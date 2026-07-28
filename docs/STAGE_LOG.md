@@ -18,10 +18,23 @@ A stage does not begin until the previous stage's entry here reads `PASS`.
 
 ## Stage 00 — Ground rules, repository, toolchain
 
-Started: 2026-07-28 Completed: —
-Exit gate: IN PROGRESS
+Started: 2026-07-28 Completed: 2026-07-28
+Exit gate: PASS
+Tests: 9 passing, 0 skipped. Coverage not yet instrumented — wired in Stage 01, where
+there is safety-critical code to hold to the §4.2 thresholds.
 
-**Done so far**
+**Exit gate, walked item by item**
+
+| Gate item | Result |
+| --- | --- |
+| `pnpm install --frozen-lockfile`, `lint`, `typecheck`, `test`, `build` pass from a clean clone | PASS — verified locally and again on a clean CI checkout |
+| `pnpm verify:stage 00` exits 0 | PASS |
+| `CLAUDE.md` exists and contains the eleven rules | PASS |
+| `.env.example` contains no values | PASS — asserted by a unit test and by the `forbidden-patterns` CI job |
+| CI green on a test PR | PASS — [PR #1](https://github.com/Sarah-JaneHarding/curriculum-saas-/pull/1), both jobs green |
+| `docs/STAGE_LOG.md` has a Stage 00 entry | PASS — this entry |
+
+**What was built**
 
 - pnpm workspaces + Turborepo, with the full §1.2 directory tree. Every package has a
   `package.json`, a `tsconfig.json` extending the root, and a `src/index.ts`.
@@ -49,11 +62,6 @@ Exit gate: IN PROGRESS
 - `scripts/verify-stage.ts`, run as `pnpm verify:stage <NN>`. Gates are cumulative: a
   stage runs its own commands and every earlier stage's.
 - `docs/DEPENDENCIES.md` records every Stage 00 dependency with its licence.
-
-**Outstanding before this gate can read PASS**
-
-- CI green on a real pull request (needs the repository to exist on GitHub — see
-  `OPEN_QUESTIONS.md`, OQ-001).
 
 Deviations from manual: the monorepo lives in the `infinite-ai/` subdirectory of the host
 repository rather than at the root of its own repository, because repository creation was
