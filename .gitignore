@@ -19,3 +19,6 @@ age.key
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Prisma generated client — rebuilt by `prisma generate`, never reviewed
+packages/db/generated/

@@ -32,7 +32,10 @@ export default tseslint.config(
       '**/coverage/**',
       '**/node_modules/**',
       '**/*.generated.ts',
-      '**/prisma/generated/**',
+      // The Prisma client is generated code: rebuilt by `prisma generate`, never
+      // hand-edited, and never reviewed. Linting it produces thousands of errors about
+      // code nobody wrote.
+      'packages/db/generated/**',
     ],
   },
 

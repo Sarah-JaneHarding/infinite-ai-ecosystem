@@ -1,0 +1,569 @@
+// INFINITE-AI core schema — Stage 01 step 3.
+//
+// Every tenant-owned model carries `tenantId`, `createdAt`, `updatedAt`, `createdBy`, and
+// `version` where mutable. Row-Level Security is applied to each of them in the migration
+// SQL, because Prisma cannot express policies. The policy is the second line of defence;
+// the tenant-scoped client in src/client.ts is the first (rule 5).
+//
+// Naming: snake_case in the database via @map, camelCase in TypeScript. The RLS coverage
+// test reads table names from information_schema, so the mapped names are what matter.
+//
+// A note on what is deliberately absent. There are no curriculum, Brain, warehouse or
+// intervention tables here. Those belong to Stages 05, 08, 09 and 10, and inventing them
+// now would mean guessing at CAPS and SIAS structures that have not been supplied
+// (OQ-002). This schema is the tenancy and identity substrate, nothing more.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Tenancy
+// ---------------------------------------------------------------------------
+
+/// A school or school group. The root of every isolation boundary.
+///
+/// This is the one table not keyed by a foreign `tenantId` — its own `id` *is* the
+/// tenant. The RLS coverage test special-cases it explicitly rather than skipping tables
+/// it cannot classify, so the exemption is visible instead of implied.
+model Tenant {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String   @unique
+  kind        TenantKind
+  /// ZA data residency (§1.3). Stored per tenant so a residency violation is detectable
+  /// in data, not only in deployment configuration.
+  region      String   @default("af-south-1")
+  status      TenantStatus @default(ACTIVE)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdBy   String?  @map("created_by") @db.Uuid
+  version     Int      @default(1)
+
+  settings           TenantSetting[]
+  userAccounts       UserAccount[]
+  roleAssignments    RoleAssignment[]
+  schools            School[]
+  phases             Phase[]
+  grades             Grade[]
+  subjects           Subject[]
+  classGroups        ClassGroup[]
+  academicYears      AcademicYear[]
+  terms              Term[]
+  learners           Learner[]
+  learnerIdentifiers LearnerIdentifier[]
+  guardians          Guardian[]
+  guardianLinks      GuardianLink[]
+  staffMembers       StaffMember[]
+  teachingAssignments TeachingAssignment[]
+  auditEvents        AuditEvent[]
+
+  @@map("tenant")
+}
+
+enum TenantKind {
+  SCHOOL
+  SCHOOL_GROUP
+
+  @@map("tenant_kind")
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  /// Retained for the audit ledger's integrity after a POPIA deletion (Stage 17).
+  CLOSED
+
+  @@map("tenant_status")
+}
+
+/// Versioned tenant configuration. Stage 17 requires config to be data, not code, and
+/// every change to be audited and reversible — hence `version` and no destructive update.
+model TenantSetting {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  key       String
+  value     Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by") @db.Uuid
+  version   Int      @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key])
+  @@index([tenantId])
+  @@map("tenant_setting")
+}
+
+// ---------------------------------------------------------------------------
+// Identity — the substrate Stage 02 builds RBAC on
+// ---------------------------------------------------------------------------
+
+/// A person who can sign in. Authentication itself is Keycloak's job (Stage 02); this
+/// table is the local projection, keyed by the OIDC subject.
+model UserAccount {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  /// OIDC `sub`. Unique per tenant, not globally: the same human at two schools is two
+  /// accounts, because their data must not be joinable across the isolation boundary.
+  subject      String
+  email        String
+  displayName  String   @map("display_name")
+  status       UserStatus @default(ACTIVE)
+  lastSeenAt   DateTime? @map("last_seen_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  createdBy    String?  @map("created_by") @db.Uuid
+  version      Int      @default(1)
+
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  roleAssignments RoleAssignment[]
+  staffMember     StaffMember?
+
+  @@unique([tenantId, subject])
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@map("user_account")
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  OFFBOARDED
+
+  @@map("user_status")
+}
+
+/// Role held by a user, optionally scoped to a school, class or subject.
+///
+/// The permission matrix itself is data in packages/policy (Stage 02); this table records
+/// only who holds which role where. Scope columns are nullable because a role may be
+/// tenant-wide.
+model RoleAssignment {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  userAccountId String  @map("user_account_id") @db.Uuid
+  role         String
+  schoolId     String?  @map("school_id") @db.Uuid
+  classGroupId String?  @map("class_group_id") @db.Uuid
+  subjectId    String?  @map("subject_id") @db.Uuid
+  grantedAt    DateTime @default(now()) @map("granted_at")
+  /// Time-boxing exists for support impersonation (Stage 02 step 7) and for roles that
+  /// should lapse rather than linger.
+  expiresAt    DateTime? @map("expires_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  createdBy    String?  @map("created_by") @db.Uuid
+  version      Int      @default(1)
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userAccount UserAccount @relation(fields: [userAccountId], references: [id], onDelete: Cascade)
+  school      School?     @relation(fields: [schoolId], references: [id])
+  classGroup  ClassGroup? @relation(fields: [classGroupId], references: [id])
+  subject     Subject?    @relation(fields: [subjectId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, userAccountId])
+  @@map("role_assignment")
+}
+
+// ---------------------------------------------------------------------------
+// Organisation
+// ---------------------------------------------------------------------------
+
+/// A campus. A SCHOOL_GROUP tenant has several; a SCHOOL tenant has one.
+model School {
+  id         String   @id @default(uuid()) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  name       String
+  /// DBE EMIS number where known. Nullable: a new tenant may not have supplied it yet,
+  /// and blocking onboarding on it would be worse than recording its absence.
+  emisNumber String?  @map("emis_number")
+  /// Language of Learning and Teaching. Drives MOD-01 and MOD-04 output language.
+  lolt       String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  createdBy  String?  @map("created_by") @db.Uuid
+  version    Int      @default(1)
+
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  phases              Phase[]
+  classGroups         ClassGroup[]
+  learners            Learner[]
+  staffMembers        StaffMember[]
+  roleAssignments     RoleAssignment[]
+  academicYears       AcademicYear[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("school")
+}
+
+/// Foundation, Intermediate, Senior, FET. Phase policy drives LoLT and assessment rules.
+model Phase {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  schoolId  String   @map("school_id") @db.Uuid
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by") @db.Uuid
+  version   Int      @default(1)
+
+  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  school School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  grades Grade[]
+
+  @@unique([tenantId, schoolId, name])
+  @@index([tenantId])
+  @@map("phase")
+}
+
+/// Grade R through 12. `ordinal` exists because "R" does not sort numerically.
+model Grade {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  phaseId   String   @map("phase_id") @db.Uuid
+  label     String
+  ordinal   Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by") @db.Uuid
+  version   Int      @default(1)
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  phase       Phase        @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  classGroups ClassGroup[]
+  learners    Learner[]
+
+  @@unique([tenantId, phaseId, label])
+  @@index([tenantId])
+  @@map("grade")
+}
+
+model Subject {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  name      String
+  /// CAPS subject code where one applies. Populated from supplied CAPS documents in
+  /// Stage 08 — never invented (OQ-002).
+  capsCode  String?  @map("caps_code")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by") @db.Uuid
+  version   Int      @default(1)
+
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  teachingAssignments TeachingAssignment[]
+  roleAssignments     RoleAssignment[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("subject")
+}
+
+/// A register class — "6A". The unit teachers actually think in.
+model ClassGroup {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  schoolId  String   @map("school_id") @db.Uuid
+  gradeId   String   @map("grade_id") @db.Uuid
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by") @db.Uuid
+  version   Int      @default(1)
+
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  school              School               @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  grade               Grade                @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  learners            Learner[]
+  teachingAssignments TeachingAssignment[]
+  roleAssignments     RoleAssignment[]
+
+  @@unique([tenantId, schoolId, name])
+  @@index([tenantId])
+  @@map("class_group")
+}
+
+model AcademicYear {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  schoolId  String   @map("school_id") @db.Uuid
+  year      Int
+  startsOn  DateTime @map("starts_on") @db.Date
+  endsOn    DateTime @map("ends_on") @db.Date
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by") @db.Uuid
+  version   Int      @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  terms  Term[]
+
+  @@unique([tenantId, schoolId, year])
+  @@index([tenantId])
+  @@map("academic_year")
+}
+
+/// A school term. ATP pacing in Stage 08 is laid against these dates, so they are
+/// authoritative rather than decorative.
+model Term {
+  id             String   @id @default(uuid()) @db.Uuid
+  tenantId       String   @map("tenant_id") @db.Uuid
+  academicYearId String   @map("academic_year_id") @db.Uuid
+  number         Int
+  startsOn       DateTime @map("starts_on") @db.Date
+  endsOn         DateTime @map("ends_on") @db.Date
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  createdBy      String?  @map("created_by") @db.Uuid
+  version        Int      @default(1)
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, academicYearId, number])
+  @@index([tenantId])
+  @@map("term")
+}
+
+// ---------------------------------------------------------------------------
+// People — the tables POPIA cares most about
+// ---------------------------------------------------------------------------
+
+/// A learner.
+///
+/// Direct identifiers live in LearnerIdentifier, encrypted at the application layer, not
+/// here. This table holds what the planning and analytics paths legitimately need, and
+/// `token` is what crosses into any de-identified context (Stage 03).
+model Learner {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  schoolId     String   @map("school_id") @db.Uuid
+  gradeId      String   @map("grade_id") @db.Uuid
+  classGroupId String?  @map("class_group_id") @db.Uuid
+  /// Tenant-salted pseudonym, e.g. LNR_7F3A2C. Deterministic per tenant so it is stable
+  /// across runs, and useless across tenants. This — never the name — is what may appear
+  /// in a prompt (rule 4).
+  token        String
+  /// Home language, for MOD-04's home-language adapter and MOD-02's parent reports.
+  homeLanguage String?  @map("home_language")
+  status       LearnerStatus @default(ENROLLED)
+  /// Set when a retention rule or a consent withdrawal tombstones this learner's
+  /// personal information. The decision record survives; the personal data does not.
+  tombstonedAt DateTime? @map("tombstoned_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  createdBy    String?  @map("created_by") @db.Uuid
+  version      Int      @default(1)
+
+  tenant      Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  school      School              @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  grade       Grade               @relation(fields: [gradeId], references: [id])
+  classGroup  ClassGroup?         @relation(fields: [classGroupId], references: [id])
+  identifiers LearnerIdentifier[]
+  guardians   GuardianLink[]
+
+  @@unique([tenantId, token])
+  @@index([tenantId])
+  @@index([tenantId, schoolId, gradeId])
+  @@map("learner")
+}
+
+enum LearnerStatus {
+  ENROLLED
+  TRANSFERRED
+  GRADUATED
+  WITHDRAWN
+
+  @@map("learner_status")
+}
+
+/// Encrypted direct identifiers, one row per identifier kind.
+///
+/// Values are AES-256-GCM ciphertext produced in the application (§1.3), so key material
+/// never reaches the database server and a database backup is not a PII leak on its own.
+/// `keyVersion` makes rotation possible without a data migration.
+model LearnerIdentifier {
+  id         String   @id @default(uuid()) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  learnerId  String   @map("learner_id") @db.Uuid
+  kind       IdentifierKind
+  /// Ciphertext. Never queried by value — see `lookupHash` for that.
+  ciphertext Bytes
+  keyVersion Int      @map("key_version")
+  /// Keyed HMAC of the plaintext, for equality lookup without decryption. A plain hash
+  /// would be trivially reversible for a value space as small as a date of birth.
+  lookupHash Bytes?   @map("lookup_hash")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  createdBy  String?  @map("created_by") @db.Uuid
+  version    Int      @default(1)
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  learner Learner @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, learnerId, kind])
+  @@index([tenantId])
+  @@index([tenantId, kind, lookupHash])
+  @@map("learner_identifier")
+}
+
+enum IdentifierKind {
+  /// South African ID number.
+  NATIONAL_ID
+  /// SA-SAMS learner reference.
+  SASAMS_NUMBER
+  LEGAL_NAME
+  DATE_OF_BIRTH
+
+  @@map("identifier_kind")
+}
+
+model Guardian {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  token        String
+  /// Drives the language MOD-02's parent reports are written in.
+  homeLanguage String?  @map("home_language")
+  tombstonedAt DateTime? @map("tombstoned_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  createdBy    String?  @map("created_by") @db.Uuid
+  version      Int      @default(1)
+
+  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  learners GuardianLink[]
+
+  @@unique([tenantId, token])
+  @@index([tenantId])
+  @@map("guardian")
+}
+
+/// Guardian-to-learner relationship, and whether this guardian may receive reports.
+model GuardianLink {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  guardianId    String   @map("guardian_id") @db.Uuid
+  learnerId     String   @map("learner_id") @db.Uuid
+  relationship  String
+  isPrimary     Boolean  @default(false) @map("is_primary")
+  /// A guardian with parental rights may not always be a lawful recipient of reports.
+  /// Recorded explicitly so the Parent Portal cannot infer it wrongly.
+  mayReceiveReports Boolean @default(true) @map("may_receive_reports")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdBy     String?  @map("created_by") @db.Uuid
+  version       Int      @default(1)
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  guardian Guardian @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+  learner  Learner  @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, guardianId, learnerId])
+  @@index([tenantId])
+  @@map("guardian_link")
+}
+
+model StaffMember {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  schoolId      String   @map("school_id") @db.Uuid
+  userAccountId String?  @unique @map("user_account_id") @db.Uuid
+  /// SACE registration, for CPTD tracking in Stage 12.
+  saceNumber    String?  @map("sace_number")
+  displayName   String   @map("display_name")
+  status        StaffStatus @default(ACTIVE)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdBy     String?  @map("created_by") @db.Uuid
+  version       Int      @default(1)
+
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  school              School               @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  userAccount         UserAccount?         @relation(fields: [userAccountId], references: [id])
+  teachingAssignments TeachingAssignment[]
+
+  @@index([tenantId])
+  @@map("staff_member")
+}
+
+enum StaffStatus {
+  ACTIVE
+  ON_LEAVE
+  DEPARTED
+
+  @@map("staff_status")
+}
+
+/// Who teaches what, to whom. The join MOD-01 and MOD-05 read to scope a teacher's world.
+model TeachingAssignment {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  staffMemberId String   @map("staff_member_id") @db.Uuid
+  classGroupId  String   @map("class_group_id") @db.Uuid
+  subjectId     String   @map("subject_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdBy     String?  @map("created_by") @db.Uuid
+  version       Int      @default(1)
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Cascade)
+  classGroup  ClassGroup  @relation(fields: [classGroupId], references: [id], onDelete: Cascade)
+  subject     Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, staffMemberId, classGroupId, subjectId])
+  @@index([tenantId])
+  @@map("teaching_assignment")
+}
+
+// ---------------------------------------------------------------------------
+// Audit
+// ---------------------------------------------------------------------------
+
+/// Append-only, hash-chained ledger.
+///
+/// Stage 02 builds the writer, the chain verification and the tamper-detection job. The
+/// table lands here because Stage 01's tables must be auditable from the first write, and
+/// retrofitting an audit trail is how gaps appear.
+///
+/// No `updatedAt` and no `version`: rows are never updated. A trigger enforcing that is
+/// added in the migration, so append-only is a property of the database rather than a
+/// convention the application is trusted to honour.
+model AuditEvent {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  actorId      String?  @map("actor_id") @db.Uuid
+  action       String
+  resourceType String   @map("resource_type")
+  resourceId   String?  @map("resource_id")
+  /// Which declared purpose this access was made under (Stage 03 taxonomy).
+  purpose      String?
+  /// One trace ID from user action to database write (§1.3).
+  traceId      String?  @map("trace_id")
+  /// JSON diff for writes. Never contains plaintext personal information.
+  diff         Json?
+  /// SHA-256 of the previous event for this tenant. Null only for the first event.
+  previousHash Bytes?   @map("previous_hash")
+  /// SHA-256 over this event's canonical form plus previousHash.
+  hash         Bytes
+  at           DateTime @default(now())
+  createdBy    String?  @map("created_by") @db.Uuid
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, at])
+  @@index([tenantId, resourceType, resourceId])
+  @@map("audit_event")
+}

@@ -12,12 +12,21 @@ name: infinite-ai-dev
 
 services:
   postgres:
-    image: postgres:16-alpine
+    # pgvector's image rather than the stock postgres one: §1.1 locks pgvector with HNSW
+    # indexes for the Brain's L1 tier, and `CREATE EXTENSION vector` fails on stock
+    # postgres:16-alpine. Same Postgres 16, extension pre-built.
+    image: pgvector/pgvector:pg16
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in your local .env}
       POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in your local .env}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in your local .env}
+      # Consumed by initdb/02-roles.sh. No defaults: an unset value must fail the
+      # bootstrap, not silently create a role with a password someone can guess.
+      MIGRATOR_PASSWORD: ${MIGRATOR_PASSWORD:?set MIGRATOR_PASSWORD in your local .env}
+      APP_RW_PASSWORD: ${APP_RW_PASSWORD:?set APP_RW_PASSWORD in your local .env}
+      WORKER_RW_PASSWORD: ${WORKER_RW_PASSWORD:?set WORKER_RW_PASSWORD in your local .env}
+      ANALYTICS_RO_PASSWORD: ${ANALYTICS_RO_PASSWORD:?set ANALYTICS_RO_PASSWORD in your local .env}
     ports:
       - '5432:5432'
     volumes:
