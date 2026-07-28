@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# One run per ref. A newer push cancels an in-flight run for the same branch.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: install → lint → typecheck → unit → build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: infinite-ai
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: infinite-ai/pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Stage gate
+        run: pnpm verify:stage 00
+
+  forbidden-patterns:
+    name: forbidden patterns (Part 6 §6.1)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: infinite-ai
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Rule 2: a skipped or focused test is never committed. ESLint covers the common
+      # forms; this is the belt-and-braces check that also catches them in untyped files.
+      - name: No skipped or focused tests
+        run: |
+          if grep -rnE '\b(describe|it|test)\.(only|skip|todo)\b|\bx(it|describe|test)\(' \
+               --include='*.ts' --include='*.tsx' --include='*.js' \
+               apps packages 2>/dev/null; then
+            echo "::error::Rule 2 — skipped or focused tests are forbidden in committed code."
+            exit 1
+          fi
+
+      # Rule 7: .env.example carries key names with empty values only.
+      - name: .env.example holds no values
+        run: |
+          if grep -vE '^\s*(#.*)?$' .env.example | grep -vE '^[A-Z0-9_]+=$'; then
+            echo "::error::Rule 7 — .env.example must contain key names with empty values only."
+            exit 1
+          fi

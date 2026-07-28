@@ -1,0 +1,2 @@
+# Pre-commit: lint and format staged files (Stage 00 step 5).
+pnpm lint-staged

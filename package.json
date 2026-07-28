@@ -1,0 +1,38 @@
+{
+  "name": "infinite-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "INFINITE-AI Education Ecosystem \u2014 multi-tenant, POPIA-safe SaaS for South African schools.",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify:stage": "tsx scripts/verify-stage.ts",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/node": "22.20.1",
+    "eslint": "9.39.5",
+    "eslint-config-prettier": "10.1.8",
+    "husky": "9.1.7",
+    "lint-staged": "16.4.0",
+    "prettier": "3.9.6",
+    "tsx": "4.23.1",
+    "turbo": "2.10.7",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.65.0",
+    "vitest": "3.2.7"
+  }
+}

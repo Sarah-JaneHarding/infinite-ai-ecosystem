@@ -1,0 +1,21 @@
+node_modules/
+dist/
+build/
+.next/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# Secrets — rule 7. Nothing but .env.example is ever committed.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+age.key
+
+.DS_Store
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json

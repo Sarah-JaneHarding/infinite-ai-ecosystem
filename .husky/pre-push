@@ -1,0 +1,2 @@
+# Pre-push: the unit suite must pass before anything leaves this machine (Stage 00 step 5).
+pnpm typecheck && pnpm test
