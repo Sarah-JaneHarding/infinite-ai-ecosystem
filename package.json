@@ -19,7 +19,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify:stage": "tsx scripts/verify-stage.ts",
-    "prepare": "husky"
+    "prepare": "node scripts/install-hooks.mjs"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",

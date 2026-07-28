@@ -148,6 +148,24 @@ export default tseslint.config(
   },
 
   // ---------------------------------------------------------------------------
+  // Plain JavaScript tooling (hook installer, config files). These run on Node
+  // directly, so declare the Node globals rather than leaving no-undef to guess.
+  // ---------------------------------------------------------------------------
+  {
+    files: ['**/*.{js,mjs,cjs}'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        Buffer: 'readonly',
+        URL: 'readonly',
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------------------
   // Exemptions, each narrow and justified.
   // ---------------------------------------------------------------------------
   {

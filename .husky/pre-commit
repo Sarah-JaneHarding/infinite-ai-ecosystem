@@ -1,2 +1,8 @@
+#!/usr/bin/env sh
 # Pre-commit: lint and format staged files (Stage 00 step 5).
+#
+# Hooks run from the git root, which is not the monorepo root while the monorepo lives
+# in a subdirectory (OQ-001). Locate the package root from this script's own path so the
+# hook works in either layout.
+cd "$(dirname "$0")/.." || exit 1
 pnpm lint-staged

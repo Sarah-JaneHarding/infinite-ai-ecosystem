@@ -1,2 +1,4 @@
+#!/usr/bin/env sh
 # Pre-push: the unit suite must pass before anything leaves this machine (Stage 00 step 5).
+cd "$(dirname "$0")/.." || exit 1
 pnpm typecheck && pnpm test
