@@ -14,13 +14,9 @@
 // key, so a second run is a no-op rather than a duplicate. CI proves this by seeding twice
 // and comparing row counts.
 
-import { randomUUID } from 'node:crypto';
-
 import { PrismaClient } from '@prisma/client';
 
 import { EncryptionKey, encrypt, lookupHash } from '../src/encryption.js';
-
-const prisma = new PrismaClient();
 
 /** A fixed actor id for seed provenance, so `created_by` is never null in seeded data. */
 const SEED_ACTOR = '00000000-0000-4000-8000-00000000f00d';
@@ -53,14 +49,24 @@ const KEY = seedKey();
 
 /** Sets the tenant context, then runs `fn`. Mirrors the production client's contract. */
 async function inTenant<T>(
+  prisma: PrismaClient,
   tenantId: string,
   fn: (tx: PrismaClient) => Promise<T>,
 ): Promise<T> {
-  return prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.tenant_id', ${tenantId}, true)`;
-    await tx.$executeRaw`SELECT set_config('app.actor_id', ${SEED_ACTOR}, true)`;
-    return fn(tx as unknown as PrismaClient);
-  });
+  return prisma.$transaction(
+    async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.tenant_id', ${tenantId}, true)`;
+      await tx.$executeRaw`SELECT set_config('app.actor_id', ${SEED_ACTOR}, true)`;
+      return fn(tx as unknown as PrismaClient);
+    },
+    // A tenant is seeded in one transaction on purpose: a seed that half-applies is worse
+    // than one that fails, and atomicity is what makes re-running it safe. The large
+    // primary is ~1,200 learners with four upserts each, which is comfortably past
+    // Prisma's 5s interactive default — that default is sized for request handlers, not
+    // for a bulk fixture load, and leaving it would have made the seed's own atomicity
+    // the thing that broke it.
+    { timeout: 180_000, maxWait: 15_000 },
+  );
 }
 
 interface CampusSpec {
@@ -128,19 +134,32 @@ const FAMILY_NAMES = [
 ] as const;
 const HOME_LANGUAGES = ['zu', 'xh', 'af', 'en', 'nso', 'tn', 'st'] as const;
 
+/**
+ * Node's `Buffer` is `Buffer<ArrayBufferLike>`; Prisma's `Bytes` columns want
+ * `Uint8Array<ArrayBuffer>`. The two are structurally incompatible under strict mode even
+ * though the bytes are identical, so convert explicitly at the boundary rather than
+ * casting the difference away.
+ */
+function toBytes(value: Buffer): Uint8Array<ArrayBuffer> {
+  const copy = new Uint8Array(new ArrayBuffer(value.byteLength));
+  copy.set(value);
+  return copy;
+}
+
 /** Deterministic pick, so the same seed run produces the same people every time. */
 function pick<T>(list: readonly T[], n: number): T {
   return list[n % list.length]!;
 }
 
 async function seedTenant(
+  prisma: PrismaClient,
   tenantId: string,
   name: string,
   slug: string,
   kind: 'SCHOOL' | 'SCHOOL_GROUP',
   campuses: readonly CampusSpec[],
 ): Promise<void> {
-  await inTenant(tenantId, async (tx) => {
+  await inTenant(prisma, tenantId, async (tx) => {
     await tx.tenant.upsert({
       where: { id: tenantId },
       update: { name },
@@ -277,14 +296,20 @@ async function seedTenant(
           // One register teacher per class.
           staffCounter += 1;
           const teacherName = `${pick(GIVEN_NAMES, staffCounter)} ${pick(FAMILY_NAMES, staffCounter)}`;
-          const subjectValue = `seed-teacher-${slug}-${campus.name}-${className}`;
+          // Both unique keys on user_account must be campus-scoped, not just one.
+          // `subject` was; `email` was not, so a school group with two campuses had two
+          // teachers of class 6A competing for 6a.<slug>@example.invalid. The upsert
+          // matched neither by subject, tried to insert, and hit the email constraint.
+          // Precisely the bug the two-campus fixture shape exists to surface.
+          const campusSlug = campus.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const subjectValue = `seed-teacher-${slug}-${campusSlug}-${className}`;
           const account = await tx.userAccount.upsert({
             where: { tenantId_subject: { tenantId, subject: subjectValue } },
             update: {},
             create: {
               tenantId,
               subject: subjectValue,
-              email: `${className.toLowerCase()}.${slug}@example.invalid`,
+              email: `${className.toLowerCase()}.${campusSlug}.${slug}@example.invalid`,
               displayName: teacherName,
               createdBy: SEED_ACTOR,
             },
@@ -371,9 +396,9 @@ async function seedTenant(
                 tenantId,
                 learnerId: learner.id,
                 kind: 'LEGAL_NAME',
-                ciphertext: encrypted.ciphertext,
+                ciphertext: toBytes(encrypted.ciphertext),
                 keyVersion: encrypted.keyVersion,
-                lookupHash: lookupHash(legalName, tenantId, KEY),
+                lookupHash: toBytes(lookupHash(legalName, tenantId, KEY)),
                 createdBy: SEED_ACTOR,
               },
             });
@@ -441,71 +466,118 @@ function deterministicId(kind: string, ...parts: string[]): string {
   ].join('-');
 }
 
-async function main(): Promise<void> {
+/** Row counts per tenant, used to prove a second run changes nothing. */
+export interface SeedCounts {
+  readonly schools: number;
+  readonly classes: number;
+  readonly learners: number;
+  readonly staff: number;
+  readonly identifiers: number;
+}
+
+/**
+ * Seeds the three reference tenants. Idempotent: every write is an upsert on a stable
+ * natural key, so running this twice leaves the same rows.
+ *
+ * Takes the client as an argument so the integration tier can seed a Testcontainers
+ * database and assert that second property rather than take it on trust.
+ */
+export async function seed(prisma: PrismaClient): Promise<Record<string, SeedCounts>> {
   // A small primary: one campus, one class per grade.
-  await seedTenant(TENANTS.smallPrimary, 'Kleinbos Primary', 'kleinbos', 'SCHOOL', [
-    {
-      name: 'Kleinbos Primary',
-      lolt: 'af',
-      classesPerGrade: 1,
-      learnersPerClass: 22,
-      grades: PRIMARY_GRADES,
-    },
-  ]);
+  await seedTenant(
+    prisma,
+    TENANTS.smallPrimary,
+    'Kleinbos Primary',
+    'kleinbos',
+    'SCHOOL',
+    [
+      {
+        name: 'Kleinbos Primary',
+        lolt: 'af',
+        classesPerGrade: 1,
+        learnersPerClass: 22,
+        grades: PRIMARY_GRADES,
+      },
+    ],
+  );
 
   // A large primary: one campus, four classes per grade — the pagination and rollup case.
-  await seedTenant(TENANTS.largePrimary, 'Thabo Mbeki Primary', 'thabo-mbeki', 'SCHOOL', [
-    {
-      name: 'Thabo Mbeki Primary',
-      lolt: 'en',
-      classesPerGrade: 4,
-      learnersPerClass: 38,
-      grades: PRIMARY_GRADES,
-    },
-  ]);
+  await seedTenant(
+    prisma,
+    TENANTS.largePrimary,
+    'Thabo Mbeki Primary',
+    'thabo-mbeki',
+    'SCHOOL',
+    [
+      {
+        name: 'Thabo Mbeki Primary',
+        lolt: 'en',
+        classesPerGrade: 4,
+        learnersPerClass: 38,
+        grades: PRIMARY_GRADES,
+      },
+    ],
+  );
 
   // A school group: two campuses under one tenant, with different LoLT. This is the shape
   // that breaks code assuming one school per tenant.
-  await seedTenant(TENANTS.schoolGroup, 'Umoya Schools Trust', 'umoya', 'SCHOOL_GROUP', [
-    {
-      name: 'Umoya North Campus',
-      lolt: 'en',
-      classesPerGrade: 2,
-      learnersPerClass: 30,
-      grades: PRIMARY_GRADES,
-    },
-    {
-      name: 'Umoya South Campus',
-      lolt: 'zu',
-      classesPerGrade: 2,
-      learnersPerClass: 28,
-      grades: PRIMARY_GRADES,
-    },
-  ]);
+  await seedTenant(
+    prisma,
+    TENANTS.schoolGroup,
+    'Umoya Schools Trust',
+    'umoya',
+    'SCHOOL_GROUP',
+    [
+      {
+        name: 'Umoya North Campus',
+        lolt: 'en',
+        classesPerGrade: 2,
+        learnersPerClass: 30,
+        grades: PRIMARY_GRADES,
+      },
+      {
+        name: 'Umoya South Campus',
+        lolt: 'zu',
+        classesPerGrade: 2,
+        learnersPerClass: 28,
+        grades: PRIMARY_GRADES,
+      },
+    ],
+  );
 
+  const summary: Record<string, SeedCounts> = {};
   for (const [label, tenantId] of Object.entries(TENANTS)) {
-    const counts = await inTenant(tenantId, async (tx) => ({
+    summary[label] = await inTenant(prisma, tenantId, async (tx) => ({
       schools: await tx.school.count(),
       classes: await tx.classGroup.count(),
       learners: await tx.learner.count(),
       staff: await tx.staffMember.count(),
+      identifiers: await tx.learnerIdentifier.count(),
     }));
-    console.log(
-      `seeded ${label}: ${counts.schools} schools, ${counts.classes} classes, ` +
-        `${counts.learners} learners, ${counts.staff} staff`,
-    );
+  }
+  return summary;
+}
+
+/** CLI entry point: `pnpm --filter @infinite-ai/db db:seed`. */
+async function main(): Promise<void> {
+  const prisma = new PrismaClient();
+  try {
+    const summary = await seed(prisma);
+    for (const [label, counts] of Object.entries(summary)) {
+      console.log(
+        `seeded ${label}: ${counts.schools} schools, ${counts.classes} classes, ` +
+          `${counts.learners} learners, ${counts.staff} staff`,
+      );
+    }
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-main()
-  .catch((error: unknown) => {
+// Only run when invoked directly, so importing this module for tests does not seed.
+if (process.argv[1]?.endsWith('seed.ts') === true) {
+  main().catch((error: unknown) => {
     console.error(error);
     process.exitCode = 1;
-  })
-  .finally(() => {
-    void prisma.$disconnect();
   });
-
-// Referenced so the import is not flagged unused when the file is type-checked in
-// isolation; randomUUID is the fallback identity for ad-hoc rows in future stages.
-void randomUUID;
+}

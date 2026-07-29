@@ -87,9 +87,88 @@ The gate stays PASS: every gate item was and remains satisfied, and the CI job t
 this is itself the backstop the manual asks for. The lesson is recorded rather than
 smoothed over — a control that has not been observed working has not been verified.
 
-Deviations from manual: the monorepo lives in the `infinite-ai/` subdirectory of the host
-repository rather than at the root of its own repository, because repository creation was
-not available to the session that scaffolded it. `scripts/spin-out-repo.sh` moves it to
-its own repository root unchanged. Recorded as OQ-001.
+Deviations from manual: none outstanding. The monorepo was initially scaffolded in a
+subdirectory of another repository because repository creation was unavailable to the
+session that built it; it now sits at the root of its own repository, with history intact,
+and OQ-001 is resolved. The subdirectory arrangement is what caused the git-hook defect
+recorded above, so the move removes that class of problem rather than merely tidying.
 
 Open questions raised: OQ-001, OQ-002, OQ-003, OQ-004.
+
+---
+
+## Stage 01 — Data foundation, tenancy, Row-Level Security
+
+Started: 2026-07-28 Completed: —
+Exit gate: **NOT YET PASS** — five of six items met; coverage outstanding.
+
+**Exit gate, walked item by item**
+
+| Gate item                                         | Result                                                                                                                                   |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Every tenant-owned table appears in the RLS suite | PASS — `rls-coverage.integration.spec.ts` diffs `information_schema` and `pg_policies` against `src/tables.ts`; 18 tables, 57 assertions |
+| No export path to an unscoped client              | PASS — `export-surface.spec.ts` checks the export list by name _and_ structurally for anything carrying `$connect`                       |
+| Seeds reproducible                                | PASS — seeded twice against real Postgres, row counts identical, ~17s per run                                                            |
+| Encryption verified by reading the raw column     | PASS — ciphertext read as raw `bytea` contains neither the plaintext nor either of its words; the mirror test decrypts the same row      |
+| Cross-tenant access impossible by construction    | PASS — 113 assertions as `app_rw`, plus `withTenant` itself proven against a live database                                               |
+| `packages/db` line coverage ≥ 95% (§4.2)          | **NOT MET — 89.5%**                                                                                                                      |
+
+**The coverage shortfall, stated plainly**
+
+§4.2 requires ≥ 95% lines for `packages/db` as a safety-critical package. The unit tier
+measures 89.5%. The remaining uncovered lines in `client.ts` are the lazy connection and
+the transaction body, which cannot execute without a database — so the unit tier cannot
+reach 95% by construction, and reaching it legitimately needs coverage merged across the
+unit and Testcontainers tiers. That merge is not built.
+
+The threshold in `vitest.config.ts` is set to 88, just under the current measurement, so a
+regression fails. It is deliberately not set to 95, because a threshold the tier cannot
+meet would either block every build or be quietly disabled — and the second is how
+coverage requirements die. The gap is carried here rather than papered over.
+
+**A real gap the coverage number exposed**
+
+`client.ts` measured 12.8% before this was investigated. The isolation suite proved the
+policies but drove them through `asTenant` in the test harness — a _mirror_ of
+`withTenant`, not `withTenant` itself. The function every read and write is supposed to go
+through (rule 5) had never been executed. `client.integration.spec.ts` now exercises the
+exported function directly, including that its settings are transaction-local rather than
+session-level, which is the property that makes connection pooling safe.
+
+This is the argument for the §4.2 thresholds existing at all: the number was not the
+problem, it was the symptom.
+
+**Defects found by CI that local runs could not catch**
+
+Six rounds, six distinct defects, every one in code that passed locally — this environment
+has no Docker daemon and no Postgres server, so nothing touching a database can be run
+before it is pushed.
+
+1. `migrator` owned no schema the migrations targeted — an `app` schema was created while
+   Prisma targeted `public`.
+2. `CREATE SCHEMA IF NOT EXISTS "public"` needs database-level CREATE, which `migrator`
+   deliberately lacks. Removed rather than granted.
+3. The Prisma client was never generated in CI, so `@prisma/client` resolved to a stub.
+   Fixed by generating on postinstall, which also makes the README's clean-clone promise
+   true.
+4. The seed's per-tenant transaction exceeded Prisma's 5s interactive default.
+5. Two seed checks scanned across tenants — which RLS correctly refused. The isolation
+   layer caught the test that forgot about it.
+6. Seeded teacher emails were not campus-scoped, so a school group's two campuses
+   collided on class 6A. Exactly the bug the two-campus fixture shape exists to surface;
+   three single-campus tenants would have shipped it.
+
+**A finding worth recording about the isolation model**
+
+Once any transaction on a connection has called `set_config` for `app.tenant_id`, a later
+context-less query on that same connection reads `''` rather than raising `unrecognized
+configuration parameter`. It still fails closed — `''::uuid` is itself an error — but with
+a different error than a connection that has never set the variable. The suite asserts
+rejection rather than a message, so it holds either way, and neither path returns rows.
+"Context-less queries raise a specific error" would have been an overclaim.
+
+Deviations from manual: no Docker in the authoring environment, so every database
+behaviour was written blind and proven only in CI. Coverage below §4.2 as described above.
+
+Open questions: OQ-002 and OQ-003 still block Stage 08. OQ-004 answered in practice —
+seeds are generic — but not formally closed.

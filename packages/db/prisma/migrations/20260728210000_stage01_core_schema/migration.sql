@@ -1,5 +1,12 @@
--- CreateSchema
-CREATE SCHEMA IF NOT EXISTS "public";
+-- NOTE: Prisma emits `CREATE SCHEMA IF NOT EXISTS "public"` here. It is deliberately
+-- removed. That statement requires CREATE on the *database*, which `migrator` does not
+-- have and should not be given: its job is to create tables in an existing schema, not
+-- schemas in the database (§1.3, least privilege). `public` always exists, so the
+-- statement is pure privilege escalation for no benefit. Postgres checks the privilege
+-- before the IF NOT EXISTS short-circuit, so it fails even though the schema is there.
+--
+-- If a future `prisma migrate diff` reintroduces it, delete it again. A test in
+-- test/schema-classification.spec.ts fails if any migration contains CREATE SCHEMA.
 
 -- CreateEnum
 CREATE TYPE "tenant_kind" AS ENUM ('SCHOOL', 'SCHOOL_GROUP');

@@ -35,21 +35,29 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
     CREATE ROLE analytics_ro LOGIN PASSWORD '${ANALYTICS_RO_PASSWORD}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS;
 
     -- The schema belongs to migrator. Nobody else may change its shape.
-    CREATE SCHEMA IF NOT EXISTS app AUTHORIZATION migrator;
+    --
+    -- This is `public`, not a bespoke `app` schema. An earlier version of this file
+    -- created `app` while Prisma's datasource still targeted `public`, and additionally
+    -- revoked rights on `public` — so `migrator` had nowhere it was permitted to create
+    -- tables and `prisma migrate deploy` failed with "no schema has been selected to
+    -- create in". Ownership, not a separate namespace, is what makes DDL migrator's
+    -- alone; a second schema bought nothing and broke the migration.
+    ALTER SCHEMA public OWNER TO migrator;
 
     GRANT CONNECT ON DATABASE "${POSTGRES_DB}" TO migrator, app_rw, worker_rw, analytics_ro;
-    GRANT USAGE ON SCHEMA app TO app_rw, worker_rw, analytics_ro;
+    GRANT USAGE ON SCHEMA public TO app_rw, worker_rw, analytics_ro;
 
-    -- No CREATE for the runtime roles: DDL is migrator's alone (step 2).
-    REVOKE CREATE ON SCHEMA app FROM app_rw, worker_rw, analytics_ro;
-    REVOKE ALL ON SCHEMA public FROM PUBLIC;
+    -- No CREATE for the runtime roles: DDL is migrator's alone (step 2). Revoking from
+    -- PUBLIC covers every current and future role that is not granted it explicitly.
+    REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+    REVOKE CREATE ON SCHEMA public FROM app_rw, worker_rw, analytics_ro;
 
     -- Default privileges apply to tables migrator creates from here on, so a new table
     -- in a later stage is reachable by the application without a follow-up grant — and,
     -- more importantly, is NOT reachable by analytics_ro without a deliberate one.
-    ALTER DEFAULT PRIVILEGES FOR ROLE migrator IN SCHEMA app
+    ALTER DEFAULT PRIVILEGES FOR ROLE migrator IN SCHEMA public
       GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_rw, worker_rw;
-    ALTER DEFAULT PRIVILEGES FOR ROLE migrator IN SCHEMA app
+    ALTER DEFAULT PRIVILEGES FOR ROLE migrator IN SCHEMA public
       GRANT USAGE, SELECT ON SEQUENCES TO app_rw, worker_rw;
 
     -- analytics_ro gets nothing here, deliberately. It is granted SELECT on the
