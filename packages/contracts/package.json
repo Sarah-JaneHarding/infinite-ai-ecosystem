@@ -13,9 +13,11 @@
     "build": "tsc --build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "3.2.7",
     "typescript": "5.9.3",
     "vitest": "3.2.7"
   },

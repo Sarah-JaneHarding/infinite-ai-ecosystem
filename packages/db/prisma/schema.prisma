@@ -65,6 +65,9 @@ model Tenant {
   staffMembers       StaffMember[]
   teachingAssignments TeachingAssignment[]
   auditEvents        AuditEvent[]
+  consentRecords     ConsentRecord[]
+  retentionRules     RetentionRule[]
+  subjectRequests    DataSubjectRequest[]
 
   @@map("tenant")
 }
@@ -568,4 +571,167 @@ model AuditEvent {
   @@index([tenantId, at])
   @@index([tenantId, resourceType, resourceId])
   @@map("audit_event")
+}
+
+// ---------------------------------------------------------------------------
+// POPIA — consent, retention, data subject rights (Stage 03)
+// ---------------------------------------------------------------------------
+
+/// One immutable entry in the consent ledger.
+///
+/// Append-only, enforced by the same trigger pattern as `audit_event`: no UPDATE, no
+/// DELETE. A withdrawal is a new row, so the history of what a school was permitted to do,
+/// and when, is reconstructable rather than overwritten. `docs/POPIA.md` §4.
+///
+/// The subject is a token, never a name or an id that resolves to one. The ledger is
+/// therefore not itself a register of who attends the school.
+model ConsentRecord {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  /// Tenant-salted pseudonym: LNR_…, GDN_…, STF_….
+  subjectToken  String   @map("subject_token")
+  /// A `DataCategory` value from @infinite-ai/contracts.
+  category      String
+  /// A `Purpose` value from @infinite-ai/contracts.
+  purpose       String
+  basis         LawfulBasis
+  decision      ConsentDecision
+  source        ConsentSource
+  /// Reference to the evidence, never the evidence itself.
+  evidenceRef   String?  @map("evidence_ref")
+  /// When the decision took effect in the world.
+  effectiveFrom DateTime @map("effective_from")
+  /// When this system learned of it. The gap between the two is what an auditor reads.
+  recordedAt    DateTime @default(now()) @map("recorded_at")
+  recordedBy    String?  @map("recorded_by") @db.Uuid
+  /// The subject's own words on an objection. Never a decision, never personal detail.
+  note          String?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, subjectToken, category, purpose, effectiveFrom])
+  @@map("consent_record")
+}
+
+/// POPIA §11(1). Named as the Act names them.
+enum LawfulBasis {
+  CONSENT
+  CONTRACT
+  LEGAL_OBLIGATION
+  SUBJECT_INTEREST
+  PUBLIC_LAW_DUTY
+  LEGITIMATE_INTEREST
+
+  @@map("lawful_basis")
+}
+
+enum ConsentDecision {
+  GRANTED
+  WITHDRAWN
+
+  @@map("consent_decision")
+}
+
+enum ConsentSource {
+  PAPER_FORM
+  GUARDIAN_PORTAL
+  STAFF_CAPTURED
+  MIGRATED
+  NOT_APPLICABLE
+
+  @@map("consent_source")
+}
+
+/// A ratified retention period for one data category.
+///
+/// The periods themselves are the school's determination, made against statute and minuted
+/// by its governing body — this system stores and enforces them and does not supply them.
+/// A category with no row here is never tombstoned automatically; it is reported as
+/// unscheduled on every retention run. See OQ-007 and `docs/POPIA.md` §5.
+model RetentionRule {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  /// A `DataCategory` value from @infinite-ai/contracts.
+  category     String
+  /// A `RetentionAnchor` value: the event the period is measured from.
+  anchor       String
+  retainMonths Int      @map("retain_months")
+  /// The Act, regulation, circular or resolution that makes this period defensible.
+  authority    String
+  ratifiedAt   DateTime @map("ratified_at")
+  ratifiedBy   String   @map("ratified_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  createdBy    String?  @map("created_by") @db.Uuid
+  version      Int      @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, category])
+  @@index([tenantId])
+  @@map("retention_rule")
+}
+
+/// A data subject exercising a right under POPIA §§23–25 — Stage 03 step 7.
+///
+/// Modelled as a case with a state, not as an endpoint that acts immediately. Erasure and
+/// correction change a school's records, and a school is entitled to check that the person
+/// asking is who they say they are before that happens. The gate is a human one and it is
+/// recorded here rather than assumed.
+model DataSubjectRequest {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  subjectToken  String   @map("subject_token")
+  kind          DataSubjectRequestKind
+  status        DataSubjectRequestStatus @default(RECEIVED)
+  /// What the subject asked for, in their words.
+  detail        String
+  /// How the requester's identity was established. Required before fulfilment.
+  verifiedBy    String?  @map("verified_by") @db.Uuid
+  verifiedAt    DateTime? @map("verified_at")
+  /// Set when the request was completed or refused, with the reason in `outcome`.
+  closedAt      DateTime? @map("closed_at")
+  outcome       String?
+  /// The §23(1) response clock. A request has a statutory deadline, so it is stored.
+  dueAt         DateTime @map("due_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdBy     String?  @map("created_by") @db.Uuid
+  version       Int      @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, status, dueAt])
+  @@map("data_subject_request")
+}
+
+enum DataSubjectRequestKind {
+  /// §23 — what do you hold about me?
+  ACCESS
+  /// §24 — correct or delete inaccurate information.
+  CORRECTION
+  /// §11(3) — objection to processing.
+  OBJECTION
+  /// §24(1)(a) — deletion of information the responsible party is no longer authorised
+  /// to retain.
+  ERASURE
+  /// Portability export. Not a POPIA right as such; offered because a family moving
+  /// schools should not have to ask twice.
+  PORTABILITY
+
+  @@map("data_subject_request_kind")
+}
+
+enum DataSubjectRequestStatus {
+  RECEIVED
+  /// Identity of the requester not yet established.
+  AWAITING_VERIFICATION
+  IN_PROGRESS
+  FULFILLED
+  /// Refused, with the reason recorded in `outcome`. A refusal is an answer.
+  REFUSED
+
+  @@map("data_subject_request_status")
 }

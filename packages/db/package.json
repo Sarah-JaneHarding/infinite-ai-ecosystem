@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "tsc --build",
+    "coverage:merged": "pnpm test:coverage && pnpm test:integration:coverage && vitest --merge-reports --config vitest.merge.config.ts --coverage",
     "db:generate": "prisma generate",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
@@ -19,18 +20,20 @@
     "lint": "eslint src",
     "postinstall": "prisma generate",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage --reporter=blob --outputFile=.vitest-reports/unit.json",
     "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:integration:coverage": "vitest run --config vitest.integration.config.ts --coverage --reporter=blob --outputFile=.vitest-reports/integration.json",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "prisma": "6.19.3",
-    "typescript": "5.9.3",
-    "vitest": "3.2.7",
-    "@vitest/coverage-v8": "3.2.7",
-    "testcontainers": "12.0.4",
+    "@infinite-ai/contracts": "workspace:*",
     "@testcontainers/postgresql": "12.0.4",
-    "tsx": "4.23.1"
+    "@vitest/coverage-v8": "3.2.7",
+    "prisma": "6.19.3",
+    "testcontainers": "12.0.4",
+    "tsx": "4.23.1",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
   },
   "dependencies": {
     "@prisma/client": "6.19.3"

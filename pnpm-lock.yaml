@@ -109,6 +109,9 @@ importers:
         specifier: 3.25.76
         version: 3.25.76
     devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.2.7
+        version: 3.2.7(vitest@3.2.7(@types/node@22.20.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0))
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -122,6 +125,9 @@ importers:
         specifier: 6.19.3
         version: 6.19.3(prisma@6.19.3(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
     devDependencies:
+      '@infinite-ai/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       '@testcontainers/postgresql':
         specifier: 12.0.4
         version: 12.0.4
@@ -146,6 +152,9 @@ importers:
 
   packages/deident:
     devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.2.7
+        version: 3.2.7(vitest@3.2.7(@types/node@22.20.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0))
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -177,6 +186,9 @@ importers:
         specifier: workspace:*
         version: link:../deident
     devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.2.7
+        version: 3.2.7(vitest@3.2.7(@types/node@22.20.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0))
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -194,7 +206,14 @@ importers:
         version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
 
   packages/policy:
+    dependencies:
+      '@infinite-ai/contracts':
+        specifier: workspace:*
+        version: link:../contracts
     devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.2.7
+        version: 3.2.7(vitest@3.2.7(@types/node@22.20.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0))
       typescript:
         specifier: 5.9.3
         version: 5.9.3

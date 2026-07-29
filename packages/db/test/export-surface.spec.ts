@@ -11,21 +11,46 @@ import * as db from '../src/index.js';
 
 describe('package export surface', () => {
   it('exports only the tenant-scoped entry point and its types', () => {
+    // Every addition to this list is a deliberate edit to a test, which is the point.
+    // Stage 03 added the consent ledger and erasure paths; each takes a `TenantClient` it
+    // is handed rather than obtaining one, so none of them widens the surface that
+    // matters. The structural check below is what actually guards the invariant.
     expect(Object.keys(db).sort()).toEqual([
+      'APPEND_ONLY_TABLES',
+      'ConsentLedgerError',
       'DecryptionError',
       'EncryptionKey',
       'EncryptionKeyError',
+      'ErasureError',
       'InvalidTenantContextError',
       'NON_TENANT_TABLES',
       'PACKAGE_NAME',
       'SELF_KEYED_TENANT_TABLES',
       'TENANT_OWNED_TABLES',
+      'appendConsentEntry',
       'decrypt',
       'disconnect',
       'encrypt',
+      'eraseSubject',
       'lookupHash',
+      'readLedger',
+      'readTenantLedger',
       'withTenant',
     ]);
+  });
+
+  it('makes every data-touching export take a tenant client as its first argument', () => {
+    // Rule 5 restated as a shape check. A function that could reach the database without
+    // being handed a scoped transaction would be a second way in, and the export list
+    // above only catches it if someone notices what the new name does.
+    for (const fn of [
+      db.appendConsentEntry,
+      db.readLedger,
+      db.readTenantLedger,
+      db.eraseSubject,
+    ]) {
+      expect(fn.length).toBeGreaterThanOrEqual(1);
+    }
   });
 
   it('exports no PrismaClient, under any name', () => {

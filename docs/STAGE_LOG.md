@@ -172,3 +172,97 @@ behaviour was written blind and proven only in CI. Coverage below §4.2 as descr
 
 Open questions: OQ-002 and OQ-003 still block Stage 08. OQ-004 answered in practice —
 seeds are generic — but not formally closed.
+
+---
+
+## Stage 03 — POPIA layer: purpose, de-identification, consent, retention
+
+Started: 2026-07-29 Completed: —
+Exit gate: **PARTIAL** — the enforceable controls are in place and proven; the
+data-subject-rights HTTP surface and the nightly retention job are not built.
+
+**What this stage put in place**
+
+| Step                    | Where                                                                     | Proven by                                                                                                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2 · Purpose taxonomy    | `packages/contracts/src/popia/purpose.ts`                                 | 16 tests; `planning` touches no learner-level category, `product_improvement` touches nothing at all, `SPECIAL_PERSONAL` is granted to `intervention` alone               |
+| 3 · Purpose filter      | `packages/policy/src/access.ts`                                           | 11 tests; three gates in fixed order, drops with a reason rather than throwing                                                                                            |
+| 4 · De-identification   | `packages/deident/`                                                       | 41 tests; tokenisation is deterministic per tenant and unlinkable across them, and the scrubber now has a direct suite rather than only being exercised through the guard |
+| 5 · PII egress guard    | `packages/guardrails/src/pii-guard.ts`                                    | 101 tests including 41 red-team payloads; provenance is checked first and on its own is sufficient to refuse                                                              |
+| 6 · Consent ledger      | `packages/contracts`, `packages/policy`, `packages/db`, `consent_record`  | append-only enforced by trigger, verified against real Postgres as both `app_rw` and `migrator`                                                                           |
+| 8 · Retention & erasure | `packages/contracts/src/popia/retention.ts`, `packages/db/src/erasure.ts` | erasure destroys identifiers and keeps the decision record, verified against real Postgres                                                                                |
+
+**Two decisions worth defending**
+
+_Consent is not the only lawful basis._ The ledger records which of POPIA §11(1)'s six
+bases applies. Modelling everything as consent would mean a guardian's withdrawal could
+oblige a school to stop keeping a statutory register; modelling nothing as consent would
+deny families a choice they genuinely have. A withdrawal against a basis the subject cannot
+unilaterally end is recorded as an objection — it does not stop the processing, and it does
+not vanish either. It rides on every subsequent access decision and sits in the information
+officer's queue until answered. An objection mechanism whose objections disappear is worse
+than not offering one.
+
+_No retention periods are shipped._ `retention.ts` defines the shape of a schedule and the
+arithmetic to evaluate it and contains no numbers, because the periods are each school's
+legal determination against statute — CLAUDE.md rule 11. A plausible-looking default would
+have been the worst outcome available: wrong in a way nobody checks, destroying records on
+a schedule no human agreed to. The consequence is deliberate and is stated in
+`docs/POPIA.md` §5.1: a category with no ratified rule is never tombstoned, and appears on
+an unscheduled-categories report every run instead. Raised as OQ-007.
+
+**Stage 01's coverage item, closed**
+
+Stage 01 recorded `packages/db` line coverage as NOT MET at 89.5%, with the reason stated:
+the unit tier cannot reach §4.2's 95% by construction, and doing so legitimately needs
+coverage merged across the unit and Testcontainers tiers. That merge is now built. Each
+tier writes a blob report; `vitest.merge.config.ts` consumes both and applies the threshold
+once, to the whole package. `pnpm --filter @infinite-ai/db coverage:merged` is the gate, it
+runs in the `database` CI job, and it requires Docker — which is the right dependency,
+since a coverage figure for this package that did not involve a database would be measuring
+the wrong thing.
+
+The per-tier configs carry no thresholds now. A threshold on a tier that cannot execute
+two-thirds of the package would either be meaningless or block every build, and the second
+is how coverage requirements get switched off.
+
+`contracts`, `policy`, `deident` and `guardrails` are all at 100% lines and branches
+against a 95% floor, enforced on every PR rather than only at the stage gate.
+
+**A real gap the coverage number exposed, again**
+
+`packages/deident/src/scrub.ts` measured **0%**. The scrubber — the thing that removes
+names from free text before it reaches a model — had never been called from its own
+package's tests. It was exercised only through the guardrails red-team suite, which calls
+`containsDetectablePii` and therefore only ever asserted the boolean.
+
+That suite proves the detector _notices_. It says nothing about what the scrubber leaves
+behind, and the replacement text is what reaches the model — so a scrubber that detects
+perfectly and rebuilds the string wrongly is a scrubber that leaks, and nothing would have
+caught it. `test/scrub.spec.ts` now asserts the output: placeholders in place of names, the
+surrounding sentence intact, offsets pointing into the original text, and redaction records
+that carry no trace of what they redacted.
+
+Second time in this project that a coverage figure has been the symptom rather than the
+problem. Stage 01's was `client.ts` at 12.8%, which turned out to mean rule 5's entry point
+had never executed.
+
+**What is not built, stated plainly**
+
+- **The data-subject-rights HTTP surface.** The `data_subject_request` model, its states,
+  the verification gate and the erasure it drives are in place. The authorised, audited,
+  rate-limited endpoints need the API app and land with it.
+- **The nightly retention job.** The evaluation function is written and tested; the worker
+  that runs it has nothing to run until a school ratifies a schedule (OQ-007).
+- **The consent-withdrawal sweep.** `docs/POPIA.md` §5 promises PII unreadable within one
+  job cycle of a withdrawal. The pieces exist — `evaluateConsent` says who withdrew,
+  `eraseSubject` does the work — and the job that joins them is not written.
+- **Audit chain linkage.** `writeErasureEvent` writes a content hash with a null
+  `previousHash`. Stage 02's tamper-evident chain is on a separate branch; this call site
+  links into it when that lands. The interim state is a real hash of real content rather
+  than a placeholder, so the row is verifiable on its own terms meanwhile.
+
+Deviations from manual: no Docker in the authoring environment, so every database behaviour
+in this stage was written blind and is proven only in CI.
+
+Open questions raised: OQ-007.

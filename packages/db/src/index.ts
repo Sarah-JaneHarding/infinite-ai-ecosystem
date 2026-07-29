@@ -23,9 +23,29 @@ export {
 } from './encryption.js';
 
 export {
+  ConsentLedgerError,
+  appendConsentEntry,
+  readLedger,
+  readTenantLedger,
+  type ConsentAppend,
+  type ConsentRow,
+} from './consent.js';
+
+export {
+  ErasureError,
+  eraseSubject,
+  type ErasureOutcome,
+  type ErasureRequest,
+  type ErasureTrigger,
+  type SubjectKind,
+} from './erasure.js';
+
+export {
+  APPEND_ONLY_TABLES,
   NON_TENANT_TABLES,
   SELF_KEYED_TENANT_TABLES,
   TENANT_OWNED_TABLES,
+  type AppendOnlyTable,
   type TenantOwnedTable,
 } from './tables.js';
 

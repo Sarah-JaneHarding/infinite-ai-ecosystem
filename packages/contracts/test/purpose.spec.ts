@@ -21,6 +21,15 @@ describe('the table is complete and consistent', () => {
     }
   });
 
+  it('throws rather than defaulting when asked for a purpose it does not know', () => {
+    // Unreachable while the enum and the table agree, which the case above asserts. It is
+    // covered anyway because the branch is the one that decides what a gap *means*: a
+    // missing definition must read as "refuse", never as "allow". Reaching it needs a
+    // value the type system forbids, which is the point — the cast here stands in for a
+    // future edit that adds an enum member and forgets the row.
+    expect(() => definitionOf('marketing' as Purpose)).toThrow(/incomplete/i);
+  });
+
   it('declares no purpose that is not in the enum', () => {
     const declared = new Set<string>(Purpose.options);
     for (const definition of PURPOSES) {

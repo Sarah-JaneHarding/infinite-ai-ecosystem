@@ -1,7 +1,9 @@
-// @infinite-ai/contracts — Zod schemas shared by the API, agents and UI. Purpose taxonomy lives here.
+// @infinite-ai/contracts — Zod schemas shared by the API, agents and UI. The POPIA
+// vocabularies live here: purpose taxonomy, consent ledger shape, retention schedule.
 //
-// Implemented in Stage 03. This stub exists so the workspace graph,
-// the TypeScript project references and CI are real from Stage 00 onward.
+// These are contracts rather than implementations on purpose. `packages/policy` decides,
+// `packages/db` stores and the modules consume — and all three agree because each agrees
+// with this package, rather than with one another.
 
 export {
   DataCategory,
@@ -13,5 +15,27 @@ export {
   type CategoryProjection,
   type PurposeDefinition,
 } from './popia/purpose.js';
+
+export {
+  ConsentDecision,
+  ConsentEntry,
+  ConsentEntryDraft,
+  ConsentSource,
+  LawfulBasis,
+  WITHDRAWABLE_BASES,
+  isWithdrawable,
+} from './popia/consent.js';
+
+export {
+  RetentionAnchor,
+  RetentionRule,
+  RetentionSchedule,
+  addMonths,
+  evaluateRetention,
+  ruleFor,
+  unscheduledCategories,
+  type RetainableRecord,
+  type RetentionVerdict,
+} from './popia/retention.js';
 
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;

@@ -17,8 +17,11 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      // Add "coverage/**" when coverage reporting is wired in Stage 01.
       "outputs": []
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
     },
     "lint": {
       "outputs": []
