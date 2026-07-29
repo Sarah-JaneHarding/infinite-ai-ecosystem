@@ -18,10 +18,17 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      // §4.2: packages/db is safety-critical. The threshold applies to the tenant client
-      // and encryption; it is raised to 95 once the integration tier's coverage is merged
-      // in, which needs Docker in CI to be meaningful.
-      thresholds: { lines: 80, branches: 75 },
+      // §4.2 requires >= 95% lines for packages/db, and this threshold is NOT that. It
+      // is what the unit tier can honestly reach on its own: the remaining lines in
+      // client.ts are the lazy connection and the transaction body, which cannot execute
+      // without a database. Reaching 95 legitimately needs coverage merged across the
+      // unit and Testcontainers tiers.
+      //
+      // The number here is set to just below the current measurement so a regression
+      // fails, rather than to a target the tier cannot meet. The shortfall against §4.2
+      // is recorded as an open item in docs/STAGE_LOG.md rather than hidden by lowering
+      // what the manual asks for.
+      thresholds: { lines: 88, branches: 92 },
     },
   },
 });
