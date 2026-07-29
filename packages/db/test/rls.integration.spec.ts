@@ -332,6 +332,26 @@ describe('roles', () => {
     }
   });
 
+  it('gives migrator ownership of the schema the migrations target', async () => {
+    // The migrations create tables in `public`. If migrator does not own it — or if
+    // CREATE was revoked without a compensating grant — `prisma migrate deploy` fails
+    // with "no schema has been selected to create in", which is how this surfaced the
+    // first time: as a migration crash rather than a named assertion.
+    const rows = await migrator.$queryRaw<{ owner: string }[]>`
+      SELECT pg_catalog.pg_get_userbyid(nspowner) AS owner
+      FROM pg_namespace WHERE nspname = 'public'
+    `;
+    expect(rows[0]!.owner).toBe('migrator');
+  });
+
+  it('does not let a runtime role create tables', async () => {
+    // Step 2: only migrator may DDL. This is the other half of the property above — it
+    // would be no good giving migrator ownership if app_rw could also create.
+    await expect(
+      appRw.$executeRawUnsafe('CREATE TABLE should_not_exist (id int)'),
+    ).rejects.toThrow();
+  });
+
   it('does not grant superuser to any application role', async () => {
     const rows = await migrator.$queryRaw<{ rolname: string; rolsuper: boolean }[]>`
       SELECT rolname, rolsuper FROM pg_roles

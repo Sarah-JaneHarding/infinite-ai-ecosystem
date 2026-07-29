@@ -11,16 +11,17 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "lint": "eslint src",
     "db:generate": "prisma generate",
-    "db:validate": "prisma validate",
-    "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
-    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:validate": "prisma validate",
+    "lint": "eslint src",
+    "postinstall": "prisma generate",
+    "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "db:seed": "tsx prisma/seed.ts"
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "prisma": "6.19.3",

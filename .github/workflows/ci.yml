@@ -99,10 +99,5 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma client
-        run: pnpm --filter @infinite-ai/db db:generate
-        env:
-          DATABASE_URL: postgresql://migrator@localhost:5432/placeholder
-
       - name: RLS isolation suite
         run: pnpm --filter @infinite-ai/db test:integration
