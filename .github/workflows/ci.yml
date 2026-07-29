@@ -85,3 +85,38 @@ jobs:
             echo "::error::Rule 7 — .env.example must contain key names with empty values only."
             exit 1
           fi
+
+  database:
+    name: RLS isolation suite (real Postgres)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: infinite-ai
+
+    # This job is the one that turns tenant isolation from a claim into a finding.
+    # Testcontainers starts its own pgvector/pgvector:pg16 container using the real
+    # infra/docker/initdb scripts, so no `services:` block is needed here.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: infinite-ai/pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @infinite-ai/db db:generate
+        env:
+          DATABASE_URL: postgresql://migrator@localhost:5432/placeholder
+
+      - name: RLS isolation suite
+        run: pnpm --filter @infinite-ai/db test:integration

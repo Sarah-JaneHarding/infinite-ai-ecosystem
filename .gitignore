@@ -22,3 +22,4 @@ age.key
 
 # Prisma generated client — rebuilt by `prisma generate`, never reviewed
 packages/db/generated/
+.prisma/

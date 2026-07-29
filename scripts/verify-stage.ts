@@ -30,7 +30,15 @@ const STAGES: readonly Stage[] = [
       'pnpm format:check',
     ],
   },
-  { id: '01', name: 'Data foundation, tenancy, RLS', commands: [] },
+  {
+    id: '01',
+    name: 'Data foundation, tenancy, RLS',
+    commands: [
+      // Requires Docker: the RLS suite runs against real Postgres via Testcontainers.
+      // There is no skip path — rule 2 — so this fails loudly where Docker is absent.
+      'pnpm --filter @infinite-ai/db test:integration',
+    ],
+  },
   { id: '02', name: 'Identity, RBAC, audit ledger', commands: [] },
   { id: '03', name: 'POPIA layer', commands: [] },
   { id: '04', name: 'Model Gateway', commands: [] },

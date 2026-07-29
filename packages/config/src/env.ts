@@ -34,6 +34,19 @@ const postgresUrl = z
     'DATABASE_URL must be a PostgreSQL connection string',
   );
 
+/**
+ * A base64-encoded 32-byte key.
+ *
+ * Validated here rather than at first use so a malformed key fails at boot, not at the
+ * moment a learner identifier needs encrypting.
+ */
+const base64Key = z
+  .string()
+  .refine(
+    (value) => Buffer.from(value, 'base64').length === 32,
+    'must be a base64-encoded 32-byte key',
+  );
+
 const redisUrl = z
   .string()
   .url('REDIS_URL must be a URL')
@@ -57,6 +70,14 @@ export const EnvSchema = z.object({
   // Data plane — Stage 01.
   DATABASE_URL: postgresUrl,
   REDIS_URL: redisUrl,
+
+  // Application-level encryption for special personal information (§1.3). A
+  // base64-encoded 32-byte key, supplied by SOPS/age in development and AWS Secrets
+  // Manager in production. Optional at the schema level because the services that never
+  // touch learner identifiers should not be made to carry it; `packages/db` fails loudly
+  // when it needs the key and it is absent, which is the honest place for that error.
+  DB_ENCRYPTION_KEY: base64Key.optional(),
+  DB_ENCRYPTION_KEY_VERSION: z.coerce.number().int().positive().default(1),
 
   // Identity — Stage 02.
   KEYCLOAK_ISSUER_URL: z.string().url().optional(),

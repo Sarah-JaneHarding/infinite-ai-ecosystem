@@ -12,12 +12,18 @@ import * as db from '../src/index.js';
 describe('package export surface', () => {
   it('exports only the tenant-scoped entry point and its types', () => {
     expect(Object.keys(db).sort()).toEqual([
+      'DecryptionError',
+      'EncryptionKey',
+      'EncryptionKeyError',
       'InvalidTenantContextError',
       'NON_TENANT_TABLES',
       'PACKAGE_NAME',
       'SELF_KEYED_TENANT_TABLES',
       'TENANT_OWNED_TABLES',
+      'decrypt',
       'disconnect',
+      'encrypt',
+      'lookupHash',
       'withTenant',
     ]);
   });

@@ -183,8 +183,34 @@ export default tseslint.config(
   },
   {
     // packages/db owns the raw Prisma client and re-exports only the scoped one (rule 5).
+    // Rule 5 says "no code *outside* packages/db" — so the whole package is in scope, not
+    // just src/. The export-surface test is what actually enforces that nothing escapes.
     files: ['packages/db/src/**/*.ts'],
     rules: { 'no-restricted-imports': 'off', 'no-restricted-syntax': 'off' },
+  },
+  {
+    // The RLS suite must construct clients as `app_rw`, `migrator` and so on to prove
+    // isolation binds each role. Going through withTenant() would test only the role the
+    // application happens to use, which is exactly the gap FORCE ROW LEVEL SECURITY
+    // exists to close. Confined to packages/db's own tests.
+    files: ['packages/db/test/**/*.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+      'no-restricted-syntax': 'off',
+      'no-restricted-globals': 'off',
+    },
+  },
+  {
+    // The seed script runs as a standalone CLI against a fresh database, before any
+    // application boots. It legitimately constructs its own client, reads the encryption
+    // key from the environment, and prints progress.
+    files: ['packages/db/prisma/**/*.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+      'no-restricted-syntax': 'off',
+      'no-restricted-globals': 'off',
+      'no-console': 'off',
+    },
   },
   {
     // Build and verification scripts run outside the app runtime.

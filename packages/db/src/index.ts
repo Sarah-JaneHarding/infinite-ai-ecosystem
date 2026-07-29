@@ -13,6 +13,16 @@ export {
 } from './client.js';
 
 export {
+  DecryptionError,
+  EncryptionKey,
+  EncryptionKeyError,
+  decrypt,
+  encrypt,
+  lookupHash,
+  type EncryptedValue,
+} from './encryption.js';
+
+export {
   NON_TENANT_TABLES,
   SELF_KEYED_TENANT_TABLES,
   TENANT_OWNED_TABLES,

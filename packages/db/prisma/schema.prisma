@@ -14,8 +14,10 @@
 // (OQ-002). This schema is the tenancy and identity substrate, nothing more.
 
 generator client {
+  // Default output (node_modules/.prisma/client), so `@prisma/client` resolves to the
+  // real generated types. A custom output path makes `@prisma/client` a stub, and every
+  // call on it then type-checks as an untyped function.
   provider = "prisma-client-js"
-  output   = "../generated/client"
 }
 
 datasource db {
