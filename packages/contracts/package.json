@@ -12,11 +12,14 @@
   "scripts": {
     "build": "tsc --build",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "lint": "eslint src"
   },
   "devDependencies": {
     "typescript": "5.9.3",
     "vitest": "3.2.7"
+  },
+  "dependencies": {
+    "zod": "3.25.76"
   }
 }

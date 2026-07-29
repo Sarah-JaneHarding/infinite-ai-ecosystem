@@ -1,6 +1,13 @@
-// @infinite-ai/guardrails — Input/output validators, refusal policy, PII egress guard.
-//
-// Implemented in Stage 06. This stub exists so the workspace graph,
-// the TypeScript project references and CI are real from Stage 00 onward.
+// @infinite-ai/guardrails — input/output validators, refusal policy, PII egress guard.
+
+export {
+  PiiEgressError,
+  assertEgressAllowed,
+  inspectEgress,
+  type DeidentificationProvenance,
+  type EgressPayload,
+  type EgressRefusal,
+  type EgressVerdict,
+} from './pii-guard.js';
 
 export const PACKAGE_NAME = '@infinite-ai/guardrails' as const;
