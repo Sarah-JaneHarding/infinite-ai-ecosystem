@@ -288,6 +288,16 @@ Classified per §4.4. Every integration suite failed in `beforeAll`, all five fo
 - **Classification.** Not a missing test — the integration suite runs migrations from
   scratch and caught it on the first run that included the new migration. This is the
   control working.
+- **A footnote worth keeping.** The pre-push hook then rejected the fix, because
+  `schema-classification.spec.ts` scans the migrations for the non-raising form of
+  `current_setting` and the new migration _names_ it in prose, in the list of approaches it
+  rejected. The check now reads comment-stripped SQL, matching what the neighbouring
+  `CREATE SCHEMA` assertion in the same file already does and for the same stated reason: a
+  check that trips over a written warning against the thing it guards is one that gets
+  deleted rather than heeded. It still inspects 42 real policy predicates. Two things this
+  confirms — the Stage 00 hook defect is genuinely fixed, since the hook fired unprompted
+  on a local push, and a rule enforced by string matching will eventually meet prose that
+  discusses it.
 
 **A CI job that failed silently**
 

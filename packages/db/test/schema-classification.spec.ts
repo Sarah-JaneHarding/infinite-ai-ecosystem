@@ -112,9 +112,16 @@ describe('RLS policies in the migration', () => {
     // current_setting('app.tenant_id', true) returns NULL when unset, which would make a
     // context-less query quietly match nothing instead of failing. The exit gate requires
     // it to fail loudly, so the missing_ok argument must be false at every occurrence.
+    //
+    // Comments are stripped first, on the same reasoning as the CREATE SCHEMA check below.
+    // The Stage 03 migration names the non-raising form in prose, in a list of approaches
+    // it considered and rejected — and a check that trips over a written warning against
+    // the very thing it guards is a check that gets deleted rather than heeded. What runs
+    // is what can weaken a policy, and this now inspects exactly that.
     const occurrences = [
-      ...migrationSql.matchAll(/current_setting\('app\.tenant_id'[^)]*\)/g),
+      ...executableSql.matchAll(/current_setting\('app\.tenant_id'[^)]*\)/g),
     ];
+    // Guards the check against passing vacuously if the policies were ever removed.
     expect(occurrences.length).toBeGreaterThan(0);
     for (const [occurrence] of occurrences) {
       expect(occurrence, 'must use the raising form').toContain('false');
