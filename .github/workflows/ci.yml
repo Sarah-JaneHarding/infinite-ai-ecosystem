@@ -18,10 +18,6 @@ jobs:
     name: install → lint → typecheck → unit → build
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: infinite-ai
-
     steps:
       - uses: actions/checkout@v4
 
@@ -33,7 +29,6 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: infinite-ai/pnpm-lock.yaml
 
       - name: Install
         run: pnpm install --frozen-lockfile
@@ -60,10 +55,6 @@ jobs:
     name: forbidden patterns (Part 6 §6.1)
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    defaults:
-      run:
-        working-directory: infinite-ai
-
     steps:
       - uses: actions/checkout@v4
 
@@ -90,10 +81,6 @@ jobs:
     name: RLS isolation suite (real Postgres)
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: infinite-ai
-
     # This job is the one that turns tenant isolation from a claim into a finding.
     # Testcontainers starts its own pgvector/pgvector:pg16 container using the real
     # infra/docker/initdb scripts, so no `services:` block is needed here.
@@ -108,7 +95,6 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: infinite-ai/pnpm-lock.yaml
 
       - name: Install
         run: pnpm install --frozen-lockfile

@@ -87,9 +87,10 @@ The gate stays PASS: every gate item was and remains satisfied, and the CI job t
 this is itself the backstop the manual asks for. The lesson is recorded rather than
 smoothed over — a control that has not been observed working has not been verified.
 
-Deviations from manual: the monorepo lives in the `infinite-ai/` subdirectory of the host
-repository rather than at the root of its own repository, because repository creation was
-not available to the session that scaffolded it. `scripts/spin-out-repo.sh` moves it to
-its own repository root unchanged. Recorded as OQ-001.
+Deviations from manual: none outstanding. The monorepo was initially scaffolded in a
+subdirectory of another repository because repository creation was unavailable to the
+session that built it; it now sits at the root of its own repository, with history intact,
+and OQ-001 is resolved. The subdirectory arrangement is what caused the git-hook defect
+recorded above, so the move removes that class of problem rather than merely tidying.
 
 Open questions raised: OQ-001, OQ-002, OQ-003, OQ-004.
