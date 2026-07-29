@@ -96,14 +96,25 @@ export async function eraseSubject(
     throw new ErasureError('Refusing to erase: empty subject token.');
   }
 
+  // Establish the tenant up front rather than when the audit event is written. Two reasons,
+  // and the second is the real one.
+  //
+  // It is one query instead of one per audit event. And it means a call made outside a
+  // tenant transaction fails here, with a sentence saying what is wrong, rather than
+  // several statements later as whatever error the first RLS-scoped read happens to
+  // produce. Checking last made the guard unreachable, which a coverage report is very
+  // good at noticing and a reviewer is not.
+  const tenantId = await currentTenantId(tx);
+
   return request.subjectKind === 'learner'
-    ? eraseLearner(tx, request)
-    : eraseGuardian(tx, request);
+    ? eraseLearner(tx, request, tenantId)
+    : eraseGuardian(tx, request, tenantId);
 }
 
 async function eraseLearner(
   tx: TenantClient,
   request: ErasureRequest,
+  tenantId: string,
 ): Promise<ErasureOutcome> {
   const learner = await tx.learner.findFirst({
     where: { token: request.subjectToken },
@@ -125,7 +136,15 @@ async function eraseLearner(
       identifiersDestroyed: 0,
       tombstonedAt: learner.tombstonedAt,
       changed: false,
-      auditEventId: await writeErasureEvent(tx, request, 'learner', learner.id, 0, false),
+      auditEventId: await writeErasureEvent(
+        tx,
+        request,
+        tenantId,
+        'learner',
+        learner.id,
+        0,
+        false,
+      ),
     };
   }
 
@@ -151,6 +170,7 @@ async function eraseLearner(
     auditEventId: await writeErasureEvent(
       tx,
       request,
+      tenantId,
       'learner',
       learner.id,
       destroyed.count,
@@ -162,6 +182,7 @@ async function eraseLearner(
 async function eraseGuardian(
   tx: TenantClient,
   request: ErasureRequest,
+  tenantId: string,
 ): Promise<ErasureOutcome> {
   const guardian = await tx.guardian.findFirst({
     where: { token: request.subjectToken },
@@ -182,6 +203,7 @@ async function eraseGuardian(
       auditEventId: await writeErasureEvent(
         tx,
         request,
+        tenantId,
         'guardian',
         guardian.id,
         0,
@@ -206,7 +228,15 @@ async function eraseGuardian(
     identifiersDestroyed: 0,
     tombstonedAt: request.now,
     changed: true,
-    auditEventId: await writeErasureEvent(tx, request, 'guardian', guardian.id, 0, true),
+    auditEventId: await writeErasureEvent(
+      tx,
+      request,
+      tenantId,
+      'guardian',
+      guardian.id,
+      0,
+      true,
+    ),
   };
 }
 
@@ -226,13 +256,13 @@ async function eraseGuardian(
 async function writeErasureEvent(
   tx: TenantClient,
   request: ErasureRequest,
+  tenantId: string,
   resourceType: string,
   resourceId: string,
   identifiersDestroyed: number,
   changed: boolean,
 ): Promise<string> {
   const id = randomUUID();
-  const tenantId = await currentTenantId(tx);
   const diff = {
     subjectToken: request.subjectToken,
     trigger: request.trigger,

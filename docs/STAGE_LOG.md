@@ -334,6 +334,39 @@ A companion case now asserts that updating one's **own** row affects one. It run
 rule 2 draws a hard line at skipped tests, and the ledgers' own-row behaviour — refusal by
 trigger — is a different guarantee, asserted where it applies.
 
+**The merged coverage number, and a real defect it exposed**
+
+The merge worked and produced the first honest figure for `packages/db`: **94.42% lines,
+94.91% branches** against §4.2's 95%. Short by 0.58 points, with 380 tests passing.
+
+The threshold was not moved. What was uncovered turned out to be three gaps and one defect:
+
+- `erasure.ts` — the guardian idempotency branch had no test. A retention sweep retrying a
+  guardian erasure would have been running code nothing had executed.
+- `erasure.ts` — the "no tenant context" guard was **unreachable**. It was checked when the
+  audit event was written, by which point an RLS-scoped read had already failed with
+  whatever error Prisma produced. The guard now runs first in `eraseSubject`, which is also
+  one query instead of one per audit event, and gives a caller a sentence instead of a
+  constraint error. Checking last made it dead code, which a coverage report notices and a
+  reviewer does not.
+- `consent.ts` — the empty-subject guard had no test.
+- `encryption.ts` — **a real defect in key handling.** `fromBase64` wrapped its decode in a
+  `try/catch` that could never fire, because `Buffer.from(x, 'base64')` does not throw. It
+  silently discards every character outside the alphabet and decodes what is left.
+
+  That is not a dead-branch tidiness point. A corrupted key does not fail to decode — it
+  decodes to _different key material_, and if what survives is 32 bytes long the length
+  check passes and the key is accepted. Constructed and confirmed: one corrupted character
+  plus one trailing valid one yields exactly 32 bytes that are not the real key. Everything
+  encrypted under it would be unreadable by the real key, found much later, with nothing
+  anywhere to explain why. The material is now validated against the base64 alphabet before
+  decoding, and a test asserts the generator's own keys all still pass.
+
+Third time in this project a coverage figure has been the symptom rather than the problem —
+`client.ts` at 12.8% in Stage 01, `scrub.ts` at 0% earlier in this stage, and now a
+key-handling defect that had been in `main` since Stage 01 and that no functional test would
+ever have reached.
+
 **A no-op assertion, found by inspection while that was being fixed**
 
 `popia.integration.spec.ts` attempted `DELETE FROM consent_record` in a tenant that had no

@@ -248,6 +248,31 @@ describe('the consent ledger is append-only, enforced by the database', () => {
     expect([...dates].sort((a, b) => a - b)).toEqual(dates);
   });
 
+  it('refuses an entry with no subject', async () => {
+    // A ledger row that names nobody is a row nobody can ever act on, and it cannot be
+    // deleted afterwards.
+    await expect(
+      asTenant(appRw, TENANT_A, ACTOR, (tx) =>
+        appendConsentEntry(
+          tx,
+          {
+            subjectToken: '   ',
+            category: 'ATTENDANCE',
+            purpose: 'screening',
+            basis: 'PUBLIC_LAW_DUTY',
+            decision: 'GRANTED',
+            source: 'NOT_APPLICABLE',
+            evidenceRef: null,
+            effectiveFrom: new Date('2026-01-15T08:00:00.000Z'),
+            recordedBy: null,
+            note: null,
+          },
+          NOW,
+        ),
+      ),
+    ).rejects.toThrow(/no subject/i);
+  });
+
   it('refuses a future-dated entry before it reaches the table', async () => {
     await expect(
       asTenant(appRw, TENANT_A, ACTOR, (tx) =>
@@ -511,6 +536,23 @@ describe('erasure destroys the identifiers and keeps the decision record', () =>
         }),
       ),
     ).rejects.toThrow(/empty subject token/i);
+  });
+
+  it('is idempotent for a guardian too', async () => {
+    // The learner path has this covered above. The guardian path is a separate branch and
+    // was not exercised by anything — a retention sweep retrying a guardian erasure would
+    // have been running untested code.
+    const outcome = await asTenant(appRw, TENANT_B, ACTOR, (tx) =>
+      eraseSubject(tx, {
+        subjectKind: 'guardian',
+        subjectToken: fixture(TENANT_B).guardianToken,
+        trigger: 'retention_expiry',
+        requestId: null,
+        now: new Date('2026-09-01T00:00:00.000Z'),
+      }),
+    );
+    expect(outcome.changed).toBe(false);
+    expect(outcome.tombstonedAt.toISOString()).toBe(NOW.toISOString());
   });
 
   it('refuses to erase a guardian that is not there', async () => {

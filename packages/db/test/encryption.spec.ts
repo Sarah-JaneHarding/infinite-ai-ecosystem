@@ -4,6 +4,8 @@
 // "read the raw column and assert it is not plaintext" lives in rls.spec.ts, where a real
 // database exists; what is proven here is that the primitive itself behaves.
 
+import { randomBytes } from 'node:crypto';
+
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -42,6 +44,46 @@ describe('key construction', () => {
   it('rejects a non-positive key version', () => {
     const material = Buffer.alloc(32, 7).toString('base64');
     expect(() => EncryptionKey.fromBase64(material, 0)).toThrow(EncryptionKeyError);
+  });
+
+  it('rejects material that is not base64, rather than decoding what it can', () => {
+    // `Buffer.from(x, 'base64')` never throws. It silently discards every character
+    // outside the alphabet and decodes the rest, so the try/catch this replaced could
+    // never fire — dead code wearing the shape of a safety check.
+    for (const bad of ['not base64 at all!', '****', 'abc$def', ' ']) {
+      expect(() => EncryptionKey.fromBase64(bad, 1), bad).toThrow(EncryptionKeyError);
+    }
+  });
+
+  it('rejects a corrupted key that still decodes to 32 bytes', () => {
+    // The case that made this worth fixing rather than merely noting.
+    //
+    // One character of the key is corrupted and one valid character follows it. The bad
+    // character is dropped, the surviving stream still decodes to exactly 32 bytes, and
+    // the length check passes — so the old code accepted the key. But the bytes are *not*
+    // the real key. Everything encrypted under it would be unreadable by the real key,
+    // discovered much later, with no error anywhere to explain why.
+    const real = randomBytes(32);
+    const good = real.toString('base64');
+    const corrupted = `${good.slice(0, 10)}!${good.slice(11, 43)}A=`;
+
+    const salvaged = Buffer.from(corrupted, 'base64');
+    // The fixture has to actually reproduce the defect, or the assertion below proves
+    // nothing about it.
+    expect(salvaged, 'fixture must decode to a full-length key').toHaveLength(32);
+    expect(salvaged.equals(real), 'fixture must decode to the wrong key').toBe(false);
+
+    expect(() => EncryptionKey.fromBase64(corrupted, 1)).toThrow(EncryptionKeyError);
+  });
+
+  it('still accepts every key the generator produces', () => {
+    // The pattern must not be so strict that it rejects real keys. 200 random 32-byte
+    // keys exercise the whole alphabet, including `+` and `/`, and the single `=` of the
+    // padding that a 32-byte value always ends with.
+    for (let i = 0; i < 200; i += 1) {
+      const material = randomBytes(32).toString('base64');
+      expect(() => EncryptionKey.fromBase64(material, 1), material).not.toThrow();
+    }
   });
 });
 
