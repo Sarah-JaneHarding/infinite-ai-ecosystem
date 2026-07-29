@@ -99,19 +99,19 @@ Open questions raised: OQ-001, OQ-002, OQ-003, OQ-004.
 
 ## Stage 01 — Data foundation, tenancy, Row-Level Security
 
-Started: 2026-07-28 Completed: —
-Exit gate: **NOT YET PASS** — five of six items met; coverage outstanding.
+Started: 2026-07-28 Completed: 2026-07-29
+Exit gate: **PASS** — the coverage item was closed during Stage 03; see below.
 
 **Exit gate, walked item by item**
 
-| Gate item                                         | Result                                                                                                                                   |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Every tenant-owned table appears in the RLS suite | PASS — `rls-coverage.integration.spec.ts` diffs `information_schema` and `pg_policies` against `src/tables.ts`; 18 tables, 57 assertions |
-| No export path to an unscoped client              | PASS — `export-surface.spec.ts` checks the export list by name _and_ structurally for anything carrying `$connect`                       |
-| Seeds reproducible                                | PASS — seeded twice against real Postgres, row counts identical, ~17s per run                                                            |
-| Encryption verified by reading the raw column     | PASS — ciphertext read as raw `bytea` contains neither the plaintext nor either of its words; the mirror test decrypts the same row      |
-| Cross-tenant access impossible by construction    | PASS — 113 assertions as `app_rw`, plus `withTenant` itself proven against a live database                                               |
-| `packages/db` line coverage ≥ 95% (§4.2)          | **NOT MET — 89.5%**                                                                                                                      |
+| Gate item                                         | Result                                                                                                                                                                               |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Every tenant-owned table appears in the RLS suite | PASS — `rls-coverage.integration.spec.ts` diffs `information_schema` and `pg_policies` against `src/tables.ts`; 18 tables, 57 assertions                                             |
+| No export path to an unscoped client              | PASS — `export-surface.spec.ts` checks the export list by name _and_ structurally for anything carrying `$connect`                                                                   |
+| Seeds reproducible                                | PASS — seeded twice against real Postgres, row counts identical, ~17s per run                                                                                                        |
+| Encryption verified by reading the raw column     | PASS — ciphertext read as raw `bytea` contains neither the plaintext nor either of its words; the mirror test decrypts the same row                                                  |
+| Cross-tenant access impossible by construction    | PASS — 113 assertions as `app_rw`, plus `withTenant` itself proven against a live database                                                                                           |
+| `packages/db` line coverage ≥ 95% (§4.2)          | PASS — **100%** lines, branches, functions and statements, merged across the unit and Testcontainers tiers. Closed during Stage 03; the account below is left as written at the time |
 
 **The coverage shortfall, stated plainly**
 
@@ -366,6 +366,16 @@ Third time in this project a coverage figure has been the symptom rather than th
 `client.ts` at 12.8% in Stage 01, `scrub.ts` at 0% earlier in this stage, and now a
 key-handling defect that had been in `main` since Stage 01 and that no functional test would
 ever have reached.
+
+With those four addressed, the merged figure is **100% of statements, branches, functions
+and lines** across `packages/db`, on 385 tests. That closes Stage 01's outstanding gate
+item, which is recorded there as met and cross-referenced here rather than quietly amended.
+
+Worth being clear about what the number does and does not mean: 100% line coverage says
+every line ran, not that every behaviour is correct. The isolation guarantees rest on the
+113 assertions in `rls.integration.spec.ts` and the trigger cases in
+`popia.integration.spec.ts`, not on this figure. What the figure is good for is exactly
+what it did three times — pointing at code nothing had ever executed.
 
 **A no-op assertion, found by inspection while that was being fixed**
 
