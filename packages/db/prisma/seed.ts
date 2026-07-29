@@ -53,11 +53,20 @@ async function inTenant<T>(
   tenantId: string,
   fn: (tx: PrismaClient) => Promise<T>,
 ): Promise<T> {
-  return prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.tenant_id', ${tenantId}, true)`;
-    await tx.$executeRaw`SELECT set_config('app.actor_id', ${SEED_ACTOR}, true)`;
-    return fn(tx as unknown as PrismaClient);
-  });
+  return prisma.$transaction(
+    async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.tenant_id', ${tenantId}, true)`;
+      await tx.$executeRaw`SELECT set_config('app.actor_id', ${SEED_ACTOR}, true)`;
+      return fn(tx as unknown as PrismaClient);
+    },
+    // A tenant is seeded in one transaction on purpose: a seed that half-applies is worse
+    // than one that fails, and atomicity is what makes re-running it safe. The large
+    // primary is ~1,200 learners with four upserts each, which is comfortably past
+    // Prisma's 5s interactive default — that default is sized for request handlers, not
+    // for a bulk fixture load, and leaving it would have made the seed's own atomicity
+    // the thing that broke it.
+    { timeout: 180_000, maxWait: 15_000 },
+  );
 }
 
 interface CampusSpec {

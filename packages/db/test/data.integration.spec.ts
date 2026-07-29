@@ -161,6 +161,13 @@ describe('encrypted identifiers in the database', () => {
   });
 });
 
+/** The seed's fixed tenant ids, mirrored so the checks below can scope themselves. */
+const SEEDED_TENANTS = {
+  smallPrimary: '10000000-0000-4000-8000-000000000001',
+  largePrimary: '10000000-0000-4000-8000-000000000002',
+  schoolGroup: '10000000-0000-4000-8000-000000000003',
+} as const;
+
 describe('seed reproducibility', () => {
   let first: Record<string, SeedCounts>;
 
@@ -187,25 +194,47 @@ describe('seed reproducibility', () => {
     expect(second).toEqual(first);
   });
 
-  it('leaves no duplicate learner tokens', async () => {
-    const rows = await migrator.$queryRaw<{ count: bigint }[]>`
-      SELECT count(*)::bigint AS count FROM (
-        SELECT tenant_id, token FROM "learner" GROUP BY tenant_id, token HAVING count(*) > 1
-      ) AS duplicates
-    `;
-    expect(Number(rows[0]!.count)).toBe(0);
-  });
+  // These run per tenant rather than across the whole table. A cross-tenant scan is
+  // exactly what RLS forbids, and the first version of these tests tried one — it failed
+  // with `invalid input syntax for type uuid: ""`, which is the isolation layer doing its
+  // job on the test that forgot about it.
+  it.each(Object.values(SEEDED_TENANTS))(
+    'leaves no duplicate learner tokens in %s',
+    async (tenantId) => {
+      const rows = await asTenant(
+        migrator,
+        tenantId,
+        ACTOR,
+        (tx) =>
+          tx.$queryRaw<{ count: bigint }[]>`
+          SELECT count(*)::bigint AS count FROM (
+            SELECT token FROM "learner" GROUP BY token HAVING count(*) > 1
+          ) AS duplicates
+        `,
+      );
+      expect(Number(rows[0]!.count)).toBe(0);
+    },
+  );
 
-  it('encrypts every seeded identifier', async () => {
-    // The seed goes through the real encryption path rather than around it, so a
-    // regression that wrote plaintext would show up here on realistic volume.
-    const rows = await migrator.$queryRaw<{ ciphertext: Buffer }[]>`
-      SELECT ciphertext FROM "learner_identifier" LIMIT 200
-    `;
-    expect(rows.length).toBeGreaterThan(0);
-    for (const row of rows) {
-      // AES-GCM output is at least iv(12) + tag(16) + 1 byte of body.
-      expect(row.ciphertext.length).toBeGreaterThan(28);
-    }
-  });
+  it.each(Object.values(SEEDED_TENANTS))(
+    'encrypts every seeded identifier in %s',
+    async (tenantId) => {
+      // The seed goes through the real encryption path rather than around it, so a
+      // regression that wrote plaintext would show up here on realistic volume.
+      const rows = await asTenant(
+        migrator,
+        tenantId,
+        ACTOR,
+        (tx) =>
+          tx.$queryRaw<{ ciphertext: Buffer }[]>`
+          SELECT ciphertext FROM "learner_identifier" LIMIT 200
+        `,
+      );
+      expect(rows.length).toBeGreaterThan(0);
+      for (const row of rows) {
+        // AES-GCM output is at least iv(12) + tag(16) + 1 byte of body.
+        expect(row.ciphertext.length).toBeGreaterThan(28);
+      }
+    },
+  );
 });
