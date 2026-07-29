@@ -46,6 +46,12 @@ const migrationSql = readdirSync(migrationsDir)
   })
   .join('\n');
 
+/** Migration SQL with `--` comments removed, for assertions about what actually runs. */
+const executableSql = migrationSql
+  .split('\n')
+  .filter((line) => !line.trimStart().startsWith('--'))
+  .join('\n');
+
 describe('schema classification', () => {
   it('classifies every table the schema defines', () => {
     const classified = new Set<string>([
@@ -113,6 +119,18 @@ describe('RLS policies in the migration', () => {
     for (const [occurrence] of occurrences) {
       expect(occurrence, 'must use the raising form').toContain('false');
     }
+  });
+
+  it('creates no schema, so migrator needs no database-level CREATE', () => {
+    // Prisma emits `CREATE SCHEMA IF NOT EXISTS "public"` when regenerating a migration
+    // from an empty baseline. That statement needs CREATE on the database, which the
+    // migrator role deliberately lacks (§1.3), and Postgres checks the privilege before
+    // the IF NOT EXISTS short-circuit — so it fails even though `public` already exists.
+    // It cost a red CI run once; this stops it costing another.
+    //
+    // Comments are stripped first: the migration explains in prose why the statement was
+    // removed, and a check that trips over its own explanation is worse than no check.
+    expect(executableSql).not.toMatch(/CREATE\s+SCHEMA/i);
   });
 
   it('keeps the audit ledger append-only at the database level', () => {
