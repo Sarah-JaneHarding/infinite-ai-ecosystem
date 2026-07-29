@@ -345,6 +345,36 @@ describe('the POPIA tables are tenant-isolated', () => {
 });
 
 describe('erasure destroys the identifiers and keeps the decision record', () => {
+  it('gives the subject a consent history to survive the erasure', async () => {
+    // Tenant B has had no ledger entries until now; every append above was to tenant A.
+    // Without this the "ledger survives" case below would attempt a DELETE that RLS
+    // filters to zero rows, the trigger would never fire, nothing would throw, and the
+    // test would fail while appearing to assert something. Worse, had it been written as
+    // a bare `resolves`, it would have *passed* while proving nothing at all.
+    await asTenant(appRw, TENANT_B, ACTOR, (tx) =>
+      appendConsentEntry(
+        tx,
+        {
+          subjectToken: fixture(TENANT_B).learnerToken,
+          category: 'ATTENDANCE',
+          purpose: 'screening',
+          basis: 'PUBLIC_LAW_DUTY',
+          decision: 'GRANTED',
+          source: 'NOT_APPLICABLE',
+          evidenceRef: null,
+          effectiveFrom: new Date('2026-01-15T08:00:00.000Z'),
+          recordedBy: null,
+          note: null,
+        },
+        NOW,
+      ),
+    );
+    const ledger = await asTenant(appRw, TENANT_B, ACTOR, (tx) =>
+      readLedger(tx, fixture(TENANT_B).learnerToken),
+    );
+    expect(ledger).toHaveLength(1);
+  });
+
   it('erases a learner', async () => {
     const token = fixture(TENANT_B).learnerToken;
     const before = await asTenant(appRw, TENANT_B, ACTOR, (tx) =>
@@ -450,8 +480,15 @@ describe('erasure destroys the identifiers and keeps the decision record', () =>
 
   it('leaves the erased learner`s consent ledger intact', async () => {
     // POPIA §24 does not entitle a subject to erase the school's record of its own lawful
-    // acts, and the ledger is exactly that record. It is also, by construction, unerasable:
-    // the trigger refuses DELETE.
+    // acts, and the ledger is exactly that record.
+    const ledger = await asTenant(appRw, TENANT_B, ACTOR, (tx) =>
+      readLedger(tx, fixture(TENANT_B).learnerToken),
+    );
+    expect(ledger).toHaveLength(1);
+    expect(ledger[0]?.category).toBe('ATTENDANCE');
+
+    // It is also, by construction, unerasable: the trigger refuses DELETE. The row above
+    // is what makes this a real attempt rather than a no-op RLS filtered to nothing.
     await expect(
       asTenant(
         appRw,
@@ -474,5 +511,65 @@ describe('erasure destroys the identifiers and keeps the decision record', () =>
         }),
       ),
     ).rejects.toThrow(/empty subject token/i);
+  });
+
+  it('refuses to erase a guardian that is not there', async () => {
+    // Same rule as the learner case, and worth its own assertion: a retention sweep must
+    // never be able to report having erased a subject it never touched.
+    await expect(
+      asTenant(appRw, TENANT_B, ACTOR, (tx) =>
+        eraseSubject(tx, {
+          subjectKind: 'guardian',
+          subjectToken: 'GDN_000000000000',
+          trigger: 'retention_expiry',
+          requestId: null,
+          now: NOW,
+        }),
+      ),
+    ).rejects.toThrow(/Refusing to report an erasure that did not happen/);
+  });
+});
+
+describe('neither path works without a tenant context', () => {
+  // Rule 5 at the two entry points this stage added. Both call `current_setting` and
+  // refuse without one — the assertion is that they reject, not what they say, because a
+  // connection that has previously carried a context reads `''` and one that never has
+  // raises, and both are correct failures. Stage 01 recorded that finding.
+
+  it('refuses to append a consent entry', async () => {
+    await expect(
+      appRw.$transaction((tx) =>
+        appendConsentEntry(
+          tx,
+          {
+            subjectToken: fixture(TENANT_A).learnerToken,
+            category: 'ATTENDANCE',
+            purpose: 'screening',
+            basis: 'PUBLIC_LAW_DUTY',
+            decision: 'GRANTED',
+            source: 'NOT_APPLICABLE',
+            evidenceRef: null,
+            effectiveFrom: new Date('2026-01-15T08:00:00.000Z'),
+            recordedBy: null,
+            note: null,
+          },
+          NOW,
+        ),
+      ),
+    ).rejects.toThrow();
+  });
+
+  it('refuses to erase a subject', async () => {
+    await expect(
+      appRw.$transaction((tx) =>
+        eraseSubject(tx, {
+          subjectKind: 'learner',
+          subjectToken: fixture(TENANT_A).learnerToken,
+          trigger: 'subject_request',
+          requestId: null,
+          now: NOW,
+        }),
+      ),
+    ).rejects.toThrow();
   });
 });

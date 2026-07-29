@@ -20,9 +20,9 @@
     "lint": "eslint src",
     "postinstall": "prisma generate",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage --reporter=blob --outputFile=.vitest-reports/unit.json",
+    "test:coverage": "vitest run --coverage --reporter=default --reporter=blob --outputFile.blob=.vitest-reports/unit.json",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "test:integration:coverage": "vitest run --config vitest.integration.config.ts --coverage --reporter=blob --outputFile=.vitest-reports/integration.json",
+    "test:integration:coverage": "vitest run --config vitest.integration.config.ts --coverage --reporter=default --reporter=blob --outputFile.blob=.vitest-reports/integration.json",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

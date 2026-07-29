@@ -12,5 +12,12 @@ export default defineConfig({
     // for that, not for a unit test.
     testTimeout: 300_000,
     hookTimeout: 300_000,
+    coverage: {
+      provider: 'v8',
+      // The same file set the unit tier measures, so the two blob reports merge into a
+      // figure about one thing. No thresholds here — they belong to the merge, for the
+      // reason set out in vitest.config.ts.
+      include: ['src/**/*.ts'],
+    },
   },
 });
