@@ -309,6 +309,31 @@ Worth recording because the cost was a full diagnostic cycle spent on a fault th
 already been detected — and because the same mistake in a job people trust would mean a
 red build nobody can act on, which erodes the habit of reading CI at all.
 
+**The Stage 01 isolation suite refused the new tables, correctly**
+
+Adding three tables to `TENANT_OWNED_TABLES` put them into `rls.integration.spec.ts`'s
+table-driven cases, and its fixture guard failed the run: _"consent_record has no seeded
+row — the isolation cases below would be vacuous"_. That guard is the reason the gap was a
+red build rather than three tables silently exempt from the isolation proof. The fixture
+now seeds all three for both tenants.
+
+Fixing it surfaced two things worth more than the fix.
+
+_The suite assumed every tenant-owned table carries `created_by`._ True of the Stage 01
+schema by accident rather than by rule — the ledgers deliberately omit mutable-row
+bookkeeping, because a row that is never updated has no "who last touched it". The update
+case now writes `SET id = id`, the one column every table here is guaranteed to have. A
+missing column makes the statement fail to parse, which looks nothing like the leak the
+case exists to detect.
+
+_Nothing proved the update case was doing anything at all._ It asserted that updating
+another tenant's row affects zero rows, and a typo in that SQL would have produced the same
+zero — a green isolation suite proving nothing, the worst outcome this file is capable of.
+A companion case now asserts that updating one's **own** row affects one. It runs over
+`TENANT_OWNED_TABLES` minus `APPEND_ONLY_TABLES`, as a filtered list rather than a skip:
+rule 2 draws a hard line at skipped tests, and the ledgers' own-row behaviour — refusal by
+trigger — is a different guarantee, asserted where it applies.
+
 **A no-op assertion, found by inspection while that was being fixed**
 
 `popia.integration.spec.ts` attempted `DELETE FROM consent_record` in a tenant that had no
