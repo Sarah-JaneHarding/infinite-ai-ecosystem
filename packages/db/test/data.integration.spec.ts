@@ -189,6 +189,15 @@ describe('seed reproducibility', () => {
     );
   });
 
+  it('creates exactly one register teacher per class, across campuses', async () => {
+    // The check that would have caught the email-collision bug as a named assertion
+    // rather than a seed crash: if two campuses collided on a teacher account, the
+    // counts would diverge.
+    for (const counts of Object.values(first)) {
+      expect(counts.staff).toBe(counts.classes);
+    }
+  });
+
   it('is a no-op on a second run', async () => {
     const second = await seed(migrator);
     expect(second).toEqual(first);

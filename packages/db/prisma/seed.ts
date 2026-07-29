@@ -296,14 +296,20 @@ async function seedTenant(
           // One register teacher per class.
           staffCounter += 1;
           const teacherName = `${pick(GIVEN_NAMES, staffCounter)} ${pick(FAMILY_NAMES, staffCounter)}`;
-          const subjectValue = `seed-teacher-${slug}-${campus.name}-${className}`;
+          // Both unique keys on user_account must be campus-scoped, not just one.
+          // `subject` was; `email` was not, so a school group with two campuses had two
+          // teachers of class 6A competing for 6a.<slug>@example.invalid. The upsert
+          // matched neither by subject, tried to insert, and hit the email constraint.
+          // Precisely the bug the two-campus fixture shape exists to surface.
+          const campusSlug = campus.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const subjectValue = `seed-teacher-${slug}-${campusSlug}-${className}`;
           const account = await tx.userAccount.upsert({
             where: { tenantId_subject: { tenantId, subject: subjectValue } },
             update: {},
             create: {
               tenantId,
               subject: subjectValue,
-              email: `${className.toLowerCase()}.${slug}@example.invalid`,
+              email: `${className.toLowerCase()}.${campusSlug}.${slug}@example.invalid`,
               displayName: teacherName,
               createdBy: SEED_ACTOR,
             },
