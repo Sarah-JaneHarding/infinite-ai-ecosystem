@@ -262,6 +262,52 @@ had never executed.
   links into it when that lands. The interim state is a real hash of real content rather
   than a placeholder, so the row is verifiable on its own terms meanwhile.
 
+**A defect CI found that only a migration-from-scratch could find**
+
+Classified per §4.4. Every integration suite failed in `beforeAll`, all five for one cause.
+
+- **Symptom.** `migrate deploy` failed on `20260729160000_stage03_popia_tables` with
+  `42704: unrecognized configuration parameter "app.tenant_id"`.
+- **Root cause.** Adding a foreign key makes PostgreSQL run a validation scan of the new
+  table joined to the referenced one. `tenant` carries `FORCE ROW LEVEL SECURITY`, so that
+  scan is subject to the tenant policy _even as the table owner_ — which is precisely what
+  FORCE is for. The policy reads `current_setting('app.tenant_id', false)`, the raising
+  form, and a migration has no tenant context. It fails even though the new table is empty,
+  because the setting lookup is row-independent and the planner hoists it into an InitPlan
+  that runs before the scan yields anything.
+- **Why Stage 01 did not hit it.** That stage created every table and its foreign keys
+  _before_ enabling RLS. Every migration from here on that adds a tenant-owned table hits
+  it, so this is a pattern rather than a one-off.
+- **Fix.** Supply the missing context — `SET app.tenant_id` to the nil UUID for the
+  duration of the migration — rather than remove the control. The rejected alternatives are
+  written out in the migration header, because the tempting one is
+  `current_setting('app.tenant_id', true)`, and switching the policy to the non-raising
+  form to make a migration pass would silently convert every isolation predicate in the
+  system from "fail loudly" to "match nothing". That is the failure the Stage 01 migration
+  header warns about, arrived at from a direction nobody would be watching.
+- **Classification.** Not a missing test — the integration suite runs migrations from
+  scratch and caught it on the first run that included the new migration. This is the
+  control working.
+
+**A CI job that failed silently**
+
+The first run of the merged-coverage gate failed and printed nothing about why: 52 seconds
+of integration run, a blob report written, exit 1, no failure output. `--reporter=blob`
+_replaces_ the default reporter rather than adding to it. Both reporters now.
+
+Worth recording because the cost was a full diagnostic cycle spent on a fault that had
+already been detected — and because the same mistake in a job people trust would mean a
+red build nobody can act on, which erodes the habit of reading CI at all.
+
+**A no-op assertion, found by inspection while that was being fixed**
+
+`popia.integration.spec.ts` attempted `DELETE FROM consent_record` in a tenant that had no
+consent records — every append in the suite was to the other tenant. RLS filtered the
+DELETE to zero rows, the append-only trigger never fired, and nothing threw. Written as
+`.rejects` it failed honestly; written as `.resolves` it would have passed while proving
+nothing, which is the shape of a test that guards an empty set. The case now seeds a real
+entry first and also asserts it survives the erasure.
+
 Deviations from manual: no Docker in the authoring environment, so every database behaviour
 in this stage was written blind and is proven only in CI.
 
