@@ -386,6 +386,45 @@ DELETE to zero rows, the append-only trigger never fired, and nothing threw. Wri
 nothing, which is the shape of a test that guards an empty set. The case now seeds a real
 entry first and also asserts it survives the erasure.
 
+**What merging Stages 02 and 03 together surfaced**
+
+PRs #2 and #3 merged while #4 was open, so #4 took `main` back in. Five conflicts, all
+additive: two barrel files, two `package.json`s and the lockfile. The lockfile was
+regenerated rather than hand-merged. Nothing semantic — but the merge did expose two things
+neither branch could have seen alone.
+
+_§4.2's coverage floor met Stage 02's code for the first time._ The `packages/policy`
+threshold was added on the Stage 03 branch; `rbac.ts` and `impersonation.ts` arrived from
+Stage 02 having never been measured against it, and the package came out at 96.4% lines but
+**93.65% branches and 90% functions**. Not a merge artefact — a real gap in the package
+§4.2 names as safety-critical. What was missing:
+
+- **`assertAuthorized` and `AuthorizationError` had zero coverage.** The throwing entry
+  point most call sites will use, in the authorisation matrix, entirely unexercised.
+- Scope branches that decide who may read a child's record: an `OWN_SCHOOL` grant with a
+  null school (tenant-wide appointment) versus one naming another campus; `OWN_SUBJECT`
+  reached by class rather than by subject; `OWN_CLASS` with a null class, where null is a
+  denial rather than the widening it is under `OWN_SCHOOL`; and the `OWN` fallthrough for
+  roles that are neither guardian nor learner.
+
+`test/rbac-scopes.spec.ts` covers these as sentences about who may see what.
+`packages/policy` is now at 100% statements, functions and lines, 99.29% branches.
+
+_A dead guard in the authorisation loop._ The remaining uncovered branch is
+`if (!scopeAtLeast(permission.scope, 'OWN')) continue;` in `authorize`. `OWN` is index 0 of
+`SCOPE_ORDER`, so the comparison is always true and the `continue` is unreachable. It reads
+as a filter and is not one. Left in place rather than edited inside a merge-resolution
+commit — a silent one-line deletion in a just-merged authorisation matrix is the hardest
+kind of change to review — but it is Stage 02's to remove, and it is recorded here so the
+next person to open that function is not misled by it.
+
+_One of my own test names was overclaiming._ `policy/test/exports.spec.ts` had a case named
+"offers no way to reach an ambient clock" that only checked function arity. The merged RBAC
+code makes the claim plainly false — `authorize` and `assertAuthorized` both default `now`
+to `new Date()`, and arity does not see a default. Renamed to what it verifies, with the
+stronger property left where it actually holds: `consent.spec.ts` evaluates the same ledger
+at different instants.
+
 Deviations from manual: no Docker in the authoring environment, so every database behaviour
 in this stage was written blind and is proven only in CI.
 

@@ -6,20 +6,34 @@ import { describe, expect, it } from 'vitest';
 import * as contracts from '../src/index.js';
 
 describe('package export surface', () => {
-  it('exports the purpose, consent and retention vocabularies', () => {
+  it('exports the POPIA vocabularies and the curriculum framework', () => {
+    // Widened deliberately when the curriculum framework merged. The list is spelled out
+    // rather than counted, so a stray export has to be added here by someone who looked at
+    // it — which is the only reason a test like this earns its keep.
     expect(Object.keys(contracts).sort()).toEqual([
+      'AssessmentWeighting',
       'ConsentDecision',
       'ConsentEntry',
       'ConsentEntryDraft',
       'ConsentSource',
+      'CurriculumFramework',
       'DataCategory',
+      'FrameworkNeedsInput',
+      'FrameworkResult',
+      'GradeFramework',
+      'GradeLabel',
       'LawfulBasis',
       'PACKAGE_NAME',
       'PURPOSES',
+      'Phase',
       'Purpose',
       'RetentionAnchor',
       'RetentionRule',
       'RetentionSchedule',
+      'SourceRef',
+      'Sourced',
+      'SubjectFramework',
+      'TimeAllocation',
       'WITHDRAWABLE_BASES',
       'addMonths',
       'definitionOf',
