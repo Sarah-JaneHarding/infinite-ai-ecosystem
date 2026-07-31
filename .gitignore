@@ -23,3 +23,7 @@ age.key
 # Prisma generated client — rebuilt by `prisma generate`, never reviewed
 packages/db/generated/
 .prisma/
+
+# Vitest blob reports, written by the per-tier coverage runs and consumed by
+# `pnpm --filter @infinite-ai/db coverage:merged`.
+.vitest-reports/

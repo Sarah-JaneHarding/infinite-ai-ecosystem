@@ -12,12 +12,15 @@ export const TENANT_OWNED_TABLES = [
   'academic_year',
   'audit_event',
   'class_group',
+  'consent_record',
+  'data_subject_request',
   'grade',
   'guardian',
   'guardian_link',
   'learner',
   'learner_identifier',
   'phase',
+  'retention_rule',
   'role_assignment',
   'school',
   'staff_member',
@@ -45,4 +48,15 @@ export const SELF_KEYED_TENANT_TABLES = ['tenant'] as const;
  */
 export const NON_TENANT_TABLES = ['_prisma_migrations'] as const;
 
+/**
+ * Tables the database refuses to UPDATE or DELETE from.
+ *
+ * Both are ledgers, and a ledger that can be edited is a record of what someone last
+ * decided the past should look like. The trigger is installed per table in the migrations;
+ * this list is what the integration suite drives its assertions from, so a fourth ledger
+ * added without a trigger fails rather than passing unnoticed.
+ */
+export const APPEND_ONLY_TABLES = ['audit_event', 'consent_record'] as const;
+
 export type TenantOwnedTable = (typeof TENANT_OWNED_TABLES)[number];
+export type AppendOnlyTable = (typeof APPEND_ONLY_TABLES)[number];

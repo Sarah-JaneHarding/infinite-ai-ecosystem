@@ -36,11 +36,31 @@ const STAGES: readonly Stage[] = [
     commands: [
       // Requires Docker: the RLS suite runs against real Postgres via Testcontainers.
       // There is no skip path — rule 2 — so this fails loudly where Docker is absent.
-      'pnpm --filter @infinite-ai/db test:integration',
+      //
+      // Runs both tiers and applies §4.2's 95% threshold to the union, which is the gate
+      // item Stage 01 recorded as NOT MET. A coverage figure for this package that did not
+      // involve a database would be measuring the wrong thing.
+      'pnpm --filter @infinite-ai/db coverage:merged',
     ],
   },
   { id: '02', name: 'Identity, RBAC, audit ledger', commands: [] },
-  { id: '03', name: 'POPIA layer', commands: [] },
+  {
+    id: '03',
+    name: 'POPIA layer',
+    commands: [
+      // §4.2 names policy, deident and guardrails as safety-critical at >= 95% lines.
+      // Everything in them is pure and synchronous, so unlike packages/db there is no
+      // tier of behaviour that only a container can reach — the threshold is enforced
+      // here rather than carried as an open item.
+      'pnpm --filter @infinite-ai/contracts test:coverage',
+      'pnpm --filter @infinite-ai/policy test:coverage',
+      'pnpm --filter @infinite-ai/deident test:coverage',
+      'pnpm --filter @infinite-ai/guardrails test:coverage',
+      // The append-only consent ledger, erasure and the RLS policies on the three tables
+      // this stage added all run inside Stage 01's `coverage:merged` command above, which
+      // the cumulative gate already executes. Nothing further is needed here.
+    ],
+  },
   { id: '04', name: 'Model Gateway', commands: [] },
   { id: '05', name: 'Infinite Brain (L0-L4)', commands: [] },
   { id: '06', name: 'Agent runtime, orchestrator, guardrails, HITL', commands: [] },

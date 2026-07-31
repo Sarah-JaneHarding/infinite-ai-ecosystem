@@ -45,6 +45,13 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+      # §4.2's thresholds are declared per package in vitest.config.ts and only bite when
+      # coverage actually runs. Running it on every PR rather than only in the stage gate
+      # means a drop below the floor fails the change that caused it, rather than the
+      # stage gate three weeks later with nobody sure which commit did it.
+      - name: Coverage thresholds (§4.2)
+        run: pnpm test:coverage
+
       - name: Build
         run: pnpm build
 
@@ -99,5 +106,9 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: RLS isolation suite
-        run: pnpm --filter @infinite-ai/db test:integration
+      # Runs both tiers with coverage and applies §4.2's 95% threshold to the union of
+      # them. Roughly two-thirds of packages/db cannot execute without a database, so this
+      # is the only place a coverage figure for the package means anything — measuring it
+      # without the isolation suite would be measuring the wrong thing.
+      - name: RLS isolation suite and merged coverage (§4.2)
+        run: pnpm --filter @infinite-ai/db coverage:merged

@@ -99,19 +99,19 @@ Open questions raised: OQ-001, OQ-002, OQ-003, OQ-004.
 
 ## Stage 01 — Data foundation, tenancy, Row-Level Security
 
-Started: 2026-07-28 Completed: —
-Exit gate: **NOT YET PASS** — five of six items met; coverage outstanding.
+Started: 2026-07-28 Completed: 2026-07-29
+Exit gate: **PASS** — the coverage item was closed during Stage 03; see below.
 
 **Exit gate, walked item by item**
 
-| Gate item                                         | Result                                                                                                                                   |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Every tenant-owned table appears in the RLS suite | PASS — `rls-coverage.integration.spec.ts` diffs `information_schema` and `pg_policies` against `src/tables.ts`; 18 tables, 57 assertions |
-| No export path to an unscoped client              | PASS — `export-surface.spec.ts` checks the export list by name _and_ structurally for anything carrying `$connect`                       |
-| Seeds reproducible                                | PASS — seeded twice against real Postgres, row counts identical, ~17s per run                                                            |
-| Encryption verified by reading the raw column     | PASS — ciphertext read as raw `bytea` contains neither the plaintext nor either of its words; the mirror test decrypts the same row      |
-| Cross-tenant access impossible by construction    | PASS — 113 assertions as `app_rw`, plus `withTenant` itself proven against a live database                                               |
-| `packages/db` line coverage ≥ 95% (§4.2)          | **NOT MET — 89.5%**                                                                                                                      |
+| Gate item                                         | Result                                                                                                                                                                               |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Every tenant-owned table appears in the RLS suite | PASS — `rls-coverage.integration.spec.ts` diffs `information_schema` and `pg_policies` against `src/tables.ts`; 18 tables, 57 assertions                                             |
+| No export path to an unscoped client              | PASS — `export-surface.spec.ts` checks the export list by name _and_ structurally for anything carrying `$connect`                                                                   |
+| Seeds reproducible                                | PASS — seeded twice against real Postgres, row counts identical, ~17s per run                                                                                                        |
+| Encryption verified by reading the raw column     | PASS — ciphertext read as raw `bytea` contains neither the plaintext nor either of its words; the mirror test decrypts the same row                                                  |
+| Cross-tenant access impossible by construction    | PASS — 113 assertions as `app_rw`, plus `withTenant` itself proven against a live database                                                                                           |
+| `packages/db` line coverage ≥ 95% (§4.2)          | PASS — **100%** lines, branches, functions and statements, merged across the unit and Testcontainers tiers. Closed during Stage 03; the account below is left as written at the time |
 
 **The coverage shortfall, stated plainly**
 
@@ -172,3 +172,260 @@ behaviour was written blind and proven only in CI. Coverage below §4.2 as descr
 
 Open questions: OQ-002 and OQ-003 still block Stage 08. OQ-004 answered in practice —
 seeds are generic — but not formally closed.
+
+---
+
+## Stage 03 — POPIA layer: purpose, de-identification, consent, retention
+
+Started: 2026-07-29 Completed: —
+Exit gate: **PARTIAL** — the enforceable controls are in place and proven; the
+data-subject-rights HTTP surface and the nightly retention job are not built.
+
+**What this stage put in place**
+
+| Step                    | Where                                                                     | Proven by                                                                                                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2 · Purpose taxonomy    | `packages/contracts/src/popia/purpose.ts`                                 | 16 tests; `planning` touches no learner-level category, `product_improvement` touches nothing at all, `SPECIAL_PERSONAL` is granted to `intervention` alone               |
+| 3 · Purpose filter      | `packages/policy/src/access.ts`                                           | 11 tests; three gates in fixed order, drops with a reason rather than throwing                                                                                            |
+| 4 · De-identification   | `packages/deident/`                                                       | 41 tests; tokenisation is deterministic per tenant and unlinkable across them, and the scrubber now has a direct suite rather than only being exercised through the guard |
+| 5 · PII egress guard    | `packages/guardrails/src/pii-guard.ts`                                    | 101 tests including 41 red-team payloads; provenance is checked first and on its own is sufficient to refuse                                                              |
+| 6 · Consent ledger      | `packages/contracts`, `packages/policy`, `packages/db`, `consent_record`  | append-only enforced by trigger, verified against real Postgres as both `app_rw` and `migrator`                                                                           |
+| 8 · Retention & erasure | `packages/contracts/src/popia/retention.ts`, `packages/db/src/erasure.ts` | erasure destroys identifiers and keeps the decision record, verified against real Postgres                                                                                |
+
+**Two decisions worth defending**
+
+_Consent is not the only lawful basis._ The ledger records which of POPIA §11(1)'s six
+bases applies. Modelling everything as consent would mean a guardian's withdrawal could
+oblige a school to stop keeping a statutory register; modelling nothing as consent would
+deny families a choice they genuinely have. A withdrawal against a basis the subject cannot
+unilaterally end is recorded as an objection — it does not stop the processing, and it does
+not vanish either. It rides on every subsequent access decision and sits in the information
+officer's queue until answered. An objection mechanism whose objections disappear is worse
+than not offering one.
+
+_No retention periods are shipped._ `retention.ts` defines the shape of a schedule and the
+arithmetic to evaluate it and contains no numbers, because the periods are each school's
+legal determination against statute — CLAUDE.md rule 11. A plausible-looking default would
+have been the worst outcome available: wrong in a way nobody checks, destroying records on
+a schedule no human agreed to. The consequence is deliberate and is stated in
+`docs/POPIA.md` §5.1: a category with no ratified rule is never tombstoned, and appears on
+an unscheduled-categories report every run instead. Raised as OQ-007.
+
+**Stage 01's coverage item, closed**
+
+Stage 01 recorded `packages/db` line coverage as NOT MET at 89.5%, with the reason stated:
+the unit tier cannot reach §4.2's 95% by construction, and doing so legitimately needs
+coverage merged across the unit and Testcontainers tiers. That merge is now built. Each
+tier writes a blob report; `vitest.merge.config.ts` consumes both and applies the threshold
+once, to the whole package. `pnpm --filter @infinite-ai/db coverage:merged` is the gate, it
+runs in the `database` CI job, and it requires Docker — which is the right dependency,
+since a coverage figure for this package that did not involve a database would be measuring
+the wrong thing.
+
+The per-tier configs carry no thresholds now. A threshold on a tier that cannot execute
+two-thirds of the package would either be meaningless or block every build, and the second
+is how coverage requirements get switched off.
+
+`contracts`, `policy`, `deident` and `guardrails` are all at 100% lines and branches
+against a 95% floor, enforced on every PR rather than only at the stage gate.
+
+**A real gap the coverage number exposed, again**
+
+`packages/deident/src/scrub.ts` measured **0%**. The scrubber — the thing that removes
+names from free text before it reaches a model — had never been called from its own
+package's tests. It was exercised only through the guardrails red-team suite, which calls
+`containsDetectablePii` and therefore only ever asserted the boolean.
+
+That suite proves the detector _notices_. It says nothing about what the scrubber leaves
+behind, and the replacement text is what reaches the model — so a scrubber that detects
+perfectly and rebuilds the string wrongly is a scrubber that leaks, and nothing would have
+caught it. `test/scrub.spec.ts` now asserts the output: placeholders in place of names, the
+surrounding sentence intact, offsets pointing into the original text, and redaction records
+that carry no trace of what they redacted.
+
+Second time in this project that a coverage figure has been the symptom rather than the
+problem. Stage 01's was `client.ts` at 12.8%, which turned out to mean rule 5's entry point
+had never executed.
+
+**What is not built, stated plainly**
+
+- **The data-subject-rights HTTP surface.** The `data_subject_request` model, its states,
+  the verification gate and the erasure it drives are in place. The authorised, audited,
+  rate-limited endpoints need the API app and land with it.
+- **The nightly retention job.** The evaluation function is written and tested; the worker
+  that runs it has nothing to run until a school ratifies a schedule (OQ-007).
+- **The consent-withdrawal sweep.** `docs/POPIA.md` §5 promises PII unreadable within one
+  job cycle of a withdrawal. The pieces exist — `evaluateConsent` says who withdrew,
+  `eraseSubject` does the work — and the job that joins them is not written.
+- **Audit chain linkage.** `writeErasureEvent` writes a content hash with a null
+  `previousHash`. Stage 02's tamper-evident chain is on a separate branch; this call site
+  links into it when that lands. The interim state is a real hash of real content rather
+  than a placeholder, so the row is verifiable on its own terms meanwhile.
+
+**A defect CI found that only a migration-from-scratch could find**
+
+Classified per §4.4. Every integration suite failed in `beforeAll`, all five for one cause.
+
+- **Symptom.** `migrate deploy` failed on `20260729160000_stage03_popia_tables` with
+  `42704: unrecognized configuration parameter "app.tenant_id"`.
+- **Root cause.** Adding a foreign key makes PostgreSQL run a validation scan of the new
+  table joined to the referenced one. `tenant` carries `FORCE ROW LEVEL SECURITY`, so that
+  scan is subject to the tenant policy _even as the table owner_ — which is precisely what
+  FORCE is for. The policy reads `current_setting('app.tenant_id', false)`, the raising
+  form, and a migration has no tenant context. It fails even though the new table is empty,
+  because the setting lookup is row-independent and the planner hoists it into an InitPlan
+  that runs before the scan yields anything.
+- **Why Stage 01 did not hit it.** That stage created every table and its foreign keys
+  _before_ enabling RLS. Every migration from here on that adds a tenant-owned table hits
+  it, so this is a pattern rather than a one-off.
+- **Fix.** Supply the missing context — `SET app.tenant_id` to the nil UUID for the
+  duration of the migration — rather than remove the control. The rejected alternatives are
+  written out in the migration header, because the tempting one is
+  `current_setting('app.tenant_id', true)`, and switching the policy to the non-raising
+  form to make a migration pass would silently convert every isolation predicate in the
+  system from "fail loudly" to "match nothing". That is the failure the Stage 01 migration
+  header warns about, arrived at from a direction nobody would be watching.
+- **Classification.** Not a missing test — the integration suite runs migrations from
+  scratch and caught it on the first run that included the new migration. This is the
+  control working.
+- **A footnote worth keeping.** The pre-push hook then rejected the fix, because
+  `schema-classification.spec.ts` scans the migrations for the non-raising form of
+  `current_setting` and the new migration _names_ it in prose, in the list of approaches it
+  rejected. The check now reads comment-stripped SQL, matching what the neighbouring
+  `CREATE SCHEMA` assertion in the same file already does and for the same stated reason: a
+  check that trips over a written warning against the thing it guards is one that gets
+  deleted rather than heeded. It still inspects 42 real policy predicates. Two things this
+  confirms — the Stage 00 hook defect is genuinely fixed, since the hook fired unprompted
+  on a local push, and a rule enforced by string matching will eventually meet prose that
+  discusses it.
+
+**A CI job that failed silently**
+
+The first run of the merged-coverage gate failed and printed nothing about why: 52 seconds
+of integration run, a blob report written, exit 1, no failure output. `--reporter=blob`
+_replaces_ the default reporter rather than adding to it. Both reporters now.
+
+Worth recording because the cost was a full diagnostic cycle spent on a fault that had
+already been detected — and because the same mistake in a job people trust would mean a
+red build nobody can act on, which erodes the habit of reading CI at all.
+
+**The Stage 01 isolation suite refused the new tables, correctly**
+
+Adding three tables to `TENANT_OWNED_TABLES` put them into `rls.integration.spec.ts`'s
+table-driven cases, and its fixture guard failed the run: _"consent_record has no seeded
+row — the isolation cases below would be vacuous"_. That guard is the reason the gap was a
+red build rather than three tables silently exempt from the isolation proof. The fixture
+now seeds all three for both tenants.
+
+Fixing it surfaced two things worth more than the fix.
+
+_The suite assumed every tenant-owned table carries `created_by`._ True of the Stage 01
+schema by accident rather than by rule — the ledgers deliberately omit mutable-row
+bookkeeping, because a row that is never updated has no "who last touched it". The update
+case now writes `SET id = id`, the one column every table here is guaranteed to have. A
+missing column makes the statement fail to parse, which looks nothing like the leak the
+case exists to detect.
+
+_Nothing proved the update case was doing anything at all._ It asserted that updating
+another tenant's row affects zero rows, and a typo in that SQL would have produced the same
+zero — a green isolation suite proving nothing, the worst outcome this file is capable of.
+A companion case now asserts that updating one's **own** row affects one. It runs over
+`TENANT_OWNED_TABLES` minus `APPEND_ONLY_TABLES`, as a filtered list rather than a skip:
+rule 2 draws a hard line at skipped tests, and the ledgers' own-row behaviour — refusal by
+trigger — is a different guarantee, asserted where it applies.
+
+**The merged coverage number, and a real defect it exposed**
+
+The merge worked and produced the first honest figure for `packages/db`: **94.42% lines,
+94.91% branches** against §4.2's 95%. Short by 0.58 points, with 380 tests passing.
+
+The threshold was not moved. What was uncovered turned out to be three gaps and one defect:
+
+- `erasure.ts` — the guardian idempotency branch had no test. A retention sweep retrying a
+  guardian erasure would have been running code nothing had executed.
+- `erasure.ts` — the "no tenant context" guard was **unreachable**. It was checked when the
+  audit event was written, by which point an RLS-scoped read had already failed with
+  whatever error Prisma produced. The guard now runs first in `eraseSubject`, which is also
+  one query instead of one per audit event, and gives a caller a sentence instead of a
+  constraint error. Checking last made it dead code, which a coverage report notices and a
+  reviewer does not.
+- `consent.ts` — the empty-subject guard had no test.
+- `encryption.ts` — **a real defect in key handling.** `fromBase64` wrapped its decode in a
+  `try/catch` that could never fire, because `Buffer.from(x, 'base64')` does not throw. It
+  silently discards every character outside the alphabet and decodes what is left.
+
+  That is not a dead-branch tidiness point. A corrupted key does not fail to decode — it
+  decodes to _different key material_, and if what survives is 32 bytes long the length
+  check passes and the key is accepted. Constructed and confirmed: one corrupted character
+  plus one trailing valid one yields exactly 32 bytes that are not the real key. Everything
+  encrypted under it would be unreadable by the real key, found much later, with nothing
+  anywhere to explain why. The material is now validated against the base64 alphabet before
+  decoding, and a test asserts the generator's own keys all still pass.
+
+Third time in this project a coverage figure has been the symptom rather than the problem —
+`client.ts` at 12.8% in Stage 01, `scrub.ts` at 0% earlier in this stage, and now a
+key-handling defect that had been in `main` since Stage 01 and that no functional test would
+ever have reached.
+
+With those four addressed, the merged figure is **100% of statements, branches, functions
+and lines** across `packages/db`, on 385 tests. That closes Stage 01's outstanding gate
+item, which is recorded there as met and cross-referenced here rather than quietly amended.
+
+Worth being clear about what the number does and does not mean: 100% line coverage says
+every line ran, not that every behaviour is correct. The isolation guarantees rest on the
+113 assertions in `rls.integration.spec.ts` and the trigger cases in
+`popia.integration.spec.ts`, not on this figure. What the figure is good for is exactly
+what it did three times — pointing at code nothing had ever executed.
+
+**A no-op assertion, found by inspection while that was being fixed**
+
+`popia.integration.spec.ts` attempted `DELETE FROM consent_record` in a tenant that had no
+consent records — every append in the suite was to the other tenant. RLS filtered the
+DELETE to zero rows, the append-only trigger never fired, and nothing threw. Written as
+`.rejects` it failed honestly; written as `.resolves` it would have passed while proving
+nothing, which is the shape of a test that guards an empty set. The case now seeds a real
+entry first and also asserts it survives the erasure.
+
+**What merging Stages 02 and 03 together surfaced**
+
+PRs #2 and #3 merged while #4 was open, so #4 took `main` back in. Five conflicts, all
+additive: two barrel files, two `package.json`s and the lockfile. The lockfile was
+regenerated rather than hand-merged. Nothing semantic — but the merge did expose two things
+neither branch could have seen alone.
+
+_§4.2's coverage floor met Stage 02's code for the first time._ The `packages/policy`
+threshold was added on the Stage 03 branch; `rbac.ts` and `impersonation.ts` arrived from
+Stage 02 having never been measured against it, and the package came out at 96.4% lines but
+**93.65% branches and 90% functions**. Not a merge artefact — a real gap in the package
+§4.2 names as safety-critical. What was missing:
+
+- **`assertAuthorized` and `AuthorizationError` had zero coverage.** The throwing entry
+  point most call sites will use, in the authorisation matrix, entirely unexercised.
+- Scope branches that decide who may read a child's record: an `OWN_SCHOOL` grant with a
+  null school (tenant-wide appointment) versus one naming another campus; `OWN_SUBJECT`
+  reached by class rather than by subject; `OWN_CLASS` with a null class, where null is a
+  denial rather than the widening it is under `OWN_SCHOOL`; and the `OWN` fallthrough for
+  roles that are neither guardian nor learner.
+
+`test/rbac-scopes.spec.ts` covers these as sentences about who may see what.
+`packages/policy` is now at 100% statements, functions and lines, 99.29% branches.
+
+_A dead guard in the authorisation loop._ The remaining uncovered branch is
+`if (!scopeAtLeast(permission.scope, 'OWN')) continue;` in `authorize`. `OWN` is index 0 of
+`SCOPE_ORDER`, so the comparison is always true and the `continue` is unreachable. It reads
+as a filter and is not one. Left in place rather than edited inside a merge-resolution
+commit — a silent one-line deletion in a just-merged authorisation matrix is the hardest
+kind of change to review — but it is Stage 02's to remove, and it is recorded here so the
+next person to open that function is not misled by it.
+
+_One of my own test names was overclaiming._ `policy/test/exports.spec.ts` had a case named
+"offers no way to reach an ambient clock" that only checked function arity. The merged RBAC
+code makes the claim plainly false — `authorize` and `assertAuthorized` both default `now`
+to `new Date()`, and arity does not see a default. Renamed to what it verifies, with the
+stronger property left where it actually holds: `consent.spec.ts` evaluates the same ledger
+at different instants.
+
+Deviations from manual: no Docker in the authoring environment, so every database behaviour
+in this stage was written blind and is proven only in CI.
+
+Open questions raised: OQ-007.

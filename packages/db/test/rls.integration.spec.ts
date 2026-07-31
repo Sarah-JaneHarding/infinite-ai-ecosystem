@@ -12,7 +12,7 @@ import { randomUUID } from 'node:crypto';
 import type { PrismaClient } from '@prisma/client';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { TENANT_OWNED_TABLES } from '../src/tables.js';
+import { APPEND_ONLY_TABLES, TENANT_OWNED_TABLES } from '../src/tables.js';
 import { asTenant, startTestDatabase, type TestDatabase } from './support/database.js';
 
 let db: TestDatabase;
@@ -162,10 +162,51 @@ async function seedTwoTenants(): Promise<void> {
         },
       });
 
+      // The Stage 03 POPIA tables. Seeded here rather than only in
+      // popia.integration.spec.ts because this suite is what proves they are isolated like
+      // every other table, and the fixture guard below refuses to let them arrive without
+      // rows — which is how their absence was caught rather than assumed.
+      const consent = await tx.consentRecord.create({
+        data: {
+          tenantId,
+          subjectToken: `LNR_${tenantId.slice(0, 6).toUpperCase()}`,
+          category: 'ATTENDANCE',
+          purpose: 'screening',
+          basis: 'PUBLIC_LAW_DUTY',
+          decision: 'GRANTED',
+          source: 'NOT_APPLICABLE',
+          effectiveFrom: new Date('2026-01-14'),
+        },
+      });
+      const retention = await tx.retentionRule.create({
+        data: {
+          tenantId,
+          category: 'ATTENDANCE',
+          anchor: 'ACADEMIC_YEAR_END',
+          retainMonths: 60,
+          // Not a ratified period and not a recommendation — a fixture value. Real
+          // schedules are each school's determination; see OQ-007.
+          authority: 'Test fixture, not a ratified retention period',
+          ratifiedAt: new Date('2026-01-14'),
+          ratifiedBy: 'Fixture',
+        },
+      });
+      const subjectRequest = await tx.dataSubjectRequest.create({
+        data: {
+          tenantId,
+          subjectToken: `LNR_${tenantId.slice(0, 6).toUpperCase()}`,
+          kind: 'ACCESS',
+          detail: 'Fixture request',
+          dueAt: new Date('2026-03-01'),
+        },
+      });
+
       const created: Record<string, string> = {
         academic_year: year.id,
         audit_event: audit.id,
         class_group: classGroup.id,
+        consent_record: consent.id,
+        data_subject_request: subjectRequest.id,
         grade: grade.id,
         guardian: guardian.id,
         guardian_link: link.id,
@@ -175,6 +216,7 @@ async function seedTwoTenants(): Promise<void> {
         role_assignment: role.id,
         school: school.id,
         staff_member: staff.id,
+        retention_rule: retention.id,
         subject: subject.id,
         teaching_assignment: assignment.id,
         tenant_setting: setting.id,
@@ -236,13 +278,16 @@ describe.each(TENANT_OWNED_TABLES)('tenant isolation on %s', (table) => {
   });
 
   it("updating another tenant's row affects zero rows", async () => {
+    // `SET id = id` rather than `SET created_by = …`. The old form assumed every
+    // tenant-owned table carries `created_by`, which was true of the Stage 01 schema by
+    // accident rather than by rule: the ledgers deliberately omit mutable-row bookkeeping,
+    // because a row that is never updated has no "who last touched it". A missing column
+    // makes this statement fail to parse, which looks nothing like the leak it is meant to
+    // detect. `id` is the one column every table here is guaranteed to have, and the
+    // assertion is unchanged — what filters the row is the USING clause, not the SET list.
     const otherId = rowIds.get(table)!.b;
     const affected = await asTenant(appRw, TENANT_A, ACTOR, (tx) =>
-      tx.$executeRawUnsafe(
-        `UPDATE ${quoted} SET created_by = $1::uuid WHERE id = $2::uuid`,
-        ACTOR,
-        otherId,
-      ),
+      tx.$executeRawUnsafe(`UPDATE ${quoted} SET id = id WHERE id = $1::uuid`, otherId),
     );
     expect(affected).toBe(0);
   });
@@ -277,6 +322,35 @@ describe.each(TENANT_OWNED_TABLES)('tenant isolation on %s', (table) => {
     );
     // Exactly the one row this tenant owns. A leak would show 2.
     expect(Number(rows[0]!.count)).toBe(1);
+  });
+});
+
+/**
+ * Tenant-owned tables that accept an UPDATE at all.
+ *
+ * A filtered list rather than a skip inside the block above: rule 2 draws a hard line at
+ * skipped tests, and a list that names what it excludes and why is clearer than a skip
+ * anyone reading the output has to go and interpret.
+ */
+const MUTABLE_TENANT_TABLES = TENANT_OWNED_TABLES.filter(
+  (table) => !APPEND_ONLY_TABLES.includes(table as never),
+);
+
+describe.each(MUTABLE_TENANT_TABLES)('the update case on %s is not vacuous', (table) => {
+  it('updating its own row affects one', async () => {
+    // The zero in "updating another tenant's row affects zero rows" has to mean "RLS
+    // filtered it out", not "the statement never did anything". Nothing distinguished the
+    // two before this: a typo in that SQL would have produced a green isolation suite,
+    // which is the worst outcome this file is capable of.
+    //
+    // The ledgers are excluded because an own-row UPDATE there is refused by the
+    // append-only trigger — a different guarantee, asserted where it applies, in the
+    // audit_event cases below and in popia.integration.spec.ts.
+    const ownId = rowIds.get(table)!.a;
+    const affected = await asTenant(appRw, TENANT_A, ACTOR, (tx) =>
+      tx.$executeRawUnsafe(`UPDATE "${table}" SET id = id WHERE id = $1::uuid`, ownId),
+    );
+    expect(affected).toBe(1);
   });
 });
 
