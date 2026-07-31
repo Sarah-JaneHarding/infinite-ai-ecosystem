@@ -9,6 +9,7 @@ import {
   RetentionSchedule,
   addMonths,
   evaluateRetention,
+  reviewSchedule,
   ruleFor,
   unscheduledCategories,
   type RetainableRecord,
@@ -200,5 +201,100 @@ describe('looking a rule up', () => {
 
   it('returns undefined rather than a permissive default', () => {
     expect(ruleFor(schedule([rule()]), 'SPECIAL_PERSONAL')).toBeUndefined();
+  });
+});
+
+describe('reviewing a schedule a school filled in', () => {
+  const ratified = (over: Partial<RetentionRule> = {}): unknown => ({
+    ...rule(over),
+    ratifiedAt: rule(over).ratifiedAt.toISOString(),
+  });
+
+  it('rejects something that is not a schedule at all', () => {
+    const review = reviewSchedule({ nonsense: true });
+    expect(review.valid).toBe(false);
+    expect(review.valid === false && review.issues.length).toBeGreaterThan(0);
+  });
+
+  it('reports a root-level problem when the file is not an object at all', () => {
+    // `pnpm check:retention` pointed at the wrong file — a bare array, a string, a number.
+    // There is no field to name, so the message has to say so rather than read
+    // ": Expected object".
+    for (const notASchedule of [42, 'a schedule', null, []]) {
+      const review = reviewSchedule(notASchedule);
+      expect(review.valid, JSON.stringify(notASchedule)).toBe(false);
+      expect(review.valid === false && review.issues.join(' ')).toContain('(root)');
+    }
+  });
+
+  it('names the field when a rule is malformed', () => {
+    // The person fixing this is filling in a form, not reading a stack trace. The path
+    // has to say which row and which column.
+    const review = reviewSchedule({
+      tenantId: TENANT,
+      rules: [{ ...(ratified() as object), retainMonths: -1 }],
+    });
+    expect(review.valid).toBe(false);
+    expect(review.valid === false && review.issues.join(' ')).toContain('retainMonths');
+  });
+
+  it('accepts an empty schedule and reports every category as unscheduled', () => {
+    // An incomplete schedule is a safe state, not an error. Refusing it would push a
+    // school toward inventing numbers to make the tool stop complaining.
+    const review = reviewSchedule({ tenantId: TENANT, rules: [] });
+    expect(review.valid).toBe(true);
+    expect(review.valid === true && review.unscheduled).toEqual(DataCategory.options);
+    expect(review.valid === true && review.findings).toEqual([]);
+  });
+
+  it('separates what is scheduled from what is not', () => {
+    const review = reviewSchedule({ tenantId: TENANT, rules: [ratified()] });
+    expect(review.valid === true && review.scheduled).toEqual(['ATTENDANCE']);
+    expect(review.valid === true && review.unscheduled).not.toContain('ATTENDANCE');
+  });
+
+  it('flags an authority that is obviously a placeholder', () => {
+    // The schema only asks for ten characters, which "TBC — to follow" satisfies. This is
+    // the check that catches the row nobody came back to before the form was signed.
+    for (const authority of [
+      'TBC — to follow',
+      'TODO: ask the SGB',
+      'To be advised later',
+      '__________________',
+      'Placeholder for now',
+    ]) {
+      const review = reviewSchedule({
+        tenantId: TENANT,
+        rules: [ratified({ authority })],
+      });
+      expect(review.valid, authority).toBe(true);
+      expect(review.valid === true && review.findings, authority).toHaveLength(1);
+      expect(review.valid === true && review.findings[0]?.problem).toBe(
+        'placeholder_authority',
+      );
+    }
+  });
+
+  it('does not flag a real citation', () => {
+    // The false-positive direction matters as much: a school that writes a genuine source
+    // and gets told it looks fake will stop trusting the check.
+    for (const authority of [
+      'Governing body resolution 2026/04, minuted 2026-04-18',
+      'Provincial circular E12 of 2025, paragraph 4.2',
+      'Protection of Personal Information Act 4 of 2013, section 14',
+    ]) {
+      const review = reviewSchedule({
+        tenantId: TENANT,
+        rules: [ratified({ authority })],
+      });
+      expect(review.valid === true && review.findings, authority).toEqual([]);
+    }
+  });
+
+  it('still ships no periods of its own', () => {
+    // The whole point, asserted against the review path too: reviewing an empty schedule
+    // must not quietly fill anything in. See OQ-007.
+    const review = reviewSchedule({ tenantId: TENANT, rules: [] });
+    expect(review.valid === true && review.schedule.rules).toEqual([]);
   });
 });
