@@ -41,6 +41,7 @@ describe('package export surface', () => {
       'isWithdrawable',
       'permits',
       'projectCategories',
+      'reviewSchedule',
       'ruleFor',
       'unscheduledCategories',
     ]);

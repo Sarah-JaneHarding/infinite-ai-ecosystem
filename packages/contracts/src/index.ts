@@ -33,10 +33,13 @@ export {
   RetentionSchedule,
   addMonths,
   evaluateRetention,
+  reviewSchedule,
   ruleFor,
   unscheduledCategories,
   type RetainableRecord,
   type RetentionVerdict,
+  type ScheduleFinding,
+  type ScheduleReview,
 } from './popia/retention.js';
 
 export {

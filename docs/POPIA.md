@@ -119,6 +119,13 @@ default would be wrong in a way nobody checks and would destroy records on a sch
 human agreed to. A test asserts the package exports no schedule, so this stays true rather
 than merely being written down here. **See OQ-007.**
 
+**The form is `docs/RETENTION_SCHEDULE_TEMPLATE.md`** — one row per category, with the
+anchor and authority fields explained in the language a governing body meeting uses. A
+filled-in schedule is checked with `pnpm check:retention <file>` before it is loaded: that
+refuses anything malformed, and refuses a rule whose Authority column is still a
+placeholder, because a rule with no real source will delete records just as effectively as
+one with a good one.
+
 Each rule a school ratifies carries four things:
 
 | Field          | Why it is required                                                                                                                                                                                |

@@ -102,6 +102,84 @@ export function ruleFor(
   return schedule.rules.find((rule) => rule.category === category);
 }
 
+// ---------------------------------------------------------------------------
+// Reviewing a schedule a school has filled in
+// ---------------------------------------------------------------------------
+
+/**
+ * Text that shows the Authority column was never actually filled in.
+ *
+ * A form gets circulated, and somewhere between the draft and the signature a placeholder
+ * survives. The schema only requires ten characters, which `TBC — to follow` satisfies
+ * comfortably. This is the check that catches the row nobody came back to.
+ */
+const PLACEHOLDER_AUTHORITY =
+  /^\W*$|\b(tbc|tba|todo|xxx|placeholder|pending|n\/?a)\b|\bto (be (advised|confirmed|determined|decided)|follow)\b|_{3,}/i;
+
+export interface ScheduleFinding {
+  readonly category: DataCategory;
+  readonly problem: 'placeholder_authority';
+  readonly detail: string;
+}
+
+export type ScheduleReview =
+  | { readonly valid: false; readonly issues: readonly string[] }
+  | {
+      readonly valid: true;
+      readonly schedule: RetentionSchedule;
+      /** Categories carrying a ratified rule. */
+      readonly scheduled: readonly DataCategory[];
+      /** Categories with no rule. Never tombstoned; reported on every run. */
+      readonly unscheduled: readonly DataCategory[];
+      /** Rules that parsed but should not be trusted. */
+      readonly findings: readonly ScheduleFinding[];
+    };
+
+/**
+ * Checks a schedule a school has filled in, before it reaches the database.
+ *
+ * Returns findings rather than throwing on the soft problems, because "you have nine
+ * unscheduled categories" is information rather than an error — an incomplete schedule is a
+ * legitimate and safe state, and refusing to load one would push a school toward inventing
+ * numbers to make the tool stop complaining. That is the exact failure this whole design
+ * exists to avoid.
+ *
+ * A placeholder authority is a finding rather than a hard failure for the same reason, but
+ * `pnpm check:retention` exits non-zero on one: a rule that will delete records on an
+ * authority of "TBC" should not reach production quietly.
+ */
+export function reviewSchedule(candidate: unknown): ScheduleReview {
+  const parsed = RetentionSchedule.safeParse(candidate);
+  if (!parsed.success) {
+    return {
+      valid: false,
+      issues: parsed.error.issues.map(
+        (issue) => `${issue.path.join('.') || '(root)'}: ${issue.message}`,
+      ),
+    };
+  }
+
+  const schedule = parsed.data;
+  const findings: ScheduleFinding[] = [];
+  for (const rule of schedule.rules) {
+    if (PLACEHOLDER_AUTHORITY.test(rule.authority)) {
+      findings.push({
+        category: rule.category,
+        problem: 'placeholder_authority',
+        detail: `Authority reads "${rule.authority}", which looks like a placeholder rather than a source.`,
+      });
+    }
+  }
+
+  return {
+    valid: true,
+    schedule,
+    scheduled: schedule.rules.map((rule) => rule.category),
+    unscheduled: unscheduledCategories(schedule),
+    findings,
+  };
+}
+
 /**
  * Adds whole months, clamping to the end of the target month.
  *

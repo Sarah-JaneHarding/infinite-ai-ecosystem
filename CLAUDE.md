@@ -1,7 +1,106 @@
-# CLAUDE.md — read this first, every session
+# CLAUDE.md
 
-Condensed from PART 0 of `INFINITEAI_BUILD_MANUAL.md`. The manual is authoritative; this
-file is what you read before touching anything. Regenerate it from Part 0 if Part 0 changes.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this
+repository.
+
+Read it first, every session. The rules below are condensed from PART 0 of
+`INFINITEAI_BUILD_MANUAL.md`. The manual is authoritative; this file is what you read
+before touching anything. Regenerate it from Part 0 if Part 0 changes.
+
+## Commands
+
+```bash
+pnpm install                     # postinstall generates the Prisma client and installs git hooks
+pnpm lint                        # eslint . — also enforces most of the forbidden-pattern list
+pnpm typecheck                   # turbo run typecheck (tsc --noEmit per package)
+pnpm test                        # unit tier, every package, no Docker needed
+pnpm test:coverage               # unit tier with §4.2 thresholds enforced per package
+pnpm build
+pnpm format / pnpm format:check
+pnpm verify:stage <NN>           # cumulative stage gate; must exit 0 before the next stage
+```
+
+Narrowing a run — Turbo filters by package, Vitest by file or test name:
+
+```bash
+pnpm --filter @infinite-ai/policy test                  # one package
+pnpm --filter @infinite-ai/policy test rbac-scopes      # files matching a substring
+pnpm --filter @infinite-ai/policy exec vitest run -t "OWN_CLASS"   # one test by name
+```
+
+Database work (`packages/db`) — the integration tier needs a **Docker daemon**, which the
+authoring sandbox does not have. Those suites are written blind and proven in CI:
+
+```bash
+pnpm --filter @infinite-ai/db db:generate        # regenerate the Prisma client after a schema edit
+pnpm --filter @infinite-ai/db db:migrate:dev     # create a migration (needs a live database)
+pnpm --filter @infinite-ai/db db:seed            # idempotent; a second run must be a no-op
+pnpm --filter @infinite-ai/db test               # unit tier only
+pnpm --filter @infinite-ai/db test:integration   # Testcontainers; real Postgres; no skip path
+pnpm --filter @infinite-ai/db coverage:merged    # both tiers merged — the only honest coverage number for this package
+```
+
+`pnpm check:retention <schedule.json>` validates a school's filled-in retention schedule
+(`docs/RETENTION_SCHEDULE_TEMPLATE.md`) before it is loaded.
+
+Writing a migration that adds a **tenant-owned table**: `tenant` carries
+`FORCE ROW LEVEL SECURITY`, so the foreign-key validation scan runs under the tenant policy
+and fails with `42704` unless the migration sets a tenant context first. See the header of
+`20260729160000_stage03_popia_tables/migration.sql` — it explains the fix and the four
+alternatives that were rejected.
+
+## Architecture
+
+Nine layers. Data flows **up** through them, and each one is a chokepoint that the layer
+above cannot go around — that is the whole design, and most of the rules below are just
+that property restated.
+
+```
+L8 experience surfaces   apps/web · role-scoped UIs
+L7 modules               MOD-01…MOD-05 · the product features
+L6 agent runtime         packages/{agents,orchestrator,prompts} · DAGs, human gates
+L5 guardrail plane       packages/{guardrails,policy,deident} · the last thing before a model
+L4 Infinite Brain        packages/brain · five memory tiers, append-only
+L3 data plane            packages/db · Prisma + RLS, tenant-scoped client
+L2 model gateway         apps/gateway · the ONLY path to a provider
+L0/L1 integrations       school systems, ratified policy sources
+```
+
+**Four invariants, each enforced in a specific file.** When something seems awkward, it is
+usually one of these holding:
+
+1. **Tenant isolation** — `packages/db/src/client.ts` exposes `withTenant()` and nothing
+   else. It opens a transaction and sets `app.tenant_id` transaction-locally; every RLS
+   policy reads it via `current_setting('app.tenant_id', false)`, the _raising_ form, so a
+   context-less query errors rather than quietly matching nothing.
+   `packages/db/src/tables.ts` classifies every table, and the RLS suite is driven off that
+   list — a new table cannot escape the isolation proof without failing a test.
+2. **No PII in a prompt** — `packages/guardrails/src/pii-guard.ts` checks
+   _provenance first_: a payload without a `deidentified: true` stamp is refused even when
+   the detector finds nothing. Tokenisation and scrubbing are `packages/deident`.
+3. **Purpose limitation** — `packages/contracts/src/popia/purpose.ts` is one table saying
+   which data categories each purpose may touch. `packages/policy/src/access.ts` applies
+   three gates in a fixed order: tombstone → purpose allow-list → lawful basis. Purpose
+   _before_ consent is deliberate; consent cannot widen a use the school never declared.
+4. **Append-only ledgers** — `audit_event` and `consent_record` refuse UPDATE and DELETE by
+   database trigger, listed in `APPEND_ONLY_TABLES`. Effective consent is derived by
+   replaying entries (`packages/policy/src/consent.ts`), which is what makes "were we
+   permitted to do this on the day we did it?" answerable.
+
+**Policy is data, not code.** The RBAC matrix (`packages/policy/src/rbac.ts`), the purpose
+table and the retention schedule are all declarative and read top-to-bottom. Compressing
+them with loops or inheritance trades reviewability for brevity nobody needs. Retention
+ships **no periods at all** — those are each school's legal determination (OQ-007).
+
+**Two test tiers.** Unit runs anywhere; integration needs Docker and has no skip path,
+because a silently skipped isolation suite is indistinguishable from a passing one.
+
+## Where the state of play lives
+
+- `docs/STAGE_LOG.md` — every stage's exit gate walked item by item, plus defects found
+  and why. Read the tail before starting anything.
+- `docs/OPEN_QUESTIONS.md` — what is blocked on a human. Add to it rather than guessing.
+- `docs/POPIA.md` — the privacy invariants and the reasoning behind them.
 
 ## What this is
 
