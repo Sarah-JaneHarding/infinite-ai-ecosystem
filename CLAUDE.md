@@ -11,6 +11,7 @@ before touching anything. Regenerate it from Part 0 if Part 0 changes.
 
 ```bash
 pnpm install                     # postinstall generates the Prisma client and installs git hooks
+cp .env.example .env             # then fill it in locally; never commit it (rule 7)
 pnpm lint                        # eslint . — also enforces most of the forbidden-pattern list
 pnpm typecheck                   # turbo run typecheck (tsc --noEmit per package)
 pnpm test                        # unit tier, every package, no Docker needed
@@ -18,6 +19,14 @@ pnpm test:coverage               # unit tier with §4.2 thresholds enforced per 
 pnpm build
 pnpm format / pnpm format:check
 pnpm verify:stage <NN>           # cumulative stage gate; must exit 0 before the next stage
+```
+
+Local dev data plane (Postgres 16 + pgvector, Redis 7) — reads secrets from `.env`, none
+have defaults, so an unconfigured machine fails to boot rather than starting with a
+guessable password:
+
+```bash
+docker compose -f infra/docker/compose.dev.yml up -d
 ```
 
 Narrowing a run — Turbo filters by package, Vitest by file or test name:
