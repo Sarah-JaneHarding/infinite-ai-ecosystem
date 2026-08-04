@@ -623,8 +623,9 @@ a decision that needs a human's judgement call, so it is tracked here rather tha
 ## Stage 05 — Infinite Brain (L0-L4)
 
 Started: 2026-08-04 Completed: —
-Exit gate: **PARTIAL** — steps 1 (the five tiers) and 2 (the write path) are built and
-proven. Steps 3-10 are not started. `scripts/verify-stage.ts`'s `05` entry stays empty
+Exit gate: **PARTIAL** — steps 1 (the five tiers), 2 (the write path) and 3 (contradiction
+resolution) are built and proven. Steps 4-10 are not started. `scripts/verify-stage.ts`'s
+`05` entry stays empty
 until they are.
 
 **What this slice put in place (step 1)**
@@ -775,3 +776,81 @@ Open questions raised: none. The two gaps above (retention categorisation, concu
 version races) are follow-up implementation work tied to steps this stage has not reached
 yet, not decisions needing a human's judgement call, so they stay here rather than in
 `docs/OPEN_QUESTIONS.md`.
+
+**What this slice put in place (step 3 — contradiction resolution)**
+
+The manual's own text: "on conflict with an existing fact, compare provenance strength and
+recency; if the new fact would supersede a human-ratified fact, do not auto-resolve —
+enqueue a conflict for a human and keep both versions."
+
+**The human-ratified carve-out needed nothing new.** `L0_CONSTITUTION`/`L3_PROCEDURE` are
+the only human-ratified tiers, and step 2's ratification gate already puts a human between
+every new version of one and its commit — conflict or not. `checkContradiction` still
+returns no contradiction for those two tiers (unchanged from step 2); this step's real work
+is entirely `L1_NODE`/`L1_EDGE`, the two tiers with a natural key to conflict against and
+no ratification of their own.
+
+**`resolveContradiction`** (`packages/brain/src/write-path-state-machine.ts`, pure, no
+database) is the comparison itself: `AUTO_SUPERSEDE` only when the candidate's confidence
+is strictly higher than the existing fact's, or tied and strictly more recent — anything
+else is not clearly the new fact's to decide, so it goes to a human rather than being
+guessed at. Exhaustively unit tested across all four quadrants (higher confidence, tied
+confidence with either the newer or the older row winning, and strictly lower confidence).
+
+**`brain_conflict_queue`** (`packages/db`) is step 1's own prediction made real: it was
+scoped to step 3 rather than invented alongside `brain_write_candidate`, "since a conflict
+queue is workflow state... closer in shape to `DataSubjectRequest`... not invented here."
+It is mutable, not append-only, for exactly that reason, and carries the provenance
+comparison's inputs (both facts' confidence and recency) so a human resolving it later does
+not have to recompute what already changed on the underlying rows.
+
+`BrainWriteCandidate` gained one column, `contradictionResolution`
+(`ACCEPT_NEW`/`KEEP_EXISTING`/null), which is what actually unblocks or permanently stops a
+stuck candidate — `contradictionOf` alone, from step 2, only ever meant "something to
+resolve." The full sequence, entirely inside the `EXTRACTED → CONTRADICTION_CHECKED`
+transition:
+
+1. `findEffectiveBrainFact` (extended to also return the existing row's own confidence and
+   `createdAt`, only for `L1_NODE`/`L1_EDGE`) plus `decideContradiction` (step 2, unchanged)
+   finds an undeclared conflict or does not.
+2. No conflict: `contradictionOf` and `contradictionResolution` both persist as null, same
+   as step 2.
+3. A conflict `resolveContradiction` resolves as `AUTO_SUPERSEDE`: `contradictionOf` and
+   `contradictionResolution: 'ACCEPT_NEW'` persist together, in the same transition — no
+   queue entry is ever created, because an auto-resolved conflict never becomes a human's
+   problem.
+4. A conflict it cannot resolve: `contradictionOf` persists with `contradictionResolution`
+   still null, and `enqueueBrainConflict` opens a queue row in the same breath — proven by
+   `write-path.integration.spec.ts`'s case, which asserts the queue entry exists and names
+   the right candidate before a human ever looks at it.
+
+A queued conflict's disposition, once a human calls `resolveConflict`/`resolveBrainConflict`:
+`ACCEPT_NEW` calls straight through to `recordContradictionResolution`, which requires the
+candidate to actually be sitting at `CONTRADICTION_CHECKED` with an unresolved conflict and
+refuses to record a second verdict over an existing one — the same "cannot happen twice"
+shape `ratifyBrainWrite` already has. `KEEP_EXISTING` stops the candidate at
+`CONTRADICTION_CHECKED` permanently; there is no new terminal `BrainWriteStatus` for a
+rejected candidate; a stuck, never-advancing row already says that honestly.
+
+`advanceBrainWrite` gained one more structural guard, alongside step 2's
+`REQUIRED_PREDECESSOR` table: it refuses `PROVENANCE_STAMPED` for a candidate whose
+`contradictionOf` is set and whose `contradictionResolution` is not `ACCEPT_NEW` — the same
+defence-in-depth shape the `COMMITTED` gate already has for ratification, so a caller in
+`packages/brain` that got the sequencing wrong fails at the database layer, not just in its
+own logic.
+
+**Supersession without a declaration.** Step 2 built `supersedes` as always caller-declared,
+never inferred. An auto-resolved or human-accepted conflict changes that narrowly:
+`buildFactToCommit`'s `resolvedSupersedes` helper uses the candidate's own declared value
+if it made one, falling back to `contradictionOf` otherwise — reachable only once
+`advanceOnce`'s own guards have already refused to let an unresolved or rejected conflict
+reach this point. Proven directly: the auto-supersede integration case asserts the
+committed row's `supersedes` points at the fact it won against, with no declaration in the
+candidate's payload at all.
+
+Deviations from manual: none. Step 3's own text — compare provenance and recency; carve out
+human-ratified facts; enqueue and keep both versions otherwise — is exactly what was built,
+with the human-ratified carve-out satisfied by step 2's existing ratification gate rather
+than a second mechanism.
+
+Open questions raised: none.

@@ -15,11 +15,15 @@
 import {
   advanceBrainWrite,
   commitBrainFact,
+  enqueueBrainConflict,
   findEffectiveBrainFact,
   getBrainWriteCandidate,
   listOpenBrainWrites,
   openBrainWrite,
   ratifyBrainWrite,
+  resolveBrainConflict,
+  type BrainConflictResolution,
+  type BrainConflictRow,
   type BrainFactToCommit,
   type BrainWriteCandidateInput,
   type BrainWriteCandidateRow,
@@ -27,7 +31,12 @@ import {
 } from '@infinite-ai/db';
 
 import { extractTyped, type ExtractedPayload } from './write-path-schemas.js';
-import { decideContradiction, requiresRatification } from './write-path-state-machine.js';
+import {
+  decideContradiction,
+  requiresRatification,
+  resolveContradiction,
+  type Provenance,
+} from './write-path-state-machine.js';
 
 export class BrainWritePathError extends Error {
   public override readonly name = 'BrainWritePathError';
@@ -88,20 +97,48 @@ export async function advanceOnce(
       );
     }
     case 'EXTRACTED': {
-      const contradictionOf = await checkContradiction(tx, candidate);
-      return advanceBrainWrite(
+      const check = await checkContradiction(tx, candidate);
+      const updated = await advanceBrainWrite(
         tx,
         candidateId,
-        { toStatus: 'CONTRADICTION_CHECKED', contradictionOf },
+        {
+          toStatus: 'CONTRADICTION_CHECKED',
+          contradictionOf: check.contradictionOf,
+          contradictionResolution: check.contradictionResolution,
+        },
         now,
       );
+      // A conflict provenance comparison could not resolve automatically is enqueued for
+      // a human in the same breath it is detected — never as a separate step a caller
+      // could skip.
+      if (check.contradictionOf !== null && check.contradictionResolution === null) {
+        await enqueueBrainConflict(tx, {
+          writeCandidateId: candidateId,
+          targetTier: candidate.targetTier,
+          contradictionOf: check.contradictionOf,
+          newConfidence: check.conflict!.newConfidence,
+          existingConfidence: check.conflict!.existingConfidence,
+          newRecency: check.conflict!.newRecency,
+          existingRecency: check.conflict!.existingRecency,
+          createdBy: candidate.createdBy,
+        });
+      }
+      return updated;
     }
     case 'CONTRADICTION_CHECKED': {
-      if (candidate.contradictionOf !== null) {
+      if (
+        candidate.contradictionOf !== null &&
+        candidate.contradictionResolution === null
+      ) {
         throw new BrainWritePathError(
           `Candidate ${candidateId} conflicts with an existing fact ` +
-            `(${candidate.contradictionOf}) it did not declare as what it supersedes. ` +
-            `Resolving a real conflict is step 3's job; refusing to commit over it silently.`,
+            `(${candidate.contradictionOf}) that provenance comparison did not clearly ` +
+            `resolve in its favour. Enqueued for a human; refusing to commit over it silently.`,
+        );
+      }
+      if (candidate.contradictionResolution === 'KEEP_EXISTING') {
+        throw new BrainWritePathError(
+          `Candidate ${candidateId}'s conflict was resolved against it. It stops here.`,
         );
       }
       validateProvenance(candidate);
@@ -179,10 +216,29 @@ function validateProvenance(candidate: BrainWriteCandidateRow): void {
   }
 }
 
+interface ContradictionCheck {
+  readonly contradictionOf: string | null;
+  /** Null while unresolved — either no conflict was found, or one still awaits a human. */
+  readonly contradictionResolution: BrainConflictResolution | null;
+  /** Set only alongside a non-null `contradictionOf`, for the conflict queue entry. */
+  readonly conflict: {
+    readonly newConfidence: number;
+    readonly existingConfidence: number;
+    readonly newRecency: Date;
+    readonly existingRecency: Date;
+  } | null;
+}
+
+const NO_CONTRADICTION: ContradictionCheck = {
+  contradictionOf: null,
+  contradictionResolution: null,
+  conflict: null,
+};
+
 async function checkContradiction(
   tx: TenantClient,
   candidate: BrainWriteCandidateRow,
-): Promise<string | null> {
+): Promise<ContradictionCheck> {
   const extracted = extractTyped(candidate.targetTier, candidate.typedPayload);
   switch (extracted.targetTier) {
     // Versioned canon always supersedes its previous version automatically — that is what
@@ -191,15 +247,15 @@ async function checkContradiction(
     case 'L0_CONSTITUTION':
     case 'L3_PROCEDURE':
     case 'L2_EPISODE':
-      return null;
+      return NO_CONTRADICTION;
     case 'L1_NODE': {
-      if (extracted.payload.externalRef === null) return null;
+      if (extracted.payload.externalRef === null) return NO_CONTRADICTION;
       const existing = await findEffectiveBrainFact(tx, {
         targetTier: 'L1_NODE',
         entityType: extracted.payload.entityType,
         externalRef: extracted.payload.externalRef,
       });
-      return decideContradiction(extracted.payload.supersedes, existing).contradictionOf;
+      return resolveIfContradiction(candidate, extracted.payload.supersedes, existing);
     }
     case 'L1_EDGE': {
       const existing = await findEffectiveBrainFact(tx, {
@@ -208,9 +264,42 @@ async function checkContradiction(
         targetId: extracted.payload.targetId,
         relation: extracted.payload.relation,
       });
-      return decideContradiction(extracted.payload.supersedes, existing).contradictionOf;
+      return resolveIfContradiction(candidate, extracted.payload.supersedes, existing);
     }
   }
+}
+
+/**
+ * The full step 3 sequence for one natural-key lookup: detect, and if a conflict is
+ * found, immediately try to resolve it by provenance comparison. `existing.provenance` is
+ * always present here — it is only absent on the `L0_CONSTITUTION`/`L3_PROCEDURE` branches
+ * of `findEffectiveBrainFact`, neither of which calls this function.
+ */
+function resolveIfContradiction(
+  candidate: BrainWriteCandidateRow,
+  declaredSupersedes: string | null,
+  existing: { readonly id: string; readonly provenance?: Provenance } | null,
+): ContradictionCheck {
+  const decision = decideContradiction(declaredSupersedes, existing);
+  if (decision.contradictionOf === null || existing?.provenance === undefined) {
+    return NO_CONTRADICTION;
+  }
+
+  const candidateProvenance: Provenance = {
+    confidence: candidate.confidence,
+    recency: candidate.createdAt,
+  };
+  const verdict = resolveContradiction(candidateProvenance, existing.provenance);
+  return {
+    contradictionOf: decision.contradictionOf,
+    contradictionResolution: verdict === 'AUTO_SUPERSEDE' ? 'ACCEPT_NEW' : null,
+    conflict: {
+      newConfidence: candidateProvenance.confidence,
+      existingConfidence: existing.provenance.confidence,
+      newRecency: candidateProvenance.recency,
+      existingRecency: existing.provenance.recency,
+    },
+  };
 }
 
 async function commitAndAdvance(
@@ -275,7 +364,7 @@ function buildFactToCommit(candidate: BrainWriteCandidateRow): BrainFactToCommit
         externalRef: extracted.payload.externalRef,
         label: extracted.payload.label,
         attributes: extracted.payload.attributes,
-        supersedes: extracted.payload.supersedes,
+        supersedes: resolvedSupersedes(candidate, extracted.payload.supersedes),
         ...provenance,
       };
     case 'L1_EDGE':
@@ -285,7 +374,7 @@ function buildFactToCommit(candidate: BrainWriteCandidateRow): BrainFactToCommit
         targetId: extracted.payload.targetId,
         relation: extracted.payload.relation,
         attributes: extracted.payload.attributes,
-        supersedes: extracted.payload.supersedes,
+        supersedes: resolvedSupersedes(candidate, extracted.payload.supersedes),
         ...provenance,
       };
     case 'L2_EPISODE':
@@ -316,4 +405,41 @@ function requireRatification(candidate: BrainWriteCandidateRow): {
     );
   }
   return { ratifiedBy: candidate.ratifiedBy, ratifiedAt: candidate.ratifiedAt };
+}
+
+/**
+ * What this candidate's commit should set `supersedes` to: its own declaration if it made
+ * one, or the conflict it was resolved to accept over, or null when neither applies. Only
+ * ever reached once `advanceOnce`'s own guards have already refused to let an unresolved
+ * or rejected conflict get this far.
+ */
+function resolvedSupersedes(
+  candidate: BrainWriteCandidateRow,
+  declaredSupersedes: string | null,
+): string | null {
+  return declaredSupersedes ?? candidate.contradictionOf;
+}
+
+/**
+ * Records a human's decision on a queued conflict — the counterpart to the automatic
+ * resolution `advanceOnce` already tries first. Resolving `ACCEPT_NEW` unblocks the write
+ * candidate that raised it; the next `run()`/`advanceOnce()` on it proceeds normally.
+ * `KEEP_EXISTING` stops that candidate permanently.
+ */
+export async function resolveConflict(
+  tx: TenantClient,
+  conflictId: string,
+  resolution: BrainConflictResolution,
+  resolvedBy: string,
+  resolvedAt: Date,
+  resolutionNote: string | null = null,
+): Promise<BrainConflictRow> {
+  return resolveBrainConflict(
+    tx,
+    conflictId,
+    resolution,
+    resolvedBy,
+    resolvedAt,
+    resolutionNote,
+  );
 }

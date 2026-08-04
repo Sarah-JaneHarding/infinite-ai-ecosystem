@@ -6,7 +6,9 @@
 // own to add there. Step 2 builds the write path: extraction/typing
 // (write-path-schemas.ts), the pure transition order and contradiction decision
 // (write-path-state-machine.ts), and the orchestrator that persists each transition
-// through @infinite-ai/db (write-path.ts).
+// through @infinite-ai/db (write-path.ts). Step 3 adds contradiction *resolution* to the
+// same two files: `resolveContradiction`'s provenance comparison, and the orchestrator
+// wiring an unresolved conflict to @infinite-ai/db's conflict queue.
 
 export {
   InMemoryWorkingMemoryStore,
@@ -32,9 +34,12 @@ export {
   decideContradiction,
   nextStatus,
   requiresRatification,
+  resolveContradiction,
   type BrainWriteStatus,
   type ContradictionDecision,
+  type ContradictionVerdict,
   type ExistingEffectiveFact,
+  type Provenance,
 } from './write-path-state-machine.js';
 
 export {
@@ -43,6 +48,7 @@ export {
   listOpenWrites,
   openWrite,
   ratify,
+  resolveConflict,
   run,
 } from './write-path.js';
 

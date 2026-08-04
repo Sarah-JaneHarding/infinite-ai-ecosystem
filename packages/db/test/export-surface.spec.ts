@@ -17,6 +17,7 @@ describe('package export surface', () => {
     // matters. The structural check below is what actually guards the invariant.
     expect(Object.keys(db).sort()).toEqual([
       'APPEND_ONLY_TABLES',
+      'BrainConflictError',
       'BrainWriteError',
       'ConsentLedgerError',
       'DecryptionError',
@@ -34,9 +35,12 @@ describe('package export surface', () => {
       'decrypt',
       'disconnect',
       'encrypt',
+      'enqueueBrainConflict',
       'eraseSubject',
       'findEffectiveBrainFact',
+      'getBrainConflict',
       'getBrainWriteCandidate',
+      'listOpenBrainConflicts',
       'listOpenBrainWrites',
       'lookupHash',
       'openBrainWrite',
@@ -44,6 +48,8 @@ describe('package export surface', () => {
       'readLedger',
       'readTenantLedger',
       'readTenantLexicon',
+      'recordContradictionResolution',
+      'resolveBrainConflict',
       'withTenant',
     ]);
   });
@@ -65,6 +71,11 @@ describe('package export surface', () => {
       db.ratifyBrainWrite,
       db.findEffectiveBrainFact,
       db.commitBrainFact,
+      db.recordContradictionResolution,
+      db.enqueueBrainConflict,
+      db.getBrainConflict,
+      db.listOpenBrainConflicts,
+      db.resolveBrainConflict,
     ]) {
       expect(fn.length).toBeGreaterThanOrEqual(1);
     }

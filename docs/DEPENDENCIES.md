@@ -105,6 +105,12 @@ already installed in `packages/db` to run migrations, and every actual query in 
 goes through `@infinite-ai/db`'s own `withTenant()` — there was never a reason to construct
 a second Prisma client.
 
+## Stage 05 step 3 — contradiction resolution
+
+No new dependency. `brain_conflict_queue` is another Prisma model in `packages/db`, on the
+same `prisma`/`zod` already recorded; the provenance comparison it depends on
+(`resolveContradiction`) is pure TypeScript in `packages/brain`, with nothing to add.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

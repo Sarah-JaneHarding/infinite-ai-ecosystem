@@ -94,3 +94,40 @@ export function decideContradiction(
   if (declaredSupersedes === existing.id) return { contradictionOf: null };
   return { contradictionOf: existing.id };
 }
+
+// ---------------------------------------------------------------------------
+// Contradiction resolution — Stage 05 step 3
+// ---------------------------------------------------------------------------
+
+export interface Provenance {
+  readonly confidence: number;
+  readonly recency: Date;
+}
+
+export type ContradictionVerdict = 'AUTO_SUPERSEDE' | 'ENQUEUE_FOR_HUMAN';
+
+/**
+ * The manual's own mechanism for a flagged conflict: "compare provenance strength and
+ * recency." `AUTO_SUPERSEDE` only when the candidate's confidence is strictly higher than
+ * the existing fact's, or tied and strictly more recent — anything less clear-cut is not
+ * the new fact's to decide, so it is left for a human rather than guessed at.
+ *
+ * Never called for `L0_CONSTITUTION`/`L3_PROCEDURE`: those tiers never produce a
+ * `contradictionOf` in the first place (`decideContradiction` is not consulted for them
+ * either — see `write-path.ts`'s `checkContradiction`), because the manual's carve-out for
+ * a human-ratified fact is already satisfied by the ratification gate every new version of
+ * one already passes through.
+ */
+export function resolveContradiction(
+  candidate: Provenance,
+  existing: Provenance,
+): ContradictionVerdict {
+  if (candidate.confidence > existing.confidence) return 'AUTO_SUPERSEDE';
+  if (
+    candidate.confidence === existing.confidence &&
+    candidate.recency.getTime() > existing.recency.getTime()
+  ) {
+    return 'AUTO_SUPERSEDE';
+  }
+  return 'ENQUEUE_FOR_HUMAN';
+}

@@ -9,7 +9,12 @@
 
 import { randomUUID } from 'node:crypto';
 
-import { disconnect, withTenant, type TenantClient } from '@infinite-ai/db';
+import {
+  disconnect,
+  listOpenBrainConflicts,
+  withTenant,
+  type TenantClient,
+} from '@infinite-ai/db';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import {
@@ -18,6 +23,7 @@ import {
   listOpenWrites,
   openWrite,
   ratify,
+  resolveConflict,
   run,
 } from '../src/write-path.js';
 import { startTestDatabase, type TestDatabase } from './support/database.js';
@@ -203,6 +209,10 @@ describe('the write path, end to end', () => {
     expect(committed.status).toBe('RETENTION_SCHEDULED');
 
     await withTenant({ tenantId, actorId }, async (tx) => {
+      // Lower confidence than the committed fact's default (1): provenance comparison
+      // cannot resolve this in the new candidate's favour, so it must be enqueued rather
+      // than auto-superseded — see the "contradiction resolution" describe block below
+      // for the case where a higher-confidence candidate *does* auto-supersede.
       const conflicting = await openWrite(tx, {
         targetTier: 'L1_NODE',
         rawPayload: {
@@ -211,6 +221,7 @@ describe('the write path, end to end', () => {
           label: 'A learner (different label, no supersedes declared)',
         },
         source: 'test',
+        confidence: 0.5,
       });
       await expect(run(tx, conflicting.id)).rejects.toThrow(BrainWritePathError);
 
@@ -218,6 +229,7 @@ describe('the write path, end to end', () => {
       const stuck = afterFailure.find((c) => c.id === conflicting.id);
       expect(stuck?.status).toBe('CONTRADICTION_CHECKED');
       expect(stuck?.contradictionOf).toBe(committed.committedRowId);
+      expect(stuck?.contradictionResolution).toBeNull();
     });
 
     // Declaring the correction explicitly is the way through.
@@ -249,6 +261,162 @@ describe('the write path, end to end', () => {
         confidence: 1.5,
       });
       await expect(run(tx, opened.id)).rejects.toThrow(BrainWritePathError);
+    });
+  });
+});
+
+describe('contradiction resolution (step 3)', () => {
+  it('auto-supersedes when the new candidate has strictly higher confidence', async () => {
+    const { tenantId, actorId } = await seedTenant();
+
+    const committed = await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: {
+          entityType: 'LEARNER',
+          externalRef: 'LNR_AUTO',
+          label: 'Low confidence',
+        },
+        source: 'test',
+        confidence: 0.3,
+      });
+      return run(tx, opened.id);
+    });
+    expect(committed.status).toBe('RETENTION_SCHEDULED');
+
+    const superseding = await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: {
+          entityType: 'LEARNER',
+          externalRef: 'LNR_AUTO',
+          label: 'High confidence, no supersedes declared',
+        },
+        source: 'test',
+        confidence: 0.9,
+      });
+      return run(tx, opened.id);
+    });
+
+    expect(superseding.status).toBe('RETENTION_SCHEDULED');
+    expect(superseding.contradictionOf).toBe(committed.committedRowId);
+    expect(superseding.contradictionResolution).toBe('ACCEPT_NEW');
+
+    // No queue entry: an auto-resolved conflict never becomes a human's problem.
+    const openConflicts = await withTenant({ tenantId, actorId }, (tx) =>
+      listOpenBrainConflicts(tx),
+    );
+    expect(openConflicts).toHaveLength(0);
+
+    const supersededRow = await withTenant({ tenantId, actorId }, (tx) =>
+      tx.brainNode.findFirstOrThrow({ where: { id: superseding.committedRowId! } }),
+    );
+    expect(supersededRow.supersedes).toBe(committed.committedRowId);
+  });
+
+  it('enqueues an unresolvable conflict, and a human resolving ACCEPT_NEW unblocks it', async () => {
+    const { tenantId, actorId } = await seedTenant();
+
+    const committed = await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: {
+          entityType: 'LEARNER',
+          externalRef: 'LNR_HUMAN',
+          label: 'Original',
+        },
+        source: 'test',
+      });
+      return run(tx, opened.id);
+    });
+
+    const stuckId = await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: {
+          entityType: 'LEARNER',
+          externalRef: 'LNR_HUMAN',
+          label: 'Weaker claim',
+        },
+        source: 'test',
+        confidence: 0.2,
+      });
+      await expect(run(tx, opened.id)).rejects.toThrow(BrainWritePathError);
+      return opened.id;
+    });
+
+    const conflict = await withTenant({ tenantId, actorId }, async (tx) => {
+      const open = await listOpenBrainConflicts(tx);
+      const found = open.find((c) => c.writeCandidateId === stuckId);
+      expect(found).toBeDefined();
+      return found!;
+    });
+
+    const resolvedAt = new Date('2026-05-01T00:00:00.000Z');
+    await withTenant({ tenantId, actorId }, (tx) =>
+      resolveConflict(tx, conflict.id, 'ACCEPT_NEW', actorId, resolvedAt),
+    );
+
+    const finished = await withTenant({ tenantId, actorId }, (tx) => run(tx, stuckId));
+    expect(finished.status).toBe('RETENTION_SCHEDULED');
+    expect(finished.contradictionResolution).toBe('ACCEPT_NEW');
+    expect(finished.committedRowId).not.toBe(committed.committedRowId);
+
+    const supersededRow = await withTenant({ tenantId, actorId }, (tx) =>
+      tx.brainNode.findFirstOrThrow({ where: { id: finished.committedRowId! } }),
+    );
+    expect(supersededRow.supersedes).toBe(committed.committedRowId);
+  });
+
+  it('enqueues an unresolvable conflict, and a human resolving KEEP_EXISTING stops it for good', async () => {
+    const { tenantId, actorId } = await seedTenant();
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: {
+          entityType: 'LEARNER',
+          externalRef: 'LNR_REJECT',
+          label: 'Original',
+        },
+        source: 'test',
+      });
+      return run(tx, opened.id);
+    });
+
+    const stuckId = await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: {
+          entityType: 'LEARNER',
+          externalRef: 'LNR_REJECT',
+          label: 'Weaker claim',
+        },
+        source: 'test',
+        confidence: 0.2,
+      });
+      await expect(run(tx, opened.id)).rejects.toThrow(BrainWritePathError);
+      return opened.id;
+    });
+
+    const conflict = await withTenant({ tenantId, actorId }, async (tx) => {
+      const open = await listOpenBrainConflicts(tx);
+      const found = open.find((c) => c.writeCandidateId === stuckId);
+      expect(found).toBeDefined();
+      return found!;
+    });
+
+    const resolvedAt = new Date('2026-05-01T00:00:00.000Z');
+    await withTenant({ tenantId, actorId }, (tx) =>
+      resolveConflict(tx, conflict.id, 'KEEP_EXISTING', actorId, resolvedAt),
+    );
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      await expect(run(tx, stuckId)).rejects.toThrow(BrainWritePathError);
+      const rows = await listOpenWrites(tx);
+      const stuck = rows.find((c) => c.id === stuckId);
+      expect(stuck?.status).toBe('CONTRADICTION_CHECKED');
+      expect(stuck?.contradictionResolution).toBe('KEEP_EXISTING');
     });
   });
 });

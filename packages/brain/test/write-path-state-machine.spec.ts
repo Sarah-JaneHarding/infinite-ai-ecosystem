@@ -5,6 +5,7 @@ import {
   decideContradiction,
   nextStatus,
   requiresRatification,
+  resolveContradiction,
   type BrainWriteStatus,
 } from '../src/write-path-state-machine.js';
 
@@ -87,5 +88,55 @@ describe('decideContradiction', () => {
     expect(decideContradiction('row-0', { id: 'row-1' })).toEqual({
       contradictionOf: 'row-1',
     });
+  });
+});
+
+describe('resolveContradiction', () => {
+  const older = new Date('2026-01-01T00:00:00.000Z');
+  const newer = new Date('2026-06-01T00:00:00.000Z');
+
+  it('auto-supersedes when the candidate has strictly higher confidence', () => {
+    expect(
+      resolveContradiction(
+        { confidence: 0.9, recency: older },
+        { confidence: 0.5, recency: newer },
+      ),
+    ).toBe('AUTO_SUPERSEDE');
+  });
+
+  it('auto-supersedes on tied confidence when the candidate is more recent', () => {
+    expect(
+      resolveContradiction(
+        { confidence: 0.8, recency: newer },
+        { confidence: 0.8, recency: older },
+      ),
+    ).toBe('AUTO_SUPERSEDE');
+  });
+
+  it('enqueues for a human on tied confidence and tied recency', () => {
+    expect(
+      resolveContradiction(
+        { confidence: 0.8, recency: older },
+        { confidence: 0.8, recency: older },
+      ),
+    ).toBe('ENQUEUE_FOR_HUMAN');
+  });
+
+  it('enqueues for a human when the candidate has strictly lower confidence, regardless of recency', () => {
+    expect(
+      resolveContradiction(
+        { confidence: 0.4, recency: newer },
+        { confidence: 0.9, recency: older },
+      ),
+    ).toBe('ENQUEUE_FOR_HUMAN');
+  });
+
+  it('enqueues for a human on tied confidence when the candidate is older', () => {
+    expect(
+      resolveContradiction(
+        { confidence: 0.8, recency: older },
+        { confidence: 0.8, recency: newer },
+      ),
+    ).toBe('ENQUEUE_FOR_HUMAN');
   });
 });

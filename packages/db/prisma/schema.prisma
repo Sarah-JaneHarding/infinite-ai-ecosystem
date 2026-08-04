@@ -75,6 +75,7 @@ model Tenant {
   brainEpisodes        BrainEpisode[]
   brainProcedures      BrainProcedure[]
   brainWriteCandidates BrainWriteCandidate[]
+  brainConflictQueue   BrainConflictQueue[]
 
   @@map("tenant")
 }
@@ -1075,55 +1076,126 @@ enum BrainWriteStatus {
 /// one of the six tables above. See the section header for why this table exists and why
 /// it is not append-only.
 model BrainWriteCandidate {
-  id                String           @id @default(uuid()) @db.Uuid
-  tenantId          String           @map("tenant_id") @db.Uuid
-  targetTier        BrainTargetTier  @map("target_tier")
-  status            BrainWriteStatus @default(CANDIDATE)
+  id                      String                   @id @default(uuid()) @db.Uuid
+  tenantId                String                   @map("tenant_id") @db.Uuid
+  targetTier              BrainTargetTier          @map("target_tier")
+  status                  BrainWriteStatus         @default(CANDIDATE)
   /// What the caller submitted, before extraction. Kept verbatim — if the typed shape
   /// turns out to be wrong, the input to re-derive it from is still here.
-  rawPayload        Json             @map("raw_payload")
+  rawPayload              Json                     @map("raw_payload")
   /// Filled in by the `EXTRACTED` transition: `rawPayload` parsed and validated against
   /// the target tier's shape. Null until then.
-  typedPayload      Json?            @map("typed_payload")
-  source            String
-  confidence        Float            @default(1)
-  derivationRunId   String?          @map("derivation_run_id") @db.Uuid
-  traceId           String?          @map("trace_id")
+  typedPayload            Json?                    @map("typed_payload")
+  source                  String
+  confidence              Float                    @default(1)
+  derivationRunId         String?                  @map("derivation_run_id") @db.Uuid
+  traceId                 String?                  @map("trace_id")
   /// Set by the `CONTRADICTION_CHECKED` transition when an existing effective row shares
   /// this candidate's natural key and the candidate did not declare it as what it
-  /// supersedes. Its presence does not by itself block anything here — deciding *how* to
-  /// resolve a real conflict (compare provenance strength and recency; never auto-resolve
-  /// over a human-ratified fact) is step 3's job. What step 2 guarantees is that a
-  /// candidate never commits over an undeclared conflict silently.
-  contradictionOf   String?          @map("contradiction_of") @db.Uuid
+  /// supersedes. Never populated for `L0_CONSTITUTION`/`L3_PROCEDURE` — a new version of
+  /// versioned canon is always meant to supersede the last one; that is what versioning
+  /// is, and the human ratification gate above is those tiers' conflict check.
+  contradictionOf         String?                  @map("contradiction_of") @db.Uuid
+  /// Step 3's verdict on `contradictionOf`, once one is set. `ACCEPT_NEW` — decided
+  /// automatically by comparing provenance strength and recency, or by a human resolving
+  /// the matching `BrainConflictQueue` row — means this candidate may proceed and its
+  /// commit supersedes the conflicting row. `KEEP_EXISTING` means a human rejected it; the
+  /// candidate stops at `CONTRADICTION_CHECKED` permanently. Null while unresolved.
+  contradictionResolution BrainConflictResolution? @map("contradiction_resolution")
   /// Filled once a human ratifies an `L0_CONSTITUTION` or `L3_PROCEDURE` candidate. Null
   /// for every other tier, which never enters `AWAITING_RATIFICATION` at all.
-  ratifiedBy        String?          @map("ratified_by") @db.Uuid
-  ratifiedAt        DateTime?        @map("ratified_at")
+  ratifiedBy              String?                  @map("ratified_by") @db.Uuid
+  ratifiedAt              DateTime?                @map("ratified_at")
   /// The id and version of the row this candidate became, once `COMMITTED`. The table it
   /// lives in is implied by `targetTier` — no FK, for the same reason
   /// `BrainNode.derivationRunId` has none: it would have to point at one of six different
   /// tables, which a single foreign key cannot express.
-  committedRowId    String?          @map("committed_row_id") @db.Uuid
-  committedVersion  Int?             @map("committed_version")
+  committedRowId          String?                  @map("committed_row_id") @db.Uuid
+  committedVersion        Int?                     @map("committed_version")
   /// A `DataCategory` value from @infinite-ai/contracts, if this candidate's tier and
   /// content carry personal information at all. Null for `L0_CONSTITUTION`/`L3_PROCEDURE`
   /// (policy and curriculum never expire — step 8) and for any `L1`/`L2` fact with no
   /// personal-information category of its own, e.g. a `TOPIC` node.
-  retentionCategory String?          @map("retention_category")
+  retentionCategory       String?                  @map("retention_category")
   /// The matching `RetentionRule`, if the tenant has ratified one for `retentionCategory`.
   /// Null is the honest, common case while OQ-007 stays open — nothing here invents a
   /// period nobody ratified.
-  retentionRuleId   String?          @map("retention_rule_id") @db.Uuid
-  createdAt         DateTime         @default(now()) @map("created_at")
-  updatedAt         DateTime         @updatedAt @map("updated_at")
-  createdBy         String?          @map("created_by") @db.Uuid
+  retentionRuleId         String?                  @map("retention_rule_id") @db.Uuid
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  createdBy               String?                  @map("created_by") @db.Uuid
 
-  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  retentionRule RetentionRule? @relation(fields: [retentionRuleId], references: [id])
+  tenant        Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  retentionRule RetentionRule?      @relation(fields: [retentionRuleId], references: [id])
+  conflictQueue BrainConflictQueue?
 
   @@index([tenantId])
   @@index([tenantId, status])
   @@index([tenantId, targetTier])
   @@map("brain_write_candidate")
+}
+
+// ---------------------------------------------------------------------------
+// Contradiction resolution — Stage 05 step 3
+// ---------------------------------------------------------------------------
+//
+// "On conflict with an existing fact, compare provenance strength and recency; if the new
+// fact would supersede a human-ratified fact, do not auto-resolve — enqueue a conflict for
+// a human and keep both versions." The manual's carve-out is already satisfied for
+// `L0_CONSTITUTION`/`L3_PROCEDURE` by step 2's ratification gate — a human approves every
+// new version of policy or curriculum canon regardless of whether one existed before, so
+// there is nothing further for this table to gate on those two tiers. Only
+// `L1_NODE`/`L1_EDGE` ever populate it: `L2_EPISODE` has no natural key to conflict
+// against, and `L1_EMBEDDING` never entered this pipeline at all (step 2's own note).
+//
+// A queue row is created the moment `CONTRADICTION_CHECKED` finds an undeclared conflict
+// that provenance comparison does not clearly resolve in the new candidate's favour — see
+// `packages/brain`'s `resolveContradiction`. Resolving it (`resolveBrainConflict`) is what
+// sets `BrainWriteCandidate.contradictionResolution`, the field that actually unblocks (or
+// permanently stops) the stuck candidate.
+enum BrainConflictStatus {
+  OPEN
+  RESOLVED
+
+  @@map("brain_conflict_status")
+}
+
+enum BrainConflictResolution {
+  /// The new candidate wins: it may proceed, and its commit supersedes the conflicting row.
+  ACCEPT_NEW
+  /// The existing fact stands. The candidate stops at `CONTRADICTION_CHECKED` for good.
+  KEEP_EXISTING
+
+  @@map("brain_conflict_resolution")
+}
+
+model BrainConflictQueue {
+  id                 String                   @id @default(uuid()) @db.Uuid
+  tenantId           String                   @map("tenant_id") @db.Uuid
+  writeCandidateId   String                   @unique @map("write_candidate_id") @db.Uuid
+  targetTier         BrainTargetTier          @map("target_tier")
+  /// The existing effective row this candidate's natural key conflicts with.
+  contradictionOf    String                   @map("contradiction_of") @db.Uuid
+  /// The comparison `resolveContradiction` made, recorded so a human reviewing the queue
+  /// does not have to recompute it — and so the recommendation is auditable even if the
+  /// underlying rows later change.
+  newConfidence      Float                    @map("new_confidence")
+  existingConfidence Float                    @map("existing_confidence")
+  newRecency         DateTime                 @map("new_recency")
+  existingRecency    DateTime                 @map("existing_recency")
+  status             BrainConflictStatus      @default(OPEN)
+  resolution         BrainConflictResolution?
+  resolvedBy         String?                  @map("resolved_by") @db.Uuid
+  resolvedAt         DateTime?                @map("resolved_at")
+  resolutionNote     String?                  @map("resolution_note")
+  createdAt          DateTime                 @default(now()) @map("created_at")
+  updatedAt          DateTime                 @updatedAt @map("updated_at")
+  createdBy          String?                  @map("created_by") @db.Uuid
+
+  tenant         Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  writeCandidate BrainWriteCandidate @relation(fields: [writeCandidateId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("brain_conflict_queue")
 }

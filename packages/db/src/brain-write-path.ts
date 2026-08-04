@@ -19,6 +19,7 @@
 // `BrainTargetTier` for why a vector does not travel through this pipeline at all.
 
 import type {
+  BrainConflictResolution,
   BrainConstitutionKind,
   BrainEntityType,
   BrainProcedureKind,
@@ -26,6 +27,8 @@ import type {
 } from '@prisma/client';
 
 import type { TenantClient } from './client.js';
+
+export type { BrainConflictResolution };
 
 export type BrainTargetTier =
   'L0_CONSTITUTION' | 'L1_NODE' | 'L1_EDGE' | 'L2_EPISODE' | 'L3_PROCEDURE';
@@ -65,6 +68,7 @@ export interface BrainWriteCandidateRow {
   readonly derivationRunId: string | null;
   readonly traceId: string | null;
   readonly contradictionOf: string | null;
+  readonly contradictionResolution: BrainConflictResolution | null;
   readonly ratifiedBy: string | null;
   readonly ratifiedAt: Date | null;
   readonly committedRowId: string | null;
@@ -158,6 +162,14 @@ export type BrainWriteTransition =
   | {
       readonly toStatus: 'CONTRADICTION_CHECKED';
       readonly contradictionOf: string | null;
+      /**
+       * Set only when `contradictionOf` is non-null and provenance comparison already
+       * resolved it in the same breath (step 3's `resolveContradiction` returning
+       * `AUTO_SUPERSEDE`) — no separate queue entry is ever created for that case. Null
+       * whenever `contradictionOf` is null, and null when a conflict is left for a human:
+       * that verdict arrives later, via `recordContradictionResolution`.
+       */
+      readonly contradictionResolution: BrainConflictResolution | null;
     }
   | { readonly toStatus: 'PROVENANCE_STAMPED' }
   | { readonly toStatus: 'AWAITING_RATIFICATION' }
@@ -218,6 +230,17 @@ export async function advanceBrainWrite(
     );
   }
 
+  if (
+    transition.toStatus === 'PROVENANCE_STAMPED' &&
+    candidate.contradictionOf !== null &&
+    candidate.contradictionResolution !== 'ACCEPT_NEW'
+  ) {
+    throw new BrainWriteError(
+      `Candidate ${id} has an unresolved conflict with ${candidate.contradictionOf}; ` +
+        `refusing to proceed past CONTRADICTION_CHECKED without ACCEPT_NEW.`,
+    );
+  }
+
   if (transition.toStatus === 'COMMITTED') {
     const requiresRatification = RATIFIED_TIERS.has(candidate.targetTier);
     if (requiresRatification && candidate.status !== 'AWAITING_RATIFICATION') {
@@ -246,6 +269,7 @@ export async function advanceBrainWrite(
       break;
     case 'CONTRADICTION_CHECKED':
       data.contradictionOf = transition.contradictionOf;
+      data.contradictionResolution = transition.contradictionResolution;
       break;
     case 'COMMITTED':
       data.committedRowId = transition.committedRowId;
@@ -288,6 +312,47 @@ export async function ratifyBrainWrite(
   return updated as BrainWriteCandidateRow;
 }
 
+/**
+ * Records a human's verdict on a candidate stuck at `CONTRADICTION_CHECKED` with an
+ * unresolved conflict — the counterpart to the automatic `ACCEPT_NEW` `advanceBrainWrite`
+ * can persist in the same breath as the conflict being detected. Not a transition: the
+ * candidate's `status` does not move. `ACCEPT_NEW` unblocks it — the next
+ * `PROVENANCE_STAMPED` attempt now succeeds; `KEEP_EXISTING` stops it here for good.
+ *
+ * Called from `resolveBrainConflict` (`brain-conflict-queue.ts`), never directly: a
+ * resolution with no matching queue entry marked resolved would be a verdict nobody could
+ * later explain the provenance of.
+ */
+export async function recordContradictionResolution(
+  tx: TenantClient,
+  id: string,
+  resolution: BrainConflictResolution,
+  now: Date,
+): Promise<BrainWriteCandidateRow> {
+  const candidate = await getBrainWriteCandidate(tx, id);
+  if (candidate === null) {
+    throw new BrainWriteError(`No write candidate ${id} in this tenant.`);
+  }
+  if (
+    candidate.status !== 'CONTRADICTION_CHECKED' ||
+    candidate.contradictionOf === null
+  ) {
+    throw new BrainWriteError(
+      `Candidate ${id} has no unresolved conflict to record a resolution for.`,
+    );
+  }
+  if (candidate.contradictionResolution !== null) {
+    throw new BrainWriteError(
+      `Candidate ${id}'s conflict was already resolved (${candidate.contradictionResolution}).`,
+    );
+  }
+  const updated = await tx.brainWriteCandidate.update({
+    where: { id },
+    data: { contradictionResolution: resolution, updatedAt: now },
+  });
+  return updated as BrainWriteCandidateRow;
+}
+
 // ---------------------------------------------------------------------------
 // Contradiction detection — the current effective row for a natural key, if one exists.
 // ---------------------------------------------------------------------------
@@ -321,6 +386,13 @@ export interface EffectiveBrainFact {
   readonly id: string;
   /** Null for L1 tiers, which have no version column. */
   readonly version: number | null;
+  /**
+   * The existing row's own provenance — populated only for `L1_NODE`/`L1_EDGE`, the two
+   * tiers step 3's `resolveContradiction` ever needs to compare against. Undefined for
+   * `L0_CONSTITUTION`/`L3_PROCEDURE`, which that comparison never runs for (see
+   * `BrainConflictStatus`'s own comment).
+   */
+  readonly provenance?: { readonly confidence: number; readonly recency: Date };
 }
 
 export async function findEffectiveBrainFact(
@@ -352,9 +424,15 @@ export async function findEffectiveBrainFact(
           tombstonedAt: null,
           supersededByNodes: { none: {} },
         },
-        select: { id: true },
+        select: { id: true, confidence: true, createdAt: true },
       });
-      return row === null ? null : { id: row.id, version: null };
+      return row === null
+        ? null
+        : {
+            id: row.id,
+            version: null,
+            provenance: { confidence: row.confidence, recency: row.createdAt },
+          };
     }
     case 'L1_EDGE': {
       const row = await tx.brainEdge.findFirst({
@@ -365,9 +443,15 @@ export async function findEffectiveBrainFact(
           tombstonedAt: null,
           supersededByEdges: { none: {} },
         },
-        select: { id: true },
+        select: { id: true, confidence: true, createdAt: true },
       });
-      return row === null ? null : { id: row.id, version: null };
+      return row === null
+        ? null
+        : {
+            id: row.id,
+            version: null,
+            provenance: { confidence: row.confidence, recency: row.createdAt },
+          };
     }
   }
 }

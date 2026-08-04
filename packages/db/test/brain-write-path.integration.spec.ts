@@ -20,6 +20,7 @@ import {
   listOpenBrainWrites,
   openBrainWrite,
   ratifyBrainWrite,
+  recordContradictionResolution,
 } from '../src/brain-write-path.js';
 import { asTenant, startTestDatabase, type TestDatabase } from './support/database.js';
 
@@ -142,7 +143,11 @@ describe('getBrainWriteCandidate / listOpenBrainWrites', () => {
       await advanceBrainWrite(
         tx,
         opened.id,
-        { toStatus: 'CONTRADICTION_CHECKED', contradictionOf: null },
+        {
+          toStatus: 'CONTRADICTION_CHECKED',
+          contradictionOf: null,
+          contradictionResolution: null,
+        },
         NOW,
       );
       await advanceBrainWrite(tx, opened.id, { toStatus: 'PROVENANCE_STAMPED' }, NOW);
@@ -230,7 +235,11 @@ describe('advanceBrainWrite', () => {
       await advanceBrainWrite(
         tx,
         opened.id,
-        { toStatus: 'CONTRADICTION_CHECKED', contradictionOf: null },
+        {
+          toStatus: 'CONTRADICTION_CHECKED',
+          contradictionOf: null,
+          contradictionResolution: null,
+        },
         NOW,
       );
       await advanceBrainWrite(tx, opened.id, { toStatus: 'PROVENANCE_STAMPED' }, NOW);
@@ -265,7 +274,11 @@ describe('advanceBrainWrite', () => {
       await advanceBrainWrite(
         tx,
         opened.id,
-        { toStatus: 'CONTRADICTION_CHECKED', contradictionOf: null },
+        {
+          toStatus: 'CONTRADICTION_CHECKED',
+          contradictionOf: null,
+          contradictionResolution: null,
+        },
         NOW,
       );
       await advanceBrainWrite(tx, opened.id, { toStatus: 'PROVENANCE_STAMPED' }, NOW);
@@ -301,7 +314,11 @@ describe('advanceBrainWrite', () => {
       await advanceBrainWrite(
         tx,
         opened.id,
-        { toStatus: 'CONTRADICTION_CHECKED', contradictionOf: null },
+        {
+          toStatus: 'CONTRADICTION_CHECKED',
+          contradictionOf: null,
+          contradictionResolution: null,
+        },
         NOW,
       );
       await advanceBrainWrite(tx, opened.id, { toStatus: 'PROVENANCE_STAMPED' }, NOW);
@@ -329,6 +346,128 @@ describe('advanceBrainWrite', () => {
     });
     expect(finished.status).toBe('COMMITTED');
     expect(finished.committedVersion).toBe(1);
+  });
+
+  it('refuses PROVENANCE_STAMPED while a conflict is unresolved', async () => {
+    const opened = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      openBrainWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: { entityType: 'TOPIC', label: 'Unresolved conflict' },
+        source: 'test',
+      }),
+    );
+    await asTenant(appRw, TENANT, ACTOR, async (tx) => {
+      await advanceBrainWrite(
+        tx,
+        opened.id,
+        { toStatus: 'EXTRACTED', typedPayload: {} },
+        NOW,
+      );
+      await advanceBrainWrite(
+        tx,
+        opened.id,
+        {
+          toStatus: 'CONTRADICTION_CHECKED',
+          contradictionOf: randomUUID(),
+          contradictionResolution: null,
+        },
+        NOW,
+      );
+    });
+    await expect(
+      asTenant(appRw, TENANT, ACTOR, (tx) =>
+        advanceBrainWrite(tx, opened.id, { toStatus: 'PROVENANCE_STAMPED' }, NOW),
+      ),
+    ).rejects.toThrow(/unresolved conflict/);
+  });
+
+  it('allows PROVENANCE_STAMPED once a conflict is resolved with ACCEPT_NEW', async () => {
+    const opened = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      openBrainWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: { entityType: 'TOPIC', label: 'Resolved conflict' },
+        source: 'test',
+      }),
+    );
+    const advanced = await asTenant(appRw, TENANT, ACTOR, async (tx) => {
+      await advanceBrainWrite(
+        tx,
+        opened.id,
+        { toStatus: 'EXTRACTED', typedPayload: {} },
+        NOW,
+      );
+      await advanceBrainWrite(
+        tx,
+        opened.id,
+        {
+          toStatus: 'CONTRADICTION_CHECKED',
+          contradictionOf: randomUUID(),
+          contradictionResolution: 'ACCEPT_NEW',
+        },
+        NOW,
+      );
+      return advanceBrainWrite(tx, opened.id, { toStatus: 'PROVENANCE_STAMPED' }, NOW);
+    });
+    expect(advanced.status).toBe('PROVENANCE_STAMPED');
+  });
+});
+
+describe('recordContradictionResolution', () => {
+  it('throws for an id that does not exist', async () => {
+    await expect(
+      asTenant(appRw, TENANT, ACTOR, (tx) =>
+        recordContradictionResolution(tx, randomUUID(), 'ACCEPT_NEW', NOW),
+      ),
+    ).rejects.toThrow(BrainWriteError);
+  });
+
+  it('refuses a candidate with no unresolved conflict', async () => {
+    const opened = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      openBrainWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: { entityType: 'TOPIC', label: 'No conflict' },
+        source: 'test',
+      }),
+    );
+    await expect(
+      asTenant(appRw, TENANT, ACTOR, (tx) =>
+        recordContradictionResolution(tx, opened.id, 'ACCEPT_NEW', NOW),
+      ),
+    ).rejects.toThrow(/no unresolved conflict/);
+  });
+
+  it('refuses a conflict that was already resolved', async () => {
+    const opened = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      openBrainWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: { entityType: 'TOPIC', label: 'Already resolved' },
+        source: 'test',
+      }),
+    );
+    await asTenant(appRw, TENANT, ACTOR, async (tx) => {
+      await advanceBrainWrite(
+        tx,
+        opened.id,
+        { toStatus: 'EXTRACTED', typedPayload: {} },
+        NOW,
+      );
+      await advanceBrainWrite(
+        tx,
+        opened.id,
+        {
+          toStatus: 'CONTRADICTION_CHECKED',
+          contradictionOf: randomUUID(),
+          contradictionResolution: null,
+        },
+        NOW,
+      );
+      await recordContradictionResolution(tx, opened.id, 'KEEP_EXISTING', NOW);
+    });
+    await expect(
+      asTenant(appRw, TENANT, ACTOR, (tx) =>
+        recordContradictionResolution(tx, opened.id, 'ACCEPT_NEW', NOW),
+      ),
+    ).rejects.toThrow(/already resolved/);
   });
 });
 
@@ -454,7 +593,10 @@ describe('findEffectiveBrainFact', () => {
         externalRef: 'LNR_EFFECTIVE',
       }),
     );
-    expect(found).toEqual({ id: committed.id, version: null });
+    expect(found?.id).toBe(committed.id);
+    expect(found?.version).toBeNull();
+    expect(found?.provenance?.confidence).toBe(1);
+    expect(found?.provenance?.recency).toBeInstanceOf(Date);
   });
 
   it('returns null for an L1_EDGE natural key with no effective row', async () => {
@@ -526,7 +668,9 @@ describe('findEffectiveBrainFact', () => {
         relation: 'prerequisite_of',
       }),
     );
-    expect(found).toEqual({ id: edgeId, version: null });
+    expect(found?.id).toBe(edgeId);
+    expect(found?.version).toBeNull();
+    expect(found?.provenance?.confidence).toBe(1);
   });
 });
 

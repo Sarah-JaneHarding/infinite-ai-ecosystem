@@ -60,6 +60,8 @@ export {
   listOpenBrainWrites,
   openBrainWrite,
   ratifyBrainWrite,
+  recordContradictionResolution,
+  type BrainConflictResolution,
   type BrainFactToCommit,
   type BrainNaturalKey,
   type BrainTargetTier,
@@ -70,5 +72,15 @@ export {
   type CommittedBrainFact,
   type EffectiveBrainFact,
 } from './brain-write-path.js';
+
+export {
+  BrainConflictError,
+  enqueueBrainConflict,
+  getBrainConflict,
+  listOpenBrainConflicts,
+  resolveBrainConflict,
+  type BrainConflictInput,
+  type BrainConflictRow,
+} from './brain-conflict-queue.js';
 
 export const PACKAGE_NAME = '@infinite-ai/db' as const;

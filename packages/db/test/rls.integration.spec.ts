@@ -274,9 +274,25 @@ async function seedTwoTenants(): Promise<void> {
         },
       });
 
+      // Stage 05 step 3's conflict queue. Seeded for the same reason, and also mutable —
+      // resolved in place, never append-only.
+      const conflict = await tx.brainConflictQueue.create({
+        data: {
+          tenantId,
+          writeCandidateId: writeCandidate.id,
+          targetTier: 'L1_NODE',
+          contradictionOf: node.id,
+          newConfidence: 1,
+          existingConfidence: 1,
+          newRecency: new Date('2026-01-14'),
+          existingRecency: new Date('2026-01-14'),
+        },
+      });
+
       const created: Record<string, string> = {
         academic_year: year.id,
         audit_event: audit.id,
+        brain_conflict_queue: conflict.id,
         brain_constitution: constitution.id,
         brain_edge: edge.id,
         brain_embedding: embedding.id,

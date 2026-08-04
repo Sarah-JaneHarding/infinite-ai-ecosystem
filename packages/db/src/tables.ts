@@ -16,6 +16,7 @@ export const TENANT_OWNED_TABLES = [
   'brain_embedding',
   'brain_episode',
   'brain_node',
+  'brain_conflict_queue',
   'brain_procedure',
   'brain_write_candidate',
   'class_group',
@@ -67,8 +68,9 @@ export const NON_TENANT_TABLES = ['_prisma_migrations'] as const;
  * versions remain readable" is a named exit-gate item for that stage, not a style
  * preference, so a correction, a re-embedding or a tombstone is always a new row.
  *
- * `brain_write_candidate` (Stage 05 step 2) deliberately does not join this list. It is
- * workflow state describing a fact still in flight, not the fact itself — the same
+ * `brain_write_candidate` (Stage 05 step 2) and `brain_conflict_queue` (Stage 05 step 3)
+ * deliberately do not join this list. Both are workflow state — a fact still in flight,
+ * and a conflict still awaiting a human's decision — not the fact itself, the same
  * distinction that keeps `data_subject_request` off this list while `consent_record`
  * is on it.
  */
