@@ -50,6 +50,14 @@ Prisma 6 is supported and behaves the way the tenant client assumes. The upgrade
 should be its own change, made when there is a working RLS suite to prove it did not
 break isolation. Revisit at Stage 16, where the supply-chain review runs.
 
+## Stage 04 — Model Gateway
+
+No new dependency. `apps/gateway` uses `zod` (schemas for the OpenAI-compatible wire
+contract), `tsx` (the `start` script) and `@vitest/coverage-v8` (coverage), all already
+recorded above at the versions pinned there. Provider calls go over the platform `fetch`,
+not a provider SDK — rule 3 confines the one exception (`apps/gateway/src/adapters/`) to
+adapter code, and there is nothing in it to add here, since no SDK was pulled in at all.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

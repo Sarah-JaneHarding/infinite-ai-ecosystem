@@ -12,4 +12,15 @@ export {
   type ChainedAuditEvent,
 } from './audit.js';
 
+export {
+  createLogger,
+  secret,
+  type LogFields,
+  type LogLevel,
+  type LogLine,
+  type Logger,
+  type LoggerOptions,
+  type Secret,
+} from './logger.js';
+
 export const PACKAGE_NAME = '@infinite-ai/telemetry' as const;

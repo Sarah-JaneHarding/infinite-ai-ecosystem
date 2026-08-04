@@ -1,28 +1,40 @@
-// The POPIA vocabularies are re-exported from one place so the modules agree with this
-// package rather than with each other. This asserts the barrel stays complete.
+// The POPIA vocabularies, the curriculum framework and the gateway's wire contract are
+// re-exported from one place so the packages on both sides of each boundary agree with
+// this package rather than with each other. This asserts the barrel stays complete.
 
 import { describe, expect, it } from 'vitest';
 
 import * as contracts from '../src/index.js';
 
 describe('package export surface', () => {
-  it('exports the POPIA vocabularies and the curriculum framework', () => {
-    // Widened deliberately when the curriculum framework merged. The list is spelled out
-    // rather than counted, so a stray export has to be added here by someone who looked at
-    // it — which is the only reason a test like this earns its keep.
+  it('exports the POPIA vocabularies, the curriculum framework and the gateway contract', () => {
+    // Widened deliberately each time a new family merged. The list is spelled out rather
+    // than counted, so a stray export has to be added here by someone who looked at it —
+    // which is the only reason a test like this earns its keep.
     expect(Object.keys(contracts).sort()).toEqual([
       'AssessmentWeighting',
+      'ChatCompletionRequest',
+      'ChatCompletionResponse',
+      'ChatCompletionUsage',
+      'ChatMessage',
+      'ChatRole',
       'ConsentDecision',
       'ConsentEntry',
       'ConsentEntryDraft',
       'ConsentSource',
       'CurriculumFramework',
       'DataCategory',
+      'DeidentificationProvenance',
+      'EmbeddingsRequest',
+      'EmbeddingsResponse',
       'FrameworkNeedsInput',
       'FrameworkResult',
+      'GatewayErrorBody',
+      'GatewayErrorCode',
       'GradeFramework',
       'GradeLabel',
       'LawfulBasis',
+      'LogicalModel',
       'PACKAGE_NAME',
       'PURPOSES',
       'Phase',
@@ -34,6 +46,8 @@ describe('package export surface', () => {
       'Sourced',
       'SubjectFramework',
       'TimeAllocation',
+      'ToolCall',
+      'ToolDefinition',
       'WITHDRAWABLE_BASES',
       'addMonths',
       'definitionOf',

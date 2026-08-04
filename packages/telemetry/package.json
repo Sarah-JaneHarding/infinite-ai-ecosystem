@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "OpenTelemetry setup and the append-only audit ledger client.",
+  "description": "OpenTelemetry setup, the append-only audit ledger client, and the one sanctioned structured logger.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {

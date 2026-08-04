@@ -1,6 +1,6 @@
-// @infinite-ai/contracts — Zod schemas shared by the API, agents and UI. Two families
-// live here: the POPIA vocabularies (purpose taxonomy, consent ledger, retention schedule)
-// and the curriculum framework.
+// @infinite-ai/contracts — Zod schemas shared by the API, agents and UI. Three families
+// live here: the POPIA vocabularies (purpose taxonomy, consent ledger, retention schedule),
+// the curriculum framework, and the Model Gateway's OpenAI-compatible wire contract.
 //
 // These are contracts rather than implementations on purpose. `packages/policy` decides,
 // `packages/db` stores and the modules consume — and all three agree because each agrees
@@ -55,5 +55,21 @@ export {
   SubjectFramework,
   TimeAllocation,
 } from './curriculum/framework.js';
+
+export {
+  ChatCompletionRequest,
+  ChatCompletionResponse,
+  ChatCompletionUsage,
+  ChatMessage,
+  ChatRole,
+  DeidentificationProvenance,
+  EmbeddingsRequest,
+  EmbeddingsResponse,
+  GatewayErrorBody,
+  GatewayErrorCode,
+  LogicalModel,
+  ToolCall,
+  ToolDefinition,
+} from './gateway/chat.js';
 
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;
