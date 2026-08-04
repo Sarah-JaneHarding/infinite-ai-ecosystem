@@ -134,9 +134,13 @@ function fixture(tenantId: string): Fixture {
 
 describe('the consent ledger is append-only, enforced by the database', () => {
   it('names the tables it claims to protect', () => {
-    // Table-driven off the exported constant, so a fourth ledger added without a trigger
-    // fails here rather than passing unnoticed.
-    expect([...APPEND_ONLY_TABLES]).toEqual(['audit_event', 'consent_record']);
+    // Table-driven off the exported constant, so a new ledger added without a trigger
+    // fails here rather than passing unnoticed. Stage 05 added the six Brain tables;
+    // rls.integration.spec.ts's own append-only suite is what actually proves the
+    // trigger fires on each of them — this just guards that the two Stage 03 ledgers
+    // this file exercises are still on the list.
+    expect(APPEND_ONLY_TABLES).toContain('audit_event');
+    expect(APPEND_ONLY_TABLES).toContain('consent_record');
   });
 
   it('accepts an append', async () => {
