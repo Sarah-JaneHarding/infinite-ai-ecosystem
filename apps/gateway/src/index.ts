@@ -23,7 +23,13 @@ import { readFileSync } from 'node:fs';
 
 import { loadEnv } from '@infinite-ai/config';
 import { EncryptionKey, readTenantLexicon, withTenant } from '@infinite-ai/db';
-import { createLogger } from '@infinite-ai/telemetry';
+import {
+  NOOP_TRACER,
+  createLogger,
+  createTracer,
+  parseOtlpHeaders,
+  type Tracer,
+} from '@infinite-ai/telemetry';
 import type { TenantLexicon } from '@infinite-ai/deident';
 
 import { createAnthropicAdapter } from './adapters/anthropic.js';
@@ -122,6 +128,25 @@ export function buildLexiconResolver(
 const zeroCost: CostEstimator = () => 0;
 
 /**
+ * Builds the gateway's tracer from the shared environment — `OTEL_EXPORTER_OTLP_ENDPOINT`
+ * and `OTEL_EXPORTER_OTLP_HEADERS` are shared config (see `packages/config`'s comment on
+ * them), not gateway-only, since every future service that ships traces uses the same
+ * exporter. No endpoint configured means `createTracer` returns the no-op tracer — see
+ * `packages/telemetry/src/tracing.ts`'s file header for why that fails open rather than
+ * closed, unlike the PII guard or the budget check.
+ */
+export function buildTracer(env: ReturnType<typeof loadEnv>): Tracer {
+  const otlpHeaders = parseOtlpHeaders(env.OTEL_EXPORTER_OTLP_HEADERS);
+  return createTracer({
+    serviceName: 'infinite-ai-gateway',
+    ...(env.OTEL_EXPORTER_OTLP_ENDPOINT !== undefined
+      ? { otlpEndpoint: env.OTEL_EXPORTER_OTLP_ENDPOINT }
+      : {}),
+    ...(otlpHeaders !== undefined ? { otlpHeaders } : {}),
+  });
+}
+
+/**
  * `env`/`gatewayEnv` are optional and default to the real, cached, `process.env`-backed
  * loaders. Accepting them as parameters — rather than calling the loaders unconditionally
  * — means a test can supply an explicit environment without touching `process.env` at
@@ -158,6 +183,13 @@ export function boot(
     logger,
   });
 
+  const tracer = buildTracer(env);
+  if (tracer === NOOP_TRACER) {
+    logger.warn('gateway.boot', {
+      message: 'OTEL_EXPORTER_OTLP_ENDPOINT not set. No LLM traces will reach Langfuse.',
+    });
+  }
+
   return createGatewayServer({
     router,
     budget: new BudgetTracker({ limitsFor: () => undefined }),
@@ -165,5 +197,6 @@ export function boot(
     resolveLexicon,
     costEstimator: zeroCost,
     logger,
+    tracer,
   });
 }

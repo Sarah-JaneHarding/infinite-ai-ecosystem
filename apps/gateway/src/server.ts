@@ -32,7 +32,7 @@ import {
 } from '@infinite-ai/contracts';
 import { assertEgressAllowed, PiiEgressError } from '@infinite-ai/guardrails';
 import type { TenantLexicon } from '@infinite-ai/deident';
-import type { Logger } from '@infinite-ai/telemetry';
+import type { Logger, Span, Tracer } from '@infinite-ai/telemetry';
 
 import { AdapterError } from './adapters/types.js';
 import type { BudgetScope, BudgetTracker } from './budgets/budget.js';
@@ -59,6 +59,7 @@ export interface GatewayServerDeps {
   readonly resolveLexicon: (tenantId: string) => Promise<TenantLexicon>;
   readonly costEstimator: CostEstimator;
   readonly logger: Logger;
+  readonly tracer: Tracer;
 }
 
 function sendJson(res: ServerResponse, status: number, body: unknown): void {
@@ -128,110 +129,153 @@ async function readBody(req: IncomingMessage): Promise<unknown> {
   return raw.length === 0 ? {} : JSON.parse(raw);
 }
 
+/**
+ * Records why a request was refused, once, in the one place all the guards funnel
+ * through — so `gateway.refusal_reason` on the span is always a single value, not a race
+ * between callers each setting their own.
+ */
+function refuse(span: Span, reason: string): void {
+  span.setAttribute('gateway.refusal_reason', reason);
+}
+
 async function handleChatCompletions(
   req: IncomingMessage,
   res: ServerResponse,
   deps: GatewayServerDeps,
 ): Promise<void> {
-  let candidate: unknown;
+  const span = deps.tracer.startSpan('gateway.chat_completions');
   try {
-    candidate = await readBody(req);
-  } catch {
-    sendError(res, 400, 'invalid_request', 'Request body is not valid JSON.');
-    return;
-  }
-
-  const parsed = ChatCompletionRequest.safeParse(candidate);
-  if (!parsed.success) {
-    sendError(
-      res,
-      400,
-      'invalid_request',
-      parsed.error.issues.map((i) => i.message).join('; '),
-    );
-    return;
-  }
-  const request = parsed.data;
-
-  try {
-    const lexicon = await deps.resolveLexicon(request.tenantId);
-    assertEgressAllowed(
-      {
-        tenantId: request.tenantId,
-        texts: request.messages.map((m) => m.content),
-        provenance: request.provenance,
-      },
-      lexicon,
-    );
-  } catch (error) {
-    if (error instanceof PiiEgressError) {
-      sendError(res, 403, 'pii_egress_blocked', error.message);
+    let candidate: unknown;
+    try {
+      candidate = await readBody(req);
+    } catch {
+      refuse(span, 'invalid_request');
+      sendError(res, 400, 'invalid_request', 'Request body is not valid JSON.');
       return;
     }
-    throw error;
-  }
 
-  const scope: BudgetScope = {
-    tenantId: request.tenantId,
-    module: request.module,
-    agent: request.agent,
-  };
-  const budgetVerdict = deps.budget.check(scope);
-  if (!budgetVerdict.allowed) {
-    sendError(res, 429, 'budget_exceeded', budgetVerdict.reason);
-    return;
-  }
-  if (budgetVerdict.warning !== null) {
-    deps.logger.warn('gateway.budget_warning', {
-      ...scope,
-      warning: budgetVerdict.warning,
-    });
-  }
+    const parsed = ChatCompletionRequest.safeParse(candidate);
+    if (!parsed.success) {
+      refuse(span, 'invalid_request');
+      sendError(
+        res,
+        400,
+        'invalid_request',
+        parsed.error.issues.map((i) => i.message).join('; '),
+      );
+      return;
+    }
+    const request = parsed.data;
+    span.setAttribute('tenant.id', request.tenantId);
+    span.setAttribute('gateway.module', request.module);
+    span.setAttribute('gateway.agent', request.agent);
+    span.setAttribute('gateway.model', request.model);
+    span.setAttribute('gateway.stream', request.stream === true);
 
-  if (request.stream) {
-    await handleStreamedChatCompletion(res, deps, request, scope);
-    return;
-  }
+    try {
+      const lexicon = await deps.resolveLexicon(request.tenantId);
+      assertEgressAllowed(
+        {
+          tenantId: request.tenantId,
+          texts: request.messages.map((m) => m.content),
+          provenance: request.provenance,
+        },
+        lexicon,
+      );
+    } catch (error) {
+      if (error instanceof PiiEgressError) {
+        refuse(span, 'pii_egress_blocked');
+        sendError(res, 403, 'pii_egress_blocked', error.message);
+        return;
+      }
+      span.recordException(error);
+      throw error;
+    }
 
-  const keys = buildCacheKeys(
-    contentKey(request.tenantId, request.model, {
-      messages: request.messages,
-      tools: request.tools,
-      temperature: request.temperature,
-      maxOutputTokens: request.maxOutputTokens,
-    }),
-    request.idempotencyKey,
-    request.tenantId,
-  );
-
-  const cached = deps.cache.lookup<ChatCompletionResponse>(keys);
-  if (cached !== undefined) {
-    sendJson(res, 200, { ...cached, cached: true });
-    return;
-  }
-
-  try {
-    const { result, provider } = await deps.router.routeChatCompletion(request);
-    const response: ChatCompletionResponse = {
-      id: generateCompletionId(),
-      model: request.model,
-      provider,
-      message: {
-        role: 'assistant',
-        content: result.content,
-        ...(result.toolCalls !== undefined
-          ? { toolCalls: result.toolCalls.map((call) => ({ ...call })) }
-          : {}),
-      },
-      usage: result.usage,
-      cached: false,
+    const scope: BudgetScope = {
+      tenantId: request.tenantId,
+      module: request.module,
+      agent: request.agent,
     };
-    deps.cache.record(keys, response);
-    deps.budget.record(scope, deps.costEstimator(provider, request.model, result.usage));
-    sendJson(res, 200, response);
-  } catch (error) {
-    if (sendRoutingError(res, error)) return;
-    throw error;
+    const budgetVerdict = deps.budget.check(scope);
+    if (!budgetVerdict.allowed) {
+      refuse(span, 'budget_exceeded');
+      sendError(res, 429, 'budget_exceeded', budgetVerdict.reason);
+      return;
+    }
+    if (budgetVerdict.warning !== null) {
+      deps.logger.warn('gateway.budget_warning', {
+        ...scope,
+        warning: budgetVerdict.warning,
+      });
+    }
+
+    if (request.stream) {
+      await handleStreamedChatCompletion(res, deps, request, scope, span);
+      return;
+    }
+
+    const keys = buildCacheKeys(
+      contentKey(request.tenantId, request.model, {
+        messages: request.messages,
+        tools: request.tools,
+        temperature: request.temperature,
+        maxOutputTokens: request.maxOutputTokens,
+      }),
+      request.idempotencyKey,
+      request.tenantId,
+    );
+
+    const cached = deps.cache.lookup<ChatCompletionResponse>(keys);
+    if (cached !== undefined) {
+      span.setAttribute('gateway.cache_hit', true);
+      sendJson(res, 200, { ...cached, cached: true });
+      return;
+    }
+    span.setAttribute('gateway.cache_hit', false);
+
+    try {
+      const { result, provider } = await deps.router.routeChatCompletion(request, span);
+      span.setAttribute('gateway.provider', provider);
+      span.setAttribute('llm.usage.prompt_tokens', result.usage.promptTokens);
+      span.setAttribute('llm.usage.completion_tokens', result.usage.completionTokens);
+      const cost = deps.costEstimator(provider, request.model, result.usage);
+      span.setAttribute('gateway.cost_estimate', cost);
+
+      const response: ChatCompletionResponse = {
+        id: generateCompletionId(),
+        model: request.model,
+        provider,
+        message: {
+          role: 'assistant',
+          content: result.content,
+          ...(result.toolCalls !== undefined
+            ? { toolCalls: result.toolCalls.map((call) => ({ ...call })) }
+            : {}),
+        },
+        usage: result.usage,
+        cached: false,
+      };
+      deps.cache.record(keys, response);
+      deps.budget.record(scope, cost);
+      sendJson(res, 200, response);
+    } catch (error) {
+      span.recordException(error);
+      if (sendRoutingError(res, error)) {
+        refuse(
+          span,
+          error instanceof AllProvidersUnavailableError
+            ? 'all_providers_unavailable'
+            : error instanceof UnknownLogicalModelError
+              ? 'invalid_request'
+              : 'all_providers_unavailable',
+        );
+        return;
+      }
+      throw error;
+    }
+  } finally {
+    span.end();
   }
 }
 
@@ -248,18 +292,24 @@ async function handleStreamedChatCompletion(
   deps: GatewayServerDeps,
   request: ChatCompletionRequest,
   scope: BudgetScope,
+  span: Span,
 ): Promise<void> {
-  const generator = deps.router.routeChatCompletionStream(request);
+  const generator = deps.router.routeChatCompletionStream(request, span);
 
   let first: IteratorResult<StreamedChatEvent, void>;
   try {
     first = await generator.next();
   } catch (error) {
-    if (sendRoutingError(res, error)) return;
+    span.recordException(error);
+    if (sendRoutingError(res, error)) {
+      refuse(span, 'all_providers_unavailable');
+      return;
+    }
     throw error;
   }
 
   if (first.done === true || first.value === undefined) {
+    refuse(span, 'all_providers_unavailable');
     sendError(
       res,
       502,
@@ -314,6 +364,8 @@ async function handleStreamedChatCompletion(
     deps.logger.error('gateway.stream_error', {
       error: error instanceof Error ? error : new Error(String(error)),
     });
+    span.recordException(error);
+    refuse(span, 'stream_error');
     writeEvent({
       type: 'error',
       id,
@@ -326,11 +378,13 @@ async function handleStreamedChatCompletion(
     });
   }
 
+  span.setAttribute('gateway.provider', finalProvider);
   if (finalUsage !== undefined) {
-    deps.budget.record(
-      scope,
-      deps.costEstimator(finalProvider, request.model, finalUsage),
-    );
+    span.setAttribute('llm.usage.prompt_tokens', finalUsage.promptTokens);
+    span.setAttribute('llm.usage.completion_tokens', finalUsage.completionTokens);
+    const cost = deps.costEstimator(finalProvider, request.model, finalUsage);
+    span.setAttribute('gateway.cost_estimate', cost);
+    deps.budget.record(scope, cost);
   }
   res.write('data: [DONE]\n\n');
   res.end();
@@ -341,88 +395,110 @@ async function handleEmbeddings(
   res: ServerResponse,
   deps: GatewayServerDeps,
 ): Promise<void> {
-  let candidate: unknown;
+  const span = deps.tracer.startSpan('gateway.embeddings');
   try {
-    candidate = await readBody(req);
-  } catch {
-    sendError(res, 400, 'invalid_request', 'Request body is not valid JSON.');
-    return;
-  }
-
-  const parsed = EmbeddingsRequest.safeParse(candidate);
-  if (!parsed.success) {
-    sendError(
-      res,
-      400,
-      'invalid_request',
-      parsed.error.issues.map((i) => i.message).join('; '),
-    );
-    return;
-  }
-  const request = parsed.data;
-
-  try {
-    const lexicon = await deps.resolveLexicon(request.tenantId);
-    assertEgressAllowed(
-      {
-        tenantId: request.tenantId,
-        texts: request.input,
-        provenance: request.provenance,
-      },
-      lexicon,
-    );
-  } catch (error) {
-    if (error instanceof PiiEgressError) {
-      sendError(res, 403, 'pii_egress_blocked', error.message);
+    let candidate: unknown;
+    try {
+      candidate = await readBody(req);
+    } catch {
+      refuse(span, 'invalid_request');
+      sendError(res, 400, 'invalid_request', 'Request body is not valid JSON.');
       return;
     }
-    throw error;
-  }
 
-  const scope = {
-    tenantId: request.tenantId,
-    module: request.module,
-    agent: request.agent,
-  };
-  const budgetVerdict = deps.budget.check(scope);
-  if (!budgetVerdict.allowed) {
-    sendError(res, 429, 'budget_exceeded', budgetVerdict.reason);
-    return;
-  }
+    const parsed = EmbeddingsRequest.safeParse(candidate);
+    if (!parsed.success) {
+      refuse(span, 'invalid_request');
+      sendError(
+        res,
+        400,
+        'invalid_request',
+        parsed.error.issues.map((i) => i.message).join('; '),
+      );
+      return;
+    }
+    const request = parsed.data;
+    span.setAttribute('tenant.id', request.tenantId);
+    span.setAttribute('gateway.module', request.module);
+    span.setAttribute('gateway.agent', request.agent);
+    span.setAttribute('gateway.model', request.model);
 
-  const keys = buildCacheKeys(
-    contentKey(request.tenantId, request.model, { input: request.input }),
-    request.idempotencyKey,
-    request.tenantId,
-  );
+    try {
+      const lexicon = await deps.resolveLexicon(request.tenantId);
+      assertEgressAllowed(
+        {
+          tenantId: request.tenantId,
+          texts: request.input,
+          provenance: request.provenance,
+        },
+        lexicon,
+      );
+    } catch (error) {
+      if (error instanceof PiiEgressError) {
+        refuse(span, 'pii_egress_blocked');
+        sendError(res, 403, 'pii_egress_blocked', error.message);
+        return;
+      }
+      span.recordException(error);
+      throw error;
+    }
 
-  const cached = deps.cache.lookup<EmbeddingsResponse>(keys);
-  if (cached !== undefined) {
-    sendJson(res, 200, { ...cached, cached: true });
-    return;
-  }
-
-  try {
-    const { result, provider } = await deps.router.routeEmbeddings(request);
-    const response: EmbeddingsResponse = {
-      model: request.model,
-      provider,
-      vectors: result.vectors.map((vector) => [...vector]),
-      usage: result.usage,
-      cached: false,
+    const scope = {
+      tenantId: request.tenantId,
+      module: request.module,
+      agent: request.agent,
     };
-    deps.cache.record(keys, response);
-    deps.budget.record(
-      scope,
-      deps.costEstimator(provider, request.model, {
+    const budgetVerdict = deps.budget.check(scope);
+    if (!budgetVerdict.allowed) {
+      refuse(span, 'budget_exceeded');
+      sendError(res, 429, 'budget_exceeded', budgetVerdict.reason);
+      return;
+    }
+
+    const keys = buildCacheKeys(
+      contentKey(request.tenantId, request.model, { input: request.input }),
+      request.idempotencyKey,
+      request.tenantId,
+    );
+
+    const cached = deps.cache.lookup<EmbeddingsResponse>(keys);
+    if (cached !== undefined) {
+      span.setAttribute('gateway.cache_hit', true);
+      sendJson(res, 200, { ...cached, cached: true });
+      return;
+    }
+    span.setAttribute('gateway.cache_hit', false);
+
+    try {
+      const { result, provider } = await deps.router.routeEmbeddings(request, span);
+      span.setAttribute('gateway.provider', provider);
+      span.setAttribute('llm.usage.prompt_tokens', result.usage.promptTokens);
+      const cost = deps.costEstimator(provider, request.model, {
         promptTokens: result.usage.promptTokens,
         completionTokens: 0,
-      }),
-    );
-    sendJson(res, 200, response);
-  } catch (error) {
-    if (sendRoutingError(res, error)) return;
-    throw error;
+      });
+      span.setAttribute('gateway.cost_estimate', cost);
+
+      const response: EmbeddingsResponse = {
+        model: request.model,
+        provider,
+        vectors: result.vectors.map((vector) => [...vector]),
+        usage: result.usage,
+        cached: false,
+      };
+      deps.cache.record(keys, response);
+      deps.budget.record(scope, cost);
+      sendJson(res, 200, response);
+    } catch (error) {
+      span.recordException(error);
+      if (sendRoutingError(res, error)) {
+        refuse(span, 'all_providers_unavailable');
+        return;
+      }
+      throw error;
+    }
+  } finally {
+    span.end();
   }
 }
 

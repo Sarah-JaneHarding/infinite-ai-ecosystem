@@ -61,7 +61,19 @@ const STAGES: readonly Stage[] = [
       // the cumulative gate already executes. Nothing further is needed here.
     ],
   },
-  { id: '04', name: 'Model Gateway', commands: [] },
+  {
+    id: '04',
+    name: 'Model Gateway',
+    commands: [
+      // Mirrors the manual's own verification block for this stage. `packages/telemetry`
+      // is included because this stage is what built out its logger and tracer, and
+      // `test:chaos` is named explicitly even though it is a subset of `test`, the same
+      // way the manual calls it out as its own line.
+      'pnpm --filter @infinite-ai/telemetry test',
+      'pnpm --filter @infinite-ai/gateway test',
+      'pnpm --filter @infinite-ai/gateway test:chaos',
+    ],
+  },
   { id: '05', name: 'Infinite Brain (L0-L4)', commands: [] },
   { id: '06', name: 'Agent runtime, orchestrator, guardrails, HITL', commands: [] },
   { id: '07', name: 'Eval harness and golden sets', commands: [] },

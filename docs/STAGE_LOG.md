@@ -434,9 +434,9 @@ Open questions raised: OQ-007.
 
 ## Stage 04 — Model Gateway
 
-Started: 2026-08-04 Completed: —
-Exit gate: **PARTIAL** — steps 1–7, 9 and 10 are built and proven, including the tenant
-lexicon's `packages/db` wiring; Langfuse/OTel instrumentation (step 8) is not.
+Started: 2026-08-04 Completed: 2026-08-04
+Exit gate: **PASS** — all ten steps are built and proven, including the tenant lexicon's
+`packages/db` wiring (step 9) and OTel/Langfuse instrumentation (step 8).
 
 **What this PR put in place**
 
@@ -452,6 +452,7 @@ lexicon's `packages/db` wiring; Langfuse/OTel instrumentation (step 8) is not.
 | 9 · Tenant lexicon             | `packages/db/src/lexicon.ts`, wired in `apps/gateway/src/index.ts`                                                                 | learner legal names decrypted from `learner_identifier`, plus staff and school names, read inside `withTenant()`; scoped by RLS and proven against real Postgres in `packages/db/test/lexicon.integration.spec.ts`                                                                                      |
 | 10 · Provider-outage drill     | `apps/gateway/test/chaos/provider-outage.spec.ts`                                                                                  | `pnpm --filter gateway test:chaos`; 429s, 500s and timeouts on the first provider all recover through the real adapters, router, cache and HTTP server; chain exhaustion spends nothing and caches nothing; a non-retryable failure stops the chain and returns a typed error rather than exhausting it |
 | 7 · Streaming + tool calls     | `apps/gateway/src/adapters/sse.ts`, `completeStream` on both adapters, `routeChatCompletionStream`, `handleStreamedChatCompletion` | SSE parsed and re-emitted as `text/event-stream`; tool-call deltas pass through by index for both providers' differing wire shapes; fallback is proven possible before the first event and proven impossible after it; budget is recorded only once the `done` event reveals usage                      |
+| 8 · OTel + Langfuse            | `packages/telemetry/src/tracing.ts`, wired in `apps/gateway/src/server.ts` and `apps/gateway/src/routing/router.ts`                | one span per `/v1/chat/completions` and `/v1/embeddings` call, carrying tenant, module, agent, model, provider, token counts, cost estimate, cache-hit flag and refusal reason; fallback attempts land as span events; ships over a plain OTLP HTTP exporter to Langfuse's own OTLP endpoint            |
 
 **Exit gate items proven**
 
@@ -551,22 +552,67 @@ not this one, and budget is recorded once the stream's own `done` event reveals 
 provider states up front — proven by `test/server.spec.ts`'s "records budget spend only
 once the done event reveals usage".
 
+**OTel spans and Langfuse traces, closed**
+
+`packages/telemetry/src/tracing.ts` wraps the real `@opentelemetry/api` /
+`sdk-trace-base` / `exporter-trace-otlp-http` packages behind one small `Span`/`Tracer`
+shape — `setAttribute`, `addEvent`, `recordException`, `end` — so application code never
+touches the OTel API directly. "Ship LLM traces to Langfuse" needed no Langfuse-specific
+SDK: Langfuse ingests OTLP directly at its own `/api/public/otel` endpoint, authenticated
+with a Basic-auth header, so this is a plain OTLP HTTP exporter pointed at that endpoint —
+the same shape every other OTel-speaking backend uses.
+
+`createTracer()` returns the shared no-op tracer when `OTEL_EXPORTER_OTLP_ENDPOINT` is not
+configured — the same "ship nothing until someone decides" shape `DEFAULT_ROUTING_CONFIG`
+and the retention schedule template already use. Unlike the PII guard or the budget check,
+tracing is not a security control, so its absence never blocks a request; it only means
+the deployment cannot see the request in Langfuse yet. `boot()` logs a warning in that
+case rather than pretending traces are shipping.
+
+One span wraps each `/v1/chat/completions` and `/v1/embeddings` call end to end, carrying
+the fields the manual names: `tenant.id`, `gateway.module`, `gateway.agent`,
+`gateway.model`, `gateway.provider`, `llm.usage.prompt_tokens` /
+`llm.usage.completion_tokens`, `gateway.cost_estimate`, `gateway.cache_hit` and
+`gateway.refusal_reason`. Latency is the span's own duration — nothing recomputes it.
+Latency percentiles and cache-hit rate are aggregates over many tagged spans, computed on
+the Langfuse side rather than locally: that aggregation is exactly what an LLM
+observability backend is for, and a local percentile calculator would just be a worse copy
+of it. Fallback attempts are recorded as span events (`gateway.fallback`, tagged with the
+provider and the reason) by threading the active span down into
+`routing/router.ts`'s `attemptChain`/`attemptStreamChain` as an optional parameter — proven
+directly against a real fallback in `test/routing/router.spec.ts`, and proven end to end
+through the HTTP layer in `test/server.spec.ts`'s tracing suite (six cases: token counts
+and cost on the happy path, a cache-hit flag flip on the second identical request, the
+refusal reason for both the PII guard and the budget check, fallback events landing on the
+trace, and exactly one span per streamed request carrying its final usage once the stream
+completes).
+
+`OTEL_EXPORTER_OTLP_ENDPOINT` and `OTEL_EXPORTER_OTLP_HEADERS` live in the shared
+`EnvSchema` (`packages/config`), not the gateway's own narrower schema — unlike a provider
+API key, an OTLP endpoint and its auth header do not grant access to any model, and every
+future service that ships traces will need the same two values, so one shared secret is
+the right shape rather than one per service. `OTEL_EXPORTER_OTLP_ENDPOINT` already existed
+in that schema, reserved for Stage 15; this is its first real consumer.
+
 **One thing still deliberately not invented**
 
 **Provider pricing.** Cost estimation defaults to zero per call. A hard budget limit is
-real and enforced the moment a school's real per-model price is supplied; until then,
-zero cost means the tracker never refuses on cost grounds, which is the safe default
-rather than an invented number feeding a control that matters. Recorded here rather than
-left to be discovered later; needed before this stage's exit gate can read PASS.
+real and enforced the moment a school's real per-model price is supplied — proven by test
+with a nonzero cost estimator injected, which is the mechanism the exit gate actually
+names ("budget refusal proven by test"), not a specific price. Until a real price is
+supplied, zero cost means the tracker never refuses on cost grounds in production, which
+is the safe default rather than an invented number feeding a control that matters. This is
+an operational gap the same shape as the Redis-backed store below, not something the
+manual's five-item exit gate for this stage requires — recorded here as a real follow-up
+rather than left to be discovered later.
 
 Deviations from manual: budgets and the prompt cache are in-memory, not the Redis-backed
 store §1.1 locks in — a single gateway process is the only deployment shape this PR
 proves; a multi-instance gateway sharing that state needs a shared store, which is a
 follow-up rather than a silent gap (both `BudgetTracker` and `GatewayCache` are built
 behind an interface for exactly that swap). The prompt cache does not cover streaming
-requests, for the reason above. Langfuse/OTel instrumentation (step 8) is not built.
-`INFINITEAI_BUILD_MANUAL.md` itself was added to the repo in this PR — it had existed only
-outside it since Stage 00.
+requests, for the reason above. `INFINITEAI_BUILD_MANUAL.md` itself was added to the repo
+earlier in this stage — it had existed only outside the repo since Stage 00.
 
 Open questions raised: none. The pricing gap above is follow-up implementation work, not
 a decision that needs a human's judgement call, so it is tracked here rather than in

@@ -8,7 +8,7 @@
 // itself treated as retryable and the router moves on rather than failing the whole chain.
 
 import type { ChatCompletionRequest, EmbeddingsRequest } from '@infinite-ai/contracts';
-import type { Logger } from '@infinite-ai/telemetry';
+import type { Logger, Span } from '@infinite-ai/telemetry';
 
 import {
   type CredentialPool,
@@ -58,16 +58,23 @@ export interface StreamedChatEvent {
 
 /** Validates every routing entry references a configured adapter and pool — a boot check. */
 export function createRouter(deps: RouterDeps): {
-  routeChatCompletion: (request: ChatCompletionRequest) => Promise<{
+  routeChatCompletion: (
+    request: ChatCompletionRequest,
+    span?: Span,
+  ) => Promise<{
     result: AdapterChatResult;
     provider: string;
   }>;
-  routeEmbeddings: (request: EmbeddingsRequest) => Promise<{
+  routeEmbeddings: (
+    request: EmbeddingsRequest,
+    span?: Span,
+  ) => Promise<{
     result: AdapterEmbeddingsResult;
     provider: string;
   }>;
   routeChatCompletionStream: (
     request: ChatCompletionRequest,
+    span?: Span,
   ) => AsyncGenerator<StreamedChatEvent, void, void>;
 } {
   for (const [model, chain] of Object.entries(deps.routing)) {
@@ -93,6 +100,7 @@ export function createRouter(deps: RouterDeps): {
       link: RoutingLink,
       credential: string,
     ) => Promise<Result>,
+    span?: Span,
   ): Promise<{ result: Result; provider: string }> {
     const chain = deps.routing[logicalModel];
     if (chain === undefined) throw new UnknownLogicalModelError(logicalModel);
@@ -114,6 +122,10 @@ export function createRouter(deps: RouterDeps): {
             provider: link.provider,
             reason: 'no_credential',
           });
+          span?.addEvent('gateway.fallback', {
+            provider: link.provider,
+            reason: 'no_credential',
+          });
           continue;
         }
         throw error;
@@ -128,6 +140,10 @@ export function createRouter(deps: RouterDeps): {
           attempts.push({ provider: link.provider, reason: error.kind });
           deps.logger?.warn('gateway.fallback', {
             logicalModel,
+            provider: link.provider,
+            reason: error.kind,
+          });
+          span?.addEvent('gateway.fallback', {
             provider: link.provider,
             reason: error.kind,
           });
@@ -156,6 +172,7 @@ export function createRouter(deps: RouterDeps): {
       link: RoutingLink,
       credential: string,
     ) => AsyncGenerator<AdapterStreamEvent, void, void>,
+    span?: Span,
   ): AsyncGenerator<StreamedChatEvent, void, void> {
     const chain = deps.routing[logicalModel];
     if (chain === undefined) throw new UnknownLogicalModelError(logicalModel);
@@ -172,6 +189,10 @@ export function createRouter(deps: RouterDeps): {
       } catch (error) {
         if (error instanceof NoCredentialAvailableError) {
           attempts.push({ provider: link.provider, reason: 'no credential available' });
+          span?.addEvent('gateway.fallback', {
+            provider: link.provider,
+            reason: 'no_credential',
+          });
           continue;
         }
         throw error;
@@ -187,6 +208,10 @@ export function createRouter(deps: RouterDeps): {
           attempts.push({ provider: link.provider, reason: error.kind });
           deps.logger?.warn('gateway.fallback', {
             logicalModel,
+            provider: link.provider,
+            reason: error.kind,
+          });
+          span?.addEvent('gateway.fallback', {
             provider: link.provider,
             reason: error.kind,
           });
@@ -207,17 +232,26 @@ export function createRouter(deps: RouterDeps): {
   }
 
   return {
-    routeChatCompletion: (request) =>
-      attemptChain(request.model, (adapter, link, credential) =>
-        adapter.complete(request, link.concreteModel, credential),
+    routeChatCompletion: (request, span) =>
+      attemptChain(
+        request.model,
+        (adapter, link, credential) =>
+          adapter.complete(request, link.concreteModel, credential),
+        span,
       ),
-    routeEmbeddings: (request) =>
-      attemptChain(request.model, (adapter, link, credential) =>
-        adapter.embed(request, link.concreteModel, credential),
+    routeEmbeddings: (request, span) =>
+      attemptChain(
+        request.model,
+        (adapter, link, credential) =>
+          adapter.embed(request, link.concreteModel, credential),
+        span,
       ),
-    routeChatCompletionStream: (request) =>
-      attemptStreamChain(request.model, (adapter, link, credential) =>
-        adapter.completeStream(request, link.concreteModel, credential),
+    routeChatCompletionStream: (request, span) =>
+      attemptStreamChain(
+        request.model,
+        (adapter, link, credential) =>
+          adapter.completeStream(request, link.concreteModel, credential),
+        span,
       ),
   };
 }

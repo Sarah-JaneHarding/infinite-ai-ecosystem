@@ -90,8 +90,16 @@ export const EnvSchema = z.object({
   OBJECT_STORE_ENDPOINT: z.string().url().optional(),
   OBJECT_STORE_BUCKET: nonEmpty('OBJECT_STORE_BUCKET').optional(),
 
-  // Observability — Stage 15.
+  // Observability. First real consumer is Stage 04 (the gateway ships LLM traces to a
+  // self-hosted Langfuse over Langfuse's OTLP ingestion endpoint); Stage 15 extends the
+  // same exporter to every other service for one trace ID end to end. Shared here, not on
+  // the gateway's own narrower schema, because unlike a provider key this is not something
+  // that leaks model access — every service that ever gets a tracer needs the same
+  // endpoint and auth header, so one shared secret is the right shape, not one per service.
   OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().optional(),
+  // Standard OTel env-var shape: comma-separated `key=value` pairs, e.g.
+  // `Authorization=Basic <base64(publicKey:secretKey)>` for Langfuse.
+  OTEL_EXPORTER_OTLP_HEADERS: z.string().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
