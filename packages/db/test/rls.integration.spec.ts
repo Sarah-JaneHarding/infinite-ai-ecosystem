@@ -262,6 +262,18 @@ async function seedTwoTenants(): Promise<void> {
         },
       });
 
+      // Stage 05 step 2's write-path table. Seeded here for the same reason the step 1
+      // tables are, and unlike them it is mutable — it belongs in
+      // MUTABLE_TENANT_TABLES below, not in APPEND_ONLY_TABLES.
+      const writeCandidate = await tx.brainWriteCandidate.create({
+        data: {
+          tenantId,
+          targetTier: 'L1_NODE',
+          rawPayload: { fixture: true },
+          source: 'seed',
+        },
+      });
+
       const created: Record<string, string> = {
         academic_year: year.id,
         audit_event: audit.id,
@@ -271,6 +283,7 @@ async function seedTwoTenants(): Promise<void> {
         brain_episode: episode.id,
         brain_node: node.id,
         brain_procedure: procedure.id,
+        brain_write_candidate: writeCandidate.id,
         class_group: classGroup.id,
         consent_record: consent.id,
         data_subject_request: subjectRequest.id,

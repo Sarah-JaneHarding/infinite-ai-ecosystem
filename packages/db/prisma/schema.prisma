@@ -48,32 +48,33 @@ model Tenant {
   createdBy String?      @map("created_by") @db.Uuid
   version   Int          @default(1)
 
-  settings            TenantSetting[]
-  userAccounts        UserAccount[]
-  roleAssignments     RoleAssignment[]
-  schools             School[]
-  phases              Phase[]
-  grades              Grade[]
-  subjects            Subject[]
-  classGroups         ClassGroup[]
-  academicYears       AcademicYear[]
-  terms               Term[]
-  learners            Learner[]
-  learnerIdentifiers  LearnerIdentifier[]
-  guardians           Guardian[]
-  guardianLinks       GuardianLink[]
-  staffMembers        StaffMember[]
-  teachingAssignments TeachingAssignment[]
-  auditEvents         AuditEvent[]
-  consentRecords      ConsentRecord[]
-  retentionRules      RetentionRule[]
-  subjectRequests     DataSubjectRequest[]
-  brainConstitutions  BrainConstitution[]
-  brainNodes          BrainNode[]
-  brainEdges          BrainEdge[]
-  brainEmbeddings     BrainEmbedding[]
-  brainEpisodes       BrainEpisode[]
-  brainProcedures     BrainProcedure[]
+  settings             TenantSetting[]
+  userAccounts         UserAccount[]
+  roleAssignments      RoleAssignment[]
+  schools              School[]
+  phases               Phase[]
+  grades               Grade[]
+  subjects             Subject[]
+  classGroups          ClassGroup[]
+  academicYears        AcademicYear[]
+  terms                Term[]
+  learners             Learner[]
+  learnerIdentifiers   LearnerIdentifier[]
+  guardians            Guardian[]
+  guardianLinks        GuardianLink[]
+  staffMembers         StaffMember[]
+  teachingAssignments  TeachingAssignment[]
+  auditEvents          AuditEvent[]
+  consentRecords       ConsentRecord[]
+  retentionRules       RetentionRule[]
+  subjectRequests      DataSubjectRequest[]
+  brainConstitutions   BrainConstitution[]
+  brainNodes           BrainNode[]
+  brainEdges           BrainEdge[]
+  brainEmbeddings      BrainEmbedding[]
+  brainEpisodes        BrainEpisode[]
+  brainProcedures      BrainProcedure[]
+  brainWriteCandidates BrainWriteCandidate[]
 
   @@map("tenant")
 }
@@ -672,7 +673,8 @@ model RetentionRule {
   createdBy    String?  @map("created_by") @db.Uuid
   version      Int      @default(1)
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant          Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  writeCandidates BrainWriteCandidate[]
 
   @@unique([tenantId, category])
   @@index([tenantId])
@@ -1018,4 +1020,110 @@ enum BrainProcedureKind {
   TOOL_CONTRACT
 
   @@map("brain_procedure_kind")
+}
+
+// ---------------------------------------------------------------------------
+// The write path — Stage 05 step 2
+// ---------------------------------------------------------------------------
+//
+// `candidate → extracted+typed → contradiction-checked → provenance-stamped →
+// (ratify if L0/L3) → committed+versioned → indexed → retention-scheduled`, exactly the
+// manual's own transition list. Every arrival at a status is a separate UPDATE, persisted
+// before the next transition is attempted — a crash between two transitions leaves the row
+// at the last one it actually reached, so resuming means picking that status back up
+// rather than starting the pipeline over.
+//
+// This is workflow state, not a Brain fact — it does not join `APPEND_ONLY_TABLES`. The
+// six tables step 1 built are the record of what the Brain knows; this is the record of
+// how one candidate got there, closer in shape to `DataSubjectRequest` than to
+// `BrainEpisode`. Once a candidate reaches `RETENTION_SCHEDULED` it is done, not deleted —
+// an audit trail of "how did this fact arrive" is exactly what `explain()` (step 9) will
+// want to walk.
+//
+// `L1_EMBEDDING` is deliberately not a target tier here. Contradiction-checking and
+// ratification are both meaningless for a vector — there is no natural-language claim to
+// conflict with another claim, and nobody ratifies an embedding — so an embedding does not
+// go through this pipeline at all. It is attached to an already-committed `BrainNode` once
+// something calls the Model Gateway to produce it, which has no caller yet (no embedding
+// model is chosen — see step 1's own note on `BrainEmbedding.dimensions`).
+enum BrainTargetTier {
+  L0_CONSTITUTION
+  L1_NODE
+  L1_EDGE
+  L2_EPISODE
+  L3_PROCEDURE
+
+  @@map("brain_target_tier")
+}
+
+enum BrainWriteStatus {
+  CANDIDATE
+  EXTRACTED
+  CONTRADICTION_CHECKED
+  PROVENANCE_STAMPED
+  /// Only reached for `L0_CONSTITUTION` and `L3_PROCEDURE` — the manual's own conditional.
+  /// Every other tier skips straight from `PROVENANCE_STAMPED` to `COMMITTED`.
+  AWAITING_RATIFICATION
+  COMMITTED
+  INDEXED
+  RETENTION_SCHEDULED
+
+  @@map("brain_write_status")
+}
+
+/// One fact's journey from raw input to a committed, indexed, retention-scheduled row in
+/// one of the six tables above. See the section header for why this table exists and why
+/// it is not append-only.
+model BrainWriteCandidate {
+  id                String           @id @default(uuid()) @db.Uuid
+  tenantId          String           @map("tenant_id") @db.Uuid
+  targetTier        BrainTargetTier  @map("target_tier")
+  status            BrainWriteStatus @default(CANDIDATE)
+  /// What the caller submitted, before extraction. Kept verbatim — if the typed shape
+  /// turns out to be wrong, the input to re-derive it from is still here.
+  rawPayload        Json             @map("raw_payload")
+  /// Filled in by the `EXTRACTED` transition: `rawPayload` parsed and validated against
+  /// the target tier's shape. Null until then.
+  typedPayload      Json?            @map("typed_payload")
+  source            String
+  confidence        Float            @default(1)
+  derivationRunId   String?          @map("derivation_run_id") @db.Uuid
+  traceId           String?          @map("trace_id")
+  /// Set by the `CONTRADICTION_CHECKED` transition when an existing effective row shares
+  /// this candidate's natural key and the candidate did not declare it as what it
+  /// supersedes. Its presence does not by itself block anything here — deciding *how* to
+  /// resolve a real conflict (compare provenance strength and recency; never auto-resolve
+  /// over a human-ratified fact) is step 3's job. What step 2 guarantees is that a
+  /// candidate never commits over an undeclared conflict silently.
+  contradictionOf   String?          @map("contradiction_of") @db.Uuid
+  /// Filled once a human ratifies an `L0_CONSTITUTION` or `L3_PROCEDURE` candidate. Null
+  /// for every other tier, which never enters `AWAITING_RATIFICATION` at all.
+  ratifiedBy        String?          @map("ratified_by") @db.Uuid
+  ratifiedAt        DateTime?        @map("ratified_at")
+  /// The id and version of the row this candidate became, once `COMMITTED`. The table it
+  /// lives in is implied by `targetTier` — no FK, for the same reason
+  /// `BrainNode.derivationRunId` has none: it would have to point at one of six different
+  /// tables, which a single foreign key cannot express.
+  committedRowId    String?          @map("committed_row_id") @db.Uuid
+  committedVersion  Int?             @map("committed_version")
+  /// A `DataCategory` value from @infinite-ai/contracts, if this candidate's tier and
+  /// content carry personal information at all. Null for `L0_CONSTITUTION`/`L3_PROCEDURE`
+  /// (policy and curriculum never expire — step 8) and for any `L1`/`L2` fact with no
+  /// personal-information category of its own, e.g. a `TOPIC` node.
+  retentionCategory String?          @map("retention_category")
+  /// The matching `RetentionRule`, if the tenant has ratified one for `retentionCategory`.
+  /// Null is the honest, common case while OQ-007 stays open — nothing here invents a
+  /// period nobody ratified.
+  retentionRuleId   String?          @map("retention_rule_id") @db.Uuid
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+  createdBy         String?          @map("created_by") @db.Uuid
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  retentionRule RetentionRule? @relation(fields: [retentionRuleId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, targetTier])
+  @@map("brain_write_candidate")
 }

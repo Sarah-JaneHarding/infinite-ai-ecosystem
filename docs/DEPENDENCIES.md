@@ -90,6 +90,21 @@ until Stage 06's orchestrator produces an actual run — adding `ioredis` (or `r
 before anything calls it, is exactly what rule 9 exists to stop. The choice between them
 is Stage 06's to make, when there is a real caller to make it against.
 
+## Stage 05 step 2 — the write path
+
+No new dependency, only reuse at pinned versions already recorded above. `packages/brain`
+took `@infinite-ai/db` (workspace) as a runtime dependency for the first time — it now
+calls `withTenant()` itself rather than only being called through it — and `zod` for the
+"extracted+typed" transition's per-tier schemas, the same `zod` recorded in Stage 00.
+
+Its integration suite needed a real Postgres the same way `packages/db`'s own suite does,
+so `packages/brain` took `@testcontainers/postgresql` and `testcontainers` as
+devDependencies, both already recorded in Stage 01 at the same versions. It does not take
+`@prisma/client`: its harness (`test/support/database.ts`) shells out to the Prisma CLI
+already installed in `packages/db` to run migrations, and every actual query in the suite
+goes through `@infinite-ai/db`'s own `withTenant()` — there was never a reason to construct
+a second Prisma client.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

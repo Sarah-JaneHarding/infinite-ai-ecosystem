@@ -17,6 +17,7 @@ export const TENANT_OWNED_TABLES = [
   'brain_episode',
   'brain_node',
   'brain_procedure',
+  'brain_write_candidate',
   'class_group',
   'consent_record',
   'data_subject_request',
@@ -65,6 +66,11 @@ export const NON_TENANT_TABLES = ['_prisma_migrations'] as const;
  * The six Brain tables joined this list in Stage 05: "no destructive update anywhere; old
  * versions remain readable" is a named exit-gate item for that stage, not a style
  * preference, so a correction, a re-embedding or a tombstone is always a new row.
+ *
+ * `brain_write_candidate` (Stage 05 step 2) deliberately does not join this list. It is
+ * workflow state describing a fact still in flight, not the fact itself — the same
+ * distinction that keeps `data_subject_request` off this list while `consent_record`
+ * is on it.
  */
 export const APPEND_ONLY_TABLES = [
   'audit_event',

@@ -112,3 +112,8 @@ jobs:
       # without the isolation suite would be measuring the wrong thing.
       - name: RLS isolation suite and merged coverage (§4.2)
         run: pnpm --filter @infinite-ai/db coverage:merged
+
+      # Stage 05 step 2's write path: resumability, versioning and the ratification gate,
+      # proven against the same real Postgres rather than asserted from a mock transaction.
+      - name: Brain write-path integration suite (real Postgres)
+        run: pnpm --filter @infinite-ai/brain test:integration
