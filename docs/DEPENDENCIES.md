@@ -76,20 +76,6 @@ only, to build an in-memory span exporter in its own tests — the real exporter
 once in `packages/telemetry` and consumed through its `Tracer`/`Span` interface, never
 imported directly by application code.
 
-## Stage 05 step 1 — Infinite Brain, L0-L4 tables
-
-No new dependency. L0-L3 are Prisma models in `packages/db`, on the same `zod`/`prisma`
-already recorded above. `pgvector` (the `vector` extension `brain_embedding` uses) was
-already installed by `infra/docker/initdb/01-extensions.sql` in Stage 00, reserved for
-this stage.
-
-L4 Working memory (`packages/brain/src/working-memory.ts`) is a `WorkingMemoryStore`
-interface plus an in-memory implementation, deliberately not a Redis client. The manual
-does name Redis for this tier, but there is no concrete per-run scratchpad to wire one to
-until Stage 06's orchestrator produces an actual run — adding `ioredis` (or `redis`) now,
-before anything calls it, is exactly what rule 9 exists to stop. The choice between them
-is Stage 06's to make, when there is a real caller to make it against.
-
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

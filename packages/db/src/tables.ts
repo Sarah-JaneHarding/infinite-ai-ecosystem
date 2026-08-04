@@ -11,12 +11,6 @@
 export const TENANT_OWNED_TABLES = [
   'academic_year',
   'audit_event',
-  'brain_constitution',
-  'brain_edge',
-  'brain_embedding',
-  'brain_episode',
-  'brain_node',
-  'brain_procedure',
   'class_group',
   'consent_record',
   'data_subject_request',
@@ -57,25 +51,12 @@ export const NON_TENANT_TABLES = ['_prisma_migrations'] as const;
 /**
  * Tables the database refuses to UPDATE or DELETE from.
  *
- * Every one is a ledger, and a ledger that can be edited is a record of what someone last
+ * Both are ledgers, and a ledger that can be edited is a record of what someone last
  * decided the past should look like. The trigger is installed per table in the migrations;
- * this list is what the integration suite drives its assertions from, so a new ledger
+ * this list is what the integration suite drives its assertions from, so a fourth ledger
  * added without a trigger fails rather than passing unnoticed.
- *
- * The six Brain tables joined this list in Stage 05: "no destructive update anywhere; old
- * versions remain readable" is a named exit-gate item for that stage, not a style
- * preference, so a correction, a re-embedding or a tombstone is always a new row.
  */
-export const APPEND_ONLY_TABLES = [
-  'audit_event',
-  'brain_constitution',
-  'brain_edge',
-  'brain_embedding',
-  'brain_episode',
-  'brain_node',
-  'brain_procedure',
-  'consent_record',
-] as const;
+export const APPEND_ONLY_TABLES = ['audit_event', 'consent_record'] as const;
 
 export type TenantOwnedTable = (typeof TENANT_OWNED_TABLES)[number];
 export type AppendOnlyTable = (typeof APPEND_ONLY_TABLES)[number];
