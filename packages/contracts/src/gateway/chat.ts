@@ -132,6 +132,49 @@ export const EmbeddingsResponse = z.object({
 });
 export type EmbeddingsResponse = z.infer<typeof EmbeddingsResponse>;
 
+/**
+ * One Server-Sent Event on a streaming `/v1/chat/completions` response (step 7). Every
+ * event on one stream repeats the same `id`, `model` and `provider` for correlation — a
+ * client reading the stream never has to guess which completion an event belongs to.
+ * `error` is the one case a stream can produce after fallback has stopped being possible
+ * (Stage 04 step 7's note in `routing/router.ts`): the connection is already open as
+ * `text/event-stream`, so a failure from this point on is reported inside the stream
+ * rather than as an HTTP status the client has already moved past.
+ */
+export const ChatCompletionStreamEvent = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('content'),
+    id: z.string().min(1),
+    model: LogicalModel,
+    provider: z.string().min(1),
+    delta: z.string(),
+  }),
+  z.object({
+    type: z.literal('tool_call'),
+    id: z.string().min(1),
+    model: LogicalModel,
+    provider: z.string().min(1),
+    index: z.number().int().nonnegative(),
+    name: z.string().nullable(),
+    argumentsDelta: z.string(),
+  }),
+  z.object({
+    type: z.literal('done'),
+    id: z.string().min(1),
+    model: LogicalModel,
+    provider: z.string().min(1),
+    usage: ChatCompletionUsage,
+  }),
+  z.object({
+    type: z.literal('error'),
+    id: z.string().min(1),
+    model: LogicalModel,
+    provider: z.string().min(1),
+    message: z.string(),
+  }),
+]);
+export type ChatCompletionStreamEvent = z.infer<typeof ChatCompletionStreamEvent>;
+
 /** A typed refusal from the gateway. Never an HTTP 200 with an error string inside it. */
 export const GatewayErrorCode = z.enum([
   'budget_exceeded',

@@ -48,6 +48,31 @@ export interface AdapterEmbeddingsResult {
 }
 
 /**
+ * One incremental piece of a streaming completion — Stage 04 step 7.
+ *
+ * A tagged union rather than one object with optional fields, so a consumer's `switch`
+ * cannot forget a case: content deltas, tool-call deltas and the terminal `done` event
+ * (carrying the usage no provider reveals until the stream ends) are different things to
+ * do, not different shades of the same thing.
+ */
+export type AdapterStreamEvent =
+  | { readonly type: 'content'; readonly delta: string }
+  | {
+      readonly type: 'tool_call';
+      readonly index: number;
+      readonly name: string | null;
+      readonly argumentsDelta: string;
+    }
+  | {
+      readonly type: 'done';
+      readonly usage: {
+        readonly promptTokens: number;
+        readonly completionTokens: number;
+        readonly totalTokens: number;
+      };
+    };
+
+/**
  * One concrete model behind one provider account. The router resolves a `LogicalModel` to
  * an ordered list of these (step 4) before calling in.
  */
@@ -69,6 +94,28 @@ export interface ProviderAdapter {
     concreteModel: string,
     credential: string,
   ) => Promise<AdapterEmbeddingsResult>;
+  /**
+   * Streams a completion. The connection is opened and the response status checked
+   * *before* the first event is yielded, so a router can still fall back to the next link
+   * in the chain on a retryable `AdapterError` — the same guarantee `complete()` offers.
+   * Once the first `content` or `tool_call` event has been yielded, a caller has already
+   * forwarded bytes to its own caller and fallback is no longer possible; an error from
+   * this point on ends the stream rather than being retried.
+   */
+  completeStream: (
+    request: ChatCompletionRequest,
+    concreteModel: string,
+    credential: string,
+  ) => AsyncGenerator<AdapterStreamEvent, void, void>;
+}
+
+interface FetchResponseLike {
+  readonly ok: boolean;
+  readonly status: number;
+  readonly json: () => Promise<unknown>;
+  readonly text: () => Promise<string>;
+  /** Present for a streaming response; `null` for a provider that has no body to stream. */
+  readonly body?: AsyncIterable<Uint8Array> | null;
 }
 
 /** The subset of `fetch` an adapter needs — injected so tests never touch the network. */
@@ -80,9 +127,4 @@ export type FetchLike = (
     body: string;
     signal?: AbortSignal;
   },
-) => Promise<{
-  ok: boolean;
-  status: number;
-  json: () => Promise<unknown>;
-  text: () => Promise<string>;
-}>;
+) => Promise<FetchResponseLike>;

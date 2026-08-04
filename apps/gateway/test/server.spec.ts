@@ -11,7 +11,21 @@ import type { TenantLexicon } from '@infinite-ai/deident';
 import { BudgetTracker } from '../src/budgets/budget.js';
 import { GatewayCache } from '../src/cache/cache.js';
 import { createGatewayServer, type GatewayServerDeps } from '../src/server.js';
-import { AllProvidersUnavailableError } from '../src/routing/router.js';
+import {
+  AllProvidersUnavailableError,
+  type StreamedChatEvent,
+} from '../src/routing/router.js';
+
+async function* defaultStream(): AsyncGenerator<StreamedChatEvent, void, void> {
+  yield { event: { type: 'content', delta: 'A lesson plan.' }, provider: 'anthropic' };
+  yield {
+    event: {
+      type: 'done',
+      usage: { promptTokens: 5, completionTokens: 5, totalTokens: 10 },
+    },
+    provider: 'anthropic',
+  };
+}
 
 const EMPTY_LEXICON: TenantLexicon = { personNames: [], schoolNames: [] };
 
@@ -35,6 +49,7 @@ let server: ReturnType<typeof createGatewayServer>;
 let baseUrl: string;
 let routeChatCompletion: ReturnType<typeof vi.fn>;
 let routeEmbeddings: ReturnType<typeof vi.fn>;
+let routeChatCompletionStream: ReturnType<typeof vi.fn>;
 
 function start(overrides: Partial<GatewayServerDeps> = {}): void {
   routeChatCompletion = vi.fn().mockResolvedValue({
@@ -48,9 +63,10 @@ function start(overrides: Partial<GatewayServerDeps> = {}): void {
     result: { vectors: [[0.1, 0.2]], usage: { promptTokens: 2 } },
     provider: 'openai',
   });
+  routeChatCompletionStream = vi.fn().mockImplementation(() => defaultStream());
 
   const deps: GatewayServerDeps = {
-    router: { routeChatCompletion, routeEmbeddings },
+    router: { routeChatCompletion, routeEmbeddings, routeChatCompletionStream },
     budget: new BudgetTracker({ limitsFor: () => undefined }),
     cache: new GatewayCache(),
     resolveLexicon: async () => EMPTY_LEXICON,
@@ -173,15 +189,6 @@ describe('POST /v1/chat/completions — fallback exhaustion and refusals', () =>
     );
   });
 
-  it('refuses a streaming request with a typed error rather than silently ignoring it', async () => {
-    const res = await post('/v1/chat/completions', baseRequestBody({ stream: true }));
-    expect(res.status).toBe(400);
-    expect(((await res.json()) as { error: { code: string } }).error.code).toBe(
-      'invalid_request',
-    );
-    expect(routeChatCompletion).not.toHaveBeenCalled();
-  });
-
   it('rejects malformed JSON', async () => {
     const res = await fetch(`${baseUrl}/v1/chat/completions`, {
       method: 'POST',
@@ -194,6 +201,102 @@ describe('POST /v1/chat/completions — fallback exhaustion and refusals', () =>
   it('rejects a body that fails schema validation', async () => {
     const res = await post('/v1/chat/completions', { tenantId: 'tenant-1' });
     expect(res.status).toBe(400);
+  });
+});
+
+describe('POST /v1/chat/completions — streaming', () => {
+  it('streams content and done events as Server-Sent Events, then [DONE]', async () => {
+    const res = await post('/v1/chat/completions', baseRequestBody({ stream: true }));
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toBe('text/event-stream');
+
+    const body = await res.text();
+    const dataLines = body
+      .split('\n\n')
+      .filter((chunk) => chunk.startsWith('data:'))
+      .map((chunk) => chunk.slice('data:'.length).trim());
+
+    expect(dataLines[dataLines.length - 1]).toBe('[DONE]');
+    const events = dataLines
+      .slice(0, -1)
+      .map((line) => JSON.parse(line) as Record<string, unknown>);
+    expect(events).toEqual([
+      expect.objectContaining({
+        type: 'content',
+        delta: 'A lesson plan.',
+        provider: 'anthropic',
+      }),
+      expect.objectContaining({
+        type: 'done',
+        usage: { promptTokens: 5, completionTokens: 5, totalTokens: 10 },
+      }),
+    ]);
+    // Every event on one stream shares the same id, so a client can correlate them.
+    const ids = new Set(events.map((e) => e.id));
+    expect(ids.size).toBe(1);
+  });
+
+  it('records budget spend only once the done event reveals usage', async () => {
+    const budget = new BudgetTracker({ limitsFor: () => ({ hardDailyLimit: 1 }) });
+    server.close();
+    await startAndWait({ budget });
+
+    const res = await post('/v1/chat/completions', baseRequestBody({ stream: true }));
+    expect(res.status).toBe(200);
+    await res.text();
+
+    // costEstimator returns 1 per call in these tests; the done event's usage should have
+    // pushed spend to the hard limit.
+    expect(
+      budget.check({ tenantId: 'tenant-1', module: 'mod-01', agent: 'CE-05' }).allowed,
+    ).toBe(false);
+  });
+
+  it('reports a typed HTTP error, not an SSE stream, when every provider fails before the first event', async () => {
+    const error = new AllProvidersUnavailableError('plan.author', [
+      { provider: 'anthropic', reason: 'timeout' },
+    ]);
+    // Not a `function*`: this stream fails before any event, so there is nothing to
+    // yield — it just rejects the first `next()` call.
+    routeChatCompletionStream.mockImplementation(
+      (): AsyncGenerator<StreamedChatEvent, void, void> => ({
+        next: () => Promise.reject(error),
+        return: () => Promise.resolve({ done: true, value: undefined }),
+        throw: (err: unknown) => Promise.reject(err),
+        [Symbol.asyncIterator]() {
+          return this;
+        },
+      }),
+    );
+
+    const res = await post('/v1/chat/completions', baseRequestBody({ stream: true }));
+    expect(res.status).toBe(503);
+    expect(res.headers.get('content-type')).not.toBe('text/event-stream');
+    expect(((await res.json()) as { error: { code: string } }).error.code).toBe(
+      'all_providers_unavailable',
+    );
+  });
+
+  it('reports an in-stream error event when a failure happens after the first event', async () => {
+    routeChatCompletionStream.mockImplementation(() => {
+      return (async function* (): AsyncGenerator<StreamedChatEvent, void, void> {
+        yield { event: { type: 'content', delta: 'partial' }, provider: 'anthropic' };
+        throw new Error('provider connection dropped');
+      })();
+    });
+
+    const res = await post('/v1/chat/completions', baseRequestBody({ stream: true }));
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    const dataLines = body
+      .split('\n\n')
+      .filter((chunk) => chunk.startsWith('data:'))
+      .map((chunk) => chunk.slice('data:'.length).trim());
+    const events = dataLines
+      .slice(0, -1)
+      .map((line) => JSON.parse(line) as { type: string });
+    expect(events.some((e) => e.type === 'error')).toBe(true);
+    expect(dataLines[dataLines.length - 1]).toBe('[DONE]');
   });
 });
 

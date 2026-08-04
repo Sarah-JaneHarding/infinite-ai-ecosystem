@@ -30,6 +30,29 @@ function fakeFetch(response: { status: number; body: unknown }) {
   }));
 }
 
+async function* sseChunks(
+  ...lines: readonly string[]
+): AsyncGenerator<Uint8Array, void, void> {
+  const encoder = new TextEncoder();
+  for (const line of lines) yield encoder.encode(`data: ${line}\n\n`);
+}
+
+function fakeStreamFetch(status: number, ...lines: readonly string[]) {
+  return vi.fn(async (_url: string, _init: FetchInit) => ({
+    ok: status < 400,
+    status,
+    json: async () => ({}),
+    text: async () => '',
+    body: sseChunks(...lines),
+  }));
+}
+
+async function collect<T>(source: AsyncGenerator<T, void, void>): Promise<T[]> {
+  const out: T[] = [];
+  for await (const item of source) out.push(item);
+  return out;
+}
+
 describe('createOpenAiCompatibleAdapter — happy path', () => {
   it('shapes the request and parses a completion, passing the given credential', async () => {
     const fetchImpl = fakeFetch({
@@ -211,5 +234,82 @@ describe('createOpenAiCompatibleAdapter — failure paths', () => {
         kind: 'invalid_request',
       },
     );
+  });
+});
+
+describe('createOpenAiCompatibleAdapter — completeStream', () => {
+  it('yields content deltas, then a done event carrying the final usage', async () => {
+    const adapter = createOpenAiCompatibleAdapter({
+      provider: 'openai',
+      baseUrl: 'https://api.openai.example',
+      fetchImpl: fakeStreamFetch(
+        200,
+        '{"choices":[{"delta":{"content":"Hello"}}]}',
+        '{"choices":[{"delta":{"content":", world"}}]}',
+        '{"choices":[{"delta":{}}],"usage":{"prompt_tokens":5,"completion_tokens":2,"total_tokens":7}}',
+        '[DONE]',
+      ),
+    });
+
+    const events = await collect(adapter.completeStream(baseRequest, 'gpt-test', 'cred'));
+    expect(events).toEqual([
+      { type: 'content', delta: 'Hello' },
+      { type: 'content', delta: ', world' },
+      {
+        type: 'done',
+        usage: { promptTokens: 5, completionTokens: 2, totalTokens: 7 },
+      },
+    ]);
+  });
+
+  it('yields tool_call deltas by index', async () => {
+    const adapter = createOpenAiCompatibleAdapter({
+      provider: 'openai',
+      baseUrl: 'https://api.openai.example',
+      fetchImpl: fakeStreamFetch(
+        200,
+        '{"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"name":"lookup","arguments":""}}]}}]}',
+        '{"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":"{\\"a\\":1}"}}]}}]}',
+        '[DONE]',
+      ),
+    });
+
+    const events = await collect(adapter.completeStream(baseRequest, 'gpt-test', 'cred'));
+    expect(events[0]).toEqual({
+      type: 'tool_call',
+      index: 0,
+      name: 'lookup',
+      argumentsDelta: '',
+    });
+    expect(events[1]).toEqual({
+      type: 'tool_call',
+      index: 0,
+      name: null,
+      argumentsDelta: '{"a":1}',
+    });
+  });
+
+  it('falls back before the first event on a 429, same as the non-streaming path', async () => {
+    const adapter = createOpenAiCompatibleAdapter({
+      provider: 'openai',
+      baseUrl: 'https://api.openai.example',
+      fetchImpl: fakeFetch({ status: 429, body: {} }),
+    });
+
+    await expect(
+      collect(adapter.completeStream(baseRequest, 'gpt-test', 'cred')),
+    ).rejects.toMatchObject({ kind: 'rate_limited' });
+  });
+
+  it('raises a classified AdapterError on an unparseable stream chunk', async () => {
+    const adapter = createOpenAiCompatibleAdapter({
+      provider: 'openai',
+      baseUrl: 'https://api.openai.example',
+      fetchImpl: fakeStreamFetch(200, 'not json'),
+    });
+
+    await expect(
+      collect(adapter.completeStream(baseRequest, 'gpt-test', 'cred')),
+    ).rejects.toMatchObject({ kind: 'invalid_request' });
   });
 });

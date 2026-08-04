@@ -20,6 +20,29 @@ function fakeFetch(response: { status: number; body: unknown }) {
   }));
 }
 
+async function* sseChunks(
+  ...lines: readonly string[]
+): AsyncGenerator<Uint8Array, void, void> {
+  const encoder = new TextEncoder();
+  for (const line of lines) yield encoder.encode(`data: ${line}\n\n`);
+}
+
+function fakeStreamFetch(status: number, ...lines: readonly string[]) {
+  return vi.fn(async (_url: string, _init: FetchInit) => ({
+    ok: status < 400,
+    status,
+    json: async () => ({}),
+    text: async () => '',
+    body: sseChunks(...lines),
+  }));
+}
+
+async function collect<T>(source: AsyncGenerator<T, void, void>): Promise<T[]> {
+  const out: T[] = [];
+  for await (const item of source) out.push(item);
+  return out;
+}
+
 const request: ChatCompletionRequest = {
   tenantId: 'tenant-1',
   module: 'mod-01',
@@ -134,5 +157,79 @@ describe('createAnthropicAdapter — failure paths', () => {
     await expect(adapter.complete(request, 'claude-test', 'cred')).rejects.toMatchObject({
       kind: 'invalid_request',
     });
+  });
+});
+
+describe('createAnthropicAdapter — completeStream', () => {
+  it('yields content deltas from text_delta events, then a done event with usage', async () => {
+    const adapter = createAnthropicAdapter({
+      baseUrl: 'https://api.anthropic.example',
+      fetchImpl: fakeStreamFetch(
+        200,
+        '{"type":"message_start","message":{"usage":{"input_tokens":12}}}',
+        '{"type":"content_block_start","index":0,"content_block":{"type":"text"}}',
+        '{"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Hello"}}',
+        '{"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":", world"}}',
+        '{"type":"message_delta","usage":{"output_tokens":8}}',
+        '{"type":"message_stop"}',
+      ),
+    });
+
+    const events = await collect(adapter.completeStream(request, 'claude-test', 'cred'));
+    expect(events).toEqual([
+      { type: 'content', delta: 'Hello' },
+      { type: 'content', delta: ', world' },
+      { type: 'done', usage: { promptTokens: 12, completionTokens: 8, totalTokens: 20 } },
+    ]);
+  });
+
+  it('yields a tool_call event on content_block_start and streams its arguments as input_json_delta', async () => {
+    const adapter = createAnthropicAdapter({
+      baseUrl: 'https://api.anthropic.example',
+      fetchImpl: fakeStreamFetch(
+        200,
+        '{"type":"message_start","message":{"usage":{"input_tokens":1}}}',
+        '{"type":"content_block_start","index":0,"content_block":{"type":"tool_use","name":"lookup"}}',
+        '{"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\\"a\\":1}"}}',
+        '{"type":"message_delta","usage":{"output_tokens":1}}',
+        '{"type":"message_stop"}',
+      ),
+    });
+
+    const events = await collect(adapter.completeStream(request, 'claude-test', 'cred'));
+    expect(events[0]).toEqual({
+      type: 'tool_call',
+      index: 0,
+      name: 'lookup',
+      argumentsDelta: '',
+    });
+    expect(events[1]).toEqual({
+      type: 'tool_call',
+      index: 0,
+      name: 'lookup',
+      argumentsDelta: '{"a":1}',
+    });
+  });
+
+  it('falls back before the first event on a 429, same as the non-streaming path', async () => {
+    const adapter = createAnthropicAdapter({
+      baseUrl: 'https://api.anthropic.example',
+      fetchImpl: fakeFetch({ status: 429, body: {} }),
+    });
+
+    await expect(
+      collect(adapter.completeStream(request, 'claude-test', 'cred')),
+    ).rejects.toMatchObject({ kind: 'rate_limited' });
+  });
+
+  it('raises a classified AdapterError on an unparseable stream event', async () => {
+    const adapter = createAnthropicAdapter({
+      baseUrl: 'https://api.anthropic.example',
+      fetchImpl: fakeStreamFetch(200, 'not json'),
+    });
+
+    await expect(
+      collect(adapter.completeStream(request, 'claude-test', 'cred')),
+    ).rejects.toMatchObject({ kind: 'invalid_request' });
   });
 });

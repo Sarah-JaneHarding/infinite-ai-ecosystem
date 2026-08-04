@@ -59,6 +59,7 @@ export {
 export {
   ChatCompletionRequest,
   ChatCompletionResponse,
+  ChatCompletionStreamEvent,
   ChatCompletionUsage,
   ChatMessage,
   ChatRole,

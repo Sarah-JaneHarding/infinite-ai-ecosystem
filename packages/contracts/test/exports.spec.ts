@@ -15,6 +15,7 @@ describe('package export surface', () => {
       'AssessmentWeighting',
       'ChatCompletionRequest',
       'ChatCompletionResponse',
+      'ChatCompletionStreamEvent',
       'ChatCompletionUsage',
       'ChatMessage',
       'ChatRole',

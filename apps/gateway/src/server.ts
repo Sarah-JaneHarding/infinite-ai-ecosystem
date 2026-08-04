@@ -10,9 +10,11 @@
 //   parse and validate → PII egress guard (step 9) → budget check (step 5, before the
 //   call) → cache lookup (step 6) → route with fallback (steps 3-4) → cache + budget record
 //
-// Streaming (step 7) is not implemented by this server yet — a `stream: true` request gets
-// a typed `invalid_request` refusal naming that, rather than a response that silently
-// ignores the flag and returns a single completion under a streaming client's nose.
+// Streaming (step 7) skips the cache lookup and write — replaying an SSE stream from a
+// cached final result is a real feature, just not this one's; caching still applies to
+// every non-streaming request, which is where it earns its keep on repeated identical
+// calls. A streamed response's cost is recorded once its `done` event reveals the usage
+// no provider states up front.
 
 import {
   createServer as createHttpServer,
@@ -24,6 +26,7 @@ import {
   ChatCompletionRequest,
   EmbeddingsRequest,
   type ChatCompletionResponse,
+  type ChatCompletionStreamEvent,
   type EmbeddingsResponse,
   type GatewayErrorCode,
 } from '@infinite-ai/contracts';
@@ -32,12 +35,13 @@ import type { TenantLexicon } from '@infinite-ai/deident';
 import type { Logger } from '@infinite-ai/telemetry';
 
 import { AdapterError } from './adapters/types.js';
-import type { BudgetTracker } from './budgets/budget.js';
+import type { BudgetScope, BudgetTracker } from './budgets/budget.js';
 import { type GatewayCache, contentKey, idempotencyCacheKey } from './cache/cache.js';
 import {
   AllProvidersUnavailableError,
   UnknownLogicalModelError,
   type createRouter,
+  type StreamedChatEvent,
 } from './routing/router.js';
 
 export interface CostEstimator {
@@ -61,6 +65,10 @@ function sendJson(res: ServerResponse, status: number, body: unknown): void {
   const payload = JSON.stringify(body);
   res.writeHead(status, { 'content-type': 'application/json' });
   res.end(payload);
+}
+
+function generateCompletionId(): string {
+  return `chatcmpl_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function sendError(
@@ -145,16 +153,6 @@ async function handleChatCompletions(
   }
   const request = parsed.data;
 
-  if (request.stream) {
-    sendError(
-      res,
-      400,
-      'invalid_request',
-      'Streaming is not yet implemented by this gateway deployment (Stage 04 step 7).',
-    );
-    return;
-  }
-
   try {
     const lexicon = await deps.resolveLexicon(request.tenantId);
     assertEgressAllowed(
@@ -173,7 +171,7 @@ async function handleChatCompletions(
     throw error;
   }
 
-  const scope = {
+  const scope: BudgetScope = {
     tenantId: request.tenantId,
     module: request.module,
     agent: request.agent,
@@ -188,6 +186,11 @@ async function handleChatCompletions(
       ...scope,
       warning: budgetVerdict.warning,
     });
+  }
+
+  if (request.stream) {
+    await handleStreamedChatCompletion(res, deps, request, scope);
+    return;
   }
 
   const keys = buildCacheKeys(
@@ -210,7 +213,7 @@ async function handleChatCompletions(
   try {
     const { result, provider } = await deps.router.routeChatCompletion(request);
     const response: ChatCompletionResponse = {
-      id: `chatcmpl_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+      id: generateCompletionId(),
       model: request.model,
       provider,
       message: {
@@ -230,6 +233,107 @@ async function handleChatCompletions(
     if (sendRoutingError(res, error)) return;
     throw error;
   }
+}
+
+/**
+ * Streams a completion as Server-Sent Events. The router's own fallback guarantee (see
+ * `routing/router.ts`) is what makes this safe: the very first event has already survived
+ * whatever fallback was going to happen, so by the time headers are written here, this
+ * function is committed to exactly one provider for the rest of the stream. An error
+ * after that point cannot be retried or reported as an HTTP status the client has already
+ * moved past — it becomes a `type: "error"` event inside the stream instead.
+ */
+async function handleStreamedChatCompletion(
+  res: ServerResponse,
+  deps: GatewayServerDeps,
+  request: ChatCompletionRequest,
+  scope: BudgetScope,
+): Promise<void> {
+  const generator = deps.router.routeChatCompletionStream(request);
+
+  let first: IteratorResult<StreamedChatEvent, void>;
+  try {
+    first = await generator.next();
+  } catch (error) {
+    if (sendRoutingError(res, error)) return;
+    throw error;
+  }
+
+  if (first.done === true || first.value === undefined) {
+    sendError(
+      res,
+      502,
+      'all_providers_unavailable',
+      'Provider ended the stream with no events.',
+    );
+    return;
+  }
+
+  const id = generateCompletionId();
+
+  function toWireEvent(streamed: StreamedChatEvent): ChatCompletionStreamEvent {
+    const base = { id, model: request.model, provider: streamed.provider };
+    switch (streamed.event.type) {
+      case 'content':
+        return { ...base, type: 'content', delta: streamed.event.delta };
+      case 'tool_call':
+        return {
+          ...base,
+          type: 'tool_call',
+          index: streamed.event.index,
+          name: streamed.event.name,
+          argumentsDelta: streamed.event.argumentsDelta,
+        };
+      case 'done':
+        return { ...base, type: 'done', usage: streamed.event.usage };
+    }
+  }
+
+  res.writeHead(200, {
+    'content-type': 'text/event-stream',
+    'cache-control': 'no-cache',
+    connection: 'keep-alive',
+  });
+  function writeEvent(event: ChatCompletionStreamEvent): void {
+    res.write(`data: ${JSON.stringify(event)}\n\n`);
+  }
+
+  let finalProvider = first.value.provider;
+  let finalUsage: { promptTokens: number; completionTokens: number } | undefined;
+
+  try {
+    writeEvent(toWireEvent(first.value));
+    if (first.value.event.type === 'done') finalUsage = first.value.event.usage;
+
+    for await (const streamed of generator) {
+      finalProvider = streamed.provider;
+      writeEvent(toWireEvent(streamed));
+      if (streamed.event.type === 'done') finalUsage = streamed.event.usage;
+    }
+  } catch (error) {
+    deps.logger.error('gateway.stream_error', {
+      error: error instanceof Error ? error : new Error(String(error)),
+    });
+    writeEvent({
+      type: 'error',
+      id,
+      model: request.model,
+      provider: finalProvider,
+      message:
+        error instanceof AdapterError
+          ? error.message
+          : 'The stream ended unexpectedly before it finished.',
+    });
+  }
+
+  if (finalUsage !== undefined) {
+    deps.budget.record(
+      scope,
+      deps.costEstimator(finalProvider, request.model, finalUsage),
+    );
+  }
+  res.write('data: [DONE]\n\n');
+  res.end();
 }
 
 async function handleEmbeddings(

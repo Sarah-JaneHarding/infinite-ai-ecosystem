@@ -20,6 +20,7 @@ import {
   AdapterError,
   type AdapterChatResult,
   type AdapterEmbeddingsResult,
+  type AdapterStreamEvent,
   type ProviderAdapter,
 } from '../adapters/types.js';
 
@@ -50,6 +51,11 @@ export class AllProvidersUnavailableError extends Error {
   }
 }
 
+export interface StreamedChatEvent {
+  readonly event: AdapterStreamEvent;
+  readonly provider: string;
+}
+
 /** Validates every routing entry references a configured adapter and pool — a boot check. */
 export function createRouter(deps: RouterDeps): {
   routeChatCompletion: (request: ChatCompletionRequest) => Promise<{
@@ -60,6 +66,9 @@ export function createRouter(deps: RouterDeps): {
     result: AdapterEmbeddingsResult;
     provider: string;
   }>;
+  routeChatCompletionStream: (
+    request: ChatCompletionRequest,
+  ) => AsyncGenerator<StreamedChatEvent, void, void>;
 } {
   for (const [model, chain] of Object.entries(deps.routing)) {
     for (const link of chain) {
@@ -131,6 +140,72 @@ export function createRouter(deps: RouterDeps): {
     throw new AllProvidersUnavailableError(logicalModel, attempts);
   }
 
+  /**
+   * The streaming counterpart of `attemptChain`. Fallback is only possible up to the
+   * *first* event a link yields — once one event has left this generator, a caller has
+   * already forwarded bytes to its own caller, and switching providers mid-stream would
+   * mean either duplicating or silently losing content. So each link's generator is primed
+   * with exactly one `next()` call before anything is yielded; a retryable failure there
+   * moves to the next link exactly like the non-streaming path, and everything after that
+   * first successful event is passed through unconditionally.
+   */
+  async function* attemptStreamChain(
+    logicalModel: string,
+    call: (
+      adapter: ProviderAdapter,
+      link: RoutingLink,
+      credential: string,
+    ) => AsyncGenerator<AdapterStreamEvent, void, void>,
+  ): AsyncGenerator<StreamedChatEvent, void, void> {
+    const chain = deps.routing[logicalModel];
+    if (chain === undefined) throw new UnknownLogicalModelError(logicalModel);
+
+    const attempts: { provider: string; reason: string }[] = [];
+
+    for (const link of chain) {
+      const adapter = deps.adapters[link.provider]!;
+      const pool = deps.credentialPools[link.provider]!;
+
+      let credentialHandle: CredentialHandle;
+      try {
+        credentialHandle = pool.take();
+      } catch (error) {
+        if (error instanceof NoCredentialAvailableError) {
+          attempts.push({ provider: link.provider, reason: 'no credential available' });
+          continue;
+        }
+        throw error;
+      }
+
+      const generator = call(adapter, link, credentialHandle.reveal());
+      let first: IteratorResult<AdapterStreamEvent, void>;
+      try {
+        first = await generator.next();
+      } catch (error) {
+        if (error instanceof AdapterError) {
+          if (error.kind === 'rate_limited') pool.reportRateLimited(credentialHandle);
+          attempts.push({ provider: link.provider, reason: error.kind });
+          deps.logger?.warn('gateway.fallback', {
+            logicalModel,
+            provider: link.provider,
+            reason: error.kind,
+          });
+          if (error.retryable) continue;
+        }
+        throw error;
+      }
+
+      // Committed to this link now — no further fallback is possible.
+      if (!first.done) yield { event: first.value, provider: link.provider };
+      for await (const event of generator) {
+        yield { event, provider: link.provider };
+      }
+      return;
+    }
+
+    throw new AllProvidersUnavailableError(logicalModel, attempts);
+  }
+
   return {
     routeChatCompletion: (request) =>
       attemptChain(request.model, (adapter, link, credential) =>
@@ -139,6 +214,10 @@ export function createRouter(deps: RouterDeps): {
     routeEmbeddings: (request) =>
       attemptChain(request.model, (adapter, link, credential) =>
         adapter.embed(request, link.concreteModel, credential),
+      ),
+    routeChatCompletionStream: (request) =>
+      attemptStreamChain(request.model, (adapter, link, credential) =>
+        adapter.completeStream(request, link.concreteModel, credential),
       ),
   };
 }
