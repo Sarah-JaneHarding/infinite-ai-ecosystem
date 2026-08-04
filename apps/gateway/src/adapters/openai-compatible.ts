@@ -122,25 +122,35 @@ export function createOpenAiCompatibleAdapter(
         credential,
       )) as OpenAiChatResponse;
 
-      const choice = raw.choices[0];
-      if (choice === undefined) {
-        throw new AdapterError('invalid_request', 'Provider returned no choices.');
+      // A 2xx response with an unexpected shape is not this code's bug to crash on — see
+      // the matching note in adapters/anthropic.ts.
+      try {
+        const choice = raw.choices[0];
+        if (choice === undefined) {
+          throw new AdapterError('invalid_request', 'Provider returned no choices.');
+        }
+        const toolCalls = choice.message.tool_calls?.map((call) => ({
+          name: call.function.name,
+          arguments: JSON.parse(call.function.arguments) as Record<string, unknown>,
+        }));
+        return {
+          content: choice.message.content ?? '',
+          // exactOptionalPropertyTypes: an absent tool call list is *omitted*, not set to
+          // undefined — the two are different states to a schema that distinguishes them.
+          ...(toolCalls !== undefined ? { toolCalls } : {}),
+          usage: {
+            promptTokens: raw.usage.prompt_tokens,
+            completionTokens: raw.usage.completion_tokens,
+            totalTokens: raw.usage.total_tokens,
+          },
+        };
+      } catch (error) {
+        if (error instanceof AdapterError) throw error;
+        throw new AdapterError(
+          'invalid_request',
+          `Provider ${config.provider} returned a response this adapter could not parse: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
-      const toolCalls = choice.message.tool_calls?.map((call) => ({
-        name: call.function.name,
-        arguments: JSON.parse(call.function.arguments) as Record<string, unknown>,
-      }));
-      return {
-        content: choice.message.content ?? '',
-        // exactOptionalPropertyTypes: an absent tool call list is *omitted*, not set to
-        // undefined — the two are different states to a schema that distinguishes them.
-        ...(toolCalls !== undefined ? { toolCalls } : {}),
-        usage: {
-          promptTokens: raw.usage.prompt_tokens,
-          completionTokens: raw.usage.completion_tokens,
-          totalTokens: raw.usage.total_tokens,
-        },
-      };
     },
 
     async embed(
@@ -155,10 +165,17 @@ export function createOpenAiCompatibleAdapter(
         credential,
       )) as OpenAiEmbeddingsResponse;
 
-      return {
-        vectors: raw.data.map((item) => item.embedding),
-        usage: { promptTokens: raw.usage.prompt_tokens },
-      };
+      try {
+        return {
+          vectors: raw.data.map((item) => item.embedding),
+          usage: { promptTokens: raw.usage.prompt_tokens },
+        };
+      } catch (error) {
+        throw new AdapterError(
+          'invalid_request',
+          `Provider ${config.provider} returned a response this adapter could not parse: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
     },
   };
 }

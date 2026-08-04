@@ -31,6 +31,7 @@ import { assertEgressAllowed, PiiEgressError } from '@infinite-ai/guardrails';
 import type { TenantLexicon } from '@infinite-ai/deident';
 import type { Logger } from '@infinite-ai/telemetry';
 
+import { AdapterError } from './adapters/types.js';
 import type { BudgetTracker } from './budgets/budget.js';
 import { type GatewayCache, contentKey, idempotencyCacheKey } from './cache/cache.js';
 import {
@@ -69,6 +70,31 @@ function sendError(
   message: string,
 ): void {
   sendJson(res, status, { error: { code, message } });
+}
+
+/**
+ * Turns a routing failure into a typed HTTP response, or returns `false` for anything it
+ * does not recognise so the caller can fall back to a generic 500 rather than lying about
+ * what happened.
+ *
+ * `AdapterError` reaching here means the router stopped the chain on a non-retryable
+ * failure (step 10: a caller must never see a bare 500 for a provider that rejected the
+ * request or the credential — that is exactly the "clear typed error" the drill requires).
+ */
+function sendRoutingError(res: ServerResponse, error: unknown): boolean {
+  if (error instanceof AllProvidersUnavailableError) {
+    sendError(res, 503, 'all_providers_unavailable', error.message);
+    return true;
+  }
+  if (error instanceof UnknownLogicalModelError) {
+    sendError(res, 400, 'invalid_request', error.message);
+    return true;
+  }
+  if (error instanceof AdapterError) {
+    sendError(res, 502, 'all_providers_unavailable', error.message);
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -201,14 +227,7 @@ async function handleChatCompletions(
     deps.budget.record(scope, deps.costEstimator(provider, request.model, result.usage));
     sendJson(res, 200, response);
   } catch (error) {
-    if (error instanceof AllProvidersUnavailableError) {
-      sendError(res, 503, 'all_providers_unavailable', error.message);
-      return;
-    }
-    if (error instanceof UnknownLogicalModelError) {
-      sendError(res, 400, 'invalid_request', error.message);
-      return;
-    }
+    if (sendRoutingError(res, error)) return;
     throw error;
   }
 }
@@ -298,14 +317,7 @@ async function handleEmbeddings(
     );
     sendJson(res, 200, response);
   } catch (error) {
-    if (error instanceof AllProvidersUnavailableError) {
-      sendError(res, 503, 'all_providers_unavailable', error.message);
-      return;
-    }
-    if (error instanceof UnknownLogicalModelError) {
-      sendError(res, 400, 'invalid_request', error.message);
-      return;
-    }
+    if (sendRoutingError(res, error)) return;
     throw error;
   }
 }

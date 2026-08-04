@@ -120,4 +120,19 @@ describe('createAnthropicAdapter — failure paths', () => {
       AdapterError,
     );
   });
+
+  it('raises a classified AdapterError, not a raw TypeError, for a 2xx body of the wrong shape', async () => {
+    // Stage 04 step 10: an OpenAI-shaped body handed to the Anthropic adapter has no
+    // `content` array at all — must not crash this adapter with an unhandled TypeError.
+    const adapter = createAnthropicAdapter({
+      baseUrl: 'https://api.anthropic.example',
+      fetchImpl: fakeFetch({
+        status: 200,
+        body: { choices: [{ message: { content: 'wrong shape' } }] },
+      }),
+    });
+    await expect(adapter.complete(request, 'claude-test', 'cred')).rejects.toMatchObject({
+      kind: 'invalid_request',
+    });
+  });
 });

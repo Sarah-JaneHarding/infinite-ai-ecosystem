@@ -106,34 +106,46 @@ export function createAnthropicAdapter(config: AnthropicConfig): ProviderAdapter
         );
       }
 
-      const raw = (await response.json()) as AnthropicMessagesResponse;
-      const textBlocks = raw.content.filter(
-        (block): block is Extract<AnthropicContentBlock, { type: 'text' }> =>
-          block.type === 'text',
-      );
-      const toolBlocks = raw.content.filter(
-        (block): block is Extract<AnthropicContentBlock, { type: 'tool_use' }> =>
-          block.type === 'tool_use',
-      );
+      // A 2xx response with an unexpected shape is not this code's bug to crash on — the
+      // provider (or a chaos drill standing in for one) sent something that does not look
+      // like a Messages response, and the router needs an AdapterError to fall back on,
+      // not a bare TypeError it does not know how to classify.
+      try {
+        const raw = (await response.json()) as AnthropicMessagesResponse;
+        const textBlocks = raw.content.filter(
+          (block): block is Extract<AnthropicContentBlock, { type: 'text' }> =>
+            block.type === 'text',
+        );
+        const toolBlocks = raw.content.filter(
+          (block): block is Extract<AnthropicContentBlock, { type: 'tool_use' }> =>
+            block.type === 'tool_use',
+        );
 
-      return {
-        content: textBlocks.map((block) => block.text).join(''),
-        // exactOptionalPropertyTypes: an absent tool call list is *omitted*, not set to
-        // undefined — the two are different states to a schema that distinguishes them.
-        ...(toolBlocks.length > 0
-          ? {
-              toolCalls: toolBlocks.map((block) => ({
-                name: block.name,
-                arguments: block.input,
-              })),
-            }
-          : {}),
-        usage: {
-          promptTokens: raw.usage.input_tokens,
-          completionTokens: raw.usage.output_tokens,
-          totalTokens: raw.usage.input_tokens + raw.usage.output_tokens,
-        },
-      };
+        return {
+          content: textBlocks.map((block) => block.text).join(''),
+          // exactOptionalPropertyTypes: an absent tool call list is *omitted*, not set to
+          // undefined — the two are different states to a schema that distinguishes them.
+          ...(toolBlocks.length > 0
+            ? {
+                toolCalls: toolBlocks.map((block) => ({
+                  name: block.name,
+                  arguments: block.input,
+                })),
+              }
+            : {}),
+          usage: {
+            promptTokens: raw.usage.input_tokens,
+            completionTokens: raw.usage.output_tokens,
+            totalTokens: raw.usage.input_tokens + raw.usage.output_tokens,
+          },
+        };
+      } catch (error) {
+        if (error instanceof AdapterError) throw error;
+        throw new AdapterError(
+          'invalid_request',
+          `Provider anthropic returned a response this adapter could not parse: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
     },
 
     embed: embedUnsupported,

@@ -193,4 +193,23 @@ describe('createOpenAiCompatibleAdapter — failure paths', () => {
       adapter.complete(baseRequest, 'gpt-test', 'cred'),
     ).rejects.toBeInstanceOf(AdapterError);
   });
+
+  it('raises a classified AdapterError, not a raw TypeError, for a 2xx body of the wrong shape', async () => {
+    // Stage 04 step 10: an Anthropic-shaped body handed to the OpenAI-family adapter has
+    // no `choices` array at all — a chaos drill or a genuinely misbehaving provider must
+    // not crash this adapter with an unhandled TypeError.
+    const adapter = createOpenAiCompatibleAdapter({
+      provider: 'openai',
+      baseUrl: 'https://api.openai.example',
+      fetchImpl: fakeFetch({
+        status: 200,
+        body: { content: [{ type: 'text', text: 'wrong shape' }] },
+      }),
+    });
+    await expect(adapter.complete(baseRequest, 'gpt-test', 'cred')).rejects.toMatchObject(
+      {
+        kind: 'invalid_request',
+      },
+    );
+  });
 });

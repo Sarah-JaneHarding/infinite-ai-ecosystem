@@ -435,32 +435,34 @@ Open questions raised: OQ-007.
 ## Stage 04 — Model Gateway
 
 Started: 2026-08-04 Completed: —
-Exit gate: **PARTIAL** — steps 1–6 and 9 are built and proven, including the tenant
-lexicon's `packages/db` wiring; streaming/tool-call pass-through (step 7), Langfuse/OTel
-instrumentation (step 8) and the provider-outage drill suite (step 10) are not.
+Exit gate: **PARTIAL** — steps 1–6, 9 and 10 are built and proven, including the tenant
+lexicon's `packages/db` wiring; streaming and tool-call pass-through (step 7) and
+Langfuse/OTel instrumentation (step 8) are not.
 
 **What this PR put in place**
 
-| Step                           | Where                                                              | Proven by                                                                                                                                                                                                          |
-| ------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1 · HTTP surface               | `apps/gateway/src/server.ts`                                       | `/health`, `/v1/chat/completions`, `/v1/embeddings` over real HTTP in `test/server.spec.ts`                                                                                                                        |
-| 2 · Provider adapters          | `apps/gateway/src/adapters/`                                       | Anthropic-family and OpenAI-family adapters (the latter also serves the self-hosted local-model case); 13 tests against a faked `fetch`                                                                            |
-| 3 · Credential pooling         | `apps/gateway/src/credentials/pool.ts`                             | round-robin, cooldown on rate limit, recovery after cooldown, no raw key reachable outside `reveal()`                                                                                                              |
-| 4 · Model routing / fallback   | `apps/gateway/src/routing/`                                        | config is Zod-validated data, not code; fallback chain proven by test, non-retryable errors stop the chain immediately                                                                                             |
-| 5 · Budgets                    | `apps/gateway/src/budgets/budget.ts`                               | hard limit refuses via `check()` before any adapter is touched; proven at both the tracker and the HTTP layer                                                                                                      |
-| 6 · Prompt cache + idempotency | `apps/gateway/src/cache/cache.ts`                                  | identical request within TTL served from cache and recorded as a hit; idempotency key wins over a differing content key                                                                                            |
-| 9 · Inbound PII guard          | `apps/gateway/src/server.ts` (`assertEgressAllowed`)               | runs before budget and before routing; a payload with no provenance, or one with a raw identifier that survived de-identification, is refused with the router never called                                         |
-| 9 · Tenant lexicon             | `packages/db/src/lexicon.ts`, wired in `apps/gateway/src/index.ts` | learner legal names decrypted from `learner_identifier`, plus staff and school names, read inside `withTenant()`; scoped by RLS and proven against real Postgres in `packages/db/test/lexicon.integration.spec.ts` |
+| Step                           | Where                                                              | Proven by                                                                                                                                                                                                                                                                                               |
+| ------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 · HTTP surface               | `apps/gateway/src/server.ts`                                       | `/health`, `/v1/chat/completions`, `/v1/embeddings` over real HTTP in `test/server.spec.ts`                                                                                                                                                                                                             |
+| 2 · Provider adapters          | `apps/gateway/src/adapters/`                                       | Anthropic-family and OpenAI-family adapters (the latter also serves the self-hosted local-model case); 13 tests against a faked `fetch`                                                                                                                                                                 |
+| 3 · Credential pooling         | `apps/gateway/src/credentials/pool.ts`                             | round-robin, cooldown on rate limit, recovery after cooldown, no raw key reachable outside `reveal()`                                                                                                                                                                                                   |
+| 4 · Model routing / fallback   | `apps/gateway/src/routing/`                                        | config is Zod-validated data, not code; fallback chain proven by test, non-retryable errors stop the chain immediately                                                                                                                                                                                  |
+| 5 · Budgets                    | `apps/gateway/src/budgets/budget.ts`                               | hard limit refuses via `check()` before any adapter is touched; proven at both the tracker and the HTTP layer                                                                                                                                                                                           |
+| 6 · Prompt cache + idempotency | `apps/gateway/src/cache/cache.ts`                                  | identical request within TTL served from cache and recorded as a hit; idempotency key wins over a differing content key                                                                                                                                                                                 |
+| 9 · Inbound PII guard          | `apps/gateway/src/server.ts` (`assertEgressAllowed`)               | runs before budget and before routing; a payload with no provenance, or one with a raw identifier that survived de-identification, is refused with the router never called                                                                                                                              |
+| 9 · Tenant lexicon             | `packages/db/src/lexicon.ts`, wired in `apps/gateway/src/index.ts` | learner legal names decrypted from `learner_identifier`, plus staff and school names, read inside `withTenant()`; scoped by RLS and proven against real Postgres in `packages/db/test/lexicon.integration.spec.ts`                                                                                      |
+| 10 · Provider-outage drill     | `apps/gateway/test/chaos/provider-outage.spec.ts`                  | `pnpm --filter gateway test:chaos`; 429s, 500s and timeouts on the first provider all recover through the real adapters, router, cache and HTTP server; chain exhaustion spends nothing and caches nothing; a non-retryable failure stops the chain and returns a typed error rather than exhausting it |
 
 **Exit gate items proven**
 
-| Gate item                                                 | Result                                                                                                                                                                                                                                               |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| No provider SDK imported outside `apps/gateway`           | PASS — no adapter imports one at all (plain `fetch` against each provider's REST API); a repo-wide test (`no-provider-sdk-outside-gateway.spec.ts`) scans every source file for the banned import patterns, confined to `apps/gateway/src/adapters/` |
-| Budget refusal proven by test                             | PASS — `test/budgets/budget.spec.ts` and `test/server.spec.ts`'s "enforced before the call" case                                                                                                                                                     |
-| Fallback chain proven by test                             | PASS — `test/routing/router.spec.ts`                                                                                                                                                                                                                 |
-| Zero credentials in logs                                  | PASS — `packages/telemetry/test/logger.spec.ts`; the boot script registers every pooled key for redaction                                                                                                                                            |
-| Cache hit path returns identical output and records a hit | PASS — `test/cache/cache.spec.ts`, `test/server.spec.ts`                                                                                                                                                                                             |
+| Gate item                                                       | Result                                                                                                                                                                                                                                               |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No provider SDK imported outside `apps/gateway`                 | PASS — no adapter imports one at all (plain `fetch` against each provider's REST API); a repo-wide test (`no-provider-sdk-outside-gateway.spec.ts`) scans every source file for the banned import patterns, confined to `apps/gateway/src/adapters/` |
+| Budget refusal proven by test                                   | PASS — `test/budgets/budget.spec.ts` and `test/server.spec.ts`'s "enforced before the call" case                                                                                                                                                     |
+| Fallback chain proven by test                                   | PASS — `test/routing/router.spec.ts`                                                                                                                                                                                                                 |
+| Zero credentials in logs                                        | PASS — `packages/telemetry/test/logger.spec.ts`; the boot script registers every pooled key for redaction                                                                                                                                            |
+| Cache hit path returns identical output and records a hit       | PASS — `test/cache/cache.spec.ts`, `test/server.spec.ts`                                                                                                                                                                                             |
+| Graceful fallback and no partial writes under a provider outage | PASS — `test/chaos/provider-outage.spec.ts` (step 10); real adapters and router, faked `fetch`                                                                                                                                                       |
 
 **A real defect the exit-gate work found before it shipped**
 
@@ -495,6 +497,26 @@ replacing it with the calling agent's real identity is explicitly Stage 06's to 
 `failClosedLexicon` stays as the default when `DB_ENCRYPTION_KEY` is not configured —
 still the honest state for a gateway that cannot decrypt anything, rather than silently
 disabling the detector with an empty lexicon.
+
+**A second real defect, found while writing the chaos drill**
+
+The chaos suite's first draft scripted an Anthropic success response using an
+OpenAI-shaped body by mistake. The Anthropic adapter did not refuse it — it crashed with
+a raw `TypeError` reading `.filter` off an undefined `content` field, which the router did
+not recognise as an `AdapterError` and so did not retry, and which the server did not
+recognise either, so it fell through to a bare `500 Internal gateway error`. A malformed
+2xx body from a genuinely misbehaving provider would have produced the exact same opaque
+failure in production. Both adapters now wrap their response-shaping logic in a
+`try/catch` that converts anything unexpected into `AdapterError('invalid_request', ...)`,
+which the router can fall back past and the server reports as a typed error — proven by a
+dedicated test per adapter, not just fixed and left implicit in the chaos suite.
+
+`sendRoutingError()` in `server.ts` also gained a case for a bare `AdapterError` reaching
+the HTTP layer (a non-retryable failure — invalid credential, malformed provider response —
+stops the router's chain immediately rather than exhausting it, so `AllProvidersUnavailableError`
+is the wrong type to expect). It maps to `502` with the `all_providers_unavailable` code:
+the gateway could not obtain a completion from any configured provider, which is what that
+code already meant, even though not every link in the chain was tried.
 
 **One thing still deliberately not invented**
 
