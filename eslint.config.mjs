@@ -182,6 +182,21 @@ export default tseslint.config(
     rules: { 'no-restricted-globals': 'off', 'no-restricted-syntax': 'off' },
   },
   {
+    // The gateway's own env loader (Stage 04) is the second and only other exception to
+    // rule 7: provider credentials never enter the shared EnvSchema, precisely so no
+    // other service's environment can leak them (see apps/gateway/.env.example).
+    files: ['apps/gateway/src/config/**/*.ts'],
+    rules: { 'no-restricted-globals': 'off', 'no-restricted-syntax': 'off' },
+  },
+  {
+    // The one sanctioned way to emit a log line (§6.1: "console.log in committed code —
+    // use the logger"). It writes to stdout directly rather than through console, which
+    // is also forbidden — every other file in the repo calls into this module instead of
+    // reaching for process or console itself.
+    files: ['packages/telemetry/src/logger.ts'],
+    rules: { 'no-restricted-globals': 'off' },
+  },
+  {
     // packages/db owns the raw Prisma client and re-exports only the scoped one (rule 5).
     // Rule 5 says "no code *outside* packages/db" — so the whole package is in scope, not
     // just src/. The export-surface test is what actually enforces that nothing escapes.

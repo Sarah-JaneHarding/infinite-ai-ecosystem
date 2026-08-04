@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Zod schemas shared by the API, agents and UI. POPIA vocabularies and the curriculum framework live here.",
+  "description": "Zod schemas shared by the API, agents and UI. POPIA vocabularies, the curriculum framework and the Model Gateway's wire contract live here.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {

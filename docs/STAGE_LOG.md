@@ -429,3 +429,145 @@ Deviations from manual: no Docker in the authoring environment, so every databas
 in this stage was written blind and is proven only in CI.
 
 Open questions raised: OQ-007.
+
+---
+
+## Stage 04 — Model Gateway
+
+Started: 2026-08-04 Completed: —
+Exit gate: **PARTIAL** — steps 1–7, 9 and 10 are built and proven, including the tenant
+lexicon's `packages/db` wiring; Langfuse/OTel instrumentation (step 8) is not.
+
+**What this PR put in place**
+
+| Step                           | Where                                                                                                                              | Proven by                                                                                                                                                                                                                                                                                               |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 · HTTP surface               | `apps/gateway/src/server.ts`                                                                                                       | `/health`, `/v1/chat/completions`, `/v1/embeddings` over real HTTP in `test/server.spec.ts`                                                                                                                                                                                                             |
+| 2 · Provider adapters          | `apps/gateway/src/adapters/`                                                                                                       | Anthropic-family and OpenAI-family adapters (the latter also serves the self-hosted local-model case); 13 tests against a faked `fetch`                                                                                                                                                                 |
+| 3 · Credential pooling         | `apps/gateway/src/credentials/pool.ts`                                                                                             | round-robin, cooldown on rate limit, recovery after cooldown, no raw key reachable outside `reveal()`                                                                                                                                                                                                   |
+| 4 · Model routing / fallback   | `apps/gateway/src/routing/`                                                                                                        | config is Zod-validated data, not code; fallback chain proven by test, non-retryable errors stop the chain immediately                                                                                                                                                                                  |
+| 5 · Budgets                    | `apps/gateway/src/budgets/budget.ts`                                                                                               | hard limit refuses via `check()` before any adapter is touched; proven at both the tracker and the HTTP layer                                                                                                                                                                                           |
+| 6 · Prompt cache + idempotency | `apps/gateway/src/cache/cache.ts`                                                                                                  | identical request within TTL served from cache and recorded as a hit; idempotency key wins over a differing content key                                                                                                                                                                                 |
+| 9 · Inbound PII guard          | `apps/gateway/src/server.ts` (`assertEgressAllowed`)                                                                               | runs before budget and before routing; a payload with no provenance, or one with a raw identifier that survived de-identification, is refused with the router never called                                                                                                                              |
+| 9 · Tenant lexicon             | `packages/db/src/lexicon.ts`, wired in `apps/gateway/src/index.ts`                                                                 | learner legal names decrypted from `learner_identifier`, plus staff and school names, read inside `withTenant()`; scoped by RLS and proven against real Postgres in `packages/db/test/lexicon.integration.spec.ts`                                                                                      |
+| 10 · Provider-outage drill     | `apps/gateway/test/chaos/provider-outage.spec.ts`                                                                                  | `pnpm --filter gateway test:chaos`; 429s, 500s and timeouts on the first provider all recover through the real adapters, router, cache and HTTP server; chain exhaustion spends nothing and caches nothing; a non-retryable failure stops the chain and returns a typed error rather than exhausting it |
+| 7 · Streaming + tool calls     | `apps/gateway/src/adapters/sse.ts`, `completeStream` on both adapters, `routeChatCompletionStream`, `handleStreamedChatCompletion` | SSE parsed and re-emitted as `text/event-stream`; tool-call deltas pass through by index for both providers' differing wire shapes; fallback is proven possible before the first event and proven impossible after it; budget is recorded only once the `done` event reveals usage                      |
+
+**Exit gate items proven**
+
+| Gate item                                                       | Result                                                                                                                                                                                                                                               |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No provider SDK imported outside `apps/gateway`                 | PASS — no adapter imports one at all (plain `fetch` against each provider's REST API); a repo-wide test (`no-provider-sdk-outside-gateway.spec.ts`) scans every source file for the banned import patterns, confined to `apps/gateway/src/adapters/` |
+| Budget refusal proven by test                                   | PASS — `test/budgets/budget.spec.ts` and `test/server.spec.ts`'s "enforced before the call" case                                                                                                                                                     |
+| Fallback chain proven by test                                   | PASS — `test/routing/router.spec.ts`                                                                                                                                                                                                                 |
+| Zero credentials in logs                                        | PASS — `packages/telemetry/test/logger.spec.ts`; the boot script registers every pooled key for redaction                                                                                                                                            |
+| Cache hit path returns identical output and records a hit       | PASS — `test/cache/cache.spec.ts`, `test/server.spec.ts`                                                                                                                                                                                             |
+| Graceful fallback and no partial writes under a provider outage | PASS — `test/chaos/provider-outage.spec.ts` (step 10); real adapters and router, faked `fetch`                                                                                                                                                       |
+
+**A real defect the exit-gate work found before it shipped**
+
+`DEFAULT_ROUTING_CONFIG` originally named `text.scrub → { provider: "local" }` as a
+"minimal default so a fresh clone boots." It does the opposite: `createRouter`'s boot
+validation refuses to construct unless every provider a routing entry names has a
+configured adapter, so a deployment that configured only Anthropic — a perfectly normal
+thing to do — would fail to boot entirely, over a model nobody had asked for. Found by
+writing `boot()`'s own test rather than assuming the wiring worked. Fixed by shipping an
+**empty** default: nothing routes until a real routing file names it, the same shape of
+decision the retention schedule template already makes by shipping no periods. See
+`packages/contracts` reviewSchedule's own reasoning; `apps/gateway/src/routing/config.ts`
+now states the parallel explicitly.
+
+**Tenant lexicon resolution, closed**
+
+The inbound PII guard's detector layer needs each tenant's known names. Learner legal
+names live encrypted in `learner_identifier` (§1.3) — never plaintext in the database —
+so `packages/db/src/lexicon.ts` decrypts them inside the caller's tenant transaction,
+alongside `staff_member.display_name` (already plaintext; staff are not learner personal
+information but a colleague's name in a note is still worth catching) and `school.name`.
+A stale-key-version identifier is skipped rather than thrown on, so one row cannot take
+the whole lexicon down; a learner `eraseSubject` has destroyed drops out on its own,
+because the row the query reads is gone, not because this function checks a flag.
+
+`withTenant()` needs an `actorId` to attribute the read to (Stage 02's audit trail), and
+there is no real caller identity on the gateway's wire yet — that arrives with Stage 06's
+agent runtime. `GATEWAY_SERVICE_ACTOR_ID` in `apps/gateway/src/index.ts` is a fixed,
+documented placeholder for this one read-only lookup, not a value to forget about:
+replacing it with the calling agent's real identity is explicitly Stage 06's to do.
+
+`failClosedLexicon` stays as the default when `DB_ENCRYPTION_KEY` is not configured —
+still the honest state for a gateway that cannot decrypt anything, rather than silently
+disabling the detector with an empty lexicon.
+
+**A second real defect, found while writing the chaos drill**
+
+The chaos suite's first draft scripted an Anthropic success response using an
+OpenAI-shaped body by mistake. The Anthropic adapter did not refuse it — it crashed with
+a raw `TypeError` reading `.filter` off an undefined `content` field, which the router did
+not recognise as an `AdapterError` and so did not retry, and which the server did not
+recognise either, so it fell through to a bare `500 Internal gateway error`. A malformed
+2xx body from a genuinely misbehaving provider would have produced the exact same opaque
+failure in production. Both adapters now wrap their response-shaping logic in a
+`try/catch` that converts anything unexpected into `AdapterError('invalid_request', ...)`,
+which the router can fall back past and the server reports as a typed error — proven by a
+dedicated test per adapter, not just fixed and left implicit in the chaos suite.
+
+`sendRoutingError()` in `server.ts` also gained a case for a bare `AdapterError` reaching
+the HTTP layer (a non-retryable failure — invalid credential, malformed provider response —
+stops the router's chain immediately rather than exhausting it, so `AllProvidersUnavailableError`
+is the wrong type to expect). It maps to `502` with the `all_providers_unavailable` code:
+the gateway could not obtain a completion from any configured provider, which is what that
+code already meant, even though not every link in the chain was tried.
+
+**Streaming and tool-call pass-through, closed**
+
+`completeStream()` on each adapter opens the same connection `complete()` does, with
+`stream: true`, and checks the response status _before_ returning anything — the one
+property `routing/router.ts`'s new `routeChatCompletionStream()` depends on. Fallback to
+the next link in the chain is only attempted before a generator's first event; once one
+event has left the generator, a caller (the HTTP layer, or eventually an agent) has
+already forwarded bytes downstream, and switching providers mid-stream would mean either
+duplicating or silently losing content. `test/routing/router.spec.ts` proves both halves
+of that: fallback happens before the first event, and does not happen after it.
+
+`apps/gateway/src/adapters/sse.ts` is a small, provider-agnostic SSE line reader — it only
+extracts `data:` lines across chunk boundaries, because both OpenAI's and Anthropic's
+streaming payloads repeat their own event type inside the JSON body, so the parser does
+not need to understand either vocabulary. Each adapter owns translating its provider's
+actual event shape (OpenAI's `choices[0].delta`, Anthropic's `content_block_start` /
+`content_block_delta` / `message_delta`) into the shared `AdapterStreamEvent` union.
+
+`packages/contracts` gained `ChatCompletionStreamEvent`, a discriminated union
+(`content` / `tool_call` / `done` / `error`) so every event on one stream carries the same
+`id`, `model` and `provider` for a client to correlate. `error` is the one case with no
+non-streaming equivalent: once headers are sent as `text/event-stream`, a failure can no
+longer be reported as an HTTP status the client has already moved past, so it becomes an
+in-stream event instead, proven by `test/server.spec.ts`'s "reports an in-stream error
+event" case. A failure _before_ the first event is still a normal typed HTTP error — proven
+by the companion case asserting the response is not `text/event-stream` at all.
+
+The prompt cache and the budget tracker both skip streaming for now: caching a stream
+would mean synthesising a replay from a stored final result, which is a real feature but
+not this one, and budget is recorded once the stream's own `done` event reveals usage no
+provider states up front — proven by `test/server.spec.ts`'s "records budget spend only
+once the done event reveals usage".
+
+**One thing still deliberately not invented**
+
+**Provider pricing.** Cost estimation defaults to zero per call. A hard budget limit is
+real and enforced the moment a school's real per-model price is supplied; until then,
+zero cost means the tracker never refuses on cost grounds, which is the safe default
+rather than an invented number feeding a control that matters. Recorded here rather than
+left to be discovered later; needed before this stage's exit gate can read PASS.
+
+Deviations from manual: budgets and the prompt cache are in-memory, not the Redis-backed
+store §1.1 locks in — a single gateway process is the only deployment shape this PR
+proves; a multi-instance gateway sharing that state needs a shared store, which is a
+follow-up rather than a silent gap (both `BudgetTracker` and `GatewayCache` are built
+behind an interface for exactly that swap). The prompt cache does not cover streaming
+requests, for the reason above. Langfuse/OTel instrumentation (step 8) is not built.
+`INFINITEAI_BUILD_MANUAL.md` itself was added to the repo in this PR — it had existed only
+outside it since Stage 00.
+
+Open questions raised: none. The pricing gap above is follow-up implementation work, not
+a decision that needs a human's judgement call, so it is tracked here rather than in
+`docs/OPEN_QUESTIONS.md`.

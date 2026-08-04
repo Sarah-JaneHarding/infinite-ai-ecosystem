@@ -49,4 +49,6 @@ export {
   type TenantOwnedTable,
 } from './tables.js';
 
+export { readTenantLexicon } from './lexicon.js';
+
 export const PACKAGE_NAME = '@infinite-ai/db' as const;

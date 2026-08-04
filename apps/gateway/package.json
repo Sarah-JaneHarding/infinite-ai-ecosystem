@@ -12,11 +12,25 @@
   "scripts": {
     "build": "tsc --build",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "lint": "eslint src"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:chaos": "vitest run test/chaos",
+    "lint": "eslint src",
+    "start": "tsx src/main.ts"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "3.2.7",
+    "tsx": "4.23.1",
     "typescript": "5.9.3",
     "vitest": "3.2.7"
+  },
+  "dependencies": {
+    "@infinite-ai/config": "workspace:*",
+    "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/db": "workspace:*",
+    "@infinite-ai/deident": "workspace:*",
+    "@infinite-ai/guardrails": "workspace:*",
+    "@infinite-ai/telemetry": "workspace:*",
+    "zod": "3.25.76"
   }
 }
