@@ -4,11 +4,13 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { parseEnv } from '@infinite-ai/config';
+import { NOOP_TRACER } from '@infinite-ai/telemetry';
 
 import {
   boot,
   buildAdapters,
   buildLexiconResolver,
+  buildTracer,
   failClosedLexicon,
   loadRouting,
 } from '../src/index.js';
@@ -113,6 +115,27 @@ describe('buildLexiconResolver', () => {
     );
     expect(resolver).not.toBe(failClosedLexicon);
     expect(typeof resolver).toBe('function');
+  });
+});
+
+describe('buildTracer', () => {
+  it('returns the no-op tracer when OTEL_EXPORTER_OTLP_ENDPOINT is not configured', () => {
+    const env = parseEnv({
+      DATABASE_URL: 'postgresql://x/y',
+      REDIS_URL: 'redis://x',
+    });
+    expect(buildTracer(env)).toBe(NOOP_TRACER);
+  });
+
+  it('builds a real, exporting tracer once an OTLP endpoint is configured', () => {
+    const env = parseEnv({
+      DATABASE_URL: 'postgresql://x/y',
+      REDIS_URL: 'redis://x',
+      OTEL_EXPORTER_OTLP_ENDPOINT: 'https://langfuse.example/api/public/otel',
+      OTEL_EXPORTER_OTLP_HEADERS: 'Authorization=Basic abc123',
+    });
+    const tracer = buildTracer(env);
+    expect(tracer).not.toBe(NOOP_TRACER);
   });
 });
 

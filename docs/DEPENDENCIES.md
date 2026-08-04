@@ -52,11 +52,29 @@ break isolation. Revisit at Stage 16, where the supply-chain review runs.
 
 ## Stage 04 — Model Gateway
 
-No new dependency. `apps/gateway` uses `zod` (schemas for the OpenAI-compatible wire
-contract), `tsx` (the `start` script) and `@vitest/coverage-v8` (coverage), all already
-recorded above at the versions pinned there. Provider calls go over the platform `fetch`,
-not a provider SDK — rule 3 confines the one exception (`apps/gateway/src/adapters/`) to
-adapter code, and there is nothing in it to add here, since no SDK was pulled in at all.
+Steps 1–7, 9 and 10 needed no new dependency: `apps/gateway` uses `zod` (schemas for the
+OpenAI-compatible wire contract), `tsx` (the `start` script) and `@vitest/coverage-v8`
+(coverage), all already recorded above at the versions pinned there. Provider calls go
+over the platform `fetch`, not a provider SDK — rule 3 confines the one exception
+(`apps/gateway/src/adapters/`) to adapter code, and there is nothing in it to add here,
+since no SDK was pulled in at all.
+
+Step 8 (OTel spans, Langfuse traces) added the official OpenTelemetry JS SDK to
+`packages/telemetry`:
+
+| Package                                   | Version | Licence    | Why                                                                                                                                                                                                                                                                                                     | Replaces |
+| ----------------------------------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `@opentelemetry/api`                      | 1.9.1   | Apache-2.0 | The stable OTel API surface (`Span`, `SpanStatusCode`) that `packages/telemetry/src/tracing.ts` wraps.                                                                                                                                                                                                  | —        |
+| `@opentelemetry/sdk-trace-base`           | 2.10.0  | Apache-2.0 | `BasicTracerProvider`, `BatchSpanProcessor` and the in-memory exporter used by tests. The base (non-Node) SDK is enough — this module passes an explicit `Span` through call sites rather than relying on `AsyncLocalStorage` context propagation, so `sdk-trace-node`'s context manager is not needed. | —        |
+| `@opentelemetry/exporter-trace-otlp-http` | 0.221.0 | Apache-2.0 | Ships spans over OTLP/HTTP. Langfuse ingests OTLP directly at its own endpoint, so no Langfuse-specific SDK is needed — see `tracing.ts`'s file header.                                                                                                                                                 | —        |
+| `@opentelemetry/resources`                | 2.10.0  | Apache-2.0 | `resourceFromAttributes()`, to tag every span with `service.name`.                                                                                                                                                                                                                                      | —        |
+| `@opentelemetry/semantic-conventions`     | 1.43.0  | Apache-2.0 | The standard `service.name` attribute key, rather than a hand-typed string.                                                                                                                                                                                                                             | —        |
+
+All five are the official CNCF OpenTelemetry JS packages, Apache-2.0, and none needs an
+approval exception. `apps/gateway` takes `@opentelemetry/sdk-trace-base` as a devDependency
+only, to build an in-memory span exporter in its own tests — the real exporter is built
+once in `packages/telemetry` and consumed through its `Tracer`/`Span` interface, never
+imported directly by application code.
 
 ## Adding a dependency
 

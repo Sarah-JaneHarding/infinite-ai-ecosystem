@@ -23,4 +23,14 @@ export {
   type Secret,
 } from './logger.js';
 
+export {
+  createTracer,
+  parseOtlpHeaders,
+  NOOP_TRACER,
+  type Span,
+  type SpanAttributeValue,
+  type Tracer,
+  type TracerOptions,
+} from './tracing.js';
+
 export const PACKAGE_NAME = '@infinite-ai/telemetry' as const;

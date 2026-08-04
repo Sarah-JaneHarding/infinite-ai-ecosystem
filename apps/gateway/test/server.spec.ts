@@ -4,8 +4,9 @@
 
 import type { AddressInfo } from 'node:net';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 
-import { createLogger } from '@infinite-ai/telemetry';
+import { createLogger, createTracer, type Span } from '@infinite-ai/telemetry';
 import type { TenantLexicon } from '@infinite-ai/deident';
 
 import { BudgetTracker } from '../src/budgets/budget.js';
@@ -50,6 +51,7 @@ let baseUrl: string;
 let routeChatCompletion: ReturnType<typeof vi.fn>;
 let routeEmbeddings: ReturnType<typeof vi.fn>;
 let routeChatCompletionStream: ReturnType<typeof vi.fn>;
+let spanExporter: InMemorySpanExporter;
 
 function start(overrides: Partial<GatewayServerDeps> = {}): void {
   routeChatCompletion = vi.fn().mockResolvedValue({
@@ -65,6 +67,12 @@ function start(overrides: Partial<GatewayServerDeps> = {}): void {
   });
   routeChatCompletionStream = vi.fn().mockImplementation(() => defaultStream());
 
+  spanExporter = new InMemorySpanExporter();
+  const tracer = createTracer({
+    serviceName: 'test-gateway',
+    spanProcessor: new SimpleSpanProcessor(spanExporter),
+  });
+
   const deps: GatewayServerDeps = {
     router: { routeChatCompletion, routeEmbeddings, routeChatCompletionStream },
     budget: new BudgetTracker({ limitsFor: () => undefined }),
@@ -72,6 +80,7 @@ function start(overrides: Partial<GatewayServerDeps> = {}): void {
     resolveLexicon: async () => EMPTY_LEXICON,
     costEstimator: () => 1,
     logger: createLogger({ sink: () => undefined }),
+    tracer,
     ...overrides,
   };
 
@@ -324,6 +333,86 @@ describe('POST /v1/embeddings', () => {
     });
     expect(res.status).toBe(403);
     expect(routeEmbeddings).not.toHaveBeenCalled();
+  });
+});
+
+describe('POST /v1/chat/completions — tracing (Stage 04 step 8)', () => {
+  it('records tenant, model, provider, token counts, cost and a cache miss on the span', async () => {
+    const res = await post('/v1/chat/completions', baseRequestBody());
+    expect(res.status).toBe(200);
+
+    const [span] = spanExporter.getFinishedSpans();
+    expect(span?.name).toBe('gateway.chat_completions');
+    expect(span?.attributes['tenant.id']).toBe('tenant-1');
+    expect(span?.attributes['gateway.model']).toBe('plan.author');
+    expect(span?.attributes['gateway.provider']).toBe('anthropic');
+    expect(span?.attributes['gateway.cache_hit']).toBe(false);
+    expect(span?.attributes['llm.usage.prompt_tokens']).toBe(5);
+    expect(span?.attributes['llm.usage.completion_tokens']).toBe(5);
+    expect(span?.attributes['gateway.cost_estimate']).toBe(1);
+  });
+
+  it('marks the second, cached request as a cache hit on its own span', async () => {
+    const request = baseRequestBody();
+    await post('/v1/chat/completions', request);
+    await post('/v1/chat/completions', request);
+
+    const spans = spanExporter.getFinishedSpans();
+    expect(spans[1]?.attributes['gateway.cache_hit']).toBe(true);
+  });
+
+  it('records the refusal reason on the span when the PII guard blocks a request', async () => {
+    await post('/v1/chat/completions', baseRequestBody({ provenance: undefined }));
+
+    const [span] = spanExporter.getFinishedSpans();
+    expect(span?.attributes['gateway.refusal_reason']).toBe('pii_egress_blocked');
+  });
+
+  it('records the refusal reason on the span when the budget is exhausted', async () => {
+    server.close();
+    const budget = new BudgetTracker({ limitsFor: () => ({ hardDailyLimit: 1 }) });
+    budget.record({ tenantId: 'tenant-1', module: 'mod-01', agent: 'CE-05' }, 1);
+    await startAndWait({ budget });
+
+    await post('/v1/chat/completions', baseRequestBody());
+
+    const [span] = spanExporter.getFinishedSpans();
+    expect(span?.attributes['gateway.refusal_reason']).toBe('budget_exceeded');
+  });
+
+  it('passes the request span through to the router, so fallback events land on the trace', async () => {
+    routeChatCompletion.mockImplementation(
+      async (_request: unknown, span?: Span): Promise<unknown> => {
+        span?.addEvent('gateway.fallback', {
+          provider: 'anthropic',
+          reason: 'rate_limited',
+        });
+        return {
+          result: {
+            content: 'A lesson plan.',
+            usage: { promptTokens: 5, completionTokens: 5, totalTokens: 10 },
+          },
+          provider: 'openai',
+        };
+      },
+    );
+
+    await post('/v1/chat/completions', baseRequestBody());
+
+    const [span] = spanExporter.getFinishedSpans();
+    expect(span?.events.map((e) => e.name)).toEqual(['gateway.fallback']);
+    expect(span?.events[0]?.attributes?.provider).toBe('anthropic');
+  });
+
+  it('ends exactly one span per streamed request, carrying its final usage and provider', async () => {
+    const res = await post('/v1/chat/completions', baseRequestBody({ stream: true }));
+    await res.text();
+
+    const spans = spanExporter.getFinishedSpans();
+    expect(spans).toHaveLength(1);
+    expect(spans[0]?.attributes['gateway.stream']).toBe(true);
+    expect(spans[0]?.attributes['gateway.provider']).toBe('anthropic');
+    expect(spans[0]?.attributes['llm.usage.prompt_tokens']).toBe(5);
   });
 });
 

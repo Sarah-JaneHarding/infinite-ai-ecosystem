@@ -11,7 +11,7 @@
 import type { AddressInfo } from 'node:net';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createLogger } from '@infinite-ai/telemetry';
+import { NOOP_TRACER, createLogger } from '@infinite-ai/telemetry';
 import type { TenantLexicon } from '@infinite-ai/deident';
 
 import { createAnthropicAdapter } from '../../src/adapters/anthropic.js';
@@ -121,6 +121,7 @@ async function start(fetchImpl: FetchLike): Promise<void> {
     resolveLexicon: async () => EMPTY_LEXICON,
     costEstimator: () => 1,
     logger: createLogger({ sink: () => undefined }),
+    tracer: NOOP_TRACER,
   };
 
   server = createGatewayServer(deps);

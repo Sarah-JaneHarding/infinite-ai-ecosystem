@@ -1,6 +1,8 @@
 import type { ChatCompletionRequest } from '@infinite-ai/contracts';
 import { describe, expect, it, vi } from 'vitest';
+import { InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 
+import { createTracer } from '@infinite-ai/telemetry';
 import { CredentialPool } from '../../src/credentials/pool.js';
 import {
   AllProvidersUnavailableError,
@@ -100,6 +102,50 @@ describe('createRouter — fallback chain', () => {
     expect(result.content).toBe('ok');
     expect(failing.complete).toHaveBeenCalledTimes(1);
     expect(working.complete).toHaveBeenCalledTimes(1);
+  });
+
+  it('records each fallback attempt as an event on the caller-supplied span (Stage 04 step 8)', async () => {
+    const failing = adapter(
+      'anthropic',
+      vi.fn().mockRejectedValue(new AdapterError('rate_limited', 'busy')),
+    );
+    const working = adapter(
+      'openai',
+      vi.fn().mockResolvedValue({
+        content: 'ok',
+        usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 },
+      }),
+    );
+
+    const router = createRouter({
+      adapters: { anthropic: failing, openai: working },
+      credentialPools: {
+        anthropic: new CredentialPool('anthropic', ['k1']),
+        openai: new CredentialPool('openai', ['k2']),
+      },
+      routing: {
+        'plan.author': [
+          { provider: 'anthropic', concreteModel: 'claude' },
+          { provider: 'openai', concreteModel: 'gpt' },
+        ],
+      },
+    });
+
+    const exporter = new InMemorySpanExporter();
+    const tracer = createTracer({
+      serviceName: 'test-gateway',
+      spanProcessor: new SimpleSpanProcessor(exporter),
+    });
+    const span = tracer.startSpan('gateway.chat_completions');
+    await router.routeChatCompletion(request, span);
+    span.end();
+
+    const [recorded] = exporter.getFinishedSpans();
+    expect(recorded?.events.map((e) => e.name)).toEqual(['gateway.fallback']);
+    expect(recorded?.events[0]?.attributes).toEqual({
+      provider: 'anthropic',
+      reason: 'rate_limited',
+    });
   });
 
   it('stops immediately on a non-retryable error rather than trying the next link', async () => {
