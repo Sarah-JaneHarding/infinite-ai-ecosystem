@@ -4,24 +4,25 @@
 // adapters from the environment, the routing chain from a config file, budgets and cache
 // in memory, and the HTTP surface in `server.ts`.
 //
-// Two things this boot script deliberately does NOT invent, because inventing them would
-// be worse than leaving them undone:
+// One thing this boot script still does not invent, because inventing it would be worse
+// than leaving it undone: **provider pricing.** Cost estimation defaults to zero per call.
+// A school's hard budget limit is real and enforced the moment a real per-model price is
+// supplied; until then, zero cost means the budget tracker never refuses on cost grounds,
+// which is the safe default — the same shape of decision the retention schedule template
+// makes by shipping no periods rather than invented ones.
 //
-//   - **Tenant lexicon resolution.** The inbound PII guard (step 9) needs each tenant's
-//     known names to run its detector layer. Wiring that to `packages/db` is real
-//     integration work for a follow-up change, not a Stage 04 boot-script decision, so the
-//     default here fails closed — every request is refused with a clear message — rather
-//     than silently disabling the detector with an empty lexicon. Recorded in
-//     `docs/STAGE_LOG.md`.
-//   - **Provider pricing.** Cost estimation defaults to zero per call. A school's hard
-//     budget limit is real and enforced the moment a real per-model price is supplied;
-//     until then, zero cost means the budget tracker never refuses on cost grounds, which
-//     is the safe default — the same shape of decision the retention schedule template
-//     makes by shipping no periods rather than invented ones.
+// The tenant lexicon resolver (step 9) *is* wired to `packages/db` below, behind one
+// placeholder worth being explicit about: `readTenantLexicon` runs inside `withTenant()`,
+// which requires an `actorId` to attribute the read to (Stage 02's audit trail). There is
+// no real caller identity on the wire yet — that arrives with Stage 06's agent runtime —
+// so `GATEWAY_SERVICE_ACTOR_ID` stands in as a fixed, documented system actor for this one
+// read-only lookup. Replacing it with the calling agent's real identity is Stage 06's to
+// do, not a gap to paper over here.
 
 import { readFileSync } from 'node:fs';
 
 import { loadEnv } from '@infinite-ai/config';
+import { EncryptionKey, readTenantLexicon, withTenant } from '@infinite-ai/db';
 import { createLogger } from '@infinite-ai/telemetry';
 import type { TenantLexicon } from '@infinite-ai/deident';
 
@@ -89,9 +90,34 @@ export function loadRouting(
 export const failClosedLexicon = async (tenantId: string): Promise<TenantLexicon> => {
   throw new Error(
     `No tenant lexicon resolver is configured. Refusing to guess for tenant ${tenantId} — ` +
-      'wiring this to packages/db is an open follow-up (docs/STAGE_LOG.md).',
+      'DB_ENCRYPTION_KEY is not set, so the learner-name layer of the PII guard cannot run.',
   );
 };
+
+/** A fixed system actor for the gateway's own read-only lexicon lookups — see the file
+ *  header note on why this stands in for real caller identity until Stage 06. */
+export const GATEWAY_SERVICE_ACTOR_ID = '00000000-0000-0000-0000-000000000004';
+
+/**
+ * Builds the real resolver when `DB_ENCRYPTION_KEY` is configured, or `failClosedLexicon`
+ * when it is not — a missing key is exactly the case `packages/config`'s own comment on
+ * the field describes ("the services that never touch learner identifiers should not be
+ * made to carry it"), except the gateway *does* need it for this one purpose, so its
+ * absence here is a real, visible refusal rather than a silently disabled guard.
+ */
+export function buildLexiconResolver(
+  env: ReturnType<typeof loadEnv>,
+): (tenantId: string) => Promise<TenantLexicon> {
+  if (env.DB_ENCRYPTION_KEY === undefined) return failClosedLexicon;
+  const key = EncryptionKey.fromBase64(
+    env.DB_ENCRYPTION_KEY,
+    env.DB_ENCRYPTION_KEY_VERSION,
+  );
+  return (tenantId) =>
+    withTenant({ tenantId, actorId: GATEWAY_SERVICE_ACTOR_ID }, (tx) =>
+      readTenantLexicon(tx, key),
+    );
+}
 
 const zeroCost: CostEstimator = () => 0;
 
@@ -117,6 +143,13 @@ export function boot(
       message: 'No provider credentials configured. Every route will fail at the router.',
     });
   }
+  const resolveLexicon = buildLexiconResolver(env);
+  if (resolveLexicon === failClosedLexicon) {
+    logger.warn('gateway.boot', {
+      message:
+        'DB_ENCRYPTION_KEY not set. The PII guard will fail closed on every request.',
+    });
+  }
 
   const router = createRouter({
     adapters,
@@ -129,7 +162,7 @@ export function boot(
     router,
     budget: new BudgetTracker({ limitsFor: () => undefined }),
     cache: new GatewayCache(),
-    resolveLexicon: failClosedLexicon,
+    resolveLexicon,
     costEstimator: zeroCost,
     logger,
   });

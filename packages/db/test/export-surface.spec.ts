@@ -35,6 +35,7 @@ describe('package export surface', () => {
       'lookupHash',
       'readLedger',
       'readTenantLedger',
+      'readTenantLexicon',
       'withTenant',
     ]);
   });
@@ -48,6 +49,7 @@ describe('package export surface', () => {
       db.readLedger,
       db.readTenantLedger,
       db.eraseSubject,
+      db.readTenantLexicon,
     ]) {
       expect(fn.length).toBeGreaterThanOrEqual(1);
     }

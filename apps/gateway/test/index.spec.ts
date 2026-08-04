@@ -5,9 +5,17 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { parseEnv } from '@infinite-ai/config';
 
-import { buildAdapters, boot, loadRouting } from '../src/index.js';
+import {
+  boot,
+  buildAdapters,
+  buildLexiconResolver,
+  failClosedLexicon,
+  loadRouting,
+} from '../src/index.js';
 import { parseGatewayEnv } from '../src/config/env.js';
 import { DEFAULT_ROUTING_CONFIG } from '../src/routing/config.js';
+
+const VALID_ENCRYPTION_KEY = Buffer.alloc(32, 7).toString('base64');
 
 const noopFetch = (async () => ({
   ok: true,
@@ -81,6 +89,30 @@ describe('loadRouting', () => {
     expect(routing['plan.author']).toEqual([
       { provider: 'anthropic', concreteModel: 'claude' },
     ]);
+  });
+});
+
+describe('buildLexiconResolver', () => {
+  it('fails closed when DB_ENCRYPTION_KEY is not configured', () => {
+    const resolver = buildLexiconResolver(
+      parseEnv({ DATABASE_URL: 'postgresql://x/y', REDIS_URL: 'redis://x' }),
+    );
+    expect(resolver).toBe(failClosedLexicon);
+  });
+
+  it('builds a real resolver, distinct from the fail-closed default, once a key is configured', () => {
+    // Does not invoke the resolver — that opens a real database connection via
+    // packages/db's withTenant(), which needs Postgres and belongs in db's own
+    // Testcontainers suite (packages/db/test/lexicon.integration.spec.ts), not here.
+    const resolver = buildLexiconResolver(
+      parseEnv({
+        DATABASE_URL: 'postgresql://x/y',
+        REDIS_URL: 'redis://x',
+        DB_ENCRYPTION_KEY: VALID_ENCRYPTION_KEY,
+      }),
+    );
+    expect(resolver).not.toBe(failClosedLexicon);
+    expect(typeof resolver).toBe('function');
   });
 });
 

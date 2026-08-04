@@ -56,6 +56,9 @@ importers:
       '@infinite-ai/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@infinite-ai/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@infinite-ai/deident':
         specifier: workspace:*
         version: link:../../packages/deident

@@ -26,6 +26,7 @@
   "dependencies": {
     "@infinite-ai/config": "workspace:*",
     "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/db": "workspace:*",
     "@infinite-ai/deident": "workspace:*",
     "@infinite-ai/guardrails": "workspace:*",
     "@infinite-ai/telemetry": "workspace:*",

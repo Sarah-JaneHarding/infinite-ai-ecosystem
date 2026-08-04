@@ -435,21 +435,22 @@ Open questions raised: OQ-007.
 ## Stage 04 — Model Gateway
 
 Started: 2026-08-04 Completed: —
-Exit gate: **PARTIAL** — steps 1–6 and 9 are built and proven; streaming/tool-call
-pass-through (step 7), Langfuse/OTel instrumentation (step 8) and the provider-outage
-drill suite (step 10) are not.
+Exit gate: **PARTIAL** — steps 1–6 and 9 are built and proven, including the tenant
+lexicon's `packages/db` wiring; streaming/tool-call pass-through (step 7), Langfuse/OTel
+instrumentation (step 8) and the provider-outage drill suite (step 10) are not.
 
 **What this PR put in place**
 
-| Step                           | Where                                                | Proven by                                                                                                                                                                  |
-| ------------------------------ | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 · HTTP surface               | `apps/gateway/src/server.ts`                         | `/health`, `/v1/chat/completions`, `/v1/embeddings` over real HTTP in `test/server.spec.ts`                                                                                |
-| 2 · Provider adapters          | `apps/gateway/src/adapters/`                         | Anthropic-family and OpenAI-family adapters (the latter also serves the self-hosted local-model case); 13 tests against a faked `fetch`                                    |
-| 3 · Credential pooling         | `apps/gateway/src/credentials/pool.ts`               | round-robin, cooldown on rate limit, recovery after cooldown, no raw key reachable outside `reveal()`                                                                      |
-| 4 · Model routing / fallback   | `apps/gateway/src/routing/`                          | config is Zod-validated data, not code; fallback chain proven by test, non-retryable errors stop the chain immediately                                                     |
-| 5 · Budgets                    | `apps/gateway/src/budgets/budget.ts`                 | hard limit refuses via `check()` before any adapter is touched; proven at both the tracker and the HTTP layer                                                              |
-| 6 · Prompt cache + idempotency | `apps/gateway/src/cache/cache.ts`                    | identical request within TTL served from cache and recorded as a hit; idempotency key wins over a differing content key                                                    |
-| 9 · Inbound PII guard          | `apps/gateway/src/server.ts` (`assertEgressAllowed`) | runs before budget and before routing; a payload with no provenance, or one with a raw identifier that survived de-identification, is refused with the router never called |
+| Step                           | Where                                                              | Proven by                                                                                                                                                                                                          |
+| ------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 · HTTP surface               | `apps/gateway/src/server.ts`                                       | `/health`, `/v1/chat/completions`, `/v1/embeddings` over real HTTP in `test/server.spec.ts`                                                                                                                        |
+| 2 · Provider adapters          | `apps/gateway/src/adapters/`                                       | Anthropic-family and OpenAI-family adapters (the latter also serves the self-hosted local-model case); 13 tests against a faked `fetch`                                                                            |
+| 3 · Credential pooling         | `apps/gateway/src/credentials/pool.ts`                             | round-robin, cooldown on rate limit, recovery after cooldown, no raw key reachable outside `reveal()`                                                                                                              |
+| 4 · Model routing / fallback   | `apps/gateway/src/routing/`                                        | config is Zod-validated data, not code; fallback chain proven by test, non-retryable errors stop the chain immediately                                                                                             |
+| 5 · Budgets                    | `apps/gateway/src/budgets/budget.ts`                               | hard limit refuses via `check()` before any adapter is touched; proven at both the tracker and the HTTP layer                                                                                                      |
+| 6 · Prompt cache + idempotency | `apps/gateway/src/cache/cache.ts`                                  | identical request within TTL served from cache and recorded as a hit; idempotency key wins over a differing content key                                                                                            |
+| 9 · Inbound PII guard          | `apps/gateway/src/server.ts` (`assertEgressAllowed`)               | runs before budget and before routing; a payload with no provenance, or one with a raw identifier that survived de-identification, is refused with the router never called                                         |
+| 9 · Tenant lexicon             | `packages/db/src/lexicon.ts`, wired in `apps/gateway/src/index.ts` | learner legal names decrypted from `learner_identifier`, plus staff and school names, read inside `withTenant()`; scoped by RLS and proven against real Postgres in `packages/db/test/lexicon.integration.spec.ts` |
 
 **Exit gate items proven**
 
@@ -474,20 +475,34 @@ decision the retention schedule template already makes by shipping no periods. S
 `packages/contracts` reviewSchedule's own reasoning; `apps/gateway/src/routing/config.ts`
 now states the parallel explicitly.
 
-**Two things deliberately not invented**
+**Tenant lexicon resolution, closed**
 
-- **Tenant lexicon resolution.** The inbound PII guard's detector layer needs each
-  tenant's known names. Wiring that to `packages/db` is real integration work, not a
-  boot-script decision, so `apps/gateway/src/index.ts` fails closed by default — every
-  request is refused with a clear message — rather than silently disabling the detector
-  with an empty lexicon.
-- **Provider pricing.** Cost estimation defaults to zero per call. A hard budget limit
-  is real and enforced the moment a school's real per-model price is supplied; until
-  then, zero cost means the tracker never refuses on cost grounds, which is the safe
-  default rather than an invented number feeding a control that matters.
+The inbound PII guard's detector layer needs each tenant's known names. Learner legal
+names live encrypted in `learner_identifier` (§1.3) — never plaintext in the database —
+so `packages/db/src/lexicon.ts` decrypts them inside the caller's tenant transaction,
+alongside `staff_member.display_name` (already plaintext; staff are not learner personal
+information but a colleague's name in a note is still worth catching) and `school.name`.
+A stale-key-version identifier is skipped rather than thrown on, so one row cannot take
+the whole lexicon down; a learner `eraseSubject` has destroyed drops out on its own,
+because the row the query reads is gone, not because this function checks a flag.
 
-Both are recorded here rather than left to be discovered later, and both are needed
-before this stage's exit gate can read PASS rather than PARTIAL.
+`withTenant()` needs an `actorId` to attribute the read to (Stage 02's audit trail), and
+there is no real caller identity on the gateway's wire yet — that arrives with Stage 06's
+agent runtime. `GATEWAY_SERVICE_ACTOR_ID` in `apps/gateway/src/index.ts` is a fixed,
+documented placeholder for this one read-only lookup, not a value to forget about:
+replacing it with the calling agent's real identity is explicitly Stage 06's to do.
+
+`failClosedLexicon` stays as the default when `DB_ENCRYPTION_KEY` is not configured —
+still the honest state for a gateway that cannot decrypt anything, rather than silently
+disabling the detector with an empty lexicon.
+
+**One thing still deliberately not invented**
+
+**Provider pricing.** Cost estimation defaults to zero per call. A hard budget limit is
+real and enforced the moment a school's real per-model price is supplied; until then,
+zero cost means the tracker never refuses on cost grounds, which is the safe default
+rather than an invented number feeding a control that matters. Recorded here rather than
+left to be discovered later; needed before this stage's exit gate can read PASS.
 
 Deviations from manual: budgets and the prompt cache are in-memory, not the Redis-backed
 store §1.1 locks in — a single gateway process is the only deployment shape this PR
@@ -498,6 +513,6 @@ single non-streaming turn, Langfuse/OTel spans, and the provider-outage chaos dr
 (steps 7, 8, 10) are not built. `INFINITEAI_BUILD_MANUAL.md` itself was added to the repo
 in this PR — it had existed only outside it since Stage 00.
 
-Open questions raised: none. The tenant-lexicon and pricing gaps above are follow-up
-implementation work, not decisions that need a human's judgement call, so they are
-tracked here rather than in `docs/OPEN_QUESTIONS.md`.
+Open questions raised: none. The pricing gap above is follow-up implementation work, not
+a decision that needs a human's judgement call, so it is tracked here rather than in
+`docs/OPEN_QUESTIONS.md`.
