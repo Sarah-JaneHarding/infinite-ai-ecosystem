@@ -617,3 +617,69 @@ earlier in this stage — it had existed only outside the repo since Stage 00.
 Open questions raised: none. The pricing gap above is follow-up implementation work, not
 a decision that needs a human's judgement call, so it is tracked here rather than in
 `docs/OPEN_QUESTIONS.md`.
+
+---
+
+## Stage 05 — Infinite Brain (L0-L4)
+
+Started: 2026-08-04 Completed: —
+Exit gate: **PARTIAL** — step 1 (the five tiers) is built and proven. Steps 2-10 are not
+started. `scripts/verify-stage.ts`'s `05` entry stays empty until they are.
+
+**What this slice put in place (step 1)**
+
+| Tier            | Table(s)                                      | Proven by                                                                                                                                                            |
+| --------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| L0 Constitution | `brain_constitution`                          | Append-only, `supersedes` self-reference, `(tenantId, key, version)` unique — `schema-classification.spec.ts`, RLS and trigger coverage in `rls.integration.spec.ts` |
+| L1 Semantic     | `brain_node`, `brain_edge`, `brain_embedding` | Same append-only/supersession shape; `brain_embedding.embedding` is `Unsupported("vector")`, invisible to the Prisma client entirely                                 |
+| L2 Episodic     | `brain_episode`                               | `occurredAt` vs `recordedAt` split for the temporal test step 10 will write; corrections via `supersedes`, never an UPDATE                                           |
+| L3 Procedural   | `brain_procedure`                             | Human-ratified like L0; a `PROMPT_VERSION` row is a pointer into Stage 06's Prompt Registry, not a second copy of prompt text                                        |
+| L4 Working      | `packages/brain/src/working-memory.ts`        | No table — a `WorkingMemoryStore` interface plus `InMemoryWorkingMemoryStore`, TTL-based, evictable per run                                                          |
+
+All six Postgres-backed tables are append-only, enforced the same way as `audit_event` and
+`consent_record`: `app_forbid_mutation()` rejects UPDATE and DELETE outright. This is
+Stage 05's own exit-gate item ("no code path performs a destructive update on a Brain
+table") made concrete from the first migration, not retrofitted once something depended on
+it being true. `rls.integration.spec.ts` gained a table-driven
+`describe.each(APPEND_ONLY_TABLES)` block that proves the trigger fires on every append-only
+table, Brain or not, rather than asserting it for `audit_event` alone and assuming the rest.
+
+**A design decision worth recording: what "committed" means here**
+
+Every row in these six tables is the _far end_ of the write-path state machine step 2
+builds — `candidate → … → committed+versioned → indexed → retention-scheduled`. What a
+candidate looks like while still in flight, still being contradiction-checked or awaiting
+ratification, is step 2's table, not this one. Building that table now, before the state
+machine that would populate and drain it exists, would be exactly the kind of speculative
+schema step 1 was scoped to avoid.
+
+**Three things deliberately not invented in this slice**
+
+- **A fixed embedding dimension.** `brain_embedding.embedding` is declared as an
+  unconstrained `vector` column. pgvector accepts that; a fixed dimension only matters for
+  building an HNSW index, and no embedding model has been chosen for this deployment yet.
+  Inventing a dimension (1536? 1024?) to get an index built now would be a real technical
+  commitment made on nobody's authority, the same shape of gap Stage 04 left for provider
+  pricing. `dimensions` on each row records what was actually stored, checked at the
+  application layer; the index is a follow-up once a model is chosen.
+- **L4's Redis backend.** The manual names Redis explicitly for working memory, unlike
+  Stage 04's prompt cache. No dependency was added for it: there is no concrete per-run
+  scratchpad to wire a Redis client to until Stage 06's orchestrator produces an actual
+  run. `WorkingMemoryStore` is the contract; `InMemoryWorkingMemoryStore` is what this
+  package's own tests run against until then.
+- **`brain_conflict_queue`.** Step 7 names it as part of "never-forget guarantees," and
+  step 3 (contradiction resolution) is what would enqueue to it. Unlike the five tiers
+  above, a conflict queue is workflow state — closer in shape to `DataSubjectRequest` than
+  to a Brain fact — so it is scoped to whichever of those two steps builds the logic that
+  actually needs it, not invented alongside tables it has no caller for yet.
+
+Deviations from manual: none yet — step 1 does exactly what "model the five tiers" asks.
+The `brain_procedure` table's decision to store a _pointer_ to prompt content rather than
+the content itself is not itself a deviation; the manual's step 1 description and Stage
+06's Prompt Registry description would otherwise duplicate the same content in two places
+with two different version-locking mechanisms, and this is the one place in either stage's
+steps where that overlap is named.
+
+Open questions raised: none. The embedding-dimension gap is follow-up implementation work
+tied to a model choice, not a policy or curriculum judgement call, so it stays here rather
+than in `docs/OPEN_QUESTIONS.md`, the same reasoning Stage 04 applied to provider pricing.
