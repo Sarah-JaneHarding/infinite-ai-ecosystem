@@ -93,7 +93,7 @@ async function insertEmbedding(
 ): Promise<void> {
   await tx.$executeRawUnsafe(
     `INSERT INTO "brain_embedding" (id, tenant_id, node_id, model, dimensions, embedding, created_at)
-     VALUES ($1, $2, $3, 'test-model', $4, $5::vector, now())`,
+     VALUES ($1::uuid, $2::uuid, $3::uuid, 'test-model', $4, $5::vector, now())`,
     randomUUID(),
     TENANT_ID,
     nodeId,
