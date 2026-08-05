@@ -103,10 +103,14 @@ export async function vectorTopK(
   // can bind to, so there is no parameterised alternative to fall back to here.
   const vectorLiteral = `[${query.queryEmbedding.join(',')}]`;
 
+  // The joined parameter values bind over the extended protocol as `text`, and Postgres
+  // has no `=` operator between `brain_entity_type` and `text` without a cast — casting
+  // the column side is the one option that doesn't need per-parameter casts inside
+  // Prisma.join, matching the uuid casts this module's tests needed for the same reason.
   const entityFilter =
     query.entityTypes === null
       ? Prisma.empty
-      : Prisma.sql`AND n.entity_type IN (${Prisma.join(query.entityTypes)})`;
+      : Prisma.sql`AND n.entity_type::text IN (${Prisma.join(query.entityTypes)})`;
 
   const rows = await tx.$queryRaw<
     {
