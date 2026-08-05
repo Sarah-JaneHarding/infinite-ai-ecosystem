@@ -199,4 +199,39 @@ describe('chain construction', () => {
     expect(hashEvent(withDiff, null)).toEqual(hashEvent(withDiff, null));
     expect(hashEvent(withDiff, null)).not.toEqual(hashEvent(event({ diff: null }), null));
   });
+
+  it("hashes the same regardless of a diff object's own key order", () => {
+    // Postgres's jsonb column type (packages/db's `audit_event.diff`) does not preserve
+    // the key order it is given — it reorders keys internally. An event's hash must not
+    // depend on that order, or the same content would hash differently before and after a
+    // round trip through storage, which looked exactly like tampering the first time a
+    // real caller hit it (see docs/STAGE_LOG.md's Stage 05 step 7 write-up).
+    const inOneOrder = event({
+      diff: {
+        toStatus: 'RETENTION_SCHEDULED',
+        retentionCategory: null,
+        retentionRuleId: null,
+      },
+    });
+    const inAnotherOrder = event({
+      diff: {
+        retentionRuleId: null,
+        toStatus: 'RETENTION_SCHEDULED',
+        retentionCategory: null,
+      },
+    });
+    expect(hashEvent(inOneOrder, null)).toEqual(hashEvent(inAnotherOrder, null));
+  });
+
+  it('still distinguishes genuinely different diff content', () => {
+    const a = event({ diff: { toStatus: 'COMMITTED' } });
+    const b = event({ diff: { toStatus: 'INDEXED' } });
+    expect(hashEvent(a, null)).not.toEqual(hashEvent(b, null));
+  });
+
+  it('sorts diff keys recursively, not only at the top level', () => {
+    const nested = event({ diff: { outer: { z: 1, a: 2 } } });
+    const nestedReordered = event({ diff: { outer: { a: 2, z: 1 } } });
+    expect(hashEvent(nested, null)).toEqual(hashEvent(nestedReordered, null));
+  });
 });

@@ -1155,4 +1155,26 @@ orders by it instead. Ordering by an autoincrement column is what "last row inse
 actually means in Postgres; ordering by a caller-supplied timestamp never guaranteed that,
 even before a real caller's usage pattern exposed it.
 
+**A second, deeper defect surfaced once the first was fixed, in the same PR: `jsonb`
+does not preserve key order.** With `sequence` fixing the chain's link order, the same
+test then failed differently — `hash_mismatch` on the _last_ event only, not
+`broken_link`. Postgres's `jsonb` column type (`audit_event.diff`) reorders an object's
+keys internally (by length, then lexicographically) rather than preserving the order they
+were given; the events whose `diff` keys happened to already be in that order round-
+tripped correctly, and the one whose keys were not (`retentionCategory` before the
+shorter `retentionRuleId`) did not. `packages/telemetry/src/audit.ts`'s `canonicalise`
+hashed `diff` with plain `JSON.stringify`, which its own header comment already warned
+key-reordering could defeat — one level higher than where the warning was actually
+applied. The fix: a `canonicalStringify` that sorts object keys recursively before
+stringifying, used for `diff` specifically, so the hash no longer depends on jsonb's
+internal reordering scheme at all. Three new unit tests in `packages/telemetry/test/
+audit.spec.ts` prove it directly, with no database involved: two diffs with the same
+keys in a different order hash identically (top-level and nested), and genuinely
+different diff content still hashes differently.
+
+Both defects were caught by the same integration test, in this same PR, before merge —
+exactly what a real end-to-end proof against Postgres is for. Neither would have been
+visible from the pure `packages/telemetry` unit suite alone, since nothing in it had ever
+round-tripped a chained event through an actual `jsonb` column before this stage.
+
 Open questions raised: none.
