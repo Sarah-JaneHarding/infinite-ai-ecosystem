@@ -216,6 +216,19 @@ question ("check whether something already in the tree does the job") has no can
 the tree either way; the second question is whether the job needs one at all, and this one
 does not.
 
+## Stage 06 step 4 — the DAG orchestrator
+
+No new dependency. `packages/orchestrator` takes `@infinite-ai/db` (the tenant-scoped
+client and the new `orchestrator.ts` persistence primitives) and `@infinite-ai/telemetry`
+(`Tracer`/`Span`, the same interface Stage 05's retrieval path and `apps/gateway` already
+thread through) as real runtime dependencies for the first time, plus `zod` — all three
+already pinned throughout the tree. Its devDependencies are the same pair every other
+Testcontainers-backed package in this repo already carries at the same pinned versions:
+`testcontainers`/`@testcontainers/postgresql` (12.0.4, first recorded Stage 01) for its own
+integration suite's Postgres, and `@opentelemetry/sdk-trace-base` (2.10.0, first recorded
+Stage 04) for `InMemorySpanExporter`, proving the run's one `trace_id` lands on every step
+span the same way Stage 05 step 4's own integration suite already proves tracing.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

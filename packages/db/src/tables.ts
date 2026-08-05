@@ -27,6 +27,8 @@ export const TENANT_OWNED_TABLES = [
   'guardian_link',
   'learner',
   'learner_identifier',
+  'orchestrator_run',
+  'orchestrator_step_run',
   'phase',
   'retention_rule',
   'role_assignment',

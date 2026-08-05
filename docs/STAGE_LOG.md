@@ -1461,9 +1461,9 @@ Open questions raised: none.
 ## Stage 06 — Agent runtime, Prompt Registry, DAG orchestrator, guardrails, HITL
 
 Started: 2026-08-05 Completed: —
-Exit gate: **PARTIAL** — steps 1 (the Agent contract), 2 (the Agent Registry) and 3 (the
-Prompt Registry) are built and proven. Steps 4-10 are not started.
-`scripts/verify-stage.ts`'s `06` entry stays empty until they are.
+Exit gate: **PARTIAL** — steps 1 (the Agent contract), 2 (the Agent Registry), 3 (the
+Prompt Registry) and 4 (the DAG orchestrator) are built and proven. Steps 5-10 are not
+started. `scripts/verify-stage.ts`'s `06` entry stays empty until they are.
 
 **What this slice put in place (step 1 — the Agent contract)**
 
@@ -1630,5 +1630,100 @@ Deviations from manual: none. Step 3 names the file location, the front-matter f
 content-hashed loader and the lockfile-comparison test; this slice builds exactly that,
 plus the filename/directory cross-check the manual's own naming convention implies but does
 not spell out as a separate rule.
+
+Open questions raised: none.
+
+**What this slice put in place (step 4 — the DAG orchestrator)**
+
+`packages/orchestrator/src/dag.ts`: a Zod-validated `PipelineDefinition` — an `entryStepId`
+plus a map of `PipelineStep`, a discriminated union over the six kinds the manual names
+(`agent_call`, `tool_call`, `human_gate`, `branch`, `map`, `compensation`). `validate
+PipelineDag` resolves every `next`/branch-target/compensation reference against the step
+map and detects cycles on the _forward_ graph only — a `compensatesWith` edge points
+backwards to an already-succeeded step by design, so it is excluded from the cycle check
+the same way a rollback path is never mistaken for a loop.
+
+`packages/orchestrator/src/run-state-machine.ts`: the pure decisions, provable without a
+database. `computeRetryDelayMs` is full-jitter exponential backoff (`random() * min(max,
+base * 2^attempt)`), `shouldRetry` compares an attempt count against a step's own `max
+Retries`, `hasTimedOut` compares elapsed time against a step's own `timeoutMs`, `next
+StepAfterSuccess` reads a step's own `next` (or a branch's evaluated target), and
+`compensationChain` walks a run's succeeded-step list in _reverse_ order, yielding only the
+steps that actually declared a `compensatesWith`.
+
+`packages/db/src/orchestrator.ts` + a new migration pair (`orchestrator_run`,
+`orchestrator_step_run`): the persistence primitives — `openRun`, `getRun`, `listStepRuns`,
+`startStepRun`, `finishStepRun`, `updateRunStatus`, `cancelRun`. Both tables are tenant-
+owned (added to `TENANT_OWNED_TABLES` in `packages/db/src/tables.ts`) but deliberately
+_not_ append-only: a run's `status`/`currentStepId`/`succeededStepIds` and a step's own
+`status` mutate in place as the run progresses, the same precedent `brain_write_candidate`
+already set for mutable, tenant-scoped workflow state that is not itself a Brain fact.
+`(runId, stepId, attempt)` carries a unique constraint, so retrying the same attempt twice
+is a database error, not a silent duplicate — the mechanism that makes a step attempt safe
+to resume from a fresh read after a crash, rather than something that has to be held in
+memory across calls.
+
+`packages/orchestrator/src/runner.ts`: the imperative shell — `startRun`, `advanceRun` (one
+unit of work), `runToCompletion` (loops until terminal, paused, or no further progress is
+possible), `cancelRun`. Every step attempt opens a tracer span carrying one application-
+level `trace_id` attribute, threaded through as a plain field on the run row (the same
+pattern `write-path.ts` already uses for Brain writes) rather than relying on OpenTelemetry's
+own internal trace context, since `@infinite-ai/telemetry`'s `Tracer` abstraction does not
+expose one.
+
+**Durability is proven directly against Postgres, not against BullMQ/Redis, and that is a
+deliberate scope line for this step, not a silent gap.** Part 1 describes the orchestrator
+as "an in-house DAG runner on BullMQ"; this slice does not wire that in. Every run and step
+attempt is a real row, so resumability — the property BullMQ would otherwise provide by
+re-delivering a job — is proven here by having `advanceRun` decide its next action purely
+from what a fresh read of the run and its step-attempt history says happened, the identical
+shape Brain's own write path already uses to prove durability without a queue. BullMQ is
+additional infrastructure for distributed _scheduling_ (many workers pulling from one
+queue) layered on top of this durable core later, once `apps/worker` has a real consumer to
+hand jobs to — building that queue wiring now, with no consumer to drive it, would be
+scaffolding with nothing to prove against.
+
+**Only the four step kinds the manual's own reference-pipeline exit gate names are
+executed; `branch` and `map` are declared, DAG-validated, and their pure next-step logic
+exists, but the runner does not execute them yet.** The manual's worked example for this
+stage is explicitly "three agents, one human gate, one compensation path" — `agent_call`,
+`tool_call`, `human_gate`, and `compensation` are exactly that set, and all four are proven
+end-to-end in `packages/orchestrator/test/runner.integration.spec.ts`. `branch`'s condition
+evaluation and `map`'s per-item fan-out are real, additional execution semantics the manual
+does not name a worked example for; rather than fake either with a stub that would silently
+pass validation and then do the wrong thing at runtime, the runner throws a named
+`OrchestratorRunnerError` for `map` and requires an injected `evaluateCondition` for
+`branch` — a stated, honest follow-up (the same "mechanism now, full execution once a real
+caller exists" shape step 2 already used for `promptExists`/`evalSetExists`), not a
+silently dropped feature.
+
+Proven by: `packages/orchestrator/test/dag.spec.ts` (13 tests — reference resolution for
+every step kind, missing-target detection, forward-cycle detection, and that a
+`compensatesWith` back-edge is correctly excluded from the cycle check);
+`packages/orchestrator/test/run-state-machine.spec.ts` (18 tests — retry-delay jitter
+bounds and determinism under a fixed `random`, the retry/no-retry boundary at `maxRetries`,
+the timeout boundary at `timeoutMs`, `next`/branch-target resolution, and the reverse-order
+compensation chain including runs with no compensations declared);
+`packages/db/test/orchestrator.integration.spec.ts` (the persistence primitives against a
+real Postgres — every status transition each function can produce, the `(runId, stepId,
+attempt)` uniqueness constraint, and each function throwing `OrchestratorPersistenceError`
+for a run that does not exist); `packages/orchestrator/test/runner.integration.spec.ts` (a
+linear pipeline running to `SUCCEEDED` with one `trace_id` on every span; a human gate
+pausing the run and staying paused across repeated resumption attempts; a retry that does
+not fire before its scheduled time and succeeds once it is due, resumed across separate
+`advanceRun` calls rather than a single in-memory loop; a stale `RUNNING` attempt from a
+simulated crash correctly detected as timed out and retried on the next call; compensation
+running in exact reverse order of success and ending `COMPENSATED`; and a cancelled run
+that makes no further progress even when resumption is attempted again). The database-
+backed suites were written and typechecked against Prisma's real generated types but not
+run against a live container in this sandbox (no Docker registry egress here); they are
+proven for real in CI, the same footnote every other Testcontainers suite in this repository
+already carries.
+
+Deviations from manual: BullMQ/Redis wiring is deferred to whichever step gives
+`apps/worker` a real job consumer, for the reason above; `branch` and `map` are declared
+and validated but not executed, for the reason above. Both are named, not silent.
+
+Open questions raised: none.
 
 Open questions raised: none.

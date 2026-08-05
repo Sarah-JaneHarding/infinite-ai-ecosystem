@@ -13,9 +13,18 @@
     "build": "tsc --build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
     "lint": "eslint src"
   },
+  "dependencies": {
+    "@infinite-ai/db": "workspace:*",
+    "@infinite-ai/telemetry": "workspace:*",
+    "zod": "3.25.76"
+  },
   "devDependencies": {
+    "@opentelemetry/sdk-trace-base": "2.10.0",
+    "@testcontainers/postgresql": "12.0.4",
+    "testcontainers": "12.0.4",
     "typescript": "5.9.3",
     "vitest": "3.2.7"
   }

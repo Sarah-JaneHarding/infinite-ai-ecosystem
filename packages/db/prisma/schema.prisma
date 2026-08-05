@@ -76,6 +76,8 @@ model Tenant {
   brainProcedures      BrainProcedure[]
   brainWriteCandidates BrainWriteCandidate[]
   brainConflictQueue   BrainConflictQueue[]
+  orchestratorRuns     OrchestratorRun[]
+  orchestratorStepRuns OrchestratorStepRun[]
 
   @@map("tenant")
 }
@@ -1209,4 +1211,101 @@ model BrainConflictQueue {
   @@index([tenantId])
   @@index([tenantId, status])
   @@map("brain_conflict_queue")
+}
+
+// ---------------------------------------------------------------------------
+// DAG orchestrator — Stage 06 step 4
+// ---------------------------------------------------------------------------
+//
+// "The runner must provide durability (state persisted per step)... and resumability."
+// One row per run, one row per step attempt — mutable workflow state, the same shape
+// `brain_write_candidate` already established for the Brain's own in-flight facts:
+// neither table joins `APPEND_ONLY_TABLES`, and neither gets the `app_forbid_mutation()`
+// trigger. `packages/orchestrator`'s pure state machine decides what transition applies
+// next; these two tables are only where that decision is persisted, so a crashed worker
+// resumes by re-reading `status`/`currentStepId`, never by replaying from the start.
+
+enum OrchestratorRunStatus {
+  PENDING
+  RUNNING
+  WAITING_FOR_APPROVAL
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  COMPENSATING
+  COMPENSATED
+
+  @@map("orchestrator_run_status")
+}
+
+enum OrchestratorStepRunStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+  RETRY_SCHEDULED
+  TIMED_OUT
+  CANCELLED
+  SKIPPED
+
+  @@map("orchestrator_step_run_status")
+}
+
+model OrchestratorRun {
+  id              String                @id @default(uuid()) @db.Uuid
+  tenantId        String                @map("tenant_id") @db.Uuid
+  pipelineId      String                @map("pipeline_id")
+  pipelineVersion String                @map("pipeline_version")
+  status          OrchestratorRunStatus @default(PENDING)
+  /// One trace ID from start to finish — the manual's own requirement, threaded through
+  /// every `@infinite-ai/telemetry` span the runner opens for this run and its steps.
+  traceId         String                @map("trace_id")
+  input           Json
+  /// The step currently in flight, or the last one reached. Null only before the first
+  /// step has started.
+  currentStepId   String?               @map("current_step_id")
+  /// Step ids that have succeeded, in the order they succeeded — what
+  /// `compensationChain` (packages/orchestrator) walks in reverse when a later step
+  /// fails. A plain JSON array, not a relation: order matters and a row's own step-run
+  /// history already lives in `OrchestratorStepRun`.
+  succeededStepIds Json                 @default("[]") @map("succeeded_step_ids")
+  cancelledAt     DateTime?             @map("cancelled_at")
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+  createdBy       String?               @map("created_by") @db.Uuid
+
+  tenant   Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  stepRuns OrchestratorStepRun[]
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("orchestrator_run")
+}
+
+model OrchestratorStepRun {
+  id            String                    @id @default(uuid()) @db.Uuid
+  tenantId      String                    @map("tenant_id") @db.Uuid
+  runId         String                    @map("run_id") @db.Uuid
+  stepId        String                    @map("step_id")
+  status        OrchestratorStepRunStatus @default(PENDING)
+  /// 0-indexed. A retry of the same step is a new row with the same `stepId` and the
+  /// next `attempt` — never an update to the previous attempt's own row.
+  attempt       Int                       @default(0)
+  input         Json?
+  output        Json?
+  error         String?
+  startedAt     DateTime?                 @map("started_at")
+  /// Set only when `status` is `RETRY_SCHEDULED` — when the next attempt may run.
+  nextAttemptAt DateTime?                 @map("next_attempt_at")
+  completedAt   DateTime?                 @map("completed_at")
+  createdAt     DateTime                  @default(now()) @map("created_at")
+  updatedAt     DateTime                  @updatedAt @map("updated_at")
+
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  run    OrchestratorRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, stepId, attempt])
+  @@index([tenantId])
+  @@index([tenantId, runId])
+  @@map("orchestrator_step_run")
 }
