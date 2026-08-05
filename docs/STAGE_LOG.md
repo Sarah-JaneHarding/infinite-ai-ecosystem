@@ -624,9 +624,9 @@ a decision that needs a human's judgement call, so it is tracked here rather tha
 
 Started: 2026-08-04 Completed: —
 Exit gate: **PARTIAL** — steps 1 (the five tiers), 2 (the write path), 3 (contradiction
-resolution) and 4 (the retrieval path) are built and proven. Steps 5-10 are not started.
-`scripts/verify-stage.ts`'s `05` entry stays empty
-until they are.
+resolution), 4 (the retrieval path) and 5 (token-budgeted assembly) are built and proven.
+Steps 6-10 are not started. `scripts/verify-stage.ts`'s `05` entry stays empty until they
+are.
 
 **What this slice put in place (step 1)**
 
@@ -946,5 +946,70 @@ that mapping is a later module's job, once one exists with concrete attributes t
 Deviations from manual: none in the pipeline's own shape. The two gaps above (no real
 query-embedding producer, no per-attribute category mapping) are follow-up work tied to
 capabilities other steps and stages own, not decisions needing a human's judgement call.
+
+Open questions raised: none.
+
+**What this slice put in place (step 5 — token-budgeted assembly)**
+
+Step 4 shipped `assembleContext` as a deliberate placeholder — highest-score-first over
+whatever the earlier stages found, because nothing fetched L0 or L3 yet and step 4's own
+text never named a priority order. This slice is the real algorithm step 5's own text asks
+for: three fixed tiers, packed in this order regardless of score or size — **L0
+constitution**, then **task-relevant L1/L2** (in the order `rerank()` already computed),
+then **L3 exemplars**. Whole-candidate granularity carries over unchanged from step 4: a
+candidate too big for what remains is dropped entire, never truncated mid-fact, and the
+packer keeps trying the rest of its own tier rather than stopping at the first miss —
+`retrieval-assembly.spec.ts`'s "backfills a later tier with budget an earlier tier could
+not use" proves this holds across tiers too, not only within one.
+
+**Two reads that did not exist before this slice.** Step 4 built the pipeline's three
+data-touching stages around L1 (vector, graph) and L2 (episodic) — nothing ever fetched L0
+or L3, because assembly did not yet need to prioritise them. `packages/db/src/
+brain-retrieval.ts` gained `listEffectiveConstitution` and `listEffectiveExemplars`:
+every non-superseded `brain_constitution` row for the tenant, and every non-superseded
+`brain_procedure` row of kind `EXEMPLAR` (the other four `BrainProcedureKind` values —
+prompt versions, pipelines, SOPs, tool contracts — are Stage 06 machinery, not retrieval
+context, so this deliberately reads only the one kind step 5's own text names). Neither is
+filtered by the intent router's plan: ratified policy applies tenant-wide, not to whichever
+entity types one query happens to be searching for, so both run unconditionally once the
+policy gate passes — the same reasoning each function's own header gives.
+
+**Two new stages in the trace, not a change to the existing seven.**
+`RETRIEVAL_PATH_ORDER` grew from seven entries to nine: `constitution_fetched` (right after
+`policy_gated`, so L0 is fetched before anything else touches the database) and
+`exemplars_fetched` (right after `episodes_filtered`, before `reranked`). The ordering
+guarantee step 4 built — a refusal's `trace` stops at `['intent_routed', 'policy_gated']`,
+never reaching a data-touching stage — holds unchanged; the new stages are simply two more
+names that never get pushed on a refusal, proven the same way (`retrieval-path.integration.
+spec.ts`'s refusal test still asserts the two-entry trace verbatim).
+
+**Rerank still only scores what it always scored.** `rerank()`'s signature narrowed from
+the full `RetrievalCandidate` union to a new `RankableCandidate` alias (`NodeRetrievalCandidate
+| EpisodeRetrievalCandidate`) — the two kinds that carry a `confidence` an extraction
+actually produced. Constitution and exemplar candidates never go through it: a ratified
+fact does not carry a probability the way an extracted one does, and scoring it against
+node/episode candidates on the same axis would have implied a false equivalence. Tier
+position, not score, decides where they land — `ConstitutionRetrievalCandidate` and
+`ExemplarRetrievalCandidate` carry no `confidence` field at all, so the omission is a type
+error to get wrong, not a convention to remember.
+
+**`packages/brain` still takes no direct dependency on `@prisma/client`.** The new
+candidate types need `BrainConstitutionKind`; rather than importing it from `@prisma/
+client` (breaking the separation step 4 kept — packages/brain works with mirrored
+Zod/string-literal types, packages/db owns the real Prisma ones), `write-path-schemas.ts`'s
+already-existing but module-private `BrainConstitutionKind` Zod enum is now exported, the
+same treatment `BrainEntityType` already got in step 2/4.
+
+**Proven end to end, not only at the unit level.** A new integration test commits a real
+`L0_CONSTITUTION` fact through the actual write path (open → run → ratify → run, the same
+ratification gate step 2 and step 3 already exercise) alongside a vector-matched `L1_NODE`,
+then retrieves with a token budget sized to fit only the constitution fact's own estimated
+cost. The assembled context contains exactly the constitution candidate; the higher-
+scoring vector match is dropped — proof that tier order beats rerank score, against a real
+Postgres, not only against hand-built fixtures in a pure unit test.
+
+Deviations from manual: none. Step 5's own text — priority ordering L0 first, then
+task-relevant L1/L2, then exemplars; record what was included and dropped; never truncate
+mid-fact — is exactly what was built.
 
 Open questions raised: none.

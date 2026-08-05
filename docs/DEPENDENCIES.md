@@ -127,6 +127,18 @@ own tests do: `@opentelemetry/sdk-trace-base`'s `InMemorySpanExporter` as a devD
 already recorded in Stage 04 at 2.10.0 and taken there the same way (devDependency only,
 for an in-memory exporter in tests — never the real OTLP path).
 
+## Stage 05 step 5 — token-budgeted assembly's real packer
+
+No new dependency. `packages/db/src/brain-retrieval.ts` gained two read functions
+(`listEffectiveConstitution`, `listEffectiveExemplars`) on the same Prisma client already
+recorded in Stage 01; `packages/brain`'s `assembleContext` rewrite and the two new
+retrieval-path stages that feed it (`constitution_fetched`, `exemplars_fetched`) are pure
+additions to code already built in step 4, on packages already taken as dependencies
+there. The one internal change worth recording: `write-path-schemas.ts`'s
+`BrainConstitutionKind` Zod enum, previously module-private, is now exported and imported
+by `retrieval-types.ts` — the same reasoning `BrainEntityType` was already exported for in
+step 4, so `packages/brain` keeps not taking `@prisma/client` as a dependency of its own.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

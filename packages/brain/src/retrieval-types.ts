@@ -6,7 +6,7 @@
 import type { ConsentEntry, DataCategory, Purpose } from '@infinite-ai/contracts';
 import type { Actor, Resource } from '@infinite-ai/policy';
 
-import type { BrainEntityType } from './write-path-schemas.js';
+import type { BrainConstitutionKind, BrainEntityType } from './write-path-schemas.js';
 
 /** What a retrieval is about, for the purpose/consent gate — null when it is not about
  * any single data subject (curriculum canon, a topic, a CAPS code). */
@@ -66,4 +66,37 @@ export interface EpisodeRetrievalCandidate {
   readonly recency: Date;
 }
 
-export type RetrievalCandidate = NodeRetrievalCandidate | EpisodeRetrievalCandidate;
+/** L0 Constitution — ratified policy, always assembled ahead of L1/L2/L3 (step 5). Has no
+ * `confidence`: a ratified fact does not carry a probability the way an extracted one
+ * does, and `recency` is `ratifiedAt`, not when a later reader happened to fetch it. */
+export interface ConstitutionRetrievalCandidate {
+  readonly kind: 'constitution';
+  readonly id: string;
+  readonly key: string;
+  readonly constitutionKind: BrainConstitutionKind;
+  readonly version: number;
+  readonly content: unknown;
+  readonly recency: Date;
+}
+
+/** L3 Procedural — an approved exemplar, assembled after L1/L2 (step 5). Same reasoning
+ * as `ConstitutionRetrievalCandidate` for the absent `confidence`. */
+export interface ExemplarRetrievalCandidate {
+  readonly kind: 'exemplar';
+  readonly id: string;
+  readonly ref: string;
+  readonly version: number;
+  readonly content: unknown;
+  readonly recency: Date;
+}
+
+export type RetrievalCandidate =
+  | NodeRetrievalCandidate
+  | EpisodeRetrievalCandidate
+  | ConstitutionRetrievalCandidate
+  | ExemplarRetrievalCandidate;
+
+/** The two kinds `rerank` scores — the ones with a `confidence` an extraction actually
+ * produced. Constitution and exemplar candidates skip rerank entirely: step 5's packer
+ * places them by tier, not by this score (see `retrieval-assembly.ts`'s own header). */
+export type RankableCandidate = NodeRetrievalCandidate | EpisodeRetrievalCandidate;
