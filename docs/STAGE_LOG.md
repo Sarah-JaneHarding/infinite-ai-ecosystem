@@ -1461,8 +1461,9 @@ Open questions raised: none.
 ## Stage 06 — Agent runtime, Prompt Registry, DAG orchestrator, guardrails, HITL
 
 Started: 2026-08-05 Completed: —
-Exit gate: **PARTIAL** — step 1 (the Agent contract) is built and proven. Steps 2-10 are
-not started. `scripts/verify-stage.ts`'s `06` entry stays empty until they are.
+Exit gate: **PARTIAL** — steps 1 (the Agent contract) and 2 (the Agent Registry) are built
+and proven. Steps 3-10 are not started. `scripts/verify-stage.ts`'s `06` entry stays empty
+until they are.
 
 **What this slice put in place (step 1 — the Agent contract)**
 
@@ -1520,5 +1521,54 @@ error."
 
 Deviations from manual: none. Step 1 asks for exactly this one file with exactly this
 field list, and that is what this slice built.
+
+Open questions raised: none.
+
+**What this slice put in place (step 2 — the Agent Registry)**
+
+`packages/agents/src/registry.ts`: `AgentRegistry`, a typed in-memory registry keyed by an
+agent's own `id`, and `bootAgentRegistry`, the startup validation pass — it registers a
+list of candidates in order and throws on the first one that fails, for any reason, rather
+than returning a partially-populated registry to a caller that might use it anyway. Two of
+the manual's own four named boot-failure conditions ("undeclared purpose, or absent
+budget") were already structural as of step 1 — `purpose` and `budget` are required fields
+on `AgentContract`, so a contract missing either never gets past `validateAgentContract`
+at all, and `registry.register()` inherits that check by calling it first. This step adds
+the other two: a duplicate `id` (never named by the manual's own list, but implied by "a
+typed registry" needing an actual identity rule) refuses outright, since an id is never
+reused for a different agent and a version bump is not a second agent coexisting under
+the same one.
+
+**"Unknown prompt ref" and "missing eval set" are real checks with no real subsystem to
+check against yet — so the registry takes each as an injected function, not a stub.**
+Both name a lookup this stage has not built the other end of: the Prompt Registry (step 3)
+is what would confirm a `promptRef` names a real, content-hashed prompt version; the eval
+harness (Stage 07) is what an `evalSetRef` would actually resolve against. Building either
+lookup for real now would mean inventing a later step's or a later stage's own work; hard-
+coding "always valid" would silently drop a boot-failure condition the manual explicitly
+names. `AgentRegistryOptions.promptExists`/`evalSetExists` split the difference the same
+way `apps/gateway/src/routing/router.ts` (Stage 04) already does for a logical model's
+routing entry: the _mechanism_ — refuse to register when the check says no — is real and
+tested now, with a default that assumes existence until step 3 and Stage 07 exist to
+supply the real check. This is not a lowered bar: nothing yet in this codebase can produce
+a `promptRef` or `evalSetRef` that doesn't already trace back to a real, hand-written
+string, so there is nothing false being assumed valid — only a check with no live data to
+run against yet, the same honest gap `contract.ts`'s own header already named for these two
+fields.
+
+Proven by `packages/agents/test/registry.spec.ts`: a contract registers and becomes
+retrievable by `get`/`has`/`list`; two distinct agents coexist; a duplicate id is refused
+and leaves the registry unchanged; a structurally invalid contract propagates
+`AgentContractError` and registers nothing; the default (no checker supplied) assumes a
+prompt and eval set both exist; an injected checker returning `false` refuses registration
+for each of the two respectively, and one test confirms the checker actually receives the
+contract's own declared `promptRef`, not a stand-in. `bootAgentRegistry` is proven both to
+succeed across several valid candidates and to throw — rather than return anything
+usable — the moment one candidate in the batch is invalid.
+
+Deviations from manual: none. The duplicate-id rule is an addition the manual's own step 2
+text does not name explicitly, but follows directly from "a typed registry" needing an
+actual primary key, the same way `contract.ts`'s own comment on `id` ("never reused for a
+different agent") already implied before this step gave it code.
 
 Open questions raised: none.

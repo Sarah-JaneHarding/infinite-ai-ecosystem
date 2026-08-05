@@ -198,6 +198,12 @@ naming, reused rather than re-invented so an agent's `model` field can never nam
 concrete provider model). `zod` is pinned at the same version (`3.25.76`) every other
 package in the tree already uses.
 
+## Stage 06 step 2 — the Agent Registry
+
+No new dependency. `packages/agents/src/registry.ts` is a new file, but it only calls
+`validateAgentContract` (step 1, same package) and holds a plain in-memory `Map` — no
+new package needed for either.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.
