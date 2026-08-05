@@ -111,4 +111,15 @@ export {
 
 export { getFactProvenance, type FactProvenance } from './brain-provenance.js';
 
+export { getRetentionRule, RetentionError, type RetentionRuleRow } from './retention.js';
+
+export {
+  BrainForgettingError,
+  tombstoneBrainFact,
+  type TombstoneInput,
+  type TombstoneReason,
+  type TombstoneTargetTier,
+  type TombstonedBrainFact,
+} from './brain-forgetting.js';
+
 export const PACKAGE_NAME = '@infinite-ai/db' as const;

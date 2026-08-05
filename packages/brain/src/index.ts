@@ -15,7 +15,9 @@
 // in the manual's own fixed order. Step 5 replaces that assembly with the real packer:
 // three fixed priority tiers (L0 constitution, then reranked L1/L2, then L3 exemplars),
 // fed by two new retrieval-path stages that fetch L0 and L3 candidates step 4 never
-// needed to.
+// needed to. Step 8 (forgetting.ts) adds the pure retention decision and the thin
+// orchestrator that tombstones what it decides has expired, reusing the same
+// @infinite-ai/db tombstone primitive a consent withdrawal would use.
 
 export {
   InMemoryWorkingMemoryStore,
@@ -93,5 +95,13 @@ export type {
   RetrievalQuery,
   RetrievalSubject,
 } from './retrieval-types.js';
+
+export {
+  decideBrainRetention,
+  sweepBrainRetention,
+  type RetainableBrainFact,
+  type RetentionSweepDecision,
+  type RetentionSweepResult,
+} from './forgetting.js';
 
 export const PACKAGE_NAME = '@infinite-ai/brain' as const;

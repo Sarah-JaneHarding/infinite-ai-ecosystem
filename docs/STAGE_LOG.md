@@ -624,11 +624,13 @@ a decision that needs a human's judgement call, so it is tracked here rather tha
 
 Started: 2026-08-04 Completed: —
 Exit gate: **PARTIAL** — steps 1 (the five tiers), 2 (the write path), 3 (contradiction
-resolution), 4 (the retrieval path), 5 (token-budgeted assembly), 6 (provenance) and 7
-(never-forget guarantees) are built and proven, with one sub-item — nightly snapshots and
-a rehearsed point-in-time restore drill — deliberately deferred to Stage 15, which owns
-backups and disaster recovery (see this step's own write-up below). Steps 8-10 are not
-started. `scripts/verify-stage.ts`'s `05` entry stays empty until they are.
+resolution), 4 (the retrieval path), 5 (token-budgeted assembly), 6 (provenance), 7
+(never-forget guarantees) and 8 (forgetting by design) are built and proven, with two
+sub-items deliberately deferred and stated plainly in each step's own write-up: step 7's
+nightly snapshots and rehearsed point-in-time restore drill (Stage 15's job), and step 8's
+automatic consent-withdrawal sweep and episode tombstoning (both stated follow-ups, not
+silently assumed away). Steps 9-10 are not started. `scripts/verify-stage.ts`'s `05` entry
+stays empty until they are.
 
 **What this slice put in place (step 1)**
 
@@ -1176,5 +1178,88 @@ Both defects were caught by the same integration test, in this same PR, before m
 exactly what a real end-to-end proof against Postgres is for. Neither would have been
 visible from the pure `packages/telemetry` unit suite alone, since nothing in it had ever
 round-tripped a chained event through an actual `jsonb` column before this stage.
+
+Open questions raised: none.
+
+**What this slice put in place (step 8 — forgetting by design)**
+
+Step 8 names four things: TTL on personal data per retention class, tombstone on consent
+withdrawal with reindex, working-memory eviction per run, and "policy and curriculum never
+expire." The third was already built — step 1's `working-memory.ts` shipped `evict()` with
+a comment naming this exact step, and `remember`/`recall`/`recallAll` already expire
+entries by TTL. The fourth needed nothing new to build, only confirming: `L0_CONSTITUTION`
+and `L3_PROCEDURE` payloads have no `dataCategory` field in their Zod schemas at all, so
+there is nothing for the retention resolution below to ever act on for those two tiers —
+proven directly by a test that passes a `dataCategory` into an `L0_CONSTITUTION` candidate
+and asserts it never survives extraction. This slice builds the first and second.
+
+**Closing the gap `write-path.ts` itself already named.** Step 2's `RETENTION_SCHEDULED`
+transition always set `retentionCategory`/`retentionRuleId` to `null`, with its own
+comment pointing here: "assigning a fact a personal-information category and matching it
+to a ratified `RetentionRule` is step 8's job." `dataCategory` is now a caller-declared
+field on `L1NodePayload`/`L1EdgePayload`/`L2EpisodePayload` — declared, never inferred,
+for the same reason `retrieval-path.ts`'s own header already gives for not classifying a
+node's free-form `attributes` automatically: nothing in this schema knows what a node's
+content actually contains, and guessing from `entityType` alone risks silently
+mis-classifying `SPECIAL_PERSONAL` data as something less sensitive. `write-path.ts`'s
+`resolveRetention` reads the declared category from the committed candidate's typed
+payload and looks it up against a new `packages/db` read, `getRetentionRule` — a rule
+found resolves `retentionRuleId`; none found resolves `retentionCategory` alone, the same
+"unscheduled, not silently retained forever and not silently destroyed either" honesty
+`packages/contracts`'s own `unscheduledCategories` already names for the main data plane.
+
+**The tombstone path is deliberately its own mechanism, not a detour through the write
+path.** Rule 11 names it directly: "deletion happens only through the retention/tombstone
+path." A tombstone is not a new fact an agent is proposing — it is the retention job (or a
+consent withdrawal) acting on a fact that already exists — so routing it back through
+`openWrite`'s candidate state machine would mean contradiction-checking a fact against
+itself for no reason a caller could explain. `packages/db/src/brain-forgetting.ts`'s
+`tombstoneBrainFact` inserts directly instead: a new row copying the original's content,
+with its own `tombstonedAt` set and `supersedes` pointing at the original. The original is
+never touched — the append-only trigger would refuse an UPDATE if this tried one — and
+`vectorTopK`'s own `WHERE tombstoned_at IS NULL AND NOT EXISTS (... supersedes ...)` then
+excludes _both_ rows from retrieval structurally: the original because something
+supersedes it now, the new row because it is tombstoned itself. That is the entire
+"reindex" step 8 asks for — there is no separate search index for Brain nodes, only this
+one table and the query every retrieval already runs against it. Proven directly:
+`brain-forgetting.integration.spec.ts` inserts an embedding, confirms `vectorTopK` finds
+it, tombstones it, and confirms `vectorTopK` no longer does.
+
+**Only `L1_NODE` and `L1_EDGE` are tombstonable.** They are the two tiers with a
+`tombstonedAt` column at all — `L2_EPISODE` has none. Extending the episode table so a
+correction-by-erasure is possible there too is a real, stated follow-up, not invented in
+this slice: episodes are "what happened," and step 8's own text does not name episode
+erasure the way it names node/edge tombstoning. `L0_CONSTITUTION`/`L3_PROCEDURE` are never
+tombstonable at all, matching "policy and curriculum never expire" exactly.
+
+**The evaluation is pure; the sweep is not — same split the write path draws.**
+`packages/brain/src/forgetting.ts`'s `decideBrainRetention` reuses `@infinite-ai/
+contracts`'s `evaluateRetention` (Stage 03) to decide one verdict per fact, with no
+database involved — fully unit-tested against every verdict branch (expired, within
+period, no rule, anchor not reached, anchor mismatch, a mixed batch). `sweepBrainRetention`
+is the thin orchestrator on top: it acts on every `tombstone` verdict by calling
+`tombstoneBrainFact`. Proven end to end against a real Postgres: a ratified rule, one
+expired fact and one current one, the expired fact tombstoned and the current one left
+alone.
+
+**What is not built, stated plainly, matching Stage 03's own precedent exactly.** Stage
+03's write-up already said it once, for its own tables: "the evaluation function is
+written and tested; the worker that runs it has nothing to run until a school ratifies a
+schedule" (OQ-007). The same is true here, for the same reason — there is still no
+ratified schedule in this environment, and this project has no infrastructure pipeline to
+schedule a job on regardless (only local Docker Compose and ephemeral Testcontainers
+databases). `decideBrainRetention`/`sweepBrainRetention` are not wired to a scheduler; that
+is Stage 15's concern, not this one, per rule 1. Nor is there an automatic
+consent-withdrawal sweep — `tombstoneBrainFact` accepts `reason: 'consent_withdrawn'` and
+works identically either way, but cross-referencing `@infinite-ai/policy`'s
+`evaluateConsent` against which Brain facts belong to which subject token is not built,
+the exact same shape of gap Stage 03 left for its own tables ("the pieces exist... and the
+job that joins them is not written"). Neither omission is a judgement call for a human to
+make — both follow directly from decisions already made and documented elsewhere in this
+project — so recorded here rather than in `docs/OPEN_QUESTIONS.md`.
+
+Deviations from manual: none in what was built. The two stated gaps above are follow-up
+work with a precedent already set by Stage 03, not decisions needing a human's judgement
+call.
 
 Open questions raised: none.
