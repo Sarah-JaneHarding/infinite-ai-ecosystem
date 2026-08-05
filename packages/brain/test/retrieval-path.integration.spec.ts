@@ -13,7 +13,7 @@ import type { Actor, Resource } from '@infinite-ai/policy';
 import { createTracer } from '@infinite-ai/telemetry';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import { openWrite, run } from '../src/write-path.js';
+import { openWrite, ratify, run } from '../src/write-path.js';
 import { RETRIEVAL_PATH_ORDER, retrieve } from '../src/retrieval-path.js';
 import type { RetrievalQuery } from '../src/retrieval-types.js';
 import { startTestDatabase, type TestDatabase } from './support/database.js';
@@ -109,6 +109,20 @@ async function makeNode(tx: TenantClient, label: string): Promise<string> {
     rawPayload: { entityType: 'TOPIC', label },
     source: 'test',
   });
+  const finished = await run(tx, opened.id);
+  return finished.committedRowId!;
+}
+
+/** Commits an `L0_CONSTITUTION` fact via the real write path, ratification included, and
+ * returns its id — proving the same pipeline the retrieval side reads back from. */
+async function makeConstitution(tx: TenantClient, key: string): Promise<string> {
+  const opened = await openWrite(tx, {
+    targetTier: 'L0_CONSTITUTION',
+    rawPayload: { key, kind: 'ASSESSMENT_POLICY', content: { rule: key } },
+    source: 'test',
+  });
+  await run(tx, opened.id);
+  await ratify(tx, opened.id, ACTOR_ID, NOW);
   const finished = await run(tx, opened.id);
   return finished.committedRowId!;
 }
@@ -255,5 +269,37 @@ describe('the retrieval path, end to end', () => {
     );
 
     expect(result.candidates.map((c) => c.id)).toContain(episodeId);
+  });
+
+  it('prioritizes L0 constitution ahead of an L1 match, even under a tight budget', async () => {
+    const key = `assessment_policy_${randomUUID().slice(0, 8)}`;
+    const { constitutionId, nodeId } = await withTenant(
+      { tenantId: TENANT_ID, actorId: ACTOR_ID },
+      async (tx) => {
+        const constitutionId = await makeConstitution(tx, key);
+        const nodeId = await makeNode(tx, 'Prioritized node');
+        await insertEmbedding(tx, nodeId, [1, 0, 0]);
+        return { constitutionId, nodeId };
+      },
+    );
+
+    // Just enough budget for the constitution fact's own estimated cost, and nothing else
+    // — proving step 5's tier order rather than a coincidence of a generous budget.
+    const constitutionText = `ASSESSMENT_POLICY[${key} v1]: ${JSON.stringify({ rule: key })}`;
+    const budget = Math.ceil(constitutionText.length / 4);
+
+    const result = await withTenant({ tenantId: TENANT_ID, actorId: ACTOR_ID }, (tx) =>
+      retrieve(tx, {
+        ...BASE_QUERY,
+        actor: smtActor,
+        resource: { ...learnerResource, classGroupId: null },
+        queryEmbedding: [1, 0, 0],
+        tokenBudget: budget,
+        now: NOW,
+      }),
+    );
+
+    expect(result.assembled!.included.map((c) => c.id)).toEqual([constitutionId]);
+    expect(result.assembled!.dropped.map((c) => c.id)).toContain(nodeId);
   });
 });

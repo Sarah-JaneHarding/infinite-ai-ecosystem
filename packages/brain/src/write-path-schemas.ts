@@ -6,7 +6,10 @@
 
 import { z } from 'zod';
 
-const BrainConstitutionKind = z.enum([
+/// Shared with the retrieval path (Stage 05 step 5), which needs it to describe a
+/// constitution candidate without packages/brain taking @prisma/client as a dependency —
+/// the same reasoning `BrainEntityType` below is already exported for.
+export const BrainConstitutionKind = z.enum([
   'SCHOOL_POLICY',
   'CAPS_CANON',
   'ATP_CALENDAR',
@@ -15,6 +18,7 @@ const BrainConstitutionKind = z.enum([
   'POPIA_RULE',
   'HOUSE_VOICE',
 ]);
+export type BrainConstitutionKind = z.infer<typeof BrainConstitutionKind>;
 
 /// Shared with the retrieval path (Stage 05 step 4), which needs the same ten entity
 /// types to filter vector search and to interpret what a node it retrieves actually is.

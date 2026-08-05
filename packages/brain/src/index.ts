@@ -12,7 +12,10 @@
 // retrieval path: the intent router and policy gate (both pure), rerank and the minimal
 // token-budgeted assembly (both pure), and the orchestrator (retrieval-path.ts) that
 // threads a TenantClient and an optional @infinite-ai/telemetry Tracer through all of it,
-// in the manual's own fixed order.
+// in the manual's own fixed order. Step 5 replaces that assembly with the real packer:
+// three fixed priority tiers (L0 constitution, then reranked L1/L2, then L3 exemplars),
+// fed by two new retrieval-path stages that fetch L0 and L3 candidates step 4 never
+// needed to.
 
 export {
   InMemoryWorkingMemoryStore,
@@ -22,6 +25,7 @@ export {
 } from './working-memory.js';
 
 export {
+  BrainConstitutionKind,
   BrainEntityType,
   BrainExtractionError,
   L0ConstitutionPayload,
@@ -79,8 +83,11 @@ export {
 } from './retrieval-path.js';
 
 export type {
+  ConstitutionRetrievalCandidate,
   EpisodeRetrievalCandidate,
+  ExemplarRetrievalCandidate,
   NodeRetrievalCandidate,
+  RankableCandidate,
   RetrievalCandidate,
   RetrievalCandidateSource,
   RetrievalQuery,

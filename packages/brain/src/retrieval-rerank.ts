@@ -6,10 +6,10 @@
 // A black-box reranker would be a second thing this stage would have to explain, on top of
 // provenance the Brain already carries for every fact.
 
-import type { RetrievalCandidate } from './retrieval-types.js';
+import type { RankableCandidate } from './retrieval-types.js';
 
 export interface ScoredCandidate {
-  readonly candidate: RetrievalCandidate;
+  readonly candidate: RankableCandidate;
   readonly score: number;
 }
 
@@ -26,7 +26,7 @@ function recencyWeight(recency: Date, now: Date): number {
 /** A node reached by graph expansion is discounted per hop from the vector seed that led
  * to it — two hops away is a weaker association than the seed itself. Vector matches and
  * episodes (no `graphHops`) are unaffected. */
-function graphPenalty(candidate: RetrievalCandidate): number {
+function graphPenalty(candidate: RankableCandidate): number {
   if (candidate.kind !== 'node' || candidate.graphHops === null) return 1;
   return 1 / (1 + candidate.graphHops);
 }
@@ -34,7 +34,7 @@ function graphPenalty(candidate: RetrievalCandidate): number {
 /** Highest score first. Ties are not broken further — `assembleContext`'s greedy packer
  * takes them in whatever stable order they arrive in. */
 export function rerank(
-  candidates: readonly RetrievalCandidate[],
+  candidates: readonly RankableCandidate[],
   now: Date,
 ): readonly ScoredCandidate[] {
   return candidates

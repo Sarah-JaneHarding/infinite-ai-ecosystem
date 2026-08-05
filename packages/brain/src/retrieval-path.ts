@@ -1,20 +1,26 @@
-// The retrieval path's orchestrator — Stage 05 step 4.
+// The retrieval path's orchestrator — Stage 05 steps 4 and 5.
 //
-// `query → intent router → policy + RBAC + purpose gate → vector top-k → graph n-hop
-// expansion → episodic temporal filter → rerank → token-budgeted context assembly`,
-// exactly the manual's own order. `trace` records every stage as it runs, in the fixed
-// order this function's own code calls them in — a reordered pipeline is a reordered
-// `trace`, which is what `retrieval-path.spec.ts` asserts against directly. The policy
-// gate is called immediately after intent routing and before anything that reads Brain
-// data; a refusal returns with an empty `trace` tail (no `vector_searched` and onward,
-// ever), which is "the policy gate runs before retrieval, never after" made structural
-// rather than merely documented.
+// Step 4 built `query → intent router → policy + RBAC + purpose gate → vector top-k →
+// graph n-hop expansion → episodic temporal filter → rerank → token-budgeted context
+// assembly`, exactly the manual's own order. Step 5 adds the two stages that order never
+// named: fetching L0 constitution and L3 exemplars, the tiers `assembleContext` now packs
+// ahead of and behind the vector/graph/episodic candidates respectively. `trace` records
+// every stage as it runs, in the fixed order this function's own code calls them in — a
+// reordered pipeline is a reordered `trace`, which is what `retrieval-path.spec.ts`
+// asserts against directly. The policy gate is called immediately after intent routing
+// and before anything that reads Brain data; a refusal returns with an empty `trace` tail
+// (no `constitution_fetched` and onward, ever), which is "the policy gate runs before
+// retrieval, never after" made structural rather than merely documented.
 
 import {
   expandGraph,
   filterEpisodesByWindow,
+  listEffectiveConstitution,
+  listEffectiveExemplars,
   vectorTopK,
+  type ConstitutionRow,
   type EpisodeCandidateRow,
+  type ExemplarRow,
   type ExpandedNode,
   type NodeCandidateRow,
   type TenantClient,
@@ -27,7 +33,11 @@ import { routeIntent } from './retrieval-intent-router.js';
 import { gateRetrieval, type RetrievalPolicyDecision } from './retrieval-policy-gate.js';
 import { rerank, type ScoredCandidate } from './retrieval-rerank.js';
 import type {
+  ConstitutionRetrievalCandidate,
+  EpisodeRetrievalCandidate,
+  ExemplarRetrievalCandidate,
   NodeRetrievalCandidate,
+  RankableCandidate,
   RetrievalCandidate,
   RetrievalQuery,
 } from './retrieval-types.js';
@@ -35,9 +45,11 @@ import type {
 export const RETRIEVAL_PATH_ORDER = [
   'intent_routed',
   'policy_gated',
+  'constitution_fetched',
   'vector_searched',
   'graph_expanded',
   'episodes_filtered',
+  'exemplars_fetched',
   'reranked',
   'assembled',
 ] as const;
@@ -78,7 +90,7 @@ function toNodeCandidate(
   };
 }
 
-function toEpisodeCandidate(episode: EpisodeCandidateRow): RetrievalCandidate {
+function toEpisodeCandidate(episode: EpisodeCandidateRow): EpisodeRetrievalCandidate {
   return {
     kind: 'episode',
     id: episode.id,
@@ -87,6 +99,29 @@ function toEpisodeCandidate(episode: EpisodeCandidateRow): RetrievalCandidate {
     detail: episode.detail,
     confidence: episode.confidence,
     recency: episode.occurredAt,
+  };
+}
+
+function toConstitutionCandidate(row: ConstitutionRow): ConstitutionRetrievalCandidate {
+  return {
+    kind: 'constitution',
+    id: row.id,
+    key: row.key,
+    constitutionKind: row.kind,
+    version: row.version,
+    content: row.content,
+    recency: row.ratifiedAt,
+  };
+}
+
+function toExemplarCandidate(row: ExemplarRow): ExemplarRetrievalCandidate {
+  return {
+    kind: 'exemplar',
+    id: row.id,
+    ref: row.ref,
+    version: row.version,
+    content: row.content,
+    recency: row.ratifiedAt,
   };
 }
 
@@ -139,7 +174,16 @@ export async function retrieve(
     // Stage 03 tables, whose columns map to a category one-for-one). Attaching that
     // mapping is a later module's job, once one exists with attributes to classify.
 
-    const candidates: RetrievalCandidate[] = [];
+    // L0 constitution is fetched unconditionally, not gated by the intent router's plan:
+    // ratified policy applies tenant-wide, not to whichever entity types this one query
+    // happens to be searching for — the same reasoning `listEffectiveConstitution`'s own
+    // header gives.
+    const constitutionRows = await listEffectiveConstitution(tx);
+    const constitution = constitutionRows.map(toConstitutionCandidate);
+    span.setAttribute('brain.retrieval.constitution_facts', constitution.length);
+    trace.push('constitution_fetched');
+
+    const rankableCandidates: RankableCandidate[] = [];
 
     if (plan.runVectorSearch) {
       const matches = await vectorTopK(tx, {
@@ -147,7 +191,7 @@ export async function retrieve(
         entityTypes: plan.entityTypes,
         k: query.vectorK,
       });
-      candidates.push(
+      rankableCandidates.push(
         ...matches.map((m) => toNodeCandidate(m.node, 'vector', m.distance)),
       );
       span.setAttribute('brain.retrieval.vector_matches', matches.length);
@@ -155,12 +199,14 @@ export async function retrieve(
     trace.push('vector_searched');
 
     if (plan.runGraphExpansion) {
-      const seedIds = candidates
+      const seedIds = rankableCandidates
         .filter((c): c is NodeRetrievalCandidate => c.kind === 'node')
         .map((c) => c.id);
       if (seedIds.length > 0) {
         const expansion = await expandGraph(tx, seedIds, query.graphHops);
-        candidates.push(...expansion.nodes.map((n) => toNodeCandidate(n, 'graph', null)));
+        rankableCandidates.push(
+          ...expansion.nodes.map((n) => toNodeCandidate(n, 'graph', null)),
+        );
         span.setAttribute('brain.retrieval.graph_expanded_nodes', expansion.nodes.length);
       }
     }
@@ -172,20 +218,31 @@ export async function retrieve(
         query.episodicSubjectNodeId,
         query.episodicWindow!,
       );
-      candidates.push(...episodes.map(toEpisodeCandidate));
+      rankableCandidates.push(...episodes.map(toEpisodeCandidate));
       span.setAttribute('brain.retrieval.episodes_found', episodes.length);
     }
     trace.push('episodes_filtered');
 
-    const ranked = rerank(candidates, query.now);
+    // L3 exemplars, same reasoning as L0: fetched whole, not filtered by the intent plan.
+    const exemplarRows = await listEffectiveExemplars(tx);
+    const exemplars = exemplarRows.map(toExemplarCandidate);
+    span.setAttribute('brain.retrieval.exemplars', exemplars.length);
+    trace.push('exemplars_fetched');
+
+    const ranked = rerank(rankableCandidates, query.now);
     trace.push('reranked');
 
-    const assembled = assembleContext(ranked, query.tokenBudget);
+    const assembled = assembleContext(constitution, ranked, exemplars, query.tokenBudget);
     trace.push('assembled');
     span.setAttribute('brain.retrieval.assembled_count', assembled.included.length);
     span.setAttribute('brain.retrieval.dropped_count', assembled.dropped.length);
     span.setAttribute('brain.retrieval.total_tokens', assembled.totalTokens);
 
+    const candidates: RetrievalCandidate[] = [
+      ...constitution,
+      ...rankableCandidates,
+      ...exemplars,
+    ];
     return { trace, policy, candidates, ranked, assembled };
   } catch (error) {
     span.recordException(error);
