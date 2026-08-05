@@ -19,6 +19,7 @@ describe('package export surface', () => {
       'APPEND_ONLY_TABLES',
       'AuditError',
       'BrainConflictError',
+      'BrainForgettingError',
       'BrainRetrievalError',
       'BrainWriteError',
       'ConsentLedgerError',
@@ -29,6 +30,7 @@ describe('package export surface', () => {
       'InvalidTenantContextError',
       'NON_TENANT_TABLES',
       'PACKAGE_NAME',
+      'RetentionError',
       'SELF_KEYED_TENANT_TABLES',
       'TENANT_OWNED_TABLES',
       'advanceBrainWrite',
@@ -46,6 +48,7 @@ describe('package export surface', () => {
       'getBrainConflict',
       'getBrainWriteCandidate',
       'getFactProvenance',
+      'getRetentionRule',
       'listEffectiveConstitution',
       'listEffectiveExemplars',
       'listOpenBrainConflicts',
@@ -58,6 +61,7 @@ describe('package export surface', () => {
       'readTenantLexicon',
       'recordContradictionResolution',
       'resolveBrainConflict',
+      'tombstoneBrainFact',
       'vectorTopK',
       'withTenant',
     ]);
@@ -92,6 +96,8 @@ describe('package export surface', () => {
       db.listEffectiveConstitution,
       db.listEffectiveExemplars,
       db.getFactProvenance,
+      db.getRetentionRule,
+      db.tombstoneBrainFact,
     ]) {
       expect(fn.length).toBeGreaterThanOrEqual(1);
     }
