@@ -1294,18 +1294,38 @@ before this step, and still do, unaffected.
 candidate through the identical `openWrite` + `run` sequence — natural-key contradiction
 detection for `L1_NODE`/`L1_EDGE`, automatic version-based supersession for
 `L0_CONSTITUTION`/`L3_PROCEDURE`, and a caller-declared `supersedes` for `L2_EPISODE`, none
-of it new. The difference is only what happens once `run()` returns. `remember` is
+of it new. The difference is only what happens once `run()` settles. `remember` is
 neutral: the pipeline decides whether anything was superseded, and a caller that only
 wanted to add a new fact never notices either way. `supersede` is a caller's explicit
 claim that this candidate replaces something specific, and it is a caller bug — surfaced
-as a thrown `BrainApiError`, not swallowed — if that turns out false: a `COMMITTED`
-result whose committed row's own `supersedes` (read back via `getFactProvenance`, the same
-step 6 primitive `explain` uses) is still null means nothing effective matched what the
-candidate declared; a candidate stuck at `CONTRADICTION_CHECKED` means the conflict was
-left for a human or resolved against it. A candidate still `AWAITING_RATIFICATION` is
+as a thrown `BrainApiError`, not swallowed — if that turns out false, in either of the two
+ways it can: a `RETENTION_SCHEDULED` result whose committed row's own `supersedes` (read
+back via `getFactProvenance`, the same step 6 primitive `explain` uses) is still null means
+nothing effective matched what the candidate declared; an unresolved or lost conflict —
+`run()` itself throwing `BrainWritePathError` when a human must adjudicate it, or when one
+already resolved it against the candidate — is caught and re-thrown as the same
+`BrainApiError`, so a caller of this surface only ever sees one error type regardless of
+which of the two ways supersession failed. A candidate still `AWAITING_RATIFICATION` is
 returned as-is rather than asserted against — whether a ratified tier's candidate
 supersedes anything is only knowable once a human ratifies it, which is `ratify`'s job, not
 this one's.
+
+**Defect found in CI, fixed in the same PR: `run()` throws on an unresolved conflict, it
+never returns one to inspect.** The first version of `supersede`'s assertion switched on
+the _returned_ candidate's status, including a `CONTRADICTION_CHECKED` case for "the
+conflict was left unresolved." That branch was dead code: `write-path.ts`'s own
+`advanceOnce` throws `BrainWritePathError` synchronously the moment it finds an
+unresolved or lost conflict at that status (see `write-path.integration.spec.ts`'s own
+"refuses to commit... over an undeclared conflict" case, proven the same way well before
+this step), so `run()` never returns a candidate sitting at `CONTRADICTION_CHECKED` for a
+caller to inspect — it either advances further or throws first. The failing test —
+`api.integration.spec.ts`'s "throws when the conflict was left unresolved rather than
+superseded" — caught this immediately: the raw `BrainWritePathError` surfaced instead of
+the `BrainApiError` the test (correctly) expected. The fix is `runForSupersession`, a
+wrapper around `run()` inside `supersede()` that catches `BrainWritePathError` specifically
+and re-throws it as `BrainApiError`, and a simplified `assertSuperseded` that only ever
+receives what `run()` can actually return — `RETENTION_SCHEDULED` or
+`AWAITING_RATIFICATION` — rather than a full, mostly-unreachable `BrainWriteStatus` switch.
 
 **`explain` walks `supersedes` backward, one step at a time, to the fact with none.** Step
 6's own header, written when `getFactProvenance` was built, already named this as the

@@ -48,7 +48,12 @@ import { NOOP_TRACER, type Tracer } from '@infinite-ai/telemetry';
 
 import { retrieve, type RetrievalResult } from './retrieval-path.js';
 import type { RetrievalQuery } from './retrieval-types.js';
-import { openWrite, ratify as recordRatification, run } from './write-path.js';
+import {
+  BrainWritePathError,
+  openWrite,
+  ratify as recordRatification,
+  run,
+} from './write-path.js';
 
 export class BrainApiError extends Error {
   public override readonly name = 'BrainApiError';
@@ -106,9 +111,12 @@ export async function ratify(
  * function asserts the result actually replaces something. It is a caller bug, surfaced
  * rather than swallowed, if a committed result turns out to have inserted a brand-new fact
  * instead (nothing effective matched what the candidate declared), or if contradiction
- * resolution left the existing fact in place or unresolved. A candidate still
- * `AWAITING_RATIFICATION` is returned as-is: whether it supersedes anything is only decided
- * once a human ratifies it (see `ratify()`).
+ * resolution left the existing fact in place or unresolved — `run()` throws
+ * `BrainWritePathError` directly for that case (see `write-path.ts`'s own `advanceOnce`),
+ * which this function translates to `BrainApiError` so a caller of this API surface only
+ * ever sees the one error type. A candidate still `AWAITING_RATIFICATION` is returned
+ * as-is: whether it supersedes anything is only decided once a human ratifies it (see
+ * `ratify()`).
  */
 export async function supersede(
   tx: TenantClient,
@@ -116,52 +124,56 @@ export async function supersede(
   now: Date = new Date(),
 ): Promise<BrainWriteCandidateRow> {
   const opened = await openWrite(tx, input);
-  const result = await run(tx, opened.id, now);
+  const result = await runForSupersession(tx, opened.id, now);
   await assertSuperseded(tx, result);
   return result;
 }
 
+async function runForSupersession(
+  tx: TenantClient,
+  candidateId: string,
+  now: Date,
+): Promise<BrainWriteCandidateRow> {
+  try {
+    return await run(tx, candidateId, now);
+  } catch (error) {
+    if (error instanceof BrainWritePathError) {
+      throw new BrainApiError(
+        `Candidate ${candidateId} did not supersede an existing fact: ${error.message}`,
+      );
+    }
+    throw error;
+  }
+}
+
+/**
+ * `run()` only ever returns a candidate at `RETENTION_SCHEDULED` or, for a ratified tier
+ * still waiting on a human, `AWAITING_RATIFICATION` — every other status either advances
+ * further automatically or is thrown out of `run()` as a `BrainWritePathError`, which
+ * `runForSupersession` above already translates before this function is ever reached.
+ */
 async function assertSuperseded(
   tx: TenantClient,
   candidate: BrainWriteCandidateRow,
 ): Promise<void> {
-  switch (candidate.status) {
-    case 'AWAITING_RATIFICATION':
-      return;
-    case 'CONTRADICTION_CHECKED':
-      throw new BrainApiError(
-        `Candidate ${candidate.id} did not supersede an existing fact: its conflict with ` +
-          `${candidate.contradictionOf} was left unresolved, or resolved against it.`,
-      );
-    case 'COMMITTED':
-    case 'INDEXED':
-    case 'RETENTION_SCHEDULED': {
-      if (candidate.committedRowId === null) {
-        throw new BrainApiError(
-          `Candidate ${candidate.id} reached ${candidate.status} with no committed row.`,
-        );
-      }
-      const fact = await getFactProvenance(
-        tx,
-        candidate.targetTier,
-        candidate.committedRowId,
-      );
-      if (fact === null || fact.supersedes === null) {
-        throw new BrainApiError(
-          `Candidate ${candidate.id} committed a new fact rather than superseding an ` +
-            'existing one; nothing effective matched what it declared.',
-        );
-      }
-      return;
-    }
-    case 'CANDIDATE':
-    case 'EXTRACTED':
-    case 'PROVENANCE_STAMPED':
-      // Unreachable: `run()` only ever stops at a terminal status or at
-      // AWAITING_RATIFICATION pending a human, never mid-pipeline.
-      throw new BrainApiError(
-        `Candidate ${candidate.id} stopped mid-pipeline at ${candidate.status}.`,
-      );
+  if (candidate.status === 'AWAITING_RATIFICATION') {
+    return;
+  }
+  if (candidate.committedRowId === null) {
+    throw new BrainApiError(
+      `Candidate ${candidate.id} reached ${candidate.status} with no committed row.`,
+    );
+  }
+  const fact = await getFactProvenance(
+    tx,
+    candidate.targetTier,
+    candidate.committedRowId,
+  );
+  if (fact === null || fact.supersedes === null) {
+    throw new BrainApiError(
+      `Candidate ${candidate.id} committed a new fact rather than superseding an existing ` +
+        'one; nothing effective matched what it declared.',
+    );
   }
 }
 
