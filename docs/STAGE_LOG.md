@@ -1461,9 +1461,9 @@ Open questions raised: none.
 ## Stage 06 — Agent runtime, Prompt Registry, DAG orchestrator, guardrails, HITL
 
 Started: 2026-08-05 Completed: —
-Exit gate: **PARTIAL** — steps 1 (the Agent contract) and 2 (the Agent Registry) are built
-and proven. Steps 3-10 are not started. `scripts/verify-stage.ts`'s `06` entry stays empty
-until they are.
+Exit gate: **PARTIAL** — steps 1 (the Agent contract), 2 (the Agent Registry) and 3 (the
+Prompt Registry) are built and proven. Steps 4-10 are not started.
+`scripts/verify-stage.ts`'s `06` entry stays empty until they are.
 
 **What this slice put in place (step 1 — the Agent contract)**
 
@@ -1570,5 +1570,65 @@ Deviations from manual: none. The duplicate-id rule is an addition the manual's 
 text does not name explicitly, but follows directly from "a typed registry" needing an
 actual primary key, the same way `contract.ts`'s own comment on `id` ("never reused for a
 different agent") already implied before this step gave it code.
+
+Open questions raised: none.
+
+**What this slice put in place (step 3 — the Prompt Registry)**
+
+`packages/prompts/src/loader.ts`: parses a prompt file's front matter (`agent`, `version`,
+`model`, `changelog`, `author`, `ratified_by`) against a Zod schema, validates Part 3.1's
+eight mandatory body sections are present in exactly that order and no others, and
+sha256-hashes the whole file's raw content. `loadPromptFile` layers on the one check only a
+real path can make: that the front matter's own `version` matches the filename and `agent`
+matches the directory, so `packages/prompts/src/<agent-id>/<semver>.prompt.md` can never
+silently disagree with what the file itself declares. `packages/prompts/src/lock.ts`:
+`verifyPromptLock` compares a set of loaded prompts against `prompt-lock.json` (checked in,
+starts as `{}` — no real prompt exists yet) and reports every `<agent>@<version>` key
+either missing from the lock or hashing differently than what was recorded for it;
+`buildPromptLock` is the regeneration function a developer runs after intentionally adding
+a prompt or bumping one's version, the same "regenerate, review, commit" shape
+`pnpm-lock.yaml` itself already has in this repo.
+
+**No YAML library added — the format doesn't need one.** Front matter here is always this
+project's own hand-authored, flat `key: value` shape; nothing in the tree already parses
+YAML, and pulling in a dependency to parse a format this constrained would trade a real
+cost (a new licence to track, a new supply-chain surface) for nothing this codebase
+actually needs. `parseFrontMatterBlock` splits each line on its first colon (so a value
+containing its own colon, e.g. a changelog message, still parses correctly) and treats a
+bare `null` literal and quoted strings as the two special cases Part 3.1's own example
+actually uses.
+
+**The section-order check is exact, not merely "these are present."** `validateSections`
+requires the body's top-level (`# `) headings to equal `PROMPT_SECTIONS` — same length,
+same order, nothing extra — rather than checking each mandatory section is present
+somewhere and ignoring anything else. The manual's own wording ("these sections in this
+order... omitting a section fails registry validation") reads as exhaustive, matching this
+codebase's general house style of strictness at a validated boundary (the retrieval path's
+own fixed stage order, the write path's own fixed transition list) rather than a
+best-effort check that would let an unreviewed section quietly ride along.
+
+**The real lockfile check runs against the real, currently-empty tree — proven trivially
+today, wired for real from the moment a prompt exists.** `packages/prompts/test/
+prompt-lock.spec.ts` scans `packages/prompts/src/` itself (not a fixture) for
+`*.prompt.md` files and checks them against the real, checked-in `prompt-lock.json`. Zero
+files today means zero violations — an honest reflection of "nothing module-specific goes
+in this stage" (no real agent has a prompt yet) — but the mechanism is exactly what will
+gate the first real prompt Stage 08 adds, the same "real mechanism, no real data yet"
+shape `contract.ts` and `registry.ts` already used for `promptRef`/`evalSetRef` themselves.
+
+Proven by four test files: `loader.spec.ts` (parsing, hashing, and every failure mode —
+missing front matter, a malformed line, a missing field, an invalid version or model, a
+missing section, sections out of order, an extra section — plus that identical content
+hashes identically and changed content does not); `lock.spec.ts` (clean match, a missing
+lock entry, a hash mismatch, a mixed batch of both, and `buildPromptLock` round-tripping
+back to zero violations); `load-scan.spec.ts` (real temp-directory files proving
+`loadPromptFile`'s filename/directory cross-check and `scanPromptFiles`'s recursive,
+`.prompt.md`-only, missing-directory-safe scan); and `prompt-lock.spec.ts`, the real check
+described above.
+
+Deviations from manual: none. Step 3 names the file location, the front-matter fields, the
+content-hashed loader and the lockfile-comparison test; this slice builds exactly that,
+plus the filename/directory cross-check the manual's own naming convention implies but does
+not spell out as a separate rule.
 
 Open questions raised: none.

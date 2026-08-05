@@ -204,6 +204,18 @@ No new dependency. `packages/agents/src/registry.ts` is a new file, but it only 
 `validateAgentContract` (step 1, same package) and holds a plain in-memory `Map` — no
 new package needed for either.
 
+## Stage 06 step 3 — the Prompt Registry
+
+`packages/prompts` takes `@infinite-ai/contracts` (`LogicalModel`) and `zod`, both already
+pinned throughout the tree — no new package for either. Deliberately **not** added: a YAML
+parsing library (`js-yaml`, `gray-matter`, etc.). Every prompt file's front matter is
+hand-authored to Part 3.1's own flat `key: value` shape (the one exception, `ratified_by:
+null`, is a bare literal, not a YAML feature this format actually needs) — never arbitrary
+external YAML — so `loader.ts` parses it with a two-line splitter instead. Rule 9's first
+question ("check whether something already in the tree does the job") has no candidate in
+the tree either way; the second question is whether the job needs one at all, and this one
+does not.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.
