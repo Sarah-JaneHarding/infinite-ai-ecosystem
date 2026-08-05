@@ -8,10 +8,10 @@
 // Naming: snake_case in the database via @map, camelCase in TypeScript. The RLS coverage
 // test reads table names from information_schema, so the mapped names are what matter.
 //
-// A note on what is deliberately absent. There are no curriculum, Brain, warehouse or
-// intervention tables here. Those belong to Stages 05, 08, 09 and 10, and inventing them
-// now would mean guessing at CAPS and SIAS structures that have not been supplied
-// (OQ-002). This schema is the tenancy and identity substrate, nothing more.
+// A note on what is deliberately absent. There are no curriculum, warehouse or
+// intervention tables here. Those belong to Stages 08, 09 and 10, and inventing them now
+// would mean guessing at CAPS and SIAS structures that have not been supplied (OQ-002).
+// The Infinite Brain (L0-L4) is added in Stage 05, below.
 
 generator client {
   // Default output (node_modules/.prisma/client), so `@prisma/client` resolves to the
@@ -35,39 +35,47 @@ datasource db {
 /// tenant. The RLS coverage test special-cases it explicitly rather than skipping tables
 /// it cannot classify, so the exemption is visible instead of implied.
 model Tenant {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String
-  slug        String   @unique
-  kind        TenantKind
+  id        String       @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String       @unique
+  kind      TenantKind
   /// ZA data residency (§1.3). Stored per tenant so a residency violation is detectable
   /// in data, not only in deployment configuration.
-  region      String   @default("af-south-1")
-  status      TenantStatus @default(ACTIVE)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  createdBy   String?  @map("created_by") @db.Uuid
-  version     Int      @default(1)
+  region    String       @default("af-south-1")
+  status    TenantStatus @default(ACTIVE)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+  createdBy String?      @map("created_by") @db.Uuid
+  version   Int          @default(1)
 
-  settings           TenantSetting[]
-  userAccounts       UserAccount[]
-  roleAssignments    RoleAssignment[]
-  schools            School[]
-  phases             Phase[]
-  grades             Grade[]
-  subjects           Subject[]
-  classGroups        ClassGroup[]
-  academicYears      AcademicYear[]
-  terms              Term[]
-  learners           Learner[]
-  learnerIdentifiers LearnerIdentifier[]
-  guardians          Guardian[]
-  guardianLinks      GuardianLink[]
-  staffMembers       StaffMember[]
-  teachingAssignments TeachingAssignment[]
-  auditEvents        AuditEvent[]
-  consentRecords     ConsentRecord[]
-  retentionRules     RetentionRule[]
-  subjectRequests    DataSubjectRequest[]
+  settings             TenantSetting[]
+  userAccounts         UserAccount[]
+  roleAssignments      RoleAssignment[]
+  schools              School[]
+  phases               Phase[]
+  grades               Grade[]
+  subjects             Subject[]
+  classGroups          ClassGroup[]
+  academicYears        AcademicYear[]
+  terms                Term[]
+  learners             Learner[]
+  learnerIdentifiers   LearnerIdentifier[]
+  guardians            Guardian[]
+  guardianLinks        GuardianLink[]
+  staffMembers         StaffMember[]
+  teachingAssignments  TeachingAssignment[]
+  auditEvents          AuditEvent[]
+  consentRecords       ConsentRecord[]
+  retentionRules       RetentionRule[]
+  subjectRequests      DataSubjectRequest[]
+  brainConstitutions   BrainConstitution[]
+  brainNodes           BrainNode[]
+  brainEdges           BrainEdge[]
+  brainEmbeddings      BrainEmbedding[]
+  brainEpisodes        BrainEpisode[]
+  brainProcedures      BrainProcedure[]
+  brainWriteCandidates BrainWriteCandidate[]
+  brainConflictQueue   BrainConflictQueue[]
 
   @@map("tenant")
 }
@@ -114,19 +122,19 @@ model TenantSetting {
 /// A person who can sign in. Authentication itself is Keycloak's job (Stage 02); this
 /// table is the local projection, keyed by the OIDC subject.
 model UserAccount {
-  id           String   @id @default(uuid()) @db.Uuid
-  tenantId     String   @map("tenant_id") @db.Uuid
+  id          String     @id @default(uuid()) @db.Uuid
+  tenantId    String     @map("tenant_id") @db.Uuid
   /// OIDC `sub`. Unique per tenant, not globally: the same human at two schools is two
   /// accounts, because their data must not be joinable across the isolation boundary.
-  subject      String
-  email        String
-  displayName  String   @map("display_name")
-  status       UserStatus @default(ACTIVE)
-  lastSeenAt   DateTime? @map("last_seen_at")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  createdBy    String?  @map("created_by") @db.Uuid
-  version      Int      @default(1)
+  subject     String
+  email       String
+  displayName String     @map("display_name")
+  status      UserStatus @default(ACTIVE)
+  lastSeenAt  DateTime?  @map("last_seen_at")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  createdBy   String?    @map("created_by") @db.Uuid
+  version     Int        @default(1)
 
   tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   roleAssignments RoleAssignment[]
@@ -152,21 +160,21 @@ enum UserStatus {
 /// only who holds which role where. Scope columns are nullable because a role may be
 /// tenant-wide.
 model RoleAssignment {
-  id           String   @id @default(uuid()) @db.Uuid
-  tenantId     String   @map("tenant_id") @db.Uuid
-  userAccountId String  @map("user_account_id") @db.Uuid
-  role         String
-  schoolId     String?  @map("school_id") @db.Uuid
-  classGroupId String?  @map("class_group_id") @db.Uuid
-  subjectId    String?  @map("subject_id") @db.Uuid
-  grantedAt    DateTime @default(now()) @map("granted_at")
+  id            String    @id @default(uuid()) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  userAccountId String    @map("user_account_id") @db.Uuid
+  role          String
+  schoolId      String?   @map("school_id") @db.Uuid
+  classGroupId  String?   @map("class_group_id") @db.Uuid
+  subjectId     String?   @map("subject_id") @db.Uuid
+  grantedAt     DateTime  @default(now()) @map("granted_at")
   /// Time-boxing exists for support impersonation (Stage 02 step 7) and for roles that
   /// should lapse rather than linger.
-  expiresAt    DateTime? @map("expires_at")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  createdBy    String?  @map("created_by") @db.Uuid
-  version      Int      @default(1)
+  expiresAt     DateTime? @map("expires_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  createdBy     String?   @map("created_by") @db.Uuid
+  version       Int       @default(1)
 
   tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   userAccount UserAccount @relation(fields: [userAccountId], references: [id], onDelete: Cascade)
@@ -198,13 +206,13 @@ model School {
   createdBy  String?  @map("created_by") @db.Uuid
   version    Int      @default(1)
 
-  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  phases              Phase[]
-  classGroups         ClassGroup[]
-  learners            Learner[]
-  staffMembers        StaffMember[]
-  roleAssignments     RoleAssignment[]
-  academicYears       AcademicYear[]
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  phases          Phase[]
+  classGroups     ClassGroup[]
+  learners        Learner[]
+  staffMembers    StaffMember[]
+  roleAssignments RoleAssignment[]
+  academicYears   AcademicYear[]
 
   @@unique([tenantId, name])
   @@index([tenantId])
@@ -351,25 +359,25 @@ model Term {
 /// here. This table holds what the planning and analytics paths legitimately need, and
 /// `token` is what crosses into any de-identified context (Stage 03).
 model Learner {
-  id           String   @id @default(uuid()) @db.Uuid
-  tenantId     String   @map("tenant_id") @db.Uuid
-  schoolId     String   @map("school_id") @db.Uuid
-  gradeId      String   @map("grade_id") @db.Uuid
-  classGroupId String?  @map("class_group_id") @db.Uuid
+  id           String        @id @default(uuid()) @db.Uuid
+  tenantId     String        @map("tenant_id") @db.Uuid
+  schoolId     String        @map("school_id") @db.Uuid
+  gradeId      String        @map("grade_id") @db.Uuid
+  classGroupId String?       @map("class_group_id") @db.Uuid
   /// Tenant-salted pseudonym, e.g. LNR_7F3A2C. Deterministic per tenant so it is stable
   /// across runs, and useless across tenants. This — never the name — is what may appear
   /// in a prompt (rule 4).
   token        String
   /// Home language, for MOD-04's home-language adapter and MOD-02's parent reports.
-  homeLanguage String?  @map("home_language")
+  homeLanguage String?       @map("home_language")
   status       LearnerStatus @default(ENROLLED)
   /// Set when a retention rule or a consent withdrawal tombstones this learner's
   /// personal information. The decision record survives; the personal data does not.
-  tombstonedAt DateTime? @map("tombstoned_at")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  createdBy    String?  @map("created_by") @db.Uuid
-  version      Int      @default(1)
+  tombstonedAt DateTime?     @map("tombstoned_at")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  createdBy    String?       @map("created_by") @db.Uuid
+  version      Int           @default(1)
 
   tenant      Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   school      School              @relation(fields: [schoolId], references: [id], onDelete: Cascade)
@@ -399,20 +407,20 @@ enum LearnerStatus {
 /// never reaches the database server and a database backup is not a PII leak on its own.
 /// `keyVersion` makes rotation possible without a data migration.
 model LearnerIdentifier {
-  id         String   @id @default(uuid()) @db.Uuid
-  tenantId   String   @map("tenant_id") @db.Uuid
-  learnerId  String   @map("learner_id") @db.Uuid
+  id         String         @id @default(uuid()) @db.Uuid
+  tenantId   String         @map("tenant_id") @db.Uuid
+  learnerId  String         @map("learner_id") @db.Uuid
   kind       IdentifierKind
   /// Ciphertext. Never queried by value — see `lookupHash` for that.
   ciphertext Bytes
-  keyVersion Int      @map("key_version")
+  keyVersion Int            @map("key_version")
   /// Keyed HMAC of the plaintext, for equality lookup without decryption. A plain hash
   /// would be trivially reversible for a value space as small as a date of birth.
-  lookupHash Bytes?   @map("lookup_hash")
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
-  createdBy  String?  @map("created_by") @db.Uuid
-  version    Int      @default(1)
+  lookupHash Bytes?         @map("lookup_hash")
+  createdAt  DateTime       @default(now()) @map("created_at")
+  updatedAt  DateTime       @updatedAt @map("updated_at")
+  createdBy  String?        @map("created_by") @db.Uuid
+  version    Int            @default(1)
 
   tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   learner Learner @relation(fields: [learnerId], references: [id], onDelete: Cascade)
@@ -435,18 +443,18 @@ enum IdentifierKind {
 }
 
 model Guardian {
-  id           String   @id @default(uuid()) @db.Uuid
-  tenantId     String   @map("tenant_id") @db.Uuid
+  id           String    @id @default(uuid()) @db.Uuid
+  tenantId     String    @map("tenant_id") @db.Uuid
   token        String
   /// Drives the language MOD-02's parent reports are written in.
-  homeLanguage String?  @map("home_language")
+  homeLanguage String?   @map("home_language")
   tombstonedAt DateTime? @map("tombstoned_at")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  createdBy    String?  @map("created_by") @db.Uuid
-  version      Int      @default(1)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  createdBy    String?   @map("created_by") @db.Uuid
+  version      Int       @default(1)
 
-  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   learners GuardianLink[]
 
   @@unique([tenantId, token])
@@ -456,19 +464,19 @@ model Guardian {
 
 /// Guardian-to-learner relationship, and whether this guardian may receive reports.
 model GuardianLink {
-  id            String   @id @default(uuid()) @db.Uuid
-  tenantId      String   @map("tenant_id") @db.Uuid
-  guardianId    String   @map("guardian_id") @db.Uuid
-  learnerId     String   @map("learner_id") @db.Uuid
-  relationship  String
-  isPrimary     Boolean  @default(false) @map("is_primary")
+  id                String   @id @default(uuid()) @db.Uuid
+  tenantId          String   @map("tenant_id") @db.Uuid
+  guardianId        String   @map("guardian_id") @db.Uuid
+  learnerId         String   @map("learner_id") @db.Uuid
+  relationship      String
+  isPrimary         Boolean  @default(false) @map("is_primary")
   /// A guardian with parental rights may not always be a lawful recipient of reports.
   /// Recorded explicitly so the Parent Portal cannot infer it wrongly.
-  mayReceiveReports Boolean @default(true) @map("may_receive_reports")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  createdBy     String?  @map("created_by") @db.Uuid
-  version       Int      @default(1)
+  mayReceiveReports Boolean  @default(true) @map("may_receive_reports")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  createdBy         String?  @map("created_by") @db.Uuid
+  version           Int      @default(1)
 
   tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   guardian Guardian @relation(fields: [guardianId], references: [id], onDelete: Cascade)
@@ -480,18 +488,18 @@ model GuardianLink {
 }
 
 model StaffMember {
-  id            String   @id @default(uuid()) @db.Uuid
-  tenantId      String   @map("tenant_id") @db.Uuid
-  schoolId      String   @map("school_id") @db.Uuid
-  userAccountId String?  @unique @map("user_account_id") @db.Uuid
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      String      @map("tenant_id") @db.Uuid
+  schoolId      String      @map("school_id") @db.Uuid
+  userAccountId String?     @unique @map("user_account_id") @db.Uuid
   /// SACE registration, for CPTD tracking in Stage 12.
-  saceNumber    String?  @map("sace_number")
-  displayName   String   @map("display_name")
+  saceNumber    String?     @map("sace_number")
+  displayName   String      @map("display_name")
   status        StaffStatus @default(ACTIVE)
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  createdBy     String?  @map("created_by") @db.Uuid
-  version       Int      @default(1)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  createdBy     String?     @map("created_by") @db.Uuid
+  version       Int         @default(1)
 
   tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   school              School               @relation(fields: [schoolId], references: [id], onDelete: Cascade)
@@ -586,10 +594,10 @@ model AuditEvent {
 /// The subject is a token, never a name or an id that resolves to one. The ledger is
 /// therefore not itself a register of who attends the school.
 model ConsentRecord {
-  id            String   @id @default(uuid()) @db.Uuid
-  tenantId      String   @map("tenant_id") @db.Uuid
+  id            String          @id @default(uuid()) @db.Uuid
+  tenantId      String          @map("tenant_id") @db.Uuid
   /// Tenant-salted pseudonym: LNR_…, GDN_…, STF_….
-  subjectToken  String   @map("subject_token")
+  subjectToken  String          @map("subject_token")
   /// A `DataCategory` value from @infinite-ai/contracts.
   category      String
   /// A `Purpose` value from @infinite-ai/contracts.
@@ -598,12 +606,12 @@ model ConsentRecord {
   decision      ConsentDecision
   source        ConsentSource
   /// Reference to the evidence, never the evidence itself.
-  evidenceRef   String?  @map("evidence_ref")
+  evidenceRef   String?         @map("evidence_ref")
   /// When the decision took effect in the world.
-  effectiveFrom DateTime @map("effective_from")
+  effectiveFrom DateTime        @map("effective_from")
   /// When this system learned of it. The gap between the two is what an auditor reads.
-  recordedAt    DateTime @default(now()) @map("recorded_at")
-  recordedBy    String?  @map("recorded_by") @db.Uuid
+  recordedAt    DateTime        @default(now()) @map("recorded_at")
+  recordedBy    String?         @map("recorded_by") @db.Uuid
   /// The subject's own words on an objection. Never a decision, never personal detail.
   note          String?
 
@@ -666,7 +674,8 @@ model RetentionRule {
   createdBy    String?  @map("created_by") @db.Uuid
   version      Int      @default(1)
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant          Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  writeCandidates BrainWriteCandidate[]
 
   @@unique([tenantId, category])
   @@index([tenantId])
@@ -680,25 +689,25 @@ model RetentionRule {
 /// asking is who they say they are before that happens. The gate is a human one and it is
 /// recorded here rather than assumed.
 model DataSubjectRequest {
-  id            String   @id @default(uuid()) @db.Uuid
-  tenantId      String   @map("tenant_id") @db.Uuid
-  subjectToken  String   @map("subject_token")
-  kind          DataSubjectRequestKind
-  status        DataSubjectRequestStatus @default(RECEIVED)
+  id           String                   @id @default(uuid()) @db.Uuid
+  tenantId     String                   @map("tenant_id") @db.Uuid
+  subjectToken String                   @map("subject_token")
+  kind         DataSubjectRequestKind
+  status       DataSubjectRequestStatus @default(RECEIVED)
   /// What the subject asked for, in their words.
-  detail        String
+  detail       String
   /// How the requester's identity was established. Required before fulfilment.
-  verifiedBy    String?  @map("verified_by") @db.Uuid
-  verifiedAt    DateTime? @map("verified_at")
+  verifiedBy   String?                  @map("verified_by") @db.Uuid
+  verifiedAt   DateTime?                @map("verified_at")
   /// Set when the request was completed or refused, with the reason in `outcome`.
-  closedAt      DateTime? @map("closed_at")
-  outcome       String?
+  closedAt     DateTime?                @map("closed_at")
+  outcome      String?
   /// The §23(1) response clock. A request has a statutory deadline, so it is stored.
-  dueAt         DateTime @map("due_at")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  createdBy     String?  @map("created_by") @db.Uuid
-  version       Int      @default(1)
+  dueAt        DateTime                 @map("due_at")
+  createdAt    DateTime                 @default(now()) @map("created_at")
+  updatedAt    DateTime                 @updatedAt @map("updated_at")
+  createdBy    String?                  @map("created_by") @db.Uuid
+  version      Int                      @default(1)
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
@@ -734,4 +743,459 @@ enum DataSubjectRequestStatus {
   REFUSED
 
   @@map("data_subject_request_status")
+}
+
+// ---------------------------------------------------------------------------
+// Infinite Brain — L0-L4 (Stage 05 step 1)
+// ---------------------------------------------------------------------------
+// Every table below holds only *committed* facts — the far end of the write-path state
+// machine step 2 builds (`candidate -> ... -> committed+versioned -> indexed -> …`). What
+// a candidate looks like while still in flight is that step's table, not this one.
+//
+// All six tables are append-only, enforced the same way `audit_event` and
+// `consent_record` already are: a trigger rejects UPDATE and DELETE outright. "No
+// destructive update anywhere; old versions remain readable" is a named exit-gate item
+// for this stage, not a style preference, so every correction, every tombstone and every
+// re-embedding is a new row, never an edit of an old one. A row that supersedes an
+// earlier one points back at it via `supersedes`; nothing ever points forward, because the
+// row that would need to is the one being inserted right now.
+//
+// L0 and L3 are human-ratified canon (`ratifiedBy`/`ratifiedAt`, required) — the write
+// path's "(ratify if L0/L3)" transition is what fills those columns before a row is
+// allowed to land here at all. L1 and L2 are agent- or system-produced observations
+// instead: `source`, `confidence`, `derivationRunId` (the run that produced the fact) and
+// `traceId`, the same provenance shape `explain()` (step 9) walks for any fact type.
+//
+// L4 Working has no table here. It is explicitly a Redis scratchpad with a TTL, not
+// durable Brain memory — see packages/brain/src/working-memory.ts.
+
+/// L0 Constitution — school policy, CAPS canon, ATP calendars, templates, assessment
+/// policy, POPIA rules, house voice. Immutable and human-ratified: nothing in this table
+/// is inferred by an agent, and nothing is ever true "for now."
+model BrainConstitution {
+  id         String                @id @default(uuid()) @db.Uuid
+  tenantId   String                @map("tenant_id") @db.Uuid
+  /// A stable key for one constitutional fact across versions, e.g. "assessment_policy"
+  /// or "caps_calendar.term1". Two rows share a key only when one supersedes the other.
+  key        String
+  kind       BrainConstitutionKind
+  version    Int
+  /// The ratified content. Structure depends on `kind` and is validated by
+  /// packages/brain before a write is ever attempted — the database enforces shape
+  /// nowhere here, the same division of labour the rest of the schema uses for `Json`.
+  content    Json
+  /// The row this version replaces. Null for a key's first version.
+  supersedes String?               @db.Uuid
+  ratifiedBy String                @map("ratified_by") @db.Uuid
+  ratifiedAt DateTime              @map("ratified_at")
+  createdAt  DateTime              @default(now()) @map("created_at")
+  createdBy  String?               @map("created_by") @db.Uuid
+
+  tenant            Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supersedesFact    BrainConstitution?  @relation("BrainConstitutionSupersession", fields: [supersedes], references: [id])
+  supersededByFacts BrainConstitution[] @relation("BrainConstitutionSupersession")
+
+  @@unique([tenantId, key, version])
+  @@index([tenantId])
+  @@index([tenantId, key])
+  @@map("brain_constitution")
+}
+
+enum BrainConstitutionKind {
+  SCHOOL_POLICY
+  CAPS_CANON
+  ATP_CALENDAR
+  TEMPLATE
+  ASSESSMENT_POLICY
+  POPIA_RULE
+  HOUSE_VOICE
+
+  @@map("brain_constitution_kind")
+}
+
+/// L1 Semantic — an entity: a learner, a class, a CAPS code, a document, and so on.
+/// Personal information stops at `Learner.token` the same way it does everywhere else in
+/// this schema (rule 4) — `externalRef` carries a token or an id from an existing table,
+/// never a name.
+model BrainNode {
+  id              String          @id @default(uuid()) @db.Uuid
+  tenantId        String          @map("tenant_id") @db.Uuid
+  entityType      BrainEntityType @map("entity_type")
+  /// A token or id from the table this entity already has, where one exists (a learner's
+  /// token, a subject's id). Null for entities with no table of their own, like a CAPS
+  /// code or a topic.
+  externalRef     String?         @map("external_ref")
+  label           String
+  /// Attributes specific to `entityType`. Same personal-information boundary as above.
+  attributes      Json            @default("{}")
+  source          String
+  confidence      Float           @default(1)
+  /// Which agent/orchestration run produced this fact (Stage 06). No FK: the run table
+  /// does not exist yet, the same reason `AuditEvent.actorId` carries no FK to a role.
+  derivationRunId String?         @map("derivation_run_id") @db.Uuid
+  traceId         String?         @map("trace_id")
+  /// The row this one supersedes — an update, a re-derivation, or (when `tombstonedAt`
+  /// is set on the new row) a retraction. Never edited in place; see the section header.
+  supersedes      String?         @db.Uuid
+  tombstonedAt    DateTime?       @map("tombstoned_at")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  createdBy       String?         @map("created_by") @db.Uuid
+
+  tenant            Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supersedesNode    BrainNode?       @relation("BrainNodeSupersession", fields: [supersedes], references: [id])
+  supersededByNodes BrainNode[]      @relation("BrainNodeSupersession")
+  embeddings        BrainEmbedding[]
+  outgoingEdges     BrainEdge[]      @relation("BrainEdgeSource")
+  incomingEdges     BrainEdge[]      @relation("BrainEdgeTarget")
+  episodes          BrainEpisode[]
+
+  @@index([tenantId])
+  @@index([tenantId, entityType])
+  @@index([tenantId, externalRef])
+  @@map("brain_node")
+}
+
+enum BrainEntityType {
+  LEARNER
+  CLASS
+  SUBJECT
+  TOPIC
+  CAPS_CODE
+  ASSESSMENT
+  INTERVENTION
+  RESOURCE
+  STAFF_MEMBER
+  DOCUMENT
+
+  @@map("brain_entity_type")
+}
+
+/// L1 Semantic — a typed relation between two nodes. An edge is a fact in its own right,
+/// so it carries the same provenance columns a node does.
+model BrainEdge {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenantId        String    @map("tenant_id") @db.Uuid
+  sourceId        String    @map("source_id") @db.Uuid
+  targetId        String    @map("target_id") @db.Uuid
+  /// e.g. "enrolled_in", "prerequisite_of", "flagged_by". Free text, not an enum — the
+  /// relation vocabulary grows with every module built on the Brain, and gating it behind
+  /// a schema migration per module would fight that.
+  relation        String
+  attributes      Json      @default("{}")
+  source          String
+  confidence      Float     @default(1)
+  derivationRunId String?   @map("derivation_run_id") @db.Uuid
+  traceId         String?   @map("trace_id")
+  supersedes      String?   @db.Uuid
+  tombstonedAt    DateTime? @map("tombstoned_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  createdBy       String?   @map("created_by") @db.Uuid
+
+  tenant            Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source_           BrainNode   @relation("BrainEdgeSource", fields: [sourceId], references: [id], onDelete: Cascade, map: "brain_edge_source_fkey")
+  target            BrainNode   @relation("BrainEdgeTarget", fields: [targetId], references: [id], onDelete: Cascade, map: "brain_edge_target_fkey")
+  supersedesEdge    BrainEdge?  @relation("BrainEdgeSupersession", fields: [supersedes], references: [id])
+  supersededByEdges BrainEdge[] @relation("BrainEdgeSupersession")
+
+  @@index([tenantId])
+  @@index([tenantId, sourceId])
+  @@index([tenantId, targetId])
+  @@index([tenantId, relation])
+  @@map("brain_edge")
+}
+
+/// L1 Semantic — a pgvector embedding for one node, from one embedding model.
+///
+/// Prisma has no native vector type: `embedding` is `Unsupported("vector")` and is
+/// invisible to the generated client entirely, for both reads and writes. Every query
+/// that touches it goes through raw SQL in packages/brain — there is no other path, since
+/// Prisma cannot represent one.
+///
+/// The column is declared without a fixed dimension. pgvector accepts that; a fixed
+/// dimension only matters for building an index (HNSW or IVFFlat), and no embedding model
+/// has been chosen for this deployment yet (`docs/DEPENDENCIES.md`'s Stage 04 entry made
+/// the equivalent call for provider pricing — a real default is worse than an honest gap).
+/// `dimensions` records what each row actually holds, checked at the application layer.
+/// The index is a follow-up once a model is chosen, tracked in `docs/STAGE_LOG.md`, not
+/// invented here.
+model BrainEmbedding {
+  id         String                 @id @default(uuid()) @db.Uuid
+  tenantId   String                 @map("tenant_id") @db.Uuid
+  nodeId     String                 @map("node_id") @db.Uuid
+  /// The logical model name from the gateway's routing config (Stage 04), e.g.
+  /// "embed.default" — never a raw provider model id, for the same reason application
+  /// code never names a provider directly.
+  model      String
+  dimensions Int
+  embedding  Unsupported("vector")?
+  createdAt  DateTime               @default(now()) @map("created_at")
+  createdBy  String?                @map("created_by") @db.Uuid
+
+  tenant Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  node   BrainNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, nodeId, model])
+  @@index([tenantId])
+  @@map("brain_embedding")
+}
+
+/// L2 Episodic — what happened, when, to whom, by whom, with outcome. Includes every
+/// human correction: a correction is a new episode whose `supersedes` points at the
+/// episode it corrects, so "what did we think happened, and what do we now know" are both
+/// readable forever.
+model BrainEpisode {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  /// A short, machine-classifiable event kind — "lesson_plan_approved",
+  /// "screening_flag_raised", "human_correction" — not free text. The temporal and
+  /// policy-gate tests (step 10) both filter on it.
+  eventType       String   @map("event_type")
+  /// The entity this episode is about, usually a learner or a class. Null for episodes
+  /// about the Brain itself, like a conflict resolution.
+  subjectNodeId   String?  @map("subject_node_id") @db.Uuid
+  actorId         String?  @map("actor_id") @db.Uuid
+  /// When it happened in the world, distinct from `recordedAt` below — the same split
+  /// `ConsentRecord.effectiveFrom` draws, and what the temporal test (step 10) queries.
+  occurredAt      DateTime @map("occurred_at")
+  summary         String
+  detail          Json     @default("{}")
+  /// The outcome, once known. An episode may be recorded before its outcome lands.
+  outcome         String?
+  source          String
+  confidence      Float    @default(1)
+  derivationRunId String?  @map("derivation_run_id") @db.Uuid
+  traceId         String?  @map("trace_id")
+  supersedes      String?  @db.Uuid
+  recordedAt      DateTime @default(now()) @map("recorded_at")
+  createdBy       String?  @map("created_by") @db.Uuid
+
+  tenant               Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  subjectNode          BrainNode?     @relation(fields: [subjectNodeId], references: [id])
+  supersedesEpisode    BrainEpisode?  @relation("BrainEpisodeSupersession", fields: [supersedes], references: [id])
+  supersededByEpisodes BrainEpisode[] @relation("BrainEpisodeSupersession")
+
+  @@index([tenantId])
+  @@index([tenantId, subjectNodeId, occurredAt])
+  @@index([tenantId, eventType, occurredAt])
+  @@map("brain_episode")
+}
+
+/// L3 Procedural — prompt versions, pipeline definitions, SOPs, approved exemplars, tool
+/// contracts. Human-ratified, like L0.
+///
+/// `PROMPT_VERSION` rows do not duplicate a prompt's text. Stage 06's Prompt Registry
+/// (`packages/prompts`) is the source of truth for prompt content, content-hashed and
+/// version-locked there; a row here is a pointer — `ref` is the agent id, `content` holds
+/// the content hash and the semver — so the Brain can cite which exact prompt version
+/// produced a fact without owning a second copy of it.
+model BrainProcedure {
+  id         String             @id @default(uuid()) @db.Uuid
+  tenantId   String             @map("tenant_id") @db.Uuid
+  kind       BrainProcedureKind
+  /// A stable key within `kind` — an agent id for a prompt version, a pipeline name for a
+  /// pipeline definition, and so on.
+  ref        String
+  version    Int
+  content    Json
+  supersedes String?            @db.Uuid
+  ratifiedBy String             @map("ratified_by") @db.Uuid
+  ratifiedAt DateTime           @map("ratified_at")
+  createdAt  DateTime           @default(now()) @map("created_at")
+  createdBy  String?            @map("created_by") @db.Uuid
+
+  tenant                 Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supersedesProcedure    BrainProcedure?  @relation("BrainProcedureSupersession", fields: [supersedes], references: [id])
+  supersededByProcedures BrainProcedure[] @relation("BrainProcedureSupersession")
+
+  @@unique([tenantId, kind, ref, version])
+  @@index([tenantId])
+  @@index([tenantId, kind, ref])
+  @@map("brain_procedure")
+}
+
+enum BrainProcedureKind {
+  PROMPT_VERSION
+  PIPELINE_DEFINITION
+  SOP
+  EXEMPLAR
+  TOOL_CONTRACT
+
+  @@map("brain_procedure_kind")
+}
+
+// ---------------------------------------------------------------------------
+// The write path — Stage 05 step 2
+// ---------------------------------------------------------------------------
+//
+// `candidate → extracted+typed → contradiction-checked → provenance-stamped →
+// (ratify if L0/L3) → committed+versioned → indexed → retention-scheduled`, exactly the
+// manual's own transition list. Every arrival at a status is a separate UPDATE, persisted
+// before the next transition is attempted — a crash between two transitions leaves the row
+// at the last one it actually reached, so resuming means picking that status back up
+// rather than starting the pipeline over.
+//
+// This is workflow state, not a Brain fact — it does not join `APPEND_ONLY_TABLES`. The
+// six tables step 1 built are the record of what the Brain knows; this is the record of
+// how one candidate got there, closer in shape to `DataSubjectRequest` than to
+// `BrainEpisode`. Once a candidate reaches `RETENTION_SCHEDULED` it is done, not deleted —
+// an audit trail of "how did this fact arrive" is exactly what `explain()` (step 9) will
+// want to walk.
+//
+// `L1_EMBEDDING` is deliberately not a target tier here. Contradiction-checking and
+// ratification are both meaningless for a vector — there is no natural-language claim to
+// conflict with another claim, and nobody ratifies an embedding — so an embedding does not
+// go through this pipeline at all. It is attached to an already-committed `BrainNode` once
+// something calls the Model Gateway to produce it, which has no caller yet (no embedding
+// model is chosen — see step 1's own note on `BrainEmbedding.dimensions`).
+enum BrainTargetTier {
+  L0_CONSTITUTION
+  L1_NODE
+  L1_EDGE
+  L2_EPISODE
+  L3_PROCEDURE
+
+  @@map("brain_target_tier")
+}
+
+enum BrainWriteStatus {
+  CANDIDATE
+  EXTRACTED
+  CONTRADICTION_CHECKED
+  PROVENANCE_STAMPED
+  /// Only reached for `L0_CONSTITUTION` and `L3_PROCEDURE` — the manual's own conditional.
+  /// Every other tier skips straight from `PROVENANCE_STAMPED` to `COMMITTED`.
+  AWAITING_RATIFICATION
+  COMMITTED
+  INDEXED
+  RETENTION_SCHEDULED
+
+  @@map("brain_write_status")
+}
+
+/// One fact's journey from raw input to a committed, indexed, retention-scheduled row in
+/// one of the six tables above. See the section header for why this table exists and why
+/// it is not append-only.
+model BrainWriteCandidate {
+  id                      String                   @id @default(uuid()) @db.Uuid
+  tenantId                String                   @map("tenant_id") @db.Uuid
+  targetTier              BrainTargetTier          @map("target_tier")
+  status                  BrainWriteStatus         @default(CANDIDATE)
+  /// What the caller submitted, before extraction. Kept verbatim — if the typed shape
+  /// turns out to be wrong, the input to re-derive it from is still here.
+  rawPayload              Json                     @map("raw_payload")
+  /// Filled in by the `EXTRACTED` transition: `rawPayload` parsed and validated against
+  /// the target tier's shape. Null until then.
+  typedPayload            Json?                    @map("typed_payload")
+  source                  String
+  confidence              Float                    @default(1)
+  derivationRunId         String?                  @map("derivation_run_id") @db.Uuid
+  traceId                 String?                  @map("trace_id")
+  /// Set by the `CONTRADICTION_CHECKED` transition when an existing effective row shares
+  /// this candidate's natural key and the candidate did not declare it as what it
+  /// supersedes. Never populated for `L0_CONSTITUTION`/`L3_PROCEDURE` — a new version of
+  /// versioned canon is always meant to supersede the last one; that is what versioning
+  /// is, and the human ratification gate above is those tiers' conflict check.
+  contradictionOf         String?                  @map("contradiction_of") @db.Uuid
+  /// Step 3's verdict on `contradictionOf`, once one is set. `ACCEPT_NEW` — decided
+  /// automatically by comparing provenance strength and recency, or by a human resolving
+  /// the matching `BrainConflictQueue` row — means this candidate may proceed and its
+  /// commit supersedes the conflicting row. `KEEP_EXISTING` means a human rejected it; the
+  /// candidate stops at `CONTRADICTION_CHECKED` permanently. Null while unresolved.
+  contradictionResolution BrainConflictResolution? @map("contradiction_resolution")
+  /// Filled once a human ratifies an `L0_CONSTITUTION` or `L3_PROCEDURE` candidate. Null
+  /// for every other tier, which never enters `AWAITING_RATIFICATION` at all.
+  ratifiedBy              String?                  @map("ratified_by") @db.Uuid
+  ratifiedAt              DateTime?                @map("ratified_at")
+  /// The id and version of the row this candidate became, once `COMMITTED`. The table it
+  /// lives in is implied by `targetTier` — no FK, for the same reason
+  /// `BrainNode.derivationRunId` has none: it would have to point at one of six different
+  /// tables, which a single foreign key cannot express.
+  committedRowId          String?                  @map("committed_row_id") @db.Uuid
+  committedVersion        Int?                     @map("committed_version")
+  /// A `DataCategory` value from @infinite-ai/contracts, if this candidate's tier and
+  /// content carry personal information at all. Null for `L0_CONSTITUTION`/`L3_PROCEDURE`
+  /// (policy and curriculum never expire — step 8) and for any `L1`/`L2` fact with no
+  /// personal-information category of its own, e.g. a `TOPIC` node.
+  retentionCategory       String?                  @map("retention_category")
+  /// The matching `RetentionRule`, if the tenant has ratified one for `retentionCategory`.
+  /// Null is the honest, common case while OQ-007 stays open — nothing here invents a
+  /// period nobody ratified.
+  retentionRuleId         String?                  @map("retention_rule_id") @db.Uuid
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  createdBy               String?                  @map("created_by") @db.Uuid
+
+  tenant        Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  retentionRule RetentionRule?      @relation(fields: [retentionRuleId], references: [id])
+  conflictQueue BrainConflictQueue?
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, targetTier])
+  @@map("brain_write_candidate")
+}
+
+// ---------------------------------------------------------------------------
+// Contradiction resolution — Stage 05 step 3
+// ---------------------------------------------------------------------------
+//
+// "On conflict with an existing fact, compare provenance strength and recency; if the new
+// fact would supersede a human-ratified fact, do not auto-resolve — enqueue a conflict for
+// a human and keep both versions." The manual's carve-out is already satisfied for
+// `L0_CONSTITUTION`/`L3_PROCEDURE` by step 2's ratification gate — a human approves every
+// new version of policy or curriculum canon regardless of whether one existed before, so
+// there is nothing further for this table to gate on those two tiers. Only
+// `L1_NODE`/`L1_EDGE` ever populate it: `L2_EPISODE` has no natural key to conflict
+// against, and `L1_EMBEDDING` never entered this pipeline at all (step 2's own note).
+//
+// A queue row is created the moment `CONTRADICTION_CHECKED` finds an undeclared conflict
+// that provenance comparison does not clearly resolve in the new candidate's favour — see
+// `packages/brain`'s `resolveContradiction`. Resolving it (`resolveBrainConflict`) is what
+// sets `BrainWriteCandidate.contradictionResolution`, the field that actually unblocks (or
+// permanently stops) the stuck candidate.
+enum BrainConflictStatus {
+  OPEN
+  RESOLVED
+
+  @@map("brain_conflict_status")
+}
+
+enum BrainConflictResolution {
+  /// The new candidate wins: it may proceed, and its commit supersedes the conflicting row.
+  ACCEPT_NEW
+  /// The existing fact stands. The candidate stops at `CONTRADICTION_CHECKED` for good.
+  KEEP_EXISTING
+
+  @@map("brain_conflict_resolution")
+}
+
+model BrainConflictQueue {
+  id                 String                   @id @default(uuid()) @db.Uuid
+  tenantId           String                   @map("tenant_id") @db.Uuid
+  writeCandidateId   String                   @unique @map("write_candidate_id") @db.Uuid
+  targetTier         BrainTargetTier          @map("target_tier")
+  /// The existing effective row this candidate's natural key conflicts with.
+  contradictionOf    String                   @map("contradiction_of") @db.Uuid
+  /// The comparison `resolveContradiction` made, recorded so a human reviewing the queue
+  /// does not have to recompute it — and so the recommendation is auditable even if the
+  /// underlying rows later change.
+  newConfidence      Float                    @map("new_confidence")
+  existingConfidence Float                    @map("existing_confidence")
+  newRecency         DateTime                 @map("new_recency")
+  existingRecency    DateTime                 @map("existing_recency")
+  status             BrainConflictStatus      @default(OPEN)
+  resolution         BrainConflictResolution?
+  resolvedBy         String?                  @map("resolved_by") @db.Uuid
+  resolvedAt         DateTime?                @map("resolved_at")
+  resolutionNote     String?                  @map("resolution_note")
+  createdAt          DateTime                 @default(now()) @map("created_at")
+  updatedAt          DateTime                 @updatedAt @map("updated_at")
+  createdBy          String?                  @map("created_by") @db.Uuid
+
+  tenant         Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  writeCandidate BrainWriteCandidate @relation(fields: [writeCandidateId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("brain_conflict_queue")
 }

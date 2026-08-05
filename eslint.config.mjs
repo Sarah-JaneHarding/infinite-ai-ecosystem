@@ -216,6 +216,18 @@ export default tseslint.config(
     },
   },
   {
+    // The Brain write-path integration suite needs to start its own Testcontainers
+    // Postgres and point @infinite-ai/db's `withTenant()` at it — the same shape of
+    // exception packages/db/test/** already has, confined the same way: to this package's
+    // own tests.
+    files: ['packages/brain/test/**/*.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+      'no-restricted-syntax': 'off',
+      'no-restricted-globals': 'off',
+    },
+  },
+  {
     // The seed script runs as a standalone CLI against a fresh database, before any
     // application boots. It legitimately constructs its own client, reads the encryption
     // key from the environment, and prints progress.

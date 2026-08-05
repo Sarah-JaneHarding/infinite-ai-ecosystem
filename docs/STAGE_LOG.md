@@ -617,3 +617,240 @@ earlier in this stage — it had existed only outside the repo since Stage 00.
 Open questions raised: none. The pricing gap above is follow-up implementation work, not
 a decision that needs a human's judgement call, so it is tracked here rather than in
 `docs/OPEN_QUESTIONS.md`.
+
+---
+
+## Stage 05 — Infinite Brain (L0-L4)
+
+Started: 2026-08-04 Completed: —
+Exit gate: **PARTIAL** — steps 1 (the five tiers), 2 (the write path) and 3 (contradiction
+resolution) are built and proven. Steps 4-10 are not started. `scripts/verify-stage.ts`'s
+`05` entry stays empty
+until they are.
+
+**What this slice put in place (step 1)**
+
+| Tier            | Table(s)                                      | Proven by                                                                                                                                                            |
+| --------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| L0 Constitution | `brain_constitution`                          | Append-only, `supersedes` self-reference, `(tenantId, key, version)` unique — `schema-classification.spec.ts`, RLS and trigger coverage in `rls.integration.spec.ts` |
+| L1 Semantic     | `brain_node`, `brain_edge`, `brain_embedding` | Same append-only/supersession shape; `brain_embedding.embedding` is `Unsupported("vector")`, invisible to the Prisma client entirely                                 |
+| L2 Episodic     | `brain_episode`                               | `occurredAt` vs `recordedAt` split for the temporal test step 10 will write; corrections via `supersedes`, never an UPDATE                                           |
+| L3 Procedural   | `brain_procedure`                             | Human-ratified like L0; a `PROMPT_VERSION` row is a pointer into Stage 06's Prompt Registry, not a second copy of prompt text                                        |
+| L4 Working      | `packages/brain/src/working-memory.ts`        | No table — a `WorkingMemoryStore` interface plus `InMemoryWorkingMemoryStore`, TTL-based, evictable per run                                                          |
+
+All six Postgres-backed tables are append-only, enforced the same way as `audit_event` and
+`consent_record`: `app_forbid_mutation()` rejects UPDATE and DELETE outright. This is
+Stage 05's own exit-gate item ("no code path performs a destructive update on a Brain
+table") made concrete from the first migration, not retrofitted once something depended on
+it being true. `rls.integration.spec.ts` gained a table-driven
+`describe.each(APPEND_ONLY_TABLES)` block that proves the trigger fires on every append-only
+table, Brain or not, rather than asserting it for `audit_event` alone and assuming the rest.
+
+**A design decision worth recording: what "committed" means here**
+
+Every row in these six tables is the _far end_ of the write-path state machine step 2
+builds — `candidate → … → committed+versioned → indexed → retention-scheduled`. What a
+candidate looks like while still in flight, still being contradiction-checked or awaiting
+ratification, is step 2's table, not this one. Building that table now, before the state
+machine that would populate and drain it exists, would be exactly the kind of speculative
+schema step 1 was scoped to avoid.
+
+**Three things deliberately not invented in this slice**
+
+- **A fixed embedding dimension.** `brain_embedding.embedding` is declared as an
+  unconstrained `vector` column. pgvector accepts that; a fixed dimension only matters for
+  building an HNSW index, and no embedding model has been chosen for this deployment yet.
+  Inventing a dimension (1536? 1024?) to get an index built now would be a real technical
+  commitment made on nobody's authority, the same shape of gap Stage 04 left for provider
+  pricing. `dimensions` on each row records what was actually stored, checked at the
+  application layer; the index is a follow-up once a model is chosen.
+- **L4's Redis backend.** The manual names Redis explicitly for working memory, unlike
+  Stage 04's prompt cache. No dependency was added for it: there is no concrete per-run
+  scratchpad to wire a Redis client to until Stage 06's orchestrator produces an actual
+  run. `WorkingMemoryStore` is the contract; `InMemoryWorkingMemoryStore` is what this
+  package's own tests run against until then.
+- **`brain_conflict_queue`.** Step 7 names it as part of "never-forget guarantees," and
+  step 3 (contradiction resolution) is what would enqueue to it. Unlike the five tiers
+  above, a conflict queue is workflow state — closer in shape to `DataSubjectRequest` than
+  to a Brain fact — so it is scoped to whichever of those two steps builds the logic that
+  actually needs it, not invented alongside tables it has no caller for yet.
+
+Deviations from manual: none yet — step 1 does exactly what "model the five tiers" asks.
+The `brain_procedure` table's decision to store a _pointer_ to prompt content rather than
+the content itself is not itself a deviation; the manual's step 1 description and Stage
+06's Prompt Registry description would otherwise duplicate the same content in two places
+with two different version-locking mechanisms, and this is the one place in either stage's
+steps where that overlap is named.
+
+Open questions raised: none. The embedding-dimension gap is follow-up implementation work
+tied to a model choice, not a policy or curriculum judgement call, so it stays here rather
+than in `docs/OPEN_QUESTIONS.md`, the same reasoning Stage 04 applied to provider pricing.
+
+**What this slice put in place (step 2 — the write path)**
+
+The manual's own transition list, made concrete: `candidate → extracted+typed →
+contradiction-checked → provenance-stamped → (ratify if L0/L3) → committed+versioned →
+indexed → retention-scheduled`. `brain_write_candidate` (`packages/db`) is one row per
+fact in flight, and every arrival at a status is a separate `UPDATE`, persisted before the
+next transition is attempted — proven directly in
+`packages/brain/test/write-path.integration.spec.ts`'s "persists every transition" case,
+which resumes a candidate from a completely separate transaction and shows it picks its
+status back up rather than restarting from `openWrite`.
+
+Unlike the six Stage 05 step 1 tables, `brain_write_candidate` is mutable and does **not**
+join `APPEND_ONLY_TABLES` — it is workflow state describing a fact's journey, not the fact
+itself, the same distinction that keeps `data_subject_request` off that list while
+`consent_record` is on it. `docs/STAGE_LOG.md`'s reasoning from step 1 predicted this
+exact table under a different name ("what a candidate looks like while still in flight...
+is step 2's table, not this one") and that is what it is.
+
+The work split across two packages, each proven at the tier the manual's own "two test
+tiers" rule expects:
+
+- **`packages/db/src/brain-write-path.ts`** is the imperative shell: it persists one
+  transition (`advanceBrainWrite`), records a ratification (`ratifyBrainWrite`), looks up
+  the current effective row for a natural key (`findEffectiveBrainFact`), and performs the
+  one `INSERT` that commits a fact into whichever of the five target tables it belongs to
+  (`commitBrainFact`). It also holds a structural guard neither the manual nor
+  `packages/brain` asked for directly but that rule 5's "every write goes through the
+  tenant-scoped client" implies under concurrency: a `REQUIRED_PREDECESSOR` table refuses
+  to persist a transition whose required predecessor status does not match the candidate's
+  current one, so two callers racing the same candidate cannot advance it out of order,
+  and a ratified tier cannot reach `COMMITTED` without both `ratifiedBy` and `ratifiedAt`
+  set. Proven by `packages/db`'s unit tier (no database needed for the guard itself) and
+  its Testcontainers tier for the actual writes.
+- **`packages/brain`** is where the decisions live: `write-path-schemas.ts` is the
+  "extracted+typed" transition's content — a Zod schema per target tier, `unknown` in,
+  a typed payload out, exactly rule 8's sanctioned pattern; `write-path-state-machine.ts`
+  is the pure transition order (`nextStatus`) and contradiction decision
+  (`decideContradiction`), neither of which touches a database and both of which are
+  exhaustively unit tested, including a case that walks the entire order for a ratified
+  tier and asserts it matches the manual's list verbatim; `write-path.ts` is the
+  orchestrator that reads a candidate's current status, performs exactly the transition
+  that status implies, and calls into `packages/db` to persist it.
+
+**Five target tiers, not six.** `L1_EMBEDDING` does not travel through this pipeline.
+Contradiction-checking and ratification are both meaningless for a vector — there is no
+claim inside an embedding for another claim to conflict with, and nobody ratifies one — so
+it is attached to an already-committed `BrainNode` once something calls the Model Gateway
+to produce it, which has no caller yet (step 1 already left the embedding dimension
+unchosen). This is a design conclusion, not a scope cut: the other four steps of the
+pipeline genuinely do not apply to a vector.
+
+**Contradiction detection, not resolution.** Step 2 detects an undeclared conflict — an
+effective row already exists for a candidate's natural key (`(entityType, externalRef)`
+for a node, `(sourceId, targetId, relation)` for an edge) and the candidate did not declare
+it as what it supersedes — and refuses to commit over it, throwing rather than choosing a
+winner. _Deciding_ what to do about a real conflict — compare provenance strength and
+recency; never auto-resolve over a human-ratified fact; enqueue for a human — is step 3's
+`brain_conflict_queue`, named but deliberately not built in step 1 and still not built
+here. A refusal is a safe subset of "enqueue for a human": nothing here ever resolves a
+conflict in the new fact's favour, which is the one behaviour rule 11's spirit forbids.
+Versioned canon (`L0_CONSTITUTION`/`L3_PROCEDURE`) and episodes are outside this check
+entirely — a new policy version is always meant to supersede the last one (that is what
+versioning is), and an episode has no natural key to conflict against; a correction to one
+is only ever an explicit `supersedes`, proven directly rather than inferred.
+
+**Retention-scheduled is a real transition with deliberately no content.** The status is
+still reached and still persisted for every candidate — proven by the same integration
+suite that proves everything else — but it assigns no personal-information category and
+matches no `RetentionRule`. Doing that honestly needs a data-category judgement call per
+fact, which is step 8's "forgetting by design," not step 2's. Recorded here rather than
+left implicit, the same shape of gap step 1 left for the embedding dimension and Stage 04
+left for provider pricing.
+
+**Concurrency, named rather than solved.** Two concurrent commits for the same
+`L0_CONSTITUTION` key both reading "current version 3" and both trying to write version 4
+is a real race this step does not lock against with `SELECT … FOR UPDATE`. What stops it
+from being a silent lost update is `(tenant_id, key, version)`'s unique constraint (already
+in place since step 1): the loser's `INSERT` throws, which is a correct, safe failure mode
+even though it is not the friendliest one. A retrying caller gets a fresh version number
+on its next attempt. Tightening this to a lock-then-read is a follow-up, not a step 2 exit
+criterion — the manual's own text for this step is about persisted, resumable transitions,
+not about concurrent-writer throughput.
+
+Deviations from manual: none. Step 2's own text — the eight transitions, persisted so a
+failed run resumes — is exactly what was built.
+
+Open questions raised: none. The two gaps above (retention categorisation, concurrent
+version races) are follow-up implementation work tied to steps this stage has not reached
+yet, not decisions needing a human's judgement call, so they stay here rather than in
+`docs/OPEN_QUESTIONS.md`.
+
+**What this slice put in place (step 3 — contradiction resolution)**
+
+The manual's own text: "on conflict with an existing fact, compare provenance strength and
+recency; if the new fact would supersede a human-ratified fact, do not auto-resolve —
+enqueue a conflict for a human and keep both versions."
+
+**The human-ratified carve-out needed nothing new.** `L0_CONSTITUTION`/`L3_PROCEDURE` are
+the only human-ratified tiers, and step 2's ratification gate already puts a human between
+every new version of one and its commit — conflict or not. `checkContradiction` still
+returns no contradiction for those two tiers (unchanged from step 2); this step's real work
+is entirely `L1_NODE`/`L1_EDGE`, the two tiers with a natural key to conflict against and
+no ratification of their own.
+
+**`resolveContradiction`** (`packages/brain/src/write-path-state-machine.ts`, pure, no
+database) is the comparison itself: `AUTO_SUPERSEDE` only when the candidate's confidence
+is strictly higher than the existing fact's, or tied and strictly more recent — anything
+else is not clearly the new fact's to decide, so it goes to a human rather than being
+guessed at. Exhaustively unit tested across all four quadrants (higher confidence, tied
+confidence with either the newer or the older row winning, and strictly lower confidence).
+
+**`brain_conflict_queue`** (`packages/db`) is step 1's own prediction made real: it was
+scoped to step 3 rather than invented alongside `brain_write_candidate`, "since a conflict
+queue is workflow state... closer in shape to `DataSubjectRequest`... not invented here."
+It is mutable, not append-only, for exactly that reason, and carries the provenance
+comparison's inputs (both facts' confidence and recency) so a human resolving it later does
+not have to recompute what already changed on the underlying rows.
+
+`BrainWriteCandidate` gained one column, `contradictionResolution`
+(`ACCEPT_NEW`/`KEEP_EXISTING`/null), which is what actually unblocks or permanently stops a
+stuck candidate — `contradictionOf` alone, from step 2, only ever meant "something to
+resolve." The full sequence, entirely inside the `EXTRACTED → CONTRADICTION_CHECKED`
+transition:
+
+1. `findEffectiveBrainFact` (extended to also return the existing row's own confidence and
+   `createdAt`, only for `L1_NODE`/`L1_EDGE`) plus `decideContradiction` (step 2, unchanged)
+   finds an undeclared conflict or does not.
+2. No conflict: `contradictionOf` and `contradictionResolution` both persist as null, same
+   as step 2.
+3. A conflict `resolveContradiction` resolves as `AUTO_SUPERSEDE`: `contradictionOf` and
+   `contradictionResolution: 'ACCEPT_NEW'` persist together, in the same transition — no
+   queue entry is ever created, because an auto-resolved conflict never becomes a human's
+   problem.
+4. A conflict it cannot resolve: `contradictionOf` persists with `contradictionResolution`
+   still null, and `enqueueBrainConflict` opens a queue row in the same breath — proven by
+   `write-path.integration.spec.ts`'s case, which asserts the queue entry exists and names
+   the right candidate before a human ever looks at it.
+
+A queued conflict's disposition, once a human calls `resolveConflict`/`resolveBrainConflict`:
+`ACCEPT_NEW` calls straight through to `recordContradictionResolution`, which requires the
+candidate to actually be sitting at `CONTRADICTION_CHECKED` with an unresolved conflict and
+refuses to record a second verdict over an existing one — the same "cannot happen twice"
+shape `ratifyBrainWrite` already has. `KEEP_EXISTING` stops the candidate at
+`CONTRADICTION_CHECKED` permanently; there is no new terminal `BrainWriteStatus` for a
+rejected candidate; a stuck, never-advancing row already says that honestly.
+
+`advanceBrainWrite` gained one more structural guard, alongside step 2's
+`REQUIRED_PREDECESSOR` table: it refuses `PROVENANCE_STAMPED` for a candidate whose
+`contradictionOf` is set and whose `contradictionResolution` is not `ACCEPT_NEW` — the same
+defence-in-depth shape the `COMMITTED` gate already has for ratification, so a caller in
+`packages/brain` that got the sequencing wrong fails at the database layer, not just in its
+own logic.
+
+**Supersession without a declaration.** Step 2 built `supersedes` as always caller-declared,
+never inferred. An auto-resolved or human-accepted conflict changes that narrowly:
+`buildFactToCommit`'s `resolvedSupersedes` helper uses the candidate's own declared value
+if it made one, falling back to `contradictionOf` otherwise — reachable only once
+`advanceOnce`'s own guards have already refused to let an unresolved or rejected conflict
+reach this point. Proven directly: the auto-supersede integration case asserts the
+committed row's `supersedes` points at the fact it won against, with no declaration in the
+candidate's payload at all.
+
+Deviations from manual: none. Step 3's own text — compare provenance and recency; carve out
+human-ratified facts; enqueue and keep both versions otherwise — is exactly what was built,
+with the human-ratified carve-out satisfied by step 2's existing ratification gate rather
+than a second mechanism.
+
+Open questions raised: none.

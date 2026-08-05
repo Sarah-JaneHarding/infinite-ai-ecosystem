@@ -51,4 +51,36 @@ export {
 
 export { readTenantLexicon } from './lexicon.js';
 
+export {
+  BrainWriteError,
+  advanceBrainWrite,
+  commitBrainFact,
+  findEffectiveBrainFact,
+  getBrainWriteCandidate,
+  listOpenBrainWrites,
+  openBrainWrite,
+  ratifyBrainWrite,
+  recordContradictionResolution,
+  type BrainConflictResolution,
+  type BrainFactToCommit,
+  type BrainNaturalKey,
+  type BrainTargetTier,
+  type BrainWriteCandidateInput,
+  type BrainWriteCandidateRow,
+  type BrainWriteStatus,
+  type BrainWriteTransition,
+  type CommittedBrainFact,
+  type EffectiveBrainFact,
+} from './brain-write-path.js';
+
+export {
+  BrainConflictError,
+  enqueueBrainConflict,
+  getBrainConflict,
+  listOpenBrainConflicts,
+  resolveBrainConflict,
+  type BrainConflictInput,
+  type BrainConflictRow,
+} from './brain-conflict-queue.js';
+
 export const PACKAGE_NAME = '@infinite-ai/db' as const;

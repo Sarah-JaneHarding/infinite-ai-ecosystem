@@ -76,6 +76,41 @@ only, to build an in-memory span exporter in its own tests — the real exporter
 once in `packages/telemetry` and consumed through its `Tracer`/`Span` interface, never
 imported directly by application code.
 
+## Stage 05 step 1 — Infinite Brain, L0-L4 tables
+
+No new dependency. L0-L3 are Prisma models in `packages/db`, on the same `zod`/`prisma`
+already recorded above. `pgvector` (the `vector` extension `brain_embedding` uses) was
+already installed by `infra/docker/initdb/01-extensions.sql` in Stage 00, reserved for
+this stage.
+
+L4 Working memory (`packages/brain/src/working-memory.ts`) is a `WorkingMemoryStore`
+interface plus an in-memory implementation, deliberately not a Redis client. The manual
+does name Redis for this tier, but there is no concrete per-run scratchpad to wire one to
+until Stage 06's orchestrator produces an actual run — adding `ioredis` (or `redis`) now,
+before anything calls it, is exactly what rule 9 exists to stop. The choice between them
+is Stage 06's to make, when there is a real caller to make it against.
+
+## Stage 05 step 2 — the write path
+
+No new dependency, only reuse at pinned versions already recorded above. `packages/brain`
+took `@infinite-ai/db` (workspace) as a runtime dependency for the first time — it now
+calls `withTenant()` itself rather than only being called through it — and `zod` for the
+"extracted+typed" transition's per-tier schemas, the same `zod` recorded in Stage 00.
+
+Its integration suite needed a real Postgres the same way `packages/db`'s own suite does,
+so `packages/brain` took `@testcontainers/postgresql` and `testcontainers` as
+devDependencies, both already recorded in Stage 01 at the same versions. It does not take
+`@prisma/client`: its harness (`test/support/database.ts`) shells out to the Prisma CLI
+already installed in `packages/db` to run migrations, and every actual query in the suite
+goes through `@infinite-ai/db`'s own `withTenant()` — there was never a reason to construct
+a second Prisma client.
+
+## Stage 05 step 3 — contradiction resolution
+
+No new dependency. `brain_conflict_queue` is another Prisma model in `packages/db`, on the
+same `prisma`/`zod` already recorded; the provenance comparison it depends on
+(`resolveContradiction`) is pure TypeScript in `packages/brain`, with nothing to add.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

@@ -201,9 +201,105 @@ async function seedTwoTenants(): Promise<void> {
         },
       });
 
+      // Stage 05's Brain tables. Seeded here for the same reason the Stage 03 tables are:
+      // this suite is what proves every table is isolated, and the fixture guard below
+      // refuses to let one arrive without a row.
+      const constitution = await tx.brainConstitution.create({
+        data: {
+          tenantId,
+          key: 'seed_policy',
+          kind: 'SCHOOL_POLICY',
+          version: 1,
+          content: { fixture: true },
+          ratifiedBy: ACTOR,
+          ratifiedAt: new Date('2026-01-14'),
+        },
+      });
+      const node = await tx.brainNode.create({
+        data: {
+          tenantId,
+          entityType: 'TOPIC',
+          label: 'Fixture topic',
+          source: 'seed',
+        },
+      });
+      const edge = await tx.brainEdge.create({
+        data: {
+          tenantId,
+          sourceId: node.id,
+          targetId: node.id,
+          relation: 'seed_self_reference',
+          source: 'seed',
+        },
+      });
+      const embedding = await tx.brainEmbedding.create({
+        data: {
+          tenantId,
+          nodeId: node.id,
+          model: 'embed.default',
+          dimensions: 3,
+        },
+      });
+      const episode = await tx.brainEpisode.create({
+        data: {
+          tenantId,
+          eventType: 'seed_event',
+          subjectNodeId: node.id,
+          occurredAt: new Date('2026-01-14'),
+          summary: 'Fixture episode',
+          source: 'seed',
+        },
+      });
+      const procedure = await tx.brainProcedure.create({
+        data: {
+          tenantId,
+          kind: 'SOP',
+          ref: 'seed-sop',
+          version: 1,
+          content: { fixture: true },
+          ratifiedBy: ACTOR,
+          ratifiedAt: new Date('2026-01-14'),
+        },
+      });
+
+      // Stage 05 step 2's write-path table. Seeded here for the same reason the step 1
+      // tables are, and unlike them it is mutable — it belongs in
+      // MUTABLE_TENANT_TABLES below, not in APPEND_ONLY_TABLES.
+      const writeCandidate = await tx.brainWriteCandidate.create({
+        data: {
+          tenantId,
+          targetTier: 'L1_NODE',
+          rawPayload: { fixture: true },
+          source: 'seed',
+        },
+      });
+
+      // Stage 05 step 3's conflict queue. Seeded for the same reason, and also mutable —
+      // resolved in place, never append-only.
+      const conflict = await tx.brainConflictQueue.create({
+        data: {
+          tenantId,
+          writeCandidateId: writeCandidate.id,
+          targetTier: 'L1_NODE',
+          contradictionOf: node.id,
+          newConfidence: 1,
+          existingConfidence: 1,
+          newRecency: new Date('2026-01-14'),
+          existingRecency: new Date('2026-01-14'),
+        },
+      });
+
       const created: Record<string, string> = {
         academic_year: year.id,
         audit_event: audit.id,
+        brain_conflict_queue: conflict.id,
+        brain_constitution: constitution.id,
+        brain_edge: edge.id,
+        brain_embedding: embedding.id,
+        brain_episode: episode.id,
+        brain_node: node.id,
+        brain_procedure: procedure.id,
+        brain_write_candidate: writeCandidate.id,
         class_group: classGroup.id,
         consent_record: consent.id,
         data_subject_request: subjectRequest.id,
@@ -475,5 +571,38 @@ describe('the audit ledger is append-only', () => {
       }),
     );
     expect(inserted.id).toBeDefined();
+  });
+});
+
+/**
+ * Every append-only table rejects UPDATE and DELETE, not just the audit ledger.
+ *
+ * `SET id = id` rather than a table-specific column, for the same reason the isolation
+ * cases above use it: the assertion is about the trigger firing before the statement does
+ * anything, not about which column changed, and a column list that assumed every ledger
+ * shared a schema would be the wrong thing to depend on. This is Stage 05's exit-gate
+ * item made concrete: "no destructive update on a Brain table," proven by a trigger that
+ * raises, for every table the trigger is supposed to protect — not asserted for one and
+ * assumed for the rest.
+ */
+describe.each(APPEND_ONLY_TABLES)('%s is append-only at the database level', (table) => {
+  const quoted = `"${table}"`;
+
+  it('rejects UPDATE', async () => {
+    const id = rowIds.get(table)!.a;
+    await expect(
+      asTenant(migrator, TENANT_A, ACTOR, (tx) =>
+        tx.$executeRawUnsafe(`UPDATE ${quoted} SET id = id WHERE id = $1::uuid`, id),
+      ),
+    ).rejects.toThrow(/append-only/);
+  });
+
+  it('rejects DELETE', async () => {
+    const id = rowIds.get(table)!.a;
+    await expect(
+      asTenant(migrator, TENANT_A, ACTOR, (tx) =>
+        tx.$executeRawUnsafe(`DELETE FROM ${quoted} WHERE id = $1::uuid`, id),
+      ),
+    ).rejects.toThrow(/append-only/);
   });
 });
