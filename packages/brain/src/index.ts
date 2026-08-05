@@ -8,7 +8,11 @@
 // (write-path-state-machine.ts), and the orchestrator that persists each transition
 // through @infinite-ai/db (write-path.ts). Step 3 adds contradiction *resolution* to the
 // same two files: `resolveContradiction`'s provenance comparison, and the orchestrator
-// wiring an unresolved conflict to @infinite-ai/db's conflict queue.
+// wiring an unresolved conflict to @infinite-ai/db's conflict queue. Step 4 builds the
+// retrieval path: the intent router and policy gate (both pure), rerank and the minimal
+// token-budgeted assembly (both pure), and the orchestrator (retrieval-path.ts) that
+// threads a TenantClient and an optional @infinite-ai/telemetry Tracer through all of it,
+// in the manual's own fixed order.
 
 export {
   InMemoryWorkingMemoryStore,
@@ -18,6 +22,7 @@ export {
 } from './working-memory.js';
 
 export {
+  BrainEntityType,
   BrainExtractionError,
   L0ConstitutionPayload,
   L1EdgePayload,
@@ -51,5 +56,35 @@ export {
   resolveConflict,
   run,
 } from './write-path.js';
+
+export { routeIntent, type RetrievalPlan } from './retrieval-intent-router.js';
+
+export { gateRetrieval, type RetrievalPolicyDecision } from './retrieval-policy-gate.js';
+
+export { rerank, type ScoredCandidate } from './retrieval-rerank.js';
+
+export {
+  BrainAssemblyError,
+  assembleContext,
+  type AssembledCandidate,
+  type AssembledContext,
+} from './retrieval-assembly.js';
+
+export {
+  RETRIEVAL_PATH_ORDER,
+  RetrievalPathError,
+  retrieve,
+  type RetrievalResult,
+  type RetrievalStage,
+} from './retrieval-path.js';
+
+export type {
+  EpisodeRetrievalCandidate,
+  NodeRetrievalCandidate,
+  RetrievalCandidate,
+  RetrievalCandidateSource,
+  RetrievalQuery,
+  RetrievalSubject,
+} from './retrieval-types.js';
 
 export const PACKAGE_NAME = '@infinite-ai/brain' as const;

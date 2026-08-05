@@ -16,7 +16,9 @@ const BrainConstitutionKind = z.enum([
   'HOUSE_VOICE',
 ]);
 
-const BrainEntityType = z.enum([
+/// Shared with the retrieval path (Stage 05 step 4), which needs the same ten entity
+/// types to filter vector search and to interpret what a node it retrieves actually is.
+export const BrainEntityType = z.enum([
   'LEARNER',
   'CLASS',
   'SUBJECT',
@@ -28,6 +30,7 @@ const BrainEntityType = z.enum([
   'STAFF_MEMBER',
   'DOCUMENT',
 ]);
+export type BrainEntityType = z.infer<typeof BrainEntityType>;
 
 const BrainProcedureKind = z.enum([
   'PROMPT_VERSION',

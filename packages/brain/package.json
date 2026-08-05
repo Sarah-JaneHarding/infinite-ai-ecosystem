@@ -17,10 +17,14 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "@infinite-ai/contracts": "workspace:*",
     "@infinite-ai/db": "workspace:*",
+    "@infinite-ai/policy": "workspace:*",
+    "@infinite-ai/telemetry": "workspace:*",
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@opentelemetry/sdk-trace-base": "2.10.0",
     "@testcontainers/postgresql": "12.0.4",
     "testcontainers": "12.0.4",
     "typescript": "5.9.3",

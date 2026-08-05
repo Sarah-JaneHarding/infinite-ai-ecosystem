@@ -117,13 +117,25 @@ importers:
 
   packages/brain:
     dependencies:
+      '@infinite-ai/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       '@infinite-ai/db':
         specifier: workspace:*
         version: link:../db
+      '@infinite-ai/policy':
+        specifier: workspace:*
+        version: link:../policy
+      '@infinite-ai/telemetry':
+        specifier: workspace:*
+        version: link:../telemetry
       zod:
         specifier: 3.25.76
         version: 3.25.76
     devDependencies:
+      '@opentelemetry/sdk-trace-base':
+        specifier: 2.10.0
+        version: 2.10.0(@opentelemetry/api@1.9.1)
       '@testcontainers/postgresql':
         specifier: 12.0.4
         version: 12.0.4
