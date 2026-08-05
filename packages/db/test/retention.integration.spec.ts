@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import type { PrismaClient } from '@prisma/client';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import type { TenantClient } from '../src/client.js';
 import { getRetentionRule } from '../src/retention.js';
 import { asTenant, startTestDatabase, type TestDatabase } from './support/database.js';
 
@@ -68,5 +69,11 @@ describe('getRetentionRule', () => {
       getRetentionRule(tx, `UNSCHEDULED_${randomUUID().slice(0, 8)}`),
     );
     expect(rule).toBeNull();
+  });
+
+  it('refuses to look up a rule with no tenant context', async () => {
+    await expect(
+      getRetentionRule(appRw as unknown as TenantClient, 'ATTENDANCE'),
+    ).rejects.toThrow();
   });
 });

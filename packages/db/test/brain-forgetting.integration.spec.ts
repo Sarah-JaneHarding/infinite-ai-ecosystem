@@ -77,6 +77,25 @@ async function makeNode(tx: TenantClient, label: string): Promise<string> {
   return created.id;
 }
 
+async function makeEdge(tx: TenantClient, labelPrefix: string): Promise<string> {
+  const sourceId = await makeNode(tx, `${labelPrefix} source`);
+  const targetId = await makeNode(tx, `${labelPrefix} target`);
+  const edge = await commitBrainFact(tx, {
+    targetTier: 'L1_EDGE',
+    sourceId,
+    targetId,
+    relation: 'related_to',
+    attributes: {},
+    source: 'test',
+    confidence: 1,
+    derivationRunId: null,
+    traceId: null,
+    supersedes: null,
+    createdBy: null,
+  });
+  return edge.id;
+}
+
 describe('tombstoneBrainFact', () => {
   it('tombstones an L1_NODE: original untouched, new row supersedes it, node drops out of retrieval', async () => {
     const { originalId } = await asTenant(appRw, TENANT, ACTOR, async (tx) => {
@@ -195,7 +214,7 @@ describe('tombstoneBrainFact', () => {
     expect((event?.diff as Record<string, unknown>).tombstoneId).toBe(tombstoned.id);
   });
 
-  it('throws when the fact does not exist', async () => {
+  it('throws when the L1_NODE fact does not exist', async () => {
     await expect(
       asTenant(appRw, TENANT, ACTOR, (tx) =>
         tombstoneBrainFact(
@@ -207,11 +226,36 @@ describe('tombstoneBrainFact', () => {
     ).rejects.toThrow(BrainForgettingError);
   });
 
-  it('throws when the fact is already tombstoned', async () => {
+  it('throws when the L1_NODE fact has already been superseded by an earlier tombstone', async () => {
     const originalId = await asTenant(appRw, TENANT, ACTOR, (tx) =>
-      makeNode(tx, 'Double tombstone'),
+      makeNode(tx, 'Double tombstone via original'),
     );
     await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      tombstoneBrainFact(
+        tx,
+        { targetTier: 'L1_NODE', id: originalId, reason: 'retention_expired' },
+        NOW,
+      ),
+    );
+
+    // The original's own tombstonedAt is still null; it's the "something already
+    // supersedes it" branch that must refuse this, not the "is itself tombstoned" one.
+    await expect(
+      asTenant(appRw, TENANT, ACTOR, (tx) =>
+        tombstoneBrainFact(
+          tx,
+          { targetTier: 'L1_NODE', id: originalId, reason: 'retention_expired' },
+          NOW,
+        ),
+      ),
+    ).rejects.toThrow(BrainForgettingError);
+  });
+
+  it('throws when the L1_NODE fact is itself already a tombstone', async () => {
+    const originalId = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      makeNode(tx, 'Double tombstone via tombstone row'),
+    );
+    const tombstoned = await asTenant(appRw, TENANT, ACTOR, (tx) =>
       tombstoneBrainFact(
         tx,
         { targetTier: 'L1_NODE', id: originalId, reason: 'retention_expired' },
@@ -223,7 +267,68 @@ describe('tombstoneBrainFact', () => {
       asTenant(appRw, TENANT, ACTOR, (tx) =>
         tombstoneBrainFact(
           tx,
-          { targetTier: 'L1_NODE', id: originalId, reason: 'retention_expired' },
+          { targetTier: 'L1_NODE', id: tombstoned.id, reason: 'retention_expired' },
+          NOW,
+        ),
+      ),
+    ).rejects.toThrow(BrainForgettingError);
+  });
+
+  it('throws when the L1_EDGE fact does not exist', async () => {
+    await expect(
+      asTenant(appRw, TENANT, ACTOR, (tx) =>
+        tombstoneBrainFact(
+          tx,
+          { targetTier: 'L1_EDGE', id: randomUUID(), reason: 'retention_expired' },
+          NOW,
+        ),
+      ),
+    ).rejects.toThrow(BrainForgettingError);
+  });
+
+  it('throws when the L1_EDGE fact has already been superseded by an earlier tombstone', async () => {
+    const originalEdgeId = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      makeEdge(tx, 'Double tombstone via original'),
+    );
+
+    await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      tombstoneBrainFact(
+        tx,
+        { targetTier: 'L1_EDGE', id: originalEdgeId, reason: 'retention_expired' },
+        NOW,
+      ),
+    );
+
+    // The original's own tombstonedAt is still null; it's the "something already
+    // supersedes it" branch that must refuse this, not the "is itself tombstoned" one.
+    await expect(
+      asTenant(appRw, TENANT, ACTOR, (tx) =>
+        tombstoneBrainFact(
+          tx,
+          { targetTier: 'L1_EDGE', id: originalEdgeId, reason: 'retention_expired' },
+          NOW,
+        ),
+      ),
+    ).rejects.toThrow(BrainForgettingError);
+  });
+
+  it('throws when the L1_EDGE fact is itself already a tombstone', async () => {
+    const originalEdgeId = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      makeEdge(tx, 'Double tombstone via tombstone row'),
+    );
+    const tombstoned = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      tombstoneBrainFact(
+        tx,
+        { targetTier: 'L1_EDGE', id: originalEdgeId, reason: 'retention_expired' },
+        NOW,
+      ),
+    );
+
+    await expect(
+      asTenant(appRw, TENANT, ACTOR, (tx) =>
+        tombstoneBrainFact(
+          tx,
+          { targetTier: 'L1_EDGE', id: tombstoned.id, reason: 'retention_expired' },
           NOW,
         ),
       ),
