@@ -11,9 +11,20 @@
 // returning. A process that dies between two calls leaves the candidate at whatever
 // `advanceOnce` last persisted — resuming means calling `advanceOnce` (or `run`) again with
 // the same `candidateId`, not restarting from `openWrite`.
+//
+// Step 7's "append-only event log for all Brain writes": `brain_write_candidate` is
+// deliberately mutable — each transition overwrites `status` in place, so a failed run can
+// resume rather than restart (see this module's own header above, and the schema's
+// comment on that table). That means the row itself, once a later transition has moved
+// past an earlier one, no longer shows what it went through to get there. Every
+// `advanceBrainWrite` call in this file is now paired with an `appendAuditEvent` call
+// (`auditedAdvance`, below) onto the same tenant-scoped, hash-chained ledger step 6's
+// `getFactProvenance` and Stage 02's ledger already share — an append-only record of the
+// journey the mutable candidate row itself does not preserve.
 
 import {
   advanceBrainWrite,
+  appendAuditEvent,
   commitBrainFact,
   enqueueBrainConflict,
   findEffectiveBrainFact,
@@ -27,6 +38,7 @@ import {
   type BrainFactToCommit,
   type BrainWriteCandidateInput,
   type BrainWriteCandidateRow,
+  type BrainWriteTransition,
   type TenantClient,
 } from '@infinite-ai/db';
 
@@ -67,7 +79,74 @@ export async function ratify(
   ratifiedBy: string,
   ratifiedAt: Date,
 ): Promise<BrainWriteCandidateRow> {
-  return ratifyBrainWrite(tx, candidateId, ratifiedBy, ratifiedAt);
+  const updated = await ratifyBrainWrite(tx, candidateId, ratifiedBy, ratifiedAt);
+  await appendAuditEvent(tx, {
+    actorId: ratifiedBy,
+    action: 'brain_write_ratified',
+    resourceType: updated.targetTier,
+    resourceId: candidateId,
+    purpose: null,
+    traceId: updated.traceId,
+    diff: { ratifiedBy, ratifiedAt: ratifiedAt.toISOString() },
+    at: ratifiedAt,
+    createdBy: updated.createdBy,
+  });
+  return updated;
+}
+
+/**
+ * `advanceBrainWrite`, paired with an `appendAuditEvent` call onto the same ledger — see
+ * this module's own header for why. `diff` never includes a candidate's actual payload
+ * content (rule 4's boundary, restated the same way `erasure.ts`'s own audit write already
+ * holds itself to): only the transition's own structural fields.
+ */
+async function auditedAdvance(
+  tx: TenantClient,
+  candidate: BrainWriteCandidateRow,
+  transition: BrainWriteTransition,
+  now: Date,
+): Promise<BrainWriteCandidateRow> {
+  const updated = await advanceBrainWrite(tx, candidate.id, transition, now);
+  await appendAuditEvent(tx, {
+    actorId: candidate.createdBy,
+    action: `brain_write_${transition.toStatus.toLowerCase()}`,
+    resourceType: candidate.targetTier,
+    resourceId: candidate.id,
+    purpose: null,
+    traceId: candidate.traceId,
+    diff: transitionDiff(transition),
+    at: now,
+    createdBy: candidate.createdBy,
+  });
+  return updated;
+}
+
+function transitionDiff(transition: BrainWriteTransition): Record<string, unknown> {
+  switch (transition.toStatus) {
+    case 'CONTRADICTION_CHECKED':
+      return {
+        toStatus: transition.toStatus,
+        contradictionOf: transition.contradictionOf,
+        contradictionResolution: transition.contradictionResolution,
+      };
+    case 'COMMITTED':
+      return {
+        toStatus: transition.toStatus,
+        committedRowId: transition.committedRowId,
+        committedVersion: transition.committedVersion,
+      };
+    case 'RETENTION_SCHEDULED':
+      return {
+        toStatus: transition.toStatus,
+        retentionCategory: transition.retentionCategory,
+        retentionRuleId: transition.retentionRuleId,
+      };
+    case 'EXTRACTED':
+    case 'PROVENANCE_STAMPED':
+    case 'AWAITING_RATIFICATION':
+    case 'INDEXED':
+      return { toStatus: transition.toStatus };
+  }
 }
 
 /**
@@ -89,18 +168,18 @@ export async function advanceOnce(
   switch (candidate.status) {
     case 'CANDIDATE': {
       const extracted = extractTyped(candidate.targetTier, candidate.rawPayload);
-      return advanceBrainWrite(
+      return auditedAdvance(
         tx,
-        candidateId,
+        candidate,
         { toStatus: 'EXTRACTED', typedPayload: extracted.payload },
         now,
       );
     }
     case 'EXTRACTED': {
       const check = await checkContradiction(tx, candidate);
-      const updated = await advanceBrainWrite(
+      const updated = await auditedAdvance(
         tx,
-        candidateId,
+        candidate,
         {
           toStatus: 'CONTRADICTION_CHECKED',
           contradictionOf: check.contradictionOf,
@@ -142,16 +221,11 @@ export async function advanceOnce(
         );
       }
       validateProvenance(candidate);
-      return advanceBrainWrite(tx, candidateId, { toStatus: 'PROVENANCE_STAMPED' }, now);
+      return auditedAdvance(tx, candidate, { toStatus: 'PROVENANCE_STAMPED' }, now);
     }
     case 'PROVENANCE_STAMPED': {
       if (requiresRatification(candidate.targetTier)) {
-        return advanceBrainWrite(
-          tx,
-          candidateId,
-          { toStatus: 'AWAITING_RATIFICATION' },
-          now,
-        );
+        return auditedAdvance(tx, candidate, { toStatus: 'AWAITING_RATIFICATION' }, now);
       }
       return commitAndAdvance(tx, candidate, now);
     }
@@ -162,16 +236,16 @@ export async function advanceOnce(
       return commitAndAdvance(tx, candidate, now);
     }
     case 'COMMITTED':
-      return advanceBrainWrite(tx, candidateId, { toStatus: 'INDEXED' }, now);
+      return auditedAdvance(tx, candidate, { toStatus: 'INDEXED' }, now);
     case 'INDEXED': {
       // Deliberately not invented here. Assigning a fact a personal-information category
       // and matching it to a ratified `RetentionRule` is step 8's "forgetting by design" —
       // this transition still runs and is still persisted, the same way step 1 shipped
       // `brain_embedding` with no fixed dimension rather than inventing one. See
       // docs/STAGE_LOG.md.
-      return advanceBrainWrite(
+      return auditedAdvance(
         tx,
-        candidateId,
+        candidate,
         {
           toStatus: 'RETENTION_SCHEDULED',
           retentionCategory: null,
@@ -309,9 +383,9 @@ async function commitAndAdvance(
 ): Promise<BrainWriteCandidateRow> {
   const fact = buildFactToCommit(candidate);
   const committed = await commitBrainFact(tx, fact);
-  return advanceBrainWrite(
+  return auditedAdvance(
     tx,
-    candidate.id,
+    candidate,
     {
       toStatus: 'COMMITTED',
       committedRowId: committed.id,
@@ -434,7 +508,7 @@ export async function resolveConflict(
   resolvedAt: Date,
   resolutionNote: string | null = null,
 ): Promise<BrainConflictRow> {
-  return resolveBrainConflict(
+  const resolved = await resolveBrainConflict(
     tx,
     conflictId,
     resolution,
@@ -442,4 +516,21 @@ export async function resolveConflict(
     resolvedAt,
     resolutionNote,
   );
+  await appendAuditEvent(tx, {
+    actorId: resolvedBy,
+    action: 'brain_conflict_resolved',
+    resourceType: resolved.targetTier,
+    resourceId: resolved.writeCandidateId,
+    purpose: null,
+    traceId: null,
+    diff: {
+      conflictId,
+      resolution,
+      contradictionOf: resolved.contradictionOf,
+      resolutionNote,
+    },
+    at: resolvedAt,
+    createdBy: resolved.createdBy,
+  });
+  return resolved;
 }

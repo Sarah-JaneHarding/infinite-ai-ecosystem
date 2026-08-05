@@ -36,6 +36,7 @@
     "vitest": "3.2.7"
   },
   "dependencies": {
+    "@infinite-ai/telemetry": "workspace:*",
     "@prisma/client": "6.19.3"
   }
 }

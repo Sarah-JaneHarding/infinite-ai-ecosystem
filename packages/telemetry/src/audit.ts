@@ -38,13 +38,51 @@ export interface ChainedAuditEvent extends AuditEventInput {
 }
 
 /**
+ * Serializes `value` the same way regardless of any object's own key insertion order:
+ * every object's keys are sorted before stringifying, recursively.
+ *
+ * `diff` round-trips through Postgres's `jsonb` column type in `packages/db`, and jsonb
+ * does not preserve the key order it was given — it reorders keys internally (by length,
+ * then lexicographically). Hashing plain `JSON.stringify(diff)` made the hash
+ * unreproducible after a single write/read round trip for any diff whose keys were not
+ * already in jsonb's own order: not a tampering signal, an artifact of the storage
+ * engine, caught by `write-path.integration.spec.ts`'s "logs every transition" test the
+ * first time it exercised a real database round trip. Sorting keys ourselves, identically
+ * on both the write side and the read side, removes the dependency on jsonb's internal
+ * reordering scheme entirely.
+ */
+function canonicalStringify(value: unknown): string {
+  return JSON.stringify(sortKeysDeep(value));
+}
+
+function sortKeysDeep(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(sortKeysDeep);
+  }
+  if (value instanceof Date) {
+    return value;
+  }
+  if (value !== null && typeof value === 'object') {
+    const source = value as Record<string, unknown>;
+    const sorted: Record<string, unknown> = {};
+    for (const key of Object.keys(source).sort()) {
+      sorted[key] = sortKeysDeep(source[key]);
+    }
+    return sorted;
+  }
+  return value;
+}
+
+/**
  * The canonical byte form of an event.
  *
  * Field order is fixed and every field is length-prefixed. Both matter: a chain built over
  * `JSON.stringify` would be vulnerable to key reordering producing a different hash for
  * the same event, and a chain built over concatenation without lengths would let
  * `{action: "read", resource: "xy"}` and `{action: "readx", resource: "y"}` collide.
- * Neither is exotic — the second is a five-minute forgery once someone notices.
+ * Neither is exotic — the second is a five-minute forgery once someone notices. `diff`
+ * itself is serialized with `canonicalStringify`, not plain `JSON.stringify`, for the
+ * same reason at one level deeper — see that function's own comment.
  */
 export function canonicalise(
   event: AuditEventInput,
@@ -58,7 +96,7 @@ export function canonicalise(
     event.resourceId,
     event.purpose,
     event.traceId,
-    event.diff === undefined ? null : JSON.stringify(event.diff ?? null),
+    event.diff === undefined ? null : canonicalStringify(event.diff ?? null),
     event.at.toISOString(),
   ];
 

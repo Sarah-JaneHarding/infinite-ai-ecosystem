@@ -15,6 +15,7 @@ import {
   withTenant,
   type TenantClient,
 } from '@infinite-ai/db';
+import { verifyChain, type ChainedAuditEvent } from '@infinite-ai/telemetry';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import {
@@ -418,5 +419,95 @@ describe('contradiction resolution (step 3)', () => {
       expect(stuck?.status).toBe('CONTRADICTION_CHECKED');
       expect(stuck?.contradictionResolution).toBe('KEEP_EXISTING');
     });
+  });
+});
+
+describe('the write path audit trail (step 7)', () => {
+  it('logs every transition onto an append-only, verifiably-chained ledger', async () => {
+    const { tenantId, actorId } = await seedTenant();
+
+    const candidateId = await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: { entityType: 'TOPIC', label: 'Audited fact' },
+        source: 'test',
+        createdBy: actorId,
+      });
+      await run(tx, opened.id);
+      return opened.id;
+    });
+
+    const events = await withTenant({ tenantId, actorId }, (tx) =>
+      tx.auditEvent.findMany({
+        where: { resourceId: candidateId },
+        // Not `at`: `run()` reuses one `now` across the whole candidate, so every event
+        // below shares the same `at` value. `sequence` is what actually orders them.
+        orderBy: { sequence: 'asc' },
+      }),
+    );
+
+    // candidate -> extracted -> contradiction_checked -> provenance_stamped -> committed
+    // -> indexed -> retention_scheduled: one audit event per transition, six in total
+    // (opening the candidate itself is not a transition `advanceBrainWrite` persists).
+    expect(events.map((e) => e.action)).toEqual([
+      'brain_write_extracted',
+      'brain_write_contradiction_checked',
+      'brain_write_provenance_stamped',
+      'brain_write_committed',
+      'brain_write_indexed',
+      'brain_write_retention_scheduled',
+    ]);
+    expect(events.every((e) => e.resourceType === 'L1_NODE')).toBe(true);
+    expect(events.every((e) => e.actorId === actorId)).toBe(true);
+
+    const committedEvent = events.find((e) => e.action === 'brain_write_committed')!;
+    expect((committedEvent.diff as Record<string, unknown>).committedRowId).toEqual(
+      expect.any(String),
+    );
+
+    const chained: ChainedAuditEvent[] = events.map((row) => ({
+      tenantId: row.tenantId,
+      actorId: row.actorId,
+      action: row.action,
+      resourceType: row.resourceType,
+      resourceId: row.resourceId,
+      purpose: row.purpose,
+      traceId: row.traceId,
+      diff: row.diff,
+      at: row.at,
+      previousHash: row.previousHash === null ? null : Buffer.from(row.previousHash),
+      hash: Buffer.from(row.hash),
+    }));
+    expect(verifyChain(chained)).toEqual({ intact: true, length: chained.length });
+  });
+
+  it('logs ratification onto the same ledger', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const ratifiedAt = new Date('2026-03-01T00:00:00.000Z');
+
+    const candidateId = await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L0_CONSTITUTION',
+        rawPayload: {
+          key: `audit_test_${randomUUID().slice(0, 8)}`,
+          kind: 'ASSESSMENT_POLICY',
+          content: { rule: 'x' },
+        },
+        source: 'test',
+      });
+      await run(tx, opened.id);
+      await ratify(tx, opened.id, actorId, ratifiedAt);
+      return opened.id;
+    });
+
+    const ratifiedEvent = await withTenant({ tenantId, actorId }, (tx) =>
+      tx.auditEvent.findFirst({
+        where: { resourceId: candidateId, action: 'brain_write_ratified' },
+      }),
+    );
+
+    expect(ratifiedEvent).not.toBeNull();
+    expect(ratifiedEvent?.actorId).toBe(actorId);
+    expect((ratifiedEvent?.diff as Record<string, unknown>).ratifiedBy).toBe(actorId);
   });
 });

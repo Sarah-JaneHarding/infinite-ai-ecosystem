@@ -13,6 +13,13 @@ export {
 } from './client.js';
 
 export {
+  AuditError,
+  appendAuditEvent,
+  type AppendAuditEventInput,
+  type AppendedAuditEvent,
+} from './audit.js';
+
+export {
   DecryptionError,
   EncryptionKey,
   EncryptionKeyError,

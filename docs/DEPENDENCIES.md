@@ -147,6 +147,18 @@ module in this package already queries, on the same client recorded in Stage 01.
 package outside `packages/db` takes a new dependency for this step: nothing in
 `packages/brain` calls it yet — that caller is step 9's `explain()`.
 
+## Stage 05 step 7 — never-forget guarantees
+
+`packages/db` takes `@infinite-ai/telemetry` (Stage 04, already pinned there) as a real
+runtime dependency for the first time — a workspace package already built, not a new
+external one. `packages/db/src/audit.ts`'s `appendAuditEvent` calls
+`@infinite-ai/telemetry`'s `chainEvent` (the pure hash-chain logic Stage 02 built but that
+nothing in `packages/db` had called until now) to actually chain and persist an
+`audit_event` row, closing the gap `erasure.ts`'s own `writeErasureEvent` comment
+(Stage 03) already flagged: "the tamper-evident chain... is Stage 02's, and this call site
+links into it when that lands." No dependency cycle: `@infinite-ai/telemetry` takes no
+workspace dependencies of its own.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

@@ -571,12 +571,19 @@ model AuditEvent {
   /// SHA-256 over this event's canonical form plus previousHash.
   hash         Bytes
   at           DateTime @default(now())
+  /// Monotonic per-row insertion order, independent of `at`. Stage 05 step 7's
+  /// `appendAuditEvent` orders by this, not `at`, to find the true previous event to
+  /// chain onto: a caller may legitimately reuse one `Date` across several events in the
+  /// same transaction (the Brain write path does exactly this, one shared `now` for a
+  /// whole `run()`), which makes `at` alone unable to disambiguate insertion order.
+  sequence     BigInt   @default(autoincrement())
   createdBy    String?  @map("created_by") @db.Uuid
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([tenantId, at])
+  @@index([tenantId, sequence])
   @@index([tenantId, resourceType, resourceId])
   @@map("audit_event")
 }

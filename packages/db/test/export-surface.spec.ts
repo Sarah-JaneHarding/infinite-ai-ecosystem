@@ -17,6 +17,7 @@ describe('package export surface', () => {
     // matters. The structural check below is what actually guards the invariant.
     expect(Object.keys(db).sort()).toEqual([
       'APPEND_ONLY_TABLES',
+      'AuditError',
       'BrainConflictError',
       'BrainRetrievalError',
       'BrainWriteError',
@@ -31,6 +32,7 @@ describe('package export surface', () => {
       'SELF_KEYED_TENANT_TABLES',
       'TENANT_OWNED_TABLES',
       'advanceBrainWrite',
+      'appendAuditEvent',
       'appendConsentEntry',
       'commitBrainFact',
       'decrypt',
@@ -66,6 +68,7 @@ describe('package export surface', () => {
     // being handed a scoped transaction would be a second way in, and the export list
     // above only catches it if someone notices what the new name does.
     for (const fn of [
+      db.appendAuditEvent,
       db.appendConsentEntry,
       db.readLedger,
       db.readTenantLedger,
