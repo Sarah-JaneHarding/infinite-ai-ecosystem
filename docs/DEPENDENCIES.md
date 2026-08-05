@@ -139,6 +139,14 @@ there. The one internal change worth recording: `write-path-schemas.ts`'s
 by `retrieval-types.ts` — the same reasoning `BrainEntityType` was already exported for in
 step 4, so `packages/brain` keeps not taking `@prisma/client` as a dependency of its own.
 
+## Stage 05 step 6 — provenance
+
+No new dependency. `packages/db/src/brain-provenance.ts` is a new file, but its one export
+(`getFactProvenance`) is a read against the same five Prisma models every other Brain
+module in this package already queries, on the same client recorded in Stage 01. No
+package outside `packages/db` takes a new dependency for this step: nothing in
+`packages/brain` calls it yet — that caller is step 9's `explain()`.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

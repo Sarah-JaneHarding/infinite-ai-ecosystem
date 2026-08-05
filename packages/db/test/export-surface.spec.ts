@@ -43,6 +43,7 @@ describe('package export surface', () => {
       'findEffectiveBrainFact',
       'getBrainConflict',
       'getBrainWriteCandidate',
+      'getFactProvenance',
       'listEffectiveConstitution',
       'listEffectiveExemplars',
       'listOpenBrainConflicts',
@@ -87,6 +88,7 @@ describe('package export surface', () => {
       db.filterEpisodesByWindow,
       db.listEffectiveConstitution,
       db.listEffectiveExemplars,
+      db.getFactProvenance,
     ]) {
       expect(fn.length).toBeGreaterThanOrEqual(1);
     }
