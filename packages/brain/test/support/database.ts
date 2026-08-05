@@ -14,6 +14,10 @@
 // No skip path if Docker is unavailable, for the same reason @infinite-ai/db's harness has
 // none (rule 2): a silently skipped resumability suite is indistinguishable from a
 // passing one.
+//
+// `snapshot()`/`restoreSnapshot()` (step 10) are a thin pass-through to
+// `@testcontainers/postgresql`'s own methods of the same name — a real `CREATE DATABASE
+// ... WITH TEMPLATE` physical copy inside the same Postgres engine, not a mock of one.
 
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -41,6 +45,20 @@ function randomSecret(): string {
 export interface TestDatabase {
   /** Connection string for `app_rw` — what `DATABASE_URL` is set to for this run. */
   readonly appRwUrl: string;
+  /**
+   * Takes a snapshot of the database's current state as a template — Stage 05 step 10's
+   * restore drill. Backed by `@testcontainers/postgresql`'s own `CREATE DATABASE ...
+   * WITH TEMPLATE`, a real Postgres physical-copy mechanism, not a mock. Requires no other
+   * connection to the database at the moment it runs — call `disconnect()` from
+   * `@infinite-ai/db` first.
+   */
+  snapshot(): Promise<void>;
+  /**
+   * Drops the database and recreates it from the last `snapshot()` — same caveat: call
+   * `disconnect()` first. Any `PrismaClient` reconnects lazily against the same
+   * `DATABASE_URL` afterwards, now pointed at the restored data.
+   */
+  restoreSnapshot(): Promise<void>;
   stop(): Promise<void>;
 }
 
@@ -74,6 +92,8 @@ export async function startTestDatabase(): Promise<TestDatabase> {
 
   return {
     appRwUrl: urlFor('app_rw'),
+    snapshot: () => container.snapshot(),
+    restoreSnapshot: () => container.restoreSnapshot(),
     async stop() {
       await container.stop();
     },

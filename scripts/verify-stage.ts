@@ -74,7 +74,19 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/gateway test:chaos',
     ],
   },
-  { id: '05', name: 'Infinite Brain (L0-L4)', commands: [] },
+  {
+    id: '05',
+    name: 'Infinite Brain (L0-L4)',
+    commands: [
+      // Mirrors the manual's own verification block: the unit tier, the dedicated
+      // temporal-test script it names explicitly, and the Testcontainers-backed
+      // integration tier (write path, retrieval path, temporal, restore drill) — all
+      // requiring Docker, with no skip path, the same as Stage 01's RLS suite.
+      'pnpm --filter @infinite-ai/brain test',
+      'pnpm --filter @infinite-ai/brain test:temporal',
+      'pnpm --filter @infinite-ai/brain test:integration',
+    ],
+  },
   { id: '06', name: 'Agent runtime, orchestrator, guardrails, HITL', commands: [] },
   { id: '07', name: 'Eval harness and golden sets', commands: [] },
   { id: '08', name: 'MOD-01 Curriculum Engine', commands: [] },
