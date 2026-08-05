@@ -625,12 +625,12 @@ a decision that needs a human's judgement call, so it is tracked here rather tha
 Started: 2026-08-04 Completed: —
 Exit gate: **PARTIAL** — steps 1 (the five tiers), 2 (the write path), 3 (contradiction
 resolution), 4 (the retrieval path), 5 (token-budgeted assembly), 6 (provenance), 7
-(never-forget guarantees) and 8 (forgetting by design) are built and proven, with two
-sub-items deliberately deferred and stated plainly in each step's own write-up: step 7's
-nightly snapshots and rehearsed point-in-time restore drill (Stage 15's job), and step 8's
-automatic consent-withdrawal sweep and episode tombstoning (both stated follow-ups, not
-silently assumed away). Steps 9-10 are not started. `scripts/verify-stage.ts`'s `05` entry
-stays empty until they are.
+(never-forget guarantees), 8 (forgetting by design) and 9 (the Brain API) are built and
+proven, with two sub-items deliberately deferred and stated plainly in each step's own
+write-up: step 7's nightly snapshots and rehearsed point-in-time restore drill (Stage 15's
+job), and step 8's automatic consent-withdrawal sweep and episode tombstoning (both stated
+follow-ups, not silently assumed away). Step 10 is not started. `scripts/verify-stage.ts`'s
+`05` entry stays empty until it is.
 
 **What this slice put in place (step 1)**
 
@@ -1261,5 +1261,89 @@ project — so recorded here rather than in `docs/OPEN_QUESTIONS.md`.
 Deviations from manual: none in what was built. The two stated gaps above are follow-up
 work with a precedent already set by Stage 03, not decisions needing a human's judgement
 call.
+
+Open questions raised: none.
+
+**What this slice put in place (step 9 — the Brain API)**
+
+Six typed functions in one new file, `packages/brain/src/api.ts`: `remember`, `recall`,
+`ratify`, `supersede`, `forget`, `explain` — "typed functions, not free-form SQL," the
+manual's own phrase. Nothing here is new logic; every one of the six composes primitives
+steps 1-8 already built and proved in isolation. `remember` is `openWrite` + `run` (step
+2); `recall` is `retrieve` (steps 4-5) under the manual's own name; `forget` wraps
+`@infinite-ai/db`'s `tombstoneBrainFact` (step 8). This is deliberately the one surface a
+caller outside `packages/brain` is meant to use — `packages/brain/src/index.ts`'s export
+list now puts these six names ahead of the lower-level primitives they are built from,
+which remain exported for a resuming worker's own use (`advanceOnce`, `listOpenWrites`,
+the record-only `ratify` in `write-path.ts`, importable directly from there).
+
+**`ratify` here does more than `write-path.ts`'s own `ratify`.** The lower-level function
+only records who ratified a candidate and when — deliberately, so a worker can record a
+human's decision now and commit it later via a separate `advanceOnce`/`run` call, the same
+resumability the rest of the write path is built around. The Brain API's `ratify`
+composes that call with `run()`: once a human has ratified a candidate there is nothing
+left for it to wait on, so a caller of the API surface gets the finished, committed
+candidate back in one call rather than having to remember a second one. Both names could
+not be exported from the same module without a collision, so `packages/brain/src/
+index.ts` now re-exports the API's `ratify`, and a caller that genuinely wants the
+lower-level, record-only primitive imports `write-path.js` directly — exactly what
+`write-path.integration.spec.ts` and `retrieval-path.integration.spec.ts` already did
+before this step, and still do, unaffected.
+
+**`supersede` is `remember` plus an assertion, not a second write path.** Both submit a
+candidate through the identical `openWrite` + `run` sequence — natural-key contradiction
+detection for `L1_NODE`/`L1_EDGE`, automatic version-based supersession for
+`L0_CONSTITUTION`/`L3_PROCEDURE`, and a caller-declared `supersedes` for `L2_EPISODE`, none
+of it new. The difference is only what happens once `run()` settles. `remember` is
+neutral: the pipeline decides whether anything was superseded, and a caller that only
+wanted to add a new fact never notices either way. `supersede` is a caller's explicit
+claim that this candidate replaces something specific, and it is a caller bug — surfaced
+as a thrown `BrainApiError`, not swallowed — if that turns out false, in either of the two
+ways it can: a `RETENTION_SCHEDULED` result whose committed row's own `supersedes` (read
+back via `getFactProvenance`, the same step 6 primitive `explain` uses) is still null means
+nothing effective matched what the candidate declared; an unresolved or lost conflict —
+`run()` itself throwing `BrainWritePathError` when a human must adjudicate it, or when one
+already resolved it against the candidate — is caught and re-thrown as the same
+`BrainApiError`, so a caller of this surface only ever sees one error type regardless of
+which of the two ways supersession failed. A candidate still `AWAITING_RATIFICATION` is
+returned as-is rather than asserted against — whether a ratified tier's candidate
+supersedes anything is only knowable once a human ratifies it, which is `ratify`'s job, not
+this one's.
+
+**Defect found in CI, fixed in the same PR: `run()` throws on an unresolved conflict, it
+never returns one to inspect.** The first version of `supersede`'s assertion switched on
+the _returned_ candidate's status, including a `CONTRADICTION_CHECKED` case for "the
+conflict was left unresolved." That branch was dead code: `write-path.ts`'s own
+`advanceOnce` throws `BrainWritePathError` synchronously the moment it finds an
+unresolved or lost conflict at that status (see `write-path.integration.spec.ts`'s own
+"refuses to commit... over an undeclared conflict" case, proven the same way well before
+this step), so `run()` never returns a candidate sitting at `CONTRADICTION_CHECKED` for a
+caller to inspect — it either advances further or throws first. The failing test —
+`api.integration.spec.ts`'s "throws when the conflict was left unresolved rather than
+superseded" — caught this immediately: the raw `BrainWritePathError` surfaced instead of
+the `BrainApiError` the test (correctly) expected. The fix is `runForSupersession`, a
+wrapper around `run()` inside `supersede()` that catches `BrainWritePathError` specifically
+and re-throws it as `BrainApiError`, and a simplified `assertSuperseded` that only ever
+receives what `run()` can actually return — `RETENTION_SCHEDULED` or
+`AWAITING_RATIFICATION` — rather than a full, mostly-unreachable `BrainWriteStatus` switch.
+
+**`explain` walks `supersedes` backward, one step at a time, to the fact with none.** Step
+6's own header, written when `getFactProvenance` was built, already named this as the
+future caller: "the primitive step 9's `explain()` will walk `supersedes` with, not a
+chain-walker itself." `explain` is exactly that walk — the given fact, then whatever it
+superseded, then whatever _that_ superseded, in newest-first order, normalized across all
+five tiers by the same `FactProvenance` shape `getFactProvenance` already returns
+(`ratifiedBy`/`ratifiedAt`/`version` for `L0`/`L3`, `source`/`confidence`/`derivationRunId`
+for everything else). Proven directly against a real Postgres: a two-hop `L1_NODE`
+correction via `supersede`, and a two-version `L0_CONSTITUTION` policy via `ratify`, both
+returning their full chain in order, ending at a row whose own `supersedes` is null. A
+cycle guard (a `Set` of visited ids) throws rather than looping forever if a chain is ever
+corrupted — append-only writes should make that structurally impossible, the same
+"defence in depth only" reasoning `write-path.ts`'s own `requireRatification` already gives
+for an equivalent should-be-unreachable guard, so it is not itself given a dedicated test.
+
+Deviations from manual: none. Step 9 asks for exactly these six functions with exactly
+this shape of guarantee (`explain()` "returns the provenance chain for any retrieved
+fact"), and that is what this slice built.
 
 Open questions raised: none.
