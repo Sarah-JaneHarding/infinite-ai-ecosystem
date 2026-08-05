@@ -623,9 +623,9 @@ a decision that needs a human's judgement call, so it is tracked here rather tha
 ## Stage 05 — Infinite Brain (L0-L4)
 
 Started: 2026-08-04 Completed: —
-Exit gate: **PARTIAL** — steps 1 (the five tiers), 2 (the write path) and 3 (contradiction
-resolution) are built and proven. Steps 4-10 are not started. `scripts/verify-stage.ts`'s
-`05` entry stays empty
+Exit gate: **PARTIAL** — steps 1 (the five tiers), 2 (the write path), 3 (contradiction
+resolution) and 4 (the retrieval path) are built and proven. Steps 5-10 are not started.
+`scripts/verify-stage.ts`'s `05` entry stays empty
 until they are.
 
 **What this slice put in place (step 1)**
@@ -852,5 +852,99 @@ Deviations from manual: none. Step 3's own text — compare provenance and recen
 human-ratified facts; enqueue and keep both versions otherwise — is exactly what was built,
 with the human-ratified carve-out satisfied by step 2's existing ratification gate rather
 than a second mechanism.
+
+Open questions raised: none.
+
+**What this slice put in place (step 4 — the retrieval path)**
+
+The manual's own order: `query → intent router → policy + RBAC + purpose gate → vector
+top-k → graph n-hop expansion → episodic temporal filter → rerank → token-budgeted context
+assembly`. `packages/brain/src/retrieval-path.ts`'s `retrieve()` runs every one of the
+seven stages in exactly that sequence, and records each as it runs into a `trace` array —
+`retrieval-path.integration.spec.ts` asserts the trace equals `RETRIEVAL_PATH_ORDER`
+verbatim on the happy path, which is what makes a reordering of the orchestrator's own code
+a failing test rather than a silent drift, the same proof shape `nextStatus` gave the write
+path in step 2.
+
+**"The policy gate runs before retrieval, never after," proven behaviourally.** The policy
+gate (`retrieval-policy-gate.ts`) is the second stage; nothing after it runs on a refusal —
+`trace` simply stops at `['intent_routed', 'policy_gated']`. The integration suite proves
+this without mocking anything: a refused request is built with an empty query embedding and
+a malformed (start-after-end) episodic window, both of which `vectorTopK` and
+`filterEpisodesByWindow` throw on if actually called — the request resolving cleanly is
+direct evidence neither one was.
+
+**No composed "RBAC + purpose + consent" gate existed anywhere in the repo before this.**
+`authorize()` (Stage 02) and `resolveAccess()` (Stage 03, which already sequences tombstone
+→ purpose → consent internally) were two separate, pure entry points with no shared
+caller. `gateRetrieval()` composes them for the first time: coarse role/scope first,
+then — only for a retrieval naming one specific data subject — the fine-grained
+purpose/consent projection. A retrieval about curriculum canon, a topic or a CAPS code has
+no single subject and stops at the RBAC check, which is the whole gate for those.
+
+**The intent router is deliberately mechanical.** Real intent classification from free
+text needs either a trained classifier or a model call, and a model call would need to go
+through the Model Gateway (rule 3) from a real caller with its own prompt version, eval
+set and cost budget (rule 9's new-agent checklist) — Stage 06's agent runtime, which does
+not exist yet. `routeIntent()` takes no query text at all: it reads what the caller already
+declared (an entity-type hint, whether a query embedding was supplied, whether a time
+window was named) and turns that into a plan. Building a first, uncalibrated path to a
+model here would be exactly what rule 9 exists to stop.
+
+**The vector top-k stage is real SQL against real (if currently empty) data.** Prisma
+cannot represent `Unsupported("vector")` at all, so `packages/db/src/brain-retrieval.ts`
+hand-writes the one query that touches it — `embedding <=> $1::vector`, ordered ascending,
+over effective (non-tombstoned, non-superseded) nodes only, the same "effective" test
+`findEffectiveBrainFact` already applies. This corrects a note from step 1's own schema
+comment, which said this raw SQL would live in `packages/brain`; that was written before
+the retrieval path's actual architecture existed, and keeping every Brain table's access
+inside `packages/db` — the split the write path already settled on — is worth more than
+honouring the early guess. The schema comment is corrected in the same commit. No caller
+produces a real query embedding yet (no embedding model is chosen — step 1's own gap), so
+`queryEmbedding` is an optional, caller-supplied input; supplying a real one is whichever
+future caller first wires the Model Gateway's `/v1/embeddings` endpoint to the Brain, not
+built here.
+
+**Graph n-hop expansion and the episodic temporal filter are both fully real**, over the
+data step 1-3 already produce: breadth-first traversal of `brain_edge` in either direction,
+one query per hop rather than per node, tagging each discovered node with the hop it was
+first reached at (`ExpandedNode.hops`, which `rerank` discounts by); and a plain
+`occurredAt`-windowed read of `brain_episode`, optionally narrowed to one subject node —
+the "what did we decide about X in Term 2 last year" query this stage exists for.
+
+**Rerank is a documented deterministic score, not a model call or a learned reranker.**
+confidence × a recency half-life (180 days) × a per-hop graph-distance discount, entirely
+computed from provenance the Brain already carries on every fact — nothing here needs
+explaining beyond what `explain()` (step 9) will already walk.
+
+**Token-budgeted assembly here is deliberately not step 5's packer.** Step 5's own text
+asks for priority ordering (L0 constitution first, then task-relevant L1/L2, then
+exemplars) and a record of what was included and dropped — real algorithmic work step 4's
+own text does not ask for, since it only names "token-budgeted context assembly" as the
+pipeline's last stage. What this slice guarantees, and step 5 will keep: highest-score-first
+selection with whole-candidate granularity — a candidate is included or dropped entire,
+never truncated mid-fact. Token counts are estimated at four characters per token, a
+documented placeholder rather than a real tokenizer, which nothing here needs to be exact
+about — only conservative enough that the budget is never exceeded.
+
+**Every stage traced.** `retrieve()` takes an optional `@infinite-ai/telemetry` `Tracer`
+(defaulting to `NOOP_TRACER`, the same fail-open shape Stage 04 established), wrapping the
+whole call in one `brain.retrieve` span with an event per stage and attributes for the
+policy decision, match/expansion/episode counts, and the assembled/dropped counts and total
+tokens. The integration suite asserts against a real span from
+`@opentelemetry/sdk-trace-base`'s in-memory exporter, the same one `apps/gateway`'s own
+tests already use, rather than a hand-rolled fake tracer.
+
+**What the policy gate's `access` decision does not do.** `resolveAccess()`'s
+`allowed`/`dropped` categories are a boundary decision — whether the retrieval may proceed
+at all — not a per-field redaction of a Brain node's free-form `attributes` or an episode's
+`detail`. Nothing in this schema declares which `DataCategory` a given attribute belongs
+to, unlike the Stage 03 tables' columns, which map to a category one-for-one. Attaching
+that mapping is a later module's job, once one exists with concrete attributes to classify
+— recorded here rather than silently assumed away.
+
+Deviations from manual: none in the pipeline's own shape. The two gaps above (no real
+query-embedding producer, no per-attribute category mapping) are follow-up work tied to
+capabilities other steps and stages own, not decisions needing a human's judgement call.
 
 Open questions raised: none.

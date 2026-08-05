@@ -18,6 +18,7 @@ describe('package export surface', () => {
     expect(Object.keys(db).sort()).toEqual([
       'APPEND_ONLY_TABLES',
       'BrainConflictError',
+      'BrainRetrievalError',
       'BrainWriteError',
       'ConsentLedgerError',
       'DecryptionError',
@@ -37,6 +38,8 @@ describe('package export surface', () => {
       'encrypt',
       'enqueueBrainConflict',
       'eraseSubject',
+      'expandGraph',
+      'filterEpisodesByWindow',
       'findEffectiveBrainFact',
       'getBrainConflict',
       'getBrainWriteCandidate',
@@ -50,6 +53,7 @@ describe('package export surface', () => {
       'readTenantLexicon',
       'recordContradictionResolution',
       'resolveBrainConflict',
+      'vectorTopK',
       'withTenant',
     ]);
   });
@@ -76,6 +80,9 @@ describe('package export surface', () => {
       db.getBrainConflict,
       db.listOpenBrainConflicts,
       db.resolveBrainConflict,
+      db.vectorTopK,
+      db.expandGraph,
+      db.filterEpisodesByWindow,
     ]) {
       expect(fn.length).toBeGreaterThanOrEqual(1);
     }

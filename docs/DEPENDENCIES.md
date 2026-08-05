@@ -111,6 +111,22 @@ No new dependency. `brain_conflict_queue` is another Prisma model in `packages/d
 same `prisma`/`zod` already recorded; the provenance comparison it depends on
 (`resolveContradiction`) is pure TypeScript in `packages/brain`, with nothing to add.
 
+## Stage 05 step 4 — the retrieval path
+
+No new dependency — every addition is a workspace package already built, taken as a real
+runtime dependency for the first time. `packages/brain` took `@infinite-ai/policy`
+(`authorize()`/`resolveAccess()`, composed for the first time anywhere in the repo — see
+`retrieval-policy-gate.ts`'s own header for why no composed gate existed before this),
+`@infinite-ai/contracts` (`Purpose`/`DataCategory`/`ConsentEntry` types the policy gate
+needs), and `@infinite-ai/telemetry` (`Tracer`/`Span`, the same interface `apps/gateway`
+already threads through its own request handling — "every stage individually testable and
+traced" is this stage's own exit-gate text).
+
+Its integration suite proves tracing against a real span, the same way `apps/gateway`'s
+own tests do: `@opentelemetry/sdk-trace-base`'s `InMemorySpanExporter` as a devDependency,
+already recorded in Stage 04 at 2.10.0 and taken there the same way (devDependency only,
+for an in-memory exporter in tests — never the real OTLP path).
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

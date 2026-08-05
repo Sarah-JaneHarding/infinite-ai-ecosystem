@@ -908,8 +908,12 @@ model BrainEdge {
 ///
 /// Prisma has no native vector type: `embedding` is `Unsupported("vector")` and is
 /// invisible to the generated client entirely, for both reads and writes. Every query
-/// that touches it goes through raw SQL in packages/brain — there is no other path, since
-/// Prisma cannot represent one.
+/// that touches it goes through raw SQL in `packages/db/src/brain-retrieval.ts` (Stage 05
+/// step 4) — there is no other path, since Prisma cannot represent one. (An earlier note
+/// here said this raw SQL would live in packages/brain; that was written before the
+/// retrieval path's actual architecture existed. Every Brain table's access staying inside
+/// packages/db, the same split the write path settled on, is worth more than honouring the
+/// early guess.)
 ///
 /// The column is declared without a fixed dimension. pgvector accepts that; a fixed
 /// dimension only matters for building an index (HNSW or IVFFlat), and no embedding model

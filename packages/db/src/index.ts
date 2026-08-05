@@ -83,4 +83,19 @@ export {
   type BrainConflictRow,
 } from './brain-conflict-queue.js';
 
+export {
+  BrainRetrievalError,
+  expandGraph,
+  filterEpisodesByWindow,
+  vectorTopK,
+  type EdgeRow,
+  type EpisodeCandidateRow,
+  type EpisodicWindow,
+  type ExpandedNode,
+  type GraphExpansionResult,
+  type NodeCandidateRow,
+  type VectorTopKMatch,
+  type VectorTopKQuery,
+} from './brain-retrieval.js';
+
 export const PACKAGE_NAME = '@infinite-ai/db' as const;
