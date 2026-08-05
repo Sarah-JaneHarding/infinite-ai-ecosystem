@@ -440,7 +440,9 @@ describe('the write path audit trail (step 7)', () => {
     const events = await withTenant({ tenantId, actorId }, (tx) =>
       tx.auditEvent.findMany({
         where: { resourceId: candidateId },
-        orderBy: { at: 'asc' },
+        // Not `at`: `run()` reuses one `now` across the whole candidate, so every event
+        // below shares the same `at` value. `sequence` is what actually orders them.
+        orderBy: { sequence: 'asc' },
       }),
     );
 

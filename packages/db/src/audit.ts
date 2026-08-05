@@ -20,6 +20,12 @@
 // commit or rollback; nothing here needs to remember to release it. Nothing else in this
 // codebase takes a Postgres advisory lock, so there is no shared key space this could
 // collide with.
+//
+// "Last event" is found by ordering on `sequence`, a plain autoincrementing column, never
+// on `at`: a caller may legitimately reuse one `Date` across several events in the same
+// transaction (the Brain write path does exactly this — one shared `now` for an entire
+// candidate's `run()`), and under that tie `at` cannot tell two events apart in insertion
+// order. `sequence` always can.
 
 import { chainEvent, type AuditEventInput } from '@infinite-ai/telemetry';
 import type { Prisma } from '@prisma/client';
@@ -81,7 +87,7 @@ export async function appendAuditEvent(
 
   const last = await tx.auditEvent.findFirst({
     where: { tenantId },
-    orderBy: [{ at: 'desc' }, { id: 'desc' }],
+    orderBy: { sequence: 'desc' },
     select: { hash: true },
   });
   const previousHash = last === null ? null : Buffer.from(last.hash);

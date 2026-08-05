@@ -1137,4 +1137,22 @@ deferred to Stage 15, for the reasons above — not a decision needing a human's
 call (it follows directly from how the manual itself splits the two stages' ownership),
 so recorded here rather than in `docs/OPEN_QUESTIONS.md`.
 
+**Defect found in CI, fixed in the same PR: `at` cannot disambiguate insertion order.**
+`appendAuditEvent`'s first version found "the last event for this tenant" by ordering
+`at DESC, id DESC`, on the assumption that ties on `at` would be rare and that `id` (a
+random UUID) was an acceptable fallback when they happened. The very first real caller
+broke both assumptions: `write-path.ts`'s `run()` reuses one `now` across an entire
+candidate's journey through every transition, so a single L1_NODE write produced six
+audit events sharing the exact same `at`. Under that tie, `id DESC` has no relationship to
+actual insertion order, so the "last event" query returned the wrong row for one
+transition, chaining onto an earlier link instead of its true predecessor —
+`write-path.integration.spec.ts`'s new audit-trail test caught this immediately
+(`verifyChain` reporting `broken_link` at position 2, not `intact`). The fix is a genuine
+schema addition, not a query tweak: `audit_event` gains `sequence`, a plain
+autoincrementing bigint independent of any caller-supplied timestamp
+(migration `20260805120000_stage05_audit_event_sequence`), and `appendAuditEvent` now
+orders by it instead. Ordering by an autoincrement column is what "last row inserted"
+actually means in Postgres; ordering by a caller-supplied timestamp never guaranteed that,
+even before a real caller's usage pattern exposed it.
+
 Open questions raised: none.
