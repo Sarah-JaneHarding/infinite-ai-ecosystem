@@ -1461,8 +1461,9 @@ Open questions raised: none.
 ## Stage 06 — Agent runtime, Prompt Registry, DAG orchestrator, guardrails, HITL
 
 Started: 2026-08-05 Completed: —
-Exit gate: **PARTIAL** — steps 1 (the Agent contract) and 2 (the Agent Registry) are built
-and proven. Steps 3-10 are not started. `scripts/verify-stage.ts`'s `06` entry stays empty
+Exit gate: **PARTIAL** — steps 1 (the Agent contract), 2 (the Agent Registry), 3 (the
+Prompt Registry), 4 (the DAG orchestrator) and 5 (Human-in-the-loop gates) are built and
+proven. Steps 6-10 are not started. `scripts/verify-stage.ts`'s `06` entry stays empty
 until they are.
 
 **What this slice put in place (step 1 — the Agent contract)**
@@ -1570,5 +1571,244 @@ Deviations from manual: none. The duplicate-id rule is an addition the manual's 
 text does not name explicitly, but follows directly from "a typed registry" needing an
 actual primary key, the same way `contract.ts`'s own comment on `id` ("never reused for a
 different agent") already implied before this step gave it code.
+
+Open questions raised: none.
+
+**What this slice put in place (step 3 — the Prompt Registry)**
+
+`packages/prompts/src/loader.ts`: parses a prompt file's front matter (`agent`, `version`,
+`model`, `changelog`, `author`, `ratified_by`) against a Zod schema, validates Part 3.1's
+eight mandatory body sections are present in exactly that order and no others, and
+sha256-hashes the whole file's raw content. `loadPromptFile` layers on the one check only a
+real path can make: that the front matter's own `version` matches the filename and `agent`
+matches the directory, so `packages/prompts/src/<agent-id>/<semver>.prompt.md` can never
+silently disagree with what the file itself declares. `packages/prompts/src/lock.ts`:
+`verifyPromptLock` compares a set of loaded prompts against `prompt-lock.json` (checked in,
+starts as `{}` — no real prompt exists yet) and reports every `<agent>@<version>` key
+either missing from the lock or hashing differently than what was recorded for it;
+`buildPromptLock` is the regeneration function a developer runs after intentionally adding
+a prompt or bumping one's version, the same "regenerate, review, commit" shape
+`pnpm-lock.yaml` itself already has in this repo.
+
+**No YAML library added — the format doesn't need one.** Front matter here is always this
+project's own hand-authored, flat `key: value` shape; nothing in the tree already parses
+YAML, and pulling in a dependency to parse a format this constrained would trade a real
+cost (a new licence to track, a new supply-chain surface) for nothing this codebase
+actually needs. `parseFrontMatterBlock` splits each line on its first colon (so a value
+containing its own colon, e.g. a changelog message, still parses correctly) and treats a
+bare `null` literal and quoted strings as the two special cases Part 3.1's own example
+actually uses.
+
+**The section-order check is exact, not merely "these are present."** `validateSections`
+requires the body's top-level (`# `) headings to equal `PROMPT_SECTIONS` — same length,
+same order, nothing extra — rather than checking each mandatory section is present
+somewhere and ignoring anything else. The manual's own wording ("these sections in this
+order... omitting a section fails registry validation") reads as exhaustive, matching this
+codebase's general house style of strictness at a validated boundary (the retrieval path's
+own fixed stage order, the write path's own fixed transition list) rather than a
+best-effort check that would let an unreviewed section quietly ride along.
+
+**The real lockfile check runs against the real, currently-empty tree — proven trivially
+today, wired for real from the moment a prompt exists.** `packages/prompts/test/
+prompt-lock.spec.ts` scans `packages/prompts/src/` itself (not a fixture) for
+`*.prompt.md` files and checks them against the real, checked-in `prompt-lock.json`. Zero
+files today means zero violations — an honest reflection of "nothing module-specific goes
+in this stage" (no real agent has a prompt yet) — but the mechanism is exactly what will
+gate the first real prompt Stage 08 adds, the same "real mechanism, no real data yet"
+shape `contract.ts` and `registry.ts` already used for `promptRef`/`evalSetRef` themselves.
+
+Proven by four test files: `loader.spec.ts` (parsing, hashing, and every failure mode —
+missing front matter, a malformed line, a missing field, an invalid version or model, a
+missing section, sections out of order, an extra section — plus that identical content
+hashes identically and changed content does not); `lock.spec.ts` (clean match, a missing
+lock entry, a hash mismatch, a mixed batch of both, and `buildPromptLock` round-tripping
+back to zero violations); `load-scan.spec.ts` (real temp-directory files proving
+`loadPromptFile`'s filename/directory cross-check and `scanPromptFiles`'s recursive,
+`.prompt.md`-only, missing-directory-safe scan); and `prompt-lock.spec.ts`, the real check
+described above.
+
+Deviations from manual: none. Step 3 names the file location, the front-matter fields, the
+content-hashed loader and the lockfile-comparison test; this slice builds exactly that,
+plus the filename/directory cross-check the manual's own naming convention implies but does
+not spell out as a separate rule.
+
+Open questions raised: none.
+
+**What this slice put in place (step 4 — the DAG orchestrator)**
+
+`packages/orchestrator/src/dag.ts`: a Zod-validated `PipelineDefinition` — an `entryStepId`
+plus a map of `PipelineStep`, a discriminated union over the six kinds the manual names
+(`agent_call`, `tool_call`, `human_gate`, `branch`, `map`, `compensation`). `validate
+PipelineDag` resolves every `next`/branch-target/compensation reference against the step
+map and detects cycles on the _forward_ graph only — a `compensatesWith` edge points
+backwards to an already-succeeded step by design, so it is excluded from the cycle check
+the same way a rollback path is never mistaken for a loop.
+
+`packages/orchestrator/src/run-state-machine.ts`: the pure decisions, provable without a
+database. `computeRetryDelayMs` is full-jitter exponential backoff (`random() * min(max,
+base * 2^attempt)`), `shouldRetry` compares an attempt count against a step's own `max
+Retries`, `hasTimedOut` compares elapsed time against a step's own `timeoutMs`, `next
+StepAfterSuccess` reads a step's own `next` (or a branch's evaluated target), and
+`compensationChain` walks a run's succeeded-step list in _reverse_ order, yielding only the
+steps that actually declared a `compensatesWith`.
+
+`packages/db/src/orchestrator.ts` + a new migration pair (`orchestrator_run`,
+`orchestrator_step_run`): the persistence primitives — `openRun`, `getRun`, `listStepRuns`,
+`startStepRun`, `finishStepRun`, `updateRunStatus`, `cancelRun`. Both tables are tenant-
+owned (added to `TENANT_OWNED_TABLES` in `packages/db/src/tables.ts`) but deliberately
+_not_ append-only: a run's `status`/`currentStepId`/`succeededStepIds` and a step's own
+`status` mutate in place as the run progresses, the same precedent `brain_write_candidate`
+already set for mutable, tenant-scoped workflow state that is not itself a Brain fact.
+`(runId, stepId, attempt)` carries a unique constraint, so retrying the same attempt twice
+is a database error, not a silent duplicate — the mechanism that makes a step attempt safe
+to resume from a fresh read after a crash, rather than something that has to be held in
+memory across calls.
+
+`packages/orchestrator/src/runner.ts`: the imperative shell — `startRun`, `advanceRun` (one
+unit of work), `runToCompletion` (loops until terminal, paused, or no further progress is
+possible), `cancelRun`. Every step attempt opens a tracer span carrying one application-
+level `trace_id` attribute, threaded through as a plain field on the run row (the same
+pattern `write-path.ts` already uses for Brain writes) rather than relying on OpenTelemetry's
+own internal trace context, since `@infinite-ai/telemetry`'s `Tracer` abstraction does not
+expose one.
+
+**Durability is proven directly against Postgres, not against BullMQ/Redis, and that is a
+deliberate scope line for this step, not a silent gap.** Part 1 describes the orchestrator
+as "an in-house DAG runner on BullMQ"; this slice does not wire that in. Every run and step
+attempt is a real row, so resumability — the property BullMQ would otherwise provide by
+re-delivering a job — is proven here by having `advanceRun` decide its next action purely
+from what a fresh read of the run and its step-attempt history says happened, the identical
+shape Brain's own write path already uses to prove durability without a queue. BullMQ is
+additional infrastructure for distributed _scheduling_ (many workers pulling from one
+queue) layered on top of this durable core later, once `apps/worker` has a real consumer to
+hand jobs to — building that queue wiring now, with no consumer to drive it, would be
+scaffolding with nothing to prove against.
+
+**Only the four step kinds the manual's own reference-pipeline exit gate names are
+executed; `branch` and `map` are declared, DAG-validated, and their pure next-step logic
+exists, but the runner does not execute them yet.** The manual's worked example for this
+stage is explicitly "three agents, one human gate, one compensation path" — `agent_call`,
+`tool_call`, `human_gate`, and `compensation` are exactly that set, and all four are proven
+end-to-end in `packages/orchestrator/test/runner.integration.spec.ts`. `branch`'s condition
+evaluation and `map`'s per-item fan-out are real, additional execution semantics the manual
+does not name a worked example for; rather than fake either with a stub that would silently
+pass validation and then do the wrong thing at runtime, the runner throws a named
+`OrchestratorRunnerError` for `map` and requires an injected `evaluateCondition` for
+`branch` — a stated, honest follow-up (the same "mechanism now, full execution once a real
+caller exists" shape step 2 already used for `promptExists`/`evalSetExists`), not a
+silently dropped feature.
+
+Proven by: `packages/orchestrator/test/dag.spec.ts` (13 tests — reference resolution for
+every step kind, missing-target detection, forward-cycle detection, and that a
+`compensatesWith` back-edge is correctly excluded from the cycle check);
+`packages/orchestrator/test/run-state-machine.spec.ts` (18 tests — retry-delay jitter
+bounds and determinism under a fixed `random`, the retry/no-retry boundary at `maxRetries`,
+the timeout boundary at `timeoutMs`, `next`/branch-target resolution, and the reverse-order
+compensation chain including runs with no compensations declared);
+`packages/db/test/orchestrator.integration.spec.ts` (the persistence primitives against a
+real Postgres — every status transition each function can produce, the `(runId, stepId,
+attempt)` uniqueness constraint, and each function throwing `OrchestratorPersistenceError`
+for a run that does not exist); `packages/orchestrator/test/runner.integration.spec.ts` (a
+linear pipeline running to `SUCCEEDED` with one `trace_id` on every span; a human gate
+pausing the run and staying paused across repeated resumption attempts; a retry that does
+not fire before its scheduled time and succeeds once it is due, resumed across separate
+`advanceRun` calls rather than a single in-memory loop; a stale `RUNNING` attempt from a
+simulated crash correctly detected as timed out and retried on the next call; compensation
+running in exact reverse order of success and ending `COMPENSATED`; and a cancelled run
+that makes no further progress even when resumption is attempted again). The database-
+backed suites were written and typechecked against Prisma's real generated types but not
+run against a live container in this sandbox (no Docker registry egress here); they are
+proven for real in CI, the same footnote every other Testcontainers suite in this repository
+already carries.
+
+Deviations from manual: BullMQ/Redis wiring is deferred to whichever step gives
+`apps/worker` a real job consumer, for the reason above; `branch` and `map` are declared
+and validated but not executed, for the reason above. Both are named, not silent.
+
+Open questions raised: none.
+
+**What this slice put in place (step 5 — Human-in-the-loop gates)**
+
+Step 4 built the pause point (`human_gate`'s own comment named this step explicitly: "The
+approval task itself, the diff, the evidence and the required-role enforcement are step
+5's job"). This step builds the approval task itself.
+
+`packages/db/prisma/schema.prisma`'s new `ApprovalTask` model + a migration pair
+(`approval_task`, `approval_decision` enum): one row per `(runId, stepId)` — a run only
+ever reaches a given gate once, the same guarantee `dag.ts`'s forward-cycle check already
+gives every other step. `decision` is null while pending and set exactly once;
+`packages/db/src/approval.ts`'s `openApprovalTask`/`getApprovalTask`/
+`getApprovalTaskForStep`/`decideApprovalTask` are the persistence primitives, following
+`orchestrator.ts`'s own division of labour precisely: `decideApprovalTask` only records a
+decision, the same "never touches the run's own status" boundary `finishStepRun` already
+draws, so recording a decision and deciding what it means for the run are two separate
+calls. Tenant-owned, but — like `orchestrator_run`/`orchestrator_step_run` — deliberately
+not append-only: the permanent, immutable record that a decision was made is the
+`audit_event` row `decideHumanGate` also appends in the same transaction, not this row
+itself (`packages/db/src/tables.ts`'s own comment now says so directly).
+
+`packages/orchestrator/src/runner.ts`: `advanceRun`'s `human_gate` branch now calls an
+injected `prepareApproval` function — required, the same "mechanism now, no faking the
+content" rule `branch`'s `evaluateCondition` already set in step 4 — to get "the artefact,
+a diff against the previous version, the evidence used" before opening the task and
+pausing the run. A new `resumeFromHumanGate` runs on every subsequent `advanceRun` call
+while a run sits `WAITING_FOR_APPROVAL`: it re-reads the approval task fresh from Postgres
+every time (no decision held in memory across calls, the same resumability rule
+everything else in this runner already follows), makes no progress while it is still
+pending, proceeds to the gate's own `next` on an `APPROVED` or `EDITED` decision, and
+routes a `REJECTED` decision into `runCompensation` — the same path an exhausted retry
+already takes, since a human declining an artefact is, structurally, exactly that: the
+step failed. `decideHumanGate` is the one exported entry point that records a decision:
+Zod-validated input (a recognised outcome, a real actor id, a non-empty reason — "the
+decision, the actor, the reason... are recorded" reads as unconditional, not only for a
+rejection), a check that the run is actually `WAITING_FOR_APPROVAL` with an open,
+undecided task, a role check, and — only once all of that holds — the decision itself plus
+one `human_gate_decided` audit event carrying who decided what and why, never the
+artefact's own content (the same boundary `brain/write-path.ts`'s own `ratify` already
+holds its audit event to).
+
+**The required-role check is a direct `role_assignment` lookup, not `packages/policy`'s
+`authorize()`.** `authorize()` (Stage 02/03) answers a _data-access_ question — can this
+actor, holding these grants, touch this resource for this purpose — and expects a caller
+that has already assembled an `Actor` with its grants attached; nothing about a workflow
+gate's "does this actor hold this one named role" needs a `Resource`, a `Purpose`, or the
+POPIA lawful-basis machinery `authorize()` exists to apply. `packages/db/src/roles.ts`'s
+new `hasActiveRoleAssignment` answers the narrower question directly: does an unexpired
+`role_assignment` row for this role exist for this actor, in this tenant. Reusing
+`authorize()` here would have meant inventing a resource/purpose pair with no referent
+just to satisfy a function signature built for a different job.
+
+**An edit's diff is recorded, not fed forward.** The manual's own text asks only that "the
+edit diff... [is] recorded" — it is, on the `ApprovalTask` row, as the stated "first-class
+training signal for Stage 13." Feeding an edited artefact into the _next_ step's own input
+would need per-step output-chaining this runner does not have yet (every step today reads
+the run's original `input`, not a previous step's output — a simplification step 4 already
+made and did not revisit here). Recording without forwarding is therefore this step's own
+honest scope line, not an oversight: `EDITED` behaves exactly like `APPROVED` for run
+progression, and the diff sits durably on the task row for whatever later consumes it.
+
+Proven by `packages/db/test/approval.integration.spec.ts` (every field an opened task
+carries, `diffAgainstPrevious` defaulting to null with nothing to diff against, the
+`(runId, stepId)` uniqueness constraint, each of the three decision outcomes recorded with
+its own fields, the "decided once" guard, and `hasActiveRoleAssignment`'s active/expired
+boundary) and `packages/orchestrator/test/runner.integration.spec.ts`'s three new describe
+blocks: "a human gate" (extended to assert the opened task's own artefact/evidence/role),
+"human gate decisions" (an approval and an edit each proceeding to the next step with the
+edit diff recorded; a rejection with nothing to compensate ending `FAILED`; a rejection
+rolling back an earlier step through compensation), and "human gate bypass vectors" — the
+manual's own "assert this with a test that attempts every bypass vector," made concrete as:
+an actor lacking the required role is refused and leaves the task undecided; a second
+decision on an already-decided task is refused and the first decision stands unchanged;
+deciding a run that has not yet reached `WAITING_FOR_APPROVAL` is refused; an empty reason
+is refused; and a `human_gate` step with no `prepareApproval` supplied refuses to execute
+at all rather than silently letting the run past with no real review recorded. The
+database-backed suites are written and typechecked against Prisma's real generated types
+but not run against a live container in this sandbox, proven for real in CI — the same
+footnote every other Testcontainers suite in this repository carries.
+
+Deviations from manual: none. The required-role check bypasses `authorize()` for the
+reason above, and an edit's diff is recorded without being fed forward for the reason
+above — both are scope decisions the manual's own step 5 text leaves open, not departures
+from anything it actually specifies.
 
 Open questions raised: none.

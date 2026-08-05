@@ -122,4 +122,36 @@ export {
   type TombstonedBrainFact,
 } from './brain-forgetting.js';
 
+export {
+  OrchestratorPersistenceError,
+  cancelRun,
+  finishStepRun,
+  getRun,
+  listStepRuns,
+  openRun,
+  startStepRun,
+  updateRunStatus,
+  type OpenRunInput,
+  type OrchestratorRunRow,
+  type OrchestratorRunStatus,
+  type OrchestratorStepRunRow,
+  type OrchestratorStepRunStatus,
+  type RunStatusUpdate,
+  type StepRunOutcome,
+} from './orchestrator.js';
+
+export {
+  ApprovalPersistenceError,
+  decideApprovalTask,
+  getApprovalTask,
+  getApprovalTaskForStep,
+  openApprovalTask,
+  type ApprovalDecisionOutcome,
+  type ApprovalTaskRow,
+  type DecideApprovalTaskInput,
+  type OpenApprovalTaskInput,
+} from './approval.js';
+
+export { hasActiveRoleAssignment } from './roles.js';
+
 export const PACKAGE_NAME = '@infinite-ai/db' as const;

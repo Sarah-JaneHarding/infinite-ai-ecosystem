@@ -15,6 +15,10 @@
     "test": "vitest run --passWithNoTests",
     "lint": "eslint src"
   },
+  "dependencies": {
+    "@infinite-ai/contracts": "workspace:*",
+    "zod": "3.25.76"
+  },
   "devDependencies": {
     "typescript": "5.9.3",
     "vitest": "3.2.7"

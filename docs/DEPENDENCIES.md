@@ -204,6 +204,40 @@ No new dependency. `packages/agents/src/registry.ts` is a new file, but it only 
 `validateAgentContract` (step 1, same package) and holds a plain in-memory `Map` — no
 new package needed for either.
 
+## Stage 06 step 3 — the Prompt Registry
+
+`packages/prompts` takes `@infinite-ai/contracts` (`LogicalModel`) and `zod`, both already
+pinned throughout the tree — no new package for either. Deliberately **not** added: a YAML
+parsing library (`js-yaml`, `gray-matter`, etc.). Every prompt file's front matter is
+hand-authored to Part 3.1's own flat `key: value` shape (the one exception, `ratified_by:
+null`, is a bare literal, not a YAML feature this format actually needs) — never arbitrary
+external YAML — so `loader.ts` parses it with a two-line splitter instead. Rule 9's first
+question ("check whether something already in the tree does the job") has no candidate in
+the tree either way; the second question is whether the job needs one at all, and this one
+does not.
+
+## Stage 06 step 4 — the DAG orchestrator
+
+No new dependency. `packages/orchestrator` takes `@infinite-ai/db` (the tenant-scoped
+client and the new `orchestrator.ts` persistence primitives) and `@infinite-ai/telemetry`
+(`Tracer`/`Span`, the same interface Stage 05's retrieval path and `apps/gateway` already
+thread through) as real runtime dependencies for the first time, plus `zod` — all three
+already pinned throughout the tree. Its devDependencies are the same pair every other
+Testcontainers-backed package in this repo already carries at the same pinned versions:
+`testcontainers`/`@testcontainers/postgresql` (12.0.4, first recorded Stage 01) for its own
+integration suite's Postgres, and `@opentelemetry/sdk-trace-base` (2.10.0, first recorded
+Stage 04) for `InMemorySpanExporter`, proving the run's one `trace_id` lands on every step
+span the same way Stage 05 step 4's own integration suite already proves tracing.
+
+## Stage 06 step 5 — Human-in-the-loop gates
+
+No new dependency. `packages/db/src/approval.ts` and `packages/db/src/roles.ts` are new
+files, but both are built entirely on `@prisma/client` (already pinned) and this package's
+own `TenantClient`; `packages/orchestrator/src/runner.ts`'s `decideHumanGate` composes
+`zod` (already a runtime dependency of this package since step 4) for input validation and
+`@infinite-ai/db`'s own `appendAuditEvent` (Stage 05 step 7) for the decision's audit-event
+record — no package gained a dependency it did not already have.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

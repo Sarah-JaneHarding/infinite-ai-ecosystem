@@ -228,6 +228,17 @@ export default tseslint.config(
     },
   },
   {
+    // The DAG runner's integration suite needs the same thing the Brain suite already
+    // has an exception for: its own Testcontainers Postgres, pointed at by
+    // @infinite-ai/db's `withTenant()`. Confined to packages/orchestrator's own tests.
+    files: ['packages/orchestrator/test/**/*.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+      'no-restricted-syntax': 'off',
+      'no-restricted-globals': 'off',
+    },
+  },
+  {
     // The seed script runs as a standalone CLI against a fresh database, before any
     // application boots. It legitimately constructs its own client, reads the encryption
     // key from the environment, and prints progress.

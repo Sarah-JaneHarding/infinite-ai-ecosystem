@@ -289,8 +289,44 @@ async function seedTwoTenants(): Promise<void> {
         },
       });
 
+      // Stage 06 step 4's orchestrator tables. Seeded here for the same reason every
+      // other table above is: this suite is what proves every tenant-owned table is
+      // isolated, and the fixture guard below refuses to let one arrive without a row.
+      // Mutable, like brain_write_candidate/brain_conflict_queue — not append-only.
+      const orchestratorRun = await tx.orchestratorRun.create({
+        data: {
+          tenantId,
+          pipelineId: 'seed-pipeline',
+          pipelineVersion: '1.0.0',
+          traceId: randomUUID(),
+          input: { fixture: true },
+        },
+      });
+      const orchestratorStepRun = await tx.orchestratorStepRun.create({
+        data: {
+          tenantId,
+          runId: orchestratorRun.id,
+          stepId: 'seed-step',
+        },
+      });
+
+      // Stage 06 step 5's approval task, for the same reason. Mutable, not append-only —
+      // see this table's own migration header for why.
+      const approvalTask = await tx.approvalTask.create({
+        data: {
+          tenantId,
+          runId: orchestratorRun.id,
+          stepId: 'seed-gate',
+          requiredRole: 'hod',
+          artefact: { fixture: true },
+          evidence: { fixture: true },
+          traceId: orchestratorRun.traceId,
+        },
+      });
+
       const created: Record<string, string> = {
         academic_year: year.id,
+        approval_task: approvalTask.id,
         audit_event: audit.id,
         brain_conflict_queue: conflict.id,
         brain_constitution: constitution.id,
@@ -308,6 +344,8 @@ async function seedTwoTenants(): Promise<void> {
         guardian_link: link.id,
         learner: learner.id,
         learner_identifier: identifier.id,
+        orchestrator_run: orchestratorRun.id,
+        orchestrator_step_run: orchestratorStepRun.id,
         phase: phase.id,
         role_assignment: role.id,
         school: school.id,
