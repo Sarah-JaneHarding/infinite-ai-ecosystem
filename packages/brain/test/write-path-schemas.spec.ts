@@ -35,7 +35,7 @@ describe('extractTyped', () => {
     });
   });
 
-  it('defaults an L1_NODE payload with no externalRef, attributes or supersedes', () => {
+  it('defaults an L1_NODE payload with no externalRef, attributes, supersedes or dataCategory', () => {
     const extracted = extractTyped('L1_NODE', {
       entityType: 'TOPIC',
       label: 'Fractions',
@@ -48,8 +48,28 @@ describe('extractTyped', () => {
         label: 'Fractions',
         attributes: {},
         supersedes: null,
+        dataCategory: null,
       },
     });
+  });
+
+  it('carries a declared dataCategory through unchanged', () => {
+    const extracted = extractTyped('L1_NODE', {
+      entityType: 'LEARNER',
+      label: 'A learner',
+      dataCategory: 'SUPPORT_NEED',
+    });
+    expect(extracted.payload).toMatchObject({ dataCategory: 'SUPPORT_NEED' });
+  });
+
+  it('throws BrainExtractionError on an L1_NODE dataCategory that is not a real category', () => {
+    expect(() =>
+      extractTyped('L1_NODE', {
+        entityType: 'TOPIC',
+        label: 'x',
+        dataCategory: 'NOT_A_REAL_CATEGORY',
+      }),
+    ).toThrow(BrainExtractionError);
   });
 
   it('carries a declared externalRef and supersedes through unchanged', () => {
@@ -82,6 +102,7 @@ describe('extractTyped', () => {
         relation: 'prerequisite_of',
         attributes: {},
         supersedes: null,
+        dataCategory: null,
       },
     });
   });
@@ -96,6 +117,28 @@ describe('extractTyped', () => {
     if (extracted.targetTier !== 'L2_EPISODE') throw new Error('unreachable');
     expect(extracted.payload.occurredAt).toBeInstanceOf(Date);
     expect(extracted.payload.occurredAt.toISOString()).toBe('2026-05-01T00:00:00.000Z');
+    expect(extracted.payload.dataCategory).toBeNull();
+  });
+
+  it('carries a declared L2_EPISODE dataCategory through unchanged', () => {
+    const extracted = extractTyped('L2_EPISODE', {
+      eventType: 'screening_flag_raised',
+      occurredAt: '2026-05-01T00:00:00.000Z',
+      summary: 'Reading screener flagged below benchmark.',
+      dataCategory: 'SPECIAL_PERSONAL',
+    });
+    if (extracted.targetTier !== 'L2_EPISODE') throw new Error('unreachable');
+    expect(extracted.payload.dataCategory).toBe('SPECIAL_PERSONAL');
+  });
+
+  it('never carries a dataCategory for L0_CONSTITUTION, even if one is passed in — policy never expires', () => {
+    const extracted = extractTyped('L0_CONSTITUTION', {
+      key: 'assessment_policy',
+      kind: 'ASSESSMENT_POLICY',
+      content: {},
+      dataCategory: 'DIRECT_IDENTIFIER',
+    });
+    expect(extracted.payload).not.toHaveProperty('dataCategory');
   });
 
   it('throws BrainExtractionError on a missing required field', () => {

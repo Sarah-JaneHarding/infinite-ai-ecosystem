@@ -3,7 +3,17 @@
 // A candidate's `rawPayload` is whatever the caller submitted; this module is the one
 // place that decides whether it is shaped like a fact the target tier can actually hold.
 // Rule 8: `unknown` plus a Zod parse, never a cast.
+//
+// `dataCategory` (step 8, "forgetting by design") is caller-declared here, on L1/L2
+// payloads only, the same way `source`/`confidence`/`traceId` are caller-declared rather
+// than inferred: nothing in this schema knows what a node's free-form `attributes` or an
+// episode's `detail` actually contain (retrieval-path.ts's own header makes the same point
+// about `attributes` not being classified per field), so guessing a category from
+// `entityType` alone would risk silently mis-classifying `SPECIAL_PERSONAL` data as
+// something less sensitive. L0/L3 never take one at all — "policy and curriculum never
+// expire" is step 8's own text, and there is no column for it to resolve against either.
 
+import { DataCategory } from '@infinite-ai/contracts';
 import { z } from 'zod';
 
 /// Shared with the retrieval path (Stage 05 step 5), which needs it to describe a
@@ -70,6 +80,10 @@ export const L1NodePayload = z.object({
   attributes: z.record(z.unknown()).default({}),
   /** The node this candidate corrects or replaces. Only ever declared, never inferred. */
   supersedes: UUID.nullable().default(null),
+  /** Which `DataCategory` this node's content is about, for retention resolution
+   * (step 8). Null means no personal-information category applies — this fact is never
+   * scheduled for expiry, the same as a category with no ratified rule at all. */
+  dataCategory: DataCategory.nullable().default(null),
 });
 export type L1NodePayload = z.infer<typeof L1NodePayload>;
 
@@ -80,6 +94,7 @@ export const L1EdgePayload = z.object({
   relation: z.string().min(1),
   attributes: z.record(z.unknown()).default({}),
   supersedes: UUID.nullable().default(null),
+  dataCategory: DataCategory.nullable().default(null),
 });
 export type L1EdgePayload = z.infer<typeof L1EdgePayload>;
 
@@ -98,6 +113,10 @@ export const L2EpisodePayload = z.object({
   detail: z.record(z.unknown()).default({}),
   outcome: z.string().nullable().default(null),
   supersedes: UUID.nullable().default(null),
+  /** Recorded for retention resolution (step 8) even though episodes have no
+   * `tombstonedAt` column yet to actually act on it — see `brain-forgetting.ts`'s own
+   * header for why episode tombstoning is a follow-up, not built here. */
+  dataCategory: DataCategory.nullable().default(null),
 });
 export type L2EpisodePayload = z.infer<typeof L2EpisodePayload>;
 

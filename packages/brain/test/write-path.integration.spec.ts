@@ -9,6 +9,7 @@
 
 import { randomUUID } from 'node:crypto';
 
+import type { DataCategory } from '@infinite-ai/contracts';
 import {
   disconnect,
   listOpenBrainConflicts,
@@ -18,6 +19,7 @@ import {
 import { verifyChain, type ChainedAuditEvent } from '@infinite-ai/telemetry';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { sweepBrainRetention, type RetainableBrainFact } from '../src/forgetting.js';
 import {
   BrainWritePathError,
   advanceOnce,
@@ -509,5 +511,189 @@ describe('the write path audit trail (step 7)', () => {
     expect(ratifiedEvent).not.toBeNull();
     expect(ratifiedEvent?.actorId).toBe(actorId);
     expect((ratifiedEvent?.diff as Record<string, unknown>).ratifiedBy).toBe(actorId);
+  });
+});
+
+describe('forgetting by design (step 8)', () => {
+  it('resolves a declared dataCategory with no ratified rule yet — unscheduled, not lost', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    // A real DataCategory value, not a randomized string: dataCategory is Zod-validated
+    // against the actual enum at extraction time. Tenant isolation (a fresh tenant per
+    // test, via seedTenant()) is what keeps this collision-free across tests, not the
+    // category name.
+    const category: DataCategory = 'ATTENDANCE';
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: { entityType: 'LEARNER', label: 'A learner', dataCategory: category },
+        source: 'test',
+      });
+      return run(tx, opened.id);
+    });
+
+    expect(finished.retentionCategory).toBe(category);
+    expect(finished.retentionRuleId).toBeNull();
+  });
+
+  it('resolves retentionRuleId once the category has a ratified rule', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const category: DataCategory = 'BEHAVIOUR';
+
+    const ruleId = await withTenant({ tenantId, actorId }, async (tx) => {
+      const created = await tx.retentionRule.create({
+        data: {
+          tenantId,
+          category,
+          anchor: 'ACADEMIC_YEAR_END',
+          retainMonths: 24,
+          authority: 'Schools Act record-keeping circular',
+          ratifiedAt: new Date('2026-01-01T00:00:00.000Z'),
+          ratifiedBy: actorId,
+        },
+      });
+      return created.id;
+    });
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L1_NODE',
+        rawPayload: { entityType: 'LEARNER', label: 'A learner', dataCategory: category },
+        source: 'test',
+      });
+      return run(tx, opened.id);
+    });
+
+    expect(finished.retentionCategory).toBe(category);
+    expect(finished.retentionRuleId).toBe(ruleId);
+  });
+
+  it('never resolves a retentionCategory for L0_CONSTITUTION — policy never expires', async () => {
+    const { tenantId, actorId } = await seedTenant();
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const opened = await openWrite(tx, {
+        targetTier: 'L0_CONSTITUTION',
+        rawPayload: {
+          key: `never_expires_${randomUUID().slice(0, 8)}`,
+          kind: 'SCHOOL_POLICY',
+          content: {},
+        },
+        source: 'test',
+      });
+      await run(tx, opened.id);
+      await ratify(tx, opened.id, actorId, new Date('2026-01-01T00:00:00.000Z'));
+      return run(tx, opened.id);
+    });
+
+    expect(finished.retentionCategory).toBeNull();
+    expect(finished.retentionRuleId).toBeNull();
+  });
+
+  it('sweeps an expired fact into a tombstone and leaves a current one alone', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const category: DataCategory = 'SUPPORT_NEED';
+
+    await withTenant({ tenantId, actorId }, (tx) =>
+      tx.retentionRule.create({
+        data: {
+          tenantId,
+          category,
+          anchor: 'ACADEMIC_YEAR_END',
+          retainMonths: 12,
+          authority: 'SIAS policy record-retention determination',
+          ratifiedAt: new Date('2020-01-01T00:00:00.000Z'),
+          ratifiedBy: actorId,
+        },
+      }),
+    );
+
+    const { expiredId, currentId } = await withTenant(
+      { tenantId, actorId },
+      async (tx) => {
+        const expired = await openWrite(tx, {
+          targetTier: 'L1_NODE',
+          rawPayload: {
+            entityType: 'LEARNER',
+            label: 'Expired fact',
+            dataCategory: category,
+          },
+          source: 'test',
+        });
+        const current = await openWrite(tx, {
+          targetTier: 'L1_NODE',
+          rawPayload: {
+            entityType: 'LEARNER',
+            label: 'Current fact',
+            dataCategory: category,
+          },
+          source: 'test',
+        });
+        const expiredFinished = await run(tx, expired.id);
+        const currentFinished = await run(tx, current.id);
+        return {
+          expiredId: expiredFinished.committedRowId!,
+          currentId: currentFinished.committedRowId!,
+        };
+      },
+    );
+
+    const facts: readonly RetainableBrainFact[] = [
+      {
+        id: expiredId,
+        targetTier: 'L1_NODE',
+        subjectToken: 'LNR_TEST',
+        category,
+        anchor: 'ACADEMIC_YEAR_END',
+        anchoredAt: new Date('2024-01-01T00:00:00.000Z'),
+      },
+      {
+        id: currentId,
+        targetTier: 'L1_NODE',
+        subjectToken: 'LNR_TEST',
+        category,
+        anchor: 'ACADEMIC_YEAR_END',
+        anchoredAt: new Date('2026-06-01T00:00:00.000Z'),
+      },
+    ];
+
+    const schedule = {
+      tenantId,
+      rules: [
+        {
+          category,
+          anchor: 'ACADEMIC_YEAR_END' as const,
+          retainMonths: 12,
+          authority: 'SIAS policy record-retention determination',
+          ratifiedAt: new Date('2020-01-01T00:00:00.000Z'),
+          ratifiedBy: actorId,
+        },
+      ],
+    };
+
+    const result = await withTenant({ tenantId, actorId }, (tx) =>
+      sweepBrainRetention(tx, schedule, facts, new Date('2026-08-06T00:00:00.000Z')),
+    );
+
+    expect(result.tombstoned).toEqual([expiredId]);
+    expect(result.retained).toEqual([{ id: currentId, reason: 'within_period' }]);
+
+    const { originalStillReadable, tombstoneExists } = await withTenant(
+      { tenantId, actorId },
+      async (tx) => {
+        const original = await tx.brainNode.findFirstOrThrow({
+          where: { id: expiredId },
+        });
+        const tombstone = await tx.brainNode.findFirst({
+          where: { supersedes: expiredId },
+        });
+        return {
+          originalStillReadable: original.tombstonedAt === null,
+          tombstoneExists: tombstone !== null && tombstone.tombstonedAt !== null,
+        };
+      },
+    );
+    expect(originalStillReadable).toBe(true);
+    expect(tombstoneExists).toBe(true);
   });
 });

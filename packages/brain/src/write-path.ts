@@ -29,6 +29,7 @@ import {
   enqueueBrainConflict,
   findEffectiveBrainFact,
   getBrainWriteCandidate,
+  getRetentionRule,
   listOpenBrainWrites,
   openBrainWrite,
   ratifyBrainWrite,
@@ -238,18 +239,14 @@ export async function advanceOnce(
     case 'COMMITTED':
       return auditedAdvance(tx, candidate, { toStatus: 'INDEXED' }, now);
     case 'INDEXED': {
-      // Deliberately not invented here. Assigning a fact a personal-information category
-      // and matching it to a ratified `RetentionRule` is step 8's "forgetting by design" —
-      // this transition still runs and is still persisted, the same way step 1 shipped
-      // `brain_embedding` with no fixed dimension rather than inventing one. See
-      // docs/STAGE_LOG.md.
+      const resolved = await resolveRetention(tx, candidate);
       return auditedAdvance(
         tx,
         candidate,
         {
           toStatus: 'RETENTION_SCHEDULED',
-          retentionCategory: null,
-          retentionRuleId: null,
+          retentionCategory: resolved.category,
+          retentionRuleId: resolved.ruleId,
         },
         now,
       );
@@ -287,6 +284,45 @@ function validateProvenance(candidate: BrainWriteCandidateRow): void {
       `Candidate ${candidate.id} has an out-of-range confidence (${candidate.confidence}); ` +
         'provenance must be a genuine confidence in [0, 1].',
     );
+  }
+}
+
+interface ResolvedRetention {
+  readonly category: string | null;
+  readonly ruleId: string | null;
+}
+
+/**
+ * Step 8's "forgetting by design": resolves what `RETENTION_SCHEDULED` records.
+ * `L0_CONSTITUTION`/`L3_PROCEDURE` never carry a category at all — "policy and curriculum
+ * never expire" is step 8's own text, and neither payload schema has the field. For
+ * L1/L2, the category is whatever the candidate's own payload declared (never inferred —
+ * see `write-path-schemas.ts`'s own header); a declared category with no ratified
+ * `RetentionRule` yet resolves to `ruleId: null`, the same "unscheduled, not silently
+ * retained forever and not silently destroyed either" honesty
+ * `packages/contracts`'s own `unscheduledCategories` already names for the main data
+ * plane.
+ */
+async function resolveRetention(
+  tx: TenantClient,
+  candidate: BrainWriteCandidateRow,
+): Promise<ResolvedRetention> {
+  const category = declaredDataCategory(candidate);
+  if (category === null) return { category: null, ruleId: null };
+  const rule = await getRetentionRule(tx, category);
+  return { category, ruleId: rule?.id ?? null };
+}
+
+function declaredDataCategory(candidate: BrainWriteCandidateRow): string | null {
+  const extracted = extractTyped(candidate.targetTier, candidate.typedPayload);
+  switch (extracted.targetTier) {
+    case 'L0_CONSTITUTION':
+    case 'L3_PROCEDURE':
+      return null;
+    case 'L1_NODE':
+    case 'L1_EDGE':
+    case 'L2_EPISODE':
+      return extracted.payload.dataCategory;
   }
 }
 

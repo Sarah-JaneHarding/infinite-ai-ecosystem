@@ -159,6 +159,17 @@ nothing in `packages/db` had called until now) to actually chain and persist an
 links into it when that lands." No dependency cycle: `@infinite-ai/telemetry` takes no
 workspace dependencies of its own.
 
+## Stage 05 step 8 — forgetting by design
+
+No new dependency. `packages/db` gained two files (`retention.ts`'s `getRetentionRule`,
+`brain-forgetting.ts`'s `tombstoneBrainFact`), both reads/writes against Prisma models
+already recorded (`RetentionRule` from Stage 03, `BrainNode`/`BrainEdge` from Stage 05
+step 1) plus the `appendAuditEvent` this package already took a dependency on for step 7.
+`packages/brain`'s `forgetting.ts` reuses `@infinite-ai/contracts`'s `evaluateRetention`
+(Stage 03) — the first real caller anywhere in the repo, closing that stage's own OQ-007
+gap for the Brain's own tables, though not for Stage 03's own, which remains its own
+follow-up.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.
