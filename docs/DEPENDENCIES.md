@@ -170,6 +170,16 @@ step 1) plus the `appendAuditEvent` this package already took a dependency on fo
 gap for the Brain's own tables, though not for Stage 03's own, which remains its own
 follow-up.
 
+## Stage 05 step 9 — the Brain API
+
+No new dependency. `packages/brain/src/api.ts` is a new file, but it introduces no import
+that was not already reachable from this package: `remember`/`supersede` compose
+`openWrite`/`run` (step 2), `recall` is `retrieve` (steps 4-5), `ratify` composes
+`write-path.ts`'s own `ratify` with `run`, `forget` wraps `@infinite-ai/db`'s
+`tombstoneBrainFact` (step 8), and `explain` is the first real caller of
+`@infinite-ai/db`'s `getFactProvenance` (step 6) that module's own header already named
+this step as owning.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

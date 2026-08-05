@@ -17,7 +17,10 @@
 // fed by two new retrieval-path stages that fetch L0 and L3 candidates step 4 never
 // needed to. Step 8 (forgetting.ts) adds the pure retention decision and the thin
 // orchestrator that tombstones what it decides has expired, reusing the same
-// @infinite-ai/db tombstone primitive a consent withdrawal would use.
+// @infinite-ai/db tombstone primitive a consent withdrawal would use. Step 9 (api.ts)
+// adds the Brain API itself: `remember`, `recall`, `ratify`, `supersede`, `forget`,
+// `explain` — six typed functions composing everything steps 1-8 already built, the one
+// surface a caller outside this package is meant to use.
 
 export {
   InMemoryWorkingMemoryStore,
@@ -58,7 +61,6 @@ export {
   advanceOnce,
   listOpenWrites,
   openWrite,
-  ratify,
   resolveConflict,
   run,
 } from './write-path.js';
@@ -103,5 +105,15 @@ export {
   type RetentionSweepDecision,
   type RetentionSweepResult,
 } from './forgetting.js';
+
+export {
+  BrainApiError,
+  explain,
+  forget,
+  ratify,
+  recall,
+  remember,
+  supersede,
+} from './api.js';
 
 export const PACKAGE_NAME = '@infinite-ai/brain' as const;
