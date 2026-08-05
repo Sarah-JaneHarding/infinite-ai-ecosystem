@@ -624,9 +624,9 @@ a decision that needs a human's judgement call, so it is tracked here rather tha
 
 Started: 2026-08-04 Completed: —
 Exit gate: **PARTIAL** — steps 1 (the five tiers), 2 (the write path), 3 (contradiction
-resolution), 4 (the retrieval path) and 5 (token-budgeted assembly) are built and proven.
-Steps 6-10 are not started. `scripts/verify-stage.ts`'s `05` entry stays empty until they
-are.
+resolution), 4 (the retrieval path), 5 (token-budgeted assembly) and 6 (provenance) are
+built and proven. Steps 7-10 are not started. `scripts/verify-stage.ts`'s `05` entry stays
+empty until they are.
 
 **What this slice put in place (step 1)**
 
@@ -1011,5 +1011,52 @@ Postgres, not only against hand-built fixtures in a pure unit test.
 Deviations from manual: none. Step 5's own text — priority ordering L0 first, then
 task-relevant L1/L2, then exemplars; record what was included and dropped; never truncate
 mid-fact — is exactly what was built.
+
+Open questions raised: none.
+
+**What this slice put in place (step 6 — provenance)**
+
+Step 6's own text — "every fact stores source, actor, timestamp, confidence, derivation
+… and the trace ID" — was already true of the schema before this slice: step 1 built
+every one of those columns onto all five tables, and step 2's write path
+(`buildFactToCommit`'s `provenance` object for L1/L2, `requireRatification` for L0/L3)
+has stamped every one of them on every commit since. What this slice adds is the missing
+other half — a normalized **read**. Five tables, five different column sets, and until
+now no shared shape a caller could ask "what is this fact's provenance?" against without
+already knowing which table it lives in: `L0_CONSTITUTION`/`L3_PROCEDURE` have
+`ratifiedBy`/`ratifiedAt`/`version` and no `source`/`confidence`; `L2_EPISODE` alone has
+`actorId`; `L2_EPISODE`'s creation timestamp is a differently-named column
+(`recordedAt`, not `createdAt`) for the same reason `ConsentRecord.effectiveFrom` is
+named apart from `createdAt` elsewhere in this schema.
+
+`packages/db/src/brain-provenance.ts`'s `getFactProvenance(tx, targetTier, id)` is that
+normalization: one `FactProvenance` shape for all five tiers, with the tier-inapplicable
+fields (a ratified tier's `source`/`confidence`, an unratified tier's `ratifiedBy`) simply
+null rather than the caller needing to know in advance which columns a given tier even
+has. It is deliberately _not_ a chain-walker — it reads one fact's own row, once. Step 9's
+`explain()` is what will follow `supersedes` across repeated calls to build a full
+explanation; this step only guarantees the single-fact primitive that walk will be built
+out of, the same layering the write path already draws between `packages/db` (persistence
+primitives) and `packages/brain` (the decisions and sequencing built on top of them).
+
+**A wrong tier is treated as "not found," not as an error or a cross-tier leak.** Asking
+`getFactProvenance` for a real id under the wrong `targetTier` — an `L1_NODE`'s id passed
+as `L2_EPISODE` — returns `null`, exactly like an id that does not exist at all. Proven
+directly: `brain-provenance.integration.spec.ts` commits a node, then reads its id back
+under `L2_EPISODE` and asserts `null`, not the node's own data mislabelled. This matters
+because a future caller (`explain()` among them) will often be walking a chain without
+perfect foreknowledge of every link's tier; failing closed to "nothing" rather than
+returning a wrong tier's row is what makes that safe to build on.
+
+**No new caller yet, and that is deliberate, not a gap.** Nothing in `packages/brain`
+calls `getFactProvenance` in this slice — the manual gives that read its own consumer only
+at step 9 (`explain()`, part of the Brain API). Building the primitive now, proven
+directly against a real Postgres for all five tiers, is what step 6's own numbered
+position in the manual asks for; wiring it into a caller before that caller exists would
+be exactly the kind of premature abstraction the project's own rules warn against.
+
+Deviations from manual: none. Every column step 6's own text names was already present on
+every table from step 1 onward; this slice's contribution is the normalized read, which
+the manual's step 9 (`explain()`) presupposes exists.
 
 Open questions raised: none.

@@ -102,4 +102,6 @@ export {
   type VectorTopKQuery,
 } from './brain-retrieval.js';
 
+export { getFactProvenance, type FactProvenance } from './brain-provenance.js';
+
 export const PACKAGE_NAME = '@infinite-ai/db' as const;
