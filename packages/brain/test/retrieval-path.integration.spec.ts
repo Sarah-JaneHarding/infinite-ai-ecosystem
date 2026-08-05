@@ -271,6 +271,47 @@ describe('the retrieval path, end to end', () => {
     expect(result.candidates.map((c) => c.id)).toContain(episodeId);
   });
 
+  // Stage 05 step 10's own worked example: "a teacher cannot retrieve another class's
+  // episodes even when semantically relevant." The previous test already proves the
+  // episode surfaces for an actor the policy gate allows; this is the same episode, the
+  // same window, with only the actor/resource combination changed to one RBAC refuses —
+  // proving the refusal holds even though a real, matching episode genuinely exists.
+  it("refuses a teacher another class's episodes, even though a real matching episode exists", async () => {
+    const episodeId = await withTenant(
+      { tenantId: TENANT_ID, actorId: ACTOR_ID },
+      async (tx) => {
+        const opened = await openWrite(tx, {
+          targetTier: 'L2_EPISODE',
+          rawPayload: {
+            eventType: 'retrieval_path_test_event',
+            occurredAt: '2026-06-01T00:00:00.000Z',
+            summary:
+              'An episode that would match, if the gate ever let this query reach it.',
+          },
+          source: 'test',
+        });
+        const finished = await run(tx, opened.id);
+        return finished.committedRowId!;
+      },
+    );
+
+    const result = await withTenant({ tenantId: TENANT_ID, actorId: ACTOR_ID }, (tx) =>
+      retrieve(tx, {
+        ...BASE_QUERY,
+        actor: teacherActorWrongClass,
+        resource: learnerResource, // classGroupId mismatched to the teacher's own grant
+        episodicWindow: { from: new Date('2026-01-01'), to: new Date('2026-12-31') },
+        now: NOW,
+      }),
+    );
+
+    expect(result.policy.allowed).toBe(false);
+    expect(result.candidates).toEqual([]);
+    expect(result.candidates.map((c) => c.id)).not.toContain(episodeId);
+    // The episodic filter never ran at all — the gate refused before any data read.
+    expect(result.trace).toEqual(['intent_routed', 'policy_gated']);
+  });
+
   it('prioritizes L0 constitution ahead of an L1 match, even under a tight budget', async () => {
     const key = `assessment_policy_${randomUUID().slice(0, 8)}`;
     const { constitutionId, nodeId } = await withTenant(

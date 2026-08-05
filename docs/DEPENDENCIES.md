@@ -180,6 +180,15 @@ that was not already reachable from this package: `remember`/`supersede` compose
 `@infinite-ai/db`'s `getFactProvenance` (step 6) that module's own header already named
 this step as owning.
 
+## Stage 05 step 10 — the stage's own test suite
+
+No new dependency. The restore drill (`packages/brain/test/restore.integration.spec.ts`)
+calls `snapshot()`/`restoreSnapshot()` on the `StartedPostgreSqlContainer`
+`@testcontainers/postgresql` (pinned since step 2) already returns from `.start()` —
+methods that library ships, not new surface added here. Everything else this step adds
+(the temporal test, the episodes-specific policy-gate test, three more `explain()` chain
+tests) composes functions steps 2, 4, 6, 8 and 9 already built.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

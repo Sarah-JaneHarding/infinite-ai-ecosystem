@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:temporal": "vitest run --config vitest.integration.config.ts test/temporal.integration.spec.ts",
     "lint": "eslint src"
   },
   "dependencies": {

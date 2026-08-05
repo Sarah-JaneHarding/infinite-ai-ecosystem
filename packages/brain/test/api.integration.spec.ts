@@ -361,6 +361,135 @@ describe('explain()', () => {
     expect(chain[1]?.supersedes).toBeNull();
   });
 
+  // The exit gate asks for a complete chain "for every fact type" — five tiers. The two
+  // tests above cover L1_NODE and L0_CONSTITUTION; these three cover the rest.
+  it('walks an L1_EDGE correction chain back to its origin', async () => {
+    const { tenantId, actorId } = await seedTenant();
+
+    const { sourceId, targetId, originalEdgeId } = await withTenant(
+      { tenantId, actorId },
+      async (tx) => {
+        const source = await remember(tx, {
+          targetTier: 'L1_NODE',
+          rawPayload: { entityType: 'TOPIC', label: 'Edge chain source' },
+          source: 'test',
+        });
+        const target = await remember(tx, {
+          targetTier: 'L1_NODE',
+          rawPayload: { entityType: 'TOPIC', label: 'Edge chain target' },
+          source: 'test',
+        });
+        const edge = await remember(tx, {
+          targetTier: 'L1_EDGE',
+          rawPayload: {
+            sourceId: source.committedRowId,
+            targetId: target.committedRowId,
+            relation: 'related_to',
+          },
+          source: 'test',
+        });
+        return {
+          sourceId: source.committedRowId!,
+          targetId: target.committedRowId!,
+          originalEdgeId: edge.committedRowId!,
+        };
+      },
+    );
+
+    const corrected = await withTenant({ tenantId, actorId }, (tx) =>
+      supersede(tx, {
+        targetTier: 'L1_EDGE',
+        rawPayload: {
+          sourceId,
+          targetId,
+          relation: 'related_to',
+          supersedes: originalEdgeId,
+        },
+        source: 'test',
+      }),
+    );
+
+    const chain = await withTenant({ tenantId, actorId }, (tx) =>
+      explain(tx, 'L1_EDGE', corrected.committedRowId!),
+    );
+
+    expect(chain.map((f) => f.id)).toEqual([corrected.committedRowId, originalEdgeId]);
+    expect(chain[0]?.supersedes).toBe(originalEdgeId);
+    expect(chain[1]?.supersedes).toBeNull();
+  });
+
+  it('walks an L2_EPISODE correction chain back to its origin', async () => {
+    const { tenantId, actorId } = await seedTenant();
+
+    const original = await withTenant({ tenantId, actorId }, (tx) =>
+      remember(tx, {
+        targetTier: 'L2_EPISODE',
+        rawPayload: {
+          eventType: 'explain_test_event',
+          occurredAt: '2026-06-01T00:00:00.000Z',
+          summary: 'What we first thought happened.',
+        },
+        source: 'test',
+      }),
+    );
+
+    const corrected = await withTenant({ tenantId, actorId }, (tx) =>
+      supersede(tx, {
+        targetTier: 'L2_EPISODE',
+        rawPayload: {
+          eventType: 'explain_test_event',
+          occurredAt: '2026-06-01T00:00:00.000Z',
+          summary: 'What we now know actually happened.',
+          supersedes: original.committedRowId,
+        },
+        source: 'test',
+      }),
+    );
+
+    const chain = await withTenant({ tenantId, actorId }, (tx) =>
+      explain(tx, 'L2_EPISODE', corrected.committedRowId!),
+    );
+
+    expect(chain.map((f) => f.id)).toEqual([
+      corrected.committedRowId,
+      original.committedRowId,
+    ]);
+    expect(chain[0]?.supersedes).toBe(original.committedRowId);
+    expect(chain[1]?.supersedes).toBeNull();
+  });
+
+  it('walks an L3_PROCEDURE version chain back to its origin', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const ref = `explain_procedure_${randomUUID().slice(0, 8)}`;
+    const ratifiedAt = new Date('2026-05-01T00:00:00.000Z');
+
+    async function commitProcedure(content: unknown) {
+      const awaiting = await withTenant({ tenantId, actorId }, (tx) =>
+        remember(tx, {
+          targetTier: 'L3_PROCEDURE',
+          rawPayload: { kind: 'SOP', ref, content },
+          source: 'test',
+        }),
+      );
+      return withTenant({ tenantId, actorId }, (tx) =>
+        ratify(tx, awaiting.id, actorId, ratifiedAt),
+      );
+    }
+
+    await commitProcedure({ step: 'v1' });
+    const second = await commitProcedure({ step: 'v2' });
+
+    const chain = await withTenant({ tenantId, actorId }, (tx) =>
+      explain(tx, 'L3_PROCEDURE', second.committedRowId!),
+    );
+
+    expect(chain).toHaveLength(2);
+    expect(chain[0]?.version).toBe(2);
+    expect(chain[0]?.ratifiedBy).toBe(actorId);
+    expect(chain[1]?.version).toBe(1);
+    expect(chain[1]?.supersedes).toBeNull();
+  });
+
   it('throws for a fact that does not exist under the given tier', async () => {
     const { tenantId, actorId } = await seedTenant();
 
