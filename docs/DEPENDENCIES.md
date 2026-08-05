@@ -229,6 +229,15 @@ integration suite's Postgres, and `@opentelemetry/sdk-trace-base` (2.10.0, first
 Stage 04) for `InMemorySpanExporter`, proving the run's one `trace_id` lands on every step
 span the same way Stage 05 step 4's own integration suite already proves tracing.
 
+## Stage 06 step 5 — Human-in-the-loop gates
+
+No new dependency. `packages/db/src/approval.ts` and `packages/db/src/roles.ts` are new
+files, but both are built entirely on `@prisma/client` (already pinned) and this package's
+own `TenantClient`; `packages/orchestrator/src/runner.ts`'s `decideHumanGate` composes
+`zod` (already a runtime dependency of this package since step 4) for input validation and
+`@infinite-ai/db`'s own `appendAuditEvent` (Stage 05 step 7) for the decision's audit-event
+record — no package gained a dependency it did not already have.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

@@ -140,4 +140,18 @@ export {
   type StepRunOutcome,
 } from './orchestrator.js';
 
+export {
+  ApprovalPersistenceError,
+  decideApprovalTask,
+  getApprovalTask,
+  getApprovalTaskForStep,
+  openApprovalTask,
+  type ApprovalDecisionOutcome,
+  type ApprovalTaskRow,
+  type DecideApprovalTaskInput,
+  type OpenApprovalTaskInput,
+} from './approval.js';
+
+export { hasActiveRoleAssignment } from './roles.js';
+
 export const PACKAGE_NAME = '@infinite-ai/db' as const;

@@ -10,6 +10,7 @@
  */
 export const TENANT_OWNED_TABLES = [
   'academic_year',
+  'approval_task',
   'audit_event',
   'brain_constitution',
   'brain_edge',
@@ -74,7 +75,10 @@ export const NON_TENANT_TABLES = ['_prisma_migrations'] as const;
  * deliberately do not join this list. Both are workflow state — a fact still in flight,
  * and a conflict still awaiting a human's decision — not the fact itself, the same
  * distinction that keeps `data_subject_request` off this list while `consent_record`
- * is on it.
+ * is on it. `orchestrator_run`/`orchestrator_step_run` (Stage 06 step 4) and
+ * `approval_task` (Stage 06 step 5) follow the same reasoning: the permanent, immutable
+ * record that a `human_gate` decision was made is the `audit_event` row it also appends,
+ * not the task row itself.
  */
 export const APPEND_ONLY_TABLES = [
   'audit_event',

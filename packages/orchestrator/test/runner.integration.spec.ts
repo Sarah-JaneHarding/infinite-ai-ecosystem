@@ -9,17 +9,25 @@
 
 import { randomUUID } from 'node:crypto';
 
-import { disconnect, startStepRun, withTenant } from '@infinite-ai/db';
+import {
+  disconnect,
+  getApprovalTaskForStep,
+  startStepRun,
+  withTenant,
+} from '@infinite-ai/db';
 import { InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { createTracer } from '@infinite-ai/telemetry';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import type { PipelineDefinition } from '../src/dag.js';
 import {
+  OrchestratorRunnerError,
   advanceRun,
   cancelRun,
+  decideHumanGate,
   runToCompletion,
   startRun,
+  type ApprovalMaterialProvider,
   type StepExecutionContext,
 } from '../src/runner.js';
 import { startTestDatabase, type TestDatabase } from './support/database.js';
@@ -57,7 +65,33 @@ async function seedTenant(): Promise<{ tenantId: string; actorId: string }> {
   return { tenantId, actorId };
 }
 
+/** Creates a user account and grants it `role` in `tenantId` — what `decideHumanGate`'s
+ * own role check reads back via `hasActiveRoleAssignment`. */
+async function seedActorWithRole(
+  tenantId: string,
+  actorId: string,
+  role: string,
+): Promise<string> {
+  return withTenant({ tenantId, actorId }, async (tx) => {
+    const user = await tx.userAccount.create({
+      data: {
+        tenantId,
+        subject: `oidc-${randomUUID()}`,
+        email: `${role}-${randomUUID().slice(0, 8)}@example.test`,
+        displayName: `Test ${role}`,
+      },
+    });
+    await tx.roleAssignment.create({ data: { tenantId, userAccountId: user.id, role } });
+    return user.id;
+  });
+}
+
 const STEP_COMMON = { timeoutMs: 10_000, maxRetries: 2, compensatesWith: null };
+
+const prepareApproval: ApprovalMaterialProvider = () => ({
+  artefact: { draft: 'v2' },
+  evidence: { source: 'unit-test' },
+});
 
 describe('a linear pipeline of agent_call/tool_call steps', () => {
   it('runs to SUCCEEDED, and every step span carries the same trace id', async () => {
@@ -161,12 +195,14 @@ describe('a human gate', () => {
           calls += 1;
           return {};
         },
+        prepareApproval,
       });
       const second = await runToCompletion(tx, pipeline, run.id, {
         executeStep: async () => {
           calls += 1;
           return {};
         },
+        prepareApproval,
       });
       return { first, second };
     });
@@ -175,6 +211,310 @@ describe('a human gate', () => {
     expect(result.first.currentStepId).toBe('gate');
     expect(result.second.status).toBe('WAITING_FOR_APPROVAL');
     expect(calls).toBe(1); // only step-1 ran; the gate itself never calls the executor
+  });
+
+  it('opens the approval task with the artefact, evidence and required role supplied', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'gated-inspect-pipeline',
+      version: '1.0.0',
+      entryStepId: 'gate',
+      steps: {
+        gate: {
+          ...STEP_COMMON,
+          id: 'gate',
+          kind: 'human_gate',
+          requiredRole: 'hod',
+          next: null,
+        },
+      },
+    };
+
+    const task = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({}),
+        prepareApproval,
+      });
+      return getApprovalTaskForStep(tx, run.id, 'gate');
+    });
+
+    expect(task).not.toBeNull();
+    expect(task?.requiredRole).toBe('hod');
+    expect(task?.artefact).toEqual({ draft: 'v2' });
+    expect(task?.evidence).toEqual({ source: 'unit-test' });
+    expect(task?.decision).toBeNull();
+  });
+});
+
+describe('human gate decisions', () => {
+  function gatedPipeline(
+    id: string,
+    compensatesWith: string | null = null,
+  ): PipelineDefinition {
+    return {
+      id,
+      version: '1.0.0',
+      entryStepId: 'step-1',
+      steps: {
+        'step-1': {
+          ...STEP_COMMON,
+          id: 'step-1',
+          compensatesWith,
+          kind: 'agent_call',
+          agentId: 'CE-01',
+          next: 'gate',
+        },
+        gate: {
+          ...STEP_COMMON,
+          id: 'gate',
+          kind: 'human_gate',
+          requiredRole: 'hod',
+          next: 'step-2',
+        },
+        'step-2': {
+          ...STEP_COMMON,
+          id: 'step-2',
+          kind: 'agent_call',
+          agentId: 'CE-02',
+          next: null,
+        },
+      },
+    };
+  }
+
+  it('an approval proceeds to the next step', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const hodId = await seedActorWithRole(tenantId, actorId, 'hod');
+    const pipeline = gatedPipeline('approve-pipeline');
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      const executeStep = async () => ({});
+      await runToCompletion(tx, pipeline, run.id, { executeStep, prepareApproval });
+      await decideHumanGate(tx, run.id, {
+        outcome: 'APPROVED',
+        decidedBy: hodId,
+        reason: 'Looks correct.',
+      });
+      return runToCompletion(tx, pipeline, run.id, { executeStep, prepareApproval });
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(finished.succeededStepIds).toEqual(['step-1', 'gate', 'step-2']);
+  });
+
+  it('an edit proceeds to the next step and records the edit diff', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const hodId = await seedActorWithRole(tenantId, actorId, 'hod');
+    const pipeline = gatedPipeline('edit-pipeline');
+
+    const { finished, task } = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      const executeStep = async () => ({});
+      await runToCompletion(tx, pipeline, run.id, { executeStep, prepareApproval });
+      await decideHumanGate(tx, run.id, {
+        outcome: 'EDITED',
+        decidedBy: hodId,
+        reason: 'Fixed the wording.',
+        editDiff: { before: 'v2', after: 'v2-edited' },
+      });
+      const finished = await runToCompletion(tx, pipeline, run.id, {
+        executeStep,
+        prepareApproval,
+      });
+      const task = await getApprovalTaskForStep(tx, run.id, 'gate');
+      return { finished, task };
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(task?.decision).toBe('EDITED');
+    expect(task?.editDiff).toEqual({ before: 'v2', after: 'v2-edited' });
+  });
+
+  it('a rejection with nothing to compensate ends FAILED, not SUCCEEDED', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const hodId = await seedActorWithRole(tenantId, actorId, 'hod');
+    const pipeline = gatedPipeline('reject-pipeline');
+
+    let step2Calls = 0;
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      const executeStep = async (ctx: StepExecutionContext): Promise<unknown> => {
+        if (ctx.stepId === 'step-2') step2Calls += 1;
+        return {};
+      };
+      await runToCompletion(tx, pipeline, run.id, { executeStep, prepareApproval });
+      await decideHumanGate(tx, run.id, {
+        outcome: 'REJECTED',
+        decidedBy: hodId,
+        reason: 'Not ready.',
+      });
+      return runToCompletion(tx, pipeline, run.id, { executeStep, prepareApproval });
+    });
+
+    expect(finished.status).toBe('FAILED');
+    expect(step2Calls).toBe(0); // rejecting must never let the run proceed forward
+  });
+
+  it('a rejection rolls back an earlier step through compensation', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const hodId = await seedActorWithRole(tenantId, actorId, 'hod');
+    const pipeline = gatedPipeline('reject-compensates-pipeline', 'undo-1');
+    pipeline.steps['undo-1'] = {
+      ...STEP_COMMON,
+      id: 'undo-1',
+      kind: 'compensation',
+      compensatesStepId: 'step-1',
+      agentId: null,
+      toolName: 'release_resource',
+    };
+
+    const callOrder: string[] = [];
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      const executeStep = async (ctx: StepExecutionContext): Promise<unknown> => {
+        callOrder.push(ctx.stepId);
+        return {};
+      };
+      await runToCompletion(tx, pipeline, run.id, { executeStep, prepareApproval });
+      await decideHumanGate(tx, run.id, {
+        outcome: 'REJECTED',
+        decidedBy: hodId,
+        reason: 'Not ready.',
+      });
+      return runToCompletion(tx, pipeline, run.id, { executeStep, prepareApproval });
+    });
+
+    expect(finished.status).toBe('COMPENSATED');
+    expect(callOrder).toEqual(['step-1', 'undo-1']);
+  });
+});
+
+describe('human gate bypass vectors', () => {
+  function gatedPipeline(id: string): PipelineDefinition {
+    return {
+      id,
+      version: '1.0.0',
+      entryStepId: 'gate',
+      steps: {
+        gate: {
+          ...STEP_COMMON,
+          id: 'gate',
+          kind: 'human_gate',
+          requiredRole: 'hod',
+          next: null,
+        },
+      },
+    };
+  }
+
+  it('refuses a decision from an actor who does not hold the required role', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const teacherId = await seedActorWithRole(tenantId, actorId, 'teacher');
+    const pipeline = gatedPipeline('bypass-role-pipeline');
+
+    const { rejection, task } = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({}),
+        prepareApproval,
+      });
+      let rejection: unknown;
+      try {
+        await decideHumanGate(tx, run.id, {
+          outcome: 'APPROVED',
+          decidedBy: teacherId,
+          reason: 'I will approve this myself.',
+        });
+      } catch (error) {
+        rejection = error;
+      }
+      const task = await getApprovalTaskForStep(tx, run.id, 'gate');
+      return { rejection, task };
+    });
+
+    expect(rejection).toBeInstanceOf(OrchestratorRunnerError);
+    expect(task?.decision).toBeNull(); // the bypass attempt left nothing decided
+  });
+
+  it('refuses a second decision on an already-decided task', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const hodId = await seedActorWithRole(tenantId, actorId, 'hod');
+    const pipeline = gatedPipeline('bypass-double-decide-pipeline');
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({}),
+        prepareApproval,
+      });
+      await decideHumanGate(tx, run.id, {
+        outcome: 'APPROVED',
+        decidedBy: hodId,
+        reason: 'First decision.',
+      });
+      await expect(
+        decideHumanGate(tx, run.id, {
+          outcome: 'REJECTED',
+          decidedBy: hodId,
+          reason: 'Changed my mind.',
+        }),
+      ).rejects.toThrow(OrchestratorRunnerError);
+      const task = await getApprovalTaskForStep(tx, run.id, 'gate');
+      expect(task?.decision).toBe('APPROVED'); // the first decision, unchanged
+    });
+  });
+
+  it('refuses to decide a run that is not currently waiting for approval', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const hodId = await seedActorWithRole(tenantId, actorId, 'hod');
+    const pipeline = gatedPipeline('bypass-not-waiting-pipeline');
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      // Still PENDING — the run has not even reached the gate yet.
+      await expect(
+        decideHumanGate(tx, run.id, {
+          outcome: 'APPROVED',
+          decidedBy: hodId,
+          reason: 'Too early.',
+        }),
+      ).rejects.toThrow(OrchestratorRunnerError);
+    });
+  });
+
+  it('refuses a decision with no reason', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const hodId = await seedActorWithRole(tenantId, actorId, 'hod');
+    const pipeline = gatedPipeline('bypass-empty-reason-pipeline');
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({}),
+        prepareApproval,
+      });
+      await expect(
+        decideHumanGate(tx, run.id, {
+          outcome: 'APPROVED',
+          decidedBy: hodId,
+          reason: '',
+        }),
+      ).rejects.toThrow(OrchestratorRunnerError);
+    });
+  });
+
+  it('refuses to execute a human_gate step with no prepareApproval supplied', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline = gatedPipeline('bypass-no-prepare-pipeline');
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await expect(
+        runToCompletion(tx, pipeline, run.id, { executeStep: async () => ({}) }),
+      ).rejects.toThrow(OrchestratorRunnerError);
+    });
   });
 });
 
