@@ -1457,3 +1457,68 @@ above (a mis-scoping of an earlier slice's own reasoning, not a deviation from w
 itself asks for).
 
 Open questions raised: none.
+
+## Stage 06 — Agent runtime, Prompt Registry, DAG orchestrator, guardrails, HITL
+
+Started: 2026-08-05 Completed: —
+Exit gate: **PARTIAL** — step 1 (the Agent contract) is built and proven. Steps 2-10 are
+not started. `scripts/verify-stage.ts`'s `06` entry stays empty until they are.
+
+**What this slice put in place (step 1 — the Agent contract)**
+
+`packages/agents/src/contract.ts`: one Zod schema, `AgentContract`, covering every field
+the manual's own step 1 names — `id`, `version`, `module`, `purpose`, `inputSchema`,
+`outputSchema`, `promptRef`, `model`, `tools`, `guardrails`, `budget`, `evalSetRef`,
+`requiresApproval`, `writesToBrain` — plus `validateAgentContract`, the function that
+parses a candidate against it and throws `AgentContractError` naming exactly which field
+failed and why. "An agent that omits any field fails to register" (the manual's own text)
+is a registry behaviour, step 2's job; this step defines what "valid" means so step 2 has
+something real to call.
+
+**`inputSchema`/`outputSchema`/a tool's own `inputSchema` are validated as actual Zod
+schema instances, not just checked for presence.** These fields hold code (a `ZodType`),
+not JSON-shaped data, which is not the usual shape for a Zod-validated boundary. Rather
+than skip validating them or fall back to a bare presence check, the schema uses
+`z.instanceof(z.ZodType)` — true for any concrete Zod schema regardless of its own type
+(`ZodObject`, `ZodString`, whatever an agent author actually wrote) — so a placeholder
+plain object standing in for "the schema I'll write later" fails registration the same way
+a missing `budget` does, rather than compiling silently and only failing the first time
+something actually tries to `.parse()` it.
+
+**`module` and `guardrails`/`evalSetRef`/`promptRef` are validated as shapes, not against
+closed lists — deliberately, and for two different reasons.** `AgentModule` is a pattern
+(`MOD-\d{2}` or `LE`), not a closed enum of the five modules built so far: Part 5.2 names
+`MOD-06` and beyond as a real, anticipated extension ("a new module must supply its own
+agent set..."), the same reasoning `LogicalModel`'s own `domain.action` pattern (Stage 04)
+already gives for logical model names it cannot enumerate in advance either. `guardrails`,
+`evalSetRef` and `promptRef`, by contrast, reference subsystems this stage has not built
+yet (the Guardrail Engine, step 6; the Prompt Registry, step 3) or that a later stage owns
+entirely (the eval harness, Stage 07) — so today they are checked only for a valid _shape_
+(a non-empty string; an agent id and a semver pair), the same "declare now, cross-check for
+real existence once the owner exists" split Stage 05 already used for `retentionRuleId`
+and `dataCategory`. `AgentRegistry` (step 2) is a real, stated follow-up for tightening
+`promptRef` once step 3 exists; the eval-set check names a genuine cross-stage dependency
+(Stage 06 asking a Stage 07 artefact to exist) that cannot close until Stage 07 is reached,
+per rule 1.
+
+**`AgentBudget` is a different concept from the gateway's own `BudgetLimits`, not a
+duplicate of it.** `apps/gateway/src/budgets/budget.ts`'s `BudgetLimits` (Stage 04) is a
+tenant's own configurable daily/monthly aggregate spend ceiling, checked at the gateway
+before any provider call. `AgentContract`'s `budget` is a fixed property of the agent's
+own definition — a ceiling on what a single run may cost, declared by whoever builds the
+agent (CLAUDE.md's own Definition of Done: "adds an agent → ... and a cost budget") — and
+is not wired to anything that spends against it yet; that wiring is the orchestrator's
+job (step 4) once a run actually exists to charge one against.
+
+Proven by `packages/agents/test/contract.spec.ts`: a fully-declared contract round-trips
+through `validateAgentContract`; a contract with a declared tool round-trips too; and eight
+failure cases each name a distinct way a contract can be incomplete or malformed (a missing
+field entirely, an invalid `module`/`version`/`purpose`, a non-Zod `inputSchema`, a tool
+missing its own `inputSchema`, an unrecognised tool `sideEffect`, and an incomplete
+`budget`) — each asserted to throw `AgentContractError` specifically, not merely "an
+error."
+
+Deviations from manual: none. Step 1 asks for exactly this one file with exactly this
+field list, and that is what this slice built.
+
+Open questions raised: none.

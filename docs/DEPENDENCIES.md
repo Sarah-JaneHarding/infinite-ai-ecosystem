@@ -189,6 +189,15 @@ methods that library ships, not new surface added here. Everything else this ste
 (the temporal test, the episodes-specific policy-gate test, three more `explain()` chain
 tests) composes functions steps 2, 4, 6, 8 and 9 already built.
 
+## Stage 06 step 1 — the Agent contract
+
+No new dependency. `packages/agents` takes `@infinite-ai/contracts` (already pinned
+throughout the tree) as a real runtime dependency for the first time — for `Purpose` (the
+manual's own "purpose, from the taxonomy") and `LogicalModel` (Stage 04's own logical-model
+naming, reused rather than re-invented so an agent's `model` field can never name a
+concrete provider model). `zod` is pinned at the same version (`3.25.76`) every other
+package in the tree already uses.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.
