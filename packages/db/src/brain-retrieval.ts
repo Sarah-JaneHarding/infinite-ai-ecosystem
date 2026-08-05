@@ -13,7 +13,7 @@
 // `packages/db` — the shape the write path settled on — is worth more than honouring an
 // early guess; the schema comment is updated in the same commit as this file.
 
-import { Prisma, type BrainEntityType } from '@prisma/client';
+import { Prisma, type BrainConstitutionKind, type BrainEntityType } from '@prisma/client';
 
 import type { TenantClient } from './client.js';
 
@@ -271,6 +271,69 @@ export async function filterEpisodesByWindow(
       occurredAt: true,
       confidence: true,
     },
+  });
+  return rows;
+}
+
+// ---------------------------------------------------------------------------
+// L0 constitution and L3 exemplars — the two priority tiers step 5's packer
+// places around vector/graph/episodic candidates, but that nothing in step 4's
+// pipeline ever fetched. Neither is filtered by the intent router's plan:
+// ratified policy applies tenant-wide, not to one entity-type search.
+// ---------------------------------------------------------------------------
+
+export interface ConstitutionRow {
+  readonly id: string;
+  readonly key: string;
+  readonly kind: BrainConstitutionKind;
+  readonly version: number;
+  readonly content: unknown;
+  readonly ratifiedAt: Date;
+}
+
+/**
+ * Every effective (non-superseded) constitution row for the tenant. Unlike
+ * `findEffectiveBrainFact`'s single natural-key lookup, this is the whole ratified set —
+ * step 5 packs all of it ahead of everything else, since L0 "never expires" (step 8) and
+ * is not itself subject to relevance filtering the way L1/L2 candidates are.
+ */
+export async function listEffectiveConstitution(
+  tx: TenantClient,
+): Promise<readonly ConstitutionRow[]> {
+  const rows = await tx.brainConstitution.findMany({
+    where: { supersededByFacts: { none: {} } },
+    orderBy: { key: 'asc' },
+    select: {
+      id: true,
+      key: true,
+      kind: true,
+      version: true,
+      content: true,
+      ratifiedAt: true,
+    },
+  });
+  return rows;
+}
+
+export interface ExemplarRow {
+  readonly id: string;
+  readonly ref: string;
+  readonly version: number;
+  readonly content: unknown;
+  readonly ratifiedAt: Date;
+}
+
+/** Every effective (non-superseded) `EXEMPLAR`-kind procedure for the tenant. The other
+ * `BrainProcedureKind` values (prompt versions, pipeline definitions, SOPs, tool
+ * contracts) are Stage 06 machinery, not retrieval context — this deliberately reads
+ * only the one kind step 5's own text names. */
+export async function listEffectiveExemplars(
+  tx: TenantClient,
+): Promise<readonly ExemplarRow[]> {
+  const rows = await tx.brainProcedure.findMany({
+    where: { kind: 'EXEMPLAR', supersededByProcedures: { none: {} } },
+    orderBy: { ref: 'asc' },
+    select: { id: true, ref: true, version: true, content: true, ratifiedAt: true },
   });
   return rows;
 }

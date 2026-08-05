@@ -13,6 +13,8 @@ import {
   BrainRetrievalError,
   expandGraph,
   filterEpisodesByWindow,
+  listEffectiveConstitution,
+  listEffectiveExemplars,
   vectorTopK,
 } from '../src/brain-retrieval.js';
 import type { TenantClient } from '../src/client.js';
@@ -398,5 +400,97 @@ describe('filterEpisodesByWindow', () => {
         }),
       ),
     ).rejects.toThrow(BrainRetrievalError);
+  });
+});
+
+describe('listEffectiveConstitution', () => {
+  it('returns only the effective row for a key, never a superseded one', async () => {
+    const ratifiedBy = randomUUID();
+    const ratifiedAt = new Date('2026-01-01T00:00:00.000Z');
+    const key = `assessment_policy_${randomUUID().slice(0, 8)}`;
+
+    const { v2Id } = await asTenant(appRw, TENANT, ACTOR, async (tx) => {
+      const v1 = await commitBrainFact(tx, {
+        targetTier: 'L0_CONSTITUTION',
+        key,
+        kind: 'ASSESSMENT_POLICY',
+        content: { weighting: 'v1' },
+        ratifiedBy,
+        ratifiedAt,
+        createdBy: null,
+      });
+      const v2 = await commitBrainFact(tx, {
+        targetTier: 'L0_CONSTITUTION',
+        key,
+        kind: 'ASSESSMENT_POLICY',
+        content: { weighting: 'v2' },
+        ratifiedBy,
+        ratifiedAt,
+        createdBy: null,
+      });
+      expect(v2.version).toBe((v1.version ?? 0) + 1);
+      return { v2Id: v2.id };
+    });
+
+    const effective = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      listEffectiveConstitution(tx),
+    );
+
+    const row = effective.find((r) => r.key === key);
+    expect(row?.id).toBe(v2Id);
+  });
+});
+
+describe('listEffectiveExemplars', () => {
+  it('returns only EXEMPLAR-kind procedures, and only the effective version', async () => {
+    const ratifiedBy = randomUUID();
+    const ratifiedAt = new Date('2026-01-01T00:00:00.000Z');
+    const exemplarRef = `worked-example-${randomUUID().slice(0, 8)}`;
+    const promptRef = `agent-prompt-${randomUUID().slice(0, 8)}`;
+
+    const { supersededId, currentId } = await asTenant(
+      appRw,
+      TENANT,
+      ACTOR,
+      async (tx) => {
+        const superseded = await commitBrainFact(tx, {
+          targetTier: 'L3_PROCEDURE',
+          kind: 'EXEMPLAR',
+          ref: exemplarRef,
+          content: { text: 'first draft' },
+          ratifiedBy,
+          ratifiedAt,
+          createdBy: null,
+        });
+        const current = await commitBrainFact(tx, {
+          targetTier: 'L3_PROCEDURE',
+          kind: 'EXEMPLAR',
+          ref: exemplarRef,
+          content: { text: 'ratified version' },
+          ratifiedBy,
+          ratifiedAt,
+          createdBy: null,
+        });
+        // Not an exemplar — must never appear in listEffectiveExemplars' results.
+        await commitBrainFact(tx, {
+          targetTier: 'L3_PROCEDURE',
+          kind: 'PROMPT_VERSION',
+          ref: promptRef,
+          content: { text: 'a prompt, not an exemplar' },
+          ratifiedBy,
+          ratifiedAt,
+          createdBy: null,
+        });
+        return { supersededId: superseded.id, currentId: current.id };
+      },
+    );
+
+    const exemplars = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      listEffectiveExemplars(tx),
+    );
+
+    expect(exemplars.map((e) => e.id)).toContain(currentId);
+    expect(exemplars.map((e) => e.id)).not.toContain(supersededId);
+    expect(exemplars.find((e) => e.ref === promptRef)).toBeUndefined();
   });
 });
