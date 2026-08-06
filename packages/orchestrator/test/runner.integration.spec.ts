@@ -19,6 +19,7 @@ import { InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-tr
 import { createTracer } from '@infinite-ai/telemetry';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
+import { ConcurrencyLimiter } from '../src/concurrency.js';
 import { PipelineDagError, type PipelineDefinition } from '../src/dag.js';
 import {
   OrchestratorRunnerError,
@@ -823,5 +824,88 @@ describe('startRun’s optional irreversible-tool gating (Stage 06 step 7)', () 
       startRun(tx, pipeline, {}, randomUUID(), actorId),
     );
     expect(run.status).toBe('PENDING');
+  });
+});
+
+describe('concurrency limiting (Stage 06 step 8)', () => {
+  it('makes no progress on an agent_call step while its agent is at capacity', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'concurrency-pipeline',
+      version: '1.0.0',
+      entryStepId: 'step-1',
+      steps: {
+        'step-1': {
+          ...STEP_COMMON,
+          id: 'step-1',
+          kind: 'agent_call',
+          agentId: 'CE-01',
+          next: null,
+        },
+      },
+    };
+    const limiter = new ConcurrencyLimiter({ maxPerTenant: 10, maxPerAgent: 1 });
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+
+      // Occupy the one slot this agent has, as if another run's step were already
+      // executing — the deterministic way to prove the wiring without a real race.
+      const heldSlot = limiter.tryAcquire(tenantId, 'CE-01')!;
+
+      let calls = 0;
+      const blocked = await advanceRun(tx, pipeline, run.id, {
+        executeStep: async () => {
+          calls += 1;
+          return {};
+        },
+        concurrencyLimiter: limiter,
+      });
+      expect(blocked.status).toBe('PENDING');
+      expect(blocked.currentStepId).toBeNull();
+      expect(calls).toBe(0);
+
+      heldSlot.release();
+
+      const finished = await runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => {
+          calls += 1;
+          return {};
+        },
+        concurrencyLimiter: limiter,
+      });
+      expect(finished.status).toBe('SUCCEEDED');
+      expect(calls).toBe(1);
+    });
+  });
+
+  it('does not limit tool_call steps, which have no agent to key on', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'concurrency-tool-pipeline',
+      version: '1.0.0',
+      entryStepId: 'step-1',
+      steps: {
+        'step-1': {
+          ...STEP_COMMON,
+          id: 'step-1',
+          kind: 'tool_call',
+          toolName: 'publish',
+          next: null,
+        },
+      },
+    };
+    // A limiter with zero capacity would refuse every agent_call outright; a tool_call
+    // must still proceed since it has no agentId to check against.
+    const limiter = new ConcurrencyLimiter({ maxPerTenant: 0, maxPerAgent: 0 });
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      return runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({}),
+        concurrencyLimiter: limiter,
+      });
+    });
+    expect(finished.status).toBe('SUCCEEDED');
   });
 });

@@ -266,6 +266,19 @@ rather than a dependency on `@infinite-ai/agents` — see `docs/STAGE_LOG.md`'s 
 for why a cross-package dependency between two peer packages in the same architectural
 layer was the wrong shape here.
 
+## Stage 06 step 8 — Cost and rate control
+
+No new dependency. `packages/orchestrator/src/concurrency.ts` and `fairness.ts` are new
+files holding only plain in-memory data structures (`Map`, arrays) — no package needed for
+either. `apps/gateway/src/circuit-breaker.ts` is the same: a hand-written state machine,
+no dependency added. A production-grade circuit-breaker or rate-limiting library (e.g.
+`opossum`, `cockatiel`, `bottleneck`) was considered and rejected for the same reason
+`packages/brain`'s own token estimate stayed a one-line heuristic rather than pulling in a
+tokenizer: the state machine step 8 actually needs (three states, one threshold, one
+cooldown) is small enough that a library would trade a real dependency (a licence to
+track, a supply-chain surface, an API to learn) for less clarity than fifty lines of plain
+TypeScript this team already owns end to end.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

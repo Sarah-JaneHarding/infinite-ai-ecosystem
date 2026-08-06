@@ -16,6 +16,13 @@
 // a map out into per-item runs — a stated follow-up, not silently dropped (see
 // `docs/STAGE_LOG.md`).
 //
+// `concurrencyLimiter` (Stage 06 step 8) is optional too, and checked only for
+// `agent_call` steps — see `concurrency.ts`'s own header for why a refusal is "no
+// progress" rather than a failure. Queue fairness, step 8's other named requirement, is a
+// scheduler concern this runner does not have (nothing here decides which *run* to advance
+// next, only what one call does for the run it is given) — `fairness.ts`'s
+// `selectNextFairly` is the algorithm a real scheduler will call once one exists.
+//
 // `startRun`'s own `isIrreversibleTool` (Stage 06 step 7) is optional: supplying it runs
 // `validatePipelineGating` (`dag.ts`) before the run is ever opened, so a pipeline that can
 // reach an irreversible tool call without a preceding `human_gate` never gets as far as
@@ -58,6 +65,7 @@ import {
 import { NOOP_TRACER, type Tracer } from '@infinite-ai/telemetry';
 import { z } from 'zod';
 
+import type { ConcurrencyLimiter, ConcurrencySlot } from './concurrency.js';
 import {
   validatePipelineDag,
   validatePipelineGating,
@@ -123,6 +131,9 @@ export interface RunnerOptions {
   readonly executeStep: StepExecutor;
   readonly evaluateCondition?: ConditionEvaluator;
   readonly prepareApproval?: ApprovalMaterialProvider;
+  /** Caps concurrent `agent_call`/agent-compensation execution per tenant and per agent
+   * (Stage 06 step 8). Omitted means unlimited — every existing call site, unchanged. */
+  readonly concurrencyLimiter?: ConcurrencyLimiter;
   readonly retryBaseMs?: number;
   readonly retryMaxMs?: number;
   readonly random?: () => number;
@@ -440,6 +451,17 @@ async function executeForwardStep(
   options: RunnerOptions,
   now: Date,
 ): Promise<OrchestratorRunRow> {
+  // Stage 06 step 8: "per-tenant and per-agent concurrency limits." Only `agent_call`
+  // steps have an agent to key on; a refusal here is "no progress this call," the same
+  // idiom a retry-not-yet-due or a still-running step's own timeout already use — nothing
+  // is written, no step-run row is even created, and a later call (once some other run
+  // has released a slot) may succeed.
+  let concurrencySlot: ConcurrencySlot | null = null;
+  if (step.kind === 'agent_call' && options.concurrencyLimiter !== undefined) {
+    concurrencySlot = options.concurrencyLimiter.tryAcquire(run.tenantId, step.agentId);
+    if (concurrencySlot === null) return run;
+  }
+
   const tracer = options.tracer ?? NOOP_TRACER;
   const stepRun = await startStepRun(tx, run.id, step.id, attempt, run.input, now);
   const span = tracer.startSpan(`orchestrator.step.${step.kind}`, {
@@ -464,6 +486,7 @@ async function executeForwardStep(
     return await handleFailure(tx, pipeline, run, step, attempt, message, options, now);
   } finally {
     span.end();
+    concurrencySlot?.release();
   }
 }
 

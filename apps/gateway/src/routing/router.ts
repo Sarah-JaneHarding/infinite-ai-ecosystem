@@ -6,10 +6,19 @@
 // credential — is not retried, because trying the next provider would not help and would
 // hide the real problem. When a link's own credential pool has nothing available, that is
 // itself treated as retryable and the router moves on rather than failing the whole chain.
+//
+// `circuitBreaker` (Stage 06 step 8) is optional: every existing caller that omits it sees
+// no change in behaviour. Supplied, it is checked before a link is even attempted — an
+// open breaker is treated exactly like "no credential available" (retryable, move to the
+// next link) — and reported to after every attempt: a success closes it, a retryable
+// failure counts against it. A non-retryable `AdapterError` (`invalid_request`,
+// `unauthorized`) is never reported, the same distinction `circuit-breaker.ts`'s own header
+// draws between a provider problem and a request or credential one.
 
 import type { ChatCompletionRequest, EmbeddingsRequest } from '@infinite-ai/contracts';
 import type { Logger, Span } from '@infinite-ai/telemetry';
 
+import type { CircuitBreaker } from '../circuit-breaker.js';
 import {
   type CredentialPool,
   NoCredentialAvailableError,
@@ -29,6 +38,7 @@ export interface RouterDeps {
   readonly credentialPools: Readonly<Record<string, CredentialPool>>;
   readonly routing: Readonly<Record<string, readonly RoutingLink[]>>;
   readonly logger?: Logger;
+  readonly circuitBreaker?: CircuitBreaker;
 }
 
 export class UnknownLogicalModelError extends Error {
@@ -111,6 +121,20 @@ export function createRouter(deps: RouterDeps): {
       const adapter = deps.adapters[link.provider]!;
       const pool = deps.credentialPools[link.provider]!;
 
+      if (deps.circuitBreaker?.allowsRequest(link.provider) === false) {
+        attempts.push({ provider: link.provider, reason: 'circuit open' });
+        deps.logger?.warn('gateway.fallback', {
+          logicalModel,
+          provider: link.provider,
+          reason: 'circuit_open',
+        });
+        span?.addEvent('gateway.fallback', {
+          provider: link.provider,
+          reason: 'circuit_open',
+        });
+        continue;
+      }
+
       let credentialHandle: CredentialHandle;
       try {
         credentialHandle = pool.take();
@@ -133,10 +157,12 @@ export function createRouter(deps: RouterDeps): {
 
       try {
         const result = await call(adapter, link, credentialHandle.reveal());
+        deps.circuitBreaker?.recordSuccess(link.provider);
         return { result, provider: link.provider };
       } catch (error) {
         if (error instanceof AdapterError) {
           if (error.kind === 'rate_limited') pool.reportRateLimited(credentialHandle);
+          if (error.retryable) deps.circuitBreaker?.recordFailure(link.provider);
           attempts.push({ provider: link.provider, reason: error.kind });
           deps.logger?.warn('gateway.fallback', {
             logicalModel,
@@ -183,6 +209,15 @@ export function createRouter(deps: RouterDeps): {
       const adapter = deps.adapters[link.provider]!;
       const pool = deps.credentialPools[link.provider]!;
 
+      if (deps.circuitBreaker?.allowsRequest(link.provider) === false) {
+        attempts.push({ provider: link.provider, reason: 'circuit open' });
+        span?.addEvent('gateway.fallback', {
+          provider: link.provider,
+          reason: 'circuit_open',
+        });
+        continue;
+      }
+
       let credentialHandle: CredentialHandle;
       try {
         credentialHandle = pool.take();
@@ -205,6 +240,7 @@ export function createRouter(deps: RouterDeps): {
       } catch (error) {
         if (error instanceof AdapterError) {
           if (error.kind === 'rate_limited') pool.reportRateLimited(credentialHandle);
+          if (error.retryable) deps.circuitBreaker?.recordFailure(link.provider);
           attempts.push({ provider: link.provider, reason: error.kind });
           deps.logger?.warn('gateway.fallback', {
             logicalModel,
@@ -221,6 +257,7 @@ export function createRouter(deps: RouterDeps): {
       }
 
       // Committed to this link now — no further fallback is possible.
+      deps.circuitBreaker?.recordSuccess(link.provider);
       if (!first.done) yield { event: first.value, provider: link.provider };
       for await (const event of generator) {
         yield { event, provider: link.provider };

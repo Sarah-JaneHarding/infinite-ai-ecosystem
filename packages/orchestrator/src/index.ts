@@ -31,6 +31,14 @@ export {
 } from './run-state-machine.js';
 
 export {
+  ConcurrencyLimiter,
+  type ConcurrencyLimits,
+  type ConcurrencySlot,
+} from './concurrency.js';
+
+export { selectNextFairly, type FairnessCandidate } from './fairness.js';
+
+export {
   OrchestratorRunnerError,
   advanceRun,
   cancelRun,

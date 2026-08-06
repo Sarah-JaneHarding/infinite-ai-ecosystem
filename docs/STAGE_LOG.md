@@ -1463,8 +1463,8 @@ Open questions raised: none.
 Started: 2026-08-05 Completed: —
 Exit gate: **PARTIAL** — steps 1 (the Agent contract), 2 (the Agent Registry), 3 (the
 Prompt Registry), 4 (the DAG orchestrator), 5 (Human-in-the-loop gates), 6 (the Guardrail
-engine) and 7 (the Tool registry) are built and proven. Steps 8-10 are not started.
-`scripts/verify-stage.ts`'s `06` entry stays empty until they are.
+engine), 7 (the Tool registry) and 8 (Cost and rate control) are built and proven. Steps
+9-10 are not started. `scripts/verify-stage.ts`'s `06` entry stays empty until they are.
 
 **What this slice put in place (step 1 — the Agent contract)**
 
@@ -2012,5 +2012,99 @@ Deviations from manual: none. Step 7 names the declaration shape (already built)
 registry, and the one enforcement rule; this slice builds exactly that, plus the
 cross-package callback shape the manual's own text does not specify but the layer diagram
 already implies.
+
+Open questions raised: none.
+
+**What this slice put in place (step 8 — Cost and rate control)**
+
+"Per-tenant and per-agent concurrency limits, queue fairness so one large tenant cannot
+starve others, and a circuit breaker per provider." Greenfield: nothing in the repo built
+any part of this before this step — confirmed by a repo-wide search for concurrency,
+semaphore, rate-limit, circuit-breaker and fairness concepts before writing anything, the
+same "check what already exists before inventing" discipline every step this stage has
+followed.
+
+`packages/orchestrator/src/concurrency.ts`: `ConcurrencyLimiter`, a plain in-memory counter
+keyed separately by tenant and by agent. `tryAcquire` refuses (`null`) once either cap is
+reached; a refusal is treated exactly like a retry not yet due or a step still within its
+timeout — no progress this call, not a failure, the same resumability idiom the rest of
+this runner already uses, so a caller polling back later (once some other run has released
+a slot) needs no new run status to understand what happened. Wired into `runner.ts`'s
+`executeForwardStep` as a new, optional `RunnerOptions.concurrencyLimiter`: checked only
+for `agent_call` steps (the only step kind with an agent to key on — a `tool_call` has no
+"per-agent" dimension to limit), acquired before a step-run row is even created and
+released in the same `finally` that already ends the tracer span. Single-process only, the
+same documented limitation `apps/gateway`'s own `BudgetTracker` and `CredentialPool`
+already carry — a shared limit across multiple worker processes needs a store every
+process can see (Redis), a stated follow-up rather than a silent gap.
+
+`packages/orchestrator/src/fairness.ts`: `selectNextFairly`, a pure round-robin-by-tenant
+selector — not by run. **A real scheduler that repeatedly decides which pending run to
+advance next does not exist yet**, for the same reason Stage 06 step 4 already gave for
+deferring BullMQ: `apps/worker` is still a stub with no queue consumer, confirmed fresh for
+this step. Building a scheduler with no real queue behind it would be scaffolding with
+nothing to prove against; the fairness _algorithm_ that scheduler will need does not have
+that problem, and is proven entirely on its own — a tenant with a thousand pending runs is
+served no more often per rotation than a tenant with one, the manual's own concern made
+concrete in `test/fairness.spec.ts`'s "a large tenant never delays a small tenant beyond
+one turn."
+
+`apps/gateway/src/circuit-breaker.ts`: `CircuitBreaker`, a real closed → open → half-open
+state machine per provider. Closed counts consecutive provider-health failures; reaching
+`failureThreshold` opens the breaker for `openDurationMs`, during which every request to
+that provider is refused before ever reaching it; once the cooldown elapses, exactly one
+half-open trial is allowed — a success closes the breaker and resets its count, a failure
+reopens it immediately for a fresh cooldown without needing the threshold again. The
+open-to-half-open transition happens the moment a real caller asks and the cooldown has
+already elapsed, rather than on a timer this class would otherwise have to run itself.
+Wired into `routing/router.ts`'s `attemptChain` and `attemptStreamChain` (both the
+non-streaming and streaming fallback paths): an open breaker is treated exactly like "no
+credential available" — retryable, move to the next link — and every attempt reports back
+(`recordSuccess`/`recordFailure`) so the breaker's state reflects real traffic. `RouterDeps.
+circuitBreaker` is optional; every existing caller and test that omits it sees no change in
+behaviour. Wired for real in `apps/gateway/src/index.ts`'s own boot script (`failure
+Threshold: 5`, `openDurationMs: 30_000` — a sane starting default, documented as such, not
+a ratified SLO).
+
+**Only the same three retryable `AdapterError` kinds `router.ts`'s own fallback chain
+already retries on count against the breaker** — `rate_limited`, `unavailable`, `timeout`.
+An `invalid_request` means the request itself was malformed, not that the provider is
+unhealthy; `unauthorized` is a credential problem, not a provider one. Neither opens the
+breaker, the same distinction the fallback chain already draws between "try the next
+provider" and "stop, this will not get better by retrying."
+
+**This complements, rather than replaces, `credentials/pool.ts`'s own per-credential
+cooldown, already built in Stage 04.** That is "this one credential just got rate-limited,"
+scoped to a single key with a fixed cooldown clock; this is "this provider, in aggregate,
+looks unhealthy right now," scoped to every caller routing through it, opened only after a
+run of consecutive failures. Both fire independently and neither depends on the other.
+
+Proven by: `packages/orchestrator/test/concurrency.spec.ts` (grants under both limits,
+refuses at either cap independently, releases on demand, idempotent release, tenants and
+agents tracked independently, zero for a name never seen);
+`packages/orchestrator/test/fairness.spec.ts` (the empty-candidates case, a single tenant,
+round-robin rotation across three candidates, the thousand-vs-one starvation case, a
+tenant skipped when it has nothing pending and picked up again once it does, and an
+unrecognised `lastServedTenantId` treated as "nothing served yet");
+`packages/orchestrator/test/runner.integration.spec.ts`'s new describe block (an
+`agent_call` step makes no progress while its agent is at capacity, then proceeds once the
+slot is released; a `tool_call` step is unaffected by a zero-capacity limiter, having no
+agent to key on) against a real Postgres; `apps/gateway/test/circuit-breaker.spec.ts` (every
+state transition: closed staying closed below threshold, a success resetting the count,
+providers tracked independently, opening at threshold and refusing further requests, the
+half-open window allowing exactly one trial, a successful trial closing the breaker, and a
+failed trial reopening immediately without needing the threshold again); and four new cases
+in `apps/gateway/test/routing/router.spec.ts` proving the wiring itself — a retryable
+failure opens the breaker while a success on another link closes it, an already-open
+breaker causes its own link's adapter to never be called at all, a non-retryable error
+leaves the breaker closed, and omitting `circuitBreaker` entirely behaves exactly as
+before. All existing gateway and orchestrator tests continue to pass unchanged.
+
+Deviations from manual: none in what each mechanism does. Queue fairness is proven as an
+algorithm rather than as a running scheduler, for the same, already-precedented reason
+BullMQ wiring itself remains deferred — there is still no real queue consumer for a
+scheduler to run inside. This is a stated scope boundary, not a silent gap: the exact
+follow-up (wire `apps/worker`, then call `selectNextFairly` from within it) is named, not
+guessed at.
 
 Open questions raised: none.

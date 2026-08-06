@@ -37,6 +37,7 @@ import { createOpenAiCompatibleAdapter } from './adapters/openai-compatible.js';
 import type { FetchLike, ProviderAdapter } from './adapters/types.js';
 import { BudgetTracker } from './budgets/budget.js';
 import { GatewayCache } from './cache/cache.js';
+import { CircuitBreaker } from './circuit-breaker.js';
 import { loadGatewayEnv } from './config/env.js';
 import { CredentialPool } from './credentials/pool.js';
 import {
@@ -176,11 +177,20 @@ export function boot(
     });
   }
 
+  // Five consecutive provider-health failures open the breaker for 30s before a single
+  // half-open trial — a sane starting default, not a ratified SLO; tune once real traffic
+  // gives this something to tune against (Stage 06 step 8).
+  const circuitBreaker = new CircuitBreaker({
+    failureThreshold: 5,
+    openDurationMs: 30_000,
+  });
+
   const router = createRouter({
     adapters,
     credentialPools,
     routing: loadRouting(gatewayEnv),
     logger,
+    circuitBreaker,
   });
 
   const tracer = buildTracer(env);
