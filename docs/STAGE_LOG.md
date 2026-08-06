@@ -2243,8 +2243,9 @@ Open questions raised: none.
 ## Stage 07 — Eval harness and golden sets
 
 Started: 2026-08-06 Completed: —
-Exit gate: **PARTIAL** — step 1 (the eval case format) is built and proven. Steps 2-8 are
-not started. `scripts/verify-stage.ts`'s `07` entry stays empty until they are.
+Exit gate: **PARTIAL** — all eight steps are built and proven; two of the four named exit
+gate items cannot be met yet for reasons outside this stage's own control, not for
+anything left undone here. See the exit-gate walk at the end of this section.
 
 **What this slice put in place (step 1 — the eval case format)**
 
@@ -2480,3 +2481,200 @@ provable, including the required "a rejected promotion" case — several of them
 isolating one gate.
 
 Open questions raised: none.
+
+**What this slice put in place (step 5 — wiring CI)**
+
+"On any change to a prompt, agent, guardrail or retrieval code, run the affected eval
+sets. Fail the build on regression beyond the declared tolerance." Four pieces:
+`discovery.ts` finds golden sets on disk, `affected.ts` classifies which agent(s) a changed
+file touches, `gate.ts` is the tolerance-based pass/fail decision, and two real CLI
+scripts (`scripts/evals-run.ts`, `scripts/evals-gate.ts`) are what `pnpm evals:run --all`
+and `pnpm evals:gate` — the manual's own verification lines — actually invoke, wired into
+`.github/workflows/ci.yml` as a real step in the main verify job.
+
+**Golden sets live as plain JSON files** under `packages/evals/sets/<agent-id>/*.json`, one
+file holding one array of cases, loaded and validated through `validateEvalCase` the moment
+they're discovered — the same "human-editable, reviewed in a diff" reasoning a prompt file
+itself already gets, deliberately not a database table nobody reviews a change to.
+`packages/evals/champions/<agent-id>.json` is the matching store for a baseline result
+(`champion-store.ts`) — what `evaluateGate` and `decidePromotion` (step 4) both compare a
+challenger against. Both directories are empty today and committed with a `README.md`
+explaining why, the same "the mechanism is real, there is nothing to populate it with yet"
+shape this build has used since Stage 06 step 4's own BullMQ deferral.
+
+**`evaluateGate` is deliberately not `decidePromotion` reused with the human-review gate
+stripped out.** A CI gate runs on every push, unattended, deciding only "may this land," not
+"should this become the champion" — conflating the two would make an automated push able to
+silently swap the champion prompt, exactly the kind of HITL bypass rule 6 forbids. It reuses
+`diffAgainstChampion` and `MUST_NOT_REGRESS_TAG` for the one check that has zero tolerance
+(any `must_not_regress` case regressing fails outright, regardless of the declared
+pass-rate tolerance) and adds the one check that has a real, declared number: how far
+`passRate` may drop (`RegressionTolerance.maxPassRateDrop`, `0.05` as wired into
+`scripts/evals-gate.ts` today) before the build fails.
+
+**`AgentExecutorRegistry`** (`agent-executors.ts`) is the missing piece both CLI scripts
+need and nothing in this build can supply yet: a way to actually call a real agent. No
+module has one — Stage 08 is the first — so the registry starts empty, and both scripts
+treat a golden set with no registered executor as a skip, not a failure: there is nothing
+to run it against yet, an honest and expected state, not a broken one. `evals:run --all`
+and `pnpm evals:gate` were run for real against this empty repo and both exit `0` reporting
+"nothing to run"/"nothing to gate" — proving the wiring works today, even though there is
+nothing yet for it to actually gate.
+
+**Incremental "only the affected sets" narrowing is built and proven, but not wired into
+either CLI script.** `affectedAgentIds` classifies a changed-file list correctly (a
+prompt or agent-contract file names one specific agent; a guardrails/brain/policy/deident
+file is cross-cutting and returns `'all'`) and is fully unit-tested, but actually computing
+"which files changed" needs a real `git diff` against a base ref — wiring that in is a
+real future optimisation this slice chose not to build, since a full run of an empty (or,
+later, still-small) golden-set tree costs nothing to run in full today. `evals-gate.ts`'s
+own header names this choice explicitly rather than leaving it a silent gap.
+
+Proven by: `packages/evals/test/discovery.spec.ts` (empty-array for a missing directory,
+filename-ordered loading across multiple files, non-JSON files ignored, a malformed file
+and a malformed case both throwing `EvalDiscoveryError` naming the file/index);
+`packages/evals/test/affected.spec.ts` (every classification branch, deduplication, and
+`'all'` winning the moment any cross-cutting file appears alongside specific matches);
+`packages/evals/test/gate.spec.ts` (no baseline passes, an unchanged or improved pass rate
+passes, a within-tolerance drop passes, a beyond-tolerance drop fails, a
+`must_not_regress` regression fails outright even within pass-rate tolerance, an untagged
+regression alone does not fail, and both checks are reported together when both apply);
+`packages/evals/test/agent-executors.spec.ts` (registration, retrieval, refusing a
+duplicate registration, sorted listing); and a real run of both CLI scripts against the
+actual (empty) repository tree, confirmed to exit `0` with an honest "nothing found/nothing
+to run" report.
+
+Deviations from manual: none in what is checked. The affected-files narrowing is built as a
+proven, reusable function rather than wired end-to-end into the CI scripts themselves — a
+stated, reasoned scope boundary (see above), not a silent gap.
+
+Open questions raised: none.
+
+**What this slice put in place (step 6 — the golden-set growth loop)**
+
+"Every human rejection or material edit in a HITL gate becomes a candidate eval case,
+de-identified, reviewed, then added with `source: correction`." Built as two functions in
+`growth-loop.ts` with a real human required in between, matching the manual's own
+three-step description exactly: `buildCorrectionCandidate` turns a rejected or edited
+`human_gate` decision (Stage 06 step 5's own `HumanGateDecisionInput` outcome) into a
+`CorrectionCandidate` — de-identified, `reviewed: false` — and `acceptCorrectionCandidate`
+is the "reviewed, then added" half, taking real `expectations` a human supplied and only
+then producing a validated `EvalCase` with `source: 'correction'`.
+
+**A candidate deliberately has no `expectations` of its own.** Guessing what a rejection or
+an edit diff implies the case should assert — which of the nine scorers, with what
+parameters — would misrepresent this pipeline's own automated output as a human's actual
+review judgment, exactly the mistake "reviewed" in the manual's own text exists to prevent.
+A candidate is real, de-identified, and traceable back to its own HITL decision; it is not
+yet a case, and cannot become one without a human filling in what it should check.
+
+**De-identification is injected, not built here.** `packages/deident`'s own `scrub`
+operates on text against a tenant lexicon that requires a live tenant context this pure
+function does not have and should not reach for itself — `packages/evals` has no
+dependency on `packages/db`, and pulling one in for a single pipeline's own de-identify
+step would be a real layering cost for one call site. A real caller, already inside a
+tenant transaction with a real lexicon, is what wires `scrub` in for real; this file only
+guarantees every field that could carry a learner's own words (`input`, `context`,
+`editDiff`) goes through the same function, independently, so a candidate is never only
+partly de-identified.
+
+Proven by `packages/evals/test/growth-loop.spec.ts` — 7 tests: `input`/`context`/
+`editDiff` each de-identified independently; a fresh candidate always `reviewed: false`;
+`editDiff` stays `null` for a `REJECTED` decision (nothing to diff); the decision and
+reason carried through unchanged; `acceptCorrectionCandidate` producing a real `EvalCase`
+with `source: 'correction'`; optional `rubric`/`tags` carried through; and an empty
+`expectations` array refused the same way `validateEvalCase` itself already refuses one.
+
+Deviations from manual: none. The three named steps (candidate, de-identified, reviewed,
+added) are all present; de-identification's real implementation is injected for the stated
+layering reason, the same pattern this build uses throughout rather than a silent gap.
+
+Open questions raised: none.
+
+**What this slice put in place (step 7 — the permanent safety set)**
+
+"Add safety evals as a permanent set, run on every change regardless of what changed: PII
+egress, prompt injection, diagnosis-refusal, age-appropriateness, safeguarding escalation,
+cross-tenant leakage." What actually constitutes an unsafe response in each of these six
+categories is not this file's content to invent — the exact same reasoning
+`docs/OPEN_QUESTIONS.md` OQ-014/OQ-015 already give for why the guardrail engine's own
+age-appropriateness and escalation checks take an injected checker rather than a built-in
+rule, extended here to the eval side of the same six categories. What this slice builds for
+real: `buildSafetyCase`, a validated constructor that tags a case with its own category
+(from `SAFETY_TAGS`, step 1) so every safety case in the tree stays reliably findable
+regardless of who wrote its actual payload and expectations, and — the part that makes "run
+on every change regardless of what changed" literally true — `selectCasesToRun`, which
+unions whatever `affectedAgentIds` (step 5) already selected with every safety-tagged case,
+from any agent, unconditionally. A safety case is never excluded by the affected-files
+classification, and never needs that classification to name it to be included.
+
+Proven by `packages/evals/test/safety-set.spec.ts` — 9 tests: `buildSafetyCase` tags
+correctly, appends `extraTags`, and refuses a malformed candidate the same way
+`validateEvalCase` does; `isSafetyCase`/`selectSafetyCases` identify and filter correctly;
+and `selectCasesToRun` proven for all four real shapes — `'all'` returns everything, a
+specific affected list includes only those agents' own cases, a safety-tagged case for an
+_unaffected_ agent is still included, and a case that is neither affected nor safety-tagged
+is excluded.
+
+Deviations from manual: none in the mechanism. The six categories' own real payloads and
+expectations are not populated here — there is no agent yet to test them against (Stage 08
+is the first), and inventing safeguarding content without a ratified source is exactly what
+rule 0.3 already forbids elsewhere in this build. `buildSafetyCase` is what a module
+populates once it has both a real agent and a real safety policy to test against.
+
+Open questions raised: none (the underlying content gap is already OQ-014/OQ-015).
+
+**What this slice put in place (step 8 — the eval dashboard)**
+
+"Publish an eval dashboard: per agent, score over time, cost over time, champion history."
+`buildAgentDashboard` (`dashboard.ts`) assembles all three named series from a run history
+a caller already has on hand — it publishes nothing itself. No page renders this yet:
+`apps/web` has no eval surface built, the exact same "backend data shape now, the UI
+surface once one exists" split Stage 06 step 9 already drew between `inspectRun` and the
+Run Inspector's own eventual screen — a module's own admin surface, or Stage 14's
+"experience surfaces," is what will eventually call this and render it, not this stage.
+
+`scoreOverTime`/`costOverTime` come from every run in the supplied history, oldest first;
+`championHistory` comes only from runs that were actually submitted for promotion (most
+runs never are — `decidePromotion`, step 4, is only called for a challenger a team actually
+wants to ship), carrying `PromotionVerdict`'s own refusals through for a rejected entry.
+Every history entry must belong to the `agentId` the dashboard is being built for — a
+caller mixing runs from more than one agent into one history is a real bug, refused rather
+than silently mislabelling whose scores a chart is showing.
+
+Proven by `packages/evals/test/dashboard.spec.ts` — 5 tests: score/cost series sorted
+oldest-first regardless of input order; champion history including only
+promotion-submitted runs; a rejected entry carrying its own refusals through; a
+wrong-agent entry refused; and an empty history producing empty series rather than an
+error.
+
+Deviations from manual: none. All three named views exist; publishing them is explicitly
+out of scope for this stage, the same UI-surface boundary already drawn for the Run
+Inspector.
+
+Open questions raised: none.
+
+**Exit gate items proven**
+
+| Gate item                                                                    | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Harness runs the reference pipeline's agents                                 | **NOT MET, structurally.** The reference pipeline named in Stage 06's own exit gate ("three agents, one human gate, one compensation path") has no real agent implementations anywhere in this build — Stage 08 (MOD-01 Curriculum Engine) is the first stage that registers one. `runEvalSet`, `AgentExecutorRegistry` and both CLI scripts (`evals:run`/`evals:gate`) are proven against injected/fake executors and, for real, against this repo's own currently-empty `packages/evals/sets/` — genuinely wired, genuinely exercised, but with nothing real yet to point at. This closes the moment Stage 08 registers a real executor and a real golden set; it is a sequencing fact, not a defect in this stage's own work |
+| Champion/challenger promotion proven by test, including a rejected promotion | PASS — `packages/evals/test/promotion.spec.ts`, 11 tests, several of them distinct rejected-promotion cases (metric not improved, a `must_not_regress` regression, over budget, an explicit human rejection, a missing review, and all four failing at once)                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Safety set wired to run on every change                                      | PASS — `selectCasesToRun` (step 7) unions every safety-tagged case into every gate run regardless of the affected-files classification, proven in `safety-set.spec.ts`; `pnpm evals:gate` is wired for real into `.github/workflows/ci.yml`'s main verify job. The six categories' own real case _content_ is not populated (no agent exists to test it against, and inventing safeguarding content unsourced is what rule 0.3 forbids) — the wiring is what this gate item asks for, and that is proven                                                                                                                                                                                                                        |
+| Judge calibration report committed                                           | **NOT MET.** No report exists because no calibration has happened — "calibrated against at least 50 human-labelled cases" needs a dataset this build does not have and has no source for yet (OQ-016). `scoreLlmJudge`'s own mechanism is built and proven; the calibration itself is real work requiring real people, not something this stage can produce on its own                                                                                                                                                                                                                                                                                                                                                          |
+
+**Why this stage proceeds at PARTIAL rather than blocking on the two unmet items.** Both
+gaps are the same shape Stage 01's coverage item and Stage 03's own PARTIAL already
+established precedent for in this build: a real, named, tracked gap that closes through
+work outside this stage's own scope (Stage 08 existing; a human labelling exercise
+happening), not something fixable by writing more code here. Rule 1 ("never skip a stage,"
+CLAUDE.md) is about not pretending a gate passed when it did not — recorded honestly here,
+with the exact two items still open, is exactly that rule being followed, not an exception
+to it. Continuing to Stage 08 is what actually closes the first item; OQ-016 already tracks
+the second and stays open until a human supplies real labelled data.
+
+Verification commands run for real, against this exact tree: `pnpm --filter
+@infinite-ai/evals test` (144 tests, all packages), `pnpm evals:run --all` and `pnpm
+evals:gate` (both exit `0`, honestly reporting "nothing found"/"nothing to gate" against
+the currently-empty `packages/evals/sets/`). `scripts/verify-stage.ts`'s `07` entry now
+runs all three.

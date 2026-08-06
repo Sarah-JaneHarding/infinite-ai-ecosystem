@@ -45,6 +45,15 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+      # Stage 07 step 5: "on any change to a prompt, agent, guardrail or retrieval code,
+      # run the affected eval sets; fail the build on regression beyond the declared
+      # tolerance." Runs every golden set that has both cases on disk and a registered
+      # executor — nothing exists yet (Stage 08 is the first real agent), so this is
+      # currently a no-op that exits 0, wired for real rather than a stub: the day a golden
+      # set and an executor both exist, this step starts actually gating the build.
+      - name: Eval regression gate (Stage 07 step 5)
+        run: pnpm evals:gate
+
       # §4.2's thresholds are declared per package in vitest.config.ts and only bite when
       # coverage actually runs. Running it on every PR rather than only in the stage gate
       # means a drop below the floor fails the change that caused it, rather than the

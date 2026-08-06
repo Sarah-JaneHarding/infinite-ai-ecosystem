@@ -314,6 +314,16 @@ No new external dependency. `packages/evals` now also depends on `@infinite-ai/a
 `AgentBudget` type directly for the budget gate, rather than declaring a second, possibly
 divergent budget shape.
 
+## Stage 07 steps 5-8 — CI wiring, growth loop, safety set, dashboard
+
+No new dependency. `discovery.ts` and `champion-store.ts` use only `node:fs`/`node:path`;
+`affected.ts`, `gate.ts`, `agent-executors.ts`, `safety-set.ts`, `growth-loop.ts` and
+`dashboard.ts` are all plain functions over this package's own existing types. The two new
+root-level CLI scripts (`scripts/evals-run.ts`, `scripts/evals-gate.ts`) reuse `tsx`
+(already a root dependency since Stage 00, the same runner `scripts/verify-stage.ts` and
+`scripts/check-retention-schedule.ts` already use) and add `@infinite-ai/evals` itself as a
+new root `devDependency` — a workspace package, not an external one.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

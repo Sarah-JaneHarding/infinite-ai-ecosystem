@@ -54,4 +54,54 @@ export {
   type PromotionVerdict,
 } from './promotion.js';
 
+export {
+  EvalDiscoveryError,
+  loadAllEvalSets,
+  loadEvalCasesFromDir,
+} from './discovery.js';
+
+export { affectedAgentIds, classifyChange, type ChangeImpact } from './affected.js';
+
+export {
+  evaluateGate,
+  type GateReasonCode,
+  type GateRefusal,
+  type GateVerdict,
+  type RegressionTolerance,
+} from './gate.js';
+
+export {
+  AgentExecutorRegistryError,
+  getAgentExecutor,
+  registerAgentExecutor,
+  registeredAgentIds,
+} from './agent-executors.js';
+
+export {
+  buildSafetyCase,
+  isSafetyCase,
+  selectCasesToRun,
+  selectSafetyCases,
+  type SafetyCaseInput,
+} from './safety-set.js';
+
+export {
+  acceptCorrectionCandidate,
+  buildCorrectionCandidate,
+  type CorrectionCandidate,
+  type CorrectionCandidateInput,
+  type HumanGateOutcome,
+} from './growth-loop.js';
+
+export { loadChampionResult, saveChampionResult } from './champion-store.js';
+
+export {
+  buildAgentDashboard,
+  type AgentDashboard,
+  type ChampionHistoryEntry,
+  type CostPoint,
+  type RunHistoryEntry,
+  type ScorePoint,
+} from './dashboard.js';
+
 export const PACKAGE_NAME = '@infinite-ai/evals' as const;

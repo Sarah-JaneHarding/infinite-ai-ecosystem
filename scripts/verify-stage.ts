@@ -104,7 +104,21 @@ const STAGES: readonly Stage[] = [
       'pnpm test:injection',
     ],
   },
-  { id: '07', name: 'Eval harness and golden sets', commands: [] },
+  {
+    id: '07',
+    name: 'Eval harness and golden sets',
+    commands: [
+      // Mirrors the manual's own verification block. The package's own unit tests come
+      // first so a real failure inside the harness itself is diagnosed before the two CLI
+      // scripts are even asked to run — both currently report "nothing found" cleanly
+      // against this repo's still-empty packages/evals/sets, since no module has a real
+      // agent yet (Stage 08 is the first); that is the correct, honest result for this
+      // point in the build, not a passing test standing in for a real one.
+      'pnpm --filter @infinite-ai/evals test',
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
   { id: '08', name: 'MOD-01 Curriculum Engine', commands: [] },
   { id: '09', name: 'MOD-03 Data Warehouse', commands: [] },
   { id: '10', name: 'MOD-02 Support Analytics Centre', commands: [] },
