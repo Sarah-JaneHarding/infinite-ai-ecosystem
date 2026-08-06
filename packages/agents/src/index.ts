@@ -14,10 +14,10 @@ export {
   AgentContractError,
   AgentModule,
   PromptRef,
+  ToolDeclaration,
   ToolSideEffect,
   validateAgentContract,
   type AgentBudget,
-  type ToolDeclaration,
 } from './contract.js';
 
 export {
@@ -28,5 +28,7 @@ export {
   type EvalSetExistenceCheck,
   type PromptExistenceCheck,
 } from './registry.js';
+
+export { ToolRegistry, ToolRegistryError, bootToolRegistry } from './tool-registry.js';
 
 export const PACKAGE_NAME = '@infinite-ai/agents' as const;

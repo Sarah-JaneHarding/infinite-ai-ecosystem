@@ -186,3 +186,55 @@ export function validatePipelineDag(pipeline: PipelineDefinition): void {
   };
   visit(entryStepId);
 }
+
+export type IrreversibleToolCheck = (toolName: string) => boolean;
+
+/**
+ * "`irreversible` tools always require a human gate" (Stage 06 step 7) — checked here, not
+ * as part of `validatePipelineDag`, since it needs to know which named tools are
+ * irreversible and `validatePipelineDag`'s own callers (this file's own tests included)
+ * have no reason to supply that. Assumes `pipeline` already passed `validatePipelineDag`.
+ *
+ * The check: walk forward from `entryStepId`, but never propagate *past* a `human_gate`
+ * step — everything reachable that way is reachable by at least one path with no approval
+ * in front of it. If an irreversible `tool_call` step is in that set, some path reaches it
+ * ungated, which is exactly what the rule forbids — even if a *different* path to the same
+ * step happens to pass through a gate first.
+ *
+ * Deliberately scoped to the forward graph only: a `compensation` step's own tool call is
+ * invoked directly by the runner during rollback, never reached by walking `next`, and is
+ * out of scope for this structural check — whether an irreversible compensation needs its
+ * own gate is a design question this step's own text does not address, not something to
+ * guess at here.
+ */
+export function validatePipelineGating(
+  pipeline: PipelineDefinition,
+  isIrreversibleTool: IrreversibleToolCheck,
+): void {
+  const { steps, entryStepId, id } = pipeline;
+
+  const reachableWithoutGate = new Set<string>();
+  const queue: string[] = [entryStepId];
+  while (queue.length > 0) {
+    const stepId = queue.shift()!;
+    if (reachableWithoutGate.has(stepId)) continue;
+    reachableWithoutGate.add(stepId);
+
+    const step = steps[stepId];
+    if (step === undefined || step.kind === 'human_gate') continue; // a gate blocks propagation past it
+
+    for (const targetId of forwardTargets(step)) {
+      if (!reachableWithoutGate.has(targetId)) queue.push(targetId);
+    }
+  }
+
+  for (const stepId of reachableWithoutGate) {
+    const step = steps[stepId];
+    if (step?.kind === 'tool_call' && isIrreversibleTool(step.toolName)) {
+      throw new PipelineDagError(
+        `Pipeline "${id}": step "${step.id}" calls irreversible tool "${step.toolName}" ` +
+          'reachable by at least one path with no human_gate in front of it.',
+      );
+    }
+  }
+}

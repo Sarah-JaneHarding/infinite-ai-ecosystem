@@ -16,6 +16,19 @@
 // a map out into per-item runs — a stated follow-up, not silently dropped (see
 // `docs/STAGE_LOG.md`).
 //
+// `concurrencyLimiter` (Stage 06 step 8) is optional too, and checked only for
+// `agent_call` steps — see `concurrency.ts`'s own header for why a refusal is "no
+// progress" rather than a failure. Queue fairness, step 8's other named requirement, is a
+// scheduler concern this runner does not have (nothing here decides which *run* to advance
+// next, only what one call does for the run it is given) — `fairness.ts`'s
+// `selectNextFairly` is the algorithm a real scheduler will call once one exists.
+//
+// `startRun`'s own `isIrreversibleTool` (Stage 06 step 7) is optional: supplying it runs
+// `validatePipelineGating` (`dag.ts`) before the run is ever opened, so a pipeline that can
+// reach an irreversible tool call without a preceding `human_gate` never gets as far as
+// `PENDING`. Omitting it does not weaken anything already enforced — it just means nobody
+// has wired a tool registry in at this call site yet.
+//
 // `human_gate` resumption (Stage 06 step 5) follows the same resumability rule as
 // everything else here: `decideHumanGate` only ever records a decision — it never advances
 // the run itself, the same "never touches the run's own status" boundary
@@ -47,13 +60,17 @@ import {
   type ApprovalTaskRow,
   type OrchestratorRunRow,
   type OrchestratorStepRunRow,
+  type StepRunOutcome,
   type TenantClient,
 } from '@infinite-ai/db';
 import { NOOP_TRACER, type Tracer } from '@infinite-ai/telemetry';
 import { z } from 'zod';
 
+import type { ConcurrencyLimiter, ConcurrencySlot } from './concurrency.js';
 import {
   validatePipelineDag,
+  validatePipelineGating,
+  type IrreversibleToolCheck,
   type PipelineDefinition,
   type PipelineStep,
 } from './dag.js';
@@ -86,6 +103,26 @@ export type StepExecutor = (context: StepExecutionContext) => Promise<unknown>;
 
 export type ConditionEvaluator = (condition: string, input: unknown) => boolean;
 
+/** What a successful step reported using, retrieved, and was checked against — the Run
+ * Inspector's own required fields (Stage 06 step 9). Called after `executeStep` resolves,
+ * never on a failed or retried attempt: nothing today captures usage from an attempt that
+ * failed before reporting it, a stated scope boundary (see `docs/STAGE_LOG.md`'s step 9
+ * entry). Any field left `undefined` stays `null` on the persisted row. */
+export type StepTelemetryCollector = (
+  context: StepExecutionContext,
+  output: unknown,
+) => StepTelemetry | undefined;
+
+export interface StepTelemetry {
+  readonly tokensUsed?: number;
+  readonly costUsd?: number;
+  /** `packages/brain`'s own `AssembledContext` shape, opaque here — this package does not
+   * depend on `packages/brain`. */
+  readonly retrievedContext?: unknown;
+  /** `packages/guardrails`'s own `GuardrailVerdict[]`, opaque here for the same reason. */
+  readonly guardrailVerdicts?: unknown;
+}
+
 export interface HumanGateContext {
   readonly runId: string;
   readonly stepId: string;
@@ -115,6 +152,12 @@ export interface RunnerOptions {
   readonly executeStep: StepExecutor;
   readonly evaluateCondition?: ConditionEvaluator;
   readonly prepareApproval?: ApprovalMaterialProvider;
+  /** Caps concurrent `agent_call`/agent-compensation execution per tenant and per agent
+   * (Stage 06 step 8). Omitted means unlimited — every existing call site, unchanged. */
+  readonly concurrencyLimiter?: ConcurrencyLimiter;
+  /** Stage 06 step 9. Omitted means no telemetry is captured — every existing call site,
+   * unchanged. */
+  readonly collectStepTelemetry?: StepTelemetryCollector;
   readonly retryBaseMs?: number;
   readonly retryMaxMs?: number;
   readonly random?: () => number;
@@ -136,8 +179,12 @@ export async function startRun(
   input: unknown,
   traceId: string,
   createdBy: string | null = null,
+  isIrreversibleTool?: IrreversibleToolCheck,
 ): Promise<OrchestratorRunRow> {
   validatePipelineDag(pipeline);
+  if (isIrreversibleTool !== undefined) {
+    validatePipelineGating(pipeline, isIrreversibleTool);
+  }
   return openRun(tx, {
     pipelineId: pipeline.id,
     pipelineVersion: pipeline.version,
@@ -268,6 +315,26 @@ function stepFor(pipeline: PipelineDefinition, stepId: string): PipelineStep {
     );
   }
   return step;
+}
+
+function succeededOutcome(
+  options: RunnerOptions,
+  context: StepExecutionContext,
+  output: unknown,
+): StepRunOutcome {
+  const telemetry = options.collectStepTelemetry?.(context, output);
+  return {
+    status: 'SUCCEEDED',
+    output,
+    ...(telemetry?.tokensUsed !== undefined && { tokensUsed: telemetry.tokensUsed }),
+    ...(telemetry?.costUsd !== undefined && { costUsd: telemetry.costUsd }),
+    ...(telemetry?.retrievedContext !== undefined && {
+      retrievedContext: telemetry.retrievedContext,
+    }),
+    ...(telemetry?.guardrailVerdicts !== undefined && {
+      guardrailVerdicts: telemetry.guardrailVerdicts,
+    }),
+  };
 }
 
 function latestAttempt(
@@ -428,6 +495,17 @@ async function executeForwardStep(
   options: RunnerOptions,
   now: Date,
 ): Promise<OrchestratorRunRow> {
+  // Stage 06 step 8: "per-tenant and per-agent concurrency limits." Only `agent_call`
+  // steps have an agent to key on; a refusal here is "no progress this call," the same
+  // idiom a retry-not-yet-due or a still-running step's own timeout already use — nothing
+  // is written, no step-run row is even created, and a later call (once some other run
+  // has released a slot) may succeed.
+  let concurrencySlot: ConcurrencySlot | null = null;
+  if (step.kind === 'agent_call' && options.concurrencyLimiter !== undefined) {
+    concurrencySlot = options.concurrencyLimiter.tryAcquire(run.tenantId, step.agentId);
+    if (concurrencySlot === null) return run;
+  }
+
   const tracer = options.tracer ?? NOOP_TRACER;
   const stepRun = await startStepRun(tx, run.id, step.id, attempt, run.input, now);
   const span = tracer.startSpan(`orchestrator.step.${step.kind}`, {
@@ -437,13 +515,14 @@ async function executeForwardStep(
     attempt,
   });
   try {
-    const output = await options.executeStep({
+    const context: StepExecutionContext = {
       runId: run.id,
       stepId: step.id,
       attempt,
       input: run.input,
-    });
-    await finishStepRun(tx, stepRun.id, { status: 'SUCCEEDED', output }, now);
+    };
+    const output = await options.executeStep(context);
+    await finishStepRun(tx, stepRun.id, succeededOutcome(options, context, output), now);
     const nextId = nextStepAfterSuccess(step);
     return await advanceToNextStep(tx, run.id, step.id, nextId, now);
   } catch (error) {
@@ -452,6 +531,7 @@ async function executeForwardStep(
     return await handleFailure(tx, pipeline, run, step, attempt, message, options, now);
   } finally {
     span.end();
+    concurrencySlot?.release();
   }
 }
 
@@ -576,13 +656,19 @@ async function runCompensation(
       step_id: compensationStepId,
     });
     try {
-      const output = await options.executeStep({
+      const context: StepExecutionContext = {
         runId: run.id,
         stepId: compensationStepId,
         attempt: 0,
         input: run.input,
-      });
-      await finishStepRun(tx, stepRun.id, { status: 'SUCCEEDED', output }, now);
+      };
+      const output = await options.executeStep(context);
+      await finishStepRun(
+        tx,
+        stepRun.id,
+        succeededOutcome(options, context, output),
+        now,
+      );
     } catch (error) {
       span.recordException(error);
       const message = error instanceof Error ? error.message : String(error);

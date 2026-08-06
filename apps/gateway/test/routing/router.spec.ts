@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 
 import { createTracer } from '@infinite-ai/telemetry';
+import { CircuitBreaker } from '../../src/circuit-breaker.js';
 import { CredentialPool } from '../../src/credentials/pool.js';
 import {
   AllProvidersUnavailableError,
@@ -287,6 +288,125 @@ describe('createRouter — routeChatCompletionStream', () => {
     await expect(
       collect(router.routeChatCompletionStream(request)),
     ).rejects.toBeInstanceOf(AllProvidersUnavailableError);
+  });
+});
+
+describe('createRouter — circuit breaker (Stage 06 step 8)', () => {
+  it('records a retryable failure against the breaker, and closes it on success', async () => {
+    const failing = adapter(
+      'anthropic',
+      vi.fn().mockRejectedValue(new AdapterError('unavailable', 'down')),
+    );
+    const working = adapter(
+      'openai',
+      vi.fn().mockResolvedValue({
+        content: 'ok',
+        usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 },
+      }),
+    );
+    const circuitBreaker = new CircuitBreaker({
+      failureThreshold: 1,
+      openDurationMs: 60_000,
+    });
+
+    const router = createRouter({
+      adapters: { anthropic: failing, openai: working },
+      credentialPools: {
+        anthropic: new CredentialPool('anthropic', ['k1']),
+        openai: new CredentialPool('openai', ['k2']),
+      },
+      routing: {
+        'plan.author': [
+          { provider: 'anthropic', concreteModel: 'claude' },
+          { provider: 'openai', concreteModel: 'gpt' },
+        ],
+      },
+      circuitBreaker,
+    });
+
+    await router.routeChatCompletion(request);
+    expect(circuitBreaker.stateOf('anthropic')).toBe('open'); // one failure, threshold 1
+    expect(circuitBreaker.stateOf('openai')).toBe('closed'); // the success closed it
+  });
+
+  it('skips a link outright once its breaker is open, without ever calling its adapter', async () => {
+    const neverCalled = adapter('anthropic', vi.fn());
+    const working = adapter(
+      'openai',
+      vi.fn().mockResolvedValue({
+        content: 'ok',
+        usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 },
+      }),
+    );
+    const circuitBreaker = new CircuitBreaker({
+      failureThreshold: 1,
+      openDurationMs: 60_000,
+    });
+    circuitBreaker.recordFailure('anthropic'); // already open before the router is even called
+
+    const router = createRouter({
+      adapters: { anthropic: neverCalled, openai: working },
+      credentialPools: {
+        anthropic: new CredentialPool('anthropic', ['k1']),
+        openai: new CredentialPool('openai', ['k2']),
+      },
+      routing: {
+        'plan.author': [
+          { provider: 'anthropic', concreteModel: 'claude' },
+          { provider: 'openai', concreteModel: 'gpt' },
+        ],
+      },
+      circuitBreaker,
+    });
+
+    const { provider } = await router.routeChatCompletion(request);
+    expect(provider).toBe('openai');
+    expect(neverCalled.complete).not.toHaveBeenCalled();
+  });
+
+  it('does not open the breaker on a non-retryable error', async () => {
+    const invalid = adapter(
+      'anthropic',
+      vi.fn().mockRejectedValue(new AdapterError('invalid_request', 'bad request')),
+    );
+    const circuitBreaker = new CircuitBreaker({
+      failureThreshold: 1,
+      openDurationMs: 60_000,
+    });
+
+    const router = createRouter({
+      adapters: { anthropic: invalid, openai: adapter('openai', vi.fn()) },
+      credentialPools: {
+        anthropic: new CredentialPool('anthropic', ['k1']),
+        openai: new CredentialPool('openai', ['k2']),
+      },
+      routing: {
+        'plan.author': [{ provider: 'anthropic', concreteModel: 'claude' }],
+      },
+      circuitBreaker,
+    });
+
+    await expect(router.routeChatCompletion(request)).rejects.toBeInstanceOf(
+      AdapterError,
+    );
+    expect(circuitBreaker.stateOf('anthropic')).toBe('closed');
+  });
+
+  it('behaves exactly as before when no circuit breaker is supplied', async () => {
+    const working = adapter(
+      'anthropic',
+      vi.fn().mockResolvedValue({
+        content: 'ok',
+        usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 },
+      }),
+    );
+    const router = createRouter({
+      adapters: { anthropic: working },
+      credentialPools: { anthropic: new CredentialPool('anthropic', ['k1']) },
+      routing: { 'plan.author': [{ provider: 'anthropic', concreteModel: 'claude' }] },
+    });
+    const { provider } = await router.routeChatCompletion(request);
+    expect(provider).toBe('anthropic');
   });
 });
 

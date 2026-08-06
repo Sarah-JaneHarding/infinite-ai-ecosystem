@@ -13,6 +13,8 @@
   "scripts": {
     "build": "turbo run build",
     "check:retention": "tsx scripts/check-retention-schedule.ts",
+    "evals:run": "tsx scripts/evals-run.ts",
+    "evals:gate": "tsx scripts/evals-gate.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
@@ -20,12 +22,14 @@
     "prepare": "node scripts/install-hooks.mjs",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
+    "test:injection": "pnpm --filter @infinite-ai/guardrails test:injection",
     "typecheck": "turbo run typecheck",
     "verify:stage": "tsx scripts/verify-stage.ts"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/evals": "workspace:*",
     "@types/node": "22.20.1",
     "eslint": "9.39.5",
     "eslint-config-prettier": "10.1.8",

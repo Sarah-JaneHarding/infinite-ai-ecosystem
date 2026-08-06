@@ -238,6 +238,92 @@ own `TenantClient`; `packages/orchestrator/src/runner.ts`'s `decideHumanGate` co
 `@infinite-ai/db`'s own `appendAuditEvent` (Stage 05 step 7) for the decision's audit-event
 record — no package gained a dependency it did not already have.
 
+## Stage 06 step 6 — the Guardrail engine
+
+No new dependency. `packages/guardrails` takes `@infinite-ai/contracts` (`DataCategory`),
+`@infinite-ai/policy` (`resolveAccess`, `AccessRequest` — Stage 03 step 3) and
+`@infinite-ai/telemetry` (`Tracer`, the same interface every other traced call site in this
+repo already threads through) as real runtime dependencies for the first time, plus `zod`
+— all four already pinned throughout the tree. Its devDependency is the same
+`@opentelemetry/sdk-trace-base` (2.10.0, first recorded Stage 04) every other traced
+package already carries, for `InMemorySpanExporter` in `test/engine.spec.ts`. Deliberately
+**not** added: a tokenizer library, for the same reason `packages/brain/src/retrieval-
+assembly.ts`'s own `estimateTokens` gave in Stage 05 step 5 — a `Math.ceil(length / 4)`
+estimate is honest about being approximate and a conservative overestimate never silently
+lets a budget be exceeded, so a real tokenizer is a dependency this stage still does not
+justify. This package deliberately takes no dependency on `@infinite-ai/agents` or
+`@infinite-ai/db` — see `docs/STAGE_LOG.md`'s step 6 entry for why (the layer diagram has
+the agent runtime sit above this package, and nothing yet calls this engine at a point
+where a tenant transaction is open).
+
+## Stage 06 step 7 — the Tool registry
+
+No new dependency. `packages/agents/src/tool-registry.ts` only calls `ToolDeclaration`
+(step 1, same package) and holds a plain in-memory `Map`, the same shape
+`AgentRegistry` (step 2) already uses. `packages/orchestrator/src/dag.ts`'s
+`validatePipelineGating` takes its irreversible-tool check as a plain injected callback
+rather than a dependency on `@infinite-ai/agents` — see `docs/STAGE_LOG.md`'s step 7 entry
+for why a cross-package dependency between two peer packages in the same architectural
+layer was the wrong shape here.
+
+## Stage 06 step 8 — Cost and rate control
+
+No new dependency. `packages/orchestrator/src/concurrency.ts` and `fairness.ts` are new
+files holding only plain in-memory data structures (`Map`, arrays) — no package needed for
+either. `apps/gateway/src/circuit-breaker.ts` is the same: a hand-written state machine,
+no dependency added. A production-grade circuit-breaker or rate-limiting library (e.g.
+`opossum`, `cockatiel`, `bottleneck`) was considered and rejected for the same reason
+`packages/brain`'s own token estimate stayed a one-line heuristic rather than pulling in a
+tokenizer: the state machine step 8 actually needs (three states, one threshold, one
+cooldown) is small enough that a library would trade a real dependency (a licence to
+track, a supply-chain surface, an API to learn) for less clarity than fifty lines of plain
+TypeScript this team already owns end to end.
+
+## Stage 06 step 9 — the Run Inspector
+
+No new dependency. `packages/orchestrator/src/inspector.ts` only calls `getRun`/
+`listStepRuns` (`@infinite-ai/db`, already a dependency) and reshapes their result with
+plain object/array operations. The four new `OrchestratorStepRun` columns are a plain
+Prisma migration, no new package.
+
+## Stage 07 step 1 — the eval case format
+
+No new dependency. `packages/evals/src/case.ts` only calls `zod`, already declared
+repo-wide in Stage 00 ("every API contract is a Zod schema") — this is simply that
+package's first real use of it.
+
+## Stage 07 step 2 — the scorers
+
+No new external dependency. `packages/evals` now depends on `@infinite-ai/guardrails`
+(workspace package, already in the tree since Stage 06 step 6) — `scorers.ts` reuses its
+`scoreReadability`, `checkGrounding` and `checkRefusalPolicy` directly for the readability,
+citation-validity and refusal-correctness scorers, rather than reimplementing any of the
+three and risking this package's notion of "correct" drifting from what the guardrail
+engine enforces at runtime.
+
+## Stage 07 step 3 — the runner
+
+No new dependency. `packages/evals/src/runner.ts` only calls `scoreExpectation` (step 2,
+same package) and holds plain in-memory data structures — no package needed for either
+`runEvalSet` or `diffAgainstChampion`.
+
+## Stage 07 step 4 — champion / challenger
+
+No new external dependency. `packages/evals` now also depends on `@infinite-ai/agents`
+(workspace package, already in the tree since Stage 06 step 1) — `promotion.ts` reuses its
+`AgentBudget` type directly for the budget gate, rather than declaring a second, possibly
+divergent budget shape.
+
+## Stage 07 steps 5-8 — CI wiring, growth loop, safety set, dashboard
+
+No new dependency. `discovery.ts` and `champion-store.ts` use only `node:fs`/`node:path`;
+`affected.ts`, `gate.ts`, `agent-executors.ts`, `safety-set.ts`, `growth-loop.ts` and
+`dashboard.ts` are all plain functions over this package's own existing types. The two new
+root-level CLI scripts (`scripts/evals-run.ts`, `scripts/evals-gate.ts`) reuse `tsx`
+(already a root dependency since Stage 00, the same runner `scripts/verify-stage.ts` and
+`scripts/check-retention-schedule.ts` already use) and add `@infinite-ai/evals` itself as a
+new root `devDependency` — a workspace package, not an external one.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

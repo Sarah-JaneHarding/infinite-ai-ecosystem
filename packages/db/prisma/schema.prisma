@@ -1253,27 +1253,27 @@ enum OrchestratorStepRunStatus {
 }
 
 model OrchestratorRun {
-  id              String                @id @default(uuid()) @db.Uuid
-  tenantId        String                @map("tenant_id") @db.Uuid
-  pipelineId      String                @map("pipeline_id")
-  pipelineVersion String                @map("pipeline_version")
-  status          OrchestratorRunStatus @default(PENDING)
+  id               String                @id @default(uuid()) @db.Uuid
+  tenantId         String                @map("tenant_id") @db.Uuid
+  pipelineId       String                @map("pipeline_id")
+  pipelineVersion  String                @map("pipeline_version")
+  status           OrchestratorRunStatus @default(PENDING)
   /// One trace ID from start to finish — the manual's own requirement, threaded through
   /// every `@infinite-ai/telemetry` span the runner opens for this run and its steps.
-  traceId         String                @map("trace_id")
-  input           Json
+  traceId          String                @map("trace_id")
+  input            Json
   /// The step currently in flight, or the last one reached. Null only before the first
   /// step has started.
-  currentStepId   String?               @map("current_step_id")
+  currentStepId    String?               @map("current_step_id")
   /// Step ids that have succeeded, in the order they succeeded — what
   /// `compensationChain` (packages/orchestrator) walks in reverse when a later step
   /// fails. A plain JSON array, not a relation: order matters and a row's own step-run
   /// history already lives in `OrchestratorStepRun`.
-  succeededStepIds Json                 @default("[]") @map("succeeded_step_ids")
-  cancelledAt     DateTime?             @map("cancelled_at")
-  createdAt       DateTime              @default(now()) @map("created_at")
-  updatedAt       DateTime              @updatedAt @map("updated_at")
-  createdBy       String?               @map("created_by") @db.Uuid
+  succeededStepIds Json                  @default("[]") @map("succeeded_step_ids")
+  cancelledAt      DateTime?             @map("cancelled_at")
+  createdAt        DateTime              @default(now()) @map("created_at")
+  updatedAt        DateTime              @updatedAt @map("updated_at")
+  createdBy        String?               @map("created_by") @db.Uuid
 
   tenant        Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   stepRuns      OrchestratorStepRun[]
@@ -1285,23 +1285,35 @@ model OrchestratorRun {
 }
 
 model OrchestratorStepRun {
-  id            String                    @id @default(uuid()) @db.Uuid
-  tenantId      String                    @map("tenant_id") @db.Uuid
-  runId         String                    @map("run_id") @db.Uuid
-  stepId        String                    @map("step_id")
-  status        OrchestratorStepRunStatus @default(PENDING)
+  id                String                    @id @default(uuid()) @db.Uuid
+  tenantId          String                    @map("tenant_id") @db.Uuid
+  runId             String                    @map("run_id") @db.Uuid
+  stepId            String                    @map("step_id")
+  status            OrchestratorStepRunStatus @default(PENDING)
   /// 0-indexed. A retry of the same step is a new row with the same `stepId` and the
   /// next `attempt` — never an update to the previous attempt's own row.
-  attempt       Int                       @default(0)
-  input         Json?
-  output        Json?
-  error         String?
-  startedAt     DateTime?                 @map("started_at")
+  attempt           Int                       @default(0)
+  input             Json?
+  output            Json?
+  error             String?
+  /// Stage 06 step 9 — the Run Inspector's own required fields, populated only on a
+  /// `SUCCEEDED` outcome via an injected `RunnerOptions.collectStepTelemetry` (nothing
+  /// today captures usage from an attempt that failed before reporting it — a stated
+  /// scope boundary, not a silent gap; see `docs/STAGE_LOG.md`'s step 9 entry).
+  tokensUsed        Int?                      @map("tokens_used")
+  costUsd           Float?                    @map("cost_usd")
+  /// Retrieved-fact provenance (`packages/brain`'s own `AssembledContext` shape, opaque
+  /// here) and guardrail check verdicts (`packages/guardrails`'s own `GuardrailVerdict[]`,
+  /// also opaque here) — neither package is a dependency of this one; this column only
+  /// stores whatever `collectStepTelemetry` hands back, unvalidated beyond being JSON.
+  retrievedContext  Json?                     @map("retrieved_context")
+  guardrailVerdicts Json?                     @map("guardrail_verdicts")
+  startedAt         DateTime?                 @map("started_at")
   /// Set only when `status` is `RETRY_SCHEDULED` — when the next attempt may run.
-  nextAttemptAt DateTime?                 @map("next_attempt_at")
-  completedAt   DateTime?                 @map("completed_at")
-  createdAt     DateTime                  @default(now()) @map("created_at")
-  updatedAt     DateTime                  @updatedAt @map("updated_at")
+  nextAttemptAt     DateTime?                 @map("next_attempt_at")
+  completedAt       DateTime?                 @map("completed_at")
+  createdAt         DateTime                  @default(now()) @map("created_at")
+  updatedAt         DateTime                  @updatedAt @map("updated_at")
 
   tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   run    OrchestratorRun @relation(fields: [runId], references: [id], onDelete: Cascade)
@@ -1336,16 +1348,16 @@ model ApprovalTask {
 
   /// Mirrors the `human_gate` step's own declared `requiredRole` at the moment the task was
   /// opened — the role checked against the deciding actor's own `RoleAssignment` rows.
-  requiredRole String @map("required_role")
+  requiredRole        String @map("required_role")
   /// The thing under review. Never learner personal information in raw form — the same
   /// boundary every other JSON payload in this schema holds itself to.
-  artefact Json
+  artefact            Json
   /// Null when there is no previous version to diff against.
-  diffAgainstPrevious Json? @map("diff_against_previous")
+  diffAgainstPrevious Json?  @map("diff_against_previous")
   evidence            Json
   /// One trace ID, carried from the run — correlates this task's own audit-event decision
   /// record back to every other span and row the run produced.
-  traceId String @map("trace_id")
+  traceId             String @map("trace_id")
 
   /// Null while pending. Set exactly once — `decideApprovalTask` refuses a task that
   /// already carries a decision.
@@ -1354,12 +1366,12 @@ model ApprovalTask {
   decidedAt DateTime?         @map("decided_at")
   /// Required on every decision, not only a rejection — "the decision, the actor, the
   /// reason... are recorded" (the manual's own step 5 text) reads as unconditional.
-  reason String?
+  reason    String?
   /// Present only when `decision` is `EDITED` — the manual's own "first-class training
   /// signal for Stage 13." Recording only, in this stage: an edited artefact does not yet
   /// feed back into the run's own `input` for downstream steps (see
   /// `docs/STAGE_LOG.md`'s step 5 entry for why that is a stated, separate follow-up).
-  editDiff Json? @map("edit_diff")
+  editDiff  Json?             @map("edit_diff")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

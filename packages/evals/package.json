@@ -18,5 +18,10 @@
   "devDependencies": {
     "typescript": "5.9.3",
     "vitest": "3.2.7"
+  },
+  "dependencies": {
+    "@infinite-ai/agents": "workspace:*",
+    "@infinite-ai/guardrails": "workspace:*",
+    "zod": "3.25.76"
   }
 }

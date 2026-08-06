@@ -19,7 +19,9 @@ import { InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-tr
 import { createTracer } from '@infinite-ai/telemetry';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import type { PipelineDefinition } from '../src/dag.js';
+import { ConcurrencyLimiter } from '../src/concurrency.js';
+import { PipelineDagError, type PipelineDefinition } from '../src/dag.js';
+import { inspectRun } from '../src/inspector.js';
 import {
   OrchestratorRunnerError,
   advanceRun,
@@ -29,6 +31,7 @@ import {
   startRun,
   type ApprovalMaterialProvider,
   type StepExecutionContext,
+  type StepTelemetryCollector,
 } from '../src/runner.js';
 import { startTestDatabase, type TestDatabase } from './support/database.js';
 
@@ -628,6 +631,80 @@ describe('per-step timeouts', () => {
   });
 });
 
+describe('durability: killing the worker mid-run (Stage 06 step 10)', () => {
+  it('resumes at the correct step on restart, with no duplicated side effects', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'durability-pipeline',
+      version: '1.0.0',
+      entryStepId: 'step-1',
+      steps: {
+        'step-1': {
+          ...STEP_COMMON,
+          id: 'step-1',
+          kind: 'agent_call',
+          agentId: 'CE-01',
+          next: 'step-2',
+          timeoutMs: 1_000,
+        },
+        'step-2': {
+          ...STEP_COMMON,
+          id: 'step-2',
+          kind: 'tool_call',
+          toolName: 'publish',
+          next: 'step-3',
+          timeoutMs: 1_000,
+        },
+        'step-3': {
+          ...STEP_COMMON,
+          id: 'step-3',
+          kind: 'agent_call',
+          agentId: 'CE-02',
+          next: null,
+          timeoutMs: 1_000,
+        },
+      },
+    };
+
+    const t0 = new Date('2026-08-06T00:00:00.000Z');
+    const callCounts: Record<string, number> = {};
+    const executeStep = async (ctx: StepExecutionContext): Promise<unknown> => {
+      callCounts[ctx.stepId] = (callCounts[ctx.stepId] ?? 0) + 1;
+      return { done: ctx.stepId };
+    };
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+
+      // A real worker process runs step-1 to completion — the durable, persisted state a
+      // restart must never redo.
+      const afterStep1 = await advanceRun(tx, pipeline, run.id, { executeStep }, t0);
+      expect(afterStep1.succeededStepIds).toEqual(['step-1']);
+
+      // The worker then dies mid-step-2: its own RUNNING row exists (the row a real
+      // in-flight step attempt would have), but the process crashed before executeStep
+      // ever returned — simulated directly, the same way the "per-step timeouts" describe
+      // block above does, rather than actually killing a process this test doesn't have.
+      await startStepRun(tx, run.id, 'step-2', 0, run.input, t0);
+
+      // "On restart": a fresh runToCompletion call, long enough after t0 for step-2's own
+      // timeout to have elapsed, with no memory of anything the crashed process held.
+      const muchLater = new Date(t0.getTime() + 60_000);
+      return runToCompletion(tx, pipeline, run.id, { executeStep }, muchLater);
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(finished.succeededStepIds).toEqual(['step-1', 'step-2', 'step-3']);
+    // The correct step: step-2 resumed and completed rather than the run restarting from
+    // step-1. No duplicated side effects: step-1's own executor ran exactly once, before
+    // the crash — never replayed by the restart — and step-2 ran exactly once despite
+    // being crashed mid-attempt.
+    expect(callCounts['step-1']).toBe(1);
+    expect(callCounts['step-2']).toBe(1);
+    expect(callCounts['step-3']).toBe(1);
+  });
+});
+
 describe('compensation on an exhausted failure', () => {
   it('runs compensations in reverse order of success, and ends COMPENSATED', async () => {
     const { tenantId, actorId } = await seedTenant();
@@ -742,5 +819,303 @@ describe('cancellation', () => {
     expect(afterCancel.status).toBe('CANCELLED');
     expect(afterResume.status).toBe('CANCELLED');
     expect(step2Calls).toBe(0);
+  });
+});
+
+describe('startRun’s optional irreversible-tool gating (Stage 06 step 7)', () => {
+  const isIrreversibleTool = (name: string): boolean => name === 'delete_record';
+
+  it('refuses to open a run whose pipeline reaches an irreversible tool ungated', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'ungated-irreversible-pipeline',
+      version: '1.0.0',
+      entryStepId: 'del',
+      steps: {
+        del: {
+          ...STEP_COMMON,
+          id: 'del',
+          kind: 'tool_call',
+          toolName: 'delete_record',
+          next: null,
+        },
+      },
+    };
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      await expect(
+        startRun(tx, pipeline, {}, randomUUID(), actorId, isIrreversibleTool),
+      ).rejects.toThrow(PipelineDagError);
+    });
+  });
+
+  it('opens the run when every path to the irreversible tool is gated', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'gated-irreversible-pipeline',
+      version: '1.0.0',
+      entryStepId: 'gate',
+      steps: {
+        gate: {
+          ...STEP_COMMON,
+          id: 'gate',
+          kind: 'human_gate',
+          requiredRole: 'hod',
+          next: 'del',
+        },
+        del: {
+          ...STEP_COMMON,
+          id: 'del',
+          kind: 'tool_call',
+          toolName: 'delete_record',
+          next: null,
+        },
+      },
+    };
+
+    const run = await withTenant({ tenantId, actorId }, (tx) =>
+      startRun(tx, pipeline, {}, randomUUID(), actorId, isIrreversibleTool),
+    );
+    expect(run.status).toBe('PENDING');
+  });
+
+  it('does not check gating at all when isIrreversibleTool is omitted', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'unchecked-irreversible-pipeline',
+      version: '1.0.0',
+      entryStepId: 'del',
+      steps: {
+        del: {
+          ...STEP_COMMON,
+          id: 'del',
+          kind: 'tool_call',
+          toolName: 'delete_record',
+          next: null,
+        },
+      },
+    };
+
+    const run = await withTenant({ tenantId, actorId }, (tx) =>
+      startRun(tx, pipeline, {}, randomUUID(), actorId),
+    );
+    expect(run.status).toBe('PENDING');
+  });
+});
+
+describe('concurrency limiting (Stage 06 step 8)', () => {
+  it('makes no progress on an agent_call step while its agent is at capacity', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'concurrency-pipeline',
+      version: '1.0.0',
+      entryStepId: 'step-1',
+      steps: {
+        'step-1': {
+          ...STEP_COMMON,
+          id: 'step-1',
+          kind: 'agent_call',
+          agentId: 'CE-01',
+          next: null,
+        },
+      },
+    };
+    const limiter = new ConcurrencyLimiter({ maxPerTenant: 10, maxPerAgent: 1 });
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+
+      // Occupy the one slot this agent has, as if another run's step were already
+      // executing — the deterministic way to prove the wiring without a real race.
+      const heldSlot = limiter.tryAcquire(tenantId, 'CE-01')!;
+
+      let calls = 0;
+      const blocked = await advanceRun(tx, pipeline, run.id, {
+        executeStep: async () => {
+          calls += 1;
+          return {};
+        },
+        concurrencyLimiter: limiter,
+      });
+      expect(blocked.status).toBe('PENDING');
+      expect(blocked.currentStepId).toBeNull();
+      expect(calls).toBe(0);
+
+      heldSlot.release();
+
+      const finished = await runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => {
+          calls += 1;
+          return {};
+        },
+        concurrencyLimiter: limiter,
+      });
+      expect(finished.status).toBe('SUCCEEDED');
+      expect(calls).toBe(1);
+    });
+  });
+
+  it('does not limit tool_call steps, which have no agent to key on', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'concurrency-tool-pipeline',
+      version: '1.0.0',
+      entryStepId: 'step-1',
+      steps: {
+        'step-1': {
+          ...STEP_COMMON,
+          id: 'step-1',
+          kind: 'tool_call',
+          toolName: 'publish',
+          next: null,
+        },
+      },
+    };
+    // A limiter with zero capacity would refuse every agent_call outright; a tool_call
+    // must still proceed since it has no agentId to check against.
+    const limiter = new ConcurrencyLimiter({ maxPerTenant: 0, maxPerAgent: 0 });
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      return runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({}),
+        concurrencyLimiter: limiter,
+      });
+    });
+    expect(finished.status).toBe('SUCCEEDED');
+  });
+});
+
+describe('run inspection and step telemetry (Stage 06 step 9)', () => {
+  it('captures tokens/cost/retrieved-context/guardrail-verdicts only on succeeded attempts, and inspectRun totals them', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'telemetry-pipeline',
+      version: '1.0.0',
+      entryStepId: 'flaky',
+      steps: {
+        flaky: {
+          ...STEP_COMMON,
+          id: 'flaky',
+          kind: 'agent_call',
+          agentId: 'CE-01',
+          next: 'step-2',
+          maxRetries: 1,
+        },
+        'step-2': {
+          ...STEP_COMMON,
+          id: 'step-2',
+          kind: 'tool_call',
+          toolName: 'publish',
+          next: null,
+        },
+      },
+    };
+
+    let flakyAttempts = 0;
+    const collectStepTelemetry: StepTelemetryCollector = (ctx) => {
+      if (ctx.stepId === 'flaky') return { tokensUsed: 100, costUsd: 0.01 };
+      if (ctx.stepId === 'step-2') {
+        return {
+          retrievedContext: { facts: ['f1'] },
+          guardrailVerdicts: [{ passed: true }],
+        };
+      }
+      return undefined;
+    };
+
+    const { finished, inspection } = await withTenant(
+      { tenantId, actorId },
+      async (tx) => {
+        const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+        const finished = await runToCompletion(
+          tx,
+          pipeline,
+          run.id,
+          {
+            executeStep: async (ctx) => {
+              if (ctx.stepId === 'flaky') {
+                flakyAttempts += 1;
+                if (flakyAttempts === 1) throw new Error('transient failure');
+              }
+              return { done: ctx.stepId };
+            },
+            collectStepTelemetry,
+            retryBaseMs: 0,
+            retryMaxMs: 0,
+            random: () => 0,
+          },
+          new Date('2026-08-06T00:00:00.000Z'),
+        );
+        const inspection = await inspectRun(tx, run.id, pipeline);
+        return { finished, inspection };
+      },
+    );
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(inspection).not.toBeNull();
+    expect(inspection?.entryStepId).toBe('flaky');
+
+    const flakyAttempt0 = inspection?.steps.find(
+      (s) => s.stepId === 'flaky' && s.attempt === 0,
+    );
+    expect(flakyAttempt0?.status).toBe('RETRY_SCHEDULED');
+    expect(flakyAttempt0?.tokensUsed).toBeNull(); // the failed attempt reported nothing
+    expect(flakyAttempt0?.costUsd).toBeNull();
+
+    const flakyAttempt1 = inspection?.steps.find(
+      (s) => s.stepId === 'flaky' && s.attempt === 1,
+    );
+    expect(flakyAttempt1?.status).toBe('SUCCEEDED');
+    expect(flakyAttempt1?.kind).toBe('agent_call');
+    expect(flakyAttempt1?.tokensUsed).toBe(100);
+    expect(flakyAttempt1?.costUsd).toBe(0.01);
+
+    const step2 = inspection?.steps.find((s) => s.stepId === 'step-2');
+    expect(step2?.kind).toBe('tool_call');
+    expect(step2?.retrievedContext).toEqual({ facts: ['f1'] });
+    expect(step2?.guardrailVerdicts).toEqual([{ passed: true }]);
+    expect(step2?.tokensUsed).toBeNull();
+
+    expect(inspection?.totalTokens).toBe(100);
+    expect(inspection?.totalCostUsd).toBe(0.01);
+  });
+
+  it('returns null for a run that does not exist in this tenant', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const inspection = await withTenant({ tenantId, actorId }, (tx) =>
+      inspectRun(tx, randomUUID()),
+    );
+    expect(inspection).toBeNull();
+  });
+
+  it('omits collectStepTelemetry with no change in behaviour, leaving telemetry columns null', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'no-telemetry-pipeline',
+      version: '1.0.0',
+      entryStepId: 'step-1',
+      steps: {
+        'step-1': {
+          ...STEP_COMMON,
+          id: 'step-1',
+          kind: 'agent_call',
+          agentId: 'CE-01',
+          next: null,
+        },
+      },
+    };
+
+    const inspection = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await runToCompletion(tx, pipeline, run.id, { executeStep: async () => ({}) });
+      return inspectRun(tx, run.id);
+    });
+
+    expect(inspection?.entryStepId).toBeNull(); // no pipeline supplied to inspectRun
+    expect(inspection?.steps[0]?.kind).toBeNull();
+    expect(inspection?.steps[0]?.tokensUsed).toBeNull();
+    expect(inspection?.totalTokens).toBe(0);
+    expect(inspection?.totalCostUsd).toBe(0);
   });
 });

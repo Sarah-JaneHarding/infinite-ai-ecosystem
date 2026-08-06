@@ -6,12 +6,34 @@ import { describe, expect, it } from 'vitest';
 import * as guardrails from '../src/index.js';
 
 describe('package export surface', () => {
-  it('exports the guard and its throwing form, and nothing else', () => {
+  it('exports the guard, the guardrail engine, and nothing else', () => {
     expect(Object.keys(guardrails).sort()).toEqual([
+      'EscalationRoute',
+      'GuardrailEscalationError',
       'PACKAGE_NAME',
+      'PASSED',
       'PiiEgressError',
+      'Refusal',
+      'RefusalReasonCode',
       'assertEgressAllowed',
+      'checkAgeAppropriateness',
+      'checkCost',
+      'checkGrounding',
+      'checkInputSchema',
+      'checkOutputSchema',
+      'checkPii',
+      'checkPromptInjection',
+      'checkPurposeAndConsent',
+      'checkReadability',
+      'checkRefusalPolicy',
+      'checkTemplateFidelity',
+      'checkTokenBudget',
+      'defaultEscalationNotifier',
       'inspectEgress',
+      'refuse',
+      'runInputGuardrails',
+      'runOutputGuardrails',
+      'scoreReadability',
     ]);
   });
 

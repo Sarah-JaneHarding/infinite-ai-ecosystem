@@ -4,6 +4,7 @@ import {
   PipelineDagError,
   PipelineStep,
   validatePipelineDag,
+  validatePipelineGating,
   type PipelineDefinition,
 } from '../src/dag.js';
 
@@ -252,6 +253,140 @@ describe('validatePipelineDag', () => {
       },
     };
     expect(() => validatePipelineDag(pipeline)).toThrow(PipelineDagError);
+  });
+});
+
+describe('validatePipelineGating', () => {
+  const IRREVERSIBLE = new Set(['delete_record']);
+  const isIrreversibleTool = (name: string): boolean => IRREVERSIBLE.has(name);
+
+  it('accepts an irreversible tool call preceded by a human_gate', () => {
+    const pipeline: PipelineDefinition = {
+      id: 'p',
+      version: '1.0.0',
+      entryStepId: 'gate',
+      steps: {
+        gate: {
+          ...COMMON,
+          id: 'gate',
+          kind: 'human_gate',
+          requiredRole: 'hod',
+          next: 'del',
+        },
+        del: {
+          ...COMMON,
+          id: 'del',
+          kind: 'tool_call',
+          toolName: 'delete_record',
+          next: null,
+        },
+      },
+    };
+    expect(() => validatePipelineGating(pipeline, isIrreversibleTool)).not.toThrow();
+  });
+
+  it('accepts a non-irreversible tool call with no gate at all', () => {
+    const pipeline: PipelineDefinition = {
+      id: 'p',
+      version: '1.0.0',
+      entryStepId: 'publish',
+      steps: {
+        publish: {
+          ...COMMON,
+          id: 'publish',
+          kind: 'tool_call',
+          toolName: 'publish_pack',
+          next: null,
+        },
+      },
+    };
+    expect(() => validatePipelineGating(pipeline, isIrreversibleTool)).not.toThrow();
+  });
+
+  it('throws when an irreversible tool call has no preceding gate at all', () => {
+    const pipeline: PipelineDefinition = {
+      id: 'p',
+      version: '1.0.0',
+      entryStepId: 'del',
+      steps: {
+        del: {
+          ...COMMON,
+          id: 'del',
+          kind: 'tool_call',
+          toolName: 'delete_record',
+          next: null,
+        },
+      },
+    };
+    expect(() => validatePipelineGating(pipeline, isIrreversibleTool)).toThrow(
+      PipelineDagError,
+    );
+  });
+
+  it('throws when only some paths to the irreversible tool call are gated', () => {
+    // A branch where onTrue passes through a gate and onFalse does not, both converging on
+    // the same irreversible tool call — one ungated path is enough to fail.
+    const pipeline: PipelineDefinition = {
+      id: 'p',
+      version: '1.0.0',
+      entryStepId: 'decide',
+      steps: {
+        decide: {
+          ...COMMON,
+          id: 'decide',
+          kind: 'branch',
+          condition: 'needs_review',
+          onTrue: 'gate',
+          onFalse: 'del',
+        },
+        gate: {
+          ...COMMON,
+          id: 'gate',
+          kind: 'human_gate',
+          requiredRole: 'hod',
+          next: 'del',
+        },
+        del: {
+          ...COMMON,
+          id: 'del',
+          kind: 'tool_call',
+          toolName: 'delete_record',
+          next: null,
+        },
+      },
+    };
+    expect(() => validatePipelineGating(pipeline, isIrreversibleTool)).toThrow(
+      PipelineDagError,
+    );
+  });
+
+  it('does not require a gate in front of a compensation step’s own tool call', () => {
+    // Compensation is invoked directly by the runner on rollback, never reached by walking
+    // `next` — out of scope for this structural check (see dag.ts's own comment).
+    const pipeline: PipelineDefinition = {
+      id: 'p',
+      version: '1.0.0',
+      entryStepId: 'book',
+      steps: {
+        book: {
+          ...COMMON,
+          id: 'book',
+          compensatesWith: 'undo-book',
+          kind: 'tool_call',
+          toolName: 'book_resource',
+          next: null,
+        },
+        'undo-book': {
+          ...COMMON,
+          id: 'undo-book',
+          kind: 'compensation',
+          compensatesStepId: 'book',
+          agentId: null,
+          toolName: 'delete_record',
+        },
+      },
+    };
+    expect(() => validatePipelineGating(pipeline, isIrreversibleTool)).not.toThrow();
   });
 });
 

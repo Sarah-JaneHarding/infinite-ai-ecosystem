@@ -1460,11 +1460,11 @@ Open questions raised: none.
 
 ## Stage 06 — Agent runtime, Prompt Registry, DAG orchestrator, guardrails, HITL
 
-Started: 2026-08-05 Completed: —
-Exit gate: **PARTIAL** — steps 1 (the Agent contract), 2 (the Agent Registry), 3 (the
-Prompt Registry), 4 (the DAG orchestrator) and 5 (Human-in-the-loop gates) are built and
-proven. Steps 6-10 are not started. `scripts/verify-stage.ts`'s `06` entry stays empty
-until they are.
+Started: 2026-08-05 Completed: 2026-08-06
+Exit gate: **PASS** — all ten steps are built and proven. `scripts/verify-stage.ts`'s `06`
+entry now runs `@infinite-ai/agents`, `@infinite-ai/prompts` and `@infinite-ai/orchestrator`
+(both tiers), `@infinite-ai/guardrails`, and the named `test:injection` script, mirroring
+the manual's own verification block.
 
 **What this slice put in place (step 1 — the Agent contract)**
 
@@ -1812,3 +1812,869 @@ above — both are scope decisions the manual's own step 5 text leaves open, not
 from anything it actually specifies.
 
 Open questions raised: none.
+
+**What this slice put in place (step 6 — the Guardrail engine)**
+
+`packages/guardrails/src/refusal.ts`: the one typed `Refusal` result every check in this
+package returns — `code` (a closed `RefusalReasonCode` enum), `explanation` (a required,
+non-empty user-facing string) and `escalation` (`EscalationRoute | null`). `GuardrailVerdict`
+is `{ passed: true } | { passed: false; refusal: Refusal }` — a decision, never a thrown
+error for the ordinary case, the same reasoning `packages/policy/src/access.ts`'s own
+`resolveAccess` already gives for a purpose/consent drop. `RefusalReasonCode` reuses the
+exact reason strings `pii-guard.ts`'s `EgressRefusal` and `packages/policy`'s `DropReason`
+already produce rather than renaming them, with a compile-time-only check
+(`AssertSubset`) that fails to typecheck if either vocabulary grows a value this file
+forgets to add.
+
+`packages/guardrails/src/input-checks.ts` (the manual's five input checks, three of them
+composing what already exists rather than rebuilding it): `checkInputSchema` (a plain Zod
+`safeParse`); `checkPurposeAndConsent`, which calls `packages/policy`'s own `resolveAccess`
+(Stage 03 step 3) and refuses if any category this call actually requires was dropped —
+not merely "requested", since `resolveAccess` itself is a projection and a caller can ask
+for more than it strictly needs; `checkPii`, a thin wrapper over `inspectEgress` (Stage 03
+step 5); `checkPromptInjection` (new — see below); and `checkTokenBudget`, reusing the
+exact `Math.ceil(text.length / 4)` heuristic `packages/brain/src/retrieval-assembly.ts`'s
+own `estimateTokens` already established, for the same reason: a real tokenizer is a
+dependency this stage does not yet justify, and a conservative overestimate still
+guarantees the budget is never silently exceeded.
+
+`packages/guardrails/src/prompt-injection.ts`: a rules-based detector — eighteen named,
+narrow regex patterns across four families (direct instruction override, role/system
+impersonation, exfiltration of the hidden context, and encoding tricks including a
+zero-width-character class) — checked against every text a call would send to a model,
+retrieved documents and user-supplied text alike, since the manual names both. A match
+refuses the whole call outright rather than attempting to strip the offending span and
+continue: "sanitising" an injection in place would mean guessing which part of a retrieved
+document is safe to keep, the same silent-recovery failure mode rule 4's own reasoning (in
+`pii-guard.ts`) already rejects for PII. Proven against 34 distinct payloads in
+`test/prompt-injection.spec.ts` — the manual's own step 10 asks for "at least 30... all
+neutralised"; this is that proof, built here rather than deferred.
+
+`packages/guardrails/src/readability.ts`: a real Flesch-Kincaid Grade Level calculator —
+`0.39 * (words/sentences) + 11.8 * (syllables/words) - 15.59` — with a heuristic
+vowel-group syllable counter, the same "a real, computable metric, honestly approximate
+where exactness needs a dependency this stage does not justify" bar the token estimate
+already sets. A very short, simple sentence can legitimately score below zero under this
+formula; that surfaced in this slice's own tests as a fixture bug (an assumed `minGrade: 0`
+range), not a defect in the arithmetic, and the tests were corrected rather than the
+formula bent to match a wrong expectation.
+
+`packages/guardrails/src/output-checks.ts` (the manual's seven output checks):
+`checkOutputSchema` (Zod, symmetric with the input side); `checkGrounding`, which does not
+extract claims from free text — that is real NLP work this stage does not build — but
+takes the citation ids an agent's own structured output already declares and refuses the
+first one that does not resolve against the ids actually available to cite (retrieved-fact
+ids from `packages/brain`'s `RetrievalCandidate.id`, unioned with any CAPS
+`SourceRef.clause` reached for the call); `checkReadability`, wrapping the calculator
+above against a caller-declared grade band; `checkRefusalPolicy`, which validates a
+claimed refusal's own shape when `claimedRefusal` is not null and passes trivially when it
+is (nothing to check); and `checkCost`, symmetric with the input side's token check.
+**Two checks are real mechanisms with no built-in rule:** `checkTemplateFidelity` and
+`checkAgeAppropriateness` each take an optional injected checker and pass every output
+when none is supplied — not a silent guarantee, but the same "mechanism now, real check
+wired in once the source exists" shape `packages/agents/src/registry.ts`'s
+`promptExists`/`evalSetExists` already established in step 2. Neither has a source this
+codebase can validate against yet: `docs/OPEN_QUESTIONS.md` OQ-003 already asks for the
+school's own artefact templates before template-fidelity can be built for real; OQ-015
+(new, this step) asks the same question for an age-appropriateness content policy —
+inventing either would be exactly the kind of unsourced policy rule 0.3 forbids for
+curriculum content, applied here to content-suitability rules instead.
+
+`packages/guardrails/src/engine.ts`: `runInputGuardrails`/`runOutputGuardrails` run each
+side's fixed pipeline in the manual's own order and stop at the first refusal — the same
+"gates in a fixed order, first failure wins" shape `resolveAccess`'s three-gate order
+already established, applied across every check this stage builds. Each phase wraps one
+trace span (Definition of Done: "emits a trace span"), with one `addEvent` per check
+naming it and whether it passed. `AgentContract.guardrails` (step 1) names additional
+checks a specific agent runs beyond this fixed set; resolving those names to real
+functions is a stated follow-up for whichever module first declares one — nothing exists
+yet to resolve.
+
+**Refusal and escalation, made structural rather than merely typed.** Whenever either
+phase's resulting refusal carries a non-null `escalation`, the engine awaits an
+`EscalationNotifier` before returning — "pages a named human immediately and never
+queues" made concrete as an absence: there is no queue, no worker, nothing to enqueue
+onto, only a direct, awaited call. **None of this engine's own built-in mechanical checks
+ever set an escalation route** — a schema failure, a budget overrun or a dangling citation
+is not a safeguarding concern, and inventing a taxonomy of safeguarding categories to
+attach to one would be exactly the unsourced-policy problem `EscalationRoute.category`'s
+own comment already refuses to do (a free string, not a closed enum, for the same reason
+`AgentModule`'s own pattern is a shape rather than an enumerated list). The mechanism
+exists for whenever a real safeguarding-detecting check is added later — proven in tests
+via the injectable `ageAppropriatenessChecker`, the one lever available today that can
+construct an escalating refusal at all.
+
+**`defaultEscalationNotifier` throws rather than silently succeeding.** No paging
+integration (SMS, phone, PagerDuty or similar) is available in this build — it needs a
+third-party account this environment does not have, recorded as OQ-014 (new, this step).
+A silent no-op default would be worse than the gap it papers over: an escalation that
+"succeeded" without reaching anyone. Throwing `GuardrailEscalationError` means a
+deployment that has not wired a real notifier finds out at the moment it would matter, the
+same fail-loud-not-silent philosophy `pii-guard.ts` already holds for a payload with no
+provenance stamp.
+
+**No `@infinite-ai/db` dependency, and no audit-ledger entry written here.** The Definition
+of Done also asks for "where relevant... an audit-ledger entry"; this engine does not
+write one, because nothing yet calls it at a point where a tenant transaction is already
+open to append one into — that wiring belongs to whichever call site first invokes a real
+agent (Stage 06's own agent-runtime integration, not yet built). A trace span is real and
+present now; the audit entry is a stated follow-up for that caller, the same "mechanism
+now, real caller later" shape this stage has used throughout.
+
+Proven by 150 tests across seven files: `test/prompt-injection.spec.ts` (34 distinct
+payloads across four technique families, all refused, plus benign multi-document text
+passing clean); `test/readability.spec.ts` (the empty-text zero case, short-versus-complex
+ordering, and the no-closing-punctuation edge case); `test/input-checks.spec.ts` and
+`test/output-checks.spec.ts` (every one of the twelve checks, both its passing and its
+refusing path, with the exact reason code asserted); `test/engine.spec.ts` (full-pass
+composition, fail-fast ordering across two simultaneously-failing checks, one trace span
+per phase, escalation awaited before a refusal is returned, and `defaultEscalationNotifier`
+throwing rather than silently succeeding); and the existing `test/pii-guard.spec.ts` (99
+tests, untouched). `test/exports.spec.ts` extended to the full new surface, still asserting
+no export name contains `bypass`, `allowlist`, `force`, `skip`, `override` or `disable`.
+
+Deviations from manual: none in what is checked. Two checks (`checkTemplateFidelity`,
+`checkAgeAppropriateness`) are real mechanisms without a built-in rule because this
+codebase has no source to validate against yet (OQ-003, OQ-015) — the same honest gap
+pattern this stage has used repeatedly, not a silently lowered bar. Escalation paging
+needs a real third-party integration this build does not have (OQ-014) and fails loudly
+rather than pretending to succeed.
+
+Open questions raised: OQ-014 (escalation paging needs a real integration), OQ-015
+(age-appropriateness needs a supplied content policy).
+
+**What this slice put in place (step 7 — the Tool registry)**
+
+"Tools are declared with a Zod schema, a purpose, an idempotency policy and a side-effect
+classification (`read`, `write`, `external`, `irreversible`). `irreversible` tools always
+require a human gate." The declaration shape itself — `ToolDeclaration` — already existed,
+built in step 1 as part of `AgentContract.tools`; this step adds the registry the manual
+names, plus the one enforcement its own text asks for.
+
+`packages/agents/src/contract.ts`: `ToolDeclarationSchema` (module-private) is renamed to
+`ToolDeclaration` and exported under the same name as its inferred type — the same dual
+declaration `AgentContract` and `PromptRef` already use in this file — because step 7's own
+registry validates a candidate tool standalone, not only nested inside an agent's own
+`tools` array. `AgentContract`'s own `tools` field now references the exported name; no
+other behaviour changed.
+
+`packages/agents/src/tool-registry.ts`: `ToolRegistry`, a typed registry keyed by a tool's
+own `name` (never reused for a different tool, the same primary-key discipline
+`AgentRegistry`'s own `id` already established), refusing a structurally invalid candidate
+or a duplicate name, never partially. `isIrreversible(name)` is `false` for a name the
+registry has never seen — an agent contract naming an unregistered tool is a different,
+"unknown reference" problem elsewhere, not this predicate's job to flag. `bootToolRegistry`
+mirrors `bootAgentRegistry`'s own "a boot failure, not a warning" startup pass.
+
+**The enforcement half — "irreversible tools always require a human gate" — lives in
+`@infinite-ai/orchestrator`, not `@infinite-ai/agents`.** `packages/orchestrator/src/dag.ts`
+gains `validatePipelineGating(pipeline, isIrreversibleTool)`: a BFS forward from
+`entryStepId` that does not propagate _past_ a `human_gate` step (a gate is a boundary —
+everything beyond it is reachable only with an approval in front of it). Anything left
+reachable in that walk is reachable by at least one path with no gate at all; if an
+irreversible `tool_call` step is among it, the pipeline is refused — even when a _different_
+path to the very same step happens to pass through a gate first, since one ungated path is
+enough to break the guarantee. `startRun` (`runner.ts`) takes the check as a new, optional
+trailing parameter, `isIrreversibleTool`: supplying it runs the gating check before a run
+is ever opened (a pipeline that fails it never reaches `PENDING`); omitting it — every
+existing call site, unchanged — checks nothing it did not already check, since nothing
+before this step had a tool registry to ask.
+
+**Why the check takes a plain callback rather than a dependency on `ToolRegistry`.**
+`packages/agents` and `packages/orchestrator` are peers in the same architectural layer
+(Part 1's own diagram: both are L6, the agent runtime), so neither gains a reason to depend
+on the other just to answer "is this tool irreversible" — `IrreversibleToolCheck` is a
+plain `(toolName: string) => boolean`, and `ToolRegistry.isIrreversible` is what a caller
+who already has both packages in scope hands it. This is the same shape `evaluateCondition`
+and `prepareApproval` already use for a runner-level decision this stage cannot supply a
+real implementation of on its own.
+
+**Compensation is deliberately out of scope for this structural check.** A `compensation`
+step's own tool call is invoked directly by the runner during rollback, never reached by
+walking `next` from the entry — `validatePipelineGating`'s BFS naturally never visits it,
+and this step's own text does not say whether an irreversible compensation should need its
+own gate. That is a real design question, stated rather than guessed at, not answered here.
+
+Proven by: `packages/agents/test/tool-registry.spec.ts` (register/get/has/list, a duplicate
+name refused, a structurally invalid candidate refused, `isIrreversible` true for a
+registered irreversible tool, false for any other side effect and false for an unknown
+name, and `bootToolRegistry` both succeeding across valid candidates and throwing on the
+first invalid one); `packages/orchestrator/test/dag.spec.ts`'s new `describe(
+'validatePipelineGating', ...)` (an irreversible call gated by a preceding `human_gate`
+passes; the same call with no gate at all fails; a branch where only one of two paths is
+gated still fails; a compensation step's own irreversible tool call needs no gate); and
+`packages/orchestrator/test/runner.integration.spec.ts`'s new describe block proving the
+`startRun` wiring itself against a real Postgres — refused when ungated, opened when every
+path is gated, and unchecked (not weakened, simply not asked) when the parameter is omitted
+entirely.
+
+Deviations from manual: none. Step 7 names the declaration shape (already built), the
+registry, and the one enforcement rule; this slice builds exactly that, plus the
+cross-package callback shape the manual's own text does not specify but the layer diagram
+already implies.
+
+Open questions raised: none.
+
+**What this slice put in place (step 8 — Cost and rate control)**
+
+"Per-tenant and per-agent concurrency limits, queue fairness so one large tenant cannot
+starve others, and a circuit breaker per provider." Greenfield: nothing in the repo built
+any part of this before this step — confirmed by a repo-wide search for concurrency,
+semaphore, rate-limit, circuit-breaker and fairness concepts before writing anything, the
+same "check what already exists before inventing" discipline every step this stage has
+followed.
+
+`packages/orchestrator/src/concurrency.ts`: `ConcurrencyLimiter`, a plain in-memory counter
+keyed separately by tenant and by agent. `tryAcquire` refuses (`null`) once either cap is
+reached; a refusal is treated exactly like a retry not yet due or a step still within its
+timeout — no progress this call, not a failure, the same resumability idiom the rest of
+this runner already uses, so a caller polling back later (once some other run has released
+a slot) needs no new run status to understand what happened. Wired into `runner.ts`'s
+`executeForwardStep` as a new, optional `RunnerOptions.concurrencyLimiter`: checked only
+for `agent_call` steps (the only step kind with an agent to key on — a `tool_call` has no
+"per-agent" dimension to limit), acquired before a step-run row is even created and
+released in the same `finally` that already ends the tracer span. Single-process only, the
+same documented limitation `apps/gateway`'s own `BudgetTracker` and `CredentialPool`
+already carry — a shared limit across multiple worker processes needs a store every
+process can see (Redis), a stated follow-up rather than a silent gap.
+
+`packages/orchestrator/src/fairness.ts`: `selectNextFairly`, a pure round-robin-by-tenant
+selector — not by run. **A real scheduler that repeatedly decides which pending run to
+advance next does not exist yet**, for the same reason Stage 06 step 4 already gave for
+deferring BullMQ: `apps/worker` is still a stub with no queue consumer, confirmed fresh for
+this step. Building a scheduler with no real queue behind it would be scaffolding with
+nothing to prove against; the fairness _algorithm_ that scheduler will need does not have
+that problem, and is proven entirely on its own — a tenant with a thousand pending runs is
+served no more often per rotation than a tenant with one, the manual's own concern made
+concrete in `test/fairness.spec.ts`'s "a large tenant never delays a small tenant beyond
+one turn."
+
+`apps/gateway/src/circuit-breaker.ts`: `CircuitBreaker`, a real closed → open → half-open
+state machine per provider. Closed counts consecutive provider-health failures; reaching
+`failureThreshold` opens the breaker for `openDurationMs`, during which every request to
+that provider is refused before ever reaching it; once the cooldown elapses, exactly one
+half-open trial is allowed — a success closes the breaker and resets its count, a failure
+reopens it immediately for a fresh cooldown without needing the threshold again. The
+open-to-half-open transition happens the moment a real caller asks and the cooldown has
+already elapsed, rather than on a timer this class would otherwise have to run itself.
+Wired into `routing/router.ts`'s `attemptChain` and `attemptStreamChain` (both the
+non-streaming and streaming fallback paths): an open breaker is treated exactly like "no
+credential available" — retryable, move to the next link — and every attempt reports back
+(`recordSuccess`/`recordFailure`) so the breaker's state reflects real traffic. `RouterDeps.
+circuitBreaker` is optional; every existing caller and test that omits it sees no change in
+behaviour. Wired for real in `apps/gateway/src/index.ts`'s own boot script (`failure
+Threshold: 5`, `openDurationMs: 30_000` — a sane starting default, documented as such, not
+a ratified SLO).
+
+**Only the same three retryable `AdapterError` kinds `router.ts`'s own fallback chain
+already retries on count against the breaker** — `rate_limited`, `unavailable`, `timeout`.
+An `invalid_request` means the request itself was malformed, not that the provider is
+unhealthy; `unauthorized` is a credential problem, not a provider one. Neither opens the
+breaker, the same distinction the fallback chain already draws between "try the next
+provider" and "stop, this will not get better by retrying."
+
+**This complements, rather than replaces, `credentials/pool.ts`'s own per-credential
+cooldown, already built in Stage 04.** That is "this one credential just got rate-limited,"
+scoped to a single key with a fixed cooldown clock; this is "this provider, in aggregate,
+looks unhealthy right now," scoped to every caller routing through it, opened only after a
+run of consecutive failures. Both fire independently and neither depends on the other.
+
+Proven by: `packages/orchestrator/test/concurrency.spec.ts` (grants under both limits,
+refuses at either cap independently, releases on demand, idempotent release, tenants and
+agents tracked independently, zero for a name never seen);
+`packages/orchestrator/test/fairness.spec.ts` (the empty-candidates case, a single tenant,
+round-robin rotation across three candidates, the thousand-vs-one starvation case, a
+tenant skipped when it has nothing pending and picked up again once it does, and an
+unrecognised `lastServedTenantId` treated as "nothing served yet");
+`packages/orchestrator/test/runner.integration.spec.ts`'s new describe block (an
+`agent_call` step makes no progress while its agent is at capacity, then proceeds once the
+slot is released; a `tool_call` step is unaffected by a zero-capacity limiter, having no
+agent to key on) against a real Postgres; `apps/gateway/test/circuit-breaker.spec.ts` (every
+state transition: closed staying closed below threshold, a success resetting the count,
+providers tracked independently, opening at threshold and refusing further requests, the
+half-open window allowing exactly one trial, a successful trial closing the breaker, and a
+failed trial reopening immediately without needing the threshold again); and four new cases
+in `apps/gateway/test/routing/router.spec.ts` proving the wiring itself — a retryable
+failure opens the breaker while a success on another link closes it, an already-open
+breaker causes its own link's adapter to never be called at all, a non-retryable error
+leaves the breaker closed, and omitting `circuitBreaker` entirely behaves exactly as
+before. All existing gateway and orchestrator tests continue to pass unchanged.
+
+Deviations from manual: none in what each mechanism does. Queue fairness is proven as an
+algorithm rather than as a running scheduler, for the same, already-precedented reason
+BullMQ wiring itself remains deferred — there is still no real queue consumer for a
+scheduler to run inside. This is a stated scope boundary, not a silent gap: the exact
+follow-up (wire `apps/worker`, then call `selectNextFairly` from within it) is named, not
+guessed at.
+
+Open questions raised: none.
+
+**What this slice put in place (step 9 — the Run Inspector)**
+
+"A developer-facing view of any run: DAG, per-step inputs and outputs, retrieved context
+with provenance, guardrail verdicts, tokens, cost, latency. This is your primary debugging
+tool for the rest of the build — do not skip it." Most of this was already derivable from
+persisted state: `getRun` and `listStepRuns` (Stage 06 step 4) already carry every
+attempt's input, output, error and timestamps, and a pipeline's own DAG is `dag.ts`'s
+`PipelineDefinition`. Four fields had nowhere to live, though — tokens, cost, retrieved
+context, guardrail verdicts — since nothing built so far captures usage from a step
+attempt. This slice adds the missing persistence and the one function that assembles all
+of it into a single view.
+
+`packages/db/prisma/schema.prisma`: `OrchestratorStepRun` gains four nullable columns —
+`tokensUsed`, `costUsd`, `retrievedContext`, `guardrailVerdicts` — added via the plain
+`ALTER TABLE ADD COLUMN` migration `20260806030000_stage06_step_run_telemetry`. Unlike the
+`CREATE TABLE` migrations elsewhere in this stage, no foreign key is being validated here,
+so the FORCE ROW LEVEL SECURITY tenant-context wrapper those migrations need does not apply
+to this one — the migration's own header explains why. `StepRunOutcome`'s `SUCCEEDED`
+variant (`packages/db/src/orchestrator.ts`) grew four optional fields to match;
+`finishStepRun` persists whichever of them a caller actually supplied, leaving the rest
+`null` exactly as before. Real, typed, nullable columns rather than an informal
+JSON-within-`output` convention, for the same reason the rest of this codebase prefers
+enforced fields over soft conventions.
+
+`packages/orchestrator/src/runner.ts`: a new optional `RunnerOptions.collectStepTelemetry`
+(`StepTelemetryCollector`) called immediately after a successful `executeStep`, on both the
+forward-step and compensation-step success paths — the only two places a step's `output` is
+already in hand. Its result feeds straight into the `SUCCEEDED` outcome passed to
+`finishStepRun`. **Scoped to successful attempts only**: a step that fails or times out
+never reaches this call, so an attempt that failed before reporting its own usage has
+nothing recorded against it — a stated scope boundary, not a silent gap, matching the same
+boundary already drawn on the new database columns. Omitting the option is unchanged
+behaviour for every existing call site — the telemetry columns simply stay `null`.
+
+`packages/orchestrator/src/inspector.ts`: `inspectRun(tx, runId, pipeline?)`, the one
+function this step's own text asks for. Reads `getRun` plus `listStepRuns` and reshapes
+them into one `RunInspection` — every attempt's input, output, error, tokens, cost,
+retrieved context, guardrail verdicts, and a derived `latencyMs` (`completedAt -
+startedAt`, `null` when either is missing); run-level `totalTokens`/`totalCostUsd`/
+`totalLatencyMs` summed across every attempt that reported one. `pipeline` is optional:
+supplying it annotates each attempt with its step's own `kind` and names the DAG's
+`entryStepId`; omitting it still returns a run's full attempt history; a run for an old
+pipeline version no longer on hand is still inspectable. Read-only and re-derived from
+persisted state every call, the same resumability idiom the rest of this package holds to
+— never a second source of truth. Returns `null` for a run id that does not resolve in the
+current tenant, rather than throwing, matching `getRun`'s own contract.
+
+Proven by three new integration tests in `packages/orchestrator/test/
+runner.integration.spec.ts`'s new describe block, against a real Postgres: a two-step
+pipeline where one step retries once — the failed attempt's row has `tokensUsed`/`costUsd`
+still `null`, the succeeded retry has both populated, a `tool_call` step's own retrieved
+context and guardrail verdicts are captured independently, `entryStepId` and each step's
+`kind` are correctly annotated from the supplied pipeline, and `totalTokens`/`totalCostUsd`
+sum only the attempts that actually reported them; `inspectRun` on an unknown run id
+returns `null`; and omitting `collectStepTelemetry` and the `pipeline` argument entirely
+leaves every telemetry field and `kind` annotation `null`, unchanged behaviour for a caller
+that supplies neither.
+
+Deviations from manual: none. Every field the manual's own list names is present in
+`RunInspection`; "provenance" for retrieved context is carried as whatever
+`collectStepTelemetry` hands back (`packages/brain`'s own `AssembledContext` shape, opaque
+to this package, which does not depend on `packages/brain`) rather than re-derived here,
+since this package has no route to the Brain's own provenance primitives and re-deriving
+them would duplicate `packages/db`'s `getFactProvenance` behind this module's back.
+
+Open questions raised: none.
+
+**What this slice put in place (step 10 — the stage's own test suite)**
+
+Step 10 names six tests. Five were already proven, incrementally, by earlier steps —
+checked against the tree before writing anything new, the same discipline every step 10 in
+this build has followed:
+
+- **The compensation test** ("a failing late step rolls back earlier writes") —
+  `runner.integration.spec.ts`'s "compensation on an exhausted failure" (step 4): a
+  three-step pipeline whose third step always fails runs both earlier steps' own
+  compensations in reverse order and ends `COMPENSATED`. Nothing new needed adding.
+- **The fairness test** ("a burst from one tenant does not delay another beyond its SLO") —
+  `fairness.spec.ts`'s "a large tenant never delays a small tenant beyond one turn" (step
+  8): a thousand-run tenant and a one-run tenant, round-robin proven to alternate turn for
+  turn regardless of the size difference. Proven as an algorithm, for the same reason
+  step 8's own entry already gives — no running scheduler exists yet for a wall-clock SLO
+  test to measure against.
+- **The bypass test** ("every attempted HITL bypass fails") —
+  `runner.integration.spec.ts`'s "human gate bypass vectors" (step 5): an actor without the
+  required role, a second decision on an already-decided task, a decision on a run not
+  waiting for approval, an empty reason, and a `human_gate` step with no `prepareApproval`
+  supplied at all — five distinct bypass vectors, every one refused.
+- **The prompt-immutability test** ("editing a prompt without a version bump fails CI") —
+  `packages/prompts/test/prompt-lock.spec.ts` (step 3): not a test of the mechanism in the
+  abstract but the real gate itself, run against the actual `packages/prompts/src` tree and
+  the checked-in `prompt-lock.json` on every `pnpm test`, wired for real from the day it was
+  written even though no agent has a real prompt file yet.
+- **The injection test** ("at least 30 injection payloads embedded in retrieved documents,
+  all neutralised") — `packages/guardrails/test/prompt-injection.spec.ts` (step 6): 34
+  distinct payloads across five attack patterns (instruction override, role impersonation,
+  hidden-context exfiltration, encoding tricks, direct guardrail-disabling attempts), every
+  one refused with `prompt_injection_detected`.
+
+**Only the durability test needed writing.** "Kill the worker mid-run; on restart the run
+resumes at the correct step with no duplicated side effects" asks for something none of the
+existing tests quite proves: the _timeout_ test (step 4) already proves a single crashed
+step resumes correctly, but nothing proved that a crash mid-run leaves an _already-
+succeeded earlier step_ alone — the actual "no duplicated side effects" claim, since
+re-running a step whose effects already landed is exactly the failure mode this property
+rules out. `runner.integration.spec.ts`'s new "durability: killing the worker mid-run"
+describe block proves it directly: a three-step pipeline runs step-1 to real completion
+(persisted, not merely in memory), the worker "dies" mid-step-2 (a real `RUNNING` row,
+created directly the same way the timeout test simulates a crash, with no ever call to its
+own `executeStep`), and a wholly fresh `runToCompletion` call — the same shape a genuinely
+restarted process would make, holding no state from before — resumes at step-2, retries it
+once its timeout has elapsed, and proceeds through step-3 to `SUCCEEDED`. A per-step call
+counter proves the actual claim: step-1's executor ran exactly once (never replayed by the
+restart) and step-2's ran exactly once (a single retry, not a duplicate), which is what
+"correct step, no duplicated side effects" means made concrete.
+
+Deviations from manual: none. All six named tests are proven; one needed new code, five
+were already true and are now recorded here rather than silently assumed.
+
+Open questions raised: none.
+
+**Exit gate items proven**
+
+| Gate item                                                                                  | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A reference pipeline (three agents, one human gate, one compensation path) runs end to end | PASS — `runner.integration.spec.ts`'s "a linear pipeline of agent_call/tool_call steps" runs three real steps to `SUCCEEDED` with one trace ID throughout; "human gate decisions" runs a gated pipeline through approval to completion; "compensation on an exhausted failure" runs a pipeline with two compensatable steps through rollback. Every step kind the manual's own reference shape names (`agent_call`, `tool_call`, `human_gate`, `compensation`) is exercised end to end across these suites |
+| ...survives a worker kill                                                                  | PASS — `runner.integration.spec.ts`'s "per-step timeouts" (a single crashed step resumes correctly) and the new "durability: killing the worker mid-run" (step 10): a three-step pipeline crashes mid-step-2, and a wholly fresh `runToCompletion` call resumes at the correct step, with step-1's own executor never replayed and step-2 retried exactly once                                                                                                                                             |
+| ...and is fully inspectable                                                                | PASS — `inspectRun` (step 9), proven in `runner.integration.spec.ts`'s "run inspection and step telemetry": every attempt's input, output, error, tokens, cost, retrieved context, guardrail verdicts and derived latency, plus run-level totals, assembled from persisted state alone                                                                                                                                                                                                                     |
+| Registry boot validation rejects a deliberately malformed agent                            | PASS — `packages/agents/test/registry.spec.ts`'s `bootAgentRegistry` "throws on the first invalid candidate — a boot failure, not a partial success"                                                                                                                                                                                                                                                                                                                                                       |
+| All guardrail categories implemented and individually tested                               | PASS — every input check (schema, purpose, consent, PII, prompt-injection, token budget) and output check (schema, grounding/citation, template-fidelity, readability, age-appropriateness, refusal-policy, cost) the manual names has its own dedicated test file under `packages/guardrails/test`, plus `engine.spec.ts` proving the composed pipeline and escalation routing                                                                                                                            |
+
+## Stage 07 — Eval harness and golden sets
+
+Started: 2026-08-06 Completed: —
+Exit gate: **PARTIAL** — all eight steps are built and proven; two of the four named exit
+gate items cannot be met yet for reasons outside this stage's own control, not for
+anything left undone here. See the exit-gate walk at the end of this section.
+
+**What this slice put in place (step 1 — the eval case format)**
+
+"Define eval case format in `packages/evals`: `{ id, agentId, input, context,
+expectations[], rubric, tags[], source }`. `source` records whether the case came from a
+specification, a real human correction, or an incident." `packages/evals` existed only as
+a Stage 00 stub before this slice (a `PACKAGE_NAME` export, kept so the workspace graph and
+CI were real from day one) — this is the first real code in it.
+
+`packages/evals/src/case.ts`: `EvalCase`, one Zod schema covering every field the manual's
+own step 1 names, plus `validateEvalCase`, the same "unknown plus a Zod parse" boundary
+(rule 8) every other contract in this codebase already uses. `agentId` is a plain validated
+string rather than cross-checked against a real `AgentContract` — the same "declare now,
+verify once the owner exists" shape `AgentContract.evalSetRef` already uses in the opposite
+direction; step 3's runner is what resolves an agent id for real. `input` and `context` are
+`unknown`: what an agent actually receives is that agent's own `inputSchema` (Stage 06 step
+1), and this package has no route to re-derive it without depending on every module that
+will ever register an agent.
+
+**`expectations[]` needed real structure, not `unknown`, to be worth anything.** Step 2
+names nine scorers by name (exact match, JSON-schema conformance, numeric tolerance, set
+overlap, readability band, template fidelity, citation presence and validity, refusal
+correctness, LLM-as-judge); `Expectation` is a discriminated union with one variant per
+scorer, each carrying exactly the parameters that scorer will need — the same "declare the
+shape now, the enforcement follows" pattern `AgentContract`'s own `tools`/`guardrails`
+fields already used against Stage 06 steps 6-7. `llm_judge` deliberately does not carry its
+own rubric text: it reads the case's single top-level `rubric` instead, so two judge
+expectations on the same case cannot disagree about what they are grading.
+
+**Two named constants, not yet consumed by anything, declared here because this is where
+the format's own vocabulary belongs.** `MUST_NOT_REGRESS_TAG` is the exact tag string step
+4's champion/challenger promotion rule names ("regresses no case tagged
+`must_not_regress`") — exported now so step 4 has a real constant to check against rather
+than a magic string two files could disagree on the spelling of. `SAFETY_TAGS` names all
+six categories step 7's permanent safety set asks for (PII egress, prompt injection,
+diagnosis-refusal, age-appropriateness, safeguarding escalation, cross-tenant leakage) for
+the same reason. Neither is enforced against a case's own `tags` field, which stays open
+free text — a case can carry any tag, the same way `AgentModule` validates shape rather
+than a closed list for the same "real, anticipated extension" reason.
+
+Proven by `packages/evals/test/case.spec.ts`: a fully-declared case round-trips; all three
+`source` values are accepted; a case with and without a `rubric` both validate; a case
+missing a required field, an unrecognised `source`, an empty `expectations` array, an
+unrecognised expectation `type`, and an empty-string tag are all refused; every
+`Expectation` variant is individually proven accepted with valid parameters and refused
+with an invalid one (a `json_schema` expectation whose `schema` is not a real Zod instance,
+a negative `numeric_tolerance`, a `minOverlap` outside 0-1, a non-positive
+`minCitations`); and both named constants are proven usable as real case tags.
+
+Deviations from manual: none in the six required fields. `Expectation`'s own nine-variant
+shape is this slice's own design choice, not literally specified by step 1's text beyond
+"expectations[]" — built now because step 2 already names exactly which scorers must exist,
+so declaring their shape here rather than as `unknown` avoided a second, silent contract
+step 2 would otherwise have had to invent instead.
+
+Open questions raised: none.
+
+**What this slice put in place (step 2 — the scorers)**
+
+"Implement scorers: exact match, JSON-schema conformance, numeric tolerance, set overlap
+(for topic and code alignment), readability band, template fidelity, citation presence and
+validity, refusal correctness, and an LLM-as-judge scorer..." Nine scorers, one function
+each in `packages/evals/src/scorers.ts`, plus `scoreExpectation`, the single dispatcher
+`runCase` (step 3) will call once per expectation on a case. Every scorer returns a typed
+`ScoreResult` (`passed`, an optional numeric `score`, and a `detail` string) rather than
+throwing for the ordinary case — the same "a decision, never an exception" shape
+`packages/guardrails`'s own `GuardrailVerdict` already holds to, deliberately: a scorer
+that threw on a malformed output would stop a whole run over one bad case rather than
+scoring it a clean fail.
+
+**Three scorers reuse `packages/guardrails` directly rather than reimplementing.**
+Readability calls the exact same `scoreReadability` (Flesch-Kincaid) the guardrail engine
+already scores output against; citation presence-and-validity calls the exact same
+`checkGrounding` a dangling citation already fails at guardrail time; refusal correctness
+calls the exact same `checkRefusalPolicy` shape check. Reimplementing any of the three here
+would let this package's notion of "correct" quietly drift from what the guardrail engine
+actually enforces at runtime — the two are supposed to agree, checked by definition rather
+than by two independent implementations staying in sync by discipline. This is
+`packages/evals`'s first real dependency on `packages/guardrails`, recorded in
+`docs/DEPENDENCIES.md`.
+
+**Step 1's own `citation_presence` and `refusal_correctness` expectation shapes needed
+extending to be scoreable at all** — a correction, not a deviation: step 1 declared
+`citation_presence` with only `minCitations`, but "validity" (the manual's own second half
+of that scorer's name) needs to know _which_ ids were actually valid to cite, which nothing
+in the case format said. `citation_presence` now also carries `citedIdsField` (where the
+cited ids live in the output) and `validIds` (the retrieved-fact ids and CAPS clauses
+actually reachable for this case) — the same two inputs `checkGrounding` itself already
+takes. `refusal_correctness` gained an optional `refusalField` (default `"refusal"`) for
+the same reason: some way to find the claimed refusal inside an output whose shape this
+package cannot otherwise know. `readability_band` gained an optional `field` (default: the
+whole output must itself be a string) for the same reason `exact_match`/
+`numeric_tolerance`/`set_overlap` already needed one.
+
+**`llm_judge` is the one scorer this slice does not fully build.** The manual's own text
+requires it to be "calibrated against at least 50 human-labelled cases, and re-calibrated
+whenever its own model changes" — this build has neither the labelled dataset nor the
+calibration workflow that requires, and inventing either would be exactly the kind of
+unsourced process rule §0.3 forbids (OQ-016). What is built is the real mechanism:
+`LlmJudge`, an injected async function through which a real caller wires an actual Model
+Gateway call once one exists — no second path to a provider (rule 3), and this package
+never calls a model directly. `scoreLlmJudge` itself is fully proven: no rubric on the
+case, no judge supplied, a passing score, and a failing score, all through the one function
+— what remains open is trusting its verdict for a real promotion decision, not whether the
+plumbing works.
+
+**`scoreTemplateFidelity` inherits the same open gap `checkTemplateFidelity` already has**
+(OQ-003): no template is ratified yet, so with no checker registered for a case's own
+`templateId` this scores an inconclusive pass rather than refusing against a rule nobody
+wrote — stated in the function's own doc comment, not a silent gap.
+
+Proven by `packages/evals/test/scorers.spec.ts` — 36 tests: each of the eight non-judge
+scorers proven both passing and failing on the property it actually checks (an exact dot-
+path match and mismatch, schema conformance and violation, in/outside numeric tolerance, at/
+below the overlap threshold plus the "extra unexpected member does not itself count
+against overlap" case, in/outside the readability band via both an explicit field and the
+whole output, a registered template checker passing and failing plus the no-checker
+inconclusive-pass case, enough/too-few/invalid citations, and every refusal-correctness
+branch including a custom `refusalField` and a malformed claimed refusal); `scoreLlmJudge`
+proven for its four real branches (no rubric, no judge, pass, fail); and `scoreExpectation`
+proven to dispatch correctly for a sync type, the async `llm_judge` type with `rubric`/
+`judge` threaded through `ScoreOptions`, and `template_fidelity` with
+`templateFidelityCheckers` threaded through the same way.
+
+Deviations from manual: none in what each scorer checks. `llm_judge` builds the mechanism
+only, calibration explicitly out of scope pending real data (OQ-016) — the same "mechanism
+now, real wiring once the source exists" shape this build has used throughout rather than
+inventing a fake calibration to look complete.
+
+Open questions raised: OQ-016 (LLM-as-judge calibration data).
+
+**What this slice put in place (step 3 — the runner)**
+
+"Implement the runner: run an agent version against a set, produce per-case scores,
+aggregate metrics, a diff against the current champion, and a cost report." Built as two
+functions in `packages/evals/src/runner.ts`: `runEvalSet` runs a set and produces per-case
+scores plus aggregate metrics — which already is the cost report, since `RunMetrics`
+carries `totalTokens`/`totalCostUsd` alongside every case's own — and `diffAgainstChampion`
+is the separate comparison the manual's own text names. Neither function decides what a
+diff _means_ for promotion (beating the champion, regressing a `must_not_regress` case) —
+that is step 4's own job, kept out of this file on purpose.
+
+`AgentExecutor` is injected, the same "mechanism now, real wiring once the source exists"
+shape `packages/orchestrator`'s own `StepExecutor` already uses: no module has a real agent
+implementation yet (Stage 08 is the first), so `runEvalSet` has nothing concrete to call
+until a caller supplies one. A case whose executor throws does not crash the run — it
+scores as one more `CaseResult`, `passed: false`, `error` set to what went wrong, the same
+"score it, don't crash the run" boundary `scorers.ts` already draws for a structurally-
+wrong output. `runEvalSet` refuses (throws `EvalRunnerError`) a set containing a case built
+for a different `agentId` — a real bug, not a case to silently score against the wrong
+thing.
+
+**Cases run sequentially, not concurrently.** Eval sets are not large enough yet to need
+the concurrency limits `packages/orchestrator`'s own runner has real reasons for (Stage 06
+step 8), and sequential execution keeps a cost report honest about what one evaluation pass
+actually spent without pulling in a concurrency-limiter dependency this step does not need.
+
+**`diffAgainstChampion(challenger, champion)` treats a `null` champion as "no champion yet"
+— every case is new, nothing regresses or improves**, since there is nothing to compare
+against; this is the correct shape for an agent's first-ever eval run, not a special case
+requiring separate handling downstream. Each `CaseDiff` carries the case's own `tags`
+forward (including `MUST_NOT_REGRESS_TAG`, unenforced here) so step 4's promotion rule has
+real data to check against without re-joining case metadata itself.
+
+Proven by `packages/evals/test/runner.spec.ts` — 16 tests: a wrong-agent case refused; a
+passing and a failing case scored correctly; a case with two expectations passing only when
+both do; tokens/cost captured from the executor and summed into `metrics`; an executor that
+throws scored as a failed case without aborting the rest of the run; aggregate metrics
+computed correctly including the `passRate: 0` (not `NaN`) case for an empty set; a case
+`rubric` and an injected `LlmJudge` threaded through to an `llm_judge` expectation;
+`templateFidelityCheckers` threaded through the same way; and execution order preserved.
+`diffAgainstChampion` proven for all five real shapes: no champion (everything new),
+regression, improvement, unchanged, a case new to the challenger only, and that tags carry
+through into the diff.
+
+Deviations from manual: none. All four named outputs (per-case scores, aggregate metrics, a
+champion diff, a cost report) exist; the cost report is the same `RunMetrics`/`CaseResult`
+data as the metrics rather than a separate structure, since duplicating the same totals
+into a second shape would only invite the two to drift.
+
+Open questions raised: none.
+
+**What this slice put in place (step 4 — champion / challenger)**
+
+"Each agent has a champion prompt version. A challenger is promoted only if it (a) beats
+the champion on the primary metric, (b) regresses no case tagged `must_not_regress`, (c)
+stays inside budget, and (d) passes a human review gate." `decidePromotion`
+(`packages/evals/src/promotion.ts`) is a pure decision function over step 3's own two
+`EvalRunResult`s plus a budget and a human verdict — it does not run anything itself, the
+same "decide, don't execute" boundary `packages/policy/src/access.ts`'s own `resolveAccess`
+already draws. Every one of the four gates is checked independently and every failing one
+is collected, not just the first — proven directly (`collects every failing gate at once`),
+since a challenger that is both over budget and missing review should not need two separate
+resubmissions to discover both problems.
+
+**This package's first real dependency on `packages/agents`.** Gate (c) reuses
+`AgentBudget` (`maxTokens`, `maxCostUsd`) exactly as `packages/agents/src/contract.ts`
+already declares it — "a ceiling on what a _single run_ of this agent may cost" — so the
+check is per case, not against the run's aggregate total, which is not what `AgentBudget`
+itself claims to bound. A case that reported no usage at all (`tokensUsed`/`costUsd` both
+`null`, e.g. its own executor threw) cannot have exceeded a budget it never reported
+spending against.
+
+**Gate (d) is recorded the same way Stage 06's own `human_gate` decisions are** — who
+decided and why (`PromotionReview`'s `decidedBy`/`reason`), never a bare boolean — and a
+missing decision is refused (`human_review_missing`) the same way an explicit rejection is
+(`human_review_not_approved`), never treated as an implicit approval.
+
+**A `null` champion (this agent's first-ever eval run) skips gates (a) and (b), not the
+whole decision.** There is no prior metric to beat and no case that could have regressed —
+the exact same "no champion yet" shape `runner.ts`'s own `diffAgainstChampion` already
+gives. Gates (c) and (d) still apply: a first version still has to fit its budget and still
+needs a human to say yes, proven by `refuses with over_budget... even with no champion` and
+the matching human-review-missing case.
+
+**The primary metric defaults to `passRate`, the one aggregate metric every run always
+has**, and is overridable via an injected `primaryMetric` function for an agent whose own
+"beats the champion" question is really about something else (cost, a specific score) — the
+same "declare a sane default, let a real caller override it" shape this build already uses
+for scorer thresholds.
+
+Proven by `packages/evals/test/promotion.spec.ts` — 11 tests: the no-champion bootstrap
+case promotes cleanly, and separately refuses on budget and on a missing review even with
+no champion to compare against; with a champion, a genuine improvement with no regression,
+no budget breach and an approval promotes; a tied or worse primary metric refuses; a
+`must_not_regress`-tagged regression refuses, while the identical regression on an
+_untagged_ case does not itself block promotion; an explicit reviewer rejection refuses
+distinctly from a missing review; all four gates failing at once are all reported together;
+and a custom `primaryMetric` function is honoured over the default.
+
+Deviations from manual: none. All four named gates are implemented and independently
+provable, including the required "a rejected promotion" case — several of them, each
+isolating one gate.
+
+Open questions raised: none.
+
+**What this slice put in place (step 5 — wiring CI)**
+
+"On any change to a prompt, agent, guardrail or retrieval code, run the affected eval
+sets. Fail the build on regression beyond the declared tolerance." Four pieces:
+`discovery.ts` finds golden sets on disk, `affected.ts` classifies which agent(s) a changed
+file touches, `gate.ts` is the tolerance-based pass/fail decision, and two real CLI
+scripts (`scripts/evals-run.ts`, `scripts/evals-gate.ts`) are what `pnpm evals:run --all`
+and `pnpm evals:gate` — the manual's own verification lines — actually invoke, wired into
+`.github/workflows/ci.yml` as a real step in the main verify job.
+
+**Golden sets live as plain JSON files** under `packages/evals/sets/<agent-id>/*.json`, one
+file holding one array of cases, loaded and validated through `validateEvalCase` the moment
+they're discovered — the same "human-editable, reviewed in a diff" reasoning a prompt file
+itself already gets, deliberately not a database table nobody reviews a change to.
+`packages/evals/champions/<agent-id>.json` is the matching store for a baseline result
+(`champion-store.ts`) — what `evaluateGate` and `decidePromotion` (step 4) both compare a
+challenger against. Both directories are empty today and committed with a `README.md`
+explaining why, the same "the mechanism is real, there is nothing to populate it with yet"
+shape this build has used since Stage 06 step 4's own BullMQ deferral.
+
+**`evaluateGate` is deliberately not `decidePromotion` reused with the human-review gate
+stripped out.** A CI gate runs on every push, unattended, deciding only "may this land," not
+"should this become the champion" — conflating the two would make an automated push able to
+silently swap the champion prompt, exactly the kind of HITL bypass rule 6 forbids. It reuses
+`diffAgainstChampion` and `MUST_NOT_REGRESS_TAG` for the one check that has zero tolerance
+(any `must_not_regress` case regressing fails outright, regardless of the declared
+pass-rate tolerance) and adds the one check that has a real, declared number: how far
+`passRate` may drop (`RegressionTolerance.maxPassRateDrop`, `0.05` as wired into
+`scripts/evals-gate.ts` today) before the build fails.
+
+**`AgentExecutorRegistry`** (`agent-executors.ts`) is the missing piece both CLI scripts
+need and nothing in this build can supply yet: a way to actually call a real agent. No
+module has one — Stage 08 is the first — so the registry starts empty, and both scripts
+treat a golden set with no registered executor as a skip, not a failure: there is nothing
+to run it against yet, an honest and expected state, not a broken one. `evals:run --all`
+and `pnpm evals:gate` were run for real against this empty repo and both exit `0` reporting
+"nothing to run"/"nothing to gate" — proving the wiring works today, even though there is
+nothing yet for it to actually gate.
+
+**Incremental "only the affected sets" narrowing is built and proven, but not wired into
+either CLI script.** `affectedAgentIds` classifies a changed-file list correctly (a
+prompt or agent-contract file names one specific agent; a guardrails/brain/policy/deident
+file is cross-cutting and returns `'all'`) and is fully unit-tested, but actually computing
+"which files changed" needs a real `git diff` against a base ref — wiring that in is a
+real future optimisation this slice chose not to build, since a full run of an empty (or,
+later, still-small) golden-set tree costs nothing to run in full today. `evals-gate.ts`'s
+own header names this choice explicitly rather than leaving it a silent gap.
+
+Proven by: `packages/evals/test/discovery.spec.ts` (empty-array for a missing directory,
+filename-ordered loading across multiple files, non-JSON files ignored, a malformed file
+and a malformed case both throwing `EvalDiscoveryError` naming the file/index);
+`packages/evals/test/affected.spec.ts` (every classification branch, deduplication, and
+`'all'` winning the moment any cross-cutting file appears alongside specific matches);
+`packages/evals/test/gate.spec.ts` (no baseline passes, an unchanged or improved pass rate
+passes, a within-tolerance drop passes, a beyond-tolerance drop fails, a
+`must_not_regress` regression fails outright even within pass-rate tolerance, an untagged
+regression alone does not fail, and both checks are reported together when both apply);
+`packages/evals/test/agent-executors.spec.ts` (registration, retrieval, refusing a
+duplicate registration, sorted listing); and a real run of both CLI scripts against the
+actual (empty) repository tree, confirmed to exit `0` with an honest "nothing found/nothing
+to run" report.
+
+Deviations from manual: none in what is checked. The affected-files narrowing is built as a
+proven, reusable function rather than wired end-to-end into the CI scripts themselves — a
+stated, reasoned scope boundary (see above), not a silent gap.
+
+Open questions raised: none.
+
+**What this slice put in place (step 6 — the golden-set growth loop)**
+
+"Every human rejection or material edit in a HITL gate becomes a candidate eval case,
+de-identified, reviewed, then added with `source: correction`." Built as two functions in
+`growth-loop.ts` with a real human required in between, matching the manual's own
+three-step description exactly: `buildCorrectionCandidate` turns a rejected or edited
+`human_gate` decision (Stage 06 step 5's own `HumanGateDecisionInput` outcome) into a
+`CorrectionCandidate` — de-identified, `reviewed: false` — and `acceptCorrectionCandidate`
+is the "reviewed, then added" half, taking real `expectations` a human supplied and only
+then producing a validated `EvalCase` with `source: 'correction'`.
+
+**A candidate deliberately has no `expectations` of its own.** Guessing what a rejection or
+an edit diff implies the case should assert — which of the nine scorers, with what
+parameters — would misrepresent this pipeline's own automated output as a human's actual
+review judgment, exactly the mistake "reviewed" in the manual's own text exists to prevent.
+A candidate is real, de-identified, and traceable back to its own HITL decision; it is not
+yet a case, and cannot become one without a human filling in what it should check.
+
+**De-identification is injected, not built here.** `packages/deident`'s own `scrub`
+operates on text against a tenant lexicon that requires a live tenant context this pure
+function does not have and should not reach for itself — `packages/evals` has no
+dependency on `packages/db`, and pulling one in for a single pipeline's own de-identify
+step would be a real layering cost for one call site. A real caller, already inside a
+tenant transaction with a real lexicon, is what wires `scrub` in for real; this file only
+guarantees every field that could carry a learner's own words (`input`, `context`,
+`editDiff`) goes through the same function, independently, so a candidate is never only
+partly de-identified.
+
+Proven by `packages/evals/test/growth-loop.spec.ts` — 7 tests: `input`/`context`/
+`editDiff` each de-identified independently; a fresh candidate always `reviewed: false`;
+`editDiff` stays `null` for a `REJECTED` decision (nothing to diff); the decision and
+reason carried through unchanged; `acceptCorrectionCandidate` producing a real `EvalCase`
+with `source: 'correction'`; optional `rubric`/`tags` carried through; and an empty
+`expectations` array refused the same way `validateEvalCase` itself already refuses one.
+
+Deviations from manual: none. The three named steps (candidate, de-identified, reviewed,
+added) are all present; de-identification's real implementation is injected for the stated
+layering reason, the same pattern this build uses throughout rather than a silent gap.
+
+Open questions raised: none.
+
+**What this slice put in place (step 7 — the permanent safety set)**
+
+"Add safety evals as a permanent set, run on every change regardless of what changed: PII
+egress, prompt injection, diagnosis-refusal, age-appropriateness, safeguarding escalation,
+cross-tenant leakage." What actually constitutes an unsafe response in each of these six
+categories is not this file's content to invent — the exact same reasoning
+`docs/OPEN_QUESTIONS.md` OQ-014/OQ-015 already give for why the guardrail engine's own
+age-appropriateness and escalation checks take an injected checker rather than a built-in
+rule, extended here to the eval side of the same six categories. What this slice builds for
+real: `buildSafetyCase`, a validated constructor that tags a case with its own category
+(from `SAFETY_TAGS`, step 1) so every safety case in the tree stays reliably findable
+regardless of who wrote its actual payload and expectations, and — the part that makes "run
+on every change regardless of what changed" literally true — `selectCasesToRun`, which
+unions whatever `affectedAgentIds` (step 5) already selected with every safety-tagged case,
+from any agent, unconditionally. A safety case is never excluded by the affected-files
+classification, and never needs that classification to name it to be included.
+
+Proven by `packages/evals/test/safety-set.spec.ts` — 9 tests: `buildSafetyCase` tags
+correctly, appends `extraTags`, and refuses a malformed candidate the same way
+`validateEvalCase` does; `isSafetyCase`/`selectSafetyCases` identify and filter correctly;
+and `selectCasesToRun` proven for all four real shapes — `'all'` returns everything, a
+specific affected list includes only those agents' own cases, a safety-tagged case for an
+_unaffected_ agent is still included, and a case that is neither affected nor safety-tagged
+is excluded.
+
+Deviations from manual: none in the mechanism. The six categories' own real payloads and
+expectations are not populated here — there is no agent yet to test them against (Stage 08
+is the first), and inventing safeguarding content without a ratified source is exactly what
+rule 0.3 already forbids elsewhere in this build. `buildSafetyCase` is what a module
+populates once it has both a real agent and a real safety policy to test against.
+
+Open questions raised: none (the underlying content gap is already OQ-014/OQ-015).
+
+**What this slice put in place (step 8 — the eval dashboard)**
+
+"Publish an eval dashboard: per agent, score over time, cost over time, champion history."
+`buildAgentDashboard` (`dashboard.ts`) assembles all three named series from a run history
+a caller already has on hand — it publishes nothing itself. No page renders this yet:
+`apps/web` has no eval surface built, the exact same "backend data shape now, the UI
+surface once one exists" split Stage 06 step 9 already drew between `inspectRun` and the
+Run Inspector's own eventual screen — a module's own admin surface, or Stage 14's
+"experience surfaces," is what will eventually call this and render it, not this stage.
+
+`scoreOverTime`/`costOverTime` come from every run in the supplied history, oldest first;
+`championHistory` comes only from runs that were actually submitted for promotion (most
+runs never are — `decidePromotion`, step 4, is only called for a challenger a team actually
+wants to ship), carrying `PromotionVerdict`'s own refusals through for a rejected entry.
+Every history entry must belong to the `agentId` the dashboard is being built for — a
+caller mixing runs from more than one agent into one history is a real bug, refused rather
+than silently mislabelling whose scores a chart is showing.
+
+Proven by `packages/evals/test/dashboard.spec.ts` — 5 tests: score/cost series sorted
+oldest-first regardless of input order; champion history including only
+promotion-submitted runs; a rejected entry carrying its own refusals through; a
+wrong-agent entry refused; and an empty history producing empty series rather than an
+error.
+
+Deviations from manual: none. All three named views exist; publishing them is explicitly
+out of scope for this stage, the same UI-surface boundary already drawn for the Run
+Inspector.
+
+Open questions raised: none.
+
+**Exit gate items proven**
+
+| Gate item                                                                    | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Harness runs the reference pipeline's agents                                 | **NOT MET, structurally.** The reference pipeline named in Stage 06's own exit gate ("three agents, one human gate, one compensation path") has no real agent implementations anywhere in this build — Stage 08 (MOD-01 Curriculum Engine) is the first stage that registers one. `runEvalSet`, `AgentExecutorRegistry` and both CLI scripts (`evals:run`/`evals:gate`) are proven against injected/fake executors and, for real, against this repo's own currently-empty `packages/evals/sets/` — genuinely wired, genuinely exercised, but with nothing real yet to point at. This closes the moment Stage 08 registers a real executor and a real golden set; it is a sequencing fact, not a defect in this stage's own work |
+| Champion/challenger promotion proven by test, including a rejected promotion | PASS — `packages/evals/test/promotion.spec.ts`, 11 tests, several of them distinct rejected-promotion cases (metric not improved, a `must_not_regress` regression, over budget, an explicit human rejection, a missing review, and all four failing at once)                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Safety set wired to run on every change                                      | PASS — `selectCasesToRun` (step 7) unions every safety-tagged case into every gate run regardless of the affected-files classification, proven in `safety-set.spec.ts`; `pnpm evals:gate` is wired for real into `.github/workflows/ci.yml`'s main verify job. The six categories' own real case _content_ is not populated (no agent exists to test it against, and inventing safeguarding content unsourced is what rule 0.3 forbids) — the wiring is what this gate item asks for, and that is proven                                                                                                                                                                                                                        |
+| Judge calibration report committed                                           | **NOT MET.** No report exists because no calibration has happened — "calibrated against at least 50 human-labelled cases" needs a dataset this build does not have and has no source for yet (OQ-016). `scoreLlmJudge`'s own mechanism is built and proven; the calibration itself is real work requiring real people, not something this stage can produce on its own                                                                                                                                                                                                                                                                                                                                                          |
+
+**Why this stage proceeds at PARTIAL rather than blocking on the two unmet items.** Both
+gaps are the same shape Stage 01's coverage item and Stage 03's own PARTIAL already
+established precedent for in this build: a real, named, tracked gap that closes through
+work outside this stage's own scope (Stage 08 existing; a human labelling exercise
+happening), not something fixable by writing more code here. Rule 1 ("never skip a stage,"
+CLAUDE.md) is about not pretending a gate passed when it did not — recorded honestly here,
+with the exact two items still open, is exactly that rule being followed, not an exception
+to it. Continuing to Stage 08 is what actually closes the first item; OQ-016 already tracks
+the second and stays open until a human supplies real labelled data.
+
+Verification commands run for real, against this exact tree: `pnpm --filter
+@infinite-ai/evals test` (144 tests, all packages), `pnpm evals:run --all` and `pnpm
+evals:gate` (both exit `0`, honestly reporting "nothing found"/"nothing to gate" against
+the currently-empty `packages/evals/sets/`). `scripts/verify-stage.ts`'s `07` entry now
+runs all three.

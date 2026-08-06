@@ -87,8 +87,38 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/brain test:integration',
     ],
   },
-  { id: '06', name: 'Agent runtime, orchestrator, guardrails, HITL', commands: [] },
-  { id: '07', name: 'Eval harness and golden sets', commands: [] },
+  {
+    id: '06',
+    name: 'Agent runtime, orchestrator, guardrails, HITL',
+    commands: [
+      // Mirrors the manual's own verification block, plus the orchestrator's own
+      // Testcontainers-backed integration tier: step 4's durability/resumability, step 5's
+      // human-gate persistence, step 7's irreversible-tool gating, step 8's concurrency
+      // wiring and step 9's telemetry columns are all proven there, against a real
+      // Postgres. No skip path, same rule Stage 01 and Stage 05 already follow.
+      'pnpm --filter @infinite-ai/agents test',
+      'pnpm --filter @infinite-ai/prompts test',
+      'pnpm --filter @infinite-ai/orchestrator test',
+      'pnpm --filter @infinite-ai/orchestrator test:integration',
+      'pnpm --filter @infinite-ai/guardrails test',
+      'pnpm test:injection',
+    ],
+  },
+  {
+    id: '07',
+    name: 'Eval harness and golden sets',
+    commands: [
+      // Mirrors the manual's own verification block. The package's own unit tests come
+      // first so a real failure inside the harness itself is diagnosed before the two CLI
+      // scripts are even asked to run — both currently report "nothing found" cleanly
+      // against this repo's still-empty packages/evals/sets, since no module has a real
+      // agent yet (Stage 08 is the first); that is the correct, honest result for this
+      // point in the build, not a passing test standing in for a real one.
+      'pnpm --filter @infinite-ai/evals test',
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
   { id: '08', name: 'MOD-01 Curriculum Engine', commands: [] },
   { id: '09', name: 'MOD-03 Data Warehouse', commands: [] },
   { id: '10', name: 'MOD-02 Support Analytics Centre', commands: [] },

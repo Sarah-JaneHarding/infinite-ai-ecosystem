@@ -15,6 +15,8 @@ export {
   PipelineStep,
   StepKind,
   validatePipelineDag,
+  validatePipelineGating,
+  type IrreversibleToolCheck,
 } from './dag.js';
 
 export {
@@ -27,6 +29,14 @@ export {
   type RunStatus,
   type StepRunStatus,
 } from './run-state-machine.js';
+
+export {
+  ConcurrencyLimiter,
+  type ConcurrencyLimits,
+  type ConcurrencySlot,
+} from './concurrency.js';
+
+export { selectNextFairly, type FairnessCandidate } from './fairness.js';
 
 export {
   OrchestratorRunnerError,
@@ -43,6 +53,10 @@ export {
   type RunnerOptions,
   type StepExecutionContext,
   type StepExecutor,
+  type StepTelemetry,
+  type StepTelemetryCollector,
 } from './runner.js';
+
+export { inspectRun, type RunInspection, type StepInspection } from './inspector.js';
 
 export const PACKAGE_NAME = '@infinite-ai/orchestrator' as const;
