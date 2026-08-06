@@ -292,6 +292,15 @@ No new dependency. `packages/evals/src/case.ts` only calls `zod`, already declar
 repo-wide in Stage 00 ("every API contract is a Zod schema") — this is simply that
 package's first real use of it.
 
+## Stage 07 step 2 — the scorers
+
+No new external dependency. `packages/evals` now depends on `@infinite-ai/guardrails`
+(workspace package, already in the tree since Stage 06 step 6) — `scorers.ts` reuses its
+`scoreReadability`, `checkGrounding` and `checkRefusalPolicy` directly for the readability,
+citation-validity and refusal-correctness scorers, rather than reimplementing any of the
+three and risking this package's notion of "correct" drifting from what the guardrail
+engine enforces at runtime.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

@@ -15,4 +15,21 @@ export {
   type SafetyTag,
 } from './case.js';
 
+export {
+  scoreCitationPresence,
+  scoreExactMatch,
+  scoreExpectation,
+  scoreJsonSchema,
+  scoreLlmJudge,
+  scoreNumericTolerance,
+  scoreReadabilityBand,
+  scoreRefusalCorrectness,
+  scoreSetOverlap,
+  scoreTemplateFidelity,
+  type LlmJudge,
+  type ScoreOptions,
+  type ScoreResult,
+  type TemplateFidelityCheckers,
+} from './scorers.js';
+
 export const PACKAGE_NAME = '@infinite-ai/evals' as const;

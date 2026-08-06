@@ -2301,3 +2301,77 @@ so declaring their shape here rather than as `unknown` avoided a second, silent 
 step 2 would otherwise have had to invent instead.
 
 Open questions raised: none.
+
+**What this slice put in place (step 2 — the scorers)**
+
+"Implement scorers: exact match, JSON-schema conformance, numeric tolerance, set overlap
+(for topic and code alignment), readability band, template fidelity, citation presence and
+validity, refusal correctness, and an LLM-as-judge scorer..." Nine scorers, one function
+each in `packages/evals/src/scorers.ts`, plus `scoreExpectation`, the single dispatcher
+`runCase` (step 3) will call once per expectation on a case. Every scorer returns a typed
+`ScoreResult` (`passed`, an optional numeric `score`, and a `detail` string) rather than
+throwing for the ordinary case — the same "a decision, never an exception" shape
+`packages/guardrails`'s own `GuardrailVerdict` already holds to, deliberately: a scorer
+that threw on a malformed output would stop a whole run over one bad case rather than
+scoring it a clean fail.
+
+**Three scorers reuse `packages/guardrails` directly rather than reimplementing.**
+Readability calls the exact same `scoreReadability` (Flesch-Kincaid) the guardrail engine
+already scores output against; citation presence-and-validity calls the exact same
+`checkGrounding` a dangling citation already fails at guardrail time; refusal correctness
+calls the exact same `checkRefusalPolicy` shape check. Reimplementing any of the three here
+would let this package's notion of "correct" quietly drift from what the guardrail engine
+actually enforces at runtime — the two are supposed to agree, checked by definition rather
+than by two independent implementations staying in sync by discipline. This is
+`packages/evals`'s first real dependency on `packages/guardrails`, recorded in
+`docs/DEPENDENCIES.md`.
+
+**Step 1's own `citation_presence` and `refusal_correctness` expectation shapes needed
+extending to be scoreable at all** — a correction, not a deviation: step 1 declared
+`citation_presence` with only `minCitations`, but "validity" (the manual's own second half
+of that scorer's name) needs to know _which_ ids were actually valid to cite, which nothing
+in the case format said. `citation_presence` now also carries `citedIdsField` (where the
+cited ids live in the output) and `validIds` (the retrieved-fact ids and CAPS clauses
+actually reachable for this case) — the same two inputs `checkGrounding` itself already
+takes. `refusal_correctness` gained an optional `refusalField` (default `"refusal"`) for
+the same reason: some way to find the claimed refusal inside an output whose shape this
+package cannot otherwise know. `readability_band` gained an optional `field` (default: the
+whole output must itself be a string) for the same reason `exact_match`/
+`numeric_tolerance`/`set_overlap` already needed one.
+
+**`llm_judge` is the one scorer this slice does not fully build.** The manual's own text
+requires it to be "calibrated against at least 50 human-labelled cases, and re-calibrated
+whenever its own model changes" — this build has neither the labelled dataset nor the
+calibration workflow that requires, and inventing either would be exactly the kind of
+unsourced process rule §0.3 forbids (OQ-016). What is built is the real mechanism:
+`LlmJudge`, an injected async function through which a real caller wires an actual Model
+Gateway call once one exists — no second path to a provider (rule 3), and this package
+never calls a model directly. `scoreLlmJudge` itself is fully proven: no rubric on the
+case, no judge supplied, a passing score, and a failing score, all through the one function
+— what remains open is trusting its verdict for a real promotion decision, not whether the
+plumbing works.
+
+**`scoreTemplateFidelity` inherits the same open gap `checkTemplateFidelity` already has**
+(OQ-003): no template is ratified yet, so with no checker registered for a case's own
+`templateId` this scores an inconclusive pass rather than refusing against a rule nobody
+wrote — stated in the function's own doc comment, not a silent gap.
+
+Proven by `packages/evals/test/scorers.spec.ts` — 36 tests: each of the eight non-judge
+scorers proven both passing and failing on the property it actually checks (an exact dot-
+path match and mismatch, schema conformance and violation, in/outside numeric tolerance, at/
+below the overlap threshold plus the "extra unexpected member does not itself count
+against overlap" case, in/outside the readability band via both an explicit field and the
+whole output, a registered template checker passing and failing plus the no-checker
+inconclusive-pass case, enough/too-few/invalid citations, and every refusal-correctness
+branch including a custom `refusalField` and a malformed claimed refusal); `scoreLlmJudge`
+proven for its four real branches (no rubric, no judge, pass, fail); and `scoreExpectation`
+proven to dispatch correctly for a sync type, the async `llm_judge` type with `rubric`/
+`judge` threaded through `ScoreOptions`, and `template_fidelity` with
+`templateFidelityCheckers` threaded through the same way.
+
+Deviations from manual: none in what each scorer checks. `llm_judge` builds the mechanism
+only, calibration explicitly out of scope pending real data (OQ-016) — the same "mechanism
+now, real wiring once the source exists" shape this build has used throughout rather than
+inventing a fake calibration to look complete.
+
+Open questions raised: OQ-016 (LLM-as-judge calibration data).

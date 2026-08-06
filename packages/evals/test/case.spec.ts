@@ -146,6 +146,8 @@ describe('Expectation', () => {
     const result = Expectation.safeParse({
       type: 'citation_presence',
       minCitations: 1,
+      citedIdsField: 'citedIds',
+      validIds: ['fact-1'],
     });
     expect(result.success).toBe(true);
   });
@@ -154,6 +156,18 @@ describe('Expectation', () => {
     const result = Expectation.safeParse({
       type: 'citation_presence',
       minCitations: 0,
+      citedIdsField: 'citedIds',
+      validIds: ['fact-1'],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a citation_presence expectation with an empty validIds', () => {
+    const result = Expectation.safeParse({
+      type: 'citation_presence',
+      minCitations: 1,
+      citedIdsField: 'citedIds',
+      validIds: [],
     });
     expect(result.success).toBe(false);
   });

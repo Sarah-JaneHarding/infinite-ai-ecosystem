@@ -60,28 +60,38 @@ export const Expectation = z.discriminatedUnion('type', [
     minOverlap: z.number().min(0).max(1),
   }),
   /** The output's Flesch-Kincaid grade level (`packages/guardrails`' own readability
-   * check) falls within `[minGrade, maxGrade]`. */
+   * check) falls within `[minGrade, maxGrade]`. `field` is a dot path to the text to
+   * score; omitted means the output itself must be a string. */
   z.object({
     type: z.literal('readability_band'),
     minGrade: z.number(),
     maxGrade: z.number(),
+    field: z.string().min(1).optional(),
   }),
   /** The output matches the structure `packages/guardrails`' own template-fidelity check
    * (OQ-015) enforces for `templateId`. */
   z.object({ type: z.literal('template_fidelity'), templateId: z.string().min(1) }),
   /** Every factual claim in the output cites a retrieved fact id or a CAPS clause — "the
-   * grounding/citation check" (step 2's own text) — and at least `minCitations` are
-   * present. */
+   * grounding/citation check" (step 2's own text) — presence AND validity: at least
+   * `minCitations` are present at `citedIdsField` (a dot path into the output), and every
+   * one of them resolves against `validIds` — the retrieved-fact ids and CAPS clauses
+   * actually reachable for this case, the same shape `packages/guardrails`' own
+   * `checkGrounding` already takes, reused here rather than reimplemented. */
   z.object({
     type: z.literal('citation_presence'),
     minCitations: z.number().int().positive(),
+    citedIdsField: z.string().min(1),
+    validIds: z.array(z.string().min(1)).min(1),
   }),
   /** The agent either must or must not refuse — and if it refuses, the refusal's own
-   * `code` must equal `expectedReasonCode` when one is given. */
+   * `code` must equal `expectedReasonCode` when one is given. `refusalField` is a dot path
+   * to the claimed refusal object (or `null`) within the output; defaults to `"refusal"`,
+   * the conventional field name `packages/guardrails`' own `checkRefusalPolicy` expects. */
   z.object({
     type: z.literal('refusal_correctness'),
     shouldRefuse: z.boolean(),
     expectedReasonCode: z.string().min(1).optional(),
+    refusalField: z.string().min(1).optional(),
   }),
   /** The LLM-as-judge scorer (step 2), reading the case's own `rubric`, must score at
    * least `minScore` on `criterion` — a named dimension of the rubric (e.g. "tone",
