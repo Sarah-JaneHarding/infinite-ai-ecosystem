@@ -45,4 +45,13 @@ export {
   type RunMetrics,
 } from './runner.js';
 
+export {
+  decidePromotion,
+  type PromotionOptions,
+  type PromotionReasonCode,
+  type PromotionRefusal,
+  type PromotionReview,
+  type PromotionVerdict,
+} from './promotion.js';
+
 export const PACKAGE_NAME = '@infinite-ai/evals' as const;

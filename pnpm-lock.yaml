@@ -242,6 +242,9 @@ importers:
 
   packages/evals:
     dependencies:
+      '@infinite-ai/agents':
+        specifier: workspace:*
+        version: link:../agents
       '@infinite-ai/guardrails':
         specifier: workspace:*
         version: link:../guardrails

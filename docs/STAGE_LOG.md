@@ -2426,3 +2426,57 @@ data as the metrics rather than a separate structure, since duplicating the same
 into a second shape would only invite the two to drift.
 
 Open questions raised: none.
+
+**What this slice put in place (step 4 — champion / challenger)**
+
+"Each agent has a champion prompt version. A challenger is promoted only if it (a) beats
+the champion on the primary metric, (b) regresses no case tagged `must_not_regress`, (c)
+stays inside budget, and (d) passes a human review gate." `decidePromotion`
+(`packages/evals/src/promotion.ts`) is a pure decision function over step 3's own two
+`EvalRunResult`s plus a budget and a human verdict — it does not run anything itself, the
+same "decide, don't execute" boundary `packages/policy/src/access.ts`'s own `resolveAccess`
+already draws. Every one of the four gates is checked independently and every failing one
+is collected, not just the first — proven directly (`collects every failing gate at once`),
+since a challenger that is both over budget and missing review should not need two separate
+resubmissions to discover both problems.
+
+**This package's first real dependency on `packages/agents`.** Gate (c) reuses
+`AgentBudget` (`maxTokens`, `maxCostUsd`) exactly as `packages/agents/src/contract.ts`
+already declares it — "a ceiling on what a _single run_ of this agent may cost" — so the
+check is per case, not against the run's aggregate total, which is not what `AgentBudget`
+itself claims to bound. A case that reported no usage at all (`tokensUsed`/`costUsd` both
+`null`, e.g. its own executor threw) cannot have exceeded a budget it never reported
+spending against.
+
+**Gate (d) is recorded the same way Stage 06's own `human_gate` decisions are** — who
+decided and why (`PromotionReview`'s `decidedBy`/`reason`), never a bare boolean — and a
+missing decision is refused (`human_review_missing`) the same way an explicit rejection is
+(`human_review_not_approved`), never treated as an implicit approval.
+
+**A `null` champion (this agent's first-ever eval run) skips gates (a) and (b), not the
+whole decision.** There is no prior metric to beat and no case that could have regressed —
+the exact same "no champion yet" shape `runner.ts`'s own `diffAgainstChampion` already
+gives. Gates (c) and (d) still apply: a first version still has to fit its budget and still
+needs a human to say yes, proven by `refuses with over_budget... even with no champion` and
+the matching human-review-missing case.
+
+**The primary metric defaults to `passRate`, the one aggregate metric every run always
+has**, and is overridable via an injected `primaryMetric` function for an agent whose own
+"beats the champion" question is really about something else (cost, a specific score) — the
+same "declare a sane default, let a real caller override it" shape this build already uses
+for scorer thresholds.
+
+Proven by `packages/evals/test/promotion.spec.ts` — 11 tests: the no-champion bootstrap
+case promotes cleanly, and separately refuses on budget and on a missing review even with
+no champion to compare against; with a champion, a genuine improvement with no regression,
+no budget breach and an approval promotes; a tied or worse primary metric refuses; a
+`must_not_regress`-tagged regression refuses, while the identical regression on an
+_untagged_ case does not itself block promotion; an explicit reviewer rejection refuses
+distinctly from a missing review; all four gates failing at once are all reported together;
+and a custom `primaryMetric` function is honoured over the default.
+
+Deviations from manual: none. All four named gates are implemented and independently
+provable, including the required "a rejected promotion" case — several of them, each
+isolating one gate.
+
+Open questions raised: none.

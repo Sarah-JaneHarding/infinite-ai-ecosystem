@@ -307,6 +307,13 @@ No new dependency. `packages/evals/src/runner.ts` only calls `scoreExpectation` 
 same package) and holds plain in-memory data structures — no package needed for either
 `runEvalSet` or `diffAgainstChampion`.
 
+## Stage 07 step 4 — champion / challenger
+
+No new external dependency. `packages/evals` now also depends on `@infinite-ai/agents`
+(workspace package, already in the tree since Stage 06 step 1) — `promotion.ts` reuses its
+`AgentBudget` type directly for the budget gate, rather than declaring a second, possibly
+divergent budget shape.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.
