@@ -2375,3 +2375,54 @@ now, real wiring once the source exists" shape this build has used throughout ra
 inventing a fake calibration to look complete.
 
 Open questions raised: OQ-016 (LLM-as-judge calibration data).
+
+**What this slice put in place (step 3 — the runner)**
+
+"Implement the runner: run an agent version against a set, produce per-case scores,
+aggregate metrics, a diff against the current champion, and a cost report." Built as two
+functions in `packages/evals/src/runner.ts`: `runEvalSet` runs a set and produces per-case
+scores plus aggregate metrics — which already is the cost report, since `RunMetrics`
+carries `totalTokens`/`totalCostUsd` alongside every case's own — and `diffAgainstChampion`
+is the separate comparison the manual's own text names. Neither function decides what a
+diff _means_ for promotion (beating the champion, regressing a `must_not_regress` case) —
+that is step 4's own job, kept out of this file on purpose.
+
+`AgentExecutor` is injected, the same "mechanism now, real wiring once the source exists"
+shape `packages/orchestrator`'s own `StepExecutor` already uses: no module has a real agent
+implementation yet (Stage 08 is the first), so `runEvalSet` has nothing concrete to call
+until a caller supplies one. A case whose executor throws does not crash the run — it
+scores as one more `CaseResult`, `passed: false`, `error` set to what went wrong, the same
+"score it, don't crash the run" boundary `scorers.ts` already draws for a structurally-
+wrong output. `runEvalSet` refuses (throws `EvalRunnerError`) a set containing a case built
+for a different `agentId` — a real bug, not a case to silently score against the wrong
+thing.
+
+**Cases run sequentially, not concurrently.** Eval sets are not large enough yet to need
+the concurrency limits `packages/orchestrator`'s own runner has real reasons for (Stage 06
+step 8), and sequential execution keeps a cost report honest about what one evaluation pass
+actually spent without pulling in a concurrency-limiter dependency this step does not need.
+
+**`diffAgainstChampion(challenger, champion)` treats a `null` champion as "no champion yet"
+— every case is new, nothing regresses or improves**, since there is nothing to compare
+against; this is the correct shape for an agent's first-ever eval run, not a special case
+requiring separate handling downstream. Each `CaseDiff` carries the case's own `tags`
+forward (including `MUST_NOT_REGRESS_TAG`, unenforced here) so step 4's promotion rule has
+real data to check against without re-joining case metadata itself.
+
+Proven by `packages/evals/test/runner.spec.ts` — 16 tests: a wrong-agent case refused; a
+passing and a failing case scored correctly; a case with two expectations passing only when
+both do; tokens/cost captured from the executor and summed into `metrics`; an executor that
+throws scored as a failed case without aborting the rest of the run; aggregate metrics
+computed correctly including the `passRate: 0` (not `NaN`) case for an empty set; a case
+`rubric` and an injected `LlmJudge` threaded through to an `llm_judge` expectation;
+`templateFidelityCheckers` threaded through the same way; and execution order preserved.
+`diffAgainstChampion` proven for all five real shapes: no champion (everything new),
+regression, improvement, unchanged, a case new to the challenger only, and that tags carry
+through into the diff.
+
+Deviations from manual: none. All four named outputs (per-case scores, aggregate metrics, a
+champion diff, a cost report) exist; the cost report is the same `RunMetrics`/`CaseResult`
+data as the metrics rather than a separate structure, since duplicating the same totals
+into a second shape would only invite the two to drift.
+
+Open questions raised: none.

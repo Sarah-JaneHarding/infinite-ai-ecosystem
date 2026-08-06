@@ -301,6 +301,12 @@ citation-validity and refusal-correctness scorers, rather than reimplementing an
 three and risking this package's notion of "correct" drifting from what the guardrail
 engine enforces at runtime.
 
+## Stage 07 step 3 — the runner
+
+No new dependency. `packages/evals/src/runner.ts` only calls `scoreExpectation` (step 2,
+same package) and holds plain in-memory data structures — no package needed for either
+`runEvalSet` or `diffAgainstChampion`.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

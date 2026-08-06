@@ -32,4 +32,17 @@ export {
   type TemplateFidelityCheckers,
 } from './scorers.js';
 
+export {
+  EvalRunnerError,
+  diffAgainstChampion,
+  runEvalSet,
+  type AgentExecutor,
+  type CaseDiff,
+  type CaseResult,
+  type EvalRunResult,
+  type RunDiff,
+  type RunEvalSetOptions,
+  type RunMetrics,
+} from './runner.js';
+
 export const PACKAGE_NAME = '@infinite-ai/evals' as const;
