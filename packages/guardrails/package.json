@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint src",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:injection": "vitest run test/prompt-injection.spec.ts"
   },
   "devDependencies": {
     "@opentelemetry/sdk-trace-base": "2.10.0",

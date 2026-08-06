@@ -1460,11 +1460,11 @@ Open questions raised: none.
 
 ## Stage 06 — Agent runtime, Prompt Registry, DAG orchestrator, guardrails, HITL
 
-Started: 2026-08-05 Completed: —
-Exit gate: **PARTIAL** — steps 1 (the Agent contract), 2 (the Agent Registry), 3 (the
-Prompt Registry), 4 (the DAG orchestrator), 5 (Human-in-the-loop gates), 6 (the Guardrail
-engine), 7 (the Tool registry) and 8 (Cost and rate control) are built and proven. Steps
-9-10 are not started. `scripts/verify-stage.ts`'s `06` entry stays empty until they are.
+Started: 2026-08-05 Completed: 2026-08-06
+Exit gate: **PASS** — all ten steps are built and proven. `scripts/verify-stage.ts`'s `06`
+entry now runs `@infinite-ai/agents`, `@infinite-ai/prompts` and `@infinite-ai/orchestrator`
+(both tiers), `@infinite-ai/guardrails`, and the named `test:injection` script, mirroring
+the manual's own verification block.
 
 **What this slice put in place (step 1 — the Agent contract)**
 
@@ -2175,3 +2175,67 @@ since this package has no route to the Brain's own provenance primitives and re-
 them would duplicate `packages/db`'s `getFactProvenance` behind this module's back.
 
 Open questions raised: none.
+
+**What this slice put in place (step 10 — the stage's own test suite)**
+
+Step 10 names six tests. Five were already proven, incrementally, by earlier steps —
+checked against the tree before writing anything new, the same discipline every step 10 in
+this build has followed:
+
+- **The compensation test** ("a failing late step rolls back earlier writes") —
+  `runner.integration.spec.ts`'s "compensation on an exhausted failure" (step 4): a
+  three-step pipeline whose third step always fails runs both earlier steps' own
+  compensations in reverse order and ends `COMPENSATED`. Nothing new needed adding.
+- **The fairness test** ("a burst from one tenant does not delay another beyond its SLO") —
+  `fairness.spec.ts`'s "a large tenant never delays a small tenant beyond one turn" (step
+  8): a thousand-run tenant and a one-run tenant, round-robin proven to alternate turn for
+  turn regardless of the size difference. Proven as an algorithm, for the same reason
+  step 8's own entry already gives — no running scheduler exists yet for a wall-clock SLO
+  test to measure against.
+- **The bypass test** ("every attempted HITL bypass fails") —
+  `runner.integration.spec.ts`'s "human gate bypass vectors" (step 5): an actor without the
+  required role, a second decision on an already-decided task, a decision on a run not
+  waiting for approval, an empty reason, and a `human_gate` step with no `prepareApproval`
+  supplied at all — five distinct bypass vectors, every one refused.
+- **The prompt-immutability test** ("editing a prompt without a version bump fails CI") —
+  `packages/prompts/test/prompt-lock.spec.ts` (step 3): not a test of the mechanism in the
+  abstract but the real gate itself, run against the actual `packages/prompts/src` tree and
+  the checked-in `prompt-lock.json` on every `pnpm test`, wired for real from the day it was
+  written even though no agent has a real prompt file yet.
+- **The injection test** ("at least 30 injection payloads embedded in retrieved documents,
+  all neutralised") — `packages/guardrails/test/prompt-injection.spec.ts` (step 6): 34
+  distinct payloads across five attack patterns (instruction override, role impersonation,
+  hidden-context exfiltration, encoding tricks, direct guardrail-disabling attempts), every
+  one refused with `prompt_injection_detected`.
+
+**Only the durability test needed writing.** "Kill the worker mid-run; on restart the run
+resumes at the correct step with no duplicated side effects" asks for something none of the
+existing tests quite proves: the _timeout_ test (step 4) already proves a single crashed
+step resumes correctly, but nothing proved that a crash mid-run leaves an _already-
+succeeded earlier step_ alone — the actual "no duplicated side effects" claim, since
+re-running a step whose effects already landed is exactly the failure mode this property
+rules out. `runner.integration.spec.ts`'s new "durability: killing the worker mid-run"
+describe block proves it directly: a three-step pipeline runs step-1 to real completion
+(persisted, not merely in memory), the worker "dies" mid-step-2 (a real `RUNNING` row,
+created directly the same way the timeout test simulates a crash, with no ever call to its
+own `executeStep`), and a wholly fresh `runToCompletion` call — the same shape a genuinely
+restarted process would make, holding no state from before — resumes at step-2, retries it
+once its timeout has elapsed, and proceeds through step-3 to `SUCCEEDED`. A per-step call
+counter proves the actual claim: step-1's executor ran exactly once (never replayed by the
+restart) and step-2's ran exactly once (a single retry, not a duplicate), which is what
+"correct step, no duplicated side effects" means made concrete.
+
+Deviations from manual: none. All six named tests are proven; one needed new code, five
+were already true and are now recorded here rather than silently assumed.
+
+Open questions raised: none.
+
+**Exit gate items proven**
+
+| Gate item                                                                                  | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A reference pipeline (three agents, one human gate, one compensation path) runs end to end | PASS — `runner.integration.spec.ts`'s "a linear pipeline of agent_call/tool_call steps" runs three real steps to `SUCCEEDED` with one trace ID throughout; "human gate decisions" runs a gated pipeline through approval to completion; "compensation on an exhausted failure" runs a pipeline with two compensatable steps through rollback. Every step kind the manual's own reference shape names (`agent_call`, `tool_call`, `human_gate`, `compensation`) is exercised end to end across these suites |
+| ...survives a worker kill                                                                  | PASS — `runner.integration.spec.ts`'s "per-step timeouts" (a single crashed step resumes correctly) and the new "durability: killing the worker mid-run" (step 10): a three-step pipeline crashes mid-step-2, and a wholly fresh `runToCompletion` call resumes at the correct step, with step-1's own executor never replayed and step-2 retried exactly once                                                                                                                                             |
+| ...and is fully inspectable                                                                | PASS — `inspectRun` (step 9), proven in `runner.integration.spec.ts`'s "run inspection and step telemetry": every attempt's input, output, error, tokens, cost, retrieved context, guardrail verdicts and derived latency, plus run-level totals, assembled from persisted state alone                                                                                                                                                                                                                     |
+| Registry boot validation rejects a deliberately malformed agent                            | PASS — `packages/agents/test/registry.spec.ts`'s `bootAgentRegistry` "throws on the first invalid candidate — a boot failure, not a partial success"                                                                                                                                                                                                                                                                                                                                                       |
+| All guardrail categories implemented and individually tested                               | PASS — every input check (schema, purpose, consent, PII, prompt-injection, token budget) and output check (schema, grounding/citation, template-fidelity, readability, age-appropriateness, refusal-policy, cost) the manual names has its own dedicated test file under `packages/guardrails/test`, plus `engine.spec.ts` proving the composed pipeline and escalation routing                                                                                                                            |

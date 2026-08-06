@@ -20,6 +20,7 @@
     "prepare": "node scripts/install-hooks.mjs",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
+    "test:injection": "pnpm --filter @infinite-ai/guardrails test:injection",
     "typecheck": "turbo run typecheck",
     "verify:stage": "tsx scripts/verify-stage.ts"
   },

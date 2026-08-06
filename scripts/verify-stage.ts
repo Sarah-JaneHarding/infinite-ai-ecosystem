@@ -87,7 +87,23 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/brain test:integration',
     ],
   },
-  { id: '06', name: 'Agent runtime, orchestrator, guardrails, HITL', commands: [] },
+  {
+    id: '06',
+    name: 'Agent runtime, orchestrator, guardrails, HITL',
+    commands: [
+      // Mirrors the manual's own verification block, plus the orchestrator's own
+      // Testcontainers-backed integration tier: step 4's durability/resumability, step 5's
+      // human-gate persistence, step 7's irreversible-tool gating, step 8's concurrency
+      // wiring and step 9's telemetry columns are all proven there, against a real
+      // Postgres. No skip path, same rule Stage 01 and Stage 05 already follow.
+      'pnpm --filter @infinite-ai/agents test',
+      'pnpm --filter @infinite-ai/prompts test',
+      'pnpm --filter @infinite-ai/orchestrator test',
+      'pnpm --filter @infinite-ai/orchestrator test:integration',
+      'pnpm --filter @infinite-ai/guardrails test',
+      'pnpm test:injection',
+    ],
+  },
   { id: '07', name: 'Eval harness and golden sets', commands: [] },
   { id: '08', name: 'MOD-01 Curriculum Engine', commands: [] },
   { id: '09', name: 'MOD-03 Data Warehouse', commands: [] },
