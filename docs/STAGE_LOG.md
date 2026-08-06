@@ -2239,3 +2239,65 @@ Open questions raised: none.
 | ...and is fully inspectable                                                                | PASS — `inspectRun` (step 9), proven in `runner.integration.spec.ts`'s "run inspection and step telemetry": every attempt's input, output, error, tokens, cost, retrieved context, guardrail verdicts and derived latency, plus run-level totals, assembled from persisted state alone                                                                                                                                                                                                                     |
 | Registry boot validation rejects a deliberately malformed agent                            | PASS — `packages/agents/test/registry.spec.ts`'s `bootAgentRegistry` "throws on the first invalid candidate — a boot failure, not a partial success"                                                                                                                                                                                                                                                                                                                                                       |
 | All guardrail categories implemented and individually tested                               | PASS — every input check (schema, purpose, consent, PII, prompt-injection, token budget) and output check (schema, grounding/citation, template-fidelity, readability, age-appropriateness, refusal-policy, cost) the manual names has its own dedicated test file under `packages/guardrails/test`, plus `engine.spec.ts` proving the composed pipeline and escalation routing                                                                                                                            |
+
+## Stage 07 — Eval harness and golden sets
+
+Started: 2026-08-06 Completed: —
+Exit gate: **PARTIAL** — step 1 (the eval case format) is built and proven. Steps 2-8 are
+not started. `scripts/verify-stage.ts`'s `07` entry stays empty until they are.
+
+**What this slice put in place (step 1 — the eval case format)**
+
+"Define eval case format in `packages/evals`: `{ id, agentId, input, context,
+expectations[], rubric, tags[], source }`. `source` records whether the case came from a
+specification, a real human correction, or an incident." `packages/evals` existed only as
+a Stage 00 stub before this slice (a `PACKAGE_NAME` export, kept so the workspace graph and
+CI were real from day one) — this is the first real code in it.
+
+`packages/evals/src/case.ts`: `EvalCase`, one Zod schema covering every field the manual's
+own step 1 names, plus `validateEvalCase`, the same "unknown plus a Zod parse" boundary
+(rule 8) every other contract in this codebase already uses. `agentId` is a plain validated
+string rather than cross-checked against a real `AgentContract` — the same "declare now,
+verify once the owner exists" shape `AgentContract.evalSetRef` already uses in the opposite
+direction; step 3's runner is what resolves an agent id for real. `input` and `context` are
+`unknown`: what an agent actually receives is that agent's own `inputSchema` (Stage 06 step
+1), and this package has no route to re-derive it without depending on every module that
+will ever register an agent.
+
+**`expectations[]` needed real structure, not `unknown`, to be worth anything.** Step 2
+names nine scorers by name (exact match, JSON-schema conformance, numeric tolerance, set
+overlap, readability band, template fidelity, citation presence and validity, refusal
+correctness, LLM-as-judge); `Expectation` is a discriminated union with one variant per
+scorer, each carrying exactly the parameters that scorer will need — the same "declare the
+shape now, the enforcement follows" pattern `AgentContract`'s own `tools`/`guardrails`
+fields already used against Stage 06 steps 6-7. `llm_judge` deliberately does not carry its
+own rubric text: it reads the case's single top-level `rubric` instead, so two judge
+expectations on the same case cannot disagree about what they are grading.
+
+**Two named constants, not yet consumed by anything, declared here because this is where
+the format's own vocabulary belongs.** `MUST_NOT_REGRESS_TAG` is the exact tag string step
+4's champion/challenger promotion rule names ("regresses no case tagged
+`must_not_regress`") — exported now so step 4 has a real constant to check against rather
+than a magic string two files could disagree on the spelling of. `SAFETY_TAGS` names all
+six categories step 7's permanent safety set asks for (PII egress, prompt injection,
+diagnosis-refusal, age-appropriateness, safeguarding escalation, cross-tenant leakage) for
+the same reason. Neither is enforced against a case's own `tags` field, which stays open
+free text — a case can carry any tag, the same way `AgentModule` validates shape rather
+than a closed list for the same "real, anticipated extension" reason.
+
+Proven by `packages/evals/test/case.spec.ts`: a fully-declared case round-trips; all three
+`source` values are accepted; a case with and without a `rubric` both validate; a case
+missing a required field, an unrecognised `source`, an empty `expectations` array, an
+unrecognised expectation `type`, and an empty-string tag are all refused; every
+`Expectation` variant is individually proven accepted with valid parameters and refused
+with an invalid one (a `json_schema` expectation whose `schema` is not a real Zod instance,
+a negative `numeric_tolerance`, a `minOverlap` outside 0-1, a non-positive
+`minCitations`); and both named constants are proven usable as real case tags.
+
+Deviations from manual: none in the six required fields. `Expectation`'s own nine-variant
+shape is this slice's own design choice, not literally specified by step 1's text beyond
+"expectations[]" — built now because step 2 already names exactly which scorers must exist,
+so declaring their shape here rather than as `unknown` avoided a second, silent contract
+step 2 would otherwise have had to invent instead.
+
+Open questions raised: none.

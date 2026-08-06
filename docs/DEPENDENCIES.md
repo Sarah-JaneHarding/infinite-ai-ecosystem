@@ -286,6 +286,12 @@ No new dependency. `packages/orchestrator/src/inspector.ts` only calls `getRun`/
 plain object/array operations. The four new `OrchestratorStepRun` columns are a plain
 Prisma migration, no new package.
 
+## Stage 07 step 1 — the eval case format
+
+No new dependency. `packages/evals/src/case.ts` only calls `zod`, already declared
+repo-wide in Stage 00 ("every API contract is a Zod schema") — this is simply that
+package's first real use of it.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.
