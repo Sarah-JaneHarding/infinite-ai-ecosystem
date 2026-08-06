@@ -1462,9 +1462,9 @@ Open questions raised: none.
 
 Started: 2026-08-05 Completed: —
 Exit gate: **PARTIAL** — steps 1 (the Agent contract), 2 (the Agent Registry), 3 (the
-Prompt Registry), 4 (the DAG orchestrator) and 5 (Human-in-the-loop gates) are built and
-proven. Steps 6-10 are not started. `scripts/verify-stage.ts`'s `06` entry stays empty
-until they are.
+Prompt Registry), 4 (the DAG orchestrator), 5 (Human-in-the-loop gates) and 6 (the
+Guardrail engine) are built and proven. Steps 7-10 are not started.
+`scripts/verify-stage.ts`'s `06` entry stays empty until they are.
 
 **What this slice put in place (step 1 — the Agent contract)**
 
@@ -1812,3 +1812,133 @@ above — both are scope decisions the manual's own step 5 text leaves open, not
 from anything it actually specifies.
 
 Open questions raised: none.
+
+**What this slice put in place (step 6 — the Guardrail engine)**
+
+`packages/guardrails/src/refusal.ts`: the one typed `Refusal` result every check in this
+package returns — `code` (a closed `RefusalReasonCode` enum), `explanation` (a required,
+non-empty user-facing string) and `escalation` (`EscalationRoute | null`). `GuardrailVerdict`
+is `{ passed: true } | { passed: false; refusal: Refusal }` — a decision, never a thrown
+error for the ordinary case, the same reasoning `packages/policy/src/access.ts`'s own
+`resolveAccess` already gives for a purpose/consent drop. `RefusalReasonCode` reuses the
+exact reason strings `pii-guard.ts`'s `EgressRefusal` and `packages/policy`'s `DropReason`
+already produce rather than renaming them, with a compile-time-only check
+(`AssertSubset`) that fails to typecheck if either vocabulary grows a value this file
+forgets to add.
+
+`packages/guardrails/src/input-checks.ts` (the manual's five input checks, three of them
+composing what already exists rather than rebuilding it): `checkInputSchema` (a plain Zod
+`safeParse`); `checkPurposeAndConsent`, which calls `packages/policy`'s own `resolveAccess`
+(Stage 03 step 3) and refuses if any category this call actually requires was dropped —
+not merely "requested", since `resolveAccess` itself is a projection and a caller can ask
+for more than it strictly needs; `checkPii`, a thin wrapper over `inspectEgress` (Stage 03
+step 5); `checkPromptInjection` (new — see below); and `checkTokenBudget`, reusing the
+exact `Math.ceil(text.length / 4)` heuristic `packages/brain/src/retrieval-assembly.ts`'s
+own `estimateTokens` already established, for the same reason: a real tokenizer is a
+dependency this stage does not yet justify, and a conservative overestimate still
+guarantees the budget is never silently exceeded.
+
+`packages/guardrails/src/prompt-injection.ts`: a rules-based detector — eighteen named,
+narrow regex patterns across four families (direct instruction override, role/system
+impersonation, exfiltration of the hidden context, and encoding tricks including a
+zero-width-character class) — checked against every text a call would send to a model,
+retrieved documents and user-supplied text alike, since the manual names both. A match
+refuses the whole call outright rather than attempting to strip the offending span and
+continue: "sanitising" an injection in place would mean guessing which part of a retrieved
+document is safe to keep, the same silent-recovery failure mode rule 4's own reasoning (in
+`pii-guard.ts`) already rejects for PII. Proven against 34 distinct payloads in
+`test/prompt-injection.spec.ts` — the manual's own step 10 asks for "at least 30... all
+neutralised"; this is that proof, built here rather than deferred.
+
+`packages/guardrails/src/readability.ts`: a real Flesch-Kincaid Grade Level calculator —
+`0.39 * (words/sentences) + 11.8 * (syllables/words) - 15.59` — with a heuristic
+vowel-group syllable counter, the same "a real, computable metric, honestly approximate
+where exactness needs a dependency this stage does not justify" bar the token estimate
+already sets. A very short, simple sentence can legitimately score below zero under this
+formula; that surfaced in this slice's own tests as a fixture bug (an assumed `minGrade: 0`
+range), not a defect in the arithmetic, and the tests were corrected rather than the
+formula bent to match a wrong expectation.
+
+`packages/guardrails/src/output-checks.ts` (the manual's seven output checks):
+`checkOutputSchema` (Zod, symmetric with the input side); `checkGrounding`, which does not
+extract claims from free text — that is real NLP work this stage does not build — but
+takes the citation ids an agent's own structured output already declares and refuses the
+first one that does not resolve against the ids actually available to cite (retrieved-fact
+ids from `packages/brain`'s `RetrievalCandidate.id`, unioned with any CAPS
+`SourceRef.clause` reached for the call); `checkReadability`, wrapping the calculator
+above against a caller-declared grade band; `checkRefusalPolicy`, which validates a
+claimed refusal's own shape when `claimedRefusal` is not null and passes trivially when it
+is (nothing to check); and `checkCost`, symmetric with the input side's token check.
+**Two checks are real mechanisms with no built-in rule:** `checkTemplateFidelity` and
+`checkAgeAppropriateness` each take an optional injected checker and pass every output
+when none is supplied — not a silent guarantee, but the same "mechanism now, real check
+wired in once the source exists" shape `packages/agents/src/registry.ts`'s
+`promptExists`/`evalSetExists` already established in step 2. Neither has a source this
+codebase can validate against yet: `docs/OPEN_QUESTIONS.md` OQ-003 already asks for the
+school's own artefact templates before template-fidelity can be built for real; OQ-015
+(new, this step) asks the same question for an age-appropriateness content policy —
+inventing either would be exactly the kind of unsourced policy rule 0.3 forbids for
+curriculum content, applied here to content-suitability rules instead.
+
+`packages/guardrails/src/engine.ts`: `runInputGuardrails`/`runOutputGuardrails` run each
+side's fixed pipeline in the manual's own order and stop at the first refusal — the same
+"gates in a fixed order, first failure wins" shape `resolveAccess`'s three-gate order
+already established, applied across every check this stage builds. Each phase wraps one
+trace span (Definition of Done: "emits a trace span"), with one `addEvent` per check
+naming it and whether it passed. `AgentContract.guardrails` (step 1) names additional
+checks a specific agent runs beyond this fixed set; resolving those names to real
+functions is a stated follow-up for whichever module first declares one — nothing exists
+yet to resolve.
+
+**Refusal and escalation, made structural rather than merely typed.** Whenever either
+phase's resulting refusal carries a non-null `escalation`, the engine awaits an
+`EscalationNotifier` before returning — "pages a named human immediately and never
+queues" made concrete as an absence: there is no queue, no worker, nothing to enqueue
+onto, only a direct, awaited call. **None of this engine's own built-in mechanical checks
+ever set an escalation route** — a schema failure, a budget overrun or a dangling citation
+is not a safeguarding concern, and inventing a taxonomy of safeguarding categories to
+attach to one would be exactly the unsourced-policy problem `EscalationRoute.category`'s
+own comment already refuses to do (a free string, not a closed enum, for the same reason
+`AgentModule`'s own pattern is a shape rather than an enumerated list). The mechanism
+exists for whenever a real safeguarding-detecting check is added later — proven in tests
+via the injectable `ageAppropriatenessChecker`, the one lever available today that can
+construct an escalating refusal at all.
+
+**`defaultEscalationNotifier` throws rather than silently succeeding.** No paging
+integration (SMS, phone, PagerDuty or similar) is available in this build — it needs a
+third-party account this environment does not have, recorded as OQ-014 (new, this step).
+A silent no-op default would be worse than the gap it papers over: an escalation that
+"succeeded" without reaching anyone. Throwing `GuardrailEscalationError` means a
+deployment that has not wired a real notifier finds out at the moment it would matter, the
+same fail-loud-not-silent philosophy `pii-guard.ts` already holds for a payload with no
+provenance stamp.
+
+**No `@infinite-ai/db` dependency, and no audit-ledger entry written here.** The Definition
+of Done also asks for "where relevant... an audit-ledger entry"; this engine does not
+write one, because nothing yet calls it at a point where a tenant transaction is already
+open to append one into — that wiring belongs to whichever call site first invokes a real
+agent (Stage 06's own agent-runtime integration, not yet built). A trace span is real and
+present now; the audit entry is a stated follow-up for that caller, the same "mechanism
+now, real caller later" shape this stage has used throughout.
+
+Proven by 150 tests across seven files: `test/prompt-injection.spec.ts` (34 distinct
+payloads across four technique families, all refused, plus benign multi-document text
+passing clean); `test/readability.spec.ts` (the empty-text zero case, short-versus-complex
+ordering, and the no-closing-punctuation edge case); `test/input-checks.spec.ts` and
+`test/output-checks.spec.ts` (every one of the twelve checks, both its passing and its
+refusing path, with the exact reason code asserted); `test/engine.spec.ts` (full-pass
+composition, fail-fast ordering across two simultaneously-failing checks, one trace span
+per phase, escalation awaited before a refusal is returned, and `defaultEscalationNotifier`
+throwing rather than silently succeeding); and the existing `test/pii-guard.spec.ts` (99
+tests, untouched). `test/exports.spec.ts` extended to the full new surface, still asserting
+no export name contains `bypass`, `allowlist`, `force`, `skip`, `override` or `disable`.
+
+Deviations from manual: none in what is checked. Two checks (`checkTemplateFidelity`,
+`checkAgeAppropriateness`) are real mechanisms without a built-in rule because this
+codebase has no source to validate against yet (OQ-003, OQ-015) — the same honest gap
+pattern this stage has used repeatedly, not a silently lowered bar. Escalation paging
+needs a real third-party integration this build does not have (OQ-014) and fails loudly
+rather than pretending to succeed.
+
+Open questions raised: OQ-014 (escalation paging needs a real integration), OQ-015
+(age-appropriateness needs a supplied content policy).

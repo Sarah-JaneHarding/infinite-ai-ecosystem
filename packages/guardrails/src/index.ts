@@ -10,4 +10,50 @@ export {
   type EgressVerdict,
 } from './pii-guard.js';
 
+export {
+  PASSED,
+  Refusal,
+  RefusalReasonCode,
+  EscalationRoute,
+  refuse,
+  type GuardrailVerdict,
+} from './refusal.js';
+
+export { checkPromptInjection } from './prompt-injection.js';
+
+export { scoreReadability, type ReadabilityResult } from './readability.js';
+
+export {
+  checkInputSchema,
+  checkPii,
+  checkPurposeAndConsent,
+  checkTokenBudget,
+  type TokenBudget,
+} from './input-checks.js';
+
+export {
+  checkAgeAppropriateness,
+  checkCost,
+  checkGrounding,
+  checkOutputSchema,
+  checkReadability,
+  checkRefusalPolicy,
+  checkTemplateFidelity,
+  type AgeAppropriatenessChecker,
+  type CostBudget,
+  type ReadabilityRange,
+  type TemplateFidelityChecker,
+} from './output-checks.js';
+
+export {
+  GuardrailEscalationError,
+  defaultEscalationNotifier,
+  runInputGuardrails,
+  runOutputGuardrails,
+  type EscalationNotifier,
+  type GuardrailRunOptions,
+  type InputGuardrailInput,
+  type OutputGuardrailInput,
+} from './engine.js';
+
 export const PACKAGE_NAME = '@infinite-ai/guardrails' as const;
