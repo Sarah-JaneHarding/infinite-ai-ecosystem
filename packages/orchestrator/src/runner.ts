@@ -60,6 +60,7 @@ import {
   type ApprovalTaskRow,
   type OrchestratorRunRow,
   type OrchestratorStepRunRow,
+  type StepRunOutcome,
   type TenantClient,
 } from '@infinite-ai/db';
 import { NOOP_TRACER, type Tracer } from '@infinite-ai/telemetry';
@@ -102,6 +103,26 @@ export type StepExecutor = (context: StepExecutionContext) => Promise<unknown>;
 
 export type ConditionEvaluator = (condition: string, input: unknown) => boolean;
 
+/** What a successful step reported using, retrieved, and was checked against — the Run
+ * Inspector's own required fields (Stage 06 step 9). Called after `executeStep` resolves,
+ * never on a failed or retried attempt: nothing today captures usage from an attempt that
+ * failed before reporting it, a stated scope boundary (see `docs/STAGE_LOG.md`'s step 9
+ * entry). Any field left `undefined` stays `null` on the persisted row. */
+export type StepTelemetryCollector = (
+  context: StepExecutionContext,
+  output: unknown,
+) => StepTelemetry | undefined;
+
+export interface StepTelemetry {
+  readonly tokensUsed?: number;
+  readonly costUsd?: number;
+  /** `packages/brain`'s own `AssembledContext` shape, opaque here — this package does not
+   * depend on `packages/brain`. */
+  readonly retrievedContext?: unknown;
+  /** `packages/guardrails`'s own `GuardrailVerdict[]`, opaque here for the same reason. */
+  readonly guardrailVerdicts?: unknown;
+}
+
 export interface HumanGateContext {
   readonly runId: string;
   readonly stepId: string;
@@ -134,6 +155,9 @@ export interface RunnerOptions {
   /** Caps concurrent `agent_call`/agent-compensation execution per tenant and per agent
    * (Stage 06 step 8). Omitted means unlimited — every existing call site, unchanged. */
   readonly concurrencyLimiter?: ConcurrencyLimiter;
+  /** Stage 06 step 9. Omitted means no telemetry is captured — every existing call site,
+   * unchanged. */
+  readonly collectStepTelemetry?: StepTelemetryCollector;
   readonly retryBaseMs?: number;
   readonly retryMaxMs?: number;
   readonly random?: () => number;
@@ -291,6 +315,26 @@ function stepFor(pipeline: PipelineDefinition, stepId: string): PipelineStep {
     );
   }
   return step;
+}
+
+function succeededOutcome(
+  options: RunnerOptions,
+  context: StepExecutionContext,
+  output: unknown,
+): StepRunOutcome {
+  const telemetry = options.collectStepTelemetry?.(context, output);
+  return {
+    status: 'SUCCEEDED',
+    output,
+    ...(telemetry?.tokensUsed !== undefined && { tokensUsed: telemetry.tokensUsed }),
+    ...(telemetry?.costUsd !== undefined && { costUsd: telemetry.costUsd }),
+    ...(telemetry?.retrievedContext !== undefined && {
+      retrievedContext: telemetry.retrievedContext,
+    }),
+    ...(telemetry?.guardrailVerdicts !== undefined && {
+      guardrailVerdicts: telemetry.guardrailVerdicts,
+    }),
+  };
 }
 
 function latestAttempt(
@@ -471,13 +515,14 @@ async function executeForwardStep(
     attempt,
   });
   try {
-    const output = await options.executeStep({
+    const context: StepExecutionContext = {
       runId: run.id,
       stepId: step.id,
       attempt,
       input: run.input,
-    });
-    await finishStepRun(tx, stepRun.id, { status: 'SUCCEEDED', output }, now);
+    };
+    const output = await options.executeStep(context);
+    await finishStepRun(tx, stepRun.id, succeededOutcome(options, context, output), now);
     const nextId = nextStepAfterSuccess(step);
     return await advanceToNextStep(tx, run.id, step.id, nextId, now);
   } catch (error) {
@@ -611,13 +656,19 @@ async function runCompensation(
       step_id: compensationStepId,
     });
     try {
-      const output = await options.executeStep({
+      const context: StepExecutionContext = {
         runId: run.id,
         stepId: compensationStepId,
         attempt: 0,
         input: run.input,
-      });
-      await finishStepRun(tx, stepRun.id, { status: 'SUCCEEDED', output }, now);
+      };
+      const output = await options.executeStep(context);
+      await finishStepRun(
+        tx,
+        stepRun.id,
+        succeededOutcome(options, context, output),
+        now,
+      );
     } catch (error) {
       span.recordException(error);
       const message = error instanceof Error ? error.message : String(error);

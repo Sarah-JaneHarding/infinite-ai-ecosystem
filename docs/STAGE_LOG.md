@@ -2108,3 +2108,70 @@ follow-up (wire `apps/worker`, then call `selectNextFairly` from within it) is n
 guessed at.
 
 Open questions raised: none.
+
+**What this slice put in place (step 9 — the Run Inspector)**
+
+"A developer-facing view of any run: DAG, per-step inputs and outputs, retrieved context
+with provenance, guardrail verdicts, tokens, cost, latency. This is your primary debugging
+tool for the rest of the build — do not skip it." Most of this was already derivable from
+persisted state: `getRun` and `listStepRuns` (Stage 06 step 4) already carry every
+attempt's input, output, error and timestamps, and a pipeline's own DAG is `dag.ts`'s
+`PipelineDefinition`. Four fields had nowhere to live, though — tokens, cost, retrieved
+context, guardrail verdicts — since nothing built so far captures usage from a step
+attempt. This slice adds the missing persistence and the one function that assembles all
+of it into a single view.
+
+`packages/db/prisma/schema.prisma`: `OrchestratorStepRun` gains four nullable columns —
+`tokensUsed`, `costUsd`, `retrievedContext`, `guardrailVerdicts` — added via the plain
+`ALTER TABLE ADD COLUMN` migration `20260806030000_stage06_step_run_telemetry`. Unlike the
+`CREATE TABLE` migrations elsewhere in this stage, no foreign key is being validated here,
+so the FORCE ROW LEVEL SECURITY tenant-context wrapper those migrations need does not apply
+to this one — the migration's own header explains why. `StepRunOutcome`'s `SUCCEEDED`
+variant (`packages/db/src/orchestrator.ts`) grew four optional fields to match;
+`finishStepRun` persists whichever of them a caller actually supplied, leaving the rest
+`null` exactly as before. Real, typed, nullable columns rather than an informal
+JSON-within-`output` convention, for the same reason the rest of this codebase prefers
+enforced fields over soft conventions.
+
+`packages/orchestrator/src/runner.ts`: a new optional `RunnerOptions.collectStepTelemetry`
+(`StepTelemetryCollector`) called immediately after a successful `executeStep`, on both the
+forward-step and compensation-step success paths — the only two places a step's `output` is
+already in hand. Its result feeds straight into the `SUCCEEDED` outcome passed to
+`finishStepRun`. **Scoped to successful attempts only**: a step that fails or times out
+never reaches this call, so an attempt that failed before reporting its own usage has
+nothing recorded against it — a stated scope boundary, not a silent gap, matching the same
+boundary already drawn on the new database columns. Omitting the option is unchanged
+behaviour for every existing call site — the telemetry columns simply stay `null`.
+
+`packages/orchestrator/src/inspector.ts`: `inspectRun(tx, runId, pipeline?)`, the one
+function this step's own text asks for. Reads `getRun` plus `listStepRuns` and reshapes
+them into one `RunInspection` — every attempt's input, output, error, tokens, cost,
+retrieved context, guardrail verdicts, and a derived `latencyMs` (`completedAt -
+startedAt`, `null` when either is missing); run-level `totalTokens`/`totalCostUsd`/
+`totalLatencyMs` summed across every attempt that reported one. `pipeline` is optional:
+supplying it annotates each attempt with its step's own `kind` and names the DAG's
+`entryStepId`; omitting it still returns a run's full attempt history; a run for an old
+pipeline version no longer on hand is still inspectable. Read-only and re-derived from
+persisted state every call, the same resumability idiom the rest of this package holds to
+— never a second source of truth. Returns `null` for a run id that does not resolve in the
+current tenant, rather than throwing, matching `getRun`'s own contract.
+
+Proven by three new integration tests in `packages/orchestrator/test/
+runner.integration.spec.ts`'s new describe block, against a real Postgres: a two-step
+pipeline where one step retries once — the failed attempt's row has `tokensUsed`/`costUsd`
+still `null`, the succeeded retry has both populated, a `tool_call` step's own retrieved
+context and guardrail verdicts are captured independently, `entryStepId` and each step's
+`kind` are correctly annotated from the supplied pipeline, and `totalTokens`/`totalCostUsd`
+sum only the attempts that actually reported them; `inspectRun` on an unknown run id
+returns `null`; and omitting `collectStepTelemetry` and the `pipeline` argument entirely
+leaves every telemetry field and `kind` annotation `null`, unchanged behaviour for a caller
+that supplies neither.
+
+Deviations from manual: none. Every field the manual's own list names is present in
+`RunInspection`; "provenance" for retrieved context is carried as whatever
+`collectStepTelemetry` hands back (`packages/brain`'s own `AssembledContext` shape, opaque
+to this package, which does not depend on `packages/brain`) rather than re-derived here,
+since this package has no route to the Brain's own provenance primitives and re-deriving
+them would duplicate `packages/db`'s `getFactProvenance` behind this module's back.
+
+Open questions raised: none.

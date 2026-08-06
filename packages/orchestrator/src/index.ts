@@ -53,6 +53,10 @@ export {
   type RunnerOptions,
   type StepExecutionContext,
   type StepExecutor,
+  type StepTelemetry,
+  type StepTelemetryCollector,
 } from './runner.js';
+
+export { inspectRun, type RunInspection, type StepInspection } from './inspector.js';
 
 export const PACKAGE_NAME = '@infinite-ai/orchestrator' as const;

@@ -279,6 +279,13 @@ cooldown) is small enough that a library would trade a real dependency (a licenc
 track, a supply-chain surface, an API to learn) for less clarity than fifty lines of plain
 TypeScript this team already owns end to end.
 
+## Stage 06 step 9 — the Run Inspector
+
+No new dependency. `packages/orchestrator/src/inspector.ts` only calls `getRun`/
+`listStepRuns` (`@infinite-ai/db`, already a dependency) and reshapes their result with
+plain object/array operations. The four new `OrchestratorStepRun` columns are a plain
+Prisma migration, no new package.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

@@ -70,6 +70,12 @@ export interface OrchestratorStepRunRow {
   readonly input: unknown;
   readonly output: unknown;
   readonly error: string | null;
+  /** Stage 06 step 9 — the Run Inspector's own required fields. `null` unless a
+   * `SUCCEEDED` outcome reported them; see this row's own schema comment for why. */
+  readonly tokensUsed: number | null;
+  readonly costUsd: number | null;
+  readonly retrievedContext: unknown;
+  readonly guardrailVerdicts: unknown;
   readonly startedAt: Date | null;
   readonly nextAttemptAt: Date | null;
   readonly completedAt: Date | null;
@@ -122,6 +128,10 @@ function toStepRunRow(row: {
   input: unknown;
   output: unknown;
   error: string | null;
+  tokensUsed: number | null;
+  costUsd: number | null;
+  retrievedContext: unknown;
+  guardrailVerdicts: unknown;
   startedAt: Date | null;
   nextAttemptAt: Date | null;
   completedAt: Date | null;
@@ -224,7 +234,18 @@ export async function startStepRun(
 }
 
 export type StepRunOutcome =
-  | { readonly status: 'SUCCEEDED'; readonly output: unknown }
+  | {
+      readonly status: 'SUCCEEDED';
+      readonly output: unknown;
+      /** Stage 06 step 9 — the Run Inspector's own required fields. Optional because not
+       * every caller has telemetry to report (only a run wired with
+       * `RunnerOptions.collectStepTelemetry` produces these); omitted fields stay `null`
+       * on the row, exactly as they were before this attempt. */
+      readonly tokensUsed?: number;
+      readonly costUsd?: number;
+      readonly retrievedContext?: unknown;
+      readonly guardrailVerdicts?: unknown;
+    }
   | { readonly status: 'FAILED'; readonly error: string }
   /** This specific attempt failed but will be retried — `error` records what happened on
    * this attempt; the row's own status is `RETRY_SCHEDULED` rather than `FAILED` because
@@ -253,6 +274,18 @@ export async function finishStepRun(
       data.status = 'SUCCEEDED';
       data.output = outcome.output as Prisma.InputJsonValue;
       data.completedAt = now;
+      if (outcome.tokensUsed !== undefined) {
+        data.tokensUsed = outcome.tokensUsed;
+      }
+      if (outcome.costUsd !== undefined) {
+        data.costUsd = outcome.costUsd;
+      }
+      if (outcome.retrievedContext !== undefined) {
+        data.retrievedContext = outcome.retrievedContext as Prisma.InputJsonValue;
+      }
+      if (outcome.guardrailVerdicts !== undefined) {
+        data.guardrailVerdicts = outcome.guardrailVerdicts as Prisma.InputJsonValue;
+      }
       break;
     case 'FAILED':
       data.status = 'FAILED';

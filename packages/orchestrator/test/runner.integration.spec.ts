@@ -21,6 +21,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { ConcurrencyLimiter } from '../src/concurrency.js';
 import { PipelineDagError, type PipelineDefinition } from '../src/dag.js';
+import { inspectRun } from '../src/inspector.js';
 import {
   OrchestratorRunnerError,
   advanceRun,
@@ -30,6 +31,7 @@ import {
   startRun,
   type ApprovalMaterialProvider,
   type StepExecutionContext,
+  type StepTelemetryCollector,
 } from '../src/runner.js';
 import { startTestDatabase, type TestDatabase } from './support/database.js';
 
@@ -907,5 +909,139 @@ describe('concurrency limiting (Stage 06 step 8)', () => {
       });
     });
     expect(finished.status).toBe('SUCCEEDED');
+  });
+});
+
+describe('run inspection and step telemetry (Stage 06 step 9)', () => {
+  it('captures tokens/cost/retrieved-context/guardrail-verdicts only on succeeded attempts, and inspectRun totals them', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'telemetry-pipeline',
+      version: '1.0.0',
+      entryStepId: 'flaky',
+      steps: {
+        flaky: {
+          ...STEP_COMMON,
+          id: 'flaky',
+          kind: 'agent_call',
+          agentId: 'CE-01',
+          next: 'step-2',
+          maxRetries: 1,
+        },
+        'step-2': {
+          ...STEP_COMMON,
+          id: 'step-2',
+          kind: 'tool_call',
+          toolName: 'publish',
+          next: null,
+        },
+      },
+    };
+
+    let flakyAttempts = 0;
+    const collectStepTelemetry: StepTelemetryCollector = (ctx) => {
+      if (ctx.stepId === 'flaky') return { tokensUsed: 100, costUsd: 0.01 };
+      if (ctx.stepId === 'step-2') {
+        return {
+          retrievedContext: { facts: ['f1'] },
+          guardrailVerdicts: [{ passed: true }],
+        };
+      }
+      return undefined;
+    };
+
+    const { finished, inspection } = await withTenant(
+      { tenantId, actorId },
+      async (tx) => {
+        const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+        const finished = await runToCompletion(
+          tx,
+          pipeline,
+          run.id,
+          {
+            executeStep: async (ctx) => {
+              if (ctx.stepId === 'flaky') {
+                flakyAttempts += 1;
+                if (flakyAttempts === 1) throw new Error('transient failure');
+              }
+              return { done: ctx.stepId };
+            },
+            collectStepTelemetry,
+            retryBaseMs: 0,
+            retryMaxMs: 0,
+            random: () => 0,
+          },
+          new Date('2026-08-06T00:00:00.000Z'),
+        );
+        const inspection = await inspectRun(tx, run.id, pipeline);
+        return { finished, inspection };
+      },
+    );
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(inspection).not.toBeNull();
+    expect(inspection?.entryStepId).toBe('flaky');
+
+    const flakyAttempt0 = inspection?.steps.find(
+      (s) => s.stepId === 'flaky' && s.attempt === 0,
+    );
+    expect(flakyAttempt0?.status).toBe('RETRY_SCHEDULED');
+    expect(flakyAttempt0?.tokensUsed).toBeNull(); // the failed attempt reported nothing
+    expect(flakyAttempt0?.costUsd).toBeNull();
+
+    const flakyAttempt1 = inspection?.steps.find(
+      (s) => s.stepId === 'flaky' && s.attempt === 1,
+    );
+    expect(flakyAttempt1?.status).toBe('SUCCEEDED');
+    expect(flakyAttempt1?.kind).toBe('agent_call');
+    expect(flakyAttempt1?.tokensUsed).toBe(100);
+    expect(flakyAttempt1?.costUsd).toBe(0.01);
+
+    const step2 = inspection?.steps.find((s) => s.stepId === 'step-2');
+    expect(step2?.kind).toBe('tool_call');
+    expect(step2?.retrievedContext).toEqual({ facts: ['f1'] });
+    expect(step2?.guardrailVerdicts).toEqual([{ passed: true }]);
+    expect(step2?.tokensUsed).toBeNull();
+
+    expect(inspection?.totalTokens).toBe(100);
+    expect(inspection?.totalCostUsd).toBe(0.01);
+  });
+
+  it('returns null for a run that does not exist in this tenant', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const inspection = await withTenant({ tenantId, actorId }, (tx) =>
+      inspectRun(tx, randomUUID()),
+    );
+    expect(inspection).toBeNull();
+  });
+
+  it('omits collectStepTelemetry with no change in behaviour, leaving telemetry columns null', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'no-telemetry-pipeline',
+      version: '1.0.0',
+      entryStepId: 'step-1',
+      steps: {
+        'step-1': {
+          ...STEP_COMMON,
+          id: 'step-1',
+          kind: 'agent_call',
+          agentId: 'CE-01',
+          next: null,
+        },
+      },
+    };
+
+    const inspection = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await runToCompletion(tx, pipeline, run.id, { executeStep: async () => ({}) });
+      return inspectRun(tx, run.id);
+    });
+
+    expect(inspection?.entryStepId).toBeNull(); // no pipeline supplied to inspectRun
+    expect(inspection?.steps[0]?.kind).toBeNull();
+    expect(inspection?.steps[0]?.tokensUsed).toBeNull();
+    expect(inspection?.totalTokens).toBe(0);
+    expect(inspection?.totalCostUsd).toBe(0);
   });
 });
