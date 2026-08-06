@@ -16,6 +16,7 @@ describe('package export surface', () => {
       'Refusal',
       'RefusalReasonCode',
       'assertEgressAllowed',
+      'buildTemplateFidelityChecker',
       'checkAgeAppropriateness',
       'checkCost',
       'checkGrounding',

@@ -57,6 +57,16 @@ export {
 } from './curriculum/framework.js';
 
 export {
+  ArtefactType,
+  TemplateDefinition,
+  TemplateField,
+  TemplateSection,
+  checkArtefactStructure,
+  type ArtefactStructure,
+  type TemplateFidelityViolation,
+} from './curriculum/template.js';
+
+export {
   ChatCompletionRequest,
   ChatCompletionResponse,
   ChatCompletionStreamEvent,

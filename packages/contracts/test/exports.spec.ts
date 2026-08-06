@@ -12,6 +12,7 @@ describe('package export surface', () => {
     // than counted, so a stray export has to be added here by someone who looked at it —
     // which is the only reason a test like this earns its keep.
     expect(Object.keys(contracts).sort()).toEqual([
+      'ArtefactType',
       'AssessmentWeighting',
       'ChatCompletionRequest',
       'ChatCompletionResponse',
@@ -46,11 +47,15 @@ describe('package export surface', () => {
       'SourceRef',
       'Sourced',
       'SubjectFramework',
+      'TemplateDefinition',
+      'TemplateField',
+      'TemplateSection',
       'TimeAllocation',
       'ToolCall',
       'ToolDefinition',
       'WITHDRAWABLE_BASES',
       'addMonths',
+      'checkArtefactStructure',
       'definitionOf',
       'evaluateRetention',
       'isWithdrawable',

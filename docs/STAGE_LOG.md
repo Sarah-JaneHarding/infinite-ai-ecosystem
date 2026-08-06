@@ -2678,3 +2678,83 @@ Verification commands run for real, against this exact tree: `pnpm --filter
 evals:gate` (both exit `0`, honestly reporting "nothing found"/"nothing to gate" against
 the currently-empty `packages/evals/sets/`). `scripts/verify-stage.ts`'s `07` entry now
 runs all three.
+
+## Stage 08 — MOD-01 Curriculum Engine
+
+Started: 2026-08-06 Completed: —
+
+**Scope decision, recorded before any code.** The user kicked this stage off by pasting a
+document titled "INFINITE-AI SYSTEM PROMPT — South African CAPS Curriculum & Business
+Engine," describing a 15-agent monolithic chatbot persona with an activation phrase. The
+manual's own Stage 08 section names a structurally different 9-agent roster (CE-01 CAPS
+Mapper … CE-09 Coverage Auditor), each built to the Part 3 agent standard this whole build
+has followed since Stage 06 (contract, versioned prompt, guardrails, ≥30-case eval set,
+cost budget, human gate) — not a single freeform system prompt, which would bypass rule 3
+(no second path to a model provider) and rule 6 (no human-gate bypass). Asked directly
+(CLAUDE.md: "two requirements in the manual conflict" and "a CAPS/ATP/SIAS/SACE rule is
+ambiguous" are both explicit stop-and-ask triggers), the user resolved this as: keep the
+manual's CE-01..CE-09 roster and gates, folding in ideas from the pasted document where
+they usefully extend a CE-0x agent's own scope, and hold off on ingesting the pasted CAPS
+ATP weighting/minutes table as a ratified L0 source — real CAPS/ATP PDFs will be supplied
+separately. This keeps `docs/OPEN_QUESTIONS.md` OQ-002 and OQ-013 exactly as they already
+stood (documents not supplied, Stage 08 blocked on real ingestion) and
+`docs/SOURCE_DOCUMENTS.md`'s "Nothing has been obtained" status unchanged.
+
+**What this slice put in place (step 1 — machine-readable template definitions, versioned
+in L0)**
+
+"Build the machine-readable template definitions for every artefact type the school uses,
+from the supplied templates. Version them in L0." `docs/SOURCE_DOCUMENTS.md` §5 (OQ-003)
+already records that no school has supplied a single template — lesson plan, unit/term
+plan, assessment task, rubric/marking memo, or parent progress report — so this step ships
+the schema and the L0-versioning mechanism, with zero real template instances, the same
+"empty vessel" shape `curriculum/framework.ts` (Stage 03/08 groundwork) already established
+for CAPS content itself.
+
+`packages/contracts/src/curriculum/template.ts`: `ArtefactType` (the six kinds Stage 08's
+own agent table and `docs/SOURCE_DOCUMENTS.md` §5 name), `TemplateDefinition` (versioned,
+sourced via the existing `SourceRef`, `ratifiedAt` nullable — null blocks any agent from
+rendering against it, the same rule `GradeFramework.ratifiedAt` already holds), and
+`checkArtefactStructure`, a pure structural diff against an `ArtefactStructure` returning
+every violation found (missing/unexpected/out-of-order section, missing required field)
+rather than stopping at the first — the same "collect every failure" shape `decidePromotion`
+(Stage 07) already uses.
+
+`packages/guardrails/src/template-fidelity.ts`: `buildTemplateFidelityChecker` is
+`checkTemplateFidelity`'s (Stage 06 step 6) first real injected checker — until now every
+call passed with no checker supplied, because nothing existed to check against. It reuses
+the existing `template_infidelity` reason code rather than inventing one, and refuses
+outright against an unratified definition before it ever looks at structure.
+
+`packages/brain/src/curriculum-templates.ts`: `submitTemplateDefinition` is a thin,
+Zod-validated wrapper around `remember()` (Stage 05 step 9) targeting `L0_CONSTITUTION`
+with the already-existing `'TEMPLATE'` constitution kind — no new Brain write mechanism,
+its first real user. It always forces the submitted definition's own `ratifiedAt` to
+`null`: submission necessarily precedes a human's `ratify()` call, so nothing passed at
+submission time can yet be a true ratification timestamp. `selectTemplateDefinitions` is
+the read side — every `'TEMPLATE'`-kind candidate a `recall()` already returned, parsed as
+a `TemplateDefinition`, with `ratifiedAt` overwritten from the candidate's own `recency`
+(the write path's real ratification date), since `listEffectiveConstitution` only ever
+returns rows that already cleared ratification. A row that fails to parse throws — that
+would mean something reached L0 without going through `submitTemplateDefinition`, a
+data-integrity bug rather than an ordinary "not found."
+
+Proven by 23 new tests: `packages/contracts/test/template.spec.ts` (14 — the schema's own
+dense-order and no-duplicate-name rules, and all four `checkArtefactStructure` violation
+kinds, including a present-but-optional section still being checked for position and
+required fields), `packages/guardrails/test/template-fidelity.spec.ts` (5 — pass, refuse
+with a named violation, refuse an unratified definition outright, every violation kind
+described in one refusal, and the real wiring into `checkTemplateFidelity`), and
+`packages/brain/test/curriculum-templates.spec.ts` (5, pure — filtering/narrowing by
+artefact type, ignoring non-`TEMPLATE` and non-constitution candidates, and throwing on an
+unparseable row). `submitTemplateDefinition`'s DB-backed half is proven in
+`curriculum-templates.integration.spec.ts`, written blind against the same Testcontainers
+harness `api.integration.spec.ts` already uses — this sandbox has no Docker daemon, so it
+is proven for real in CI, the same limitation every Stage 01/05 integration suite already
+carries.
+
+Deviations from manual: none. Template definitions are versioned in L0 through the
+existing, general `remember()`/`ratify()` path rather than a new one, exactly as "version
+them in L0" asks — no dedicated submission table or bypass was added.
+
+Open questions raised: none (OQ-003 already covers the missing real templates).

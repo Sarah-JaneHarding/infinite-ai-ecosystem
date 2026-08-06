@@ -45,6 +45,8 @@ export {
   type TemplateFidelityChecker,
 } from './output-checks.js';
 
+export { buildTemplateFidelityChecker } from './template-fidelity.js';
+
 export {
   GuardrailEscalationError,
   defaultEscalationNotifier,

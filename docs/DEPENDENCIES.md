@@ -324,6 +324,18 @@ root-level CLI scripts (`scripts/evals-run.ts`, `scripts/evals-gate.ts`) reuse `
 `scripts/check-retention-schedule.ts` already use) and add `@infinite-ai/evals` itself as a
 new root `devDependency` — a workspace package, not an external one.
 
+## Stage 08 step 1 — machine-readable template definitions, versioned in L0
+
+No new dependency, external or workspace. `packages/contracts/src/curriculum/template.ts`
+only calls `zod`, already declared. `packages/guardrails/src/template-fidelity.ts` adds no
+new package.json entry either — `@infinite-ai/contracts` was already a `guardrails`
+dependency (Stage 03). `packages/brain/src/curriculum-templates.ts` calls only `remember()`
+(this package's own `api.ts`, Stage 05) and `@infinite-ai/contracts`, already a `brain`
+dependency. No real template instance was added: `docs/SOURCE_DOCUMENTS.md` OQ-003 records
+that no school has supplied one yet, so this step ships only the schema and the mechanism
+that will version a real definition into L0 once one exists — the same "empty vessel"
+shape `curriculum/framework.ts` already established for CAPS content itself.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.
