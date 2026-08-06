@@ -12,8 +12,15 @@ describe('package export surface', () => {
     // than counted, so a stray export has to be added here by someone who looked at it —
     // which is the only reason a test like this earns its keep.
     expect(Object.keys(contracts).sort()).toEqual([
+      'ATPNeedsInput',
+      'ATPResult',
+      'ATPSchedule',
+      'ATPTopicEntry',
+      'ATPWeek',
       'ArtefactType',
       'AssessmentWeighting',
+      'CE01Input',
+      'CE02Input',
       'ChatCompletionRequest',
       'ChatCompletionResponse',
       'ChatCompletionStreamEvent',
@@ -44,6 +51,7 @@ describe('package export surface', () => {
       'RetentionAnchor',
       'RetentionRule',
       'RetentionSchedule',
+      'SchoolCalendarBlock',
       'SourceRef',
       'Sourced',
       'SubjectFramework',
@@ -54,6 +62,7 @@ describe('package export surface', () => {
       'ToolCall',
       'ToolDefinition',
       'WITHDRAWABLE_BASES',
+      'WeekKind',
       'addMonths',
       'checkArtefactStructure',
       'definitionOf',

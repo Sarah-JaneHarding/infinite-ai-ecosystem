@@ -67,6 +67,18 @@ export {
 } from './curriculum/template.js';
 
 export {
+  ATPNeedsInput,
+  ATPResult,
+  ATPSchedule,
+  ATPTopicEntry,
+  ATPWeek,
+  CE01Input,
+  CE02Input,
+  SchoolCalendarBlock,
+  WeekKind,
+} from './curriculum/atp.js';
+
+export {
   ChatCompletionRequest,
   ChatCompletionResponse,
   ChatCompletionStreamEvent,

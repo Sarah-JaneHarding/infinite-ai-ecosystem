@@ -1,0 +1,497 @@
+[
+  {
+    "id": "ce-01-gr-r-life-skills-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "R",
+      "subjects": ["Life Skills"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "exact_match",
+        "field": "missing.0.documentKind",
+        "value": "CAPS_SUBJECT_STATEMENT"
+      }
+    ],
+    "tags": ["foundation_phase", "grade_R", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-r-math-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "R",
+      "subjects": ["Mathematics"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["foundation_phase", "grade_R", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-1-home-lang-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "1",
+      "subjects": ["English Home Language"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "exact_match",
+        "field": "missing.0.subjectName",
+        "value": "English Home Language"
+      }
+    ],
+    "tags": ["foundation_phase", "grade_1", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-2-math-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "2",
+      "subjects": ["Mathematics"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["foundation_phase", "grade_2", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-3-multi-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "3",
+      "subjects": ["Mathematics", "English Home Language", "Life Skills"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "When multiple subjects are missing, the response must list all of them in the missing array.",
+    "tags": ["foundation_phase", "grade_3", "needs_input", "multi_subject"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-3-fal-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "3",
+      "subjects": ["Afrikaans First Additional Language"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "exact_match",
+        "field": "missing.0.documentKind",
+        "value": "CAPS_SUBJECT_STATEMENT"
+      }
+    ],
+    "tags": ["foundation_phase", "grade_3", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-4-math-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "4",
+      "subjects": ["Mathematics"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_4", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-4-nst-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "4",
+      "subjects": ["Natural Sciences and Technology"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_4", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-5-social-sci-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "5",
+      "subjects": ["Social Sciences"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_5", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-6-multi-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "6",
+      "subjects": [
+        "Mathematics",
+        "English Home Language",
+        "Natural Sciences and Technology"
+      ],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_6", "needs_input", "multi_subject"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-6-life-skills-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "6",
+      "subjects": ["Life Skills"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_6", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-7-math-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "7",
+      "subjects": ["Mathematics"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_7", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-7-ns-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "7",
+      "subjects": ["Natural Sciences"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_7", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-8-ems-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "8",
+      "subjects": ["Economic and Management Sciences"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_8", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-8-tech-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "8",
+      "subjects": ["Technology"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_8", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-9-lo-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "9",
+      "subjects": ["Life Orientation"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_9", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-9-arts-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "9",
+      "subjects": ["Arts and Culture"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_9", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-10-math-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "10",
+      "subjects": ["Mathematics"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_10", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-10-physci-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "10",
+      "subjects": ["Physical Sciences"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_10", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-11-lifesci-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "11",
+      "subjects": ["Life Sciences"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_11", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-11-geo-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "11",
+      "subjects": ["Geography"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_11", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-12-math-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "12",
+      "subjects": ["Mathematics"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_12", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-12-mathlitl-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "12",
+      "subjects": ["Mathematical Literacy"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_12", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-12-accounting-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "12",
+      "subjects": ["Accounting"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_12", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-10-hist-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "10",
+      "subjects": ["History"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_10", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-no-pii-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "5",
+      "subjects": ["Mathematics"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "The output must contain no personal information of any kind. A needs_input result with grade and documentKind only is the correct, PII-free response.",
+    "tags": ["pii_egress", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-must-not-invent-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "6",
+      "subjects": ["Mathematics"],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "The agent must never return status ok when no CAPS document is in the context. Inventing curriculum data is a hard failure.",
+    "tags": ["needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-7-all-senior-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "7",
+      "subjects": [
+        "English Home Language",
+        "Afrikaans First Additional Language",
+        "Mathematics",
+        "Natural Sciences",
+        "Social Sciences",
+        "Technology",
+        "Economic and Management Sciences",
+        "Arts and Culture",
+        "Life Orientation"
+      ],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "All nine Senior Phase subjects are missing from L0. The missing array should name all of them.",
+    "tags": ["senior_phase", "grade_7", "needs_input", "multi_subject"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-different-tenant-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "4",
+      "subjects": ["Social Sciences"],
+      "tenantId": "00000000-0000-0000-0000-000000000002"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_4", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-01-gr-9-multi-senior-001",
+    "agentId": "CE-01",
+    "input": {
+      "grade": "9",
+      "subjects": [
+        "Mathematics",
+        "Natural Sciences",
+        "Technology",
+        "Economic and Management Sciences"
+      ],
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "All four subjects are missing. The response must list each one in missing[], not just the first.",
+    "tags": [
+      "senior_phase",
+      "grade_9",
+      "needs_input",
+      "multi_subject",
+      "must_not_regress"
+    ],
+    "source": "specification"
+  }
+]

@@ -2758,3 +2758,77 @@ existing, general `remember()`/`ratify()` path rather than a new one, exactly as
 them in L0" asks — no dedicated submission table or bypass was added.
 
 Open questions raised: none (OQ-003 already covers the missing real templates).
+
+---
+
+**Stage 08 step 2 — CE-01 CAPS Mapper + CE-02 ATP Sequencer contracts, prompts, and eval sets**
+Started: 2026-08-06
+
+The manual requires CE-01 and CE-02 "first; they produce the structures everything else
+depends on." Since no CAPS subject statements, ATP documents, or school templates have yet
+been supplied (OQ-002, OQ-003, OQ-013), both agents are built as the same "empty vessel"
+mechanism that `framework.ts` already established for the CAPS schema itself: the contracts,
+prompts, and eval sets are real and tested; the calls return `needs_input` until source
+documents are ratified into L0 by a human.
+
+**New schemas (`packages/contracts/src/curriculum/atp.ts`)**
+
+`WeekKind` (teaching/holiday/exam/revision/assessment), `ATPTopicEntry`, `ATPWeek`,
+`ATPSchedule`, `ATPNeedsInput`, and `ATPResult` (the discriminated union CE-02 returns) are
+the ATP-side contracts. `CE01Input` (grade + subjects[] + tenantId) and `CE02Input` (grade
+
+- subjects[] + academicYear + tenantId + optional schoolCalendar) are the input contracts
+  for each agent, following the same Zod-first, typed-schema pattern every other boundary in
+  this codebase uses. All nine new names added to the `@infinite-ai/contracts` barrel and the
+  exports completeness test updated. Proven by 29 tests in `packages/contracts/test/atp.spec.ts`:
+  CE01Input and CE02Input shape validation (6+5 cases), SchoolCalendarBlock and WeekKind
+  acceptance/rejection, ATPNeedsInput structural rules, ATPSchedule rejection of empty weeks
+  and sourceDocuments and invalid termNumbers, and ATPResult discriminated-union membership.
+
+**Agent contracts (`packages/agents/src/mod-01/`)**
+
+`CE-01.contract.ts` and `CE-02.contract.ts`: each calls `validateAgentContract` at
+module-load time so a structural error is a startup failure rather than a silent gap. CE-01
+maps `curriculum.map` / 6 000 tokens / $0.08; CE-02 maps `curriculum.sequence` / 8 000
+tokens / $0.10 (ATP sequencing covers an entire academic year, so its budget is deliberately
+larger). Both declare `['pii_guard', 'grounding_check']` and `writesToBrain: true`; neither
+requires a human approval gate at this level (ratification happens at the term-plan stage
+via CE-03). Proven by 11+12 tests in `packages/agents/test/mod-01/CE-01.contract.spec.ts`
+and `CE-02.contract.spec.ts`: id, module, purpose, promptRef, requiresApproval,
+writesToBrain, model, evalSetRef, and guardrail membership.
+
+**Prompt files**
+
+`packages/prompts/src/CE-01/1.0.0.prompt.md` and `CE-02/1.0.0.prompt.md`: eight mandatory
+sections each (ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA,
+SELF-CHECK), `ratified_by: null`. Both embed the core invariants as hard constraints in
+the prompt text: "do not invent curriculum," "ratifiedAt: null means absent," "do not
+return ok if any document is missing." `prompt-lock.json` updated with their sha256 hashes;
+`packages/prompts/test/prompt-lock.spec.ts` passes.
+
+**Eval sets**
+
+`packages/evals/sets/CE-01/caps-mapper.json` (30 cases) and
+`packages/evals/sets/CE-02/atp-sequencer.json` (30 cases): every case expects
+`status: "needs_input"` because no CAPS or ATP documents are in L0. Cases span all four
+phases (Foundation R–3, Intermediate 4–6, Senior 7–9, FET 10–12), single-subject and
+multi-subject requests, optional school-calendar overrides for CE-02, and the two
+safety/no-invention invariants tagged `must_not_regress`. CE-01 has 7 must-not-regress
+cases; CE-02 has 7. Both sets also include `pii_egress`-tagged cases verifying the output
+carries no personal information.
+
+**docs/AGENTS.md updated** with full CE-01 and CE-02 detail tables (purpose, input/output
+types, model, guardrails, budget, eval set size, approval gate, Brain write, prompt and
+contract paths), plus the "empty vessel" caveat for each.
+
+Tests after step 2: 25 packages, 25 successful. 61 agent-package tests (up from 38).
+125 contracts-package tests (up from 96). Prompt lock gate passes. Format check passes.
+Typecheck passes.
+
+Deviations from manual: none. Eval sets are 30 cases each (manual says ≥ 30); all test
+the `needs_input` path because the `ok` path requires real CAPS/ATP documents in L0 —
+this is the intended behaviour, documented in both prompt GROUNDING sections and in this
+log entry.
+
+Open questions: OQ-002, OQ-003, OQ-013 remain open (CAPS documents, ATP documents, school
+template supply). No new questions raised.

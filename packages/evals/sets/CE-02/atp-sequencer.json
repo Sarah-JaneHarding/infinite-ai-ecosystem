@@ -1,0 +1,517 @@
+[
+  {
+    "id": "ce-02-gr-r-life-skills-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "R",
+      "subjects": ["Life Skills"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "exact_match", "field": "missing.0.documentKind", "value": "ATP" }
+    ],
+    "tags": ["foundation_phase", "grade_R", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-1-math-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "1",
+      "subjects": ["Mathematics"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["foundation_phase", "grade_1", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-2-home-lang-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "2",
+      "subjects": ["English Home Language"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["foundation_phase", "grade_2", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-3-math-2027-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "3",
+      "subjects": ["Mathematics"],
+      "academicYear": 2027,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["foundation_phase", "grade_3", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-3-multi-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "3",
+      "subjects": ["Mathematics", "English Home Language"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["foundation_phase", "grade_3", "needs_input", "multi_subject"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-r-math-with-calendar-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "R",
+      "subjects": ["Mathematics"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "schoolCalendar": [
+        {
+          "kind": "holiday",
+          "startDate": "2026-03-23",
+          "endDate": "2026-04-04",
+          "label": "Term 1 break"
+        }
+      ]
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "A school calendar override does not substitute for missing ATP documents. The result must still be needs_input.",
+    "tags": ["foundation_phase", "grade_R", "needs_input", "with_calendar"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-4-math-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "4",
+      "subjects": ["Mathematics"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_4", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-4-nst-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "4",
+      "subjects": ["Natural Sciences and Technology"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_4", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-5-social-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "5",
+      "subjects": ["Social Sciences"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_5", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-6-multi-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "6",
+      "subjects": ["Mathematics", "Natural Sciences and Technology", "Social Sciences"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_6", "needs_input", "multi_subject"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-6-life-skills-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "6",
+      "subjects": ["Life Skills"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_6", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-7-math-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "7",
+      "subjects": ["Mathematics"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_7", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-7-ns-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "7",
+      "subjects": ["Natural Sciences"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_7", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-8-ems-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "8",
+      "subjects": ["Economic and Management Sciences"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_8", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-8-tech-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "8",
+      "subjects": ["Technology"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_8", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-9-lo-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "9",
+      "subjects": ["Life Orientation"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_9", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-9-ss-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "9",
+      "subjects": ["Social Sciences"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["senior_phase", "grade_9", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-10-math-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "10",
+      "subjects": ["Mathematics"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_10", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-10-physci-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "10",
+      "subjects": ["Physical Sciences"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_10", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-11-lifesci-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "11",
+      "subjects": ["Life Sciences"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_11", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-11-geo-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "11",
+      "subjects": ["Geography"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_11", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-12-math-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "12",
+      "subjects": ["Mathematics"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_12", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-12-hist-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "12",
+      "subjects": ["History"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_12", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-12-accounting-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "12",
+      "subjects": ["Accounting"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["fet_phase", "grade_12", "needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-missing-framework-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "5",
+      "subjects": ["Mathematics"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "When context.framework is null (CE-01 has not yet produced a ratified GradeFramework), CE-02 must return needs_input. It must never attempt to construct a schedule without a framework.",
+    "tags": ["intermediate_phase", "grade_5", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-no-pii-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "7",
+      "subjects": ["Mathematics"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "The output must contain no personal information of any kind. A needs_input result with grade and documentKind is the correct, PII-free response.",
+    "tags": ["pii_egress", "needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-must-not-invent-schedule-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "6",
+      "subjects": ["Mathematics"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "The agent must never return status ok and an invented ATPSchedule when no ATP document is in L0. Fabricated pacing is a hard failure.",
+    "tags": ["needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-calendar-override-no-docs-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "4",
+      "subjects": ["Social Sciences"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "schoolCalendar": [
+        {
+          "kind": "holiday",
+          "startDate": "2026-03-23",
+          "endDate": "2026-04-04",
+          "label": "Term 1 break"
+        },
+        {
+          "kind": "exam",
+          "startDate": "2026-06-09",
+          "endDate": "2026-06-20",
+          "label": "Mid-year exams"
+        }
+      ]
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "A school calendar supplied by the caller does not replace the ATP source document. The ATP document must come from L0. With no L0 documents, the result must be needs_input.",
+    "tags": ["intermediate_phase", "grade_4", "needs_input", "with_calendar"],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-gr-9-all-core-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "9",
+      "subjects": ["Mathematics", "Natural Sciences", "Technology", "Life Orientation"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000001"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "All four subjects are missing their ATP documents. The missing array should list all of them.",
+    "tags": [
+      "senior_phase",
+      "grade_9",
+      "needs_input",
+      "multi_subject",
+      "must_not_regress"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "ce-02-different-tenant-2026-001",
+    "agentId": "CE-02",
+    "input": {
+      "grade": "5",
+      "subjects": ["Social Sciences"],
+      "academicYear": 2026,
+      "tenantId": "00000000-0000-0000-0000-000000000002"
+    },
+    "context": { "l0Documents": [], "framework": null },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["intermediate_phase", "grade_5", "needs_input"],
+    "source": "specification"
+  }
+]

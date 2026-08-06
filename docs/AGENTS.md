@@ -46,6 +46,49 @@ it is built; the table below is the plan, not a claim of completion.
 | CE-08 | Differentiation Agent | Tier-aware variants: support, on-level, extension                          |
 | CE-09 | Coverage Auditor      | Drift between planned, taught and assessed                                 |
 
+#### CE-01 — CAPS Mapper
+
+| Field           | Value                                                                                                     |
+| --------------- | --------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-01                                                                                                    |
+| Purpose         | `planning`                                                                                                |
+| Input           | `CE01Input`: grade, subjects[], tenantId                                                                  |
+| Output          | `FrameworkResult`: `{ status: "ok", framework: GradeFramework }` or `FrameworkNeedsInput`                 |
+| Model           | `curriculum.map`                                                                                          |
+| Guardrails      | `pii_guard`, `grounding_check`                                                                            |
+| Budget          | 6 000 tokens · $0.08 per run                                                                              |
+| Eval set        | `CE-01` (30 specification cases; all test `needs_input` until CAPS source documents are ratified into L0) |
+| Approval gate   | None — output goes to L0 as a ratification candidate                                                      |
+| Writes to Brain | Yes — the GradeFramework is versioned in L0                                                               |
+| Prompt          | `packages/prompts/src/CE-01/1.0.0.prompt.md`                                                              |
+| Contract        | `packages/agents/src/mod-01/CE-01.contract.ts`                                                            |
+
+CE-01 is an **empty vessel** until CAPS subject statements are ratified into L0 (see
+`docs/SOURCE_DOCUMENTS.md`). Until then, every call returns `needs_input` naming the
+missing documents — that is the correct behaviour, not a bug.
+
+#### CE-02 — ATP Sequencer
+
+| Field           | Value                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------- |
+| Module          | MOD-01                                                                                            |
+| Purpose         | `planning`                                                                                        |
+| Input           | `CE02Input`: grade, subjects[], academicYear, tenantId, schoolCalendar?                           |
+| Output          | `ATPResult`: `{ status: "ok", schedule: ATPSchedule }` or `ATPNeedsInput`                         |
+| Model           | `curriculum.sequence`                                                                             |
+| Guardrails      | `pii_guard`, `grounding_check`                                                                    |
+| Budget          | 8 000 tokens · $0.10 per run                                                                      |
+| Eval set        | `CE-02` (30 specification cases; all test `needs_input` until ATP documents are ratified into L0) |
+| Approval gate   | None — ATP schedules are ratified at the term plan level (CE-03)                                  |
+| Writes to Brain | Yes — the ATPSchedule is versioned in L0                                                          |
+| Prompt          | `packages/prompts/src/CE-02/1.0.0.prompt.md`                                                      |
+| Contract        | `packages/agents/src/mod-01/CE-02.contract.ts`                                                    |
+
+CE-02 depends on CE-01's stored `GradeFramework` (retrieved from L0 by the executor) and
+on a ratified ATP source document in L0. When either is absent, it returns `needs_input`.
+ATP pacing is authoritative: any deviation from the ATP's own week-by-week position
+requires a stored `deviationReason`, which CE-09 Coverage Auditor surfaces as drift.
+
 ### MOD-02 Support Analytics Centre — Stage 10
 
 | ID    | Agent                | Output                                                              |
