@@ -1462,8 +1462,8 @@ Open questions raised: none.
 
 Started: 2026-08-05 Completed: —
 Exit gate: **PARTIAL** — steps 1 (the Agent contract), 2 (the Agent Registry), 3 (the
-Prompt Registry), 4 (the DAG orchestrator), 5 (Human-in-the-loop gates) and 6 (the
-Guardrail engine) are built and proven. Steps 7-10 are not started.
+Prompt Registry), 4 (the DAG orchestrator), 5 (Human-in-the-loop gates), 6 (the Guardrail
+engine) and 7 (the Tool registry) are built and proven. Steps 8-10 are not started.
 `scripts/verify-stage.ts`'s `06` entry stays empty until they are.
 
 **What this slice put in place (step 1 — the Agent contract)**
@@ -1942,3 +1942,75 @@ rather than pretending to succeed.
 
 Open questions raised: OQ-014 (escalation paging needs a real integration), OQ-015
 (age-appropriateness needs a supplied content policy).
+
+**What this slice put in place (step 7 — the Tool registry)**
+
+"Tools are declared with a Zod schema, a purpose, an idempotency policy and a side-effect
+classification (`read`, `write`, `external`, `irreversible`). `irreversible` tools always
+require a human gate." The declaration shape itself — `ToolDeclaration` — already existed,
+built in step 1 as part of `AgentContract.tools`; this step adds the registry the manual
+names, plus the one enforcement its own text asks for.
+
+`packages/agents/src/contract.ts`: `ToolDeclarationSchema` (module-private) is renamed to
+`ToolDeclaration` and exported under the same name as its inferred type — the same dual
+declaration `AgentContract` and `PromptRef` already use in this file — because step 7's own
+registry validates a candidate tool standalone, not only nested inside an agent's own
+`tools` array. `AgentContract`'s own `tools` field now references the exported name; no
+other behaviour changed.
+
+`packages/agents/src/tool-registry.ts`: `ToolRegistry`, a typed registry keyed by a tool's
+own `name` (never reused for a different tool, the same primary-key discipline
+`AgentRegistry`'s own `id` already established), refusing a structurally invalid candidate
+or a duplicate name, never partially. `isIrreversible(name)` is `false` for a name the
+registry has never seen — an agent contract naming an unregistered tool is a different,
+"unknown reference" problem elsewhere, not this predicate's job to flag. `bootToolRegistry`
+mirrors `bootAgentRegistry`'s own "a boot failure, not a warning" startup pass.
+
+**The enforcement half — "irreversible tools always require a human gate" — lives in
+`@infinite-ai/orchestrator`, not `@infinite-ai/agents`.** `packages/orchestrator/src/dag.ts`
+gains `validatePipelineGating(pipeline, isIrreversibleTool)`: a BFS forward from
+`entryStepId` that does not propagate _past_ a `human_gate` step (a gate is a boundary —
+everything beyond it is reachable only with an approval in front of it). Anything left
+reachable in that walk is reachable by at least one path with no gate at all; if an
+irreversible `tool_call` step is among it, the pipeline is refused — even when a _different_
+path to the very same step happens to pass through a gate first, since one ungated path is
+enough to break the guarantee. `startRun` (`runner.ts`) takes the check as a new, optional
+trailing parameter, `isIrreversibleTool`: supplying it runs the gating check before a run
+is ever opened (a pipeline that fails it never reaches `PENDING`); omitting it — every
+existing call site, unchanged — checks nothing it did not already check, since nothing
+before this step had a tool registry to ask.
+
+**Why the check takes a plain callback rather than a dependency on `ToolRegistry`.**
+`packages/agents` and `packages/orchestrator` are peers in the same architectural layer
+(Part 1's own diagram: both are L6, the agent runtime), so neither gains a reason to depend
+on the other just to answer "is this tool irreversible" — `IrreversibleToolCheck` is a
+plain `(toolName: string) => boolean`, and `ToolRegistry.isIrreversible` is what a caller
+who already has both packages in scope hands it. This is the same shape `evaluateCondition`
+and `prepareApproval` already use for a runner-level decision this stage cannot supply a
+real implementation of on its own.
+
+**Compensation is deliberately out of scope for this structural check.** A `compensation`
+step's own tool call is invoked directly by the runner during rollback, never reached by
+walking `next` from the entry — `validatePipelineGating`'s BFS naturally never visits it,
+and this step's own text does not say whether an irreversible compensation should need its
+own gate. That is a real design question, stated rather than guessed at, not answered here.
+
+Proven by: `packages/agents/test/tool-registry.spec.ts` (register/get/has/list, a duplicate
+name refused, a structurally invalid candidate refused, `isIrreversible` true for a
+registered irreversible tool, false for any other side effect and false for an unknown
+name, and `bootToolRegistry` both succeeding across valid candidates and throwing on the
+first invalid one); `packages/orchestrator/test/dag.spec.ts`'s new `describe(
+'validatePipelineGating', ...)` (an irreversible call gated by a preceding `human_gate`
+passes; the same call with no gate at all fails; a branch where only one of two paths is
+gated still fails; a compensation step's own irreversible tool call needs no gate); and
+`packages/orchestrator/test/runner.integration.spec.ts`'s new describe block proving the
+`startRun` wiring itself against a real Postgres — refused when ungated, opened when every
+path is gated, and unchecked (not weakened, simply not asked) when the parameter is omitted
+entirely.
+
+Deviations from manual: none. Step 7 names the declaration shape (already built), the
+registry, and the one enforcement rule; this slice builds exactly that, plus the
+cross-package callback shape the manual's own text does not specify but the layer diagram
+already implies.
+
+Open questions raised: none.

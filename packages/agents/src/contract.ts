@@ -53,8 +53,9 @@ export type PromptRef = z.infer<typeof PromptRef>;
 
 /**
  * A tool's side-effect classification (step 7). `irreversible` always requires a human
- * gate — enforced where a pipeline step declares a tool call (step 5), not here; this
- * schema only records which classification a declared tool carries.
+ * gate — enforced against a pipeline's own tool-call steps (step 4's `dag.ts`) by step 7's
+ * `validatePipelineGating`, not here; this schema only records which classification a
+ * declared tool carries.
  */
 export const ToolSideEffect = z.enum(['read', 'write', 'external', 'irreversible']);
 export type ToolSideEffect = z.infer<typeof ToolSideEffect>;
@@ -65,7 +66,14 @@ const ZodSchemaInstance = z.instanceof(z.ZodType, {
   message: 'must be a Zod schema instance',
 });
 
-const ToolDeclarationSchema = z.object({
+/**
+ * A tool's own declaration (step 7): a Zod input schema, a purpose, an idempotency policy
+ * and a side-effect classification. Exported under the same name as its inferred type —
+ * the same dual declaration `AgentContract` and `PromptRef` already use in this file —
+ * because step 7's own `ToolRegistry` validates a candidate tool standalone, not only as
+ * part of an agent's own `tools` array.
+ */
+export const ToolDeclaration = z.object({
   name: z.string().min(1),
   purpose: z.string().min(1),
   /** The tool's own input contract — validated the same way an agent's `inputSchema` is,
@@ -74,7 +82,7 @@ const ToolDeclarationSchema = z.object({
   idempotent: z.boolean(),
   sideEffect: ToolSideEffect,
 });
-export type ToolDeclaration = z.infer<typeof ToolDeclarationSchema>;
+export type ToolDeclaration = z.infer<typeof ToolDeclaration>;
 
 /**
  * A ceiling on what a *single run* of this agent may cost — the agent author's own
@@ -109,7 +117,7 @@ export const AgentContract = z.object({
    * Model Gateway (Stage 04) is the only thing that resolves it further; there is no
    * second path to a provider from an agent's own contract. */
   model: LogicalModel,
-  tools: z.array(ToolDeclarationSchema),
+  tools: z.array(ToolDeclaration),
   /** Guardrail check names this agent runs, beyond whatever the engine (step 6) already
    * applies to every agent unconditionally. */
   guardrails: z.array(z.string().min(1)),

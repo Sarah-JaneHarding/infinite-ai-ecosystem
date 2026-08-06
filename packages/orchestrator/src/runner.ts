@@ -16,6 +16,12 @@
 // a map out into per-item runs — a stated follow-up, not silently dropped (see
 // `docs/STAGE_LOG.md`).
 //
+// `startRun`'s own `isIrreversibleTool` (Stage 06 step 7) is optional: supplying it runs
+// `validatePipelineGating` (`dag.ts`) before the run is ever opened, so a pipeline that can
+// reach an irreversible tool call without a preceding `human_gate` never gets as far as
+// `PENDING`. Omitting it does not weaken anything already enforced — it just means nobody
+// has wired a tool registry in at this call site yet.
+//
 // `human_gate` resumption (Stage 06 step 5) follows the same resumability rule as
 // everything else here: `decideHumanGate` only ever records a decision — it never advances
 // the run itself, the same "never touches the run's own status" boundary
@@ -54,6 +60,8 @@ import { z } from 'zod';
 
 import {
   validatePipelineDag,
+  validatePipelineGating,
+  type IrreversibleToolCheck,
   type PipelineDefinition,
   type PipelineStep,
 } from './dag.js';
@@ -136,8 +144,12 @@ export async function startRun(
   input: unknown,
   traceId: string,
   createdBy: string | null = null,
+  isIrreversibleTool?: IrreversibleToolCheck,
 ): Promise<OrchestratorRunRow> {
   validatePipelineDag(pipeline);
+  if (isIrreversibleTool !== undefined) {
+    validatePipelineGating(pipeline, isIrreversibleTool);
+  }
   return openRun(tx, {
     pipelineId: pipeline.id,
     pipelineVersion: pipeline.version,

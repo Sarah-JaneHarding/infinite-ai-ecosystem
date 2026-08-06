@@ -19,7 +19,7 @@ import { InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-tr
 import { createTracer } from '@infinite-ai/telemetry';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import type { PipelineDefinition } from '../src/dag.js';
+import { PipelineDagError, type PipelineDefinition } from '../src/dag.js';
 import {
   OrchestratorRunnerError,
   advanceRun,
@@ -742,5 +742,86 @@ describe('cancellation', () => {
     expect(afterCancel.status).toBe('CANCELLED');
     expect(afterResume.status).toBe('CANCELLED');
     expect(step2Calls).toBe(0);
+  });
+});
+
+describe('startRun’s optional irreversible-tool gating (Stage 06 step 7)', () => {
+  const isIrreversibleTool = (name: string): boolean => name === 'delete_record';
+
+  it('refuses to open a run whose pipeline reaches an irreversible tool ungated', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'ungated-irreversible-pipeline',
+      version: '1.0.0',
+      entryStepId: 'del',
+      steps: {
+        del: {
+          ...STEP_COMMON,
+          id: 'del',
+          kind: 'tool_call',
+          toolName: 'delete_record',
+          next: null,
+        },
+      },
+    };
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      await expect(
+        startRun(tx, pipeline, {}, randomUUID(), actorId, isIrreversibleTool),
+      ).rejects.toThrow(PipelineDagError);
+    });
+  });
+
+  it('opens the run when every path to the irreversible tool is gated', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'gated-irreversible-pipeline',
+      version: '1.0.0',
+      entryStepId: 'gate',
+      steps: {
+        gate: {
+          ...STEP_COMMON,
+          id: 'gate',
+          kind: 'human_gate',
+          requiredRole: 'hod',
+          next: 'del',
+        },
+        del: {
+          ...STEP_COMMON,
+          id: 'del',
+          kind: 'tool_call',
+          toolName: 'delete_record',
+          next: null,
+        },
+      },
+    };
+
+    const run = await withTenant({ tenantId, actorId }, (tx) =>
+      startRun(tx, pipeline, {}, randomUUID(), actorId, isIrreversibleTool),
+    );
+    expect(run.status).toBe('PENDING');
+  });
+
+  it('does not check gating at all when isIrreversibleTool is omitted', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'unchecked-irreversible-pipeline',
+      version: '1.0.0',
+      entryStepId: 'del',
+      steps: {
+        del: {
+          ...STEP_COMMON,
+          id: 'del',
+          kind: 'tool_call',
+          toolName: 'delete_record',
+          next: null,
+        },
+      },
+    };
+
+    const run = await withTenant({ tenantId, actorId }, (tx) =>
+      startRun(tx, pipeline, {}, randomUUID(), actorId),
+    );
+    expect(run.status).toBe('PENDING');
   });
 });

@@ -256,6 +256,16 @@ justify. This package deliberately takes no dependency on `@infinite-ai/agents` 
 the agent runtime sit above this package, and nothing yet calls this engine at a point
 where a tenant transaction is open).
 
+## Stage 06 step 7 — the Tool registry
+
+No new dependency. `packages/agents/src/tool-registry.ts` only calls `ToolDeclaration`
+(step 1, same package) and holds a plain in-memory `Map`, the same shape
+`AgentRegistry` (step 2) already uses. `packages/orchestrator/src/dag.ts`'s
+`validatePipelineGating` takes its irreversible-tool check as a plain injected callback
+rather than a dependency on `@infinite-ai/agents` — see `docs/STAGE_LOG.md`'s step 7 entry
+for why a cross-package dependency between two peer packages in the same architectural
+layer was the wrong shape here.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

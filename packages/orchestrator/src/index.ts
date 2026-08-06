@@ -15,6 +15,8 @@ export {
   PipelineStep,
   StepKind,
   validatePipelineDag,
+  validatePipelineGating,
+  type IrreversibleToolCheck,
 } from './dag.js';
 
 export {
