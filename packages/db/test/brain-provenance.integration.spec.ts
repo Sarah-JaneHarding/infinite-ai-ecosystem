@@ -257,6 +257,27 @@ describe('getFactProvenance', () => {
     expect(provenance).toBeNull();
   });
 
+  it('returns null for a non-existent L0_CONSTITUTION id', async () => {
+    const provenance = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      getFactProvenance(tx, 'L0_CONSTITUTION', randomUUID()),
+    );
+    expect(provenance).toBeNull();
+  });
+
+  it('returns null for a non-existent L3_PROCEDURE id', async () => {
+    const provenance = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      getFactProvenance(tx, 'L3_PROCEDURE', randomUUID()),
+    );
+    expect(provenance).toBeNull();
+  });
+
+  it('returns null for a non-existent L1_EDGE id', async () => {
+    const provenance = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      getFactProvenance(tx, 'L1_EDGE', randomUUID()),
+    );
+    expect(provenance).toBeNull();
+  });
+
   it('returns null when the id exists, but under a different tier', async () => {
     const { nodeId } = await asTenant(appRw, TENANT, ACTOR, async (tx) => {
       const node = await commitBrainFact(tx, {

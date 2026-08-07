@@ -182,6 +182,29 @@ describe('finishStepRun', () => {
     expect(finished.completedAt).toEqual(NOW);
   });
 
+  it('records a SUCCEEDED outcome with all optional telemetry fields', async () => {
+    const { stepRun } = await openRunning();
+    const finished = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      finishStepRun(
+        tx,
+        stepRun.id,
+        {
+          status: 'SUCCEEDED',
+          output: { result: 'done' },
+          tokensUsed: 1234,
+          costUsd: 0.005,
+          retrievedContext: [{ chunk: 'abc' }],
+          guardrailVerdicts: [{ check: 'pii_guard', passed: true }],
+        },
+        NOW,
+      ),
+    );
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(finished.tokensUsed).toBe(1234);
+    expect(finished.retrievedContext).toEqual([{ chunk: 'abc' }]);
+    expect(finished.guardrailVerdicts).toEqual([{ check: 'pii_guard', passed: true }]);
+  });
+
   it('records a FAILED outcome with its error', async () => {
     const { stepRun } = await openRunning();
     const finished = await asTenant(appRw, TENANT, ACTOR, (tx) =>
