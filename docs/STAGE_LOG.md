@@ -3622,3 +3622,60 @@ Tests: 188 warehouse unit tests (25 pipeline + 163 existing). `pnpm lint` and
 | RLS coverage test accounts for analytics views (views ≠ tables)                                                | PASS — rls-coverage fix in this commit                                                                                                                                          |
 
 Exit gate: **PASS**
+
+---
+
+## Stage 10 — MOD-02 Support Analytics Centre
+
+### Step 1 — Tier model and SIAS state machine
+
+**Date:** 2026-08-07
+
+**What was built**
+
+New package `packages/analytics` (`@infinite-ai/analytics`) containing:
+
+1. **`src/tier-model.ts`** — Pure tier-assignment and data-sufficiency logic:
+   - `SupportTier`: `TIER_1 | TIER_2 | TIER_3 | REFERRAL`
+   - `ScreeningDomain`: `LITERACY | NUMERACY | ATTENDANCE | BEHAVIOUR | WELLBEING`
+   - `DATA_SUFFICIENCY_REQUIREMENTS`: per-domain floor counts and recency windows
+   - `assignTier(percentileScore, bands?)`: maps a 0–100 percentile to a tier using
+     ordered band table (default or custom); first `scoreBelow` match wins
+   - `checkDataSufficiency(domain, count, ageDays)`: returns `'sufficient'` or
+     `'insufficient'`; insufficient when count is below floor OR most recent record is
+     older than the recency window
+   - `checkAllDomainsSufficiency(readings[])`: returns overall verdict plus per-domain
+     breakdown; a single insufficient domain blocks the recommendation
+
+2. **`src/sias-state.ts`** — Enforces the mandatory SIAS sequence:
+   - 10 states: `PENDING_SCREEN → SCREENED → SBST_REVIEW → INTERVENTION_ACTIVE →
+MONITORING → SBST_REVIEW → REFERRAL_PENDING → REFERRED`; plus `CORE_HEALTH_BLOCKED`
+     (class health gate), `EXITED` (SBST discharge), `SAFEGUARDING_ESCALATED` (terminal)
+   - 16 explicitly listed legal transitions — no inference from names or ordinals
+   - 4 transitions require a stored `SbstRatification` (SBST_REVIEW→INTERVENTION_ACTIVE,
+     SBST_REVIEW→EXITED, SBST_REVIEW→REFERRAL_PENDING, REFERRAL_PENDING→REFERRED)
+   - Safeguarding escalation bypasses all queues from any non-terminal state; no
+     ratification needed; `SAFEGUARDING_ESCALATED` is terminal
+   - `SiasTransitionError` carries typed `from` and `to` fields
+   - `transitionSias()` returns `{ nextStatus, audit }` — caller must persist both
+     atomically; audit carries `ratificationId | null`
+
+**Tests**
+
+- `test/tier-model.spec.ts` — 15 tests: all four tier bands and their boundary conditions,
+  custom band overrides, DEFAULT_TIER_BANDS exhaustive coverage, every domain's
+  sufficiency requirements at boundary/over-count/over-age, cross-domain aggregation
+- `test/sias-state.spec.ts` — 38 tests: all legal transitions (6 without ratification,
+  4 with), all 4 ratification-gated transitions refused without ratification, 5 illegal
+  transitions refused, `SiasTransitionError` typed fields, 3 terminal states refuse all
+  further transitions, 7 non-terminal states escalate to SAFEGUARDING_ESCALATED without
+  ratification, `isSiasTerminal` for all 10 states, `legalNextStates` including fallback
+  path, `LEGAL_TRANSITIONS` table integrity (no duplicates, all non-terminals listed)
+
+**Coverage** (aggregate): 98.68% statements, 97.05% branches, 100% functions, 98.68%
+lines — all above the 95% threshold.
+
+`scripts/verify-stage.ts` stage 10 entry wired to `pnpm --filter @infinite-ai/analytics
+test:coverage`.
+
+`pnpm lint` and `pnpm typecheck` clean for the new package.

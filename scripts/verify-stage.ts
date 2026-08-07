@@ -146,7 +146,16 @@ const STAGES: readonly Stage[] = [
     ],
   },
   { id: '09', name: 'MOD-03 Data Warehouse', commands: [] },
-  { id: '10', name: 'MOD-02 Support Analytics Centre', commands: [] },
+  {
+    id: '10',
+    name: 'MOD-02 Support Analytics Centre',
+    commands: [
+      // Tier model (assignTier, checkDataSufficiency, checkAllDomainsSufficiency) and
+      // SIAS state machine (transitionSias, isSiasTerminal, legalNextStates) — 53 tests,
+      // ≥ 95% coverage across all four axes.
+      'pnpm --filter @infinite-ai/analytics test:coverage',
+    ],
+  },
   { id: '11', name: 'MOD-04 Teaching & Learning Toolbox', commands: [] },
   { id: '12', name: 'MOD-05 Teaching Analytics & PD Studio', commands: [] },
   { id: '13', name: 'LE Learning Engine', commands: [] },
