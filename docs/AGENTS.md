@@ -558,3 +558,45 @@ LE-08 Commons Publisher · LE-09 Decay & Revalidation Agent.
   retrieved fact ID or a CAPS clause.
 - No chain-of-thought in the artefact.
 - One agent, one job. If the prompt needs "and also", split the agent.
+
+---
+
+## Stage 11 — MOD-04 Teaching & Learning Toolbox
+
+### Step 1 — Artefact model and renderer
+
+**Date:** 2026-08-07
+
+Contracts for all eleven TB artefact types declared in `@infinite-ai/contracts/src/toolbox/`:
+
+| Type                  | Agent |
+| --------------------- | ----- |
+| WORKSHEET             | TB-01 |
+| BOARD_DECK            | TB-02 |
+| READING_PASSAGE       | TB-03 |
+| ASSESSMENT_ITEM       | TB-04 |
+| MARKING_MEMO          | TB-05 |
+| HOME_LANGUAGE_ADAPTED | TB-06 |
+| ACCESSIBLE_ARTEFACT   | TB-07 |
+| REMEDIATION_PACK      | TB-08 |
+| EXTENSION_PACK        | TB-09 |
+| ACTIVITY_PLAN         | TB-10 |
+| VISUAL_BRIEF          | TB-11 |
+
+Every artefact carries `capsTopicId` (the CAPS topic it serves) and at least one of `lessonId`
+or `interventionId`. The `superRefine` check on `ArtefactLinkage` enforces this — a parse that
+omits both identifiers fails at the contract boundary.
+
+`dispatchRender` routes by format and artefact type. `BOARD_DECK` renders only to `SLIDES`;
+`VISUAL_BRIEF` renders only to `PRINT_HTML`. Any unsupported combination returns
+`format_not_supported` before a renderer is invoked. An absent `templateVersion` returns
+`needs_template` — the school must supply a ratified template before rendering can proceed.
+
+The `ReadabilityCheckInput` / `ReadabilityCheckResult` contract declares what "measured
+grade band" means. The `AnswerKeyVerificationResult` contract declares the TB-05 independent
+verification gate: `disagreement` blocks release; `verified` allows it.
+
+`VISUAL_BRIEF` extends the base artefact with a `brief` (text description) and a
+`pedagogicalPurpose` field. No image data or generative image call is involved.
+
+TB agent contracts, prompt files, and eval sets come in Stage 11 Step 2.

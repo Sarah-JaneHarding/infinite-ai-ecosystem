@@ -165,4 +165,22 @@ export {
   ToolDefinition,
 } from './gateway/chat.js';
 
+export {
+  ARTEFACT_TYPE_TO_AGENT,
+  AnswerKeyItem,
+  AnswerKeyVerificationResult,
+  ArtefactLinkage,
+  FORMAT_SUPPORT,
+  GradeBand,
+  ReadabilityCheckInput,
+  ReadabilityCheckResult,
+  RenderRequest,
+  RenderResult,
+  ToolboxArtefact,
+  ToolboxArtefactType,
+  ToolboxOutputFormat,
+  VisualBrief,
+  dispatchRender,
+} from './toolbox/index.js';
+
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;
