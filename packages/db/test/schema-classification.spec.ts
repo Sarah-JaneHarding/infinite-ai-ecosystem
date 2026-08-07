@@ -32,7 +32,7 @@ const modelBlocks = [...schema.matchAll(/^model\s+\w+\s*\{([\s\S]*?)^\}/gm)].map
 );
 
 const mappedTables = modelBlocks.flatMap((body) => {
-  const match = /@@map\("([a-z_]+)"\)/.exec(body);
+  const match = /@@map\("([a-z0-9_]+)"\)/.exec(body);
   return match ? [match[1]!] : [];
 });
 
