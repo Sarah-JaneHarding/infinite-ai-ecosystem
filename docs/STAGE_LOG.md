@@ -2832,3 +2832,99 @@ log entry.
 
 Open questions: OQ-002, OQ-003, OQ-013 remain open (CAPS documents, ATP documents, school
 template supply). No new questions raised.
+
+---
+
+**Stage 08 step 3 — CE-03 through CE-08 contracts, prompts, eval sets, and tests**
+
+Date: 2026-08-07
+
+**Contract types (`packages/contracts/src/curriculum/`)**
+
+Three new files, adding 41 new exports to the `@infinite-ai/contracts` barrel (102 total):
+
+- `planning.ts`: CE03Input, CE04Input, CognitiveLevel, SuccessCriterion, EvidenceItem,
+  TermPlanWeekEntry, TermAssessmentTask, TermPlanSubject, TermPlan, TermPlanNeedsInput,
+  TermPlanResult, UnitBlueprint, UnitNeedsInput, UnitBlueprintResult.
+- `lesson.ts`: CE05Input, ActivityKind, LessonActivity, Lesson, LessonPlan,
+  LessonPlanNeedsInput, LessonPlanResult, DifferentiationTierName, CE08Input,
+  DifferentiatedTier, DifferentiatedSet, DifferentiationNeedsInput, DifferentiationResult.
+- `assessment.ts`: AssessmentTaskKind, CE06Input, CognitiveLevelSpread, AssessmentQuestion,
+  AssessmentSection, AssessmentTaskDesign, AssessmentDesignNeedsInput,
+  AssessmentTaskDesignResult, CE07Input, RubricDescriptors, RubricCriterion, Rubric,
+  RubricNeedsInput, RubricResult. Imports CognitiveLevel from planning.ts.
+
+Key structural invariant: `CognitiveLevelSpread` enforces that the six Bloom levels sum to
+exactly 100% (< 0.01 tolerance for floating-point). An assessment design with an
+inconsistent spread fails at parse time, before any brain write.
+
+Three new contract type test suites (75 new tests in `packages/contracts/test/`):
+
+- `planning.spec.ts` (26 tests): CE03Input and CE04Input shape validation, CognitiveLevel
+  enum coverage, SuccessCriterion source-citation requirement, TermPlanResult and
+  UnitBlueprintResult discriminated-union rules.
+- `lesson.spec.ts` (22 tests): CE05Input and CE08Input validation (including tier enum
+  and empty-tiers rejection), ActivityKind coverage, LessonPlanResult and
+  DifferentiationResult discriminated-union rules.
+- `assessment.spec.ts` (27 tests): CE06Input and CE07Input validation, AssessmentTaskKind
+  coverage, CognitiveLevelSpread sum-to-100 constraint (6 cases), AssessmentTaskDesignResult
+  and RubricResult discriminated-union rules including unrecognised documentKind rejection.
+
+Exports completeness test updated from 61 to 102 names.
+
+**Agent contracts (`packages/agents/src/mod-01/`)**
+
+Six new agent contracts, each calling `validateAgentContract` at module-load time:
+
+- CE-03: `curriculum.plan` / 8 000 tokens / $0.10 / `['pii_guard', 'grounding_check']`
+  / requiresApproval: false
+- CE-04: `curriculum.design` / 10 000 tokens / $0.12 / same guardrails / false
+- CE-05: `curriculum.lessons` / 12 000 tokens / $0.15 /
+  `['pii_guard', 'grounding_check', 'template_fidelity']` / **requiresApproval: true**
+- CE-06: `curriculum.assess` / 10 000 tokens / $0.12 / same guardrails (no template) /
+  **requiresApproval: true**
+- CE-07: `curriculum.rubric` / 8 000 tokens / $0.10 / standard guardrails / false
+- CE-08: `curriculum.differentiate` / 10 000 tokens / $0.12 / standard guardrails / false
+
+Six new agent contract spec suites (11 tests each): id, module, purpose, promptRef,
+requiresApproval, writesToBrain, model, evalSetRef, guardrail membership, and budget
+positivity. CE-05 additionally asserts template_fidelity presence; CE-05 asserts a token
+budget larger than CE-03 (lesson generation is more expensive than term planning).
+
+**Prompt files (`packages/prompts/src/`)**
+
+Six prompt files (CE-03 through CE-08), each following the 8-section structure
+(ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA, SELF-CHECK).
+All have `ratified_by: null`. Each GROUNDING section names the specific L0 documents
+required before the agent can produce a non-needs_input response. `prompt-lock.json`
+updated with sha256 hashes of the Prettier-formatted files.
+
+**Eval sets (`packages/evals/sets/`)**
+
+Six eval sets, 30 cases each:
+
+- `CE-03/term-planner.json`: varies grade, subjects, termNumber; 5 adversarial cases
+  (draft framework, draft ATP, unknown subject, all-drafts, injection); 3 must_not_regress.
+- `CE-04/unit-architect.json`: varies grade, subject, contentArea; 5 adversarial;
+  3 must_not_regress.
+- `CE-05/lesson-plan-generator.json`: includes unknown templateId case; 5 adversarial;
+  3 must_not_regress.
+- `CE-06/assessment-designer.json`: covers all 6 task kinds (test/assignment/project/oral/
+  practical/examination); 5 adversarial; 3 must_not_regress.
+- `CE-07/rubric-builder.json`: varies totalMarks; includes totalMarks-mismatch adversarial
+  case; 5 adversarial; 3 must_not_regress.
+- `CE-08/differentiation-agent.json`: varies tier combinations (all-three, support-only,
+  extension-only, etc.); grade-mismatch adversarial case; 5 adversarial; 3 must_not_regress.
+
+All 180 cases expect `status: "needs_input"` because no L0 documents are ratified.
+
+**docs/AGENTS.md** updated with full CE-03 through CE-08 detail tables.
+
+Tests after step 3: 25 packages, 25 successful. 127 agent-package tests (up from 61).
+200 contracts-package tests (up from 125). Prompt lock gate passes. Lint passes.
+Typecheck passes.
+
+Deviations from manual: none. All eval sets are 30 cases (manual says ≥ 30). All test
+the `needs_input` path; the `ok` path requires real CAPS/ATP documents in L0.
+
+Open questions: OQ-002, OQ-003, OQ-013 remain open. No new questions raised.

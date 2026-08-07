@@ -79,6 +79,56 @@ export {
 } from './curriculum/atp.js';
 
 export {
+  CE03Input,
+  CE04Input,
+  CognitiveLevel,
+  EvidenceItem,
+  SuccessCriterion,
+  TermAssessmentTask,
+  TermPlan,
+  TermPlanNeedsInput,
+  TermPlanResult,
+  TermPlanSubject,
+  TermPlanWeekEntry,
+  UnitBlueprint,
+  UnitBlueprintResult,
+  UnitNeedsInput,
+} from './curriculum/planning.js';
+
+export {
+  ActivityKind,
+  CE05Input,
+  CE08Input,
+  DifferentiatedSet,
+  DifferentiatedTier,
+  DifferentiationNeedsInput,
+  DifferentiationResult,
+  DifferentiationTierName,
+  Lesson,
+  LessonActivity,
+  LessonPlan,
+  LessonPlanNeedsInput,
+  LessonPlanResult,
+} from './curriculum/lesson.js';
+
+export {
+  AssessmentDesignNeedsInput,
+  AssessmentQuestion,
+  AssessmentSection,
+  AssessmentTaskDesign,
+  AssessmentTaskDesignResult,
+  AssessmentTaskKind,
+  CE06Input,
+  CE07Input,
+  CognitiveLevelSpread,
+  Rubric,
+  RubricCriterion,
+  RubricDescriptors,
+  RubricNeedsInput,
+  RubricResult,
+} from './curriculum/assessment.js';
+
+export {
   ChatCompletionRequest,
   ChatCompletionResponse,
   ChatCompletionStreamEvent,
