@@ -3305,3 +3305,68 @@ Tests: 88 passing (15 schema-mapper + 26 connector + 34 types + 13 csv-parser).
 `pnpm lint` and `pnpm typecheck` (27 packages) clean.
 
 Step 5 (DW-05 Data Quality Sentinel) is next.
+
+---
+
+### Stage 09 — Step 5: DW-05 Data Quality Sentinel
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the quality sentinel (DW-05), a pure synchronous function over canonical records.
+No database imports; all quality rules are declared inline so the unit tier runs without
+any infrastructure.
+
+**New files in `packages/warehouse/src/quality/`:**
+
+- `quality-sentinel.ts` — exports `runQualityChecks(input: DW05Input, asOf?: string): DW05Result`.
+
+  Two outcomes:
+  - `ok` — checks ran; returns `qualityScore`, `rejectedRecords`, `totalRecords`,
+    `blockedDownstream`, and `issues[]`.
+  - `needs_input` — `sampleRecords` is empty; human must supply data.
+
+  Check types implemented:
+  - **`MISSING_FIELD`** (ERROR): required field absent or empty.
+  - **`REFERENTIAL_INTEGRITY`** (ERROR): field value not in the allowed-values set
+    (e.g. `attendanceStatus` not in `['PRESENT', 'ABSENT', 'LATE', 'EXCUSED']`).
+  - **`IMPOSSIBLE_VALUE`** (ERROR for numeric violations; WARNING for future dates):
+    numeric value exceeds domain maximum (e.g. `attendanceRatePct > 100`) or is
+    negative when non-negative is required; `occurredAt` is in the future.
+  - **`DUPLICATE_RECORD`** (WARNING): exact match on the domain's key fields
+    (`learnerToken + occurredAt` for ATTENDANCE/ASSESSMENT/BEHAVIOUR; `learnerToken`
+    for DEMOGRAPHIC).
+
+  Quality score formula: `Math.round(100 × (total − rejected) / total)`.
+  A record is "rejected" when it has at least one ERROR-severity issue.
+  `blockedDownstream = qualityScore < 60`.
+
+  Domain rules defined for all six domains (ATTENDANCE, ASSESSMENT, BEHAVIOUR,
+  WELLBEING, DEMOGRAPHIC, SCREENER). The `asOf` parameter is injected for
+  deterministic date comparison in tests.
+
+  PII safety: issue `detail` strings contain only field names and numeric values — never
+  the raw field value (which might be a learner token or identifier).
+
+**New files in `packages/warehouse/test/quality/`:**
+
+- `quality-sentinel.spec.ts` — 20 tests:
+  - Perfect quality (2): score = 100, no issues; totalRecords counts correctly.
+  - `needs_input` (1): empty records.
+  - Missing required fields (3): MISSING_FIELD issues present, records rejected, score
+    and blocking reflect rejections.
+  - Quality score formula (3): formula verified at 50; score ≥ 60 = not blocked;
+    score < 60 = blocked.
+  - Impossible values (4): attendanceRatePct > 100 (ERROR, blocks), negative absentDays
+    (ERROR), future occurredAt (WARNING, does not reject), scorePercent > 100
+    (ASSESSMENT domain).
+  - Duplicate records (3): DUPLICATE_RECORD raised, distinct keys not flagged, WARNING
+    alone does not reject the record.
+  - Referential integrity (1): invalid attendanceStatus raises REFERENTIAL_INTEGRITY ERROR.
+  - Multi-domain (2): BEHAVIOUR and DEMOGRAPHIC domains apply correct required fields.
+  - PII safety (1): issue detail does not expose raw field values.
+
+Tests: 108 passing (20 quality-sentinel + 15 schema-mapper + 26 connector +
+34 types + 13 csv-parser). `pnpm lint` and `pnpm typecheck` clean.
+
+Step 6 (DW-06 Learner-360 Builder) is next.

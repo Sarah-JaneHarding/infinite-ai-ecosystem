@@ -62,6 +62,8 @@ export {
   type TransformRegistry,
 } from './mapping/schema-mapper.js';
 
+export { runQualityChecks } from './quality/quality-sentinel.js';
+
 export {
   DW01Input,
   DW02Input,
