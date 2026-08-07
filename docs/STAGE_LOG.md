@@ -2928,3 +2928,47 @@ Deviations from manual: none. All eval sets are 30 cases (manual says ≥ 30). A
 the `needs_input` path; the `ok` path requires real CAPS/ATP documents in L0.
 
 Open questions: OQ-002, OQ-003, OQ-013 remain open. No new questions raised.
+
+---
+
+## Stage 08 — MOD-01 Curriculum Engine, step 4: MOD-01 pipeline declaration
+
+Started: 2026-08-07 Completed: 2026-08-07
+Exit gate: IN PROGRESS (steps 5–7 remain)
+
+**Step 4: pipeline in orchestrator with HoD gate before publish**
+
+`packages/orchestrator/src/pipelines/mod-01.ts` declares `MOD01_CURRICULUM_PIPELINE`
+as a `PipelineDefinition` DAG covering the full planning lifecycle:
+
+```
+ingest-caps-atp (tool_call: l0.ingest_ratified_source)
+  → build-topic-graph (agent_call: CE-01)
+  → sequence-atp (agent_call: CE-02)
+  → plan-term (agent_call: CE-03)
+  → architect-units (map over contentAreas → CE-04)
+  → generate-lessons (map over units → CE-05)
+  → differentiate-lessons (map over lessonPlans → CE-08)
+  → design-assessments (map over units → CE-06)
+  → build-rubrics (map over assessmentTasks → CE-07)
+  → hod-approval (human_gate, requiredRole: "hod")
+  → publish-to-brain (tool_call: brain.publish_curriculum_version)
+  → audit-coverage (agent_call: CE-09)
+```
+
+Compensation: `compensate-publish` tombstones the Brain record on any failure after
+publish commits. The Brain is append-only — compensation adds a tombstone record, it
+does not delete.
+
+`validatePipelineDag` is called at module load time (fail-fast, same pattern as
+`validateAgentContract` in the agents package).
+
+`validatePipelineGating` is enforced in tests: `brain.publish_curriculum_version` is
+marked irreversible; the test confirms no path reaches it without the HoD gate.
+
+Tests: 12 new pipeline spec tests in `test/pipelines/mod-01.spec.ts`, all passing.
+Exported from `packages/orchestrator/src/index.ts` as `MOD01_CURRICULUM_PIPELINE`.
+
+Steps 5–7 (CE-09 Coverage Auditor, export surface, docs/AGENTS.md for CE-09) are next.
+
+Open questions: OQ-002, OQ-003, OQ-013 remain open.

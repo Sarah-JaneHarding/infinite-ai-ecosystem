@@ -59,4 +59,6 @@ export {
 
 export { inspectRun, type RunInspection, type StepInspection } from './inspector.js';
 
+export { MOD01_CURRICULUM_PIPELINE } from './pipelines/mod-01.js';
+
 export const PACKAGE_NAME = '@infinite-ai/orchestrator' as const;
