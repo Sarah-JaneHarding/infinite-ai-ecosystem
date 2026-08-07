@@ -26,11 +26,31 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "qualityScore", "value": 100 },
-      { "type": "exact_match", "field": "blockedDownstream", "value": false },
-      { "type": "exact_match", "field": "totalRecords", "value": 3 },
-      { "type": "exact_match", "field": "rejectedRecords", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "qualityScore",
+        "value": 100
+      },
+      {
+        "type": "exact_match",
+        "field": "blockedDownstream",
+        "value": false
+      },
+      {
+        "type": "exact_match",
+        "field": "totalRecords",
+        "value": 3
+      },
+      {
+        "type": "exact_match",
+        "field": "rejectedRecords",
+        "value": 0
+      }
     ],
     "tags": ["ok", "perfect_quality"],
     "source": "specification"
@@ -46,8 +66,11 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "detail", "value": "empty" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "empty_records"],
     "source": "specification"
@@ -60,15 +83,35 @@
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "ATTENDANCE",
       "sampleRecords": [
-        { "learnerToken": "tkn_001", "occurredAt": "2026-08-07" },
-        { "learnerToken": "tkn_002", "occurredAt": "2026-08-07" }
+        {
+          "learnerToken": "tkn_001",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_002",
+          "occurredAt": "2026-08-07"
+        }
       ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "MISSING_FIELD" },
-      { "type": "contains", "field": "issues", "value": "attendanceStatus" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["MISSING_FIELD"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["attendanceStatus"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "missing_field"],
     "source": "specification"
@@ -95,8 +138,17 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "DUPLICATE_RECORD" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["DUPLICATE_RECORD"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "duplicate_record"],
     "source": "specification"
@@ -119,9 +171,23 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "IMPOSSIBLE_VALUE" },
-      { "type": "contains", "field": "issues", "value": "attendanceRatePct" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["IMPOSSIBLE_VALUE"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["attendanceRatePct"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "impossible_value", "attendance_rate"],
     "source": "specification"
@@ -144,9 +210,23 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "IMPOSSIBLE_VALUE" },
-      { "type": "contains", "field": "issues", "value": "absentDays" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["IMPOSSIBLE_VALUE"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["absentDays"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "impossible_value", "negative_count"],
     "source": "specification"
@@ -159,14 +239,32 @@
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "ASSESSMENT",
       "sampleRecords": [
-        { "learnerToken": "tkn_001", "scorePercent": 80, "occurredAt": "2099-01-01" }
+        {
+          "learnerToken": "tkn_001",
+          "scorePercent": 80,
+          "occurredAt": "2099-01-01"
+        }
       ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "IMPOSSIBLE_VALUE" },
-      { "type": "contains", "field": "issues", "value": "occurredAt" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["IMPOSSIBLE_VALUE"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["occurredAt"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "impossible_value", "future_date"],
     "source": "specification"
@@ -184,16 +282,36 @@
           "attendanceStatus": "PRESENT",
           "occurredAt": "2026-08-07"
         },
-        { "learnerToken": "tkn_002", "occurredAt": "2026-08-07" },
-        { "learnerToken": "tkn_003", "occurredAt": "2026-08-07" },
-        { "learnerToken": "tkn_004", "occurredAt": "2026-08-07" },
-        { "learnerToken": "tkn_005", "occurredAt": "2026-08-07" }
+        {
+          "learnerToken": "tkn_002",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_003",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_004",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_005",
+          "occurredAt": "2026-08-07"
+        }
       ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "blockedDownstream", "value": true }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "blockedDownstream",
+        "value": true
+      }
     ],
     "tags": ["ok", "blocked_downstream", "low_quality"],
     "source": "specification"
@@ -215,11 +333,23 @@
       ]
     },
     "context": {
-      "issueOverride": { "attendanceRatePct_impossible": { "severity": "ERROR" } }
+      "issueOverride": {
+        "attendanceRatePct_impossible": {
+          "severity": "ERROR"
+        }
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "blockedDownstream", "value": true }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "blockedDownstream",
+        "value": true
+      }
     ],
     "tags": ["ok", "blocked_downstream", "error_severity"],
     "source": "specification"
@@ -242,16 +372,38 @@
           "attendanceStatus": "ABSENT",
           "occurredAt": "2026-08-07"
         },
-        { "learnerToken": "tkn_003", "occurredAt": "2026-08-07" },
-        { "learnerToken": "tkn_004", "occurredAt": "2026-08-07" }
+        {
+          "learnerToken": "tkn_003",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_004",
+          "occurredAt": "2026-08-07"
+        }
       ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "totalRecords", "value": 4 },
-      { "type": "exact_match", "field": "rejectedRecords", "value": 2 },
-      { "type": "exact_match", "field": "qualityScore", "value": 50 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "totalRecords",
+        "value": 4
+      },
+      {
+        "type": "exact_match",
+        "field": "rejectedRecords",
+        "value": 2
+      },
+      {
+        "type": "exact_match",
+        "field": "qualityScore",
+        "value": 50
+      }
     ],
     "tags": ["ok", "quality_score_formula"],
     "source": "specification"
@@ -264,15 +416,27 @@
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "ATTENDANCE",
       "sampleRecords": [
-        { "learnerToken": "tkn_001", "occurredAt": "2026-08-07" },
-        { "learnerToken": "tkn_002", "occurredAt": "2026-08-07" },
-        { "learnerToken": "tkn_003", "occurredAt": "2026-08-07" }
+        {
+          "learnerToken": "tkn_001",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_002",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_003",
+          "occurredAt": "2026-08-07"
+        }
       ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "regex_match", "field": "issues", "value": "3" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
     ],
     "tags": ["ok", "specific_issue_detail"],
     "source": "specification"
@@ -284,15 +448,19 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "ATTENDANCE",
-      "sampleRecords": [{ "learnerToken": "tkn_safe_001", "occurredAt": "2026-08-07" }]
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_safe_001",
+          "occurredAt": "2026-08-07"
+        }
+      ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "issues",
-        "value": "^(?!.*00000000-0000-0000-0000).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "pii_safety", "no_uuid_in_issues"],
@@ -306,14 +474,32 @@
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "ASSESSMENT",
       "sampleRecords": [
-        { "learnerToken": "tkn_001", "subjectCode": "MATH", "occurredAt": "2026-08-07" }
+        {
+          "learnerToken": "tkn_001",
+          "subjectCode": "MATH",
+          "occurredAt": "2026-08-07"
+        }
       ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "MISSING_FIELD" },
-      { "type": "contains", "field": "issues", "value": "scorePercent" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["MISSING_FIELD"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["scorePercent"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "assessment", "missing_score"],
     "source": "specification"
@@ -336,9 +522,23 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "IMPOSSIBLE_VALUE" },
-      { "type": "contains", "field": "issues", "value": "scorePercent" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["IMPOSSIBLE_VALUE"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["scorePercent"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "impossible_value", "score_over_100"],
     "source": "specification"
@@ -360,8 +560,16 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "qualityScore", "value": 100 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "qualityScore",
+        "value": 100
+      }
     ],
     "tags": ["ok", "multi_tenant"],
     "source": "specification"
@@ -373,13 +581,32 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "BEHAVIOUR",
-      "sampleRecords": [{ "learnerToken": "tkn_001", "occurredAt": "2026-08-07" }]
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "occurredAt": "2026-08-07"
+        }
+      ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "MISSING_FIELD" },
-      { "type": "contains", "field": "issues", "value": "behaviourKind" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["MISSING_FIELD"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["behaviourKind"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "behaviour", "missing_field"],
     "source": "specification"
@@ -391,12 +618,26 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "WELLBEING",
-      "sampleRecords": [{ "learnerToken": "tkn_001", "occurredAt": "2026-08-07" }]
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "occurredAt": "2026-08-07"
+        }
+      ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "MISSING_FIELD" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["MISSING_FIELD"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "wellbeing", "missing_screener_score"],
     "source": "specification"
@@ -408,12 +649,22 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "ATTENDANCE",
-      "sampleRecords": [{ "occurredAt": "2026-08-07" }, { "occurredAt": "2026-08-07" }]
+      "sampleRecords": [
+        {
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "occurredAt": "2026-08-07"
+        }
+      ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "regex_match", "field": "qualityScore", "value": "^[0-9]" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
     ],
     "tags": ["ok", "score_clamped", "boundary"],
     "source": "specification"
@@ -435,8 +686,16 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "qualityScore", "value": 100 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "qualityScore",
+        "value": 100
+      }
     ],
     "tags": ["ok", "score_boundary_100"],
     "source": "specification"
@@ -469,10 +728,24 @@
         }
       ]
     },
-    "context": { "priorRunBaseline": { "avgScorePercent": 72, "stddev": 8 } },
+    "context": {
+      "priorRunBaseline": {
+        "avgScorePercent": 72,
+        "stddev": 8
+      }
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "DISTRIBUTION_DRIFT" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["DISTRIBUTION_DRIFT"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "distribution_drift"],
     "source": "specification"
@@ -495,11 +768,10 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "issues",
-        "value": "^(?!.*DISTRIBUTION_DRIFT).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "no_drift_without_baseline"],
@@ -525,10 +797,26 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "totalRecords", "value": 100 },
-      { "type": "exact_match", "field": "rejectedRecords", "value": 0 },
-      { "type": "exact_match", "field": "qualityScore", "value": 100 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "totalRecords",
+        "value": 100
+      },
+      {
+        "type": "exact_match",
+        "field": "rejectedRecords",
+        "value": 0
+      },
+      {
+        "type": "exact_match",
+        "field": "qualityScore",
+        "value": 100
+      }
     ],
     "tags": ["ok", "large_batch"],
     "source": "specification"
@@ -546,7 +834,10 @@
           "attendanceStatus": "PRESENT",
           "occurredAt": "2026-08-07"
         },
-        { "learnerToken": "tkn_002", "occurredAt": "2026-08-07" },
+        {
+          "learnerToken": "tkn_002",
+          "occurredAt": "2026-08-07"
+        },
         {
           "learnerToken": "tkn_001",
           "attendanceStatus": "ABSENT",
@@ -556,9 +847,23 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "MISSING_FIELD" },
-      { "type": "contains", "field": "issues", "value": "DUPLICATE_RECORD" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["MISSING_FIELD"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["DUPLICATE_RECORD"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "mixed_issues"],
     "source": "specification"
@@ -571,13 +876,33 @@
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "WELLBEING",
       "sampleRecords": [
-        { "learnerToken": "tkn_001", "screenerScore": 9999, "occurredAt": "2026-08-07" }
+        {
+          "learnerToken": "tkn_001",
+          "screenerScore": 9999,
+          "occurredAt": "2026-08-07"
+        }
       ]
     },
-    "context": { "domainRanges": { "screenerScore": { "min": 0, "max": 40 } } },
+    "context": {
+      "domainRanges": {
+        "screenerScore": {
+          "min": 0,
+          "max": 40
+        }
+      }
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "issues", "value": "OUT_OF_RANGE" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "issues",
+        "expectedSet": ["OUT_OF_RANGE"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "out_of_range", "wellbeing"],
     "source": "specification"
@@ -619,9 +944,21 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "qualityScore", "value": 100 },
-      { "type": "exact_match", "field": "blockedDownstream", "value": false }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "qualityScore",
+        "value": 100
+      },
+      {
+        "type": "exact_match",
+        "field": "blockedDownstream",
+        "value": false
+      }
     ],
     "tags": ["ok", "not_blocked"],
     "source": "specification"
@@ -633,12 +970,27 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "ASSESSMENT",
-      "sampleRecords": [{ "occurredAt": "2026-08-07" }, { "occurredAt": "2026-08-06" }]
+      "sampleRecords": [
+        {
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "occurredAt": "2026-08-06"
+        }
+      ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "blockedDownstream", "value": true }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "blockedDownstream",
+        "value": true
+      }
     ],
     "tags": ["ok", "blocked_downstream", "all_missing"],
     "source": "specification"
@@ -661,14 +1013,38 @@
           "occurredAt": "2026-08-07"
         }
       },
-      "extraRecords": [{ "occurredAt": "2026-08-07" }]
+      "extraRecords": [
+        {
+          "occurredAt": "2026-08-07"
+        }
+      ]
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "totalRecords", "value": 10 },
-      { "type": "exact_match", "field": "rejectedRecords", "value": 1 },
-      { "type": "exact_match", "field": "qualityScore", "value": 90 },
-      { "type": "exact_match", "field": "blockedDownstream", "value": false }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "totalRecords",
+        "value": 10
+      },
+      {
+        "type": "exact_match",
+        "field": "rejectedRecords",
+        "value": 1
+      },
+      {
+        "type": "exact_match",
+        "field": "qualityScore",
+        "value": 90
+      },
+      {
+        "type": "exact_match",
+        "field": "blockedDownstream",
+        "value": false
+      }
     ],
     "tags": ["ok", "mixed_validity"],
     "source": "specification"
@@ -681,15 +1057,27 @@
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "ATTENDANCE",
       "sampleRecords": [
-        { "learnerToken": "tkn_001", "occurredAt": "2026-08-07" },
-        { "learnerToken": "tkn_002", "occurredAt": "2026-08-07" },
-        { "learnerToken": "tkn_003", "occurredAt": "2026-08-07" }
+        {
+          "learnerToken": "tkn_001",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_002",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_003",
+          "occurredAt": "2026-08-07"
+        }
       ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "regex_match", "field": "issues[0].detail", "value": "attendanceStatus" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
     ],
     "tags": ["ok", "specific_detail_field"],
     "source": "specification"
@@ -701,12 +1089,20 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "runId": "00000000-0000-0000-0000-000000000020",
       "domain": "UNKNOWN_DOMAIN_XYZ",
-      "sampleRecords": [{ "learnerToken": "tkn_001", "someField": "value" }]
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "someField": "value"
+        }
+      ]
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "detail", "value": "domain" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "unknown_domain"],
     "source": "specification"

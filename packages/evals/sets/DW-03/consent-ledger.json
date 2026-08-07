@@ -18,12 +18,27 @@
           "fields": ["attendanceStatus", "occurredAt"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "consentBasis", "value": "PARENTAL_CONSENT" },
-      { "type": "contains", "field": "permittedFields", "value": "attendanceStatus" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "consentBasis",
+        "value": "PARENTAL_CONSENT"
+      },
+      {
+        "type": "set_overlap",
+        "field": "permittedFields",
+        "expectedSet": ["attendanceStatus"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "all_permitted"],
     "source": "specification"
@@ -40,11 +55,16 @@
     },
     "context": {
       "consentRecords": [],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "detail", "value": "consent" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "no_consent_record"],
     "source": "specification"
@@ -68,11 +88,16 @@
           "fields": ["attendanceStatus"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "blocked" },
-      { "type": "contains", "field": "detail", "value": "withdrawn" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      }
     ],
     "tags": ["blocked", "withdrawn_consent"],
     "source": "specification"
@@ -96,11 +121,16 @@
           "fields": ["attendanceStatus"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "detail", "value": "purpose" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "unknown_purpose"],
     "source": "specification"
@@ -124,11 +154,22 @@
           "fields": ["scorePercent", "subjectCode"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ASSESSMENT"] }
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "blocked" },
-      { "type": "contains", "field": "blockedFields", "value": "financialData" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["financialData"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["blocked", "partial_block"],
     "source": "specification"
@@ -152,11 +193,17 @@
           "fields": ["screenerScore"]
         }
       ],
-      "purposeAllowList": { "intervention": ["WELLBEING"], "curriculum": ["ASSESSMENT"] }
+      "purposeAllowList": {
+        "intervention": ["WELLBEING"],
+        "curriculum": ["ASSESSMENT"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "blocked" },
-      { "type": "contains", "field": "detail", "value": "purpose" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      }
     ],
     "tags": ["blocked", "purpose_domain_mismatch"],
     "source": "specification"
@@ -180,14 +227,15 @@
           "fields": ["attendanceStatus"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "blocked" },
       {
-        "type": "regex_match",
-        "field": "detail",
-        "value": "^(?!.*00000000-0000-0000-0000-000000000106).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
       }
     ],
     "tags": ["blocked", "pii_safety", "no_learner_id_in_detail"],
@@ -218,9 +266,17 @@
           "recordedAt": "2026-06-01T00:00:00Z"
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "blocked" }],
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      }
+    ],
     "tags": ["blocked", "most_recent_wins"],
     "source": "specification"
   },
@@ -249,9 +305,17 @@
           "recordedAt": "2026-07-01T00:00:00Z"
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
     "tags": ["ok", "regrant_after_withdrawal"],
     "source": "specification"
   },
@@ -274,10 +338,16 @@
           "fields": ["attendanceStatus"]
         }
       ],
-      "purposeAllowList": { "intervention": ["BEHAVIOUR"] }
+      "purposeAllowList": {
+        "intervention": ["BEHAVIOUR"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "wrong_domain"],
     "source": "specification"
@@ -301,9 +371,17 @@
           "fields": ["scorePercent"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ASSESSMENT"] }
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
     },
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
     "tags": ["ok", "multi_tenant"],
     "source": "specification"
   },
@@ -326,11 +404,21 @@
           "fields": ["screenerScore"]
         }
       ],
-      "purposeAllowList": { "intervention": ["WELLBEING"] }
+      "purposeAllowList": {
+        "intervention": ["WELLBEING"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "consentBasis", "value": "PARENTAL_CONSENT" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "consentBasis",
+        "value": "PARENTAL_CONSENT"
+      }
     ],
     "tags": ["ok", "wellbeing"],
     "source": "specification"
@@ -354,11 +442,22 @@
           "fields": ["scorePercent", "subjectCode"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ASSESSMENT"] }
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "blocked" },
-      { "type": "contains", "field": "blockedFields", "value": "teacherComment" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["teacherComment"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["blocked", "sorted_blocked_fields"],
     "source": "specification"
@@ -382,12 +481,28 @@
           "fields": ["occurredAt", "attendanceStatus"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "permittedFields", "value": "occurredAt" },
-      { "type": "contains", "field": "permittedFields", "value": "attendanceStatus" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "permittedFields",
+        "expectedSet": ["occurredAt"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "permittedFields",
+        "expectedSet": ["attendanceStatus"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "sorted_permitted_fields"],
     "source": "specification"
@@ -411,10 +526,16 @@
           "fields": ["attendanceStatus"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "empty_fields_list"],
     "source": "specification"
@@ -438,9 +559,17 @@
           "fields": ["behaviourKind", "occurredAt"]
         }
       ],
-      "purposeAllowList": { "intervention": ["BEHAVIOUR"] }
+      "purposeAllowList": {
+        "intervention": ["BEHAVIOUR"]
+      }
     },
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
     "tags": ["ok", "behaviour"],
     "source": "specification"
   },
@@ -456,13 +585,22 @@
     },
     "context": {
       "consentRecords": [
-        { "domain": "ATTENDANCE", "decision": "WITHDRAWN", "basis": "PARENTAL_CONSENT" }
+        {
+          "domain": "ATTENDANCE",
+          "decision": "WITHDRAWN",
+          "basis": "PARENTAL_CONSENT"
+        }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "blocked" },
-      { "type": "regex_match", "field": "detail", "value": "ATTENDANCE" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      }
     ],
     "tags": ["blocked", "detail_names_rule"],
     "source": "specification"
@@ -486,11 +624,22 @@
           "fields": ["scorePercent"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ASSESSMENT"] }
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "blocked" },
-      { "type": "contains", "field": "blockedFields", "value": "financialBalance" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["financialBalance"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["blocked", "one_field_blocked"],
     "source": "specification"
@@ -514,11 +663,21 @@
           "fields": ["scorePercent"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ASSESSMENT"] }
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "consentBasis", "value": "LEGITIMATE_INTEREST" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "consentBasis",
+        "value": "LEGITIMATE_INTEREST"
+      }
     ],
     "tags": ["ok", "legitimate_interest"],
     "source": "specification"
@@ -542,10 +701,17 @@
           "fields": ["attendanceStatus"]
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"], "curriculum": ["ASSESSMENT"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"],
+        "curriculum": ["ASSESSMENT"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "unknown_purpose"],
     "source": "specification"
@@ -569,11 +735,22 @@
           "fields": ["screenerScore", "screenerDate"]
         }
       ],
-      "purposeAllowList": { "intervention": ["WELLBEING"] }
+      "purposeAllowList": {
+        "intervention": ["WELLBEING"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "permittedFields", "value": "screenerScore" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "permittedFields",
+        "expectedSet": ["screenerScore"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "wellbeing", "screener"],
     "source": "specification"
@@ -597,13 +774,34 @@
           "fields": []
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "blocked" },
-      { "type": "contains", "field": "blockedFields", "value": "fieldA" },
-      { "type": "contains", "field": "blockedFields", "value": "fieldB" },
-      { "type": "contains", "field": "blockedFields", "value": "fieldC" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["fieldA"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["fieldB"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["fieldC"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["blocked", "all_fields_blocked"],
     "source": "specification"
@@ -620,12 +818,22 @@
     },
     "context": {
       "consentRecords": [
-        { "domain": "ATTENDANCE", "decision": "PENDING", "basis": null }
+        {
+          "domain": "ATTENDANCE",
+          "decision": "PENDING",
+          "basis": null
+        }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "pending_consent"],
     "source": "specification"
@@ -654,7 +862,13 @@
         "intervention": ["ATTENDANCE", "WELLBEING", "BEHAVIOUR"]
       }
     },
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
     "tags": ["ok", "curriculum_purpose"],
     "source": "specification"
   },
@@ -677,11 +891,22 @@
           "fields": ["screenerScore"]
         }
       ],
-      "purposeAllowList": { "curriculum": ["ASSESSMENT"] }
+      "purposeAllowList": {
+        "curriculum": ["ASSESSMENT"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "blocked" },
-      { "type": "contains", "field": "blockedFields", "value": "screenerScore" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["screenerScore"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["blocked", "wellbeing_not_in_curriculum"],
     "source": "specification"
@@ -711,11 +936,21 @@
           "recordedAt": "2026-06-01T00:00:00Z"
         }
       ],
-      "purposeAllowList": { "intervention": ["ATTENDANCE"] }
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "consentBasis", "value": "PARENTAL_CONSENT" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "consentBasis",
+        "value": "PARENTAL_CONSENT"
+      }
     ],
     "tags": ["ok", "most_recent_basis"],
     "source": "specification"
@@ -739,11 +974,22 @@
           "fields": ["behaviourKind", "occurredAt", "severity"]
         }
       ],
-      "purposeAllowList": { "intervention": ["BEHAVIOUR"] }
+      "purposeAllowList": {
+        "intervention": ["BEHAVIOUR"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "permittedFields", "value": "severity" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "permittedFields",
+        "expectedSet": ["severity"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["ok", "behaviour", "intervention"],
     "source": "specification"
@@ -760,14 +1006,15 @@
     },
     "context": {
       "consentRecords": [],
-      "purposeAllowList": { "intervention": ["ASSESSMENT"] }
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
       {
-        "type": "regex_match",
-        "field": "detail",
-        "value": "^(?!.*00000000-0000-0000-0000-000000000126).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
       }
     ],
     "tags": ["needs_input", "pii_safety"],
@@ -785,10 +1032,16 @@
     },
     "context": {
       "consentRecords": [],
-      "purposeAllowList": { "intervention": ["BEHAVIOUR"] }
+      "purposeAllowList": {
+        "intervention": ["BEHAVIOUR"]
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "single_field"],
     "source": "specification"

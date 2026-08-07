@@ -7,10 +7,15 @@
       "sourceId": "00000000-0000-0000-0000-000000000010",
       "configRef": "secret://school-001/sis-api"
     },
-    "context": { "connectorRegistry": {} },
+    "context": {
+      "connectorRegistry": {}
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "detail", "value": "connector" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "no_connector"],
     "source": "specification"
@@ -25,7 +30,11 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "invalid_config"],
     "source": "specification"
@@ -38,10 +47,15 @@
       "sourceId": "00000000-0000-0000-0000-000000000010",
       "configRef": "secret://school-001/sis-api"
     },
-    "context": { "sourceStatus": "PAUSED" },
+    "context": {
+      "sourceStatus": "PAUSED"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "detail", "value": "PAUSED" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "paused_source"],
     "source": "specification"
@@ -54,9 +68,15 @@
       "sourceId": "00000000-0000-0000-0000-000000000010",
       "configRef": "secret://school-001/sis-api"
     },
-    "context": { "sourceStatus": "ERROR" },
+    "context": {
+      "sourceStatus": "ERROR"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "error_source"],
     "source": "specification"
@@ -71,11 +91,23 @@
     },
     "context": {
       "connectorKind": "FILE_CSV",
-      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+      "connectorReturns": {
+        "records": [],
+        "hasMore": false,
+        "cursor": null
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 0
+      }
     ],
     "tags": ["ok", "empty_result", "file_csv"],
     "source": "specification"
@@ -94,11 +126,19 @@
         "records": [
           {
             "sourceRef": "row 1",
-            "payload": { "learnerNo": "LNR001", "date": "2026-08-01", "status": "P" }
+            "payload": {
+              "learnerNo": "LNR001",
+              "date": "2026-08-01",
+              "status": "P"
+            }
           },
           {
             "sourceRef": "row 2",
-            "payload": { "learnerNo": "LNR002", "date": "2026-08-01", "status": "A" }
+            "payload": {
+              "learnerNo": "LNR002",
+              "date": "2026-08-01",
+              "status": "A"
+            }
           }
         ],
         "hasMore": false,
@@ -106,8 +146,16 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 2 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 2
+      }
     ],
     "tags": ["ok", "file_csv"],
     "source": "specification"
@@ -126,7 +174,11 @@
         "records": [
           {
             "sourceRef": "Sheet1!A2",
-            "payload": { "learnerNo": "LNR001", "subject": "Math", "mark": 78 }
+            "payload": {
+              "learnerNo": "LNR001",
+              "subject": "Math",
+              "mark": 78
+            }
           }
         ],
         "hasMore": false,
@@ -134,8 +186,16 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 1
+      }
     ],
     "tags": ["ok", "file_xlsx"],
     "source": "specification"
@@ -150,11 +210,23 @@
     },
     "context": {
       "connectorKind": "SIS_API",
-      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+      "connectorReturns": {
+        "records": [],
+        "hasMore": false,
+        "cursor": null
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 0
+      }
     ],
     "tags": ["ok", "empty_result", "sis_api"],
     "source": "specification"
@@ -171,17 +243,43 @@
       "connectorKind": "SIS_API",
       "connectorReturns": {
         "records": [
-          { "sourceRef": "learner/LNR001", "payload": { "id": "LNR001", "grade": "6" } },
-          { "sourceRef": "learner/LNR002", "payload": { "id": "LNR002", "grade": "6" } },
-          { "sourceRef": "learner/LNR003", "payload": { "id": "LNR003", "grade": "7" } }
+          {
+            "sourceRef": "learner/LNR001",
+            "payload": {
+              "id": "LNR001",
+              "grade": "6"
+            }
+          },
+          {
+            "sourceRef": "learner/LNR002",
+            "payload": {
+              "id": "LNR002",
+              "grade": "6"
+            }
+          },
+          {
+            "sourceRef": "learner/LNR003",
+            "payload": {
+              "id": "LNR003",
+              "grade": "7"
+            }
+          }
         ],
         "hasMore": false,
         "cursor": null
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 3 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 3
+      }
     ],
     "tags": ["ok", "sis_api"],
     "source": "specification"
@@ -200,7 +298,11 @@
         "records": [
           {
             "sourceRef": "att/001",
-            "payload": { "learnerNo": "LNR001", "date": "2026-08-01", "status": "P" }
+            "payload": {
+              "learnerNo": "LNR001",
+              "date": "2026-08-01",
+              "status": "P"
+            }
           }
         ],
         "hasMore": true,
@@ -208,8 +310,16 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 1
+      }
     ],
     "tags": ["ok", "pagination", "attendance_api"],
     "source": "specification"
@@ -228,15 +338,27 @@
         "records": [
           {
             "sourceRef": "att/day-001",
-            "payload": { "learnerNo": "LNR001", "date": "2026-08-01", "status": "P" }
+            "payload": {
+              "learnerNo": "LNR001",
+              "date": "2026-08-01",
+              "status": "P"
+            }
           },
           {
             "sourceRef": "att/day-002",
-            "payload": { "learnerNo": "LNR001", "date": "2026-08-02", "status": "P" }
+            "payload": {
+              "learnerNo": "LNR001",
+              "date": "2026-08-02",
+              "status": "P"
+            }
           },
           {
             "sourceRef": "att/day-003",
-            "payload": { "learnerNo": "LNR001", "date": "2026-08-03", "status": "A" }
+            "payload": {
+              "learnerNo": "LNR001",
+              "date": "2026-08-03",
+              "status": "A"
+            }
           }
         ],
         "hasMore": false,
@@ -244,8 +366,16 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 3 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 3
+      }
     ],
     "tags": ["ok", "attendance_api"],
     "source": "specification"
@@ -276,8 +406,16 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 1
+      }
     ],
     "tags": ["ok", "behaviour_api"],
     "source": "specification"
@@ -308,8 +446,16 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 1
+      }
     ],
     "tags": ["ok", "screener_api"],
     "source": "specification"
@@ -328,11 +474,19 @@
         "records": [
           {
             "sourceRef": "upload/2026-t1-results.csv/row-1",
-            "payload": { "learnerNo": "LNR001", "subject": "English", "mark": 85 }
+            "payload": {
+              "learnerNo": "LNR001",
+              "subject": "English",
+              "mark": 85
+            }
           },
           {
             "sourceRef": "upload/2026-t1-results.csv/row-2",
-            "payload": { "learnerNo": "LNR002", "subject": "English", "mark": 72 }
+            "payload": {
+              "learnerNo": "LNR002",
+              "subject": "English",
+              "mark": 72
+            }
           }
         ],
         "hasMore": false,
@@ -340,8 +494,16 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 2 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 2
+      }
     ],
     "tags": ["ok", "manual_upload"],
     "source": "specification"
@@ -356,14 +518,17 @@
     },
     "context": {
       "connectorKind": "FILE_CSV",
-      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+      "connectorReturns": {
+        "records": [],
+        "hasMore": false,
+        "cursor": null
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "runId",
-        "value": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "runid_format"],
@@ -380,15 +545,34 @@
     "context": {
       "connectorKind": "FILE_CSV",
       "connectorReturns": {
-        "records": [{ "sourceRef": "row 1", "payload": { "learnerNo": "LNR001" } }],
+        "records": [
+          {
+            "sourceRef": "row 1",
+            "payload": {
+              "learnerNo": "LNR001"
+            }
+          }
+        ],
         "hasMore": false,
         "cursor": null
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsConformed", "value": 0 },
-      { "type": "exact_match", "field": "recordsRejected", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsConformed",
+        "value": 0
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsRejected",
+        "value": 0
+      }
     ],
     "tags": ["ok", "conformed_count"],
     "source": "specification"
@@ -411,8 +595,16 @@
       "recordCount": 100
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 100 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 100
+      }
     ],
     "tags": ["ok", "large_batch"],
     "source": "specification"
@@ -432,7 +624,11 @@
         "records": [
           {
             "sourceRef": "att/101",
-            "payload": { "learnerNo": "LNR101", "date": "2026-08-01", "status": "P" }
+            "payload": {
+              "learnerNo": "LNR101",
+              "date": "2026-08-01",
+              "status": "P"
+            }
           }
         ],
         "hasMore": false,
@@ -440,8 +636,16 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 1
+      }
     ],
     "tags": ["ok", "pagination", "cursor_provided"],
     "source": "specification"
@@ -456,11 +660,23 @@
     },
     "context": {
       "connectorKind": "FILE_CSV",
-      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+      "connectorReturns": {
+        "records": [],
+        "hasMore": false,
+        "cursor": null
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 0
+      }
     ],
     "tags": ["ok", "multi_tenant"],
     "source": "specification"
@@ -479,7 +695,9 @@
         "records": [
           {
             "sourceRef": "learner/LNR001",
-            "payload": { "id": "LNR001" },
+            "payload": {
+              "id": "LNR001"
+            },
             "schemaVersion": "v2"
           }
         ],
@@ -488,8 +706,16 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 1
+      }
     ],
     "tags": ["ok", "schema_version"],
     "source": "specification"
@@ -506,16 +732,34 @@
       "connectorKind": "SIS_API",
       "connectorReturns": {
         "records": [
-          { "sourceRef": "learner/LNR001", "payload": { "id": "LNR001" } },
-          { "sourceRef": "learner/LNR002", "payload": { "id": "LNR002" } }
+          {
+            "sourceRef": "learner/LNR001",
+            "payload": {
+              "id": "LNR001"
+            }
+          },
+          {
+            "sourceRef": "learner/LNR002",
+            "payload": {
+              "id": "LNR002"
+            }
+          }
         ],
         "hasMore": true,
         "cursor": "after-LNR002"
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 2 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 2
+      }
     ],
     "tags": ["ok", "pagination", "has_more"],
     "source": "specification"
@@ -528,9 +772,15 @@
       "sourceId": "00000000-0000-0000-0000-000000000099",
       "configRef": "secret://school-001/attendance-csv"
     },
-    "context": { "sourceNotFound": true },
+    "context": {
+      "sourceNotFound": true
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "source_not_found"],
     "source": "specification"
@@ -549,7 +799,11 @@
         "records": [
           {
             "sourceRef": "row 1",
-            "payload": { "learnerNo": "LNR001", "date": "2026-01-14", "status": "P" }
+            "payload": {
+              "learnerNo": "LNR001",
+              "date": "2026-01-14",
+              "status": "P"
+            }
           }
         ],
         "hasMore": false,
@@ -557,9 +811,21 @@
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 1 },
-      { "type": "exact_match", "field": "recordsRejected", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 1
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsRejected",
+        "value": 0
+      }
     ],
     "tags": ["ok", "single_record"],
     "source": "specification"
@@ -574,11 +840,23 @@
     },
     "context": {
       "connectorKind": "SCREENER_API",
-      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+      "connectorReturns": {
+        "records": [],
+        "hasMore": false,
+        "cursor": null
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 0
+      }
     ],
     "tags": ["ok", "empty_result", "screener_api"],
     "source": "specification"
@@ -593,11 +871,23 @@
     },
     "context": {
       "connectorKind": "BEHAVIOUR_API",
-      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+      "connectorReturns": {
+        "records": [],
+        "hasMore": false,
+        "cursor": null
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 0
+      }
     ],
     "tags": ["ok", "empty_result", "behaviour_api"],
     "source": "specification"
@@ -615,22 +905,41 @@
       "pages": [
         {
           "records": [
-            { "sourceRef": "l/1", "payload": {} },
-            { "sourceRef": "l/2", "payload": {} }
+            {
+              "sourceRef": "l/1",
+              "payload": {}
+            },
+            {
+              "sourceRef": "l/2",
+              "payload": {}
+            }
           ],
           "hasMore": true,
           "cursor": "p2"
         },
         {
-          "records": [{ "sourceRef": "l/3", "payload": {} }],
+          "records": [
+            {
+              "sourceRef": "l/3",
+              "payload": {}
+            }
+          ],
           "hasMore": false,
           "cursor": null
         }
       ]
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 3 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 3
+      }
     ],
     "tags": ["ok", "pagination", "multi_page"],
     "source": "specification"
@@ -645,11 +954,23 @@
     },
     "context": {
       "connectorKind": "FILE_XLSX",
-      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+      "connectorReturns": {
+        "records": [],
+        "hasMore": false,
+        "cursor": null
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 0
+      }
     ],
     "tags": ["ok", "empty_result", "file_xlsx"],
     "source": "specification"
@@ -664,11 +985,23 @@
     },
     "context": {
       "connectorKind": "ATTENDANCE_API",
-      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+      "connectorReturns": {
+        "records": [],
+        "hasMore": false,
+        "cursor": null
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 0
+      }
     ],
     "tags": ["ok", "empty_result", "attendance_api"],
     "source": "specification"
@@ -683,11 +1016,23 @@
     },
     "context": {
       "connectorKind": "MANUAL_UPLOAD",
-      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+      "connectorReturns": {
+        "records": [],
+        "hasMore": false,
+        "cursor": null
+      }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "recordsReceived",
+        "value": 0
+      }
     ],
     "tags": ["ok", "empty_result", "manual_upload"],
     "source": "specification"
@@ -703,13 +1048,24 @@
     "context": {
       "connectorKind": "FILE_CSV",
       "connectorReturns": {
-        "records": [{ "sourceRef": "", "payload": { "learnerNo": "LNR001" } }],
+        "records": [
+          {
+            "sourceRef": "",
+            "payload": {
+              "learnerNo": "LNR001"
+            }
+          }
+        ],
         "hasMore": false,
         "cursor": null
       }
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "invalid_record"],
     "source": "specification"

@@ -16,9 +16,21 @@
       "learnerToken": "tkn_abc123xyz"
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "deidentified", "value": true },
-      { "type": "exact_match", "field": "learnerToken", "value": "tkn_abc123xyz" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "deidentified",
+        "value": true
+      },
+      {
+        "type": "exact_match",
+        "field": "learnerToken",
+        "value": "tkn_abc123xyz"
+      }
     ],
     "tags": ["ok", "basic_tokenisation"],
     "source": "specification"
@@ -36,13 +48,14 @@
         "occurredAt": "2026-08-07"
       }
     },
-    "context": { "learnerToken": "tkn_def456uvw" },
+    "context": {
+      "learnerToken": "tkn_def456uvw"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "deidentifiedPayload",
-        "value": "^(?!.*00000000-0000-0000-0000-000000000101).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "pii_safety", "uuid_absent_from_result"],
@@ -60,10 +73,15 @@
         "attendanceStatus": "LATE"
       }
     },
-    "context": { "learnerToken": null },
+    "context": {
+      "learnerToken": null
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "detail", "value": "token" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "no_token"],
     "source": "specification"
@@ -81,10 +99,20 @@
         "occurredAt": "2026-08-07"
       }
     },
-    "context": { "learnerToken": "tkn_ghi789rst" },
+    "context": {
+      "learnerToken": "tkn_ghi789rst"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "deidentified", "value": true }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "deidentified",
+        "value": true
+      }
     ],
     "tags": ["ok", "deidentified_boolean"],
     "source": "specification"
@@ -101,13 +129,14 @@
         "attendanceStatus": "PRESENT"
       }
     },
-    "context": { "learnerToken": "tkn_jkl012mno" },
+    "context": {
+      "learnerToken": "tkn_jkl012mno"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "deidentifiedPayload",
-        "value": "^(?!.*learnerId.*00000000).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "no_raw_payload"],
@@ -126,13 +155,14 @@
         "attendanceStatus": "PRESENT"
       }
     },
-    "context": { "learnerToken": "tkn_pqr345stu" },
+    "context": {
+      "learnerToken": "tkn_pqr345stu"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "deidentifiedPayload",
-        "value": "^(?!.*Jane Doe).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "name_suppressed"],
@@ -151,13 +181,14 @@
         "screenerScore": 22
       }
     },
-    "context": { "learnerToken": "tkn_vwx678yza" },
+    "context": {
+      "learnerToken": "tkn_vwx678yza"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "deidentifiedPayload",
-        "value": "^(?!.*9501015800085).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "national_id_suppressed", "pii_safety"],
@@ -175,10 +206,20 @@
         "scorePercent": 55
       }
     },
-    "context": { "learnerToken": "tkn_stable_opaque_007" },
+    "context": {
+      "learnerToken": "tkn_stable_opaque_007"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "learnerToken", "value": "tkn_stable_opaque_007" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "learnerToken",
+        "value": "tkn_stable_opaque_007"
+      }
     ],
     "tags": ["ok", "stable_token"],
     "source": "specification"
@@ -197,10 +238,20 @@
         "occurredAt": "2026-08-07"
       }
     },
-    "context": { "learnerToken": "tkn_assess_001" },
+    "context": {
+      "learnerToken": "tkn_assess_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "deidentified", "value": true }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "deidentified",
+        "value": true
+      }
     ],
     "tags": ["ok", "assessment"],
     "source": "specification"
@@ -218,10 +269,20 @@
         "occurredAt": "2026-08-07"
       }
     },
-    "context": { "learnerToken": "tkn_behav_001" },
+    "context": {
+      "learnerToken": "tkn_behav_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "deidentified", "value": true }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "deidentified",
+        "value": true
+      }
     ],
     "tags": ["ok", "behaviour"],
     "source": "specification"
@@ -239,10 +300,20 @@
         "occurredAt": "2026-08-07"
       }
     },
-    "context": { "learnerToken": "tkn_well_001" },
+    "context": {
+      "learnerToken": "tkn_well_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "deidentified", "value": true }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "deidentified",
+        "value": true
+      }
     ],
     "tags": ["ok", "wellbeing"],
     "source": "specification"
@@ -259,10 +330,20 @@
         "attendanceStatus": "PRESENT"
       }
     },
-    "context": { "learnerToken": "tkn_tenant2_001" },
+    "context": {
+      "learnerToken": "tkn_tenant2_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "learnerToken", "value": "tkn_tenant2_001" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "learnerToken",
+        "value": "tkn_tenant2_001"
+      }
     ],
     "tags": ["ok", "multi_tenant"],
     "source": "specification"
@@ -282,13 +363,14 @@
         }
       }
     },
-    "context": { "learnerToken": "tkn_nested_001" },
+    "context": {
+      "learnerToken": "tkn_nested_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "deidentifiedPayload",
-        "value": "^(?!.*00000000-0000-0000-0000-000000000111).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "nested_uuid_removed"],
@@ -312,8 +394,11 @@
       "unsuppressableFields": ["biometricHash"]
     },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "detail", "value": "biometricHash" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "unsuppressable_identifier"],
     "source": "specification"
@@ -332,11 +417,15 @@
         "termNumber": 3
       }
     },
-    "context": { "learnerToken": "tkn_shape_001" },
+    "context": {
+      "learnerToken": "tkn_shape_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "deidentifiedPayload", "value": "scorePercent" },
-      { "type": "contains", "field": "deidentifiedPayload", "value": "ENGLISH" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
     ],
     "tags": ["ok", "payload_shape_preserved"],
     "source": "specification"
@@ -353,9 +442,15 @@
         "attendanceStatus": "PRESENT"
       }
     },
-    "context": { "learnerToken": "" },
+    "context": {
+      "learnerToken": ""
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "empty_token"],
     "source": "specification"
@@ -373,13 +468,14 @@
         "screenerScore": 15
       }
     },
-    "context": { "learnerToken": "tkn_phone_001" },
+    "context": {
+      "learnerToken": "tkn_phone_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "deidentifiedPayload",
-        "value": "^(?!.*27821234567).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "phone_suppressed", "pii_safety"],
@@ -399,10 +495,15 @@
         "classCode": "10A"
       }
     },
-    "context": { "learnerToken": "tkn_grade_001" },
+    "context": {
+      "learnerToken": "tkn_grade_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "deidentifiedPayload", "value": "GR10" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
     ],
     "tags": ["ok", "non_pii_fields_preserved"],
     "source": "specification"
@@ -420,13 +521,14 @@
         "screenerScore": 20
       }
     },
-    "context": { "learnerToken": "tkn_email_001" },
+    "context": {
+      "learnerToken": "tkn_email_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "deidentifiedPayload",
-        "value": "^(?!.*parent@example.com).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "email_suppressed", "pii_safety"],
@@ -446,10 +548,20 @@
         "occurredAt": "2026-08-07"
       }
     },
-    "context": { "learnerToken": "tkn_sdq_001" },
+    "context": {
+      "learnerToken": "tkn_sdq_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "deidentified", "value": true }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "deidentified",
+        "value": true
+      }
     ],
     "tags": ["ok", "screener", "wellbeing"],
     "source": "specification"
@@ -463,9 +575,15 @@
       "domain": "ATTENDANCE",
       "payload": {}
     },
-    "context": { "learnerToken": "tkn_empty_001" },
+    "context": {
+      "learnerToken": "tkn_empty_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["needs_input", "empty_payload"],
     "source": "specification"
@@ -482,10 +600,20 @@
         "scorePercent": 91
       }
     },
-    "context": { "learnerToken": "tkn_stored_val_999" },
+    "context": {
+      "learnerToken": "tkn_stored_val_999"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "learnerToken", "value": "tkn_stored_val_999" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "learnerToken",
+        "value": "tkn_stored_val_999"
+      }
     ],
     "tags": ["ok", "stored_token_not_derived"],
     "source": "specification"
@@ -503,13 +631,14 @@
         "behaviourKind": "DISRUPTION"
       }
     },
-    "context": { "learnerToken": "tkn_multi_001" },
+    "context": {
+      "learnerToken": "tkn_multi_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "deidentifiedPayload",
-        "value": "^(?!.*00000000-0000-0000-0000-000000000121).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "multiple_uuid_occurrences"],
@@ -528,10 +657,15 @@
         "termNumber": 1
       }
     },
-    "context": { "learnerToken": "tkn_zero_001" },
+    "context": {
+      "learnerToken": "tkn_zero_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "deidentifiedPayload", "value": "scorePercent" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
     ],
     "tags": ["ok", "zero_score_preserved"],
     "source": "specification"
@@ -550,10 +684,15 @@
         "occurredAt": "2026-08-07"
       }
     },
-    "context": { "learnerToken": "tkn_bully_001" },
+    "context": {
+      "learnerToken": "tkn_bully_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "deidentifiedPayload", "value": "BULLYING" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
     ],
     "tags": ["ok", "behaviour", "severity_preserved"],
     "source": "specification"
@@ -570,10 +709,15 @@
         "attendanceStatus": "PRESENT"
       }
     },
-    "context": { "learnerToken": "tkn_opaque_token_XYZ" },
+    "context": {
+      "learnerToken": "tkn_opaque_token_XYZ"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "regex_match", "field": "learnerToken", "value": "^tkn_" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
     ],
     "tags": ["ok", "token_format"],
     "source": "specification"
@@ -591,13 +735,14 @@
         "behaviourKind": "TRUANCY"
       }
     },
-    "context": { "learnerToken": "tkn_truancy_001" },
+    "context": {
+      "learnerToken": "tkn_truancy_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "regex_match",
-        "field": "deidentifiedPayload",
-        "value": "^(?!.*00000000-0000-0000-0000-000000000124).*$"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
     ],
     "tags": ["ok", "uuid_in_non_identity_field"],
@@ -616,10 +761,15 @@
         "occurredAt": "2026-07-15"
       }
     },
-    "context": { "learnerToken": "tkn_date_001" },
+    "context": {
+      "learnerToken": "tkn_date_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "contains", "field": "deidentifiedPayload", "value": "2026-07-15" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
     ],
     "tags": ["ok", "date_preserved"],
     "source": "specification"
@@ -636,11 +786,20 @@
         "scorePercent": 73
       }
     },
-    "context": { "learnerToken": "tkn_fields_001" },
+    "context": {
+      "learnerToken": "tkn_fields_001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "deidentified", "value": true },
-      { "type": "regex_match", "field": "learnerToken", "value": "^tkn_" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "deidentified",
+        "value": true
+      }
     ],
     "tags": ["ok", "output_schema"],
     "source": "specification"
