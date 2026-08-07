@@ -1,0 +1,562 @@
+[
+  {
+    "id": "ac04-high-risk-below-25th-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 20.0,
+          "ageInDays": 5,
+          "evidenceId": "ev-001"
+        }
+      ],
+      "previousScreenCompositePercentile": 35.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      { "type": "exact_match", "field": "riskLevel", "value": "HIGH" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000001"
+      }
+    ],
+    "tags": ["signals_found", "high_risk", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-medium-risk-below-35th-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 30.0,
+          "ageInDays": 3,
+          "evidenceId": "ev-002"
+        }
+      ],
+      "previousScreenCompositePercentile": 50.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      { "type": "exact_match", "field": "riskLevel", "value": "MEDIUM" }
+    ],
+    "tags": ["signals_found", "medium_risk", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-low-risk-decline-any-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 58.0,
+          "ageInDays": 7,
+          "evidenceId": "ev-003"
+        }
+      ],
+      "previousScreenCompositePercentile": 65.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      { "type": "exact_match", "field": "riskLevel", "value": "LOW" }
+    ],
+    "tags": ["signals_found", "low_risk", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-no-signals-stable-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 70.0,
+          "ageInDays": 2,
+          "evidenceId": "ev-004"
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 75.0,
+          "ageInDays": 2,
+          "evidenceId": "ev-005"
+        }
+      ],
+      "previousScreenCompositePercentile": 68.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_signals" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000004"
+      }
+    ],
+    "tags": ["no_signals", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-empty-readings-needs-input-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": []
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-recommend-full-screen-below-25-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 15.0,
+          "ageInDays": 4,
+          "evidenceId": "ev-006"
+        }
+      ],
+      "previousScreenCompositePercentile": 40.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      { "type": "exact_match", "field": "recommendFullScreen", "value": true }
+    ],
+    "tags": ["signals_found", "recommend_screen", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-no-recommend-full-screen-mild-decline-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 55.0,
+          "ageInDays": 6,
+          "evidenceId": "ev-007"
+        }
+      ],
+      "previousScreenCompositePercentile": 60.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      { "type": "exact_match", "field": "recommendFullScreen", "value": false }
+    ],
+    "tags": ["signals_found", "no_full_screen"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-evidence-ids-carried-through-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 22.0,
+          "ageInDays": 5,
+          "evidenceId": "ev-unique-008"
+        }
+      ],
+      "previousScreenCompositePercentile": 45.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      { "type": "set_overlap", "field": "evidenceIds", "value": ["ev-unique-008"] }
+    ],
+    "tags": ["evidence_linkage", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-no-signals-evidence-ids-present-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 80.0,
+          "ageInDays": 3,
+          "evidenceId": "ev-009"
+        }
+      ],
+      "previousScreenCompositePercentile": 78.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_signals" },
+      { "type": "set_overlap", "field": "evidenceIds", "value": ["ev-009"] }
+    ],
+    "tags": ["no_signals", "evidence_linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-high-risk-max-level-multiple-domains-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 20.0,
+          "ageInDays": 4,
+          "evidenceId": "ev-010a"
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 55.0,
+          "ageInDays": 4,
+          "evidenceId": "ev-010b"
+        }
+      ],
+      "previousScreenCompositePercentile": 60.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      { "type": "exact_match", "field": "riskLevel", "value": "HIGH" }
+    ],
+    "tags": ["signals_found", "high_risk", "multi_domain"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-signals-no-diagnostic-language-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 18.0,
+          "ageInDays": 6,
+          "evidenceId": "ev-011"
+        }
+      ],
+      "previousScreenCompositePercentile": 30.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" }
+    ],
+    "tags": ["diagnosis_guard", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-no-baseline-uses-oldest-reading-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 70.0,
+          "ageInDays": 14,
+          "evidenceId": "ev-012a"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 50.0,
+          "ageInDays": 3,
+          "evidenceId": "ev-012b"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" }
+    ],
+    "tags": ["no_baseline", "signals_found"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-warning-id-is-uuid-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 10.0,
+          "ageInDays": 2,
+          "evidenceId": "ev-013"
+        }
+      ],
+      "previousScreenCompositePercentile": 40.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      {
+        "type": "json_schema",
+        "field": "warningId",
+        "schema": { "type": "string", "format": "uuid" }
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-medium-risk-decline-over-10-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 45.0,
+          "ageInDays": 5,
+          "evidenceId": "ev-014"
+        }
+      ],
+      "previousScreenCompositePercentile": 60.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      { "type": "exact_match", "field": "riskLevel", "value": "MEDIUM" }
+    ],
+    "tags": ["signals_found", "medium_risk"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-signals-include-domain-in-output-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 22.0,
+          "ageInDays": 5,
+          "evidenceId": "ev-015"
+        }
+      ],
+      "previousScreenCompositePercentile": 50.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      {
+        "type": "json_schema",
+        "field": "signals",
+        "schema": { "type": "array", "minItems": 1 }
+      }
+    ],
+    "tags": ["signals_found", "schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-no-signals-improving-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 68.0,
+          "ageInDays": 7,
+          "evidenceId": "ev-016"
+        }
+      ],
+      "previousScreenCompositePercentile": 60.0
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "no_signals" }],
+    "tags": ["no_signals"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-multiple-evidence-ids-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 20.0,
+          "ageInDays": 5,
+          "evidenceId": "ev-017a"
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 18.0,
+          "ageInDays": 5,
+          "evidenceId": "ev-017b"
+        }
+      ],
+      "previousScreenCompositePercentile": 50.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      { "type": "set_overlap", "field": "evidenceIds", "value": ["ev-017a", "ev-017b"] }
+    ],
+    "tags": ["signals_found", "evidence_linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-learnerId-echoed-in-no-signals-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 80.0,
+          "ageInDays": 4,
+          "evidenceId": "ev-018"
+        }
+      ],
+      "previousScreenCompositePercentile": 75.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_signals" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000018"
+      }
+    ],
+    "tags": ["no_signals", "schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-attendance-behaviour-two-domains-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 30.0,
+          "ageInDays": 3,
+          "evidenceId": "ev-019a"
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 32.0,
+          "ageInDays": 3,
+          "evidenceId": "ev-019b"
+        }
+      ],
+      "previousScreenCompositePercentile": 55.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "signals_found" },
+      { "type": "exact_match", "field": "riskLevel", "value": "MEDIUM" }
+    ],
+    "tags": ["signals_found", "medium_risk", "multi_domain"],
+    "source": "specification"
+  },
+  {
+    "id": "ac04-checked-at-present-for-no-signals-001",
+    "agentId": "AC-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "recentReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 65.0,
+          "ageInDays": 5,
+          "evidenceId": "ev-020"
+        }
+      ],
+      "previousScreenCompositePercentile": 62.0
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_signals" },
+      {
+        "type": "json_schema",
+        "field": "checkedAt",
+        "schema": { "type": "string", "format": "date-time" }
+      }
+    ],
+    "tags": ["no_signals", "schema_validation"],
+    "source": "specification"
+  }
+]

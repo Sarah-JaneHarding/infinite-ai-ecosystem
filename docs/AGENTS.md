@@ -323,6 +323,127 @@ If the class fails, `gatesAc03: false` suppresses individual tier recommendation
 Tier 1 improvement task must be raised. AC-02 works at class level only; it never
 identifies individual learners. `tier1Percentage` is rounded to two decimal places.
 
+#### AC-03 — Tier Recommender
+
+| Field           | Value                                                                                                                                                                         |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-02                                                                                                                                                                        |
+| Purpose         | `intervention`                                                                                                                                                                |
+| Input           | `AC03Input`: tenantId, learnerId, classId, termId, screenId, compositePercentile, tier, domainSufficiency, `coreHealthGate: true` (literal), classHealthRecordId              |
+| Output          | `AC03Result`: `{ status: "recommended", recommendationId, learnerId, termId, tier, compositePercentile, evidenceIds[], rationale, requiresSbstReview: true }` · `needs_input` |
+| Model           | `support.screen`                                                                                                                                                              |
+| Guardrails      | `pii_guard`, `diagnosis_guard`                                                                                                                                                |
+| Budget          | 1 200 tokens · $0.004 per run                                                                                                                                                 |
+| Eval set        | `AC-03` (21 cases covering all tier bands, coreHealthGate enforcement, evidence linkage, SBST-review flag)                                                                    |
+| Approval gate   | None — recommendation feeds the SBST human gate downstream                                                                                                                    |
+| Writes to Brain | Yes — tier recommendation is a versioned support fact                                                                                                                         |
+| Prompt          | `packages/prompts/src/AC-03/1.0.0.prompt.md`                                                                                                                                  |
+| Contract        | `packages/agents/src/mod-02/AC-03.contract.ts`                                                                                                                                |
+
+AC-03 proposes a support tier for one learner, given the screen output from AC-01 and the
+green `coreHealthGate` signal from AC-02. The input schema enforces `coreHealthGate:
+z.literal(true)` so the contract cannot be satisfied without a passing gate. Every output
+must carry `evidenceIds` that include at minimum the `screenId` and `classHealthRecordId`
+passed in — the agent may never invent or omit these. `requiresSbstReview` is always
+`true`; a human SBST gate fires before the recommendation is acted upon. No diagnostic or
+disability language may appear; `tier` is the only classification signal.
+
+#### AC-04 — Early Warning Agent
+
+| Field           | Value                                                                                                                                                      |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-02                                                                                                                                                     |
+| Purpose         | `intervention`                                                                                                                                             |
+| Input           | `AC04Input`: tenantId, learnerId, classId, termId, recentReadings[] (domain, percentileScore, ageInDays, evidenceId), previousScreenCompositePercentile?   |
+| Output          | `AC04Result`: `{ status: "signals_found", warningId, learnerId, riskLevel, signals[], recommendFullScreen, evidenceIds[] }` · `no_signals` · `needs_input` |
+| Model           | `support.screen`                                                                                                                                           |
+| Guardrails      | `pii_guard`, `diagnosis_guard`                                                                                                                             |
+| Budget          | 800 tokens · $0.002 per run                                                                                                                                |
+| Eval set        | `AC-04` (20 cases covering HIGH/MEDIUM/LOW risk, no_signals, empty readings, recommendFullScreen threshold)                                                |
+| Approval gate   | None — warning signals feed the monitoring queue automatically                                                                                             |
+| Writes to Brain | No — warning signals are transient alerts, not versioned facts                                                                                             |
+| Prompt          | `packages/prompts/src/AC-04/1.0.0.prompt.md`                                                                                                               |
+| Contract        | `packages/agents/src/mod-02/AC-04.contract.ts`                                                                                                             |
+
+AC-04 runs daily against recent domain readings and emits risk signals without waiting for
+a full termly screen. Risk classification: HIGH if any domain ≤ 25th percentile and
+declining; MEDIUM if any domain ≤ 35th percentile or composite dropped > 10 points;
+LOW if any domain is declining but thresholds not yet met. `recommendFullScreen: true`
+when any domain is ≤ 25th percentile or composite dropped > 15 points. Every signal
+carries the `evidenceId` of the reading that triggered it. No diagnostic language; risk
+level is the only classification.
+
+#### AC-05 — Intervention Planner
+
+| Field           | Value                                                                                                                                                                    |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Module          | MOD-02                                                                                                                                                                   |
+| Purpose         | `intervention`                                                                                                                                                           |
+| Input           | `AC05Input`: tenantId, learnerId, termId, tier (TIER_2 or TIER_3), targetDomains[], compositePercentile, sbstRatificationId (UUID), evidenceIds[]                        |
+| Output          | `AC05Result`: `{ status: "planned", planId, learnerId, termId, tier, targetDomains[], goal, strategy, dosage, durationWeeks, ownerRole, evidenceIds[] }` · `needs_input` |
+| Model           | `support.screen`                                                                                                                                                         |
+| Guardrails      | `pii_guard`, `diagnosis_guard`                                                                                                                                           |
+| Budget          | 1 500 tokens · $0.005 per run                                                                                                                                            |
+| Eval set        | `AC-05` (21 cases covering TIER_2/TIER_3 dosage, duration ranges, evidence linkage, missing sbstRatificationId)                                                          |
+| Approval gate   | None — plan output feeds the SBST human ratification gate                                                                                                                |
+| Writes to Brain | Yes — intervention plan is a versioned support fact                                                                                                                      |
+| Prompt          | `packages/prompts/src/AC-05/1.0.0.prompt.md`                                                                                                                             |
+| Contract        | `packages/agents/src/mod-02/AC-05.contract.ts`                                                                                                                           |
+
+AC-05 requires proof of the SBST human gate via `sbstRatificationId` — a missing or
+malformed UUID returns `needs_input`. TIER_2 dosage: 2–3 sessions/week, 20–30 min each,
+6–10 weeks. TIER_3 dosage: 4–5 sessions/week, 30–45 min each, 10–16 weeks. `ownerRole`
+is always a role name (e.g. "Learning Support Educator"), never a personal name. Output
+`evidenceIds` must carry through all input `evidenceIds`. No diagnostic language in the
+`goal` or `strategy` fields.
+
+#### AC-06 — Progress Monitor
+
+| Field           | Value                                                                                                                                                                                                        |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Module          | MOD-02                                                                                                                                                                                                       |
+| Purpose         | `intervention`                                                                                                                                                                                               |
+| Input           | `AC06Input`: tenantId, learnerId, termId, planId, measurements[] (≥ 2, measuredOn, domain, percentileScore, evidenceId), goalPercentile, weeksSinceIntervention                                              |
+| Output          | `AC06Result`: `{ status: "monitored", monitorId, learnerId, termId, planId, trendDirection, currentPercentile, goalPercentile, progressRatePerWeek, recommendation, evidenceIds[], detail }` · `needs_input` |
+| Model           | `support.screen`                                                                                                                                                                                             |
+| Guardrails      | `pii_guard`, `diagnosis_guard`                                                                                                                                                                               |
+| Budget          | 1 000 tokens · $0.003 per run                                                                                                                                                                                |
+| Eval set        | `AC-06` (21 cases covering all recommendation types, trend directions, boundary cases, evidence from all measurements)                                                                                       |
+| Approval gate   | None — monitoring recommendation feeds the educator dashboard                                                                                                                                                |
+| Writes to Brain | No — progress snapshot is transient; the plan is the versioned fact                                                                                                                                          |
+| Prompt          | `packages/prompts/src/AC-06/1.0.0.prompt.md`                                                                                                                                                                 |
+| Contract        | `packages/agents/src/mod-02/AC-06.contract.ts`                                                                                                                                                               |
+
+AC-06 requires at least two measurements to compute a trend. Recommendation priority (in
+order): **exit** if trend is improving AND current percentile ≥ goal; **intensify** if
+trend is declining for ≥ 4 consecutive weeks OR stable for ≥ 8 weeks below goal;
+**continue** otherwise. `progressRatePerWeek` is negative on a declining trend.
+`evidenceIds` must include the `evidenceId` from every measurement supplied.
+
+#### AC-07 — Fidelity Checker
+
+| Field           | Value                                                                                                                                                                                                                  |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-02                                                                                                                                                                                                                 |
+| Purpose         | `intervention`                                                                                                                                                                                                         |
+| Input           | `AC07Input`: tenantId, learnerId, termId, planId, plannedSessions[] (scheduledOn, domain, plannedMinutes), deliveredSessions[] (deliveredOn, domain, deliveredMinutes, deliveredByRole, evidenceId), planEvidenceIds[] |
+| Output          | `AC07Result`: `{ status: "adequate" \| "inadequate", fidelityId, learnerId, termId, planId, plannedSessionCount, deliveredSessionCount, fidelityRate, evidenceIds[], detail }` · `needs_input`                         |
+| Model           | `support.screen`                                                                                                                                                                                                       |
+| Guardrails      | `pii_guard`                                                                                                                                                                                                            |
+| Budget          | 800 tokens · $0.002 per run                                                                                                                                                                                            |
+| Eval set        | `AC-07` (21 cases covering adequate/inadequate verdicts, 80% minute threshold, zero delivery, empty planned, fidelityRate precision)                                                                                   |
+| Approval gate   | None — fidelity report feeds the educator dashboard                                                                                                                                                                    |
+| Writes to Brain | No — fidelity snapshot is a transient report                                                                                                                                                                           |
+| Prompt          | `packages/prompts/src/AC-07/1.0.0.prompt.md`                                                                                                                                                                           |
+| Contract        | `packages/agents/src/mod-02/AC-07.contract.ts`                                                                                                                                                                         |
+
+AC-07 computes `fidelityRate = (deliveredSessionCount / plannedSessionCount) × 100`,
+rounded to two decimal places. A session is counted as delivered only if
+`deliveredMinutes ≥ 0.8 × plannedMinutes` AND the `deliveredOn` date is the same or
+next calendar day as `scheduledOn`. Adequate = fidelityRate ≥ 80%. `evidenceIds` must
+include all `planEvidenceIds` plus the `evidenceId` from every delivered session.
+No diagnostic language; fidelity metrics are the only outputs.
+
 ### MOD-03 Data Collection & Warehouse — Stage 09
 
 | ID    | Agent                   | Output                                                          |

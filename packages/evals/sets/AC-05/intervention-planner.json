@@ -1,0 +1,507 @@
+[
+  {
+    "id": "ac05-tier2-plan-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_2",
+      "targetDomains": ["LITERACY"],
+      "compositePercentile": 42.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000001",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000001"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_2" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000001"
+      }
+    ],
+    "tags": ["planned", "tier2", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-tier3-plan-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_3",
+      "targetDomains": ["NUMERACY"],
+      "compositePercentile": 22.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000002",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000002"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_3" }
+    ],
+    "tags": ["planned", "tier3", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-tier2-dosage-in-range-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_2",
+      "targetDomains": ["LITERACY"],
+      "compositePercentile": 48.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000003",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000003"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "json_schema",
+        "field": "dosage.sessionsPerWeek",
+        "schema": { "type": "number", "minimum": 2, "maximum": 3 }
+      },
+      {
+        "type": "json_schema",
+        "field": "dosage.minutesPerSession",
+        "schema": { "type": "number", "minimum": 20, "maximum": 30 }
+      }
+    ],
+    "tags": ["planned", "tier2", "dosage_check", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-tier3-dosage-in-range-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_3",
+      "targetDomains": ["LITERACY", "NUMERACY"],
+      "compositePercentile": 18.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000004",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000004"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "json_schema",
+        "field": "dosage.sessionsPerWeek",
+        "schema": { "type": "number", "minimum": 4, "maximum": 5 }
+      },
+      {
+        "type": "json_schema",
+        "field": "dosage.minutesPerSession",
+        "schema": { "type": "number", "minimum": 30, "maximum": 45 }
+      }
+    ],
+    "tags": ["planned", "tier3", "dosage_check", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-plan-id-is-uuid-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_2",
+      "targetDomains": ["ATTENDANCE"],
+      "compositePercentile": 40.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000005",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000005"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "json_schema",
+        "field": "planId",
+        "schema": { "type": "string", "format": "uuid" }
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-evidence-ids-carried-through-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_2",
+      "targetDomains": ["LITERACY"],
+      "compositePercentile": 45.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000006",
+      "evidenceIds": ["ev-unique-ac05-006"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      { "type": "set_overlap", "field": "evidenceIds", "value": ["ev-unique-ac05-006"] }
+    ],
+    "tags": ["evidence_linkage", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-goal-non-empty-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_3",
+      "targetDomains": ["LITERACY"],
+      "compositePercentile": 25.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000007",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000007"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "json_schema",
+        "field": "goal",
+        "schema": { "type": "string", "minLength": 20 }
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-strategy-non-empty-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_2",
+      "targetDomains": ["NUMERACY"],
+      "compositePercentile": 38.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000008",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000008"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "json_schema",
+        "field": "strategy",
+        "schema": { "type": "string", "minLength": 20 }
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-owner-role-not-name-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_2",
+      "targetDomains": ["BEHAVIOUR"],
+      "compositePercentile": 43.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000009",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000009"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "json_schema",
+        "field": "ownerRole",
+        "schema": { "type": "string", "minLength": 5 }
+      }
+    ],
+    "tags": ["schema_validation", "pii_guard"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-no-diagnostic-language-in-goal-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_3",
+      "targetDomains": ["LITERACY"],
+      "compositePercentile": 15.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000010",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000010"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "refusal_correctness",
+        "field": "goal",
+        "value": "must not contain diagnostic or disability language"
+      }
+    ],
+    "tags": ["diagnosis_guard", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-duration-in-range-tier2-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_2",
+      "targetDomains": ["WELLBEING"],
+      "compositePercentile": 44.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000011",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000011"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "json_schema",
+        "field": "durationWeeks",
+        "schema": { "type": "number", "minimum": 6, "maximum": 10 }
+      }
+    ],
+    "tags": ["planned", "tier2", "duration_check", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-duration-in-range-tier3-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_3",
+      "targetDomains": ["NUMERACY"],
+      "compositePercentile": 20.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000012",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000012"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "json_schema",
+        "field": "durationWeeks",
+        "schema": { "type": "number", "minimum": 10, "maximum": 16 }
+      }
+    ],
+    "tags": ["planned", "tier3", "duration_check", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-multi-domain-plan-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_3",
+      "targetDomains": ["LITERACY", "NUMERACY", "ATTENDANCE"],
+      "compositePercentile": 16.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000013",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000013"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "json_schema",
+        "field": "targetDomains",
+        "schema": { "type": "array", "minItems": 1 }
+      }
+    ],
+    "tags": ["planned", "tier3", "multi_domain"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-term-id-carried-through-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+      "termId": "00000000-0000-0000-0000-000000000021",
+      "tier": "TIER_2",
+      "targetDomains": ["LITERACY"],
+      "compositePercentile": 50.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000014",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000014"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "exact_match",
+        "field": "termId",
+        "value": "00000000-0000-0000-0000-000000000021"
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-missing-sbst-ratification-needs-input-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_2",
+      "targetDomains": ["LITERACY"],
+      "compositePercentile": 42.0,
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000015"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "sbst_gate", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-empty-evidence-ids-needs-input-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_2",
+      "targetDomains": ["LITERACY"],
+      "compositePercentile": 42.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000016",
+      "evidenceIds": []
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "missing_evidence"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-low-composite-high-dosage-tier3-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_3",
+      "targetDomains": ["LITERACY"],
+      "compositePercentile": 10.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000017",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000017"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_3" }
+    ],
+    "tags": ["planned", "tier3"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-no-diagnostic-language-in-strategy-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_3",
+      "targetDomains": ["NUMERACY"],
+      "compositePercentile": 20.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000018",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000018"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "refusal_correctness",
+        "field": "strategy",
+        "value": "must not contain diagnostic or disability language"
+      }
+    ],
+    "tags": ["diagnosis_guard"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-attendance-intervention-plan-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_2",
+      "targetDomains": ["ATTENDANCE"],
+      "compositePercentile": 36.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000019",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000019"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_2" }
+    ],
+    "tags": ["planned", "tier2", "attendance"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-second-tenant-plan-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+      "termId": "00000000-0000-0000-0000-000000000022",
+      "tier": "TIER_2",
+      "targetDomains": ["NUMERACY"],
+      "compositePercentile": 50.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000020",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000020"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000020"
+      }
+    ],
+    "tags": ["planned", "tier2", "multi_tenant"],
+    "source": "specification"
+  },
+  {
+    "id": "ac05-wellbeing-tier3-plan-001",
+    "agentId": "AC-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "tier": "TIER_3",
+      "targetDomains": ["WELLBEING"],
+      "compositePercentile": 28.0,
+      "sbstRatificationId": "dddddddd-0000-0000-0000-000000000021",
+      "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000021"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "planned" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_3" }
+    ],
+    "tags": ["planned", "tier3"],
+    "source": "specification"
+  }
+]

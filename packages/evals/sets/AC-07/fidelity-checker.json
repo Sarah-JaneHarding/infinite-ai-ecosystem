@@ -1,0 +1,909 @@
+[
+  {
+    "id": "ac07-100pct-fidelity-adequate-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000001",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-10", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-12", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-17", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-001a"
+        },
+        {
+          "deliveredOn": "2026-03-05",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-001b"
+        },
+        {
+          "deliveredOn": "2026-03-10",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-001c"
+        },
+        {
+          "deliveredOn": "2026-03-12",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-001d"
+        },
+        {
+          "deliveredOn": "2026-03-17",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-001e"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-001"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      {
+        "type": "numeric_tolerance",
+        "field": "fidelityRate",
+        "expected": 100.0,
+        "tolerance": 0.01
+      },
+      { "type": "exact_match", "field": "plannedSessionCount", "value": 5 },
+      { "type": "exact_match", "field": "deliveredSessionCount", "value": 5 }
+    ],
+    "tags": ["adequate", "100pct", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-80pct-exactly-adequate-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000002",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-05", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-10", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-12", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-17", "domain": "NUMERACY", "plannedMinutes": 25 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-002a"
+        },
+        {
+          "deliveredOn": "2026-03-05",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-002b"
+        },
+        {
+          "deliveredOn": "2026-03-10",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-002c"
+        },
+        {
+          "deliveredOn": "2026-03-12",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-002d"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-002"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      {
+        "type": "numeric_tolerance",
+        "field": "fidelityRate",
+        "expected": 80.0,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["adequate", "80pct", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-below-80pct-inadequate-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000003",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-10", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-12", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-17", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-003a"
+        },
+        {
+          "deliveredOn": "2026-03-05",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-003b"
+        },
+        {
+          "deliveredOn": "2026-03-10",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-003c"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-003"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "inadequate" },
+      {
+        "type": "numeric_tolerance",
+        "field": "fidelityRate",
+        "expected": 60.0,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["inadequate", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-zero-sessions-delivered-inadequate-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000004",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [],
+      "planEvidenceIds": ["plan-ev-004"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "inadequate" },
+      {
+        "type": "numeric_tolerance",
+        "field": "fidelityRate",
+        "expected": 0.0,
+        "tolerance": 0.01
+      },
+      { "type": "exact_match", "field": "deliveredSessionCount", "value": 0 }
+    ],
+    "tags": ["inadequate", "zero_delivery", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-empty-planned-needs-input-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000005",
+      "plannedSessions": [],
+      "deliveredSessions": [],
+      "planEvidenceIds": ["plan-ev-005"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-fidelity-id-is-uuid-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000006",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-006a"
+        },
+        {
+          "deliveredOn": "2026-03-05",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-006b"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-006"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      {
+        "type": "json_schema",
+        "field": "fidelityId",
+        "schema": { "type": "string", "format": "uuid" }
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-evidence-includes-plan-evidence-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000007",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "NUMERACY", "plannedMinutes": 25 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-007a"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-unique-007"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      { "type": "set_overlap", "field": "evidenceIds", "value": ["plan-ev-unique-007"] }
+    ],
+    "tags": ["evidence_linkage", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-evidence-includes-delivered-evidence-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000008",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-unique-008"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-008"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      { "type": "set_overlap", "field": "evidenceIds", "value": ["ev-unique-008"] }
+    ],
+    "tags": ["evidence_linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-detail-non-empty-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000009",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-009a"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-009"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "inadequate" },
+      {
+        "type": "json_schema",
+        "field": "detail",
+        "schema": { "type": "string", "minLength": 10 }
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-short-minutes-not-counted-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000010",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-10", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-12", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-17", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-010a"
+        },
+        {
+          "deliveredOn": "2026-03-05",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-010b"
+        },
+        {
+          "deliveredOn": "2026-03-10",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-010c"
+        },
+        {
+          "deliveredOn": "2026-03-12",
+          "domain": "LITERACY",
+          "deliveredMinutes": 10,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-010d"
+        },
+        {
+          "deliveredOn": "2026-03-17",
+          "domain": "LITERACY",
+          "deliveredMinutes": 5,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-010e"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-010"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "inadequate" },
+      { "type": "exact_match", "field": "deliveredSessionCount", "value": 3 }
+    ],
+    "tags": ["inadequate", "minutes_threshold", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-learnerId-echoed-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000011",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "NUMERACY", "plannedMinutes": 25 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-011a"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-011"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000011"
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-planId-echoed-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000012",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-012a"
+        },
+        {
+          "deliveredOn": "2026-03-05",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-012b"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-012"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      {
+        "type": "exact_match",
+        "field": "planId",
+        "value": "eeeeeeee-0000-0000-0000-000000000012"
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-planned-count-correct-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000013",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-10", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-013a"
+        },
+        {
+          "deliveredOn": "2026-03-05",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-013b"
+        },
+        {
+          "deliveredOn": "2026-03-10",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-013c"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-013"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      { "type": "exact_match", "field": "plannedSessionCount", "value": 3 }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-no-diagnostic-language-in-detail-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000014",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-014a"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-014"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "inadequate" },
+      {
+        "type": "refusal_correctness",
+        "field": "detail",
+        "value": "must not contain diagnostic or disability language"
+      }
+    ],
+    "tags": ["diagnosis_guard"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-multi-domain-sessions-adequate-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000015",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-04", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-10", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-11", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-17", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-015a"
+        },
+        {
+          "deliveredOn": "2026-03-04",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-015b"
+        },
+        {
+          "deliveredOn": "2026-03-10",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-015c"
+        },
+        {
+          "deliveredOn": "2026-03-11",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-015d"
+        },
+        {
+          "deliveredOn": "2026-03-17",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-015e"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-015"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      {
+        "type": "numeric_tolerance",
+        "field": "fidelityRate",
+        "expected": 100.0,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["adequate", "multi_domain"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-79pct-fidelity-inadequate-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000016",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-05", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-10", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-12", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-17", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-19", "domain": "NUMERACY", "plannedMinutes": 25 },
+        { "scheduledOn": "2026-03-24", "domain": "NUMERACY", "plannedMinutes": 25 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-016a"
+        },
+        {
+          "deliveredOn": "2026-03-05",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-016b"
+        },
+        {
+          "deliveredOn": "2026-03-10",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-016c"
+        },
+        {
+          "deliveredOn": "2026-03-12",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-016d"
+        },
+        {
+          "deliveredOn": "2026-03-17",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-016e"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-016"]
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "inadequate" }],
+    "tags": ["inadequate", "79pct", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-second-tenant-adequate-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+      "termId": "00000000-0000-0000-0000-000000000022",
+      "planId": "eeeeeeee-0000-0000-0000-000000000017",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-017a"
+        },
+        {
+          "deliveredOn": "2026-03-05",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-017b"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-017"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000017"
+      }
+    ],
+    "tags": ["adequate", "multi_tenant"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-termId-echoed-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+      "termId": "00000000-0000-0000-0000-000000000021",
+      "planId": "eeeeeeee-0000-0000-0000-000000000018",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "NUMERACY", "plannedMinutes": 25 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "NUMERACY",
+          "deliveredMinutes": 25,
+          "deliveredByRole": "Subject Teacher",
+          "evidenceId": "ev-018a"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-018"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      {
+        "type": "exact_match",
+        "field": "termId",
+        "value": "00000000-0000-0000-0000-000000000021"
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-next-day-delivery-counts-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000019",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-04",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-019a"
+        },
+        {
+          "deliveredOn": "2026-03-06",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-019b"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-019"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      { "type": "exact_match", "field": "deliveredSessionCount", "value": 2 }
+    ],
+    "tags": ["adequate", "next_day_matching"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-single-session-100pct-adequate-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000020",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "WELLBEING", "plannedMinutes": 40 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "WELLBEING",
+          "deliveredMinutes": 40,
+          "deliveredByRole": "School Counsellor",
+          "evidenceId": "ev-020a"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-020"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "adequate" },
+      {
+        "type": "numeric_tolerance",
+        "field": "fidelityRate",
+        "expected": 100.0,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["adequate", "single_session"],
+    "source": "specification"
+  },
+  {
+    "id": "ac07-fidelity-rate-two-decimal-places-001",
+    "agentId": "AC-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000021",
+      "plannedSessions": [
+        { "scheduledOn": "2026-03-03", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-05", "domain": "LITERACY", "plannedMinutes": 30 },
+        { "scheduledOn": "2026-03-10", "domain": "LITERACY", "plannedMinutes": 30 }
+      ],
+      "deliveredSessions": [
+        {
+          "deliveredOn": "2026-03-03",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-021a"
+        },
+        {
+          "deliveredOn": "2026-03-05",
+          "domain": "LITERACY",
+          "deliveredMinutes": 30,
+          "deliveredByRole": "Learning Support Educator",
+          "evidenceId": "ev-021b"
+        }
+      ],
+      "planEvidenceIds": ["plan-ev-021"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "inadequate" },
+      {
+        "type": "numeric_tolerance",
+        "field": "fidelityRate",
+        "expected": 66.67,
+        "tolerance": 0.05
+      }
+    ],
+    "tags": ["inadequate", "fidelity_rate"],
+    "source": "specification"
+  }
+]

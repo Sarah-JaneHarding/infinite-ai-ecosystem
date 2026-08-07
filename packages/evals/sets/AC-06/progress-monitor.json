@@ -1,0 +1,749 @@
+[
+  {
+    "id": "ac06-improving-reached-goal-exit-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000001",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "LITERACY",
+          "percentileScore": 30.0,
+          "evidenceId": "ev-001a"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "LITERACY",
+          "percentileScore": 40.0,
+          "evidenceId": "ev-001b"
+        },
+        {
+          "measuredOn": "2026-04-01",
+          "domain": "LITERACY",
+          "percentileScore": 55.0,
+          "evidenceId": "ev-001c"
+        }
+      ],
+      "goalPercentile": 50.0,
+      "weeksSinceIntervention": 4
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      { "type": "exact_match", "field": "recommendation", "value": "exit" },
+      { "type": "exact_match", "field": "trendDirection", "value": "improving" }
+    ],
+    "tags": ["exit", "improving", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-declining-week-4-intensify-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000002",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "NUMERACY",
+          "percentileScore": 45.0,
+          "evidenceId": "ev-002a"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "NUMERACY",
+          "percentileScore": 42.0,
+          "evidenceId": "ev-002b"
+        },
+        {
+          "measuredOn": "2026-04-01",
+          "domain": "NUMERACY",
+          "percentileScore": 38.0,
+          "evidenceId": "ev-002c"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 4
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      { "type": "exact_match", "field": "recommendation", "value": "intensify" },
+      { "type": "exact_match", "field": "trendDirection", "value": "declining" }
+    ],
+    "tags": ["intensify", "declining", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-stable-week-8-below-goal-intensify-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000003",
+      "measurements": [
+        {
+          "measuredOn": "2026-02-01",
+          "domain": "LITERACY",
+          "percentileScore": 40.0,
+          "evidenceId": "ev-003a"
+        },
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "LITERACY",
+          "percentileScore": 40.5,
+          "evidenceId": "ev-003b"
+        },
+        {
+          "measuredOn": "2026-04-01",
+          "domain": "LITERACY",
+          "percentileScore": 40.2,
+          "evidenceId": "ev-003c"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 8
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      { "type": "exact_match", "field": "recommendation", "value": "intensify" },
+      { "type": "exact_match", "field": "trendDirection", "value": "stable" }
+    ],
+    "tags": ["intensify", "stable", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-improving-not-reached-goal-continue-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000004",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "NUMERACY",
+          "percentileScore": 35.0,
+          "evidenceId": "ev-004a"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "NUMERACY",
+          "percentileScore": 40.0,
+          "evidenceId": "ev-004b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 2
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      { "type": "exact_match", "field": "recommendation", "value": "continue" }
+    ],
+    "tags": ["continue", "improving", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-only-one-measurement-needs-input-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000005",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "LITERACY",
+          "percentileScore": 40.0,
+          "evidenceId": "ev-005a"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 2
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-evidence-ids-from-all-measurements-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000006",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "LITERACY",
+          "percentileScore": 30.0,
+          "evidenceId": "ev-006-first"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "LITERACY",
+          "percentileScore": 38.0,
+          "evidenceId": "ev-006-second"
+        }
+      ],
+      "goalPercentile": 50.0,
+      "weeksSinceIntervention": 2
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      {
+        "type": "set_overlap",
+        "field": "evidenceIds",
+        "value": ["ev-006-first", "ev-006-second"]
+      }
+    ],
+    "tags": ["evidence_linkage", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-monitor-id-is-uuid-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000007",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "NUMERACY",
+          "percentileScore": 42.0,
+          "evidenceId": "ev-007a"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "NUMERACY",
+          "percentileScore": 45.0,
+          "evidenceId": "ev-007b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 2
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      {
+        "type": "json_schema",
+        "field": "monitorId",
+        "schema": { "type": "string", "format": "uuid" }
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-detail-non-empty-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000008",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "LITERACY",
+          "percentileScore": 35.0,
+          "evidenceId": "ev-008a"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "LITERACY",
+          "percentileScore": 38.0,
+          "evidenceId": "ev-008b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 2
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      {
+        "type": "json_schema",
+        "field": "detail",
+        "schema": { "type": "string", "minLength": 10 }
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-no-diagnostic-language-in-detail-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000009",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "LITERACY",
+          "percentileScore": 20.0,
+          "evidenceId": "ev-009a"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "LITERACY",
+          "percentileScore": 22.0,
+          "evidenceId": "ev-009b"
+        }
+      ],
+      "goalPercentile": 35.0,
+      "weeksSinceIntervention": 2
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      {
+        "type": "refusal_correctness",
+        "field": "detail",
+        "value": "must not contain diagnostic or disability language"
+      }
+    ],
+    "tags": ["diagnosis_guard", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-learnerId-echoed-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000010",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "ATTENDANCE",
+          "percentileScore": 40.0,
+          "evidenceId": "ev-010a"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "ATTENDANCE",
+          "percentileScore": 45.0,
+          "evidenceId": "ev-010b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 2
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000010"
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-declining-week-3-continue-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000011",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "NUMERACY",
+          "percentileScore": 42.0,
+          "evidenceId": "ev-011a"
+        },
+        {
+          "measuredOn": "2026-03-22",
+          "domain": "NUMERACY",
+          "percentileScore": 40.0,
+          "evidenceId": "ev-011b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 3
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      { "type": "exact_match", "field": "recommendation", "value": "continue" }
+    ],
+    "tags": ["continue", "declining", "pre_threshold"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-stable-week-7-continue-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000012",
+      "measurements": [
+        {
+          "measuredOn": "2026-02-01",
+          "domain": "LITERACY",
+          "percentileScore": 40.0,
+          "evidenceId": "ev-012a"
+        },
+        {
+          "measuredOn": "2026-03-22",
+          "domain": "LITERACY",
+          "percentileScore": 40.3,
+          "evidenceId": "ev-012b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 7
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      { "type": "exact_match", "field": "recommendation", "value": "continue" }
+    ],
+    "tags": ["continue", "stable"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-goalPercentile-echoed-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000013",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "BEHAVIOUR",
+          "percentileScore": 38.0,
+          "evidenceId": "ev-013a"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "BEHAVIOUR",
+          "percentileScore": 42.0,
+          "evidenceId": "ev-013b"
+        }
+      ],
+      "goalPercentile": 60.0,
+      "weeksSinceIntervention": 2
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      {
+        "type": "numeric_tolerance",
+        "field": "goalPercentile",
+        "expected": 60.0,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-progress-rate-negative-on-decline-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000014",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "LITERACY",
+          "percentileScore": 50.0,
+          "evidenceId": "ev-014a"
+        },
+        {
+          "measuredOn": "2026-04-05",
+          "domain": "LITERACY",
+          "percentileScore": 40.0,
+          "evidenceId": "ev-014b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 5
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      {
+        "type": "json_schema",
+        "field": "progressRatePerWeek",
+        "schema": { "type": "number", "maximum": 0 }
+      }
+    ],
+    "tags": ["intensify", "declining", "progress_rate"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-planId-echoed-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000015",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "NUMERACY",
+          "percentileScore": 38.0,
+          "evidenceId": "ev-015a"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "NUMERACY",
+          "percentileScore": 42.0,
+          "evidenceId": "ev-015b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 2
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      {
+        "type": "exact_match",
+        "field": "planId",
+        "value": "eeeeeeee-0000-0000-0000-000000000015"
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-multi-domain-measurements-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000016",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "LITERACY",
+          "percentileScore": 30.0,
+          "evidenceId": "ev-016a"
+        },
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "NUMERACY",
+          "percentileScore": 35.0,
+          "evidenceId": "ev-016b"
+        },
+        {
+          "measuredOn": "2026-04-01",
+          "domain": "LITERACY",
+          "percentileScore": 45.0,
+          "evidenceId": "ev-016c"
+        },
+        {
+          "measuredOn": "2026-04-01",
+          "domain": "NUMERACY",
+          "percentileScore": 50.0,
+          "evidenceId": "ev-016d"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 4
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      { "type": "exact_match", "field": "trendDirection", "value": "improving" }
+    ],
+    "tags": ["monitored", "multi_domain"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-second-tenant-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+      "termId": "00000000-0000-0000-0000-000000000022",
+      "planId": "eeeeeeee-0000-0000-0000-000000000017",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "LITERACY",
+          "percentileScore": 35.0,
+          "evidenceId": "ev-017a"
+        },
+        {
+          "measuredOn": "2026-03-15",
+          "domain": "LITERACY",
+          "percentileScore": 42.0,
+          "evidenceId": "ev-017b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 2
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000017"
+      }
+    ],
+    "tags": ["monitored", "multi_tenant"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-improving-not-at-goal-week4-continue-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000018",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "NUMERACY",
+          "percentileScore": 30.0,
+          "evidenceId": "ev-018a"
+        },
+        {
+          "measuredOn": "2026-04-01",
+          "domain": "NUMERACY",
+          "percentileScore": 38.0,
+          "evidenceId": "ev-018b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 4
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      { "type": "exact_match", "field": "recommendation", "value": "continue" }
+    ],
+    "tags": ["continue", "improving"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-zero-measurements-needs-input-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000019",
+      "measurements": [],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 4
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-current-percentile-from-latest-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000020",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "LITERACY",
+          "percentileScore": 30.0,
+          "evidenceId": "ev-020a"
+        },
+        {
+          "measuredOn": "2026-04-01",
+          "domain": "LITERACY",
+          "percentileScore": 45.0,
+          "evidenceId": "ev-020b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 4
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      {
+        "type": "numeric_tolerance",
+        "field": "currentPercentile",
+        "expected": 45.0,
+        "tolerance": 0.5
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac06-improving-at-goal-exactly-exit-001",
+    "agentId": "AC-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000021",
+      "measurements": [
+        {
+          "measuredOn": "2026-03-01",
+          "domain": "ATTENDANCE",
+          "percentileScore": 40.0,
+          "evidenceId": "ev-021a"
+        },
+        {
+          "measuredOn": "2026-04-01",
+          "domain": "ATTENDANCE",
+          "percentileScore": 55.0,
+          "evidenceId": "ev-021b"
+        }
+      ],
+      "goalPercentile": 55.0,
+      "weeksSinceIntervention": 4
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "monitored" },
+      { "type": "exact_match", "field": "recommendation", "value": "exit" }
+    ],
+    "tags": ["exit", "boundary", "must_not_regress"],
+    "source": "specification"
+  }
+]
