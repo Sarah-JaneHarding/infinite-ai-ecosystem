@@ -34,14 +34,25 @@ export {
 } from './types.js';
 
 export {
+  AttendanceApiConnector,
+  BehaviourApiConnector,
+  CsvFileConnector,
   FileConnector,
+  ManualUploadConnector,
+  ScreenerApiConnector,
   SisApiConnector,
   getConnector,
   type ConnectorConfig,
   type ConnectorFactory,
+  type ContentResolver,
+  type DeadLetterRecord,
   type IngestConnector,
   type PullResult,
+  type ReconciliationReport,
+  type RichPullResult,
 } from './ingest/connector.js';
+
+export { parseCsv, type ParsedRow } from './ingest/csv-parser.js';
 
 export {
   DW01Input,
