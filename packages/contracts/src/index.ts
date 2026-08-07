@@ -138,6 +138,17 @@ export {
 } from './curriculum/coverage.js';
 
 export {
+  BINARY_FORMATS,
+  ExportFormat,
+  ExportJob,
+  ExportJobStatus,
+  ExportRequest,
+  ExportResult,
+  PUBLICATION_CHANNELS,
+  PublicationTarget,
+} from './curriculum/export.js';
+
+export {
   ChatCompletionRequest,
   ChatCompletionResponse,
   ChatCompletionStreamEvent,
