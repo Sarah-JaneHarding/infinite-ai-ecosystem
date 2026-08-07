@@ -40,9 +40,18 @@ async function publicTables(): Promise<string[]> {
 }
 
 async function tablesWithTenantId(): Promise<string[]> {
+  // Join with information_schema.tables to restrict to BASE TABLE — views that
+  // expose tenant_id (e.g. analytics views) must not be classified as
+  // tenant-owned tables: they have no RLS of their own and inherit it from
+  // the underlying tables.
   const rows = await migrator.$queryRaw<{ table_name: string }[]>`
-    SELECT table_name FROM information_schema.columns
-    WHERE table_schema = 'public' AND column_name = 'tenant_id'
+    SELECT c.table_name
+    FROM information_schema.columns c
+    JOIN information_schema.tables t
+      ON t.table_schema = c.table_schema AND t.table_name = c.table_name
+    WHERE c.table_schema = 'public'
+      AND c.column_name = 'tenant_id'
+      AND t.table_type = 'BASE TABLE'
   `;
   return rows.map((row) => row.table_name);
 }

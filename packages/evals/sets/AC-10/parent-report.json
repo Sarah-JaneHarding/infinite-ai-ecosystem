@@ -1,0 +1,663 @@
+[
+  {
+    "id": "ac10-english-improving-continue-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000001",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000001",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 35,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 8
+      },
+      "evidenceIds": ["ev-pr-001", "ev-pr-002"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      { "type": "exact_match", "field": "homeLanguage", "value": "en" },
+      { "type": "exact_match", "field": "readabilityAdequate", "value": true },
+      {
+        "type": "set_overlap",
+        "field": "evidenceIds",
+        "expectedSet": ["ev-pr-001", "ev-pr-002"],
+        "minOverlap": 1
+      }
+    ],
+    "tags": ["english", "improving", "continue", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-afrikaans-stable-continue-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000002",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000002",
+      "homeLanguage": "af",
+      "targetReadabilityGrade": 4,
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 28,
+        "goalPercentile": 35,
+        "recommendation": "continue",
+        "weeksElapsed": 6
+      },
+      "evidenceIds": ["ev-pr-003"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      { "type": "exact_match", "field": "homeLanguage", "value": "af" },
+      { "type": "exact_match", "field": "readabilityAdequate", "value": true }
+    ],
+    "tags": ["afrikaans", "stable", "continue"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-isizulu-improving-exit-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000003",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000003",
+      "homeLanguage": "zu",
+      "targetReadabilityGrade": 4,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 42,
+        "goalPercentile": 40,
+        "recommendation": "exit",
+        "weeksElapsed": 10
+      },
+      "evidenceIds": ["ev-pr-004", "ev-pr-005"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      { "type": "exact_match", "field": "homeLanguage", "value": "zu" },
+      { "type": "exact_match", "field": "readabilityAdequate", "value": true }
+    ],
+    "tags": ["isizulu", "improving", "exit"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-sepedi-declining-intensify-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000004",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000004",
+      "homeLanguage": "nso",
+      "targetReadabilityGrade": 4,
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 18,
+        "goalPercentile": 30,
+        "recommendation": "intensify",
+        "weeksElapsed": 8
+      },
+      "evidenceIds": ["ev-pr-006"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      { "type": "exact_match", "field": "homeLanguage", "value": "nso" },
+      { "type": "exact_match", "field": "readabilityAdequate", "value": true }
+    ],
+    "tags": ["sepedi", "declining", "intensify"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-setswana-stable-intensify-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000005",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000005",
+      "homeLanguage": "tn",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 22,
+        "goalPercentile": 35,
+        "recommendation": "intensify",
+        "weeksElapsed": 12
+      },
+      "evidenceIds": ["ev-pr-007"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      { "type": "exact_match", "field": "homeLanguage", "value": "tn" }
+    ],
+    "tags": ["setswana", "stable", "intensify"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-no-diagnostic-language-improving-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000006",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000006",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 32,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 8
+      },
+      "evidenceIds": ["ev-pr-008"]
+    },
+    "context": {},
+    "rubric": "The reportText must not contain diagnostic labels such as 'dyslexia', 'learning disability', 'ADHD', 'autism', 'disorder', or any other clinical diagnosis. It must use plain, supportive language about the learner's progress.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "no-diagnostic-language-in-report-text"
+      }
+    ],
+    "tags": ["diagnosis_guard", "english", "no-clinical-labels"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-no-learner-name-in-report-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000007",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000007",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 30,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 6
+      },
+      "evidenceIds": ["ev-pr-009"]
+    },
+    "context": {},
+    "rubric": "reportText must not contain a specific learner name. The letter should refer to 'your child' or an equivalent pronoun in the target language, but never a named individual.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "no-learner-name-in-report-text"
+      }
+    ],
+    "tags": ["pii_guard", "no-learner-name"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-readability-adequate-grade-5-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000008",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000008",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 38,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 10
+      },
+      "evidenceIds": ["ev-pr-010"]
+    },
+    "context": {},
+    "rubric": "The letter must be written at approximately grade 5 reading level or below (grade 6 at most). The estimatedReadabilityGrade must be ≤ 6 for readabilityAdequate to be true.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      { "type": "exact_match", "field": "readabilityAdequate", "value": true },
+      {
+        "type": "numeric_tolerance",
+        "field": "estimatedReadabilityGrade",
+        "expected": 4,
+        "tolerance": 2
+      }
+    ],
+    "tags": ["readability", "grade-5-target", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-needs-input-missing-plan-id-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000009",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 35,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 8
+      },
+      "evidenceIds": ["ev-pr-011"]
+    },
+    "context": {},
+    "expectations": [
+      {
+        "type": "refusal_correctness",
+        "shouldRefuse": true,
+        "refusalField": "status",
+        "expectedReasonCode": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "missing-plan-id"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-needs-input-missing-home-language-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000010",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000010",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 28,
+        "goalPercentile": 35,
+        "recommendation": "continue",
+        "weeksElapsed": 6
+      },
+      "evidenceIds": ["ev-pr-012"]
+    },
+    "context": {},
+    "expectations": [
+      {
+        "type": "refusal_correctness",
+        "shouldRefuse": true,
+        "refusalField": "status",
+        "expectedReasonCode": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "missing-home-language"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-isixhosa-improving-continue-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000011",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000011",
+      "homeLanguage": "xh",
+      "targetReadabilityGrade": 4,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 33,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 7
+      },
+      "evidenceIds": ["ev-pr-013"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      { "type": "exact_match", "field": "homeLanguage", "value": "xh" }
+    ],
+    "tags": ["isixhosa", "improving", "continue"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-sesotho-stable-continue-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000012",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000012",
+      "homeLanguage": "st",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 31,
+        "goalPercentile": 38,
+        "recommendation": "continue",
+        "weeksElapsed": 9
+      },
+      "evidenceIds": ["ev-pr-014"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      { "type": "exact_match", "field": "homeLanguage", "value": "st" }
+    ],
+    "tags": ["sesotho", "stable", "continue"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-evidence-ids-passed-through-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000013",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000013",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 36,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 8
+      },
+      "evidenceIds": ["ev-pr-015", "ev-pr-016", "ev-pr-017"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      {
+        "type": "set_overlap",
+        "field": "evidenceIds",
+        "expectedSet": ["ev-pr-015", "ev-pr-016", "ev-pr-017"],
+        "minOverlap": 1
+      }
+    ],
+    "tags": ["evidence-linkage", "three-evidence-ids"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-weeks-elapsed-mentioned-in-report-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000014",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000014",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 33,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 12
+      },
+      "evidenceIds": ["ev-pr-018"]
+    },
+    "context": {},
+    "rubric": "The reportText must mention the duration of the programme in a way that conveys roughly 12 weeks (e.g. 'twelve weeks', '12 weeks', 'three months', or similar). It must not quote a raw percentile score to the guardian.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "weeks-elapsed-communicated-no-raw-percentile"
+      }
+    ],
+    "tags": ["weeks-elapsed", "plain-language"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-no-percentile-quoted-to-guardian-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000015",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000015",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 4,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 31,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 6
+      },
+      "evidenceIds": ["ev-pr-019"]
+    },
+    "context": {},
+    "rubric": "The reportText must not contain a sentence like 'your child is at the 31st percentile' or 'scored 31%'. Percentile data is internal; translate it into plain everyday language ('is making good progress', 'is catching up well', etc.).",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "no-raw-percentile-quoted-to-guardian"
+      }
+    ],
+    "tags": ["plain-language", "no-raw-percentile"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-exit-recommendation-communicated-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000016",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000016",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 42,
+        "goalPercentile": 40,
+        "recommendation": "exit",
+        "weeksElapsed": 10
+      },
+      "evidenceIds": ["ev-pr-020"]
+    },
+    "context": {},
+    "rubric": "The reportText must communicate that the learner is ready to return to mainstream support (the 'exit' recommendation). It must be framed positively — the child has reached their goal — not as a dismissal.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "exit-recommendation-communicated-positively"
+      }
+    ],
+    "tags": ["exit", "positive-framing"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-intensify-recommendation-communicated-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000017",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000017",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 18,
+        "goalPercentile": 30,
+        "recommendation": "intensify",
+        "weeksElapsed": 8
+      },
+      "evidenceIds": ["ev-pr-021"]
+    },
+    "context": {},
+    "rubric": "The reportText must communicate that the support programme will be intensified or increased, framed supportively. It must invite the guardian to contact the school to discuss.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "intensify-communicated-with-guardian-contact-invite"
+      }
+    ],
+    "tags": ["intensify", "guardian-contact-invite"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-xitsonga-improving-continue-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000018",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000018",
+      "homeLanguage": "ts",
+      "targetReadabilityGrade": 4,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 34,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 9
+      },
+      "evidenceIds": ["ev-pr-022"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      { "type": "exact_match", "field": "homeLanguage", "value": "ts" }
+    ],
+    "tags": ["xitsonga", "improving"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-english-grade-3-readability-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000019",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000019",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 3,
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 25,
+        "goalPercentile": 35,
+        "recommendation": "continue",
+        "weeksElapsed": 5
+      },
+      "evidenceIds": ["ev-pr-023"]
+    },
+    "context": {},
+    "rubric": "The letter must be written at approximately Grade 3 reading level or just above (Grade 4 at most). Very short sentences. Very common words. No jargon at all.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      { "type": "exact_match", "field": "readabilityAdequate", "value": true },
+      {
+        "type": "numeric_tolerance",
+        "field": "estimatedReadabilityGrade",
+        "expected": 3,
+        "tolerance": 2
+      }
+    ],
+    "tags": ["readability", "grade-3-target", "very-plain-language"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-needs-input-missing-sbst-ratification-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000020",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 33,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 8
+      },
+      "evidenceIds": ["ev-pr-024"]
+    },
+    "context": {},
+    "expectations": [
+      {
+        "type": "refusal_correctness",
+        "shouldRefuse": true,
+        "refusalField": "status",
+        "expectedReasonCode": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "missing-sbst-ratification"],
+    "source": "specification"
+  },
+  {
+    "id": "ac10-report-text-non-empty-001",
+    "agentId": "AC-10",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "planId": "eeeeeeee-0000-0000-0000-000000000021",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000021",
+      "homeLanguage": "en",
+      "targetReadabilityGrade": 5,
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 37,
+        "goalPercentile": 40,
+        "recommendation": "continue",
+        "weeksElapsed": 7
+      },
+      "evidenceIds": ["ev-pr-025"]
+    },
+    "context": {},
+    "rubric": "reportText must be a non-trivial paragraph-length letter — at minimum two full sentences — not just a single word or empty string.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "written" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "report-text-is-a-real-letter-not-just-a-stub"
+      }
+    ],
+    "tags": ["report-text-length", "must_not_regress"],
+    "source": "specification"
+  }
+]

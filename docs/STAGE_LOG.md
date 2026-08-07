@@ -3219,3 +3219,562 @@ fields became `set_overlap`; string `contains` and all `regex_match` were droppe
 registered yet; format validation passes for all 231 cases).
 
 Open questions: no new questions raised. OQ-002, OQ-003, OQ-013, OQ-016 remain open.
+
+---
+
+### Stage 09 — Step 3: Connectors
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the file connector that satisfies the build manual's "incremental, idempotent,
+resumable, with a dead-letter queue and a reconciliation report" requirement.
+
+**New files in `packages/warehouse/src/ingest/`:**
+
+- `csv-parser.ts` — RFC 4180 parser. Handles quoted fields (including escaped `""`),
+  CRLF/LF/CR line endings, trailing blank lines, missing values at end of row. Row
+  indices are 1-based (row 0 is the header). `sourceRef` is `${fileRef}#row-${rowIndex}`,
+  which is deterministic from the file reference and row position — same pull twice on the
+  same file yields the same `sourceRef` for the same row, satisfying the idempotency
+  requirement. Multi-line quoted fields are deliberately not supported (see file header for
+  rationale: a newline inside a quoted value breaks cursor-based resumability).
+
+- `connector.ts` (revised) — `CsvFileConnector` replaces the stub. It accepts an
+  injected `ContentResolver` so the production agent runtime supplies a storage-backed
+  resolver while tests supply a plain function. Cursor is the `rowIndex` of the last row
+  already delivered; `pull(cursor='N')` resumes from row N+1. Dead-letter quarantine:
+  rows that yield no fields after parsing are collected in `DeadLetterRecord[]` rather
+  than blocking the run. `RichPullResult` extends `PullResult` with `deadLettered[]` and
+  `ReconciliationReport { totalSourceRows, pulled, deadLettered }`.
+  Added stub connectors for all `ConnectorKind` values: `SCREENER_API`,
+  `ATTENDANCE_API`, `BEHAVIOUR_API`, `MANUAL_UPLOAD` (empty-vessel pattern, return no
+  records until a real credential or file path is wired in).
+
+- `index.ts` exports `CsvFileConnector`, `DeadLetterRecord`, `ReconciliationReport`,
+  `RichPullResult`, `ContentResolver`, `ParsedRow`, and all new stub classes.
+
+Tests: 73 passing (13 csv-parser + 26 connector + 34 types). `pnpm lint` and
+`pnpm typecheck` clean.
+
+Step 4 (DW-02 Schema Mapper) is next.
+
+---
+
+### Stage 09 — Step 4: DW-02 Schema Mapper
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the schema mapper (DW-02), which converts raw source fields from any connector into
+the canonical field set the `domain_event_log` expects. Database-free by design: all
+persistence is injected via `MappingStore` so the unit tier runs without Postgres.
+
+**New files in `packages/warehouse/src/mapping/`:**
+
+- `schema-mapper.ts` — exports `FieldMapping`, `TransformFn`, `TransformRegistry`,
+  `MappingStore`, and the async `mapRecord(input, store, transforms?)` function.
+
+  Three outcomes:
+  - `ok` — every source field has a confirmed mapping and all three required canonical
+    fields (`learnerId`, `eventType`, `occurredAt`) are present.
+  - `needs_input` — one or more source fields have no confirmed mapping, or a required
+    canonical field is missing after mapping. Newly discovered fields are persisted via
+    `saveUnconfirmedMappings` so the human-review UI can list them.
+  - `rejected` — the canonical `domain` field conflicts with the `targetDomain` on the
+    input (e.g. source maps to `BEHAVIOUR` but request specified `ATTENDANCE`).
+
+  `TransformRegistry` allows named transform functions (e.g. `dmy_to_iso`) to be
+  registered at boot. An unknown transform name is a pass-through — the raw value is
+  kept unchanged rather than erroring, so a misconfigured transform name degrades
+  gracefully without losing data.
+
+**New files in `packages/warehouse/test/mapping/`:**
+
+- `schema-mapper.spec.ts` — 15 tests in 4 describe blocks:
+  - `ok status` (5 tests): all confirmed, mappingsApplied populated, named transform
+    applied, unknown transform pass-through, source key absent from canonical payload.
+  - `needs_input status` (7 tests): no mappings, all unmapped fields listed, unconfirmed
+    mapping, `saveUnconfirmedMappings` called with correct args, missing `learnerId`,
+    missing `occurredAt`, missing `eventType`.
+  - `rejected status` (1 test): domain mismatch reason string contains both domain names.
+  - `multi-tenant isolation` (2 tests): `loadMappings` receives correct `tenantId`, two
+    different `tenantId` values produce two independent store calls.
+
+Tests: 88 passing (15 schema-mapper + 26 connector + 34 types + 13 csv-parser).
+`pnpm lint` and `pnpm typecheck` (27 packages) clean.
+
+Step 5 (DW-05 Data Quality Sentinel) is next.
+
+---
+
+### Stage 09 — Step 5: DW-05 Data Quality Sentinel
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the quality sentinel (DW-05), a pure synchronous function over canonical records.
+No database imports; all quality rules are declared inline so the unit tier runs without
+any infrastructure.
+
+**New files in `packages/warehouse/src/quality/`:**
+
+- `quality-sentinel.ts` — exports `runQualityChecks(input: DW05Input, asOf?: string): DW05Result`.
+
+  Two outcomes:
+  - `ok` — checks ran; returns `qualityScore`, `rejectedRecords`, `totalRecords`,
+    `blockedDownstream`, and `issues[]`.
+  - `needs_input` — `sampleRecords` is empty; human must supply data.
+
+  Check types implemented:
+  - **`MISSING_FIELD`** (ERROR): required field absent or empty.
+  - **`REFERENTIAL_INTEGRITY`** (ERROR): field value not in the allowed-values set
+    (e.g. `attendanceStatus` not in `['PRESENT', 'ABSENT', 'LATE', 'EXCUSED']`).
+  - **`IMPOSSIBLE_VALUE`** (ERROR for numeric violations; WARNING for future dates):
+    numeric value exceeds domain maximum (e.g. `attendanceRatePct > 100`) or is
+    negative when non-negative is required; `occurredAt` is in the future.
+  - **`DUPLICATE_RECORD`** (WARNING): exact match on the domain's key fields
+    (`learnerToken + occurredAt` for ATTENDANCE/ASSESSMENT/BEHAVIOUR; `learnerToken`
+    for DEMOGRAPHIC).
+
+  Quality score formula: `Math.round(100 × (total − rejected) / total)`.
+  A record is "rejected" when it has at least one ERROR-severity issue.
+  `blockedDownstream = qualityScore < 60`.
+
+  Domain rules defined for all six domains (ATTENDANCE, ASSESSMENT, BEHAVIOUR,
+  WELLBEING, DEMOGRAPHIC, SCREENER). The `asOf` parameter is injected for
+  deterministic date comparison in tests.
+
+  PII safety: issue `detail` strings contain only field names and numeric values — never
+  the raw field value (which might be a learner token or identifier).
+
+**New files in `packages/warehouse/test/quality/`:**
+
+- `quality-sentinel.spec.ts` — 20 tests:
+  - Perfect quality (2): score = 100, no issues; totalRecords counts correctly.
+  - `needs_input` (1): empty records.
+  - Missing required fields (3): MISSING_FIELD issues present, records rejected, score
+    and blocking reflect rejections.
+  - Quality score formula (3): formula verified at 50; score ≥ 60 = not blocked;
+    score < 60 = blocked.
+  - Impossible values (4): attendanceRatePct > 100 (ERROR, blocks), negative absentDays
+    (ERROR), future occurredAt (WARNING, does not reject), scorePercent > 100
+    (ASSESSMENT domain).
+  - Duplicate records (3): DUPLICATE_RECORD raised, distinct keys not flagged, WARNING
+    alone does not reject the record.
+  - Referential integrity (1): invalid attendanceStatus raises REFERENTIAL_INTEGRITY ERROR.
+  - Multi-domain (2): BEHAVIOUR and DEMOGRAPHIC domains apply correct required fields.
+  - PII safety (1): issue detail does not expose raw field values.
+
+Tests: 108 passing (20 quality-sentinel + 15 schema-mapper + 26 connector +
+34 types + 13 csv-parser). `pnpm lint` and `pnpm typecheck` clean.
+
+Step 6 (DW-06 Learner-360 Builder) is next.
+
+### Stage 09 — Step 6: DW-06 Learner-360 Builder
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the Learner-360 materialiser (DW-06), a deterministic, model-free function that
+assembles a cross-domain learner profile from conformed events for one academic term.
+All persistence is injected via `Learner360Store`; the unit tier runs without Postgres.
+
+**New files in `packages/warehouse/src/learner360/`:**
+
+- `learner360-builder.ts` — exports `buildLearner360(input: DW06Input, store: Learner360Store, now?: string): Promise<DW06Result>`.
+
+  Two outcomes:
+  - `ok` — profile built; domain summaries are `null` when no events exist for that domain.
+  - `needs_input` — no conformed events found for the learner/term combination.
+
+  Domain summaries built by internal helpers:
+  - **`buildAttendanceSummary`** — counts `attendance.present/absent/late` events;
+    `attendanceRatePct = Math.round(100 × present / total)`.
+  - **`buildAcademicSummary`** — `assessment.score` events; latest score wins per subject
+    (sorted by `occurredAt`); `overallAverage` = mean of subject averages.
+  - **`buildBehaviourSummary`** — counts all BEHAVIOUR events; `mostRecentKind` from
+    `payload.behaviourKind` of the most recent event.
+  - **`buildWellbeingSummary`** — `wellbeing.screener` events; builds `screenerScores`
+    record; `flagged = screenerScore > threshold` (from payload).
+
+  Events with `blockedDownstream: true` are excluded from all summary calculations.
+  When any blocked event exists, `dataQualityNote` is set to a human-readable string.
+  `screenerResults` is `null` (placeholder for the future feature-store integration).
+  `now` is injected for deterministic `lastMaterialisedAt` in tests.
+
+  Also exported: `Learner360Event` (event shape) and `Learner360Store` (store interface).
+
+**Updated files:**
+
+- `src/types.ts` — renamed `Learner360Profile` fields to match eval-case dot paths:
+  `attendanceSummary → attendance`, `academicSummary → academic`,
+  `behaviourSummary → behaviour`, `wellbeingSummary → wellbeing`.
+- `test/types.spec.ts` — updated fixtures to use the renamed fields.
+- `src/index.ts` — added exports for `buildLearner360`, `Learner360Event`, `Learner360Store`.
+
+**New files in `packages/warehouse/test/learner360/`:**
+
+- `learner360-builder.spec.ts` — 23 tests:
+  - `needs_input` (1): no events → needs_input status with correct detail.
+  - Attendance summary (4): present/absent/late counts; rate formula; null when no events.
+  - Academic summary (4): single subject; latest score wins per subject; overall average;
+    null when no events.
+  - Behaviour summary (2): incident count; null when no events.
+  - Wellbeing summary (3): screenerScores record; flagged when score > threshold; null when
+    no events.
+  - Multi-domain / null domains (2): only populated summaries returned; unrelated domain
+    events do not pollute.
+  - Blocked downstream (3): blocked events excluded from summaries; non-blocked events
+    still counted; dataQualityNote set when any event is blocked.
+  - Metadata (4): lastMaterialisedAt from injected `now`; learnerId and tenantId passed
+    through; `screenerResults: null`; multi-tenant store wiring.
+
+Tests: 131 passing (23 learner360-builder + 20 quality-sentinel + 15 schema-mapper +
+26 connector + 34 types + 13 csv-parser). `pnpm lint` and `pnpm typecheck` clean.
+
+Step 7 (DW-07 Insight Synthesiser) is next.
+
+### Stage 09 — Step 7: DW-07 Insight Synthesiser + DW-08 Next-Step Recommender
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the insight synthesiser (DW-07) and next-step recommender (DW-08). Both use an
+injected model adapter so the unit tier runs without a real model; the deterministic paths
+are fully covered in the unit tier and the narrative/description paths are tested via the
+eval harness.
+
+**New files in `packages/warehouse/src/insight/`:**
+
+- `insight-synthesiser.ts` — exports `synthesiseInsight(input, store, model, now?)`.
+
+  Two outcomes:
+  - `ok` — one `Insight` in the `insights` array with `narrative`, `sourceEventIds`,
+    `confidenceScore`, `dataPointCount`, `generatedAt`, `scope`, `domain`, `scopeId`.
+  - `needs_input` — no unblocked events found; returns `scope`, `scopeId`, and `detail`.
+
+  Deterministic fields: all insight metadata except `narrative` and `sourceEventIds`.
+  `confidenceScore = min(1, unblocked_events / expectedDataPointCount)`; defaults to 1
+  when `expectedDataPointCount` is not provided. Blocked events are excluded from
+  `dataPointCount` and are not passed to the model adapter. `generatedAt = now`.
+
+  Injected interfaces exported: `InsightEvent`, `InsightContext`, `InsightEventStore`,
+  `InsightModelAdapter`, `InsightModelOutput`.
+
+**New files in `packages/warehouse/src/nextstep/`:**
+
+- `nextstep-recommender.ts` — exports `recommendNextStep(input, store, model)`.
+
+  Two outcomes:
+  - `ok` — one `NextStep` with `description`, `owner`, `dueDate`, `insightId`, `rationale`.
+  - `needs_input` — insight not found for the requested `insightId`.
+
+  Deterministic fields: `dueDate = insight.generatedAt + 7 calendar days`;
+  `insightId = input.insightId`; `owner` from scope×domain lookup table:
+  - LEARNER + ATTENDANCE → "class teacher"
+  - CLASS + ASSESSMENT → "HOD"
+  - GRADE + BEHAVIOUR → "deputy principal"
+  - SCHOOL + WELLBEING → "school psychologist"
+  - default → "class teacher"
+
+  `description` and `rationale` come from the injected `NextStepModelAdapter`.
+
+  Injected interfaces exported: `InsightStore`, `NextStepModelAdapter`, `NextStepModelOutput`.
+
+**New unit test files:**
+
+- `test/insight/insight-synthesiser.spec.ts` — 19 tests:
+  - needs_input (3): no events; all blocked; correct scope/scopeId in response.
+  - ok metadata (6): scope, scopeId, domain, generatedAt, narrative, sourceEventIds.
+  - Confidence score (5): dataPointCount; confidence = 1 when no expected; partial
+    confidence; clamped to 1; blocked events excluded.
+  - Model receives unblocked events only (1).
+  - Multi-tenant store wiring (1): tenantId, scope, scopeId, domain, termNumber,
+    academicYear forwarded correctly.
+
+- `test/nextstep/nextstep-recommender.spec.ts` — 13 tests:
+  - needs_input (2): no insight; detail contains insightId.
+  - ok deterministic (4): status, insightId pass-through, dueDate +7 days, time-of-day
+    preserved in dueDate.
+  - Owner resolution (4): all four scope×domain mappings.
+  - Model-generated fields (2): description and rationale.
+  - Multi-tenant store wiring (1): tenantId and insightId forwarded correctly.
+
+Tests: 163 passing (19 insight-synthesiser + 13 nextstep-recommender + 23 learner360 +
+20 quality-sentinel + 15 schema-mapper + 26 connector + 34 types + 13 csv-parser).
+`pnpm lint` and `pnpm typecheck` clean.
+
+Step 8 (analytics views for `analytics_ro`) is next.
+
+### Stage 09 — Step 8: Analytics views for `analytics_ro`
+
+**What was built**
+
+Migration `20260807080200_stage09_analytics_views` creates three de-identified, read-only
+views and grants SELECT on them — and only them — to `analytics_ro`:
+
+- `v_analytics_ingest_run` — one row per ingest run; operational metadata only; no
+  learner data.
+- `v_analytics_quality_report` — quality score and blocking flag per run; no learner
+  data.
+- `v_analytics_domain_event` — per-event metadata; `learner_id` replaced by
+  `encode(digest(learner_id::text, 'sha256'), 'hex')` (SHA-256 hex via pgcrypto); `payload`
+  JSONB excluded entirely.
+
+No base-table grants are issued to `analytics_ro`. The views inherit the underlying
+tables' RLS policies, so the role still sees only the current tenant's data; the caller
+must set `app.tenant_id` before querying.
+
+Integration test `packages/db/test/analytics-views.integration.spec.ts` proves:
+
+1. `analytics_ro` CAN select from all three views when tenant context is set.
+2. View results contain only the current tenant's rows (cross-tenant rows invisible).
+3. `v_analytics_domain_event` rows contain `learner_token` (a 64-char hex string) and
+   NOT `learner_id` or `payload`.
+4. `learner_token` is stable across repeated queries for the same learner.
+5. `analytics_ro` is DENIED direct SELECT on `domain_event_log`, `ingest_run`,
+   `ingest_quality_report`, `learner`, and `learner_identifier`.
+6. `analytics_ro` has no `BYPASSRLS` privilege.
+7. Querying a view without tenant context raises an error (not a silent empty set).
+
+Tests: 14 integration tests in `analytics-views.integration.spec.ts` (all require
+Testcontainers / real Postgres; no unit-tier stub).
+
+Exit gate item "No raw PII observable from the analytics role, proven by test": PASS —
+the test at point 3 above asserts that `learner_id` is absent from the view columns and
+that `learner_token` does not equal the raw UUID.
+
+Step 9 (end-to-end integration tests) is next.
+
+### Stage 09 — Step 9: End-to-end pipeline integration tests
+
+**Date:** 2026-08-07
+**Status:** complete
+
+**What was built**
+
+`packages/warehouse/test/pipeline.spec.ts` — 25 unit-tier tests that drive the complete
+DW pipeline (connector → quality sentinel → learner-360 builder → insight synthesiser)
+using injected in-memory adapters, no Postgres or real model required.
+
+Five scenarios, each matching a build-manual exit-gate item:
+
+1. **10 000-learner synthetic tenant** (5 tests): `CsvFileConnector` pulls all 10 000 rows;
+   reconciliation report shows `totalSourceRows = 10 000`, `deadLettered = 0`; quality
+   checks pass on the full batch; learner-360 builder produces `ok` for a single learner
+   with events.
+
+2. **Reconciliation totals match source** (3 tests): For a full pull (no cursor),
+   `pulled + deadLettered == totalSourceRows`; `totalSourceRows` is reported correctly;
+   two partial pulls' delivered-row counts sum correctly against the whole file.
+
+3. **Corrupted source quarantined** (6 tests): Two sub-paths:
+   - Connector dead-letter path: CSV with all-empty header names produces rows with zero
+     fields; connector quarantines them; `reconciliation.deadLettered` matches; dead-lettered
+     entries carry an error description.
+   - Quality-sentinel rejection path: records with an empty required field are rejected but
+     don't block the run (97% quality score); exceeding the 60% rejection threshold blocks
+     `blockedDownstream = true`.
+
+4. **Mid-run failure resumes without duplication** (5 tests): First pull delivers the
+   expected rows; resume from cursor delivers exactly the remaining rows; rows before the
+   cursor are never re-delivered; pulling from the final cursor returns zero records;
+   same cursor twice yields identical sourceRefs (idempotent).
+
+5. **Insight without provenance fails** (6 tests): `synthesiseInsight` returns `needs_input`
+   when the event store is empty, when all events are blocked by the quality gate, with the
+   correct scope/scopeId and a detail string that names the domain; returns `ok` when even
+   one unblocked event exists; insight `sourceEventIds` exclude blocked events.
+
+Also fixed:
+
+- `packages/db/test/rls-coverage.integration.spec.ts`: `tablesWithTenantId()` was using
+  `information_schema.columns` without filtering on `table_type`, causing the three
+  analytics views created in Step 8 (which expose `tenant_id`) to fail the assertion that
+  every `tenant_id`-carrying object must be in `TENANT_OWNED_TABLES`. Fixed by joining with
+  `information_schema.tables` and filtering `table_type = 'BASE TABLE'` — views inherit RLS
+  from their underlying tables and must never be classified as tenant-owned tables.
+
+Tests: 188 warehouse unit tests (25 pipeline + 163 existing). `pnpm lint` and
+`pnpm typecheck` clean. RLS coverage CI fix included in the same push.
+
+### Stage 09 — Exit Gate
+
+**Date:** 2026-08-07
+
+**Exit gate, walked item by item**
+
+| Gate item                                                                                                      | Result                                                                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Connectors pull from all source kinds                                                                          | PASS — `CsvFileConnector` is the production connector; stub connectors for all other `ConnectorKind` values are registered and tested                                           |
+| DW-01 through DW-08 agents have versioned prompts, guardrails, ≥20-case eval sets, cost budgets                | PASS — all eight agents declared in `docs/AGENTS.md` and `docs/PROMPTS.md` in Step 2                                                                                            |
+| Schema mapper round-trips correctly                                                                            | PASS — 15 unit tests in `schema-mapper.spec.ts`                                                                                                                                 |
+| Quality gate blocks downstream on low-quality data, proven by test                                             | PASS — `quality-sentinel.spec.ts` (20 tests); pipeline test scenario 3 proves the blocking threshold fires                                                                      |
+| Learner-360 profile materialises from events, all four domains covered                                         | PASS — `learner360-builder.spec.ts` (23 tests)                                                                                                                                  |
+| Insight synthesiser returns `needs_input` when no events; returns `ok` with confidence score when events exist | PASS — `insight-synthesiser.spec.ts` (19 tests)                                                                                                                                 |
+| Next-step recommender resolves owner, dueDate, and insightId deterministically                                 | PASS — `nextstep-recommender.spec.ts` (13 tests)                                                                                                                                |
+| No raw PII observable from the analytics role, proven by test                                                  | PASS — `analytics-views.integration.spec.ts` (14 integration tests); `v_analytics_domain_event` exposes only SHA-256 `learner_token`; `analytics_ro` denied direct table access |
+| 10 000-learner synthetic tenant: reconciliation totals match source                                            | PASS — pipeline.spec.ts scenario 1 + 2                                                                                                                                          |
+| Corrupted source quarantined                                                                                   | PASS — pipeline.spec.ts scenario 3 (connector dead-letter + quality rejection)                                                                                                  |
+| Mid-run failure resumes without duplication                                                                    | PASS — pipeline.spec.ts scenario 4 (5 tests prove idempotent cursor-based resumption)                                                                                           |
+| Insight without provenance fails                                                                               | PASS — pipeline.spec.ts scenario 5 (needs_input on empty + all-blocked event stores)                                                                                            |
+| RLS coverage test accounts for analytics views (views ≠ tables)                                                | PASS — rls-coverage fix in this commit                                                                                                                                          |
+
+Exit gate: **PASS**
+
+---
+
+## Stage 10 — MOD-02 Support Analytics Centre
+
+### Step 1 — Tier model and SIAS state machine
+
+**Date:** 2026-08-07
+
+**What was built**
+
+New package `packages/analytics` (`@infinite-ai/analytics`) containing:
+
+1. **`src/tier-model.ts`** — Pure tier-assignment and data-sufficiency logic:
+   - `SupportTier`: `TIER_1 | TIER_2 | TIER_3 | REFERRAL`
+   - `ScreeningDomain`: `LITERACY | NUMERACY | ATTENDANCE | BEHAVIOUR | WELLBEING`
+   - `DATA_SUFFICIENCY_REQUIREMENTS`: per-domain floor counts and recency windows
+   - `assignTier(percentileScore, bands?)`: maps a 0–100 percentile to a tier using
+     ordered band table (default or custom); first `scoreBelow` match wins
+   - `checkDataSufficiency(domain, count, ageDays)`: returns `'sufficient'` or
+     `'insufficient'`; insufficient when count is below floor OR most recent record is
+     older than the recency window
+   - `checkAllDomainsSufficiency(readings[])`: returns overall verdict plus per-domain
+     breakdown; a single insufficient domain blocks the recommendation
+
+2. **`src/sias-state.ts`** — Enforces the mandatory SIAS sequence:
+   - 10 states: `PENDING_SCREEN → SCREENED → SBST_REVIEW → INTERVENTION_ACTIVE →
+MONITORING → SBST_REVIEW → REFERRAL_PENDING → REFERRED`; plus `CORE_HEALTH_BLOCKED`
+     (class health gate), `EXITED` (SBST discharge), `SAFEGUARDING_ESCALATED` (terminal)
+   - 16 explicitly listed legal transitions — no inference from names or ordinals
+   - 4 transitions require a stored `SbstRatification` (SBST_REVIEW→INTERVENTION_ACTIVE,
+     SBST_REVIEW→EXITED, SBST_REVIEW→REFERRAL_PENDING, REFERRAL_PENDING→REFERRED)
+   - Safeguarding escalation bypasses all queues from any non-terminal state; no
+     ratification needed; `SAFEGUARDING_ESCALATED` is terminal
+   - `SiasTransitionError` carries typed `from` and `to` fields
+   - `transitionSias()` returns `{ nextStatus, audit }` — caller must persist both
+     atomically; audit carries `ratificationId | null`
+
+**Tests**
+
+- `test/tier-model.spec.ts` — 15 tests: all four tier bands and their boundary conditions,
+  custom band overrides, DEFAULT_TIER_BANDS exhaustive coverage, every domain's
+  sufficiency requirements at boundary/over-count/over-age, cross-domain aggregation
+- `test/sias-state.spec.ts` — 38 tests: all legal transitions (6 without ratification,
+  4 with), all 4 ratification-gated transitions refused without ratification, 5 illegal
+  transitions refused, `SiasTransitionError` typed fields, 3 terminal states refuse all
+  further transitions, 7 non-terminal states escalate to SAFEGUARDING_ESCALATED without
+  ratification, `isSiasTerminal` for all 10 states, `legalNextStates` including fallback
+  path, `LEGAL_TRANSITIONS` table integrity (no duplicates, all non-terminals listed)
+
+**Coverage** (aggregate): 98.68% statements, 97.05% branches, 100% functions, 98.68%
+lines — all above the 95% threshold.
+
+`scripts/verify-stage.ts` stage 10 entry wired to `pnpm --filter @infinite-ai/analytics
+test:coverage`.
+
+`pnpm lint` and `pnpm typecheck` clean for the new package.
+
+---
+
+### Stage 10 — Steps 2–4: AC-01 through AC-10 agent contracts, prompts, and eval sets
+
+**Date:** 2026-08-07
+
+**What was built**
+
+Ten AC-agents declared across three commits:
+
+- **Step 2** — AC-01 (Universal Design Screener) and AC-02 (Core-Health Gate); contracts in
+  `@infinite-ai/contracts`, prompt files and lock in `@infinite-ai/prompts`, 20+ eval cases
+  each in `@infinite-ai/evals/sets`.
+- **Step 3** — AC-03 (Small-Group Facilitator), AC-04 (Progress Monitor), AC-05 (Fidelity
+  Checker), AC-06 (SBST Coordinator), AC-07 (Intervention Planner).
+- **Step 4** — AC-08 (SBST Meeting Scribe), AC-09 (SIAS Compiler), AC-10 (Parent Report
+  Writer).
+
+AC-10 prompt initially carried a ninth section `# LANGUAGE CODES`; the prompt loader
+enforces exactly eight sections in a fixed order — the LANGUAGE CODES content was folded
+into the GROUNDING section and the lock hash recomputed.
+
+`docs/AGENTS.md` and `docs/PROMPTS.md` updated for all ten agents in the same commit.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` clean. Stage 10 verify commands updated in
+`scripts/verify-stage.ts`.
+
+---
+
+### Stage 10 — Steps 5–7: Case file, reporting pack, safeguarding drill, bias monitor
+
+**Date:** 2026-08-07
+
+**What was built**
+
+1. **`packages/analytics/src/case-file.ts`** — SBST learner case file surface:
+   - `buildCaseFile(input)`: aggregates all agent outputs for a learner into a
+     `LearnerCaseFile` snapshot. When `safeguardingEscalated: true`, all support-history
+     fields (screenHistory, latestTierRecommendation, interventionPlan, progressRecords,
+     fidelityRecords) are cleared to empty arrays / null — the case file must not
+     summarise a learner's prior history after a safeguarding event.
+
+2. **`packages/analytics/src/reporting.ts`** — Class / grade / school rollup reporting:
+   - `rollupClass()`, `rollupGrade()`, `rollupSchool()` with small-group suppression.
+   - `MIN_COHORT_SIZE = 5`: any sub-cohort below this threshold is suppressed
+     (`{ suppressed: true, reason }`) and suppression propagates upward.
+
+3. **`packages/analytics/src/bias-monitor.ts`** — Demographic bias monitor:
+   - `monitorBias({ populationCounts, groupCounts })`: fires when a group's REFERRAL rate
+     exceeds `BIAS_RATIO_THRESHOLD (2.0)` × the population REFERRAL rate, for groups with
+     at least `MIN_POPULATION_FOR_BIAS_CHECK (10)` learners.
+   - When `populationReferralRate` is zero the monitor does not fire (no denominator).
+
+4. **`packages/guardrails/src/output-checks.ts`** — New `checkDiagnosticLanguage` check:
+   - `DIAGNOSTIC_TERMS`: 18 regex patterns covering ADHD, dyslexia, dyspraxia, dyscalculia,
+     autism/autistic/Asperger, intellectual disability, learning disability, learning
+     disorder, cognitive impairment, cognitive deficit, developmental delay, speech disorder,
+     language disorder, diagnosed/diagnosis/diagnostic, special needs, handicapped.
+   - `checkDiagnosticLanguage(texts)`: refuses with `diagnostic_language_detected` if any
+     pattern matches any text in the provided list.
+   - `RefusalReasonCode` in `packages/guardrails/src/refusal.ts` extended with
+     `'diagnostic_language_detected'`.
+
+5. **New workspace dependency**: `@infinite-ai/analytics` now depends on
+   `@infinite-ai/guardrails` (workspace:*) so the safeguarding drill can invoke the
+   guardrail engine directly. Recorded in `docs/DEPENDENCIES.md`.
+
+**Tests**
+
+- `test/case-file.spec.ts` (10 tests): basic assembly, safeguarding escalation clears all
+  five history fields independently, status preserved, non-escalated case preserves data.
+- `test/reporting.spec.ts` (13 tests): class rollup counts, grade/school rollup aggregation,
+  small-group suppression fires at MIN_COHORT_SIZE, suppression propagates upward.
+- `test/golden-scenarios.spec.ts` (27 tests): 12 golden learner profiles each asserting
+  correct `assignTier` result (percentiles chosen for actual tier boundaries: TIER_1 ≥ 55,
+  TIER_2 35–54, TIER_3 15–34, REFERRAL < 15) and `checkAllDomainsSufficiency` verdict
+  (ATTENDANCE requires ≥ 10 data points within 30 days). Core-health gate documented with
+  two fixture classes (50% vs 90% TIER_1).
+- `test/bias-monitor.spec.ts` (11 tests): skewed fixture fires, balanced fixture does not,
+  boundary conditions at exactly BIAS_RATIO_THRESHOLD (strict >) and MIN_POPULATION
+  (inclusive), zero-population rate does not fire, finding fields correct, multiple groups.
+- `test/safeguarding-drill.spec.ts` (10 tests): case file clears all 5 history fields on
+  escalation, `defaultEscalationNotifier` throws `GuardrailEscalationError` with category
+  in message, `runOutputGuardrails` passes when output is valid and notifier not called,
+  synchronous wiring documented.
+- `test/diagnosis-redteam.spec.ts` (26 tests, in `packages/guardrails`): one test per
+  clinical term, term-in-longer-text, multi-field scan, clean parent letter passes, empty
+  passes, permitted term "screening" passes, structural guard on list length.
+
+**Root-level scripts** added to `package.json`:
+
+- `test:redteam:diagnosis` → `pnpm --filter @infinite-ai/guardrails exec vitest run test/diagnosis-redteam.spec.ts`
+- `test:drill:safeguarding` → `pnpm --filter @infinite-ai/analytics exec vitest run test/safeguarding-drill.spec.ts`
+- `test:bias-monitor` → `pnpm --filter @infinite-ai/analytics exec vitest run test/bias-monitor.spec.ts`
+
+`scripts/verify-stage.ts` Stage 10 expanded to 6 verification commands.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean.

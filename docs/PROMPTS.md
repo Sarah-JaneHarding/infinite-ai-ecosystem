@@ -71,5 +71,19 @@ rollback.
 
 ## 5. Registry contents
 
-Empty until Stage 06 builds the registry and Stage 08 adds the first module prompts. Each
-prompt is listed here with its agent, current champion version and owner as it lands.
+Each prompt is listed here with its agent, current champion version and owner as it lands.
+
+### MOD-02 Support Analytics Centre — Stage 10
+
+| Agent | Version | Model          | File                                         | Lock key    | Author   |
+| ----- | ------- | -------------- | -------------------------------------------- | ----------- | -------- |
+| AC-01 | 1.0.0   | support.screen | `packages/prompts/src/AC-01/1.0.0.prompt.md` | AC-01@1.0.0 | stage-10 |
+| AC-02 | 1.0.0   | support.health | `packages/prompts/src/AC-02/1.0.0.prompt.md` | AC-02@1.0.0 | stage-10 |
+| AC-03 | 1.0.0   | support.screen | `packages/prompts/src/AC-03/1.0.0.prompt.md` | AC-03@1.0.0 | stage-10 |
+| AC-04 | 1.0.0   | support.screen | `packages/prompts/src/AC-04/1.0.0.prompt.md` | AC-04@1.0.0 | stage-10 |
+| AC-05 | 1.0.0   | support.screen | `packages/prompts/src/AC-05/1.0.0.prompt.md` | AC-05@1.0.0 | stage-10 |
+| AC-06 | 1.0.0   | support.screen | `packages/prompts/src/AC-06/1.0.0.prompt.md` | AC-06@1.0.0 | stage-10 |
+| AC-07 | 1.0.0   | support.screen | `packages/prompts/src/AC-07/1.0.0.prompt.md` | AC-07@1.0.0 | stage-10 |
+| AC-08 | 1.0.0   | support.screen | `packages/prompts/src/AC-08/1.0.0.prompt.md` | AC-08@1.0.0 | stage-10 |
+| AC-09 | 1.0.0   | support.screen | `packages/prompts/src/AC-09/1.0.0.prompt.md` | AC-09@1.0.0 | stage-10 |
+| AC-10 | 1.0.0   | support.screen | `packages/prompts/src/AC-10/1.0.0.prompt.md` | AC-10@1.0.0 | stage-10 |

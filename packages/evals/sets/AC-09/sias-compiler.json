@@ -1,0 +1,883 @@
+[
+  {
+    "id": "ac09-referral-pending-compiled-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000001",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000001",
+          "termId": "00000000-0000-0000-0000-000000000018",
+          "compositePercentile": 22,
+          "tier": "TIER_2"
+        },
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000002",
+          "termId": "00000000-0000-0000-0000-000000000019",
+          "compositePercentile": 18,
+          "tier": "TIER_3"
+        },
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000003",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 14,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [
+        {
+          "planId": "eeeeeeee-0000-0000-0000-000000000001",
+          "goal": "Reach 30th percentile composite in LITERACY",
+          "tier": "TIER_2",
+          "durationWeeks": 10
+        },
+        {
+          "planId": "eeeeeeee-0000-0000-0000-000000000002",
+          "goal": "Reach 25th percentile in LITERACY and NUMERACY",
+          "tier": "TIER_3",
+          "durationWeeks": 14
+        }
+      ],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 14,
+        "goalPercentile": 30,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-sc-001", "ev-sc-002", "ev-sc-003"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      { "type": "exact_match", "field": "requiresSignOff", "value": true },
+      {
+        "type": "set_overlap",
+        "field": "evidenceIds",
+        "expectedSet": ["ev-sc-001", "ev-sc-002", "ev-sc-003"],
+        "minOverlap": 1
+      }
+    ],
+    "tags": ["compiled", "referral-pending", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-state-machine-blocked-monitored-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "MONITORING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000002",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000004",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 28,
+          "tier": "TIER_2"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 28,
+        "goalPercentile": 35,
+        "recommendation": "continue"
+      },
+      "evidenceIds": ["ev-smb-001"]
+    },
+    "context": {},
+    "expectations": [
+      {
+        "type": "refusal_correctness",
+        "shouldRefuse": true,
+        "refusalField": "status",
+        "expectedReasonCode": "state_machine_blocked"
+      }
+    ],
+    "tags": ["state_machine_blocked", "wrong-status", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-state-machine-blocked-intervention-active-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "INTERVENTION_ACTIVE",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000003",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000005",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 20,
+          "tier": "TIER_2"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 22,
+        "goalPercentile": 35,
+        "recommendation": "continue"
+      },
+      "evidenceIds": ["ev-ia-001"]
+    },
+    "context": {},
+    "expectations": [
+      {
+        "type": "refusal_correctness",
+        "shouldRefuse": true,
+        "refusalField": "status",
+        "expectedReasonCode": "state_machine_blocked"
+      }
+    ],
+    "tags": ["state_machine_blocked", "intervention-active"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-state-machine-blocked-sbst-review-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "SBST_REVIEW",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000004",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000006",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 10,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 10,
+        "goalPercentile": 30,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-sr-001"]
+    },
+    "context": {},
+    "expectations": [
+      {
+        "type": "refusal_correctness",
+        "shouldRefuse": true,
+        "refusalField": "status",
+        "expectedReasonCode": "state_machine_blocked"
+      }
+    ],
+    "tags": ["state_machine_blocked", "sbst-review"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-five-required-sections-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000005",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000007",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 8,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [
+        {
+          "planId": "eeeeeeee-0000-0000-0000-000000000003",
+          "goal": "Reach 20th percentile in LITERACY",
+          "tier": "TIER_3",
+          "durationWeeks": 16
+        }
+      ],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 8,
+        "goalPercentile": 25,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-fs-001"]
+    },
+    "context": {},
+    "rubric": "The compiled output must contain exactly the five required sections in order: 'Learner Support History', 'Intervention Record', 'Progress Summary', 'Referral Basis', 'SBST Ratification'. Each section must have a non-empty content string.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "five-required-sections-in-order"
+      }
+    ],
+    "tags": ["sections", "five-sections", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-requires-sign-off-always-true-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000006",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000008",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 12,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 12,
+        "goalPercentile": 30,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-rs-001"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      { "type": "exact_match", "field": "requiresSignOff", "value": true }
+    ],
+    "tags": ["requires-sign-off", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-no-diagnostic-language-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000007",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000009",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 5,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [
+        {
+          "planId": "eeeeeeee-0000-0000-0000-000000000004",
+          "goal": "Reach 15th percentile",
+          "tier": "TIER_3",
+          "durationWeeks": 14
+        }
+      ],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 5,
+        "goalPercentile": 20,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-nd-001"]
+    },
+    "context": {},
+    "rubric": "None of the section content fields may contain diagnostic labels such as 'autism', 'ADHD', 'dyslexia', 'intellectual disability', 'learning disability', or any other clinical diagnosis.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "no-diagnostic-language-in-sections"
+      }
+    ],
+    "tags": ["diagnosis_guard", "no-clinical-labels"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-sbst-ratification-echoed-in-section-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-111111111111",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000010",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 9,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 9,
+        "goalPercentile": 25,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-sb-001"]
+    },
+    "context": {},
+    "rubric": "The 'SBST Ratification' section content must reference the ratificationId 'cccccccc-0000-0000-0000-111111111111' or its shortened form as proof of the stored decision.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "sbst-ratification-section-references-ratification-id"
+      }
+    ],
+    "tags": ["ratification-id-echo", "sections"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-evidence-ids-passed-through-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000009",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000011",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 11,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 11,
+        "goalPercentile": 28,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-ep-001", "ev-ep-002", "ev-ep-003"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      {
+        "type": "set_overlap",
+        "field": "evidenceIds",
+        "expectedSet": ["ev-ep-001", "ev-ep-002", "ev-ep-003"],
+        "minOverlap": 1
+      }
+    ],
+    "tags": ["evidence-linkage", "pass-through"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-no-pii-in-sections-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000010",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000012",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 7,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [
+        {
+          "planId": "eeeeeeee-0000-0000-0000-000000000005",
+          "goal": "Reach 18th percentile",
+          "tier": "TIER_3",
+          "durationWeeks": 12
+        }
+      ],
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 7,
+        "goalPercentile": 18,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-pii-001"]
+    },
+    "context": {},
+    "rubric": "None of the section content fields must contain a personal name, physical address, identity number, or any other direct personal identifier. The learnerId UUID may appear as a reference but no other identifying information.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      { "type": "llm_judge", "minScore": 1, "criterion": "no-pii-in-section-content" }
+    ],
+    "tags": ["pii_guard", "no-personal-identifiers"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-state-machine-blocked-screened-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "SCREENED",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000011",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000013",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 20,
+          "tier": "TIER_2"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 20,
+        "goalPercentile": 35,
+        "recommendation": "continue"
+      },
+      "evidenceIds": ["ev-sc2-001"]
+    },
+    "context": {},
+    "expectations": [
+      {
+        "type": "refusal_correctness",
+        "shouldRefuse": true,
+        "refusalField": "status",
+        "expectedReasonCode": "state_machine_blocked"
+      }
+    ],
+    "tags": ["state_machine_blocked", "screened-status"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-multiple-screen-history-entries-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000012",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000014",
+          "termId": "00000000-0000-0000-0000-000000000017",
+          "compositePercentile": 30,
+          "tier": "TIER_2"
+        },
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000015",
+          "termId": "00000000-0000-0000-0000-000000000018",
+          "compositePercentile": 22,
+          "tier": "TIER_2"
+        },
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000016",
+          "termId": "00000000-0000-0000-0000-000000000019",
+          "compositePercentile": 14,
+          "tier": "TIER_3"
+        },
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000017",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 9,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [
+        {
+          "planId": "eeeeeeee-0000-0000-0000-000000000006",
+          "goal": "Reach 30th percentile",
+          "tier": "TIER_2",
+          "durationWeeks": 8
+        },
+        {
+          "planId": "eeeeeeee-0000-0000-0000-000000000007",
+          "goal": "Reach 25th percentile",
+          "tier": "TIER_3",
+          "durationWeeks": 16
+        }
+      ],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 9,
+        "goalPercentile": 25,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-msh-001", "ev-msh-002"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      { "type": "exact_match", "field": "requiresSignOff", "value": true }
+    ],
+    "tags": ["compiled", "four-screen-history"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-no-intervention-history-still-compiles-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000013",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000018",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 3,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 3,
+        "goalPercentile": 20,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-nih-001"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      { "type": "exact_match", "field": "requiresSignOff", "value": true }
+    ],
+    "tags": ["compiled", "no-intervention-history"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-improving-trend-still-compiles-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000014",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000019",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 6,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [
+        {
+          "planId": "eeeeeeee-0000-0000-0000-000000000008",
+          "goal": "Reach 20th percentile",
+          "tier": "TIER_3",
+          "durationWeeks": 16
+        }
+      ],
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 6,
+        "goalPercentile": 20,
+        "recommendation": "continue"
+      },
+      "evidenceIds": ["ev-it-001"]
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "compiled" }],
+    "tags": ["compiled", "improving-trend"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-state-machine-blocked-exited-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "EXITED",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000015",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000020",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 40,
+          "tier": "TIER_1"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "improving",
+        "currentPercentile": 40,
+        "goalPercentile": 35,
+        "recommendation": "exit"
+      },
+      "evidenceIds": ["ev-ex-001"]
+    },
+    "context": {},
+    "expectations": [
+      {
+        "type": "refusal_correctness",
+        "shouldRefuse": true,
+        "refusalField": "status",
+        "expectedReasonCode": "state_machine_blocked"
+      }
+    ],
+    "tags": ["state_machine_blocked", "terminal-state"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-factual-referral-basis-section-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000016",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000021",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 4,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [
+        {
+          "planId": "eeeeeeee-0000-0000-0000-000000000009",
+          "goal": "Reach 15th percentile",
+          "tier": "TIER_3",
+          "durationWeeks": 16
+        }
+      ],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 4,
+        "goalPercentile": 15,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-rb-001"]
+    },
+    "context": {},
+    "rubric": "The 'Referral Basis' section must make a factual statement about why referral is warranted — grounded in the data (e.g. persistent below-goal performance, declining trend, duration of support) — without speculating or using clinical/diagnostic labels.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "referral-basis-is-factual-and-data-grounded"
+      }
+    ],
+    "tags": ["referral-basis", "factual-content"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-state-machine-blocked-pending-screen-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "PENDING_SCREEN",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000017",
+      "screenHistory": [],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 50,
+        "goalPercentile": 50,
+        "recommendation": "continue"
+      },
+      "evidenceIds": ["ev-ps-001"]
+    },
+    "context": {},
+    "expectations": [
+      {
+        "type": "refusal_correctness",
+        "shouldRefuse": true,
+        "refusalField": "status",
+        "expectedReasonCode": "state_machine_blocked"
+      }
+    ],
+    "tags": ["state_machine_blocked", "pending-screen"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-sbst-ratification-id-echoed-in-output-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000018",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000022",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 10,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 10,
+        "goalPercentile": 25,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-sre-001"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      {
+        "type": "exact_match",
+        "field": "sbstRatificationId",
+        "value": "cccccccc-0000-0000-0000-000000000018"
+      }
+    ],
+    "tags": ["ratification-id-echo", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-learner-id-echoed-in-output-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000019",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000023",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 6,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "stable",
+        "currentPercentile": 6,
+        "goalPercentile": 20,
+        "recommendation": "continue"
+      },
+      "evidenceIds": ["ev-lie-001"]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000019"
+      }
+    ],
+    "tags": ["learner-id-echo"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-state-machine-blocked-referred-terminal-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRED",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000020",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000024",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 5,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 5,
+        "goalPercentile": 20,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-rt-001"]
+    },
+    "context": {},
+    "expectations": [
+      {
+        "type": "refusal_correctness",
+        "shouldRefuse": true,
+        "refusalField": "status",
+        "expectedReasonCode": "state_machine_blocked"
+      }
+    ],
+    "tags": ["state_machine_blocked", "already-referred-terminal"],
+    "source": "specification"
+  },
+  {
+    "id": "ac09-learner-support-history-section-grounded-in-data-001",
+    "agentId": "AC-09",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "siasStatus": "REFERRAL_PENDING",
+      "sbstRatificationId": "cccccccc-0000-0000-0000-000000000021",
+      "screenHistory": [
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000025",
+          "termId": "00000000-0000-0000-0000-000000000018",
+          "compositePercentile": 25,
+          "tier": "TIER_2"
+        },
+        {
+          "screenId": "dddddddd-0000-0000-0000-000000000026",
+          "termId": "00000000-0000-0000-0000-000000000020",
+          "compositePercentile": 9,
+          "tier": "TIER_3"
+        }
+      ],
+      "interventionHistory": [
+        {
+          "planId": "eeeeeeee-0000-0000-0000-000000000010",
+          "goal": "Reach 30th percentile",
+          "tier": "TIER_2",
+          "durationWeeks": 10
+        }
+      ],
+      "progressSummary": {
+        "trendDirection": "declining",
+        "currentPercentile": 9,
+        "goalPercentile": 30,
+        "recommendation": "intensify"
+      },
+      "evidenceIds": ["ev-lsh-001"]
+    },
+    "context": {},
+    "rubric": "The 'Learner Support History' section content must mention the percentile scores from screenHistory (25 and 9) and the tier progression. It must not fabricate data not present in the input.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "compiled" },
+      {
+        "type": "llm_judge",
+        "minScore": 1,
+        "criterion": "learner-support-history-references-input-data"
+      }
+    ],
+    "tags": ["grounded-content", "no-fabrication"],
+    "source": "specification"
+  }
+]

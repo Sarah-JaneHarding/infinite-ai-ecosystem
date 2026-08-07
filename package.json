@@ -23,6 +23,9 @@
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
     "test:injection": "pnpm --filter @infinite-ai/guardrails test:injection",
+    "test:redteam:diagnosis": "pnpm --filter @infinite-ai/guardrails exec vitest run test/diagnosis-redteam.spec.ts",
+    "test:drill:safeguarding": "pnpm --filter @infinite-ai/analytics exec vitest run test/safeguarding-drill.spec.ts",
+    "test:bias-monitor": "pnpm --filter @infinite-ai/analytics exec vitest run test/bias-monitor.spec.ts",
     "typecheck": "turbo run typecheck",
     "verify:stage": "tsx scripts/verify-stage.ts"
   },

@@ -32,8 +32,10 @@ export {
 } from './input-checks.js';
 
 export {
+  DIAGNOSTIC_TERMS,
   checkAgeAppropriateness,
   checkCost,
+  checkDiagnosticLanguage,
   checkGrounding,
   checkOutputSchema,
   checkReadability,

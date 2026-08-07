@@ -1,0 +1,642 @@
+[
+  {
+    "id": "ac03-tier1-recommended-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000001",
+      "compositePercentile": 72.0,
+      "tier": "TIER_1",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_1" },
+      { "type": "exact_match", "field": "requiresSbstReview", "value": true },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "exact_match",
+        "field": "termId",
+        "value": "00000000-0000-0000-0000-000000000020"
+      }
+    ],
+    "tags": ["recommended", "tier1", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-tier2-recommended-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000002",
+      "compositePercentile": 42.0,
+      "tier": "TIER_2",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_2" },
+      { "type": "exact_match", "field": "requiresSbstReview", "value": true }
+    ],
+    "tags": ["recommended", "tier2", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-tier3-recommended-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000003",
+      "compositePercentile": 22.0,
+      "tier": "TIER_3",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_3" },
+      { "type": "exact_match", "field": "requiresSbstReview", "value": true }
+    ],
+    "tags": ["recommended", "tier3", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-referral-recommended-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000004",
+      "compositePercentile": 8.0,
+      "tier": "REFERRAL",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "exact_match", "field": "tier", "value": "REFERRAL" },
+      { "type": "exact_match", "field": "requiresSbstReview", "value": true }
+    ],
+    "tags": ["recommended", "referral", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-missing-core-health-gate-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+      "classId": "00000000-0000-0000-0000-000000000011",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000005",
+      "compositePercentile": 40.0,
+      "tier": "TIER_2",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000002"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "missing_gate", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-evidence-includes-screen-id-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000006",
+      "compositePercentile": 55.0,
+      "tier": "TIER_1",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      {
+        "type": "set_overlap",
+        "field": "evidenceIds",
+        "expectedSet": ["bbbbbbbb-0000-0000-0000-000000000006"],
+        "minOverlap": 1
+      }
+    ],
+    "tags": ["evidence_linkage", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-evidence-includes-class-health-record-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000007",
+      "compositePercentile": 60.0,
+      "tier": "TIER_1",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      {
+        "type": "set_overlap",
+        "field": "evidenceIds",
+        "expectedSet": ["cccccccc-0000-0000-0000-000000000001"],
+        "minOverlap": 1
+      }
+    ],
+    "tags": ["evidence_linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-rationale-no-diagnostic-language-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000008",
+      "compositePercentile": 18.0,
+      "tier": "TIER_3",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "rubric": "Score 1 if the rationale field contains no diagnostic or disability language (e.g. dyslexia, ADHD, autism, learning disability, disorder); score 0 if any such term appears.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "llm_judge", "minScore": 1 }
+    ],
+    "tags": ["diagnosis_guard", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-boundary-tier1-at-55-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000009",
+      "compositePercentile": 55.0,
+      "tier": "TIER_1",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_1" }
+    ],
+    "tags": ["boundary", "tier_band"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-boundary-tier2-at-54-9-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000010",
+      "compositePercentile": 54.9,
+      "tier": "TIER_2",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_2" }
+    ],
+    "tags": ["boundary", "tier_band"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-boundary-tier3-at-35-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000011",
+      "compositePercentile": 35.0,
+      "tier": "TIER_2",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_2" }
+    ],
+    "tags": ["boundary", "tier_band"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-boundary-referral-at-15-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000012",
+      "compositePercentile": 14.9,
+      "tier": "REFERRAL",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "exact_match", "field": "tier", "value": "REFERRAL" }
+    ],
+    "tags": ["boundary", "tier_band"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-requires-sbst-review-always-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000013",
+      "compositePercentile": 65.0,
+      "tier": "TIER_1",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "exact_match", "field": "requiresSbstReview", "value": true }
+    ],
+    "tags": ["sbst_gate", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-recommendation-id-is-uuid-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000014",
+      "compositePercentile": 48.0,
+      "tier": "TIER_2",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-missing-screen-id-needs-input-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "compositePercentile": 40.0,
+      "tier": "TIER_2",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "missing_field"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-compositePercentile-carried-through-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000016",
+      "compositePercentile": 33.5,
+      "tier": "TIER_3",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      {
+        "type": "numeric_tolerance",
+        "field": "compositePercentile",
+        "expected": 33.5,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-tier2-at-55-boundary-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000021",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000017",
+      "compositePercentile": 44.2,
+      "tier": "TIER_2",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000003"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_2" }
+    ],
+    "tags": ["recommended", "tier2"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-learnerId-carried-through-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000018",
+      "compositePercentile": 70.0,
+      "tier": "TIER_1",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      {
+        "type": "exact_match",
+        "field": "learnerId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000018"
+      }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-rationale-non-empty-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000019",
+      "compositePercentile": 25.0,
+      "tier": "TIER_3",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" }
+    ],
+    "tags": ["schema_validation"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-evidence-ids-non-empty-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+      "classId": "00000000-0000-0000-0000-000000000010",
+      "termId": "00000000-0000-0000-0000-000000000020",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000020",
+      "compositePercentile": 58.0,
+      "tier": "TIER_1",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" }
+    ],
+    "tags": ["evidence_linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "ac03-different-term-001",
+    "agentId": "AC-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+      "classId": "00000000-0000-0000-0000-000000000012",
+      "termId": "00000000-0000-0000-0000-000000000022",
+      "screenId": "bbbbbbbb-0000-0000-0000-000000000021",
+      "compositePercentile": 38.0,
+      "tier": "TIER_2",
+      "domainSufficiency": {
+        "LITERACY": "sufficient",
+        "NUMERACY": "sufficient",
+        "ATTENDANCE": "sufficient",
+        "BEHAVIOUR": "sufficient",
+        "WELLBEING": "sufficient"
+      },
+      "coreHealthGate": true,
+      "classHealthRecordId": "cccccccc-0000-0000-0000-000000000004"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "recommended" },
+      {
+        "type": "exact_match",
+        "field": "termId",
+        "value": "00000000-0000-0000-0000-000000000022"
+      }
+    ],
+    "tags": ["multi_tenant"],
+    "source": "specification"
+  }
+]

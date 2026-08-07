@@ -55,6 +55,38 @@ export {
 export { parseCsv, type ParsedRow } from './ingest/csv-parser.js';
 
 export {
+  mapRecord,
+  type FieldMapping,
+  type MappingStore,
+  type TransformFn,
+  type TransformRegistry,
+} from './mapping/schema-mapper.js';
+
+export { runQualityChecks } from './quality/quality-sentinel.js';
+
+export {
+  buildLearner360,
+  type Learner360Event,
+  type Learner360Store,
+} from './learner360/learner360-builder.js';
+
+export {
+  synthesiseInsight,
+  type InsightContext,
+  type InsightEvent,
+  type InsightEventStore,
+  type InsightModelAdapter,
+  type InsightModelOutput,
+} from './insight/insight-synthesiser.js';
+
+export {
+  recommendNextStep,
+  type InsightStore,
+  type NextStepModelAdapter,
+  type NextStepModelOutput,
+} from './nextstep/nextstep-recommender.js';
+
+export {
   DW01Input,
   DW02Input,
   DW02Result,

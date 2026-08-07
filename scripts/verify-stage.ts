@@ -146,7 +146,23 @@ const STAGES: readonly Stage[] = [
     ],
   },
   { id: '09', name: 'MOD-03 Data Warehouse', commands: [] },
-  { id: '10', name: 'MOD-02 Support Analytics Centre', commands: [] },
+  {
+    id: '10',
+    name: 'MOD-02 Support Analytics Centre',
+    commands: [
+      // Tier model and SIAS state machine — ≥ 95% coverage.
+      'pnpm --filter @infinite-ai/analytics test:coverage',
+      // Eval sets for all AC agents (smoke-run + gate score).
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+      // Diagnosis red-team: every poisoned input must be refused.
+      'pnpm test:redteam:diagnosis',
+      // Safeguarding escalation drill.
+      'pnpm test:drill:safeguarding',
+      // Bias monitor on skewed fixture.
+      'pnpm test:bias-monitor',
+    ],
+  },
   { id: '11', name: 'MOD-04 Teaching & Learning Toolbox', commands: [] },
   { id: '12', name: 'MOD-05 Teaching Analytics & PD Studio', commands: [] },
   { id: '13', name: 'LE Learning Engine', commands: [] },
