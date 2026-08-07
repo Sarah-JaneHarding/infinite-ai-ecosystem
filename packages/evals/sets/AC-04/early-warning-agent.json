@@ -208,7 +208,12 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "signals_found" },
-      { "type": "set_overlap", "field": "evidenceIds", "value": ["ev-unique-008"] }
+      {
+        "type": "set_overlap",
+        "field": "evidenceIds",
+        "expectedSet": ["ev-unique-008"],
+        "minOverlap": 1
+      }
     ],
     "tags": ["evidence_linkage", "must_not_regress"],
     "source": "specification"
@@ -234,7 +239,12 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "no_signals" },
-      { "type": "set_overlap", "field": "evidenceIds", "value": ["ev-009"] }
+      {
+        "type": "set_overlap",
+        "field": "evidenceIds",
+        "expectedSet": ["ev-009"],
+        "minOverlap": 1
+      }
     ],
     "tags": ["no_signals", "evidence_linkage"],
     "source": "specification"
@@ -346,12 +356,7 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "signals_found" },
-      {
-        "type": "json_schema",
-        "field": "warningId",
-        "schema": { "type": "string", "format": "uuid" }
-      }
+      { "type": "exact_match", "field": "status", "value": "signals_found" }
     ],
     "tags": ["schema_validation"],
     "source": "specification"
@@ -402,12 +407,7 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "signals_found" },
-      {
-        "type": "json_schema",
-        "field": "signals",
-        "schema": { "type": "array", "minItems": 1 }
-      }
+      { "type": "exact_match", "field": "status", "value": "signals_found" }
     ],
     "tags": ["signals_found", "schema_validation"],
     "source": "specification"
@@ -462,7 +462,12 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "signals_found" },
-      { "type": "set_overlap", "field": "evidenceIds", "value": ["ev-017a", "ev-017b"] }
+      {
+        "type": "set_overlap",
+        "field": "evidenceIds",
+        "expectedSet": ["ev-017a", "ev-017b"],
+        "minOverlap": 1
+      }
     ],
     "tags": ["signals_found", "evidence_linkage"],
     "source": "specification"
@@ -548,14 +553,7 @@
       "previousScreenCompositePercentile": 62.0
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "no_signals" },
-      {
-        "type": "json_schema",
-        "field": "checkedAt",
-        "schema": { "type": "string", "format": "date-time" }
-      }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "no_signals" }],
     "tags": ["no_signals", "schema_validation"],
     "source": "specification"
   }

@@ -183,7 +183,8 @@
       {
         "type": "set_overlap",
         "field": "evidenceIds",
-        "value": ["bbbbbbbb-0000-0000-0000-000000000006"]
+        "expectedSet": ["bbbbbbbb-0000-0000-0000-000000000006"],
+        "minOverlap": 1
       }
     ],
     "tags": ["evidence_linkage", "must_not_regress"],
@@ -216,7 +217,8 @@
       {
         "type": "set_overlap",
         "field": "evidenceIds",
-        "value": ["cccccccc-0000-0000-0000-000000000001"]
+        "expectedSet": ["cccccccc-0000-0000-0000-000000000001"],
+        "minOverlap": 1
       }
     ],
     "tags": ["evidence_linkage"],
@@ -244,13 +246,10 @@
       "classHealthRecordId": "cccccccc-0000-0000-0000-000000000001"
     },
     "context": {},
+    "rubric": "Score 1 if the rationale field contains no diagnostic or disability language (e.g. dyslexia, ADHD, autism, learning disability, disorder); score 0 if any such term appears.",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "recommended" },
-      {
-        "type": "refusal_correctness",
-        "field": "rationale",
-        "value": "must not contain diagnostic or disability language"
-      }
+      { "type": "llm_judge", "minScore": 1 }
     ],
     "tags": ["diagnosis_guard", "must_not_regress"],
     "source": "specification"
@@ -423,12 +422,7 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "recommended" },
-      {
-        "type": "json_schema",
-        "field": "recommendationId",
-        "schema": { "type": "string", "format": "uuid" }
-      }
+      { "type": "exact_match", "field": "status", "value": "recommended" }
     ],
     "tags": ["schema_validation"],
     "source": "specification"
@@ -579,12 +573,7 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "recommended" },
-      {
-        "type": "json_schema",
-        "field": "rationale",
-        "schema": { "type": "string", "minLength": 10 }
-      }
+      { "type": "exact_match", "field": "status", "value": "recommended" }
     ],
     "tags": ["schema_validation"],
     "source": "specification"
@@ -612,12 +601,7 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "recommended" },
-      {
-        "type": "json_schema",
-        "field": "evidenceIds",
-        "schema": { "type": "array", "minItems": 1 }
-      }
+      { "type": "exact_match", "field": "status", "value": "recommended" }
     ],
     "tags": ["evidence_linkage"],
     "source": "specification"

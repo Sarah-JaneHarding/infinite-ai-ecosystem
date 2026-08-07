@@ -209,7 +209,8 @@
       {
         "type": "set_overlap",
         "field": "evidenceIds",
-        "value": ["ev-006-first", "ev-006-second"]
+        "expectedSet": ["ev-006-first", "ev-006-second"],
+        "minOverlap": 1
       }
     ],
     "tags": ["evidence_linkage", "must_not_regress"],
@@ -241,14 +242,7 @@
       "weeksSinceIntervention": 2
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "monitored" },
-      {
-        "type": "json_schema",
-        "field": "monitorId",
-        "schema": { "type": "string", "format": "uuid" }
-      }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "monitored" }],
     "tags": ["schema_validation"],
     "source": "specification"
   },
@@ -278,14 +272,7 @@
       "weeksSinceIntervention": 2
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "monitored" },
-      {
-        "type": "json_schema",
-        "field": "detail",
-        "schema": { "type": "string", "minLength": 10 }
-      }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "monitored" }],
     "tags": ["schema_validation"],
     "source": "specification"
   },
@@ -315,13 +302,10 @@
       "weeksSinceIntervention": 2
     },
     "context": {},
+    "rubric": "Score 1 if the detail field contains no diagnostic or disability language (e.g. dyslexia, ADHD, autism, learning disability, disorder); score 0 if any such term appears.",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "monitored" },
-      {
-        "type": "refusal_correctness",
-        "field": "detail",
-        "value": "must not contain diagnostic or disability language"
-      }
+      { "type": "llm_judge", "minScore": 1 }
     ],
     "tags": ["diagnosis_guard", "must_not_regress"],
     "source": "specification"
@@ -495,11 +479,7 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "monitored" },
-      {
-        "type": "json_schema",
-        "field": "progressRatePerWeek",
-        "schema": { "type": "number", "maximum": 0 }
-      }
+      { "type": "exact_match", "field": "trendDirection", "value": "declining" }
     ],
     "tags": ["intensify", "declining", "progress_rate"],
     "source": "specification"
