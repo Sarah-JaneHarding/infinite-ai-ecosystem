@@ -152,4 +152,16 @@ describe('monitorBias', () => {
     expect(MIN_POPULATION_FOR_BIAS_CHECK).toBeGreaterThan(0);
     expect(Number.isInteger(MIN_POPULATION_FOR_BIAS_CHECK)).toBe(true);
   });
+
+  it('does not fire when population has zero total learners', () => {
+    // referralRate() guards against division-by-zero with `if (total === 0) return 0`.
+    // This test exercises that branch directly via a zero-total populationCounts.
+    const result = monitorBias({
+      populationCounts: counts(0, 0, 0, 0), // total = 0 → referralRate returns 0
+      groupCounts: {
+        largeGroup: counts(5, 5, 0, 10), // 10 learners ≥ MIN; but population rate is 0
+      },
+    });
+    expect(result.fired).toBe(false);
+  });
 });

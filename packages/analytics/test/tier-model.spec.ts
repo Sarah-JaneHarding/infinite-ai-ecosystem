@@ -43,6 +43,13 @@ describe('assignTier', () => {
     expect(assignTier(100)).toBe('TIER_1');
   });
 
+  it('falls back to TIER_1 for scores at or above the ceiling of the last band', () => {
+    // 101 is above every scoreBelow in DEFAULT_TIER_BANDS — the for-loop exits
+    // without returning, so the fallback return at the end of assignTier fires.
+    expect(assignTier(101)).toBe('TIER_1');
+    expect(assignTier(200)).toBe('TIER_1');
+  });
+
   it('accepts custom bands and applies them in order', () => {
     const customBands = [
       { tier: 'TIER_3' as const, scoreBelow: 25 },

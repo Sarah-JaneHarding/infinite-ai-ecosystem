@@ -111,6 +111,26 @@ describe('rollupClass', () => {
       expect(cr.tierDistribution.REFERRAL).toBe(1);
     }
   });
+
+  it('increments total but not any specific bucket for an unrecognised tier string', () => {
+    // addToDistribution falls through its four if-guards to the bare `return next`
+    // when the tier value does not match any known string — total still increases.
+    const reports = [
+      learner('TIER_1'),
+      learner('TIER_1'),
+      learner('TIER_1'),
+      learner('TIER_1'),
+      learner('UNKNOWN_TIER'),
+    ];
+    const cr = rollupClass('cls-8', TERM, reports);
+    if (!cr.tierDistribution.suppressed) {
+      expect(cr.tierDistribution.total).toBe(5);
+      expect(cr.tierDistribution.TIER_1).toBe(4);
+      expect(cr.tierDistribution.TIER_2).toBe(0);
+      expect(cr.tierDistribution.TIER_3).toBe(0);
+      expect(cr.tierDistribution.REFERRAL).toBe(0);
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------
