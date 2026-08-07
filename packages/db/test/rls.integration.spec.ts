@@ -324,6 +324,77 @@ async function seedTwoTenants(): Promise<void> {
         },
       });
 
+      // Stage 09 MOD-03 warehouse tables. Seeded here for the same reason every earlier
+      // stage's tables are: this suite is the proof that every tenant-owned table is
+      // isolated, and the fixture guard above refuses a table with no row.
+      const ingestSource = await tx.ingestSource.create({
+        data: {
+          tenantId,
+          name: 'Fixture source',
+          connectorKind: 'FILE_CSV',
+          configRef: 'fixture-config-ref',
+        },
+      });
+      const ingestRun = await tx.ingestRun.create({
+        data: {
+          tenantId,
+          sourceId: ingestSource.id,
+          connectorKind: 'FILE_CSV',
+          status: 'SUCCEEDED',
+          startedAt: new Date('2026-08-07T00:00:00Z'),
+        },
+      });
+      const rawIngestRecord = await tx.rawIngestRecord.create({
+        data: {
+          tenantId,
+          ingestRunId: ingestRun.id,
+          sourceRef: 'fixture row 1',
+          payload: { fixture: true },
+        },
+      });
+      const domainEventLog = await tx.domainEventLog.create({
+        data: {
+          tenantId,
+          learnerId: learner.id,
+          domain: 'ATTENDANCE',
+          eventType: 'attendance.present',
+          occurredAt: new Date('2026-08-07T08:00:00Z'),
+          payload: { fixture: true },
+        },
+      });
+      const sourceFieldMapping = await tx.sourceFieldMapping.create({
+        data: {
+          tenantId,
+          connectorKind: 'FILE_CSV',
+          sourceField: 'learnerNo',
+          canonicalField: 'learnerId',
+        },
+      });
+      const ingestQualityReport = await tx.ingestQualityReport.create({
+        data: {
+          tenantId,
+          ingestRunId: ingestRun.id,
+          qualityScore: 100,
+          issues: [],
+        },
+      });
+      const learner360 = await tx.learner360.create({
+        data: {
+          tenantId,
+          learnerId: learner.id,
+          lastMaterialisedAt: new Date('2026-08-07T08:00:00Z'),
+        },
+      });
+      const screeningFeature = await tx.screeningFeature.create({
+        data: {
+          tenantId,
+          learnerId: learner.id,
+          featureName: 'fixture_score',
+          featureValue: 0,
+          asAt: new Date('2026-08-07T08:00:00Z'),
+        },
+      });
+
       const created: Record<string, string> = {
         academic_year: year.id,
         approval_task: approvalTask.id,
@@ -342,7 +413,12 @@ async function seedTwoTenants(): Promise<void> {
         grade: grade.id,
         guardian: guardian.id,
         guardian_link: link.id,
+        domain_event_log: domainEventLog.id,
+        ingest_quality_report: ingestQualityReport.id,
+        ingest_run: ingestRun.id,
+        ingest_source: ingestSource.id,
         learner: learner.id,
+        learner_360: learner360.id,
         learner_identifier: identifier.id,
         orchestrator_run: orchestratorRun.id,
         orchestrator_step_run: orchestratorStepRun.id,
@@ -350,7 +426,10 @@ async function seedTwoTenants(): Promise<void> {
         role_assignment: role.id,
         school: school.id,
         staff_member: staff.id,
+        raw_ingest_record: rawIngestRecord.id,
         retention_rule: retention.id,
+        screening_feature: screeningFeature.id,
+        source_field_mapping: sourceFieldMapping.id,
         subject: subject.id,
         teaching_assignment: assignment.id,
         tenant_setting: setting.id,
