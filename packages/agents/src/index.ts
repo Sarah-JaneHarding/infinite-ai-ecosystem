@@ -31,4 +31,23 @@ export {
 
 export { ToolRegistry, ToolRegistryError, bootToolRegistry } from './tool-registry.js';
 
+export { CE01Contract } from './mod-01/CE-01.contract.js';
+export { CE02Contract } from './mod-01/CE-02.contract.js';
+export { CE03Contract } from './mod-01/CE-03.contract.js';
+export { CE04Contract } from './mod-01/CE-04.contract.js';
+export { CE05Contract } from './mod-01/CE-05.contract.js';
+export { CE06Contract } from './mod-01/CE-06.contract.js';
+export { CE07Contract } from './mod-01/CE-07.contract.js';
+export { CE08Contract } from './mod-01/CE-08.contract.js';
+export { CE09Contract } from './mod-01/CE-09.contract.js';
+
+export { DW01Contract } from './mod-03/DW-01.contract.js';
+export { DW02Contract } from './mod-03/DW-02.contract.js';
+export { DW03Contract } from './mod-03/DW-03.contract.js';
+export { DW04Contract } from './mod-03/DW-04.contract.js';
+export { DW05Contract } from './mod-03/DW-05.contract.js';
+export { DW06Contract } from './mod-03/DW-06.contract.js';
+export { DW07Contract } from './mod-03/DW-07.contract.js';
+export { DW08Contract } from './mod-03/DW-08.contract.js';
+
 export const PACKAGE_NAME = '@infinite-ai/agents' as const;

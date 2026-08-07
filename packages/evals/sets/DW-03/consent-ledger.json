@@ -1,0 +1,1049 @@
+[
+  {
+    "id": "dw-03-all-fields-permitted-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000100",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["attendanceStatus", "occurredAt"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["attendanceStatus", "occurredAt"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "consentBasis",
+        "value": "PARENTAL_CONSENT"
+      },
+      {
+        "type": "set_overlap",
+        "field": "permittedFields",
+        "expectedSet": ["attendanceStatus"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["ok", "all_permitted"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-no-consent-record-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000101",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "no_consent_record"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-withdrawn-consent-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000102",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "WITHDRAWN",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["attendanceStatus"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      }
+    ],
+    "tags": ["blocked", "withdrawn_consent"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-purpose-not-in-allow-list-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000103",
+      "domain": "ATTENDANCE",
+      "purpose": "marketing",
+      "fields": ["attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["attendanceStatus"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "unknown_purpose"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-partial-block-some-fields-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000104",
+      "domain": "ASSESSMENT",
+      "purpose": "intervention",
+      "fields": ["scorePercent", "subjectCode", "financialData"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ASSESSMENT",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["scorePercent", "subjectCode"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["financialData"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["blocked", "partial_block"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-purpose-not-permitted-for-domain-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000105",
+      "domain": "WELLBEING",
+      "purpose": "curriculum",
+      "fields": ["screenerScore"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "WELLBEING",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["screenerScore"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["WELLBEING"],
+        "curriculum": ["ASSESSMENT"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      }
+    ],
+    "tags": ["blocked", "purpose_domain_mismatch"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-learner-id-not-in-detail-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000106",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "WITHDRAWN",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["attendanceStatus"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      }
+    ],
+    "tags": ["blocked", "pii_safety", "no_learner_id_in_detail"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-most-recent-decision-wins-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000107",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "recordedAt": "2025-01-01T00:00:00Z"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "decision": "WITHDRAWN",
+          "basis": "PARENTAL_CONSENT",
+          "recordedAt": "2026-06-01T00:00:00Z"
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      }
+    ],
+    "tags": ["blocked", "most_recent_wins"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-regrant-after-withdrawal-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000108",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "WITHDRAWN",
+          "basis": "PARENTAL_CONSENT",
+          "recordedAt": "2025-01-01T00:00:00Z"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "recordedAt": "2026-07-01T00:00:00Z"
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "regrant_after_withdrawal"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-different-domain-no-record-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000109",
+      "domain": "BEHAVIOUR",
+      "purpose": "intervention",
+      "fields": ["behaviourKind"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["attendanceStatus"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["BEHAVIOUR"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "wrong_domain"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-multi-tenant-isolation-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "learnerId": "00000000-0000-0000-0000-000000000200",
+      "domain": "ASSESSMENT",
+      "purpose": "intervention",
+      "fields": ["scorePercent"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ASSESSMENT",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["scorePercent"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "multi_tenant"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-wellbeing-granted-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000110",
+      "domain": "WELLBEING",
+      "purpose": "intervention",
+      "fields": ["screenerScore"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "WELLBEING",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["screenerScore"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["WELLBEING"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "consentBasis",
+        "value": "PARENTAL_CONSENT"
+      }
+    ],
+    "tags": ["ok", "wellbeing"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-blocked-fields-sorted-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000111",
+      "domain": "ASSESSMENT",
+      "purpose": "intervention",
+      "fields": ["scorePercent", "subjectCode", "teacherComment"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ASSESSMENT",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["scorePercent", "subjectCode"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["teacherComment"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["blocked", "sorted_blocked_fields"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-permitted-fields-sorted-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000112",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["occurredAt", "attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["occurredAt", "attendanceStatus"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "permittedFields",
+        "expectedSet": ["occurredAt"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "permittedFields",
+        "expectedSet": ["attendanceStatus"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["ok", "sorted_permitted_fields"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-empty-fields-list-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000113",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": []
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["attendanceStatus"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "empty_fields_list"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-behaviour-granted-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000114",
+      "domain": "BEHAVIOUR",
+      "purpose": "intervention",
+      "fields": ["behaviourKind", "occurredAt"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "BEHAVIOUR",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["behaviourKind", "occurredAt"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["BEHAVIOUR"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "behaviour"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-detail-names-rule-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000115",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "WITHDRAWN",
+          "basis": "PARENTAL_CONSENT"
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      }
+    ],
+    "tags": ["blocked", "detail_names_rule"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-multiple-domains-one-blocked-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000116",
+      "domain": "ASSESSMENT",
+      "purpose": "intervention",
+      "fields": ["scorePercent", "financialBalance"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ASSESSMENT",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["scorePercent"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["financialBalance"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["blocked", "one_field_blocked"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-consent-basis-from-record-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000117",
+      "domain": "ASSESSMENT",
+      "purpose": "intervention",
+      "fields": ["scorePercent"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ASSESSMENT",
+          "decision": "GRANTED",
+          "basis": "LEGITIMATE_INTEREST",
+          "fields": ["scorePercent"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "consentBasis",
+        "value": "LEGITIMATE_INTEREST"
+      }
+    ],
+    "tags": ["ok", "legitimate_interest"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-unknown-purpose-002",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000118",
+      "domain": "ATTENDANCE",
+      "purpose": "unknown_purpose_xyz",
+      "fields": ["attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["attendanceStatus"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"],
+        "curriculum": ["ASSESSMENT"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "unknown_purpose"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-screener-domain-granted-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000119",
+      "domain": "WELLBEING",
+      "purpose": "intervention",
+      "fields": ["screenerScore", "screenerDate"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "WELLBEING",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["screenerScore", "screenerDate"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["WELLBEING"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "permittedFields",
+        "expectedSet": ["screenerScore"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["ok", "wellbeing", "screener"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-all-blocked-fields-returned-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000120",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["fieldA", "fieldB", "fieldC"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": []
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["fieldA"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["fieldB"],
+        "minOverlap": 1.0
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["fieldC"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["blocked", "all_fields_blocked"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-pending-consent-state-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000121",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "PENDING",
+          "basis": null
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "pending_consent"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-curriculum-purpose-assessment-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000122",
+      "domain": "ASSESSMENT",
+      "purpose": "curriculum",
+      "fields": ["scorePercent", "subjectCode"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ASSESSMENT",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["scorePercent", "subjectCode"]
+        }
+      ],
+      "purposeAllowList": {
+        "curriculum": ["ASSESSMENT"],
+        "intervention": ["ATTENDANCE", "WELLBEING", "BEHAVIOUR"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "curriculum_purpose"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-wellbeing-blocked-for-curriculum-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000123",
+      "domain": "WELLBEING",
+      "purpose": "curriculum",
+      "fields": ["screenerScore"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "WELLBEING",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["screenerScore"]
+        }
+      ],
+      "purposeAllowList": {
+        "curriculum": ["ASSESSMENT"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "blocked"
+      },
+      {
+        "type": "set_overlap",
+        "field": "blockedFields",
+        "expectedSet": ["screenerScore"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["blocked", "wellbeing_not_in_curriculum"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-consent-basis-is-most-recent-granted-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000124",
+      "domain": "ATTENDANCE",
+      "purpose": "intervention",
+      "fields": ["attendanceStatus"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "SCHOOL_POLICY",
+          "recordedAt": "2025-01-01T00:00:00Z"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "recordedAt": "2026-06-01T00:00:00Z"
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["ATTENDANCE"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "consentBasis",
+        "value": "PARENTAL_CONSENT"
+      }
+    ],
+    "tags": ["ok", "most_recent_basis"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-intervention-purpose-behaviour-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000125",
+      "domain": "BEHAVIOUR",
+      "purpose": "intervention",
+      "fields": ["behaviourKind", "occurredAt", "severity"]
+    },
+    "context": {
+      "consentRecords": [
+        {
+          "domain": "BEHAVIOUR",
+          "decision": "GRANTED",
+          "basis": "PARENTAL_CONSENT",
+          "fields": ["behaviourKind", "occurredAt", "severity"]
+        }
+      ],
+      "purposeAllowList": {
+        "intervention": ["BEHAVIOUR"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "set_overlap",
+        "field": "permittedFields",
+        "expectedSet": ["severity"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["ok", "behaviour", "intervention"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-opaque-token-not-uuid-in-detail-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000126",
+      "domain": "ASSESSMENT",
+      "purpose": "intervention",
+      "fields": ["scorePercent"]
+    },
+    "context": {
+      "consentRecords": [],
+      "purposeAllowList": {
+        "intervention": ["ASSESSMENT"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "pii_safety"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-03-single-field-no-consent-record-001",
+    "agentId": "DW-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000127",
+      "domain": "BEHAVIOUR",
+      "purpose": "intervention",
+      "fields": ["behaviourKind"]
+    },
+    "context": {
+      "consentRecords": [],
+      "purposeAllowList": {
+        "intervention": ["BEHAVIOUR"]
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "single_field"],
+    "source": "specification"
+  }
+]

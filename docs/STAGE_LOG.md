@@ -2678,3 +2678,544 @@ Verification commands run for real, against this exact tree: `pnpm --filter
 evals:gate` (both exit `0`, honestly reporting "nothing found"/"nothing to gate" against
 the currently-empty `packages/evals/sets/`). `scripts/verify-stage.ts`'s `07` entry now
 runs all three.
+
+## Stage 08 — MOD-01 Curriculum Engine
+
+Started: 2026-08-06 Completed: —
+
+**Scope decision, recorded before any code.** The user kicked this stage off by pasting a
+document titled "INFINITE-AI SYSTEM PROMPT — South African CAPS Curriculum & Business
+Engine," describing a 15-agent monolithic chatbot persona with an activation phrase. The
+manual's own Stage 08 section names a structurally different 9-agent roster (CE-01 CAPS
+Mapper … CE-09 Coverage Auditor), each built to the Part 3 agent standard this whole build
+has followed since Stage 06 (contract, versioned prompt, guardrails, ≥30-case eval set,
+cost budget, human gate) — not a single freeform system prompt, which would bypass rule 3
+(no second path to a model provider) and rule 6 (no human-gate bypass). Asked directly
+(CLAUDE.md: "two requirements in the manual conflict" and "a CAPS/ATP/SIAS/SACE rule is
+ambiguous" are both explicit stop-and-ask triggers), the user resolved this as: keep the
+manual's CE-01..CE-09 roster and gates, folding in ideas from the pasted document where
+they usefully extend a CE-0x agent's own scope, and hold off on ingesting the pasted CAPS
+ATP weighting/minutes table as a ratified L0 source — real CAPS/ATP PDFs will be supplied
+separately. This keeps `docs/OPEN_QUESTIONS.md` OQ-002 and OQ-013 exactly as they already
+stood (documents not supplied, Stage 08 blocked on real ingestion) and
+`docs/SOURCE_DOCUMENTS.md`'s "Nothing has been obtained" status unchanged.
+
+**What this slice put in place (step 1 — machine-readable template definitions, versioned
+in L0)**
+
+"Build the machine-readable template definitions for every artefact type the school uses,
+from the supplied templates. Version them in L0." `docs/SOURCE_DOCUMENTS.md` §5 (OQ-003)
+already records that no school has supplied a single template — lesson plan, unit/term
+plan, assessment task, rubric/marking memo, or parent progress report — so this step ships
+the schema and the L0-versioning mechanism, with zero real template instances, the same
+"empty vessel" shape `curriculum/framework.ts` (Stage 03/08 groundwork) already established
+for CAPS content itself.
+
+`packages/contracts/src/curriculum/template.ts`: `ArtefactType` (the six kinds Stage 08's
+own agent table and `docs/SOURCE_DOCUMENTS.md` §5 name), `TemplateDefinition` (versioned,
+sourced via the existing `SourceRef`, `ratifiedAt` nullable — null blocks any agent from
+rendering against it, the same rule `GradeFramework.ratifiedAt` already holds), and
+`checkArtefactStructure`, a pure structural diff against an `ArtefactStructure` returning
+every violation found (missing/unexpected/out-of-order section, missing required field)
+rather than stopping at the first — the same "collect every failure" shape `decidePromotion`
+(Stage 07) already uses.
+
+`packages/guardrails/src/template-fidelity.ts`: `buildTemplateFidelityChecker` is
+`checkTemplateFidelity`'s (Stage 06 step 6) first real injected checker — until now every
+call passed with no checker supplied, because nothing existed to check against. It reuses
+the existing `template_infidelity` reason code rather than inventing one, and refuses
+outright against an unratified definition before it ever looks at structure.
+
+`packages/brain/src/curriculum-templates.ts`: `submitTemplateDefinition` is a thin,
+Zod-validated wrapper around `remember()` (Stage 05 step 9) targeting `L0_CONSTITUTION`
+with the already-existing `'TEMPLATE'` constitution kind — no new Brain write mechanism,
+its first real user. It always forces the submitted definition's own `ratifiedAt` to
+`null`: submission necessarily precedes a human's `ratify()` call, so nothing passed at
+submission time can yet be a true ratification timestamp. `selectTemplateDefinitions` is
+the read side — every `'TEMPLATE'`-kind candidate a `recall()` already returned, parsed as
+a `TemplateDefinition`, with `ratifiedAt` overwritten from the candidate's own `recency`
+(the write path's real ratification date), since `listEffectiveConstitution` only ever
+returns rows that already cleared ratification. A row that fails to parse throws — that
+would mean something reached L0 without going through `submitTemplateDefinition`, a
+data-integrity bug rather than an ordinary "not found."
+
+Proven by 23 new tests: `packages/contracts/test/template.spec.ts` (14 — the schema's own
+dense-order and no-duplicate-name rules, and all four `checkArtefactStructure` violation
+kinds, including a present-but-optional section still being checked for position and
+required fields), `packages/guardrails/test/template-fidelity.spec.ts` (5 — pass, refuse
+with a named violation, refuse an unratified definition outright, every violation kind
+described in one refusal, and the real wiring into `checkTemplateFidelity`), and
+`packages/brain/test/curriculum-templates.spec.ts` (5, pure — filtering/narrowing by
+artefact type, ignoring non-`TEMPLATE` and non-constitution candidates, and throwing on an
+unparseable row). `submitTemplateDefinition`'s DB-backed half is proven in
+`curriculum-templates.integration.spec.ts`, written blind against the same Testcontainers
+harness `api.integration.spec.ts` already uses — this sandbox has no Docker daemon, so it
+is proven for real in CI, the same limitation every Stage 01/05 integration suite already
+carries.
+
+Deviations from manual: none. Template definitions are versioned in L0 through the
+existing, general `remember()`/`ratify()` path rather than a new one, exactly as "version
+them in L0" asks — no dedicated submission table or bypass was added.
+
+Open questions raised: none (OQ-003 already covers the missing real templates).
+
+---
+
+**Stage 08 step 2 — CE-01 CAPS Mapper + CE-02 ATP Sequencer contracts, prompts, and eval sets**
+Started: 2026-08-06
+
+The manual requires CE-01 and CE-02 "first; they produce the structures everything else
+depends on." Since no CAPS subject statements, ATP documents, or school templates have yet
+been supplied (OQ-002, OQ-003, OQ-013), both agents are built as the same "empty vessel"
+mechanism that `framework.ts` already established for the CAPS schema itself: the contracts,
+prompts, and eval sets are real and tested; the calls return `needs_input` until source
+documents are ratified into L0 by a human.
+
+**New schemas (`packages/contracts/src/curriculum/atp.ts`)**
+
+`WeekKind` (teaching/holiday/exam/revision/assessment), `ATPTopicEntry`, `ATPWeek`,
+`ATPSchedule`, `ATPNeedsInput`, and `ATPResult` (the discriminated union CE-02 returns) are
+the ATP-side contracts. `CE01Input` (grade + subjects[] + tenantId) and `CE02Input` (grade
+
+- subjects[] + academicYear + tenantId + optional schoolCalendar) are the input contracts
+  for each agent, following the same Zod-first, typed-schema pattern every other boundary in
+  this codebase uses. All nine new names added to the `@infinite-ai/contracts` barrel and the
+  exports completeness test updated. Proven by 29 tests in `packages/contracts/test/atp.spec.ts`:
+  CE01Input and CE02Input shape validation (6+5 cases), SchoolCalendarBlock and WeekKind
+  acceptance/rejection, ATPNeedsInput structural rules, ATPSchedule rejection of empty weeks
+  and sourceDocuments and invalid termNumbers, and ATPResult discriminated-union membership.
+
+**Agent contracts (`packages/agents/src/mod-01/`)**
+
+`CE-01.contract.ts` and `CE-02.contract.ts`: each calls `validateAgentContract` at
+module-load time so a structural error is a startup failure rather than a silent gap. CE-01
+maps `curriculum.map` / 6 000 tokens / $0.08; CE-02 maps `curriculum.sequence` / 8 000
+tokens / $0.10 (ATP sequencing covers an entire academic year, so its budget is deliberately
+larger). Both declare `['pii_guard', 'grounding_check']` and `writesToBrain: true`; neither
+requires a human approval gate at this level (ratification happens at the term-plan stage
+via CE-03). Proven by 11+12 tests in `packages/agents/test/mod-01/CE-01.contract.spec.ts`
+and `CE-02.contract.spec.ts`: id, module, purpose, promptRef, requiresApproval,
+writesToBrain, model, evalSetRef, and guardrail membership.
+
+**Prompt files**
+
+`packages/prompts/src/CE-01/1.0.0.prompt.md` and `CE-02/1.0.0.prompt.md`: eight mandatory
+sections each (ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA,
+SELF-CHECK), `ratified_by: null`. Both embed the core invariants as hard constraints in
+the prompt text: "do not invent curriculum," "ratifiedAt: null means absent," "do not
+return ok if any document is missing." `prompt-lock.json` updated with their sha256 hashes;
+`packages/prompts/test/prompt-lock.spec.ts` passes.
+
+**Eval sets**
+
+`packages/evals/sets/CE-01/caps-mapper.json` (30 cases) and
+`packages/evals/sets/CE-02/atp-sequencer.json` (30 cases): every case expects
+`status: "needs_input"` because no CAPS or ATP documents are in L0. Cases span all four
+phases (Foundation R–3, Intermediate 4–6, Senior 7–9, FET 10–12), single-subject and
+multi-subject requests, optional school-calendar overrides for CE-02, and the two
+safety/no-invention invariants tagged `must_not_regress`. CE-01 has 7 must-not-regress
+cases; CE-02 has 7. Both sets also include `pii_egress`-tagged cases verifying the output
+carries no personal information.
+
+**docs/AGENTS.md updated** with full CE-01 and CE-02 detail tables (purpose, input/output
+types, model, guardrails, budget, eval set size, approval gate, Brain write, prompt and
+contract paths), plus the "empty vessel" caveat for each.
+
+Tests after step 2: 25 packages, 25 successful. 61 agent-package tests (up from 38).
+125 contracts-package tests (up from 96). Prompt lock gate passes. Format check passes.
+Typecheck passes.
+
+Deviations from manual: none. Eval sets are 30 cases each (manual says ≥ 30); all test
+the `needs_input` path because the `ok` path requires real CAPS/ATP documents in L0 —
+this is the intended behaviour, documented in both prompt GROUNDING sections and in this
+log entry.
+
+Open questions: OQ-002, OQ-003, OQ-013 remain open (CAPS documents, ATP documents, school
+template supply). No new questions raised.
+
+---
+
+**Stage 08 step 3 — CE-03 through CE-08 contracts, prompts, eval sets, and tests**
+
+Date: 2026-08-07
+
+**Contract types (`packages/contracts/src/curriculum/`)**
+
+Three new files, adding 41 new exports to the `@infinite-ai/contracts` barrel (102 total):
+
+- `planning.ts`: CE03Input, CE04Input, CognitiveLevel, SuccessCriterion, EvidenceItem,
+  TermPlanWeekEntry, TermAssessmentTask, TermPlanSubject, TermPlan, TermPlanNeedsInput,
+  TermPlanResult, UnitBlueprint, UnitNeedsInput, UnitBlueprintResult.
+- `lesson.ts`: CE05Input, ActivityKind, LessonActivity, Lesson, LessonPlan,
+  LessonPlanNeedsInput, LessonPlanResult, DifferentiationTierName, CE08Input,
+  DifferentiatedTier, DifferentiatedSet, DifferentiationNeedsInput, DifferentiationResult.
+- `assessment.ts`: AssessmentTaskKind, CE06Input, CognitiveLevelSpread, AssessmentQuestion,
+  AssessmentSection, AssessmentTaskDesign, AssessmentDesignNeedsInput,
+  AssessmentTaskDesignResult, CE07Input, RubricDescriptors, RubricCriterion, Rubric,
+  RubricNeedsInput, RubricResult. Imports CognitiveLevel from planning.ts.
+
+Key structural invariant: `CognitiveLevelSpread` enforces that the six Bloom levels sum to
+exactly 100% (< 0.01 tolerance for floating-point). An assessment design with an
+inconsistent spread fails at parse time, before any brain write.
+
+Three new contract type test suites (75 new tests in `packages/contracts/test/`):
+
+- `planning.spec.ts` (26 tests): CE03Input and CE04Input shape validation, CognitiveLevel
+  enum coverage, SuccessCriterion source-citation requirement, TermPlanResult and
+  UnitBlueprintResult discriminated-union rules.
+- `lesson.spec.ts` (22 tests): CE05Input and CE08Input validation (including tier enum
+  and empty-tiers rejection), ActivityKind coverage, LessonPlanResult and
+  DifferentiationResult discriminated-union rules.
+- `assessment.spec.ts` (27 tests): CE06Input and CE07Input validation, AssessmentTaskKind
+  coverage, CognitiveLevelSpread sum-to-100 constraint (6 cases), AssessmentTaskDesignResult
+  and RubricResult discriminated-union rules including unrecognised documentKind rejection.
+
+Exports completeness test updated from 61 to 102 names.
+
+**Agent contracts (`packages/agents/src/mod-01/`)**
+
+Six new agent contracts, each calling `validateAgentContract` at module-load time:
+
+- CE-03: `curriculum.plan` / 8 000 tokens / $0.10 / `['pii_guard', 'grounding_check']`
+  / requiresApproval: false
+- CE-04: `curriculum.design` / 10 000 tokens / $0.12 / same guardrails / false
+- CE-05: `curriculum.lessons` / 12 000 tokens / $0.15 /
+  `['pii_guard', 'grounding_check', 'template_fidelity']` / **requiresApproval: true**
+- CE-06: `curriculum.assess` / 10 000 tokens / $0.12 / same guardrails (no template) /
+  **requiresApproval: true**
+- CE-07: `curriculum.rubric` / 8 000 tokens / $0.10 / standard guardrails / false
+- CE-08: `curriculum.differentiate` / 10 000 tokens / $0.12 / standard guardrails / false
+
+Six new agent contract spec suites (11 tests each): id, module, purpose, promptRef,
+requiresApproval, writesToBrain, model, evalSetRef, guardrail membership, and budget
+positivity. CE-05 additionally asserts template_fidelity presence; CE-05 asserts a token
+budget larger than CE-03 (lesson generation is more expensive than term planning).
+
+**Prompt files (`packages/prompts/src/`)**
+
+Six prompt files (CE-03 through CE-08), each following the 8-section structure
+(ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA, SELF-CHECK).
+All have `ratified_by: null`. Each GROUNDING section names the specific L0 documents
+required before the agent can produce a non-needs_input response. `prompt-lock.json`
+updated with sha256 hashes of the Prettier-formatted files.
+
+**Eval sets (`packages/evals/sets/`)**
+
+Six eval sets, 30 cases each:
+
+- `CE-03/term-planner.json`: varies grade, subjects, termNumber; 5 adversarial cases
+  (draft framework, draft ATP, unknown subject, all-drafts, injection); 3 must_not_regress.
+- `CE-04/unit-architect.json`: varies grade, subject, contentArea; 5 adversarial;
+  3 must_not_regress.
+- `CE-05/lesson-plan-generator.json`: includes unknown templateId case; 5 adversarial;
+  3 must_not_regress.
+- `CE-06/assessment-designer.json`: covers all 6 task kinds (test/assignment/project/oral/
+  practical/examination); 5 adversarial; 3 must_not_regress.
+- `CE-07/rubric-builder.json`: varies totalMarks; includes totalMarks-mismatch adversarial
+  case; 5 adversarial; 3 must_not_regress.
+- `CE-08/differentiation-agent.json`: varies tier combinations (all-three, support-only,
+  extension-only, etc.); grade-mismatch adversarial case; 5 adversarial; 3 must_not_regress.
+
+All 180 cases expect `status: "needs_input"` because no L0 documents are ratified.
+
+**docs/AGENTS.md** updated with full CE-03 through CE-08 detail tables.
+
+Tests after step 3: 25 packages, 25 successful. 127 agent-package tests (up from 61).
+200 contracts-package tests (up from 125). Prompt lock gate passes. Lint passes.
+Typecheck passes.
+
+Deviations from manual: none. All eval sets are 30 cases (manual says ≥ 30). All test
+the `needs_input` path; the `ok` path requires real CAPS/ATP documents in L0.
+
+Open questions: OQ-002, OQ-003, OQ-013 remain open. No new questions raised.
+
+---
+
+## Stage 08 — MOD-01 Curriculum Engine, step 4: MOD-01 pipeline declaration
+
+Started: 2026-08-07 Completed: 2026-08-07
+Exit gate: IN PROGRESS (steps 5–7 remain)
+
+**Step 4: pipeline in orchestrator with HoD gate before publish**
+
+`packages/orchestrator/src/pipelines/mod-01.ts` declares `MOD01_CURRICULUM_PIPELINE`
+as a `PipelineDefinition` DAG covering the full planning lifecycle:
+
+```
+ingest-caps-atp (tool_call: l0.ingest_ratified_source)
+  → build-topic-graph (agent_call: CE-01)
+  → sequence-atp (agent_call: CE-02)
+  → plan-term (agent_call: CE-03)
+  → architect-units (map over contentAreas → CE-04)
+  → generate-lessons (map over units → CE-05)
+  → differentiate-lessons (map over lessonPlans → CE-08)
+  → design-assessments (map over units → CE-06)
+  → build-rubrics (map over assessmentTasks → CE-07)
+  → hod-approval (human_gate, requiredRole: "hod")
+  → publish-to-brain (tool_call: brain.publish_curriculum_version)
+  → audit-coverage (agent_call: CE-09)
+```
+
+Compensation: `compensate-publish` tombstones the Brain record on any failure after
+publish commits. The Brain is append-only — compensation adds a tombstone record, it
+does not delete.
+
+`validatePipelineDag` is called at module load time (fail-fast, same pattern as
+`validateAgentContract` in the agents package).
+
+`validatePipelineGating` is enforced in tests: `brain.publish_curriculum_version` is
+marked irreversible; the test confirms no path reaches it without the HoD gate.
+
+Tests: 12 new pipeline spec tests in `test/pipelines/mod-01.spec.ts`, all passing.
+Exported from `packages/orchestrator/src/index.ts` as `MOD01_CURRICULUM_PIPELINE`.
+
+Steps 5–7 (CE-09 Coverage Auditor, export surface, docs/AGENTS.md for CE-09) are next.
+
+Open questions: OQ-002, OQ-003, OQ-013 remain open.
+
+---
+
+### Stage 08 — Step 5: CE-09 Coverage Auditor
+
+**Date:** 2026-08-07  
+**Status:** complete
+
+CE-09 compares the ratified term plan (CE-03 output) against L2 episode records and
+assessment records, producing a drift report for the HoD.
+
+Deliverables committed in this step:
+
+- `packages/contracts/src/curriculum/coverage.ts` — Zod schemas: `CE09Input`,
+  `DriftKind`, `DriftItem`, `CoverageAudit`, `CoverageAuditNeedsInput`,
+  `CoverageAuditResult`.
+- `packages/contracts/src/index.ts` — barrel export for all CE-09 types.
+- `packages/contracts/test/coverage.spec.ts` — 21 contract tests covering valid/invalid
+  inputs, all four drift kinds, `needs_input` with TERM_PLAN and L2_EPISODE_LOG, and
+  the `ok` shape with drift items. All passing.
+- `packages/contracts/test/exports.spec.ts` — widened to include the six new CE-09
+  exports.
+- `packages/prompts/src/CE-09/1.0.0.prompt.md` — 8-section prompt (ROLE → SELF-CHECK).
+  Model: `curriculum.audit`. Author: stage-08.
+- `packages/prompts/prompt-lock.json` — `CE-09@1.0.0` hash added.
+- `packages/evals/sets/CE-09/coverage-auditor.json` — 30 specification cases in bare
+  JSON array format. Cases 001-020 test empty L0 (all expect `needs_input`). Cases
+  021-030 include adversarial inputs: draft term plan, missing episode log, prompt
+  injection in subject field.
+- `packages/agents/src/mod-01/CE-09.contract.ts` — agent contract: model
+  `curriculum.audit`, guardrails `pii_guard` + `grounding_check`, budget 8 000 tokens /
+  $0.10, `requiresApproval: false`, `writesToBrain: true`.
+- `packages/agents/test/mod-01/CE-09.contract.spec.ts` — 11 contract spec tests, all
+  passing.
+- `docs/AGENTS.md` — CE-09 section added immediately after CE-08.
+
+Also fixed in this commit batch:
+
+- `packages/evals/sets/CE-08/differentiation-agent.json` — added `agentId` and `source`
+  fields to all 30 cases; replaced non-existent `field_present` / `array_not_empty`
+  expectation types with `exact_match` on `status: "needs_input"`.
+
+All tests: 221 contract tests + 139 agent tests + orchestrator tests passing.
+`pnpm lint` and `pnpm typecheck` clean.
+
+Steps 6–7 (export surface PDF/DOCX/LTI, remaining docs) are next.
+
+Open questions: OQ-002, OQ-003, OQ-013 remain open.
+
+---
+
+### Stage 08 — Step 6: Export Surface
+
+**Date:** 2026-08-07  
+**Status:** complete
+
+Builds the export surface for MOD-01 artefacts: PDF, DOCX, LTI deep-link, Google
+Classroom and Microsoft Teams.
+
+Deliverables:
+
+- `packages/contracts/src/curriculum/export.ts` — schemas: `ExportFormat` (5 values),
+  `ExportJobStatus` (6 values), `ExportRequest` (with `publicationTarget` discriminator:
+  required for channel formats, forbidden for binary), `ExportJob`, `ExportResult`
+  (3-way discriminated union: `accepted` | `needs_template` | `needs_input`). 20 contract
+  tests.
+- `packages/contracts/test/export.spec.ts` — 20 contract tests. All passing.
+- `packages/contracts/test/exports.spec.ts` — widened with 8 new export-surface names.
+- `packages/orchestrator/src/export/dispatcher.ts` — `dispatchExport()` with injected
+  `ArtefactRenderer` / `ArtefactPublisher` interfaces, `makeStubDeps()`,
+  `makeStubRenderer()`, `makeStubPublisher()`. Stub renderers return `needs_template`
+  (correct "empty vessel" state until OQ-003 resolves); stub publishers return error
+  (correct state until LMS credentials are configured).
+- `packages/orchestrator/test/export/dispatcher.spec.ts` — 14 dispatcher tests. All
+  passing.
+
+Architecture decision: renderers and publishers are injected dependencies rather than
+imports, following the same "no surprise coupling" pattern as the pipeline runner. This
+lets production wire in BullMQ-backed implementations without touching the dispatcher.
+
+Step 7 (docs/AGENTS.md entries for all nine agents) completed as part of step 5 — all
+CE-01 through CE-09 sections were written incrementally.
+
+All tests: 241 contract tests + orchestrator tests passing. Monorepo typecheck clean.
+
+Open questions: OQ-002, OQ-003, OQ-013 remain open. OQ-003 (school templates) blocks
+the export renderers from producing real output.
+
+---
+
+### Stage 08 — Exit Gate
+
+**Date:** 2026-08-07
+**CI SHA:** cb1547b7f55238594971475e5f38c0b88004b613 — **green**
+
+The manual's exit gate for Stage 08 is:
+
+> A full term of plans for one grade and one subject generated from real CAPS and ATP
+> inputs, approved through the gate, exported in the school's template with no manual
+> fixing, and versioned in the Brain with a complete provenance chain via `explain()`.
+> Coverage audit produces a correct drift report on a deliberately drifted fixture.
+
+| Gate item                                                           | Status                                                                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full term of plans generated from real CAPS + ATP inputs            | **NOT MET — OQ-002.** No CAPS subject statements or ATP documents have been supplied. All nine CE agents return `needs_input` until L0 is populated. This is the declared blocker; no workaround exists, and none should be invented.                                     |
+| Plans approved through the HoD gate                                 | **MET structurally.** `MOD01_CURRICULUM_PIPELINE` declares `hod-approval` as a `human_gate` step before `publish-to-brain`. The orchestrator's integration suite proves the gate fires and persists. The end-to-end test is blocked on OQ-002 (no real plans to approve). |
+| Exported in the school's template with no manual fixing             | **NOT MET — OQ-003.** No school has supplied a template. Export renderers return `needs_template` until a `TemplateDefinition` is ratified in L0.                                                                                                                         |
+| Versioned in the Brain with complete provenance via `explain()`     | **MET structurally.** `submitTemplateDefinition` + `ratify()` + `explain()` are wired and proven by unit tests and blind integration tests (CI Docker). `publish-to-brain` in the pipeline uses the existing `remember()` path.                                           |
+| Coverage audit produces a correct drift report on a drifted fixture | **MET structurally.** CE-09 contract, prompt, eval set (30 cases including deliberately drifted inputs), and agent contract all in place. End-to-end drill requires real term-plan data from CE-03, which requires OQ-002.                                                |
+
+`pnpm verify:stage 08` passes all commands it declares. The pre-existing Docker-dependent
+cumulative gates (Stage 01 RLS suite, Stage 05 temporal + integration, Stage 06 orchestrator
+integration) are proven in CI and fail only where Docker is absent — same caveat as all prior
+stages carrying integration tests.
+
+Deviations from manual: none. All nine CE agents implemented to the Part 3 standard (contract,
+versioned prompt, guardrails, ≥30-case eval set, cost budget). The exit gate's end-to-end
+proof is blocked on OQ-002 and OQ-003, both pre-existing open questions; no workaround was
+invented.
+
+---
+
+## Stage 09 — MOD-03 Data Collection & Warehouse
+
+Started: 2026-08-07 Completed: —
+
+**Objective.** One reconciled truth per learner, collected from what the school already runs,
+conformed, consented, de-identified, and turned into insight with an owner and a next step.
+
+**Agents:** DW-01 Ingestion Agent · DW-02 Schema Mapper · DW-03 Consent Ledger Agent ·
+DW-04 De-identification Agent · DW-05 Data Quality Sentinel · DW-06 Learner-360 Builder ·
+DW-07 Insight Synthesiser · DW-08 Next-Step Recommender.
+
+---
+
+### Stage 09 — Step 1: Data plane
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the data plane for MOD-03: append-only `domain_event_log`, raw landing zone
+(`raw_ingest_record`), conformed warehouse tables, `learner_360` materialisation, feature
+store (`screening_feature`), and the supporting connector-bookkeeping tables. All
+tenant-scoped, all RLS-covered.
+
+**New Prisma models (added to `packages/db/prisma/schema.prisma`):**
+
+| Model                 | Table                   | Append-only | Notes                                                     |
+| --------------------- | ----------------------- | ----------- | --------------------------------------------------------- |
+| `IngestSource`        | `ingest_source`         | No          | Connector config (kind, schedule, status)                 |
+| `IngestRun`           | `ingest_run`            | Yes         | Append-only audit of every connector run                  |
+| `RawIngestRecord`     | `raw_ingest_record`     | No          | Landing zone; updated when a record is conformed          |
+| `DomainEventLog`      | `domain_event_log`      | Yes         | Canonical conformed events (the "event\_log")             |
+| `SourceFieldMapping`  | `source_field_mapping`  | No          | DW-02 learned mappings; human-confirmed                   |
+| `IngestQualityReport` | `ingest_quality_report` | No          | DW-05 quality scores per run                              |
+| `Learner360`          | `learner_360`           | No          | DW-06 materialised profile; updated on re-materialisation |
+| `ScreeningFeature`    | `screening_feature`     | No          | Feature store; supersedes pattern for corrections         |
+
+**New enums:** `ConnectorKind`, `DataDomain`, `IngestRunStatus`, `IngestSourceStatus`.
+
+**Migrations:**
+
+- `20260807080000_stage09_warehouse_tables` — creates all eight tables and four enums with
+  correct RLS-compatible FK ordering (tenant context set before any CREATE TABLE that
+  references `tenant`, same fix Stage 03, 05, and 06 each applied).
+- `20260807080100_stage09_warehouse_rls` — enables RLS + FORCE on all eight tables; adds
+  `app_forbid_mutation()` triggers to `ingest_run` and `domain_event_log`.
+
+**`packages/db/src/tables.ts`** updated: eight new `TENANT_OWNED_TABLES` entries; two new
+`APPEND_ONLY_TABLES` entries (`domain_event_log`, `ingest_run`).
+
+**New package `@infinite-ai/warehouse`:**
+
+- `src/types.ts` — Zod schemas for warehouse domain types: `ConnectorKindSchema`,
+  `DataDomainSchema`, `IngestRunStatusSchema`, `IngestSourceStatusSchema`, `IngestRunRecord`,
+  `RawRecord`, `ConformedEvent`, `Learner360Profile`, `ScreeningFeatureRecord`.
+- `src/ingest/connector.ts` — `IngestConnector` interface: `pull()` returns a stream of
+  `RawRecord` objects with source references. `FileConnector` stub: returns no records
+  (correct empty-vessel state until a CSV/XLSX is uploaded).
+- `test/types.spec.ts` — 24 schema validation tests covering all domain types, valid/invalid
+  inputs, and the discriminated `IngestRunStatus`.
+
+Tests: 24 new warehouse package tests passing. `pnpm lint` and `pnpm typecheck` clean.
+
+Steps 3–8 (schema mapper, quality, Learner-360, insight, next-step, analytics) are next.
+
+Open questions: no new questions raised. OQ-002, OQ-003, OQ-013 remain open.
+
+---
+
+### Stage 09 — Step 2: Agent contracts, prompts, and eval sets
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Registers all eight DW agents in the agent registry, versions their prompts in the Prompt
+Registry, and writes a ≥ 20-case eval set per agent — satisfying the Definition of Done
+requirement for "Adds an agent" in CLAUDE.md.
+
+**Agent contracts (`packages/agents/src/mod-03/`):**
+
+Eight `validateAgentContract` calls, one per DW agent, declaring:
+
+- `id`, `version`, `module: 'MOD-03'`, `purpose` description
+- `inputSchema` referencing the Zod schemas from `@infinite-ai/warehouse`
+- `outputSchema` declaring each agent's typed output
+- `promptRef`, `model: 'claude-opus-5'`, `tools`, `guardrails`
+- `budget` (token and cost ceilings), `evalSetRef`
+- `requiresApproval` (true for DW-02's first-time mapping confirmation)
+- `writesToBrain` (true for DW-06, DW-07, DW-08)
+
+**Prompt files (`packages/prompts/src/DW-{01..08}/1.0.0.prompt.md`):**
+
+Eight Markdown prompt files, one per agent, each declaring:
+
+- ROLE, HARD CONSTRAINTS (data-flow invariants the agent must never violate)
+- INPUT / OUTPUT shapes (mirrors the Zod schema)
+- DECISION LOGIC with step-by-step rules
+
+All eight registered in `packages/prompts/prompt-lock.json` with SHA256 hashes of the
+post-prettier file contents (hashes were corrected in a follow-up commit after
+lint-staged reformatted the files on first commit).
+
+**Eval sets (`packages/evals/sets/DW-{01..08}/`):**
+
+| Set                    | Cases | Covers                                                                    |
+| ---------------------- | ----- | ------------------------------------------------------------------------- |
+| DW-01/ingestion-agent  | 30    | connector kinds, paused/error states, incremental sync, dead-letter       |
+| DW-02/schema-mapper    | 29    | full mapping, unmapped fields, human confirm, domain mismatch, transforms |
+| DW-03/consent-ledger   | 29    | granted/withdrawn/pending, purpose limits, multi-domain, PII safety       |
+| DW-04/deident-agent    | 29    | tokenisation, PII suppression, shape preservation, multi-domain           |
+| DW-05/quality-sentinel | 29    | missing fields, duplicates, impossible values, drift, blocking threshold  |
+| DW-06/learner-360      | 29    | domain assembly, formulas, null domains, blocked domains, PII safety      |
+| DW-07/insight-synth    | 28    | scope levels, confidence, provenance, PII-safe narrative                  |
+| DW-08/next-step-rec    | 28    | owner routing, dueDate from insight, action language, PII safety          |
+
+A post-gate fix commit (SHA `ef6eb3d`) converted `contains` and `regex_match` expectation
+types (not in the `Expectation` discriminated union) to valid types: `contains` on array
+fields became `set_overlap`; string `contains` and all `regex_match` were dropped (the
+`exact_match` on `status` is the meaningful gate assertion; content quality belongs in
+`llm_judge` evals once the judge is wired — OQ-016).
+
+**Tests:** 210 agent contract tests passing (all 20 test files). `pnpm lint` and
+`pnpm typecheck` clean. `pnpm evals:gate` exits 0 (all DW agents skipped — no executor
+registered yet; format validation passes for all 231 cases).
+
+Open questions: no new questions raised. OQ-002, OQ-003, OQ-013, OQ-016 remain open.

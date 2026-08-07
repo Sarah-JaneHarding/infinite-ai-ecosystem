@@ -116,4 +116,10 @@ export {
   supersede,
 } from './api.js';
 
+export {
+  CurriculumTemplateError,
+  selectTemplateDefinitions,
+  submitTemplateDefinition,
+} from './curriculum-templates.js';
+
 export const PACKAGE_NAME = '@infinite-ai/brain' as const;

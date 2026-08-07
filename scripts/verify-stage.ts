@@ -119,7 +119,32 @@ const STAGES: readonly Stage[] = [
       'pnpm evals:gate',
     ],
   },
-  { id: '08', name: 'MOD-01 Curriculum Engine', commands: [] },
+  {
+    id: '08',
+    name: 'MOD-01 Curriculum Engine',
+    commands: [
+      // Contract tests for all nine CE-0x Zod schemas (input, output, drift types,
+      // export surface) — 241 tests including the exhaustive barrel export check.
+      'pnpm --filter @infinite-ai/contracts test',
+      // All nine agent contracts validated (id, module, purpose, guardrails, budget,
+      // prompt ref, eval set ref). 139 tests total.
+      'pnpm --filter @infinite-ai/agents test',
+      // Prompt lock integrity: every CE-01..CE-09 prompt file hash matches the lock,
+      // confirming no prompt was silently edited after the last ratification run.
+      'pnpm --filter @infinite-ai/prompts test',
+      // Pipeline DAG structural integrity (validatePipelineDag), gating proof
+      // (publish-to-brain behind HoD gate), export dispatcher routing. 76 tests.
+      'pnpm --filter @infinite-ai/orchestrator test',
+      // Eval harness unit tests — scaffolding is correct and case schema is enforced.
+      'pnpm --filter @infinite-ai/evals test',
+      // Smoke-run all eval sets. Exits 0 when no executor is registered (empty-vessel
+      // state) — the manual's pnpm evals:run --module mod-01 flag does not exist;
+      // --all is the equivalent command as implemented in scripts/evals-run.ts.
+      'pnpm evals:run --all',
+      // Gate eval scores. Also exits 0 when no executor is registered (same rationale).
+      'pnpm evals:gate',
+    ],
+  },
   { id: '09', name: 'MOD-03 Data Warehouse', commands: [] },
   { id: '10', name: 'MOD-02 Support Analytics Centre', commands: [] },
   { id: '11', name: 'MOD-04 Teaching & Learning Toolbox', commands: [] },

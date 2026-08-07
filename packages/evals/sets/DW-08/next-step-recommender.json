@@ -1,0 +1,920 @@
+[
+  {
+    "id": "dw-08-no-insight-needs-input-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000100",
+      "domain": "ATTENDANCE",
+      "insightId": "ffffffff-ffff-ffff-ffff-ffffffffffff"
+    },
+    "context": {
+      "insights": {}
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "no_insight"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-learner-attendance-owner-class-teacher-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000101",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000501"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000501": {
+          "id": "00000000-0000-0000-0000-000000000501",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner's attendance declined from 92% in week 1 to 74% in week 4. Absences increased steadily over the four-week period.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "nextStep.owner",
+        "value": "class teacher"
+      },
+      {
+        "type": "exact_match",
+        "field": "nextStep.insightId",
+        "value": "00000000-0000-0000-0000-000000000501"
+      }
+    ],
+    "tags": ["ok", "learner_attendance", "class_teacher"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-class-assessment-owner-hod-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "CLASS",
+      "scopeId": "00000000-0000-0000-0000-000000000300",
+      "domain": "ASSESSMENT",
+      "insightId": "00000000-0000-0000-0000-000000000502"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000502": {
+          "id": "00000000-0000-0000-0000-000000000502",
+          "scope": "CLASS",
+          "domain": "ASSESSMENT",
+          "narrative": "This class recorded an average score of 38% in Mathematics this term. Performance has been below the 40% pass threshold for three consecutive assessments.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "class_assessment", "hod"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-grade-behaviour-owner-deputy-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "GRADE",
+      "scopeId": "00000000-0000-0000-0000-000000000400",
+      "domain": "BEHAVIOUR",
+      "insightId": "00000000-0000-0000-0000-000000000503"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000503": {
+          "id": "00000000-0000-0000-0000-000000000503",
+          "scope": "GRADE",
+          "domain": "BEHAVIOUR",
+          "narrative": "This grade recorded 12 disruption incidents in week 3, a 50% increase from week 2. Truancy incidents also increased from 2 to 5.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "grade_behaviour", "deputy_principal"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-school-wellbeing-owner-psychologist-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "SCHOOL",
+      "scopeId": "00000000-0000-0000-0000-000000000001",
+      "domain": "WELLBEING",
+      "insightId": "00000000-0000-0000-0000-000000000504"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000504": {
+          "id": "00000000-0000-0000-0000-000000000504",
+          "scope": "SCHOOL",
+          "domain": "WELLBEING",
+          "narrative": "The school recorded 8 SDQ scores exceeding the 30-point threshold this term. This represents 18% of learners screened.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "school_wellbeing", "psychologist"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-due-date-seven-days-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000102",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000505"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000505": {
+          "id": "00000000-0000-0000-0000-000000000505",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner was absent on 4 of the last 5 school days. Attendance rate dropped to 20% this week.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "nextStep.dueDate",
+        "value": "2026-08-14T10:00:00Z"
+      }
+    ],
+    "tags": ["ok", "due_date_seven_days"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-description-fifteen-words-max-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000103",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000506"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000506": {
+          "id": "00000000-0000-0000-0000-000000000506",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner recorded 3 consecutive absences. Attendance rate declined from 85% to 60%.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "description_max_words"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-description-is-action-not-observation-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000104",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000507"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000507": {
+          "id": "00000000-0000-0000-0000-000000000507",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner's attendance declined sharply in week 4. Only 1 day attended out of 5.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "description_imperative_verb"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-no-learner-name-in-description-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000105",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000508"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000508": {
+          "id": "00000000-0000-0000-0000-000000000508",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner was absent for 3 consecutive days. No prior pattern of absence was recorded.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "pii_safety", "no_name_in_description"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-rationale-cites-narrative-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000106",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000509"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000509": {
+          "id": "00000000-0000-0000-0000-000000000509",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner's attendance dropped from 92% to 68% between weeks 1 and 3. The learner was absent on all 5 days in week 4.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "rationale_cites_narrative"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-insight-id-equals-input-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000107",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000510"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000510": {
+          "id": "00000000-0000-0000-0000-000000000510",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner missed 4 out of 5 days in week 3. A pattern of Monday absences is emerging.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "nextStep.insightId",
+        "value": "00000000-0000-0000-0000-000000000510"
+      }
+    ],
+    "tags": ["ok", "insight_id_equals_input"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-requires-approval-true-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000108",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000511"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000511": {
+          "id": "00000000-0000-0000-0000-000000000511",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner has been absent for 6 consecutive school days. No medical certificate has been submitted.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "nextStep.requiresApproval",
+        "value": true
+      }
+    ],
+    "tags": ["ok", "requires_approval"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-no-learner-in-rationale-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000109",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000512"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000512": {
+          "id": "00000000-0000-0000-0000-000000000512",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner was absent for 3 days in week 4. This follows a pattern noted over two terms.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "pii_safety", "no_learner_in_rationale"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-multi-tenant-isolation-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000200",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000520"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000520": {
+          "id": "00000000-0000-0000-0000-000000000520",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner has been absent on 4 consecutive days. Attendance rate is 20% this week.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "multi_tenant"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-due-date-from-generated-at-not-now-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000110",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000513"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000513": {
+          "id": "00000000-0000-0000-0000-000000000513",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner was absent for 3 days. Attendance declined this term.",
+          "generatedAt": "2026-08-01T08:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "nextStep.dueDate",
+        "value": "2026-08-08T08:00:00Z"
+      }
+    ],
+    "tags": ["ok", "due_date_from_generated_at"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-class-assessment-description-hod-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "CLASS",
+      "scopeId": "00000000-0000-0000-0000-000000000301",
+      "domain": "ASSESSMENT",
+      "insightId": "00000000-0000-0000-0000-000000000514"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000514": {
+          "id": "00000000-0000-0000-0000-000000000514",
+          "scope": "CLASS",
+          "domain": "ASSESSMENT",
+          "narrative": "This class scored below 40% in 3 out of 4 assessments this term. The average score is 35%.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "class_assessment_hod_description"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-rationale-one-to-two-sentences-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000111",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000515"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000515": {
+          "id": "00000000-0000-0000-0000-000000000515",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner's attendance rate fell from 95% to 60% over four weeks. All absences occurred on Mondays.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "rationale_sentence_count"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-description-no-period-except-end-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000112",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000516"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000516": {
+          "id": "00000000-0000-0000-0000-000000000516",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner missed 5 consecutive days in week 4. Attendance in week 3 was 60%.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "description_punctuation"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-no-insight-for-domain-needs-input-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000113",
+      "domain": "BEHAVIOUR",
+      "insightId": "00000000-0000-0000-0000-000000000517"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000517": {
+          "id": "00000000-0000-0000-0000-000000000517",
+          "scope": "LEARNER",
+          "domain": "BEHAVIOUR",
+          "narrative": "No behaviour incidents were recorded for the learner this term. All behaviour data fields are absent.",
+          "generatedAt": "2026-08-07T10:00:00Z",
+          "hasActionableFinding": false
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input", "no_actionable_finding"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-attendance-contact-guardian-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000114",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000518"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000518": {
+          "id": "00000000-0000-0000-0000-000000000518",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner missed 8 out of 10 school days. No explanation has been provided for the absences.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "attendance_guardian_contact"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-wellbeing-refer-to-psychologist-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "SCHOOL",
+      "scopeId": "00000000-0000-0000-0000-000000000001",
+      "domain": "WELLBEING",
+      "insightId": "00000000-0000-0000-0000-000000000519"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000519": {
+          "id": "00000000-0000-0000-0000-000000000519",
+          "scope": "SCHOOL",
+          "domain": "WELLBEING",
+          "narrative": "10 learners scored above the SDQ threshold of 30 this term. This is a 25% increase from last term.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "wellbeing_psychologist"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-description-not-observation-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000115",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000521"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000521": {
+          "id": "00000000-0000-0000-0000-000000000521",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner's attendance was 25% in week 4. This is the lowest rate recorded this term.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "description_not_observation"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-grade-behaviour-review-incidents-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "GRADE",
+      "scopeId": "00000000-0000-0000-0000-000000000401",
+      "domain": "BEHAVIOUR",
+      "insightId": "00000000-0000-0000-0000-000000000522"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000522": {
+          "id": "00000000-0000-0000-0000-000000000522",
+          "scope": "GRADE",
+          "domain": "BEHAVIOUR",
+          "narrative": "Grade 10 recorded 18 truancy incidents in term 3, up from 5 in term 2. This represents a 260% increase.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "grade_behaviour_review"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-insight-id-not-substituted-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000116",
+      "domain": "ATTENDANCE",
+      "insightId": "aaaaaaaa-0000-0000-0000-000000000523"
+    },
+    "context": {
+      "insights": {
+        "aaaaaaaa-0000-0000-0000-000000000523": {
+          "id": "aaaaaaaa-0000-0000-0000-000000000523",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner missed 4 days this week. Attendance is critically low at 20%.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        },
+        "bbbbbbbb-0000-0000-0000-000000000999": {
+          "id": "bbbbbbbb-0000-0000-0000-000000000999",
+          "scope": "LEARNER",
+          "domain": "ASSESSMENT",
+          "narrative": "Different insight \u2014 must not be used.",
+          "generatedAt": "2026-08-06T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "nextStep.insightId",
+        "value": "aaaaaaaa-0000-0000-0000-000000000523"
+      }
+    ],
+    "tags": ["ok", "insight_id_not_substituted"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-assessment-hod-refer-curriculum-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "CLASS",
+      "scopeId": "00000000-0000-0000-0000-000000000302",
+      "domain": "ASSESSMENT",
+      "insightId": "00000000-0000-0000-0000-000000000524"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000524": {
+          "id": "00000000-0000-0000-0000-000000000524",
+          "scope": "CLASS",
+          "domain": "ASSESSMENT",
+          "narrative": "This class averaged 29% in English over 4 assessments. No learner achieved above 50%.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["ok", "assessment_hod"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-attendance-duedate-boundary-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000117",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000525"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000525": {
+          "id": "00000000-0000-0000-0000-000000000525",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner was absent on 4 out of 5 days in week 3. No reason was recorded.",
+          "generatedAt": "2026-07-31T00:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "nextStep.dueDate",
+        "value": "2026-08-07T00:00:00Z"
+      }
+    ],
+    "tags": ["ok", "due_date_boundary"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-class-teacher-for-learner-scope-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000118",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000526"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000526": {
+          "id": "00000000-0000-0000-0000-000000000526",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner recorded 0% attendance in week 4. Attendance this term averages 40%.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "nextStep.owner",
+        "value": "class teacher"
+      }
+    ],
+    "tags": ["ok", "learner_scope_class_teacher"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-08-full-next-step-fields-present-001",
+    "agentId": "DW-08",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000119",
+      "domain": "ATTENDANCE",
+      "insightId": "00000000-0000-0000-0000-000000000527"
+    },
+    "context": {
+      "insights": {
+        "00000000-0000-0000-0000-000000000527": {
+          "id": "00000000-0000-0000-0000-000000000527",
+          "scope": "LEARNER",
+          "domain": "ATTENDANCE",
+          "narrative": "The learner was absent for 7 consecutive days. Attendance fell from 80% to 46% this week.",
+          "generatedAt": "2026-08-07T10:00:00Z"
+        }
+      }
+    },
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "nextStep.insightId",
+        "value": "00000000-0000-0000-0000-000000000527"
+      }
+    ],
+    "tags": ["ok", "full_next_step"],
+    "source": "specification"
+  }
+]

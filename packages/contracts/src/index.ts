@@ -57,6 +57,98 @@ export {
 } from './curriculum/framework.js';
 
 export {
+  ArtefactType,
+  TemplateDefinition,
+  TemplateField,
+  TemplateSection,
+  checkArtefactStructure,
+  type ArtefactStructure,
+  type TemplateFidelityViolation,
+} from './curriculum/template.js';
+
+export {
+  ATPNeedsInput,
+  ATPResult,
+  ATPSchedule,
+  ATPTopicEntry,
+  ATPWeek,
+  CE01Input,
+  CE02Input,
+  SchoolCalendarBlock,
+  WeekKind,
+} from './curriculum/atp.js';
+
+export {
+  CE03Input,
+  CE04Input,
+  CognitiveLevel,
+  EvidenceItem,
+  SuccessCriterion,
+  TermAssessmentTask,
+  TermPlan,
+  TermPlanNeedsInput,
+  TermPlanResult,
+  TermPlanSubject,
+  TermPlanWeekEntry,
+  UnitBlueprint,
+  UnitBlueprintResult,
+  UnitNeedsInput,
+} from './curriculum/planning.js';
+
+export {
+  ActivityKind,
+  CE05Input,
+  CE08Input,
+  DifferentiatedSet,
+  DifferentiatedTier,
+  DifferentiationNeedsInput,
+  DifferentiationResult,
+  DifferentiationTierName,
+  Lesson,
+  LessonActivity,
+  LessonPlan,
+  LessonPlanNeedsInput,
+  LessonPlanResult,
+} from './curriculum/lesson.js';
+
+export {
+  AssessmentDesignNeedsInput,
+  AssessmentQuestion,
+  AssessmentSection,
+  AssessmentTaskDesign,
+  AssessmentTaskDesignResult,
+  AssessmentTaskKind,
+  CE06Input,
+  CE07Input,
+  CognitiveLevelSpread,
+  Rubric,
+  RubricCriterion,
+  RubricDescriptors,
+  RubricNeedsInput,
+  RubricResult,
+} from './curriculum/assessment.js';
+
+export {
+  CE09Input,
+  CoverageAudit,
+  CoverageAuditNeedsInput,
+  CoverageAuditResult,
+  DriftItem,
+  DriftKind,
+} from './curriculum/coverage.js';
+
+export {
+  BINARY_FORMATS,
+  ExportFormat,
+  ExportJob,
+  ExportJobStatus,
+  ExportRequest,
+  ExportResult,
+  PUBLICATION_CHANNELS,
+  PublicationTarget,
+} from './curriculum/export.js';
+
+export {
   ChatCompletionRequest,
   ChatCompletionResponse,
   ChatCompletionStreamEvent,
