@@ -88,8 +88,8 @@ export const AC02Input = z.object({
   tenantId: z.string().uuid(),
   classId: z.string().uuid(),
   termId: z.string().uuid(),
-  /** AC-01 tier results for every learner in the class. At least one is required. */
-  screenResults: z.array(LearnerTierSummary).min(1),
+  /** AC-01 tier results for every learner in the class. Empty array returns needs_input. */
+  screenResults: z.array(LearnerTierSummary).min(0),
 });
 export type AC02Input = z.infer<typeof AC02Input>;
 
