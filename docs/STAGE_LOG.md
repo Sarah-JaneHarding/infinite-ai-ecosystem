@@ -3020,3 +3020,42 @@ All tests: 221 contract tests + 139 agent tests + orchestrator tests passing.
 Steps 6–7 (export surface PDF/DOCX/LTI, remaining docs) are next.
 
 Open questions: OQ-002, OQ-003, OQ-013 remain open.
+
+---
+
+### Stage 08 — Step 6: Export Surface
+
+**Date:** 2026-08-07  
+**Status:** complete
+
+Builds the export surface for MOD-01 artefacts: PDF, DOCX, LTI deep-link, Google
+Classroom and Microsoft Teams.
+
+Deliverables:
+
+- `packages/contracts/src/curriculum/export.ts` — schemas: `ExportFormat` (5 values),
+  `ExportJobStatus` (6 values), `ExportRequest` (with `publicationTarget` discriminator:
+  required for channel formats, forbidden for binary), `ExportJob`, `ExportResult`
+  (3-way discriminated union: `accepted` | `needs_template` | `needs_input`). 20 contract
+  tests.
+- `packages/contracts/test/export.spec.ts` — 20 contract tests. All passing.
+- `packages/contracts/test/exports.spec.ts` — widened with 8 new export-surface names.
+- `packages/orchestrator/src/export/dispatcher.ts` — `dispatchExport()` with injected
+  `ArtefactRenderer` / `ArtefactPublisher` interfaces, `makeStubDeps()`,
+  `makeStubRenderer()`, `makeStubPublisher()`. Stub renderers return `needs_template`
+  (correct "empty vessel" state until OQ-003 resolves); stub publishers return error
+  (correct state until LMS credentials are configured).
+- `packages/orchestrator/test/export/dispatcher.spec.ts` — 14 dispatcher tests. All
+  passing.
+
+Architecture decision: renderers and publishers are injected dependencies rather than
+imports, following the same "no surprise coupling" pattern as the pipeline runner. This
+lets production wire in BullMQ-backed implementations without touching the dispatcher.
+
+Step 7 (docs/AGENTS.md entries for all nine agents) completed as part of step 5 — all
+CE-01 through CE-09 sections were written incrementally.
+
+All tests: 241 contract tests + orchestrator tests passing. Monorepo typecheck clean.
+
+Open questions: OQ-002, OQ-003, OQ-013 remain open. OQ-003 (school templates) blocks
+the export renderers from producing real output.
