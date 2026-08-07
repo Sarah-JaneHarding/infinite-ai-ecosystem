@@ -3219,3 +3219,89 @@ fields became `set_overlap`; string `contains` and all `regex_match` were droppe
 registered yet; format validation passes for all 231 cases).
 
 Open questions: no new questions raised. OQ-002, OQ-003, OQ-013, OQ-016 remain open.
+
+---
+
+### Stage 09 — Step 3: Connectors
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the file connector that satisfies the build manual's "incremental, idempotent,
+resumable, with a dead-letter queue and a reconciliation report" requirement.
+
+**New files in `packages/warehouse/src/ingest/`:**
+
+- `csv-parser.ts` — RFC 4180 parser. Handles quoted fields (including escaped `""`),
+  CRLF/LF/CR line endings, trailing blank lines, missing values at end of row. Row
+  indices are 1-based (row 0 is the header). `sourceRef` is `${fileRef}#row-${rowIndex}`,
+  which is deterministic from the file reference and row position — same pull twice on the
+  same file yields the same `sourceRef` for the same row, satisfying the idempotency
+  requirement. Multi-line quoted fields are deliberately not supported (see file header for
+  rationale: a newline inside a quoted value breaks cursor-based resumability).
+
+- `connector.ts` (revised) — `CsvFileConnector` replaces the stub. It accepts an
+  injected `ContentResolver` so the production agent runtime supplies a storage-backed
+  resolver while tests supply a plain function. Cursor is the `rowIndex` of the last row
+  already delivered; `pull(cursor='N')` resumes from row N+1. Dead-letter quarantine:
+  rows that yield no fields after parsing are collected in `DeadLetterRecord[]` rather
+  than blocking the run. `RichPullResult` extends `PullResult` with `deadLettered[]` and
+  `ReconciliationReport { totalSourceRows, pulled, deadLettered }`.
+  Added stub connectors for all `ConnectorKind` values: `SCREENER_API`,
+  `ATTENDANCE_API`, `BEHAVIOUR_API`, `MANUAL_UPLOAD` (empty-vessel pattern, return no
+  records until a real credential or file path is wired in).
+
+- `index.ts` exports `CsvFileConnector`, `DeadLetterRecord`, `ReconciliationReport`,
+  `RichPullResult`, `ContentResolver`, `ParsedRow`, and all new stub classes.
+
+Tests: 73 passing (13 csv-parser + 26 connector + 34 types). `pnpm lint` and
+`pnpm typecheck` clean.
+
+Step 4 (DW-02 Schema Mapper) is next.
+
+---
+
+### Stage 09 — Step 4: DW-02 Schema Mapper
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the schema mapper (DW-02), which converts raw source fields from any connector into
+the canonical field set the `domain_event_log` expects. Database-free by design: all
+persistence is injected via `MappingStore` so the unit tier runs without Postgres.
+
+**New files in `packages/warehouse/src/mapping/`:**
+
+- `schema-mapper.ts` — exports `FieldMapping`, `TransformFn`, `TransformRegistry`,
+  `MappingStore`, and the async `mapRecord(input, store, transforms?)` function.
+
+  Three outcomes:
+  - `ok` — every source field has a confirmed mapping and all three required canonical
+    fields (`learnerId`, `eventType`, `occurredAt`) are present.
+  - `needs_input` — one or more source fields have no confirmed mapping, or a required
+    canonical field is missing after mapping. Newly discovered fields are persisted via
+    `saveUnconfirmedMappings` so the human-review UI can list them.
+  - `rejected` — the canonical `domain` field conflicts with the `targetDomain` on the
+    input (e.g. source maps to `BEHAVIOUR` but request specified `ATTENDANCE`).
+
+  `TransformRegistry` allows named transform functions (e.g. `dmy_to_iso`) to be
+  registered at boot. An unknown transform name is a pass-through — the raw value is
+  kept unchanged rather than erroring, so a misconfigured transform name degrades
+  gracefully without losing data.
+
+**New files in `packages/warehouse/test/mapping/`:**
+
+- `schema-mapper.spec.ts` — 15 tests in 4 describe blocks:
+  - `ok status` (5 tests): all confirmed, mappingsApplied populated, named transform
+    applied, unknown transform pass-through, source key absent from canonical payload.
+  - `needs_input status` (7 tests): no mappings, all unmapped fields listed, unconfirmed
+    mapping, `saveUnconfirmedMappings` called with correct args, missing `learnerId`,
+    missing `occurredAt`, missing `eventType`.
+  - `rejected status` (1 test): domain mismatch reason string contains both domain names.
+  - `multi-tenant isolation` (2 tests): `loadMappings` receives correct `tenantId`, two
+    different `tenantId` values produce two independent store calls.
+
+Tests: 88 passing (15 schema-mapper + 26 connector + 34 types + 13 csv-parser).
+`pnpm lint` and `pnpm typecheck` (27 packages) clean.
+
+Step 5 (DW-05 Data Quality Sentinel) is next.

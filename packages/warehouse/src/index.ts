@@ -55,6 +55,14 @@ export {
 export { parseCsv, type ParsedRow } from './ingest/csv-parser.js';
 
 export {
+  mapRecord,
+  type FieldMapping,
+  type MappingStore,
+  type TransformFn,
+  type TransformRegistry,
+} from './mapping/schema-mapper.js';
+
+export {
   DW01Input,
   DW02Input,
   DW02Result,
