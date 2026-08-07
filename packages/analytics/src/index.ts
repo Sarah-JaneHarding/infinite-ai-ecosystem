@@ -31,4 +31,16 @@ export {
   type SiasTransitionAudit,
 } from './sias-state.js';
 
+export {
+  AC01Input,
+  AC01Result,
+  AC02Input,
+  AC02Result,
+  DataSufficiencyVerdictSchema,
+  DomainReading,
+  LearnerTierSummary,
+  ScreeningDomainSchema,
+  SupportTierSchema,
+} from './agent-schemas.js';
+
 export const PACKAGE_NAME = '@infinite-ai/analytics' as const;

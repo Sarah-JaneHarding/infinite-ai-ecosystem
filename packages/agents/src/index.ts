@@ -41,6 +41,9 @@ export { CE07Contract } from './mod-01/CE-07.contract.js';
 export { CE08Contract } from './mod-01/CE-08.contract.js';
 export { CE09Contract } from './mod-01/CE-09.contract.js';
 
+export { AC01Contract } from './mod-02/AC-01.contract.js';
+export { AC02Contract } from './mod-02/AC-02.contract.js';
+
 export { DW01Contract } from './mod-03/DW-01.contract.js';
 export { DW02Contract } from './mod-03/DW-02.contract.js';
 export { DW03Contract } from './mod-03/DW-03.contract.js';

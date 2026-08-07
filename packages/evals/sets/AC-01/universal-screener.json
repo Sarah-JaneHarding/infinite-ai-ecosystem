@@ -1,0 +1,1045 @@
+[
+  {
+    "id": "ac01-tier1-all-sufficient-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000101",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 72,
+          "dataPointCount": 5,
+          "mostRecentDataAgeInDays": 14
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 68,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 21
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 80,
+          "dataPointCount": 18,
+          "mostRecentDataAgeInDays": 3
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 75,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 10
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 70,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_1" },
+      { "type": "exact_match", "field": "overallSufficiency", "value": "sufficient" },
+      {
+        "type": "numeric_tolerance",
+        "field": "compositePercentile",
+        "expected": 73.0,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["ok", "tier_1", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-tier2-all-sufficient-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000102",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 45,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 42,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 25
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 50,
+          "dataPointCount": 12,
+          "mostRecentDataAgeInDays": 7
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 48,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 46,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 45
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_2" },
+      {
+        "type": "numeric_tolerance",
+        "field": "compositePercentile",
+        "expected": 46.2,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["ok", "tier_2", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-tier3-all-sufficient-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000103",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 22,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 30
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 18,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 28
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 25,
+          "dataPointCount": 10,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 20,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 28,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 60
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_3" },
+      {
+        "type": "numeric_tolerance",
+        "field": "compositePercentile",
+        "expected": 22.6,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["ok", "tier_3", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-referral-all-sufficient-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000104",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 8,
+          "dataPointCount": 5,
+          "mostRecentDataAgeInDays": 10
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 6,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 5,
+          "dataPointCount": 15,
+          "mostRecentDataAgeInDays": 2
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 10,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 8
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 7,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 20
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "REFERRAL" },
+      {
+        "type": "numeric_tolerance",
+        "field": "compositePercentile",
+        "expected": 7.2,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["ok", "referral", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-boundary-tier1-at-55-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000105",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 55,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 55,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 55,
+          "dataPointCount": 10,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 55,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 10
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 55,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_1" }
+    ],
+    "tags": ["ok", "tier_1", "boundary"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-boundary-tier2-at-35-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000106",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 35,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 35,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 35,
+          "dataPointCount": 10,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 35,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 10
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 35,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_2" }
+    ],
+    "tags": ["ok", "tier_2", "boundary"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-boundary-tier3-at-15-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000107",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 15,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 15,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 15,
+          "dataPointCount": 10,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 15,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 10
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 15,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_3" }
+    ],
+    "tags": ["ok", "tier_3", "boundary"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-boundary-referral-at-14.9-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000108",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 14.9,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 14.9,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 14.9,
+          "dataPointCount": 10,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 14.9,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 10
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 14.9,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "REFERRAL" }
+    ],
+    "tags": ["ok", "referral", "boundary"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-score-zero-referral-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000109",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 0,
+          "dataPointCount": 5,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 0,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 0,
+          "dataPointCount": 12,
+          "mostRecentDataAgeInDays": 1
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 0,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 0,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 5
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "REFERRAL" },
+      {
+        "type": "numeric_tolerance",
+        "field": "compositePercentile",
+        "expected": 0.0,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["ok", "referral", "boundary"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-score-100-tier1-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000110",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 100,
+          "dataPointCount": 5,
+          "mostRecentDataAgeInDays": 2
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 100,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 2
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 100,
+          "dataPointCount": 20,
+          "mostRecentDataAgeInDays": 1
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 100,
+          "dataPointCount": 5,
+          "mostRecentDataAgeInDays": 2
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 100,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 5
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_1" },
+      {
+        "type": "numeric_tolerance",
+        "field": "compositePercentile",
+        "expected": 100.0,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["ok", "tier_1", "boundary"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-literacy-insufficient-count-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000111",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 60,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 65,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 70,
+          "dataPointCount": 15,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 60,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 65,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "insufficiency", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-attendance-insufficient-stale-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000112",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 60,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 65,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 55,
+          "dataPointCount": 12,
+          "mostRecentDataAgeInDays": 31
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 60,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 65,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "insufficiency", "stale_data"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-numeracy-insufficient-count-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000113",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 60,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 65,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 70,
+          "dataPointCount": 12,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 60,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 65,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "insufficiency"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-behaviour-insufficient-count-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000114",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 60,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 65,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 70,
+          "dataPointCount": 12,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 60,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 65,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "insufficiency"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-wellbeing-stale-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000115",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 60,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 65,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 70,
+          "dataPointCount": 12,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 60,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 65,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 91
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "insufficiency", "stale_data"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-multiple-domains-insufficient-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000116",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 50,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 55,
+          "dataPointCount": 0,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 60,
+          "dataPointCount": 12,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 55,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 60,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "insufficiency", "multiple_domains"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-attendance-exactly-at-recency-boundary-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000117",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 65,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 90
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 65,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 90
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 65,
+          "dataPointCount": 10,
+          "mostRecentDataAgeInDays": 30
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 65,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 60
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 65,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 90
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "overallSufficiency", "value": "sufficient" }
+    ],
+    "tags": ["ok", "boundary", "recency"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-safeguarding-escalation-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000118",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 60,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 65,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 70,
+          "dataPointCount": 12,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 60,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 65,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ],
+      "safeguardingSignal": true
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "safeguarding" }
+    ],
+    "tags": ["safeguarding_escalation", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-literacy-stale-91-days-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000119",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 70,
+          "dataPointCount": 5,
+          "mostRecentDataAgeInDays": 91
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 70,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 70,
+          "dataPointCount": 12,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 70,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 70,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "stale_data", "literacy"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-mixed-tiers-composite-in-tier2-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000120",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 70,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 10,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 60,
+          "dataPointCount": 10,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 40,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 15
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 45,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "tier", "value": "TIER_2" },
+      {
+        "type": "numeric_tolerance",
+        "field": "compositePercentile",
+        "expected": 45.0,
+        "tolerance": 0.01
+      }
+    ],
+    "tags": ["ok", "tier_2", "mixed_scores"],
+    "source": "specification"
+  },
+  {
+    "id": "ac01-behaviour-stale-61-days-001",
+    "agentId": "AC-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000121",
+      "termId": "00000000-0000-0000-0000-000000000201",
+      "domainReadings": [
+        {
+          "domain": "LITERACY",
+          "percentileScore": 65,
+          "dataPointCount": 4,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "NUMERACY",
+          "percentileScore": 65,
+          "dataPointCount": 3,
+          "mostRecentDataAgeInDays": 20
+        },
+        {
+          "domain": "ATTENDANCE",
+          "percentileScore": 65,
+          "dataPointCount": 12,
+          "mostRecentDataAgeInDays": 5
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "percentileScore": 65,
+          "dataPointCount": 2,
+          "mostRecentDataAgeInDays": 61
+        },
+        {
+          "domain": "WELLBEING",
+          "percentileScore": 65,
+          "dataPointCount": 1,
+          "mostRecentDataAgeInDays": 30
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "stale_data", "behaviour"],
+    "source": "specification"
+  }
+]

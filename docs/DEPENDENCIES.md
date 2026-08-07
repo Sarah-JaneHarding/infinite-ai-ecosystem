@@ -336,6 +336,20 @@ that no school has supplied one yet, so this step ships only the schema and the 
 that will version a real definition into L0 once one exists — the same "empty vessel"
 shape `curriculum/framework.ts` already established for CAPS content itself.
 
+## Stage 09 — MOD-03 Data Collection & Warehouse
+
+No new external dependency. `@infinite-ai/warehouse` (workspace package, created this
+stage) is taken as a runtime dependency by `@infinite-ai/agents` for the DW-01 through
+DW-08 contracts.
+
+## Stage 10 step 2 — AC-01 and AC-02 agent contracts, prompts and eval sets
+
+No new external dependency. `@infinite-ai/analytics` (workspace package, created in Stage
+10 step 1) is taken as a runtime dependency by `@infinite-ai/agents` for the first time —
+it provides the `AC01Input`, `AC01Result`, `AC02Input`, and `AC02Result` Zod schemas used
+in the AC-01 and AC-02 contracts. The analytics package itself depends only on `zod`
+(already in the tree since Stage 02).
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

@@ -71,5 +71,11 @@ rollback.
 
 ## 5. Registry contents
 
-Empty until Stage 06 builds the registry and Stage 08 adds the first module prompts. Each
-prompt is listed here with its agent, current champion version and owner as it lands.
+Each prompt is listed here with its agent, current champion version and owner as it lands.
+
+### MOD-02 Support Analytics Centre — Stage 10
+
+| Agent | Version | Model          | File                                         | Lock key    | Author   |
+| ----- | ------- | -------------- | -------------------------------------------- | ----------- | -------- |
+| AC-01 | 1.0.0   | support.screen | `packages/prompts/src/AC-01/1.0.0.prompt.md` | AC-01@1.0.0 | stage-10 |
+| AC-02 | 1.0.0   | support.health | `packages/prompts/src/AC-02/1.0.0.prompt.md` | AC-02@1.0.0 | stage-10 |

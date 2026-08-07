@@ -111,6 +111,9 @@ importers:
 
   packages/agents:
     dependencies:
+      '@infinite-ai/analytics':
+        specifier: workspace:*
+        version: link:../analytics
       '@infinite-ai/contracts':
         specifier: workspace:*
         version: link:../contracts

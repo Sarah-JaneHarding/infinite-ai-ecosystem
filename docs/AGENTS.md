@@ -274,6 +274,55 @@ memory.
 **AC-02 gates AC-03.** If core health fails for a class, tier recommendations for that
 class are suppressed and a Tier 1 improvement task is raised instead.
 
+#### AC-01 — Universal Screener
+
+| Field           | Value                                                                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-02                                                                                                                                                           |
+| Purpose         | `intervention`                                                                                                                                                   |
+| Input           | `AC01Input`: tenantId, learnerId (UUID), termId, domainReadings[]                                                                                                |
+| Output          | `AC01Result`: `{ status: "ok", screenId, learnerId, termId, compositePercentile, tier, domainSufficiency, overallSufficiency }` · `needs_input` · `safeguarding` |
+| Model           | `support.screen`                                                                                                                                                 |
+| Guardrails      | `pii_guard`, `diagnosis_guard`                                                                                                                                   |
+| Budget          | 1 500 tokens · $0.005 per run                                                                                                                                    |
+| Eval set        | `AC-01` (21 cases covering all tier bands, domain-sufficiency failures, safeguarding escalation)                                                                 |
+| Approval gate   | None — screen output feeds the automated AC-02 gate                                                                                                              |
+| Writes to Brain | Yes — screen results are versioned support facts                                                                                                                 |
+| Prompt          | `packages/prompts/src/AC-01/1.0.0.prompt.md`                                                                                                                     |
+| Contract        | `packages/agents/src/mod-02/AC-01.contract.ts`                                                                                                                   |
+
+AC-01 receives domain-level percentile readings for one learner across five SIAS domains
+(LITERACY, NUMERACY, ATTENDANCE, BEHAVIOUR, WELLBEING). It checks data sufficiency for
+each domain, computes the composite percentile as the arithmetic mean, and assigns a
+preliminary support tier. A safeguarding signal in the input metadata takes precedence
+over all other output paths. No clinical, diagnostic, or disability language may appear
+in the output; `tier` is the only classification. `learnerId` is an opaque UUID and must
+not be echoed in any output field.
+
+#### AC-02 — Core-Health Analyst
+
+| Field           | Value                                                                                                                                                                      |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-02                                                                                                                                                                     |
+| Purpose         | `intervention`                                                                                                                                                             |
+| Input           | `AC02Input`: tenantId, classId, termId, screenResults[] (learnerId + tier per learner)                                                                                     |
+| Output          | `AC02Result`: `{ status: "healthy", tier1Percentage, learnerCount, tier1Count, gatesAc03: true }` · `{ status: "blocked", ..., gatesAc03: false, detail }` · `needs_input` |
+| Model           | `support.health`                                                                                                                                                           |
+| Guardrails      | `pii_guard`                                                                                                                                                                |
+| Budget          | 800 tokens · $0.002 per run                                                                                                                                                |
+| Eval set        | `AC-02` (21 cases covering all threshold boundaries, empty input, single-learner edge cases)                                                                               |
+| Approval gate   | None — core-health assessment is an automated gate                                                                                                                         |
+| Writes to Brain | No — AC-02 produces a gate signal, not a versioned fact                                                                                                                    |
+| Prompt          | `packages/prompts/src/AC-02/1.0.0.prompt.md`                                                                                                                               |
+| Contract        | `packages/agents/src/mod-02/AC-02.contract.ts`                                                                                                                             |
+
+AC-02 receives all AC-01 screen results for a class and determines whether at least 80%
+of learners are in TIER_1 (the DBE SIAS core-health threshold). If the class passes,
+`gatesAc03: true` permits the Tier Recommender (AC-03) to run for individual learners.
+If the class fails, `gatesAc03: false` suppresses individual tier recommendations and a
+Tier 1 improvement task must be raised. AC-02 works at class level only; it never
+identifies individual learners. `tier1Percentage` is rounded to two decimal places.
+
 ### MOD-03 Data Collection & Warehouse — Stage 09
 
 | ID    | Agent                   | Output                                                          |
