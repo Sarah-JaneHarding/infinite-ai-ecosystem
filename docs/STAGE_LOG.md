@@ -3156,7 +3156,66 @@ tenant-scoped, all RLS-covered.
 
 Tests: 24 new warehouse package tests passing. `pnpm lint` and `pnpm typecheck` clean.
 
-Steps 2–8 (connectors, schema mapper, quality, Learner-360, insight, next-step, analytics)
-are next.
+Steps 3–8 (schema mapper, quality, Learner-360, insight, next-step, analytics) are next.
 
 Open questions: no new questions raised. OQ-002, OQ-003, OQ-013 remain open.
+
+---
+
+### Stage 09 — Step 2: Agent contracts, prompts, and eval sets
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Registers all eight DW agents in the agent registry, versions their prompts in the Prompt
+Registry, and writes a ≥ 20-case eval set per agent — satisfying the Definition of Done
+requirement for "Adds an agent" in CLAUDE.md.
+
+**Agent contracts (`packages/agents/src/mod-03/`):**
+
+Eight `validateAgentContract` calls, one per DW agent, declaring:
+
+- `id`, `version`, `module: 'MOD-03'`, `purpose` description
+- `inputSchema` referencing the Zod schemas from `@infinite-ai/warehouse`
+- `outputSchema` declaring each agent's typed output
+- `promptRef`, `model: 'claude-opus-5'`, `tools`, `guardrails`
+- `budget` (token and cost ceilings), `evalSetRef`
+- `requiresApproval` (true for DW-02's first-time mapping confirmation)
+- `writesToBrain` (true for DW-06, DW-07, DW-08)
+
+**Prompt files (`packages/prompts/src/DW-{01..08}/1.0.0.prompt.md`):**
+
+Eight Markdown prompt files, one per agent, each declaring:
+
+- ROLE, HARD CONSTRAINTS (data-flow invariants the agent must never violate)
+- INPUT / OUTPUT shapes (mirrors the Zod schema)
+- DECISION LOGIC with step-by-step rules
+
+All eight registered in `packages/prompts/prompt-lock.json` with SHA256 hashes of the
+post-prettier file contents (hashes were corrected in a follow-up commit after
+lint-staged reformatted the files on first commit).
+
+**Eval sets (`packages/evals/sets/DW-{01..08}/`):**
+
+| Set                    | Cases | Covers                                                                    |
+| ---------------------- | ----- | ------------------------------------------------------------------------- |
+| DW-01/ingestion-agent  | 30    | connector kinds, paused/error states, incremental sync, dead-letter       |
+| DW-02/schema-mapper    | 29    | full mapping, unmapped fields, human confirm, domain mismatch, transforms |
+| DW-03/consent-ledger   | 29    | granted/withdrawn/pending, purpose limits, multi-domain, PII safety       |
+| DW-04/deident-agent    | 29    | tokenisation, PII suppression, shape preservation, multi-domain           |
+| DW-05/quality-sentinel | 29    | missing fields, duplicates, impossible values, drift, blocking threshold  |
+| DW-06/learner-360      | 29    | domain assembly, formulas, null domains, blocked domains, PII safety      |
+| DW-07/insight-synth    | 28    | scope levels, confidence, provenance, PII-safe narrative                  |
+| DW-08/next-step-rec    | 28    | owner routing, dueDate from insight, action language, PII safety          |
+
+A post-gate fix commit (SHA `ef6eb3d`) converted `contains` and `regex_match` expectation
+types (not in the `Expectation` discriminated union) to valid types: `contains` on array
+fields became `set_overlap`; string `contains` and all `regex_match` were dropped (the
+`exact_match` on `status` is the meaningful gate assertion; content quality belongs in
+`llm_judge` evals once the judge is wired — OQ-016).
+
+**Tests:** 210 agent contract tests passing (all 20 test files). `pnpm lint` and
+`pnpm typecheck` clean. `pnpm evals:gate` exits 0 (all DW agents skipped — no executor
+registered yet; format validation passes for all 231 cases).
+
+Open questions: no new questions raised. OQ-002, OQ-003, OQ-013, OQ-016 remain open.
