@@ -114,6 +114,9 @@ importers:
       '@infinite-ai/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@infinite-ai/warehouse':
+        specifier: workspace:*
+        version: link:../warehouse
       zod:
         specifier: 3.25.76
         version: 3.25.76

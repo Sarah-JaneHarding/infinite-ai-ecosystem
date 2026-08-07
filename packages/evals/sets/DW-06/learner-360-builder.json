@@ -1,0 +1,917 @@
+[
+  {
+    "id": "dw-06-no-events-needs-input-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000100",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": { "events": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "detail", "value": "No domain events" }
+    ],
+    "tags": ["needs_input", "no_events"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-attendance-only-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000101",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-04"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-05"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.absent",
+          "occurredAt": "2026-08-06"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.late",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.attendance.presentDays", "value": 2 },
+      { "type": "exact_match", "field": "profile.attendance.absentDays", "value": 1 },
+      { "type": "exact_match", "field": "profile.attendance.lateDays", "value": 1 },
+      {
+        "type": "exact_match",
+        "field": "profile.attendance.attendanceRatePct",
+        "value": 50
+      }
+    ],
+    "tags": ["ok", "attendance_only"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-assessment-only-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000102",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "MATH", "scorePercent": 80 },
+          "occurredAt": "2026-08-01"
+        },
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "ENGLISH", "scorePercent": 70 },
+          "occurredAt": "2026-08-02"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.academic.overallAverage", "value": 75 }
+    ],
+    "tags": ["ok", "assessment_only"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-attendance-rate-formula-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000103",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-04"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-05"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-06"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.absent",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.attendance.presentDays", "value": 3 },
+      { "type": "exact_match", "field": "profile.attendance.absentDays", "value": 1 },
+      {
+        "type": "exact_match",
+        "field": "profile.attendance.attendanceRatePct",
+        "value": 75
+      }
+    ],
+    "tags": ["ok", "attendance_rate_formula"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-zero-events-domain-null-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000104",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.academic", "value": null },
+      { "type": "exact_match", "field": "profile.behaviour", "value": null }
+    ],
+    "tags": ["ok", "null_for_missing_domain"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-behaviour-events-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000105",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "BEHAVIOUR",
+          "eventType": "behaviour.incident",
+          "payload": { "behaviourKind": "DISRUPTION" },
+          "occurredAt": "2026-08-01"
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "eventType": "behaviour.incident",
+          "payload": { "behaviourKind": "TRUANCY" },
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.behaviour.incidentCount", "value": 2 },
+      {
+        "type": "exact_match",
+        "field": "profile.behaviour.mostRecentKind",
+        "value": "TRUANCY"
+      }
+    ],
+    "tags": ["ok", "behaviour"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-wellbeing-screener-flag-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000106",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "WELLBEING",
+          "eventType": "wellbeing.screener",
+          "payload": { "screenerScore": 35, "screenerKind": "SDQ", "threshold": 30 },
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.wellbeing.flagged", "value": true }
+    ],
+    "tags": ["ok", "wellbeing", "flagged"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-wellbeing-not-flagged-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000107",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "WELLBEING",
+          "eventType": "wellbeing.screener",
+          "payload": { "screenerScore": 10, "screenerKind": "SDQ", "threshold": 30 },
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.wellbeing.flagged", "value": false }
+    ],
+    "tags": ["ok", "wellbeing", "not_flagged"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-multi-subject-overall-average-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000108",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "MATH", "scorePercent": 90 },
+          "occurredAt": "2026-08-01"
+        },
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "SCIENCE", "scorePercent": 80 },
+          "occurredAt": "2026-08-02"
+        },
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "ENGLISH", "scorePercent": 70 },
+          "occurredAt": "2026-08-03"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.academic.overallAverage", "value": 80 }
+    ],
+    "tags": ["ok", "multi_subject_average"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-multi-domain-all-present-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000109",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "MATH", "scorePercent": 75 },
+          "occurredAt": "2026-08-01"
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "eventType": "behaviour.incident",
+          "payload": { "behaviourKind": "DISRUPTION" },
+          "occurredAt": "2026-08-05"
+        },
+        {
+          "domain": "WELLBEING",
+          "eventType": "wellbeing.screener",
+          "payload": { "screenerScore": 12, "threshold": 30 },
+          "occurredAt": "2026-08-06"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "regex_match", "field": "profile.attendance", "value": "presentDays" },
+      { "type": "regex_match", "field": "profile.academic", "value": "overallAverage" },
+      { "type": "regex_match", "field": "profile.behaviour", "value": "incidentCount" },
+      { "type": "regex_match", "field": "profile.wellbeing", "value": "flagged" }
+    ],
+    "tags": ["ok", "all_domains"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-last-materialised-at-is-run-time-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000110",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "runStartedAt": "2026-08-07T10:00:00Z",
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-01"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "profile.lastMaterialisedAt",
+        "value": "2026-08-07"
+      }
+    ],
+    "tags": ["ok", "last_materialised_at"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-data-quality-note-when-blocked-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000111",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07",
+          "blockedDownstream": false
+        },
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "occurredAt": "2026-08-01",
+          "blockedDownstream": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "regex_match", "field": "profile.dataQualityNote", "value": "ASSESSMENT" }
+    ],
+    "tags": ["ok", "data_quality_note", "partial_block"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-deterministic-same-events-same-output-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000112",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.absent",
+          "occurredAt": "2026-08-06"
+        }
+      ],
+      "runCount": 2
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.attendance.presentDays", "value": 1 },
+      { "type": "exact_match", "field": "profile.attendance.absentDays", "value": 1 }
+    ],
+    "tags": ["ok", "deterministic"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-multi-tenant-isolation-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "learnerId": "00000000-0000-0000-0000-000000000200",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["ok", "multi_tenant"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-no-assessment-events-null-summary-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000113",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "BEHAVIOUR",
+          "eventType": "behaviour.incident",
+          "payload": { "behaviourKind": "DISRUPTION" },
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.academic", "value": null },
+      { "type": "exact_match", "field": "profile.attendance", "value": null }
+    ],
+    "tags": ["ok", "null_not_zero", "no_attendance"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-overall-average-rounded-two-decimals-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000114",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "MATH", "scorePercent": 100 },
+          "occurredAt": "2026-08-01"
+        },
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "ENGLISH", "scorePercent": 67 },
+          "occurredAt": "2026-08-02"
+        },
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "SCIENCE", "scorePercent": 58 },
+          "occurredAt": "2026-08-03"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.academic.overallAverage", "value": 75 }
+    ],
+    "tags": ["ok", "rounding"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-wrong-term-no-events-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000115",
+      "termNumber": 2,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07",
+          "termNumber": 3
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "wrong_term"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-screener-results-in-profile-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000116",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "WELLBEING",
+          "eventType": "wellbeing.screener",
+          "payload": { "screenerKind": "SDQ", "screenerScore": 22, "threshold": 30 },
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "profile.wellbeing.screenerResults", "value": "SDQ" }
+    ],
+    "tags": ["ok", "screener_results"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-100-percent-attendance-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000117",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-04"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-05"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-06"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "profile.attendance.attendanceRatePct",
+        "value": 100
+      }
+    ],
+    "tags": ["ok", "perfect_attendance"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-0-percent-attendance-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000118",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.absent",
+          "occurredAt": "2026-08-04"
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.absent",
+          "occurredAt": "2026-08-05"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "profile.attendance.attendanceRatePct",
+        "value": 0
+      }
+    ],
+    "tags": ["ok", "zero_attendance"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-all-domains-blocked-quality-note-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000119",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07",
+          "blockedDownstream": true
+        },
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "occurredAt": "2026-08-01",
+          "blockedDownstream": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "all_blocked"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-most-recent-behaviour-kind-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000120",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "BEHAVIOUR",
+          "eventType": "behaviour.incident",
+          "payload": { "behaviourKind": "DISRUPTION" },
+          "occurredAt": "2026-08-01"
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "eventType": "behaviour.incident",
+          "payload": { "behaviourKind": "BULLYING" },
+          "occurredAt": "2026-08-05"
+        },
+        {
+          "domain": "BEHAVIOUR",
+          "eventType": "behaviour.incident",
+          "payload": { "behaviourKind": "TRUANCY" },
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "profile.behaviour.mostRecentKind",
+        "value": "TRUANCY"
+      },
+      { "type": "exact_match", "field": "profile.behaviour.incidentCount", "value": 3 }
+    ],
+    "tags": ["ok", "most_recent_kind"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-assessment-per-subject-averages-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000121",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "MATH", "scorePercent": 60 },
+          "occurredAt": "2026-08-01"
+        },
+        {
+          "domain": "ASSESSMENT",
+          "eventType": "assessment.score",
+          "payload": { "subjectCode": "MATH", "scorePercent": 80 },
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "profile.academic.subjectAverages.MATH",
+        "value": 70
+      }
+    ],
+    "tags": ["ok", "per_subject_average"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-no-fabrication-zero-filled-summary-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000122",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.behaviour", "value": null }
+    ],
+    "tags": ["ok", "no_zero_fabrication"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-term-window-respected-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000123",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07",
+          "termNumber": 3
+        },
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-05-01",
+          "termNumber": 2
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.attendance.presentDays", "value": 1 }
+    ],
+    "tags": ["ok", "term_window_respected"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-learnerId-not-in-profile-output-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000124",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "profile",
+        "value": "^(?!.*00000000-0000-0000-0000-000000000124).*$"
+      }
+    ],
+    "tags": ["ok", "pii_safety", "no_uuid_in_profile"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-needs-input-detail-has-term-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000125",
+      "termNumber": 1,
+      "academicYear": 2026
+    },
+    "context": { "events": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "detail", "value": "term 1" }
+    ],
+    "tags": ["needs_input", "detail_has_term"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-well-being-threshold-boundary-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000126",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "WELLBEING",
+          "eventType": "wellbeing.screener",
+          "payload": { "screenerKind": "SDQ", "screenerScore": 30, "threshold": 30 },
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "profile.wellbeing.flagged", "value": true }
+    ],
+    "tags": ["ok", "wellbeing", "threshold_boundary"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-06-all-events-out-of-term-001",
+    "agentId": "DW-06",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "learnerId": "00000000-0000-0000-0000-000000000127",
+      "termNumber": 4,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "domain": "ATTENDANCE",
+          "eventType": "attendance.present",
+          "occurredAt": "2026-08-07",
+          "termNumber": 3
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "out_of_term"],
+    "source": "specification"
+  }
+]

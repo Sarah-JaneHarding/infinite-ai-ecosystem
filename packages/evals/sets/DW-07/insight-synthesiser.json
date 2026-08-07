@@ -1,0 +1,967 @@
+[
+  {
+    "id": "dw-07-no-events-needs-input-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000100",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": { "events": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "exact_match", "field": "scope", "value": "LEARNER" },
+      { "type": "contains", "field": "detail", "value": "No events" }
+    ],
+    "tags": ["needs_input", "no_events"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-all-blocked-needs-input-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000101",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        { "id": "evt-001", "domain": "ATTENDANCE", "blockedDownstream": true },
+        { "id": "evt-002", "domain": "ATTENDANCE", "blockedDownstream": true }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "detail", "value": "blocked" }
+    ],
+    "tags": ["needs_input", "all_blocked"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-attendance-decline-narrative-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000102",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-w1-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT", "week": 1 }
+        },
+        {
+          "id": "evt-w1-002",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT", "week": 1 }
+        },
+        {
+          "id": "evt-w2-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT", "week": 2 }
+        },
+        {
+          "id": "evt-w2-002",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT", "week": 2 }
+        },
+        {
+          "id": "evt-w3-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT", "week": 3 }
+        },
+        {
+          "id": "evt-w3-002",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT", "week": 3 }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(declin|drop|absent|atten)"
+      },
+      { "type": "regex_match", "field": "insights[0].sourceEventIds", "value": "evt-" }
+    ],
+    "tags": ["ok", "attendance_decline"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-source-event-ids-required-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000103",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-a001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].sourceEventIds",
+        "value": "evt-a001"
+      }
+    ],
+    "tags": ["ok", "source_event_ids"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-confidence-score-clamped-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000104",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "expectedDataPointCount": 5,
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" }
+        },
+        {
+          "id": "evt-002",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" }
+        },
+        {
+          "id": "evt-003",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" }
+        },
+        {
+          "id": "evt-004",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" }
+        },
+        {
+          "id": "evt-005",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "insights[0].confidenceScore", "value": 1 }
+    ],
+    "tags": ["ok", "confidence_score_max"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-confidence-score-partial-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000105",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "expectedDataPointCount": 10,
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" }
+        },
+        {
+          "id": "evt-002",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" }
+        },
+        {
+          "id": "evt-003",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" }
+        },
+        {
+          "id": "evt-004",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" }
+        },
+        {
+          "id": "evt-005",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "insights[0].confidenceScore", "value": 0.5 }
+    ],
+    "tags": ["ok", "confidence_score_partial"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-no-learner-name-in-narrative-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000106",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "^(?!.*Jane)(?!.*John).*$"
+      }
+    ],
+    "tags": ["ok", "pii_safety", "no_learner_name"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-no-scope-uuid-in-narrative-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000107",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "^(?!.*00000000-0000-0000-0000-000000000107).*$"
+      }
+    ],
+    "tags": ["ok", "pii_safety", "no_scope_uuid"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-class-scope-insight-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "CLASS",
+      "scopeId": "00000000-0000-0000-0000-000000000300",
+      "domain": "ASSESSMENT",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        { "id": "evt-001", "domain": "ASSESSMENT", "payload": { "scorePercent": 40 } },
+        { "id": "evt-002", "domain": "ASSESSMENT", "payload": { "scorePercent": 45 } },
+        { "id": "evt-003", "domain": "ASSESSMENT", "payload": { "scorePercent": 42 } }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(class|average|below)"
+      }
+    ],
+    "tags": ["ok", "class_scope"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-grade-scope-insight-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "GRADE",
+      "scopeId": "00000000-0000-0000-0000-000000000400",
+      "domain": "BEHAVIOUR",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "BEHAVIOUR",
+          "payload": { "behaviourKind": "DISRUPTION" }
+        },
+        {
+          "id": "evt-002",
+          "domain": "BEHAVIOUR",
+          "payload": { "behaviourKind": "TRUANCY" }
+        },
+        {
+          "id": "evt-003",
+          "domain": "BEHAVIOUR",
+          "payload": { "behaviourKind": "DISRUPTION" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(grade|incident|disrupt)"
+      }
+    ],
+    "tags": ["ok", "grade_scope"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-school-scope-insight-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "SCHOOL",
+      "scopeId": "00000000-0000-0000-0000-000000000001",
+      "domain": "WELLBEING",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "WELLBEING",
+          "payload": { "screenerScore": 32, "threshold": 30 }
+        },
+        {
+          "id": "evt-002",
+          "domain": "WELLBEING",
+          "payload": { "screenerScore": 35, "threshold": 30 }
+        },
+        {
+          "id": "evt-003",
+          "domain": "WELLBEING",
+          "payload": { "screenerScore": 8, "threshold": 30 }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(school|wellbeing|flagged)"
+      }
+    ],
+    "tags": ["ok", "school_scope"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-narrative-three-sentences-max-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000108",
+      "domain": "ASSESSMENT",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ASSESSMENT",
+          "payload": { "scorePercent": 55, "subjectCode": "MATH" }
+        },
+        {
+          "id": "evt-002",
+          "domain": "ASSESSMENT",
+          "payload": { "scorePercent": 50, "subjectCode": "MATH" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "^[^.]+\\.[^.]+\\."
+      }
+    ],
+    "tags": ["ok", "narrative_sentences"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-confidence-never-above-one-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000109",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "expectedDataPointCount": 2,
+      "events": [
+        { "id": "evt-001", "domain": "ATTENDANCE" },
+        { "id": "evt-002", "domain": "ATTENDANCE" },
+        { "id": "evt-003", "domain": "ATTENDANCE" },
+        { "id": "evt-004", "domain": "ATTENDANCE" }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "insights[0].confidenceScore", "value": 1 }
+    ],
+    "tags": ["ok", "confidence_clamped_at_one"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-narrative-specific-not-vague-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000110",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-w1",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceRatePct": 92, "week": 1 }
+        },
+        {
+          "id": "evt-w4",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceRatePct": 74, "week": 4 }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "regex_match", "field": "insights[0].narrative", "value": "\\d+%" }
+    ],
+    "tags": ["ok", "specific_narrative"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-multi-tenant-isolation-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000200",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-t2-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" }
+        }
+      ]
+    },
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["ok", "multi_tenant"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-assessment-below-average-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000111",
+      "domain": "ASSESSMENT",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ASSESSMENT",
+          "payload": { "scorePercent": 30, "subjectCode": "MATH" }
+        },
+        {
+          "id": "evt-002",
+          "domain": "ASSESSMENT",
+          "payload": { "scorePercent": 28, "subjectCode": "MATH" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(below|low|declin)"
+      }
+    ],
+    "tags": ["ok", "assessment_below_average"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-at-least-one-insight-in-ok-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "CLASS",
+      "scopeId": "00000000-0000-0000-0000-000000000301",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" }
+        },
+        {
+          "id": "evt-002",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "regex_match", "field": "insights", "value": "narrative" }
+    ],
+    "tags": ["ok", "at_least_one_insight"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-behaviour-trend-insight-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000112",
+      "domain": "BEHAVIOUR",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "BEHAVIOUR",
+          "payload": { "behaviourKind": "DISRUPTION" }
+        },
+        {
+          "id": "evt-002",
+          "domain": "BEHAVIOUR",
+          "payload": { "behaviourKind": "DISRUPTION" }
+        },
+        {
+          "id": "evt-003",
+          "domain": "BEHAVIOUR",
+          "payload": { "behaviourKind": "BULLYING" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(incident|behav|disrupt)"
+      }
+    ],
+    "tags": ["ok", "behaviour_trend"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-wellbeing-elevated-score-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000113",
+      "domain": "WELLBEING",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "WELLBEING",
+          "payload": { "screenerScore": 34, "threshold": 30 }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(score|threshold|flag)"
+      }
+    ],
+    "tags": ["ok", "wellbeing_elevated"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-source-event-ids-not-empty-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000114",
+      "domain": "ASSESSMENT",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-uuid-abc",
+          "domain": "ASSESSMENT",
+          "payload": { "scorePercent": 65 }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "contains",
+        "field": "insights[0].sourceEventIds",
+        "value": "evt-uuid-abc"
+      }
+    ],
+    "tags": ["ok", "source_event_ids_populated"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-uses-learner-not-name-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000115",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(the learner|this learner|this class)"
+      }
+    ],
+    "tags": ["ok", "uses_learner_role_language"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-present-tense-narrative-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000116",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" }
+        },
+        {
+          "id": "evt-002",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(shows|has|is|records)"
+      }
+    ],
+    "tags": ["ok", "present_tense"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-scopeId-not-in-needs-input-detail-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000117",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": { "events": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "exact_match",
+        "field": "scopeId",
+        "value": "00000000-0000-0000-0000-000000000117"
+      }
+    ],
+    "tags": ["needs_input", "scopeId_in_result"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-confidence-zero-for-no-data-points-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000118",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "expectedDataPointCount": 20,
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].confidenceScore",
+        "value": "^0\\.0[0-9]"
+      }
+    ],
+    "tags": ["ok", "low_confidence"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-grade-scope-behaviour-insight-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "GRADE",
+      "scopeId": "00000000-0000-0000-0000-000000000401",
+      "domain": "BEHAVIOUR",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-g001",
+          "domain": "BEHAVIOUR",
+          "payload": { "behaviourKind": "TRUANCY" }
+        },
+        {
+          "id": "evt-g002",
+          "domain": "BEHAVIOUR",
+          "payload": { "behaviourKind": "TRUANCY" }
+        },
+        {
+          "id": "evt-g003",
+          "domain": "BEHAVIOUR",
+          "payload": { "behaviourKind": "DISRUPTION" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(truanc|incident|grade)"
+      }
+    ],
+    "tags": ["ok", "grade_scope_behaviour"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-partially-blocked-uses-unblocked-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000119",
+      "domain": "ATTENDANCE",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "PRESENT" },
+          "blockedDownstream": false
+        },
+        {
+          "id": "evt-002",
+          "domain": "ATTENDANCE",
+          "payload": { "attendanceStatus": "ABSENT" },
+          "blockedDownstream": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "insights[0].sourceEventIds", "value": "evt-001" }
+    ],
+    "tags": ["ok", "partially_blocked_uses_unblocked"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-school-wellbeing-multiple-learners-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "SCHOOL",
+      "scopeId": "00000000-0000-0000-0000-000000000001",
+      "domain": "WELLBEING",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-s001",
+          "domain": "WELLBEING",
+          "payload": { "screenerScore": 32, "threshold": 30 }
+        },
+        {
+          "id": "evt-s002",
+          "domain": "WELLBEING",
+          "payload": { "screenerScore": 38, "threshold": 30 }
+        },
+        {
+          "id": "evt-s003",
+          "domain": "WELLBEING",
+          "payload": { "screenerScore": 10, "threshold": 30 }
+        },
+        {
+          "id": "evt-s004",
+          "domain": "WELLBEING",
+          "payload": { "screenerScore": 8, "threshold": 30 }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "(?i)(school|wellbeing|2)"
+      }
+    ],
+    "tags": ["ok", "school_wellbeing_multi"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-07-narrative-not-vague-not-inconsistent-001",
+    "agentId": "DW-07",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "scope": "LEARNER",
+      "scopeId": "00000000-0000-0000-0000-000000000120",
+      "domain": "ASSESSMENT",
+      "termNumber": 3,
+      "academicYear": 2026
+    },
+    "context": {
+      "events": [
+        {
+          "id": "evt-001",
+          "domain": "ASSESSMENT",
+          "payload": { "scorePercent": 42, "subjectCode": "MATH" }
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "insights[0].narrative",
+        "value": "^(?!.*inconsistent).*$"
+      }
+    ],
+    "tags": ["ok", "not_vague_narrative"],
+    "source": "specification"
+  }
+]

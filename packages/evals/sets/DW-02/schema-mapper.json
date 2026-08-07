@@ -1,0 +1,1002 @@
+[
+  {
+    "id": "dw-02-all-fields-mapped-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000030",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": { "learnerNo": "L001", "date": "2026-08-07", "status": "P" }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "status",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "learnerId", "value": "L001" },
+      { "type": "exact_match", "field": "eventType", "value": "attendance.present" }
+    ],
+    "tags": ["ok", "file_csv", "attendance"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-unmapped-field-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000031",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": {
+        "learnerNo": "L001",
+        "date": "2026-08-07",
+        "status": "P",
+        "unknownField": "x"
+      }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "status",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "unmappedFields", "value": "unknownField" }
+    ],
+    "tags": ["needs_input", "unmapped_field"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-missing-learnerid-mapping-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000032",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": { "date": "2026-08-07", "status": "P" }
+    },
+    "context": {
+      "mappings": [
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "status",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "detail", "value": "learnerId" }
+    ],
+    "tags": ["needs_input", "missing_learner_id"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-unconfirmed-mapping-not-applied-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000033",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": { "learnerNo": "L001", "date": "2026-08-07", "status": "P" }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "date",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": false
+        },
+        {
+          "sourceField": "status",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "unmappedFields", "value": "date" }
+    ],
+    "tags": ["needs_input", "unconfirmed_mapping"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-raw-record-not-found-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": {}
+    },
+    "context": { "rawRecordExists": false },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "rejected" },
+      { "type": "contains", "field": "reason", "value": "rawRecordId" }
+    ],
+    "tags": ["rejected", "record_not_found"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-domain-mismatch-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000034",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "BEHAVIOUR",
+      "sourceFields": { "learnerNo": "L001", "date": "2026-08-07", "status": "P" }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "status",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true,
+          "domain": "ATTENDANCE"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "rejected" },
+      { "type": "contains", "field": "reason", "value": "BEHAVIOUR" }
+    ],
+    "tags": ["rejected", "domain_mismatch"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-transform-fn-applied-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000035",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "SIS_API",
+      "targetDomain": "ASSESSMENT",
+      "sourceFields": { "pupilId": "P999", "testDate": "07/08/2026", "markPct": "78" }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "pupilId",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "testDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true,
+          "transformFn": "parseDate_DDMMYYYY"
+        },
+        {
+          "sourceField": "markPct",
+          "canonicalField": "scorePercent",
+          "humanConfirmed": true,
+          "transformFn": "toNumber"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "eventType", "value": "assessment.score" }
+    ],
+    "tags": ["ok", "sis_api", "assessment", "transform_fn"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-mappings-applied-audit-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000036",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_XLSX",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": { "id": "S100", "dt": "2026-08-07", "att": "A" }
+    },
+    "context": {
+      "mappings": [
+        { "sourceField": "id", "canonicalField": "learnerId", "humanConfirmed": true },
+        { "sourceField": "dt", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "att",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "regex_match", "field": "mappingsApplied", "value": "id.*learnerId" }
+    ],
+    "tags": ["ok", "file_xlsx", "audit_trail"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-raw-payload-not-in-result-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000037",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": {
+        "learnerNo": "SECRET_ID_007",
+        "date": "2026-08-07",
+        "status": "P"
+      }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "status",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "regex_match", "field": "canonicalPayload", "value": "(?!.*learnerNo)" }
+    ],
+    "tags": ["ok", "pii_safety", "no_raw_payload"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-multi-tenant-isolation-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "runId": "00000000-0000-0000-0000-000000000021",
+      "rawRecordId": "00000000-0000-0000-0000-000000000038",
+      "sourceId": "00000000-0000-0000-0000-000000000011",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": { "learnerNo": "L002", "date": "2026-08-07", "status": "L" }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "status",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["ok", "multi_tenant"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-attendance-api-connector-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000039",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "ATTENDANCE_API",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": {
+        "studentRef": "A100",
+        "eventDate": "2026-08-07",
+        "type": "PRESENT"
+      }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "studentRef",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "eventDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "type",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "eventType", "value": "attendance.present" }
+    ],
+    "tags": ["ok", "attendance_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-behaviour-api-connector-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000040",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "BEHAVIOUR_API",
+      "targetDomain": "BEHAVIOUR",
+      "sourceFields": {
+        "pupilRef": "B200",
+        "incidentDate": "2026-08-07",
+        "category": "DISRUPTION"
+      }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "pupilRef",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "incidentDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "category",
+          "canonicalField": "behaviourKind",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "eventType", "value": "behaviour.incident" }
+    ],
+    "tags": ["ok", "behaviour_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-screener-api-connector-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000041",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "SCREENER_API",
+      "targetDomain": "WELLBEING",
+      "sourceFields": { "id": "W300", "screenDate": "2026-08-07", "score": "42" }
+    },
+    "context": {
+      "mappings": [
+        { "sourceField": "id", "canonicalField": "learnerId", "humanConfirmed": true },
+        {
+          "sourceField": "screenDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "score",
+          "canonicalField": "screenerScore",
+          "humanConfirmed": true,
+          "transformFn": "toNumber"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "eventType", "value": "wellbeing.screener" }
+    ],
+    "tags": ["ok", "screener_api", "wellbeing"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-manual-upload-connector-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000042",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "MANUAL_UPLOAD",
+      "targetDomain": "ASSESSMENT",
+      "sourceFields": { "learner": "M400", "assessDate": "2026-08-07", "markPct": "65" }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learner",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "assessDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "markPct",
+          "canonicalField": "scorePercent",
+          "humanConfirmed": true,
+          "transformFn": "toNumber"
+        }
+      ]
+    },
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["ok", "manual_upload", "assessment"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-multiple-unmapped-fields-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000043",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": {
+        "learnerNo": "L001",
+        "date": "2026-08-07",
+        "fieldA": "x",
+        "fieldB": "y",
+        "fieldC": "z"
+      }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "unmappedFields", "value": "fieldA" },
+      { "type": "contains", "field": "unmappedFields", "value": "fieldB" },
+      { "type": "contains", "field": "unmappedFields", "value": "fieldC" }
+    ],
+    "tags": ["needs_input", "multiple_unmapped"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-empty-source-fields-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000044",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": {}
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "empty_source_fields"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-no-mappings-configured-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000045",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": { "col1": "v1", "col2": "v2" }
+    },
+    "context": { "mappings": [] },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "no_mappings"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-occurrence-at-in-result-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000046",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "ATTENDANCE_API",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": { "studentRef": "A101", "eventDate": "2026-07-15", "type": "LATE" }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "studentRef",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "eventDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "type",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "occurredAt", "value": "2026-07-15" }
+    ],
+    "tags": ["ok", "occurred_at"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-assessment-subject-mapping-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000047",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "SIS_API",
+      "targetDomain": "ASSESSMENT",
+      "sourceFields": {
+        "pupilId": "P100",
+        "subject": "MATH",
+        "testDate": "2026-08-07",
+        "score": "88"
+      }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "pupilId",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "subject",
+          "canonicalField": "subjectCode",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "testDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "score",
+          "canonicalField": "scorePercent",
+          "humanConfirmed": true,
+          "transformFn": "toNumber"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "regex_match", "field": "mappingsApplied", "value": "subjectCode" }
+    ],
+    "tags": ["ok", "sis_api", "assessment", "subject_mapping"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-partially-confirmed-mappings-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000048",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": { "learnerNo": "L001", "date": "2026-08-07", "status": "P" }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "date",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": false
+        },
+        {
+          "sourceField": "status",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": false
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "unmappedFields", "value": "date" },
+      { "type": "contains", "field": "unmappedFields", "value": "status" }
+    ],
+    "tags": ["needs_input", "partially_confirmed"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-wellbeing-domain-mapping-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000049",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "SCREENER_API",
+      "targetDomain": "WELLBEING",
+      "sourceFields": {
+        "studentId": "W100",
+        "screenerDate": "2026-08-07",
+        "sdq_total": "18"
+      }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "studentId",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "screenerDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "sdq_total",
+          "canonicalField": "screenerScore",
+          "humanConfirmed": true,
+          "transformFn": "toNumber"
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "eventType", "value": "wellbeing.screener" }
+    ],
+    "tags": ["ok", "screener_api", "wellbeing"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-file-xlsx-connector-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000050",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_XLSX",
+      "targetDomain": "ASSESSMENT",
+      "sourceFields": { "uid": "X200", "examDate": "2026-08-07", "pct": "72" }
+    },
+    "context": {
+      "mappings": [
+        { "sourceField": "uid", "canonicalField": "learnerId", "humanConfirmed": true },
+        {
+          "sourceField": "examDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "pct",
+          "canonicalField": "scorePercent",
+          "humanConfirmed": true,
+          "transformFn": "toNumber"
+        }
+      ]
+    },
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["ok", "file_xlsx"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-canonical-payload-no-raw-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000051",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": {
+        "learnerNo": "L999",
+        "date": "2026-08-07",
+        "status": "P",
+        "teacherNotes": "CONFIDENTIAL"
+      }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "status",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "unmappedFields", "value": "teacherNotes" }
+    ],
+    "tags": ["needs_input", "unmapped_sensitive_field"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-numeric-transform-integer-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000052",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "SIS_API",
+      "targetDomain": "ASSESSMENT",
+      "sourceFields": { "id": "N100", "date": "2026-08-07", "mark": "100" }
+    },
+    "context": {
+      "mappings": [
+        { "sourceField": "id", "canonicalField": "learnerId", "humanConfirmed": true },
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "mark",
+          "canonicalField": "scorePercent",
+          "humanConfirmed": true,
+          "transformFn": "toNumber"
+        }
+      ]
+    },
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["ok", "numeric_transform", "boundary"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-zero-mark-transform-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000053",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "SIS_API",
+      "targetDomain": "ASSESSMENT",
+      "sourceFields": { "id": "N101", "date": "2026-08-07", "mark": "0" }
+    },
+    "context": {
+      "mappings": [
+        { "sourceField": "id", "canonicalField": "learnerId", "humanConfirmed": true },
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "mark",
+          "canonicalField": "scorePercent",
+          "humanConfirmed": true,
+          "transformFn": "toNumber"
+        }
+      ]
+    },
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["ok", "numeric_transform", "zero_value"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-learnerId-null-value-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000054",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": { "learnerNo": null, "date": "2026-08-07", "status": "P" }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "learnerNo",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        { "sourceField": "date", "canonicalField": "occurredAt", "humanConfirmed": true },
+        {
+          "sourceField": "status",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "detail", "value": "learnerId" }
+    ],
+    "tags": ["needs_input", "null_learner_id"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-absent-status-event-type-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000055",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "ATTENDANCE_API",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": {
+        "studentRef": "A200",
+        "eventDate": "2026-08-07",
+        "type": "ABSENT"
+      }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "studentRef",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "eventDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "type",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "eventType", "value": "attendance.absent" }
+    ],
+    "tags": ["ok", "attendance_api", "absent"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-late-attendance-event-type-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "00000000-0000-0000-0000-000000000056",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "connectorKind": "ATTENDANCE_API",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": { "studentRef": "A201", "eventDate": "2026-08-07", "type": "LATE" }
+    },
+    "context": {
+      "mappings": [
+        {
+          "sourceField": "studentRef",
+          "canonicalField": "learnerId",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "eventDate",
+          "canonicalField": "occurredAt",
+          "humanConfirmed": true
+        },
+        {
+          "sourceField": "type",
+          "canonicalField": "attendanceStatus",
+          "humanConfirmed": true
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "eventType", "value": "attendance.late" }
+    ],
+    "tags": ["ok", "attendance_api", "late"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-02-source-id-not-found-001",
+    "agentId": "DW-02",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "rawRecordId": "ffffffff-ffff-ffff-ffff-000000000001",
+      "sourceId": "ffffffff-ffff-ffff-ffff-000000000002",
+      "connectorKind": "FILE_CSV",
+      "targetDomain": "ATTENDANCE",
+      "sourceFields": {}
+    },
+    "context": { "rawRecordExists": false },
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "rejected" }],
+    "tags": ["rejected", "source_not_found"],
+    "source": "specification"
+  }
+]

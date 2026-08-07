@@ -42,3 +42,18 @@ export {
   type IngestConnector,
   type PullResult,
 } from './ingest/connector.js';
+
+export {
+  DW01Input,
+  DW02Input,
+  DW02Result,
+  DW03Input,
+  DW03Result,
+  DW04Input,
+  DW04Result,
+  DW05Input,
+  DW05Result,
+  DW06Input,
+  DW07Input,
+  DW08Input,
+} from './agent-inputs.js';

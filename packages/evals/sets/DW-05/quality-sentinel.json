@@ -1,0 +1,714 @@
+[
+  {
+    "id": "dw-05-perfect-quality-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_002",
+          "attendanceStatus": "ABSENT",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_003",
+          "attendanceStatus": "LATE",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "qualityScore", "value": 100 },
+      { "type": "exact_match", "field": "blockedDownstream", "value": false },
+      { "type": "exact_match", "field": "totalRecords", "value": 3 },
+      { "type": "exact_match", "field": "rejectedRecords", "value": 0 }
+    ],
+    "tags": ["ok", "perfect_quality"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-empty-records-needs-input-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": []
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "detail", "value": "empty" }
+    ],
+    "tags": ["needs_input", "empty_records"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-missing-required-field-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        { "learnerToken": "tkn_001", "occurredAt": "2026-08-07" },
+        { "learnerToken": "tkn_002", "occurredAt": "2026-08-07" }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "MISSING_FIELD" },
+      { "type": "contains", "field": "issues", "value": "attendanceStatus" }
+    ],
+    "tags": ["ok", "missing_field"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-duplicate-record-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "DUPLICATE_RECORD" }
+    ],
+    "tags": ["ok", "duplicate_record"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-attendance-rate-over-100-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "PRESENT",
+          "attendanceRatePct": 110,
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "IMPOSSIBLE_VALUE" },
+      { "type": "contains", "field": "issues", "value": "attendanceRatePct" }
+    ],
+    "tags": ["ok", "impossible_value", "attendance_rate"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-negative-day-count-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "ABSENT",
+          "absentDays": -3,
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "IMPOSSIBLE_VALUE" },
+      { "type": "contains", "field": "issues", "value": "absentDays" }
+    ],
+    "tags": ["ok", "impossible_value", "negative_count"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-future-occurred-at-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ASSESSMENT",
+      "sampleRecords": [
+        { "learnerToken": "tkn_001", "scorePercent": 80, "occurredAt": "2099-01-01" }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "IMPOSSIBLE_VALUE" },
+      { "type": "contains", "field": "issues", "value": "occurredAt" }
+    ],
+    "tags": ["ok", "impossible_value", "future_date"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-quality-score-below-60-blocks-downstream-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        },
+        { "learnerToken": "tkn_002", "occurredAt": "2026-08-07" },
+        { "learnerToken": "tkn_003", "occurredAt": "2026-08-07" },
+        { "learnerToken": "tkn_004", "occurredAt": "2026-08-07" },
+        { "learnerToken": "tkn_005", "occurredAt": "2026-08-07" }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "blockedDownstream", "value": true }
+    ],
+    "tags": ["ok", "blocked_downstream", "low_quality"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-error-severity-blocks-downstream-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07",
+          "attendanceRatePct": 110
+        }
+      ]
+    },
+    "context": {
+      "issueOverride": { "attendanceRatePct_impossible": { "severity": "ERROR" } }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "blockedDownstream", "value": true }
+    ],
+    "tags": ["ok", "blocked_downstream", "error_severity"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-quality-score-formula-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_002",
+          "attendanceStatus": "ABSENT",
+          "occurredAt": "2026-08-07"
+        },
+        { "learnerToken": "tkn_003", "occurredAt": "2026-08-07" },
+        { "learnerToken": "tkn_004", "occurredAt": "2026-08-07" }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "totalRecords", "value": 4 },
+      { "type": "exact_match", "field": "rejectedRecords", "value": 2 },
+      { "type": "exact_match", "field": "qualityScore", "value": 50 }
+    ],
+    "tags": ["ok", "quality_score_formula"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-issue-detail-specific-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        { "learnerToken": "tkn_001", "occurredAt": "2026-08-07" },
+        { "learnerToken": "tkn_002", "occurredAt": "2026-08-07" },
+        { "learnerToken": "tkn_003", "occurredAt": "2026-08-07" }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "regex_match", "field": "issues", "value": "3" }
+    ],
+    "tags": ["ok", "specific_issue_detail"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-no-learner-uuid-in-issues-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [{ "learnerToken": "tkn_safe_001", "occurredAt": "2026-08-07" }]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "issues",
+        "value": "^(?!.*00000000-0000-0000-0000).*$"
+      }
+    ],
+    "tags": ["ok", "pii_safety", "no_uuid_in_issues"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-assessment-domain-missing-score-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ASSESSMENT",
+      "sampleRecords": [
+        { "learnerToken": "tkn_001", "subjectCode": "MATH", "occurredAt": "2026-08-07" }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "MISSING_FIELD" },
+      { "type": "contains", "field": "issues", "value": "scorePercent" }
+    ],
+    "tags": ["ok", "assessment", "missing_score"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-assessment-score-over-100-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ASSESSMENT",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "scorePercent": 150,
+          "subjectCode": "MATH",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "IMPOSSIBLE_VALUE" },
+      { "type": "contains", "field": "issues", "value": "scorePercent" }
+    ],
+    "tags": ["ok", "impossible_value", "score_over_100"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-multi-tenant-isolation-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "runId": "00000000-0000-0000-0000-000000000021",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_t2_001",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "qualityScore", "value": 100 }
+    ],
+    "tags": ["ok", "multi_tenant"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-behaviour-domain-missing-kind-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "BEHAVIOUR",
+      "sampleRecords": [{ "learnerToken": "tkn_001", "occurredAt": "2026-08-07" }]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "MISSING_FIELD" },
+      { "type": "contains", "field": "issues", "value": "behaviourKind" }
+    ],
+    "tags": ["ok", "behaviour", "missing_field"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-wellbeing-missing-screener-score-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "WELLBEING",
+      "sampleRecords": [{ "learnerToken": "tkn_001", "occurredAt": "2026-08-07" }]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "MISSING_FIELD" }
+    ],
+    "tags": ["ok", "wellbeing", "missing_screener_score"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-quality-score-clamped-never-negative-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [{ "occurredAt": "2026-08-07" }, { "occurredAt": "2026-08-07" }]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "regex_match", "field": "qualityScore", "value": "^[0-9]" }
+    ],
+    "tags": ["ok", "score_clamped", "boundary"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-quality-score-clamped-never-above-100-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "qualityScore", "value": 100 }
+    ],
+    "tags": ["ok", "score_boundary_100"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-distribution-drift-detected-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ASSESSMENT",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "scorePercent": 20,
+          "subjectCode": "MATH",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_002",
+          "scorePercent": 18,
+          "subjectCode": "MATH",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_003",
+          "scorePercent": 15,
+          "subjectCode": "MATH",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": { "priorRunBaseline": { "avgScorePercent": 72, "stddev": 8 } },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "DISTRIBUTION_DRIFT" }
+    ],
+    "tags": ["ok", "distribution_drift"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-no-drift-without-prior-data-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ASSESSMENT",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "scorePercent": 72,
+          "subjectCode": "MATH",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "issues",
+        "value": "^(?!.*DISTRIBUTION_DRIFT).*$"
+      }
+    ],
+    "tags": ["ok", "no_drift_without_baseline"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-large-batch-100-records-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": "__100_valid_attendance_records__"
+    },
+    "context": {
+      "expandSampleRecords": {
+        "count": 100,
+        "template": {
+          "learnerToken": "tkn_{i}",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        }
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "totalRecords", "value": 100 },
+      { "type": "exact_match", "field": "rejectedRecords", "value": 0 },
+      { "type": "exact_match", "field": "qualityScore", "value": 100 }
+    ],
+    "tags": ["ok", "large_batch"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-mixed-issues-multiple-kinds-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        },
+        { "learnerToken": "tkn_002", "occurredAt": "2026-08-07" },
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "ABSENT",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "MISSING_FIELD" },
+      { "type": "contains", "field": "issues", "value": "DUPLICATE_RECORD" }
+    ],
+    "tags": ["ok", "mixed_issues"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-wellbeing-score-out-of-range-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "WELLBEING",
+      "sampleRecords": [
+        { "learnerToken": "tkn_001", "screenerScore": 9999, "occurredAt": "2026-08-07" }
+      ]
+    },
+    "context": { "domainRanges": { "screenerScore": { "min": 0, "max": 40 } } },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "contains", "field": "issues", "value": "OUT_OF_RANGE" }
+    ],
+    "tags": ["ok", "out_of_range", "wellbeing"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-high-quality-not-blocked-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        {
+          "learnerToken": "tkn_001",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_002",
+          "attendanceStatus": "ABSENT",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_003",
+          "attendanceStatus": "LATE",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_004",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        },
+        {
+          "learnerToken": "tkn_005",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "qualityScore", "value": 100 },
+      { "type": "exact_match", "field": "blockedDownstream", "value": false }
+    ],
+    "tags": ["ok", "not_blocked"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-assessment-all-missing-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ASSESSMENT",
+      "sampleRecords": [{ "occurredAt": "2026-08-07" }, { "occurredAt": "2026-08-06" }]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "blockedDownstream", "value": true }
+    ],
+    "tags": ["ok", "blocked_downstream", "all_missing"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-single-invalid-record-in-large-batch-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": "__1_invalid_in_10__"
+    },
+    "context": {
+      "expandSampleRecords": {
+        "count": 9,
+        "template": {
+          "learnerToken": "tkn_{i}",
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        }
+      },
+      "extraRecords": [{ "occurredAt": "2026-08-07" }]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "totalRecords", "value": 10 },
+      { "type": "exact_match", "field": "rejectedRecords", "value": 1 },
+      { "type": "exact_match", "field": "qualityScore", "value": 90 },
+      { "type": "exact_match", "field": "blockedDownstream", "value": false }
+    ],
+    "tags": ["ok", "mixed_validity"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-issues-have-specific-detail-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "ATTENDANCE",
+      "sampleRecords": [
+        { "learnerToken": "tkn_001", "occurredAt": "2026-08-07" },
+        { "learnerToken": "tkn_002", "occurredAt": "2026-08-07" },
+        { "learnerToken": "tkn_003", "occurredAt": "2026-08-07" }
+      ]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "regex_match", "field": "issues[0].detail", "value": "attendanceStatus" }
+    ],
+    "tags": ["ok", "specific_detail_field"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-05-unknown-domain-needs-input-001",
+    "agentId": "DW-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "runId": "00000000-0000-0000-0000-000000000020",
+      "domain": "UNKNOWN_DOMAIN_XYZ",
+      "sampleRecords": [{ "learnerToken": "tkn_001", "someField": "value" }]
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "detail", "value": "domain" }
+    ],
+    "tags": ["needs_input", "unknown_domain"],
+    "source": "specification"
+  }
+]

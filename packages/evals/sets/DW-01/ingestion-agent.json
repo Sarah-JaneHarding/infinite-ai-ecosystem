@@ -1,0 +1,717 @@
+[
+  {
+    "id": "dw-01-no-connector-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/sis-api"
+    },
+    "context": { "connectorRegistry": {} },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "detail", "value": "connector" }
+    ],
+    "tags": ["needs_input", "no_connector"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-empty-configref-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": ""
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "invalid_config"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-paused-source-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/sis-api"
+    },
+    "context": { "sourceStatus": "PAUSED" },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "contains", "field": "detail", "value": "PAUSED" }
+    ],
+    "tags": ["needs_input", "paused_source"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-error-source-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/sis-api"
+    },
+    "context": { "sourceStatus": "ERROR" },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "error_source"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-file-csv-empty-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-csv"
+    },
+    "context": {
+      "connectorKind": "FILE_CSV",
+      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+    ],
+    "tags": ["ok", "empty_result", "file_csv"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-file-csv-records-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-csv"
+    },
+    "context": {
+      "connectorKind": "FILE_CSV",
+      "connectorReturns": {
+        "records": [
+          {
+            "sourceRef": "row 1",
+            "payload": { "learnerNo": "LNR001", "date": "2026-08-01", "status": "P" }
+          },
+          {
+            "sourceRef": "row 2",
+            "payload": { "learnerNo": "LNR002", "date": "2026-08-01", "status": "A" }
+          }
+        ],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 2 }
+    ],
+    "tags": ["ok", "file_csv"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-file-xlsx-records-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/marks-xlsx"
+    },
+    "context": {
+      "connectorKind": "FILE_XLSX",
+      "connectorReturns": {
+        "records": [
+          {
+            "sourceRef": "Sheet1!A2",
+            "payload": { "learnerNo": "LNR001", "subject": "Math", "mark": 78 }
+          }
+        ],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+    ],
+    "tags": ["ok", "file_xlsx"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-sis-api-empty-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/sis-api"
+    },
+    "context": {
+      "connectorKind": "SIS_API",
+      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+    ],
+    "tags": ["ok", "empty_result", "sis_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-sis-api-records-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/sis-api"
+    },
+    "context": {
+      "connectorKind": "SIS_API",
+      "connectorReturns": {
+        "records": [
+          { "sourceRef": "learner/LNR001", "payload": { "id": "LNR001", "grade": "6" } },
+          { "sourceRef": "learner/LNR002", "payload": { "id": "LNR002", "grade": "6" } },
+          { "sourceRef": "learner/LNR003", "payload": { "id": "LNR003", "grade": "7" } }
+        ],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 3 }
+    ],
+    "tags": ["ok", "sis_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-pagination-first-page-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-api"
+    },
+    "context": {
+      "connectorKind": "ATTENDANCE_API",
+      "connectorReturns": {
+        "records": [
+          {
+            "sourceRef": "att/001",
+            "payload": { "learnerNo": "LNR001", "date": "2026-08-01", "status": "P" }
+          }
+        ],
+        "hasMore": true,
+        "cursor": "page-2-token"
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+    ],
+    "tags": ["ok", "pagination", "attendance_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-attendance-api-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-api"
+    },
+    "context": {
+      "connectorKind": "ATTENDANCE_API",
+      "connectorReturns": {
+        "records": [
+          {
+            "sourceRef": "att/day-001",
+            "payload": { "learnerNo": "LNR001", "date": "2026-08-01", "status": "P" }
+          },
+          {
+            "sourceRef": "att/day-002",
+            "payload": { "learnerNo": "LNR001", "date": "2026-08-02", "status": "P" }
+          },
+          {
+            "sourceRef": "att/day-003",
+            "payload": { "learnerNo": "LNR001", "date": "2026-08-03", "status": "A" }
+          }
+        ],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 3 }
+    ],
+    "tags": ["ok", "attendance_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-behaviour-api-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/behaviour-api"
+    },
+    "context": {
+      "connectorKind": "BEHAVIOUR_API",
+      "connectorReturns": {
+        "records": [
+          {
+            "sourceRef": "incident/001",
+            "payload": {
+              "learnerNo": "LNR001",
+              "date": "2026-08-04",
+              "kind": "disruption"
+            }
+          }
+        ],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+    ],
+    "tags": ["ok", "behaviour_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-screener-api-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/screener-api"
+    },
+    "context": {
+      "connectorKind": "SCREENER_API",
+      "connectorReturns": {
+        "records": [
+          {
+            "sourceRef": "screen/LNR001/2026-t1",
+            "payload": {
+              "learnerNo": "LNR001",
+              "literacyScore": 72.5,
+              "numeracyScore": 68.0
+            }
+          }
+        ],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+    ],
+    "tags": ["ok", "screener_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-manual-upload-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/manual-upload"
+    },
+    "context": {
+      "connectorKind": "MANUAL_UPLOAD",
+      "connectorReturns": {
+        "records": [
+          {
+            "sourceRef": "upload/2026-t1-results.csv/row-1",
+            "payload": { "learnerNo": "LNR001", "subject": "English", "mark": 85 }
+          },
+          {
+            "sourceRef": "upload/2026-t1-results.csv/row-2",
+            "payload": { "learnerNo": "LNR002", "subject": "English", "mark": 72 }
+          }
+        ],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 2 }
+    ],
+    "tags": ["ok", "manual_upload"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-runid-is-uuid-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-csv"
+    },
+    "context": {
+      "connectorKind": "FILE_CSV",
+      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "regex_match",
+        "field": "runId",
+        "value": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      }
+    ],
+    "tags": ["ok", "runid_format"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-records-conformed-zero-on-first-run-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-csv"
+    },
+    "context": {
+      "connectorKind": "FILE_CSV",
+      "connectorReturns": {
+        "records": [{ "sourceRef": "row 1", "payload": { "learnerNo": "LNR001" } }],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsConformed", "value": 0 },
+      { "type": "exact_match", "field": "recordsRejected", "value": 0 }
+    ],
+    "tags": ["ok", "conformed_count"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-large-batch-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-csv"
+    },
+    "context": {
+      "connectorKind": "FILE_CSV",
+      "connectorReturns": {
+        "records": "__generate_100_attendance_records__",
+        "hasMore": false,
+        "cursor": null
+      },
+      "recordCount": 100
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 100 }
+    ],
+    "tags": ["ok", "large_batch"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-cursor-provided-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-api",
+      "cursor": "page-2-token"
+    },
+    "context": {
+      "connectorKind": "ATTENDANCE_API",
+      "connectorReturns": {
+        "records": [
+          {
+            "sourceRef": "att/101",
+            "payload": { "learnerNo": "LNR101", "date": "2026-08-01", "status": "P" }
+          }
+        ],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+    ],
+    "tags": ["ok", "pagination", "cursor_provided"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-different-tenant-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000002",
+      "sourceId": "00000000-0000-0000-0000-000000000020",
+      "configRef": "secret://school-002/attendance-csv"
+    },
+    "context": {
+      "connectorKind": "FILE_CSV",
+      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+    ],
+    "tags": ["ok", "multi_tenant"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-schema-version-in-payload-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/sis-api"
+    },
+    "context": {
+      "connectorKind": "SIS_API",
+      "connectorReturns": {
+        "records": [
+          {
+            "sourceRef": "learner/LNR001",
+            "payload": { "id": "LNR001" },
+            "schemaVersion": "v2"
+          }
+        ],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 1 }
+    ],
+    "tags": ["ok", "schema_version"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-partial-batch-hasmore-true-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/sis-api"
+    },
+    "context": {
+      "connectorKind": "SIS_API",
+      "connectorReturns": {
+        "records": [
+          { "sourceRef": "learner/LNR001", "payload": { "id": "LNR001" } },
+          { "sourceRef": "learner/LNR002", "payload": { "id": "LNR002" } }
+        ],
+        "hasMore": true,
+        "cursor": "after-LNR002"
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 2 }
+    ],
+    "tags": ["ok", "pagination", "has_more"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-no-source-id-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000099",
+      "configRef": "secret://school-001/attendance-csv"
+    },
+    "context": { "sourceNotFound": true },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "source_not_found"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-file-csv-single-record-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-csv"
+    },
+    "context": {
+      "connectorKind": "FILE_CSV",
+      "connectorReturns": {
+        "records": [
+          {
+            "sourceRef": "row 1",
+            "payload": { "learnerNo": "LNR001", "date": "2026-01-14", "status": "P" }
+          }
+        ],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 1 },
+      { "type": "exact_match", "field": "recordsRejected", "value": 0 }
+    ],
+    "tags": ["ok", "single_record"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-screener-api-empty-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/screener-api"
+    },
+    "context": {
+      "connectorKind": "SCREENER_API",
+      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+    ],
+    "tags": ["ok", "empty_result", "screener_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-behaviour-api-empty-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/behaviour-api"
+    },
+    "context": {
+      "connectorKind": "BEHAVIOUR_API",
+      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+    ],
+    "tags": ["ok", "empty_result", "behaviour_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-multi-page-total-count-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/sis-api"
+    },
+    "context": {
+      "connectorKind": "SIS_API",
+      "pages": [
+        {
+          "records": [
+            { "sourceRef": "l/1", "payload": {} },
+            { "sourceRef": "l/2", "payload": {} }
+          ],
+          "hasMore": true,
+          "cursor": "p2"
+        },
+        {
+          "records": [{ "sourceRef": "l/3", "payload": {} }],
+          "hasMore": false,
+          "cursor": null
+        }
+      ]
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 3 }
+    ],
+    "tags": ["ok", "pagination", "multi_page"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-file-xlsx-empty-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/marks-xlsx"
+    },
+    "context": {
+      "connectorKind": "FILE_XLSX",
+      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+    ],
+    "tags": ["ok", "empty_result", "file_xlsx"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-attendance-api-empty-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-api"
+    },
+    "context": {
+      "connectorKind": "ATTENDANCE_API",
+      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+    ],
+    "tags": ["ok", "empty_result", "attendance_api"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-manual-upload-empty-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/manual-upload"
+    },
+    "context": {
+      "connectorKind": "MANUAL_UPLOAD",
+      "connectorReturns": { "records": [], "hasMore": false, "cursor": null }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "recordsReceived", "value": 0 }
+    ],
+    "tags": ["ok", "empty_result", "manual_upload"],
+    "source": "specification"
+  },
+  {
+    "id": "dw-01-source-field-missing-sourceref-001",
+    "agentId": "DW-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "sourceId": "00000000-0000-0000-0000-000000000010",
+      "configRef": "secret://school-001/attendance-csv"
+    },
+    "context": {
+      "connectorKind": "FILE_CSV",
+      "connectorReturns": {
+        "records": [{ "sourceRef": "", "payload": { "learnerNo": "LNR001" } }],
+        "hasMore": false,
+        "cursor": null
+      }
+    },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["needs_input", "invalid_record"],
+    "source": "specification"
+  }
+]
