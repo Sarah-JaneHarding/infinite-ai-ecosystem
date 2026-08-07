@@ -228,6 +228,34 @@ lesson plan's source documents. CE-08 does not hold learner data — it writes c
 variants — so the approval gate is upstream at CE-05. Depends on CE-01's GradeFramework
 and CE-05's LessonPlan.
 
+#### CE-09 — Coverage Auditor
+
+| Field           | Value                                                                                                     |
+| --------------- | --------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-01                                                                                                    |
+| Purpose         | `planning`                                                                                                |
+| Input           | `CE09Input`: grade, subject, termNumber, academicYear, tenantId                                           |
+| Output          | `CoverageAuditResult`: `{ status: "ok", audit: CoverageAudit }` or `CoverageAuditNeedsInput`              |
+| Model           | `curriculum.audit`                                                                                        |
+| Guardrails      | `pii_guard`, `grounding_check`                                                                            |
+| Budget          | 8 000 tokens · $0.10 per run                                                                              |
+| Eval set        | `CE-09` (30 specification cases; all test `needs_input` until ratified TermPlan and L2 episode log exist) |
+| Approval gate   | None — audit output is a diagnostic artefact; the HoD gate sits upstream at the publish step              |
+| Writes to Brain | Yes — coverage audit records are versioned curriculum diagnostics                                         |
+| Prompt          | `packages/prompts/src/CE-09/1.0.0.prompt.md`                                                              |
+| Contract        | `packages/agents/src/mod-01/CE-09.contract.ts`                                                            |
+
+CE-09 compares the ratified term plan (CE-03 output) against L2 episode records and
+assessment records. It produces a drift report with four kinds of `DriftItem`: topics
+planned but not taught, topics taught but not planned, topics planned but not assessed,
+and assessments recorded for topics outside the plan. `coverageRatePct` is the percentage
+of planned topics found in both the episode log and an assessment record. CE-09 has no
+learner-data access — `driftItems` and `coverageRatePct` are curriculum diagnostics only.
+The agent returns `needs_input` when the term plan is absent or unratified, or when no L2
+episode log exists for the term. Runs after the HoD-approved `publish-to-brain` step in
+the MOD-01 pipeline. Depends on CE-03's ratified `TermPlan` and the Brain's L2 procedural
+memory.
+
 ### MOD-02 Support Analytics Centre — Stage 10
 
 | ID    | Agent                | Output                                                              |

@@ -129,6 +129,15 @@ export {
 } from './curriculum/assessment.js';
 
 export {
+  CE09Input,
+  CoverageAudit,
+  CoverageAuditNeedsInput,
+  CoverageAuditResult,
+  DriftItem,
+  DriftKind,
+} from './curriculum/coverage.js';
+
+export {
   ChatCompletionRequest,
   ChatCompletionResponse,
   ChatCompletionStreamEvent,

@@ -2972,3 +2972,51 @@ Exported from `packages/orchestrator/src/index.ts` as `MOD01_CURRICULUM_PIPELINE
 Steps 5–7 (CE-09 Coverage Auditor, export surface, docs/AGENTS.md for CE-09) are next.
 
 Open questions: OQ-002, OQ-003, OQ-013 remain open.
+
+---
+
+### Stage 08 — Step 5: CE-09 Coverage Auditor
+
+**Date:** 2026-08-07  
+**Status:** complete
+
+CE-09 compares the ratified term plan (CE-03 output) against L2 episode records and
+assessment records, producing a drift report for the HoD.
+
+Deliverables committed in this step:
+
+- `packages/contracts/src/curriculum/coverage.ts` — Zod schemas: `CE09Input`,
+  `DriftKind`, `DriftItem`, `CoverageAudit`, `CoverageAuditNeedsInput`,
+  `CoverageAuditResult`.
+- `packages/contracts/src/index.ts` — barrel export for all CE-09 types.
+- `packages/contracts/test/coverage.spec.ts` — 21 contract tests covering valid/invalid
+  inputs, all four drift kinds, `needs_input` with TERM_PLAN and L2_EPISODE_LOG, and
+  the `ok` shape with drift items. All passing.
+- `packages/contracts/test/exports.spec.ts` — widened to include the six new CE-09
+  exports.
+- `packages/prompts/src/CE-09/1.0.0.prompt.md` — 8-section prompt (ROLE → SELF-CHECK).
+  Model: `curriculum.audit`. Author: stage-08.
+- `packages/prompts/prompt-lock.json` — `CE-09@1.0.0` hash added.
+- `packages/evals/sets/CE-09/coverage-auditor.json` — 30 specification cases in bare
+  JSON array format. Cases 001-020 test empty L0 (all expect `needs_input`). Cases
+  021-030 include adversarial inputs: draft term plan, missing episode log, prompt
+  injection in subject field.
+- `packages/agents/src/mod-01/CE-09.contract.ts` — agent contract: model
+  `curriculum.audit`, guardrails `pii_guard` + `grounding_check`, budget 8 000 tokens /
+  $0.10, `requiresApproval: false`, `writesToBrain: true`.
+- `packages/agents/test/mod-01/CE-09.contract.spec.ts` — 11 contract spec tests, all
+  passing.
+- `docs/AGENTS.md` — CE-09 section added immediately after CE-08.
+
+Also fixed in this commit batch:
+
+- `packages/evals/sets/CE-08/differentiation-agent.json` — added `agentId` and `source`
+  fields to all 30 cases; replaced non-existent `field_present` / `array_not_empty`
+  expectation types with `exact_match` on `status: "needs_input"`.
+
+All tests: 221 contract tests + 139 agent tests + orchestrator tests passing.
+`pnpm lint` and `pnpm typecheck` clean.
+
+Steps 6–7 (export surface PDF/DOCX/LTI, remaining docs) are next.
+
+Open questions: OQ-002, OQ-003, OQ-013 remain open.
