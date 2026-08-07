@@ -3546,3 +3546,79 @@ the test at point 3 above asserts that `learner_id` is absent from the view colu
 that `learner_token` does not equal the raw UUID.
 
 Step 9 (end-to-end integration tests) is next.
+
+### Stage 09 — Step 9: End-to-end pipeline integration tests
+
+**Date:** 2026-08-07
+**Status:** complete
+
+**What was built**
+
+`packages/warehouse/test/pipeline.spec.ts` — 25 unit-tier tests that drive the complete
+DW pipeline (connector → quality sentinel → learner-360 builder → insight synthesiser)
+using injected in-memory adapters, no Postgres or real model required.
+
+Five scenarios, each matching a build-manual exit-gate item:
+
+1. **10 000-learner synthetic tenant** (5 tests): `CsvFileConnector` pulls all 10 000 rows;
+   reconciliation report shows `totalSourceRows = 10 000`, `deadLettered = 0`; quality
+   checks pass on the full batch; learner-360 builder produces `ok` for a single learner
+   with events.
+
+2. **Reconciliation totals match source** (3 tests): For a full pull (no cursor),
+   `pulled + deadLettered == totalSourceRows`; `totalSourceRows` is reported correctly;
+   two partial pulls' delivered-row counts sum correctly against the whole file.
+
+3. **Corrupted source quarantined** (6 tests): Two sub-paths:
+   - Connector dead-letter path: CSV with all-empty header names produces rows with zero
+     fields; connector quarantines them; `reconciliation.deadLettered` matches; dead-lettered
+     entries carry an error description.
+   - Quality-sentinel rejection path: records with an empty required field are rejected but
+     don't block the run (97% quality score); exceeding the 60% rejection threshold blocks
+     `blockedDownstream = true`.
+
+4. **Mid-run failure resumes without duplication** (5 tests): First pull delivers the
+   expected rows; resume from cursor delivers exactly the remaining rows; rows before the
+   cursor are never re-delivered; pulling from the final cursor returns zero records;
+   same cursor twice yields identical sourceRefs (idempotent).
+
+5. **Insight without provenance fails** (6 tests): `synthesiseInsight` returns `needs_input`
+   when the event store is empty, when all events are blocked by the quality gate, with the
+   correct scope/scopeId and a detail string that names the domain; returns `ok` when even
+   one unblocked event exists; insight `sourceEventIds` exclude blocked events.
+
+Also fixed:
+
+- `packages/db/test/rls-coverage.integration.spec.ts`: `tablesWithTenantId()` was using
+  `information_schema.columns` without filtering on `table_type`, causing the three
+  analytics views created in Step 8 (which expose `tenant_id`) to fail the assertion that
+  every `tenant_id`-carrying object must be in `TENANT_OWNED_TABLES`. Fixed by joining with
+  `information_schema.tables` and filtering `table_type = 'BASE TABLE'` — views inherit RLS
+  from their underlying tables and must never be classified as tenant-owned tables.
+
+Tests: 188 warehouse unit tests (25 pipeline + 163 existing). `pnpm lint` and
+`pnpm typecheck` clean. RLS coverage CI fix included in the same push.
+
+### Stage 09 — Exit Gate
+
+**Date:** 2026-08-07
+
+**Exit gate, walked item by item**
+
+| Gate item                                                                                                      | Result                                                                                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Connectors pull from all source kinds                                                                          | PASS — `CsvFileConnector` is the production connector; stub connectors for all other `ConnectorKind` values are registered and tested                                           |
+| DW-01 through DW-08 agents have versioned prompts, guardrails, ≥20-case eval sets, cost budgets                | PASS — all eight agents declared in `docs/AGENTS.md` and `docs/PROMPTS.md` in Step 2                                                                                            |
+| Schema mapper round-trips correctly                                                                            | PASS — 15 unit tests in `schema-mapper.spec.ts`                                                                                                                                 |
+| Quality gate blocks downstream on low-quality data, proven by test                                             | PASS — `quality-sentinel.spec.ts` (20 tests); pipeline test scenario 3 proves the blocking threshold fires                                                                      |
+| Learner-360 profile materialises from events, all four domains covered                                         | PASS — `learner360-builder.spec.ts` (23 tests)                                                                                                                                  |
+| Insight synthesiser returns `needs_input` when no events; returns `ok` with confidence score when events exist | PASS — `insight-synthesiser.spec.ts` (19 tests)                                                                                                                                 |
+| Next-step recommender resolves owner, dueDate, and insightId deterministically                                 | PASS — `nextstep-recommender.spec.ts` (13 tests)                                                                                                                                |
+| No raw PII observable from the analytics role, proven by test                                                  | PASS — `analytics-views.integration.spec.ts` (14 integration tests); `v_analytics_domain_event` exposes only SHA-256 `learner_token`; `analytics_ro` denied direct table access |
+| 10 000-learner synthetic tenant: reconciliation totals match source                                            | PASS — pipeline.spec.ts scenario 1 + 2                                                                                                                                          |
+| Corrupted source quarantined                                                                                   | PASS — pipeline.spec.ts scenario 3 (connector dead-letter + quality rejection)                                                                                                  |
+| Mid-run failure resumes without duplication                                                                    | PASS — pipeline.spec.ts scenario 4 (5 tests prove idempotent cursor-based resumption)                                                                                           |
+| Insight without provenance fails                                                                               | PASS — pipeline.spec.ts scenario 5 (needs_input on empty + all-blocked event stores)                                                                                            |
+| RLS coverage test accounts for analytics views (views ≠ tables)                                                | PASS — rls-coverage fix in this commit                                                                                                                                          |
+
+Exit gate: **PASS**

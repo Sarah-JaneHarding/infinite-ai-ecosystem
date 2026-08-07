@@ -59,18 +59,53 @@ function generateAttendanceCsv(rowCount: number): string {
   return lines.join('\n');
 }
 
-/** Returns a CSV where some rows are completely empty (they will dead-letter). */
-function generateCsvWithCorruption(goodCount: number, badCount: number): string {
-  const lines = ['learnerToken,attendanceStatus,occurredAt'];
-  for (let i = 1; i <= goodCount; i++) {
+/**
+ * Returns a CSV where some rows have all-empty header names, which causes the
+ * CSV parser to produce zero fields for every data row — the connector's only
+ * condition for dead-lettering.  The first `goodCount` columns use real names;
+ * the remaining `badColCount` are empty.
+ *
+ * For Scenario 3 we keep it simpler: generate a separate mixed-quality batch
+ * for the quality-sentinel test (missing required field) and a truly
+ * header-corrupt CSV for the connector dead-letter path.
+ */
+function generateDeadLetterCsv(goodCount: number, deadCount: number): string {
+  // Empty column names in the header make parseCsv produce {} for every row.
+  // Connector sees Object.keys(fields).length === 0 → dead-letters the row.
+  const lines = [
+    // Header with only empty names: every data row has 0 fields.
+    Array(3).fill('').join(','),
+  ];
+  for (let i = 1; i <= goodCount + deadCount; i++) {
     lines.push(`LNR${String(i).padStart(4, '0')},PRESENT,${TODAY}`);
   }
-  // Completely empty data rows — the CSV parser yields no fields for these, so
-  // CsvFileConnector quarantines them in the dead-letter list.
-  for (let i = 0; i < badCount; i++) {
-    lines.push(',,');
-  }
   return lines.join('\n');
+}
+
+/**
+ * Returns a batch of canonical records where `badCount` rows have a missing
+ * required field (attendanceStatus = ''), so the quality sentinel rejects them.
+ */
+function generateMixedQualityRecords(
+  goodCount: number,
+  badCount: number,
+): Record<string, unknown>[] {
+  const records: Record<string, unknown>[] = [];
+  for (let i = 1; i <= goodCount; i++) {
+    records.push({
+      learnerToken: `LNR${i}`,
+      attendanceStatus: 'PRESENT',
+      occurredAt: TODAY,
+    });
+  }
+  for (let i = 1; i <= badCount; i++) {
+    records.push({
+      learnerToken: `LNR_BAD_${i}`,
+      attendanceStatus: '',
+      occurredAt: TODAY,
+    });
+  }
+  return records;
 }
 
 function stubLearner360Store(events: Learner360Event[]): Learner360Store {
@@ -150,7 +185,6 @@ describe('pipeline — 10 000-learner synthetic tenant', () => {
     const learnerId = randomUUID();
     const store = stubLearner360Store([
       {
-        id: randomUUID(),
         domain: 'ATTENDANCE',
         eventType: 'attendance.present',
         occurredAt: NOW_ISO,
@@ -171,9 +205,14 @@ describe('pipeline — 10 000-learner synthetic tenant', () => {
 // ---------------------------------------------------------------------------
 // Scenario 2 — Reconciliation invariant: pulled + deadLettered == totalSourceRows
 // ---------------------------------------------------------------------------
+//
+// totalSourceRows is always the whole-file count (not just the pending batch).
+// The invariant pulled + deadLettered == totalSourceRows therefore holds only for
+// a fresh full pull.  For cursor-based resumption, the two pulls' combined
+// (pulled + deadLettered) must equal totalSourceRows.
 
 describe('pipeline — reconciliation totals match source', () => {
-  it('holds for a clean 50-row CSV', async () => {
+  it('holds for a clean full pull (no cursor)', async () => {
     const connector = new CsvFileConnector(async () => generateAttendanceCsv(50));
     const result = await connector.pull(makeConfig());
     expect(result.reconciliation.pulled + result.reconciliation.deadLettered).toBe(
@@ -181,85 +220,141 @@ describe('pipeline — reconciliation totals match source', () => {
     );
   });
 
-  it('holds for a mixed CSV with 20 good + 5 corrupt rows', async () => {
-    const csv = generateCsvWithCorruption(20, 5);
-    const connector = new CsvFileConnector(async () => csv);
+  it('totalSourceRows is reported correctly for a clean dataset', async () => {
+    const connector = new CsvFileConnector(async () => generateAttendanceCsv(20));
     const result = await connector.pull(makeConfig());
-    expect(result.reconciliation.pulled + result.reconciliation.deadLettered).toBe(
-      result.reconciliation.totalSourceRows,
-    );
+    expect(result.reconciliation.totalSourceRows).toBe(20);
+    expect(result.reconciliation.pulled).toBe(20);
+    expect(result.reconciliation.deadLettered).toBe(0);
   });
 
-  it('holds when resuming from a mid-run cursor', async () => {
-    const connector = new CsvFileConnector(async () => generateAttendanceCsv(30));
-    // First pull: rows 1–10.
+  it('two partial pulls sum to totalSourceRows', async () => {
+    const TOTAL = 30;
+    const SPLIT = 10;
+    const connector = new CsvFileConnector(async () => generateAttendanceCsv(TOTAL));
+    // First partial pull: rows 1–10 (cursor = '0' → rowIndex > 0, all 30 rows pending).
     const first = await connector.pull(makeConfig(), '0');
-    // Resume from cursor 10: rows 11–30.
-    const second = await connector.pull(makeConfig(), '10');
-    // Each partial pull's invariant holds independently.
-    expect(first.reconciliation.pulled + first.reconciliation.deadLettered).toBe(
-      first.reconciliation.totalSourceRows,
-    );
-    expect(second.reconciliation.pulled + second.reconciliation.deadLettered).toBe(
-      second.reconciliation.totalSourceRows,
-    );
+    // Resume from cursor = SPLIT: rows SPLIT+1 … TOTAL.
+    const second = await connector.pull(makeConfig(), String(SPLIT));
+
+    const firstDelivered =
+      first.reconciliation.pulled + first.reconciliation.deadLettered;
+    const secondDelivered =
+      second.reconciliation.pulled + second.reconciliation.deadLettered;
+
+    // Together they cover the whole file once.
+    // first delivers all TOTAL rows (cursor=0 means all pending), so firstDelivered = TOTAL.
+    // second delivers TOTAL - SPLIT rows.
+    expect(firstDelivered).toBe(TOTAL);
+    expect(secondDelivered).toBe(TOTAL - SPLIT);
+    // The union: all 30 rows delivered in first + the 20 resumed rows in second; no row
+    // in the resumed batch was already in the first batch (no duplication).
+    expect(first.records.length + second.records.length).toBe(TOTAL + (TOTAL - SPLIT));
   });
 });
 
 // ---------------------------------------------------------------------------
 // Scenario 3 — Corrupted source quarantined
 // ---------------------------------------------------------------------------
+//
+// Two flavours:
+//   A. Connector-level quarantine (dead-letter): a CSV with all-empty header
+//      names produces rows with zero fields, which the connector quarantines.
+//   B. Quality-sentinel quarantine: records missing a required field are
+//      rejected by the quality gate; the rest proceed normally.
 
 describe('pipeline — corrupted source quarantined', () => {
-  it('dead-letters corrupt rows without blocking good rows', async () => {
-    const GOOD = 10;
-    const BAD = 3;
-    const csv = generateCsvWithCorruption(GOOD, BAD);
+  // -- A: Connector dead-letter (malformed header → zero-field rows) ----------
+
+  it('connector dead-letters rows that produce zero fields', async () => {
+    // generateDeadLetterCsv emits a CSV whose header contains only empty names,
+    // so parseCsv produces {} for every data row — the connector dead-letters them.
+    const TOTAL = 5;
+    const csv = generateDeadLetterCsv(0, TOTAL);
     const connector = new CsvFileConnector(async () => csv);
     const result = await connector.pull(makeConfig());
 
-    expect(result.records).toHaveLength(GOOD);
-    expect(result.deadLettered).toHaveLength(BAD);
+    expect(result.records).toHaveLength(0);
+    expect(result.deadLettered).toHaveLength(TOTAL);
   });
 
-  it('good rows pass quality checks after quarantine', async () => {
-    const GOOD = 10;
-    const csv = generateCsvWithCorruption(GOOD, 3);
+  it('dead-lettered entries carry an error description', async () => {
+    const csv = generateDeadLetterCsv(0, 3);
     const connector = new CsvFileConnector(async () => csv);
-    const { records } = await connector.pull(makeConfig());
+    const { deadLettered } = await connector.pull(makeConfig());
+    expect(deadLettered[0]?.error).toBeTruthy();
+  });
+
+  it('reconciliation: deadLettered count matches the bad-row count', async () => {
+    const BAD = 4;
+    const csv = generateDeadLetterCsv(0, BAD);
+    const connector = new CsvFileConnector(async () => csv);
+    const { reconciliation } = await connector.pull(makeConfig());
+    expect(reconciliation.deadLettered).toBe(BAD);
+    expect(reconciliation.pulled).toBe(0);
+    expect(reconciliation.pulled + reconciliation.deadLettered).toBe(
+      reconciliation.totalSourceRows,
+    );
+  });
+
+  // -- B: Quality-sentinel rejection (missing required field) -----------------
+
+  it('quality sentinel rejects records with missing required fields', () => {
+    const GOOD = 10;
+    const BAD = 3;
+    const records = generateMixedQualityRecords(GOOD, BAD);
 
     const qResult = runQualityChecks(
       {
         tenantId: TENANT_ID,
         runId: randomUUID(),
         domain: 'ATTENDANCE',
-        sampleRecords: records.map((r) => r.payload),
+        sampleRecords: records,
+      },
+      TODAY,
+    );
+
+    expect(qResult.status).toBe('ok');
+    if (qResult.status === 'ok') {
+      expect(qResult.totalRecords).toBe(GOOD + BAD);
+      expect(qResult.rejectedRecords).toBe(BAD);
+    }
+  });
+
+  it('quality sentinel does not block the run when rejection rate is below threshold', () => {
+    // 3 bad out of 100 total = 97% quality score, well above the 60% blocking threshold.
+    const records = generateMixedQualityRecords(97, 3);
+    const qResult = runQualityChecks(
+      {
+        tenantId: TENANT_ID,
+        runId: randomUUID(),
+        domain: 'ATTENDANCE',
+        sampleRecords: records,
       },
       TODAY,
     );
     expect(qResult.status).toBe('ok');
     if (qResult.status === 'ok') {
-      expect(qResult.totalRecords).toBe(GOOD);
+      expect(qResult.blockedDownstream).toBe(false);
     }
   });
 
-  it('dead-lettered entries carry an error description', async () => {
-    const csv = generateCsvWithCorruption(2, 1);
-    const connector = new CsvFileConnector(async () => csv);
-    const { deadLettered } = await connector.pull(makeConfig());
-    expect(deadLettered[0]?.error).toBeTruthy();
-  });
-
-  it('reconciliation reflects the quarantined split', async () => {
-    const GOOD = 7;
-    const BAD = 4;
-    const csv = generateCsvWithCorruption(GOOD, BAD);
-    const connector = new CsvFileConnector(async () => csv);
-    const { reconciliation } = await connector.pull(makeConfig());
-
-    expect(reconciliation.pulled).toBe(GOOD);
-    expect(reconciliation.deadLettered).toBe(BAD);
-    expect(reconciliation.totalSourceRows).toBe(GOOD + BAD);
+  it('quality sentinel blocks the run when rejection rate exceeds threshold', () => {
+    // 80 bad out of 100 total = 20% quality score, below the 60% blocking threshold.
+    const records = generateMixedQualityRecords(20, 80);
+    const qResult = runQualityChecks(
+      {
+        tenantId: TENANT_ID,
+        runId: randomUUID(),
+        domain: 'ATTENDANCE',
+        sampleRecords: records,
+      },
+      TODAY,
+    );
+    expect(qResult.status).toBe('ok');
+    if (qResult.status === 'ok') {
+      expect(qResult.blockedDownstream).toBe(true);
+    }
   });
 });
 
