@@ -65,6 +65,12 @@ export {
 export { runQualityChecks } from './quality/quality-sentinel.js';
 
 export {
+  buildLearner360,
+  type Learner360Event,
+  type Learner360Store,
+} from './learner360/learner360-builder.js';
+
+export {
   DW01Input,
   DW02Input,
   DW02Result,

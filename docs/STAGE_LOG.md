@@ -3370,3 +3370,67 @@ Tests: 108 passing (20 quality-sentinel + 15 schema-mapper + 26 connector +
 34 types + 13 csv-parser). `pnpm lint` and `pnpm typecheck` clean.
 
 Step 6 (DW-06 Learner-360 Builder) is next.
+
+### Stage 09 — Step 6: DW-06 Learner-360 Builder
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the Learner-360 materialiser (DW-06), a deterministic, model-free function that
+assembles a cross-domain learner profile from conformed events for one academic term.
+All persistence is injected via `Learner360Store`; the unit tier runs without Postgres.
+
+**New files in `packages/warehouse/src/learner360/`:**
+
+- `learner360-builder.ts` — exports `buildLearner360(input: DW06Input, store: Learner360Store, now?: string): Promise<DW06Result>`.
+
+  Two outcomes:
+  - `ok` — profile built; domain summaries are `null` when no events exist for that domain.
+  - `needs_input` — no conformed events found for the learner/term combination.
+
+  Domain summaries built by internal helpers:
+  - **`buildAttendanceSummary`** — counts `attendance.present/absent/late` events;
+    `attendanceRatePct = Math.round(100 × present / total)`.
+  - **`buildAcademicSummary`** — `assessment.score` events; latest score wins per subject
+    (sorted by `occurredAt`); `overallAverage` = mean of subject averages.
+  - **`buildBehaviourSummary`** — counts all BEHAVIOUR events; `mostRecentKind` from
+    `payload.behaviourKind` of the most recent event.
+  - **`buildWellbeingSummary`** — `wellbeing.screener` events; builds `screenerScores`
+    record; `flagged = screenerScore > threshold` (from payload).
+
+  Events with `blockedDownstream: true` are excluded from all summary calculations.
+  When any blocked event exists, `dataQualityNote` is set to a human-readable string.
+  `screenerResults` is `null` (placeholder for the future feature-store integration).
+  `now` is injected for deterministic `lastMaterialisedAt` in tests.
+
+  Also exported: `Learner360Event` (event shape) and `Learner360Store` (store interface).
+
+**Updated files:**
+
+- `src/types.ts` — renamed `Learner360Profile` fields to match eval-case dot paths:
+  `attendanceSummary → attendance`, `academicSummary → academic`,
+  `behaviourSummary → behaviour`, `wellbeingSummary → wellbeing`.
+- `test/types.spec.ts` — updated fixtures to use the renamed fields.
+- `src/index.ts` — added exports for `buildLearner360`, `Learner360Event`, `Learner360Store`.
+
+**New files in `packages/warehouse/test/learner360/`:**
+
+- `learner360-builder.spec.ts` — 23 tests:
+  - `needs_input` (1): no events → needs_input status with correct detail.
+  - Attendance summary (4): present/absent/late counts; rate formula; null when no events.
+  - Academic summary (4): single subject; latest score wins per subject; overall average;
+    null when no events.
+  - Behaviour summary (2): incident count; null when no events.
+  - Wellbeing summary (3): screenerScores record; flagged when score > threshold; null when
+    no events.
+  - Multi-domain / null domains (2): only populated summaries returned; unrelated domain
+    events do not pollute.
+  - Blocked downstream (3): blocked events excluded from summaries; non-blocked events
+    still counted; dataQualityNote set when any event is blocked.
+  - Metadata (4): lastMaterialisedAt from injected `now`; learnerId and tenantId passed
+    through; `screenerResults: null`; multi-tenant store wiring.
+
+Tests: 131 passing (23 learner360-builder + 20 quality-sentinel + 15 schema-mapper +
+26 connector + 34 types + 13 csv-parser). `pnpm lint` and `pnpm typecheck` clean.
+
+Step 7 (DW-07 Insight Synthesiser) is next.

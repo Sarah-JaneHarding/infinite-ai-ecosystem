@@ -246,10 +246,10 @@ describe('Learner360Profile', () => {
   const base: Learner360Profile = {
     learnerId: LEARNER_ID,
     tenantId: TENANT_ID,
-    attendanceSummary: null,
-    academicSummary: null,
-    behaviourSummary: null,
-    wellbeingSummary: null,
+    attendance: null,
+    academic: null,
+    behaviour: null,
+    wellbeing: null,
     screenerResults: null,
     dataQualityNote: null,
     lastMaterialisedAt: NOW,
@@ -263,7 +263,7 @@ describe('Learner360Profile', () => {
     expect(
       Learner360Profile.safeParse({
         ...base,
-        attendanceSummary: {
+        attendance: {
           termNumber: 1,
           academicYear: 2026,
           presentDays: 40,
