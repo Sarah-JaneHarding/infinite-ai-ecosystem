@@ -78,4 +78,43 @@ export {
   TrendDirection,
 } from './agent-schemas.js';
 
+export {
+  buildCaseFile,
+  type CaseFileInput,
+  type FidelityEntry,
+  type InterventionEntry,
+  type LearnerCaseFile,
+  type MeetingEntry,
+  type ParentReportEntry,
+  type ProgressEntry,
+  type ReferralEntry,
+  type ScreenEntry,
+  type TierEntry,
+} from './case-file.js';
+
+export {
+  MIN_COHORT_SIZE,
+  rollupClass,
+  rollupGrade,
+  rollupSchool,
+  type ClassReport,
+  type CohortDistribution,
+  type GradeReport,
+  type LearnerReport,
+  type SchoolReport,
+  type SuppressedCohort,
+  type TierDistribution,
+  type VisibleDistribution,
+} from './reporting.js';
+
+export {
+  BIAS_RATIO_THRESHOLD,
+  MIN_POPULATION_FOR_BIAS_CHECK,
+  monitorBias,
+  type BiasMonitorFinding,
+  type BiasMonitorInput,
+  type BiasMonitorResult,
+  type GroupTierCounts,
+} from './bias-monitor.js';
+
 export const PACKAGE_NAME = '@infinite-ai/analytics' as const;

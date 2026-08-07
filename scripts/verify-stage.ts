@@ -150,10 +150,17 @@ const STAGES: readonly Stage[] = [
     id: '10',
     name: 'MOD-02 Support Analytics Centre',
     commands: [
-      // Tier model (assignTier, checkDataSufficiency, checkAllDomainsSufficiency) and
-      // SIAS state machine (transitionSias, isSiasTerminal, legalNextStates) — 53 tests,
-      // ≥ 95% coverage across all four axes.
+      // Tier model and SIAS state machine — ≥ 95% coverage.
       'pnpm --filter @infinite-ai/analytics test:coverage',
+      // Eval sets for all AC agents (smoke-run + gate score).
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+      // Diagnosis red-team: every poisoned input must be refused.
+      'pnpm test:redteam:diagnosis',
+      // Safeguarding escalation drill.
+      'pnpm test:drill:safeguarding',
+      // Bias monitor on skewed fixture.
+      'pnpm test:bias-monitor',
     ],
   },
   { id: '11', name: 'MOD-04 Teaching & Learning Toolbox', commands: [] },

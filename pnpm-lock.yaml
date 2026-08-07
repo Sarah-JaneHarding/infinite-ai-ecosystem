@@ -133,6 +133,9 @@ importers:
 
   packages/analytics:
     dependencies:
+      '@infinite-ai/guardrails':
+        specifier: workspace:*
+        version: link:../guardrails
       zod:
         specifier: 3.25.76
         version: 3.25.76

@@ -3679,3 +3679,102 @@ lines — all above the 95% threshold.
 test:coverage`.
 
 `pnpm lint` and `pnpm typecheck` clean for the new package.
+
+---
+
+### Stage 10 — Steps 2–4: AC-01 through AC-10 agent contracts, prompts, and eval sets
+
+**Date:** 2026-08-07
+
+**What was built**
+
+Ten AC-agents declared across three commits:
+
+- **Step 2** — AC-01 (Universal Design Screener) and AC-02 (Core-Health Gate); contracts in
+  `@infinite-ai/contracts`, prompt files and lock in `@infinite-ai/prompts`, 20+ eval cases
+  each in `@infinite-ai/evals/sets`.
+- **Step 3** — AC-03 (Small-Group Facilitator), AC-04 (Progress Monitor), AC-05 (Fidelity
+  Checker), AC-06 (SBST Coordinator), AC-07 (Intervention Planner).
+- **Step 4** — AC-08 (SBST Meeting Scribe), AC-09 (SIAS Compiler), AC-10 (Parent Report
+  Writer).
+
+AC-10 prompt initially carried a ninth section `# LANGUAGE CODES`; the prompt loader
+enforces exactly eight sections in a fixed order — the LANGUAGE CODES content was folded
+into the GROUNDING section and the lock hash recomputed.
+
+`docs/AGENTS.md` and `docs/PROMPTS.md` updated for all ten agents in the same commit.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` clean. Stage 10 verify commands updated in
+`scripts/verify-stage.ts`.
+
+---
+
+### Stage 10 — Steps 5–7: Case file, reporting pack, safeguarding drill, bias monitor
+
+**Date:** 2026-08-07
+
+**What was built**
+
+1. **`packages/analytics/src/case-file.ts`** — SBST learner case file surface:
+   - `buildCaseFile(input)`: aggregates all agent outputs for a learner into a
+     `LearnerCaseFile` snapshot. When `safeguardingEscalated: true`, all support-history
+     fields (screenHistory, latestTierRecommendation, interventionPlan, progressRecords,
+     fidelityRecords) are cleared to empty arrays / null — the case file must not
+     summarise a learner's prior history after a safeguarding event.
+
+2. **`packages/analytics/src/reporting.ts`** — Class / grade / school rollup reporting:
+   - `rollupClass()`, `rollupGrade()`, `rollupSchool()` with small-group suppression.
+   - `MIN_COHORT_SIZE = 5`: any sub-cohort below this threshold is suppressed
+     (`{ suppressed: true, reason }`) and suppression propagates upward.
+
+3. **`packages/analytics/src/bias-monitor.ts`** — Demographic bias monitor:
+   - `monitorBias({ populationCounts, groupCounts })`: fires when a group's REFERRAL rate
+     exceeds `BIAS_RATIO_THRESHOLD (2.0)` × the population REFERRAL rate, for groups with
+     at least `MIN_POPULATION_FOR_BIAS_CHECK (10)` learners.
+   - When `populationReferralRate` is zero the monitor does not fire (no denominator).
+
+4. **`packages/guardrails/src/output-checks.ts`** — New `checkDiagnosticLanguage` check:
+   - `DIAGNOSTIC_TERMS`: 18 regex patterns covering ADHD, dyslexia, dyspraxia, dyscalculia,
+     autism/autistic/Asperger, intellectual disability, learning disability, learning
+     disorder, cognitive impairment, cognitive deficit, developmental delay, speech disorder,
+     language disorder, diagnosed/diagnosis/diagnostic, special needs, handicapped.
+   - `checkDiagnosticLanguage(texts)`: refuses with `diagnostic_language_detected` if any
+     pattern matches any text in the provided list.
+   - `RefusalReasonCode` in `packages/guardrails/src/refusal.ts` extended with
+     `'diagnostic_language_detected'`.
+
+5. **New workspace dependency**: `@infinite-ai/analytics` now depends on
+   `@infinite-ai/guardrails` (workspace:*) so the safeguarding drill can invoke the
+   guardrail engine directly. Recorded in `docs/DEPENDENCIES.md`.
+
+**Tests**
+
+- `test/case-file.spec.ts` (10 tests): basic assembly, safeguarding escalation clears all
+  five history fields independently, status preserved, non-escalated case preserves data.
+- `test/reporting.spec.ts` (13 tests): class rollup counts, grade/school rollup aggregation,
+  small-group suppression fires at MIN_COHORT_SIZE, suppression propagates upward.
+- `test/golden-scenarios.spec.ts` (27 tests): 12 golden learner profiles each asserting
+  correct `assignTier` result (percentiles chosen for actual tier boundaries: TIER_1 ≥ 55,
+  TIER_2 35–54, TIER_3 15–34, REFERRAL < 15) and `checkAllDomainsSufficiency` verdict
+  (ATTENDANCE requires ≥ 10 data points within 30 days). Core-health gate documented with
+  two fixture classes (50% vs 90% TIER_1).
+- `test/bias-monitor.spec.ts` (11 tests): skewed fixture fires, balanced fixture does not,
+  boundary conditions at exactly BIAS_RATIO_THRESHOLD (strict >) and MIN_POPULATION
+  (inclusive), zero-population rate does not fire, finding fields correct, multiple groups.
+- `test/safeguarding-drill.spec.ts` (10 tests): case file clears all 5 history fields on
+  escalation, `defaultEscalationNotifier` throws `GuardrailEscalationError` with category
+  in message, `runOutputGuardrails` passes when output is valid and notifier not called,
+  synchronous wiring documented.
+- `test/diagnosis-redteam.spec.ts` (26 tests, in `packages/guardrails`): one test per
+  clinical term, term-in-longer-text, multi-field scan, clean parent letter passes, empty
+  passes, permitted term "screening" passes, structural guard on list length.
+
+**Root-level scripts** added to `package.json`:
+
+- `test:redteam:diagnosis` → `pnpm --filter @infinite-ai/guardrails exec vitest run test/diagnosis-redteam.spec.ts`
+- `test:drill:safeguarding` → `pnpm --filter @infinite-ai/analytics exec vitest run test/safeguarding-drill.spec.ts`
+- `test:bias-monitor` → `pnpm --filter @infinite-ai/analytics exec vitest run test/bias-monitor.spec.ts`
+
+`scripts/verify-stage.ts` Stage 10 expanded to 6 verification commands.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean.

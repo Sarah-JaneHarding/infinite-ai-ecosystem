@@ -8,6 +8,7 @@ import * as guardrails from '../src/index.js';
 describe('package export surface', () => {
   it('exports the guard, the guardrail engine, and nothing else', () => {
     expect(Object.keys(guardrails).sort()).toEqual([
+      'DIAGNOSTIC_TERMS',
       'EscalationRoute',
       'GuardrailEscalationError',
       'PACKAGE_NAME',
@@ -19,6 +20,7 @@ describe('package export surface', () => {
       'buildTemplateFidelityChecker',
       'checkAgeAppropriateness',
       'checkCost',
+      'checkDiagnosticLanguage',
       'checkGrounding',
       'checkInputSchema',
       'checkOutputSchema',

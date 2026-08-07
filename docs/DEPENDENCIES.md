@@ -350,6 +350,13 @@ it provides the `AC01Input`, `AC01Result`, `AC02Input`, and `AC02Result` Zod sch
 in the AC-01 and AC-02 contracts. The analytics package itself depends only on `zod`
 (already in the tree since Stage 02).
 
+## Stage 10 steps 5–7 — case file, reporting, bias monitor, safeguarding drill
+
+No new external dependency. `@infinite-ai/analytics` now takes `@infinite-ai/guardrails`
+as a runtime dependency (workspace package, `workspace:*`) so that the safeguarding-drill
+test can call `runOutputGuardrails`, `defaultEscalationNotifier`, and `GuardrailEscalationError`
+from the guardrail plane. The guardrails package itself is already in the tree since Stage 06.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

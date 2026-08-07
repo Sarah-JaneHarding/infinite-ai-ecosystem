@@ -131,3 +131,54 @@ export function checkCost(actualCostUsd: number, budget: CostBudget): GuardrailV
   }
   return PASSED;
 }
+
+/**
+ * Closed vocabulary of diagnostic, clinical, and disability terms that must never appear
+ * in MOD-02 agent outputs that reach guardians or general school records. The SIAS
+ * programme is an educational process, not a clinical one — diagnostic labelling in parent
+ * communication or support records is outside its scope.
+ *
+ * Only unambiguous clinical labels are blocked here; terms that appear legitimately in
+ * professional context (e.g. "screening") are left to individual agent prompts.
+ */
+export const DIAGNOSTIC_TERMS: ReadonlyArray<RegExp> = [
+  /\badhd\b/i,
+  /\bdyslexia\b/i,
+  /\bdyspraxia\b/i,
+  /\bdyscalculia\b/i,
+  /\bautism\b/i,
+  /\bautistic\b/i,
+  /\basperger/i,
+  /\bintellectual\s+disabilit/i,
+  /\blearning\s+disabilit/i,
+  /\blearning\s+disorder/i,
+  /\bcognitive\s+impairment/i,
+  /\bcognitive\s+deficit/i,
+  /\bdevelopmental\s+delay/i,
+  /\bspeech\s+disorder/i,
+  /\blanguage\s+disorder/i,
+  /\bdiagnos/i,
+  /\bspecial\s+needs\b/i,
+  /\bhandicap(?:ped)?\b/i,
+];
+
+/**
+ * Scans every string in `texts` for diagnostic or clinical labels. Refuses on the first
+ * match; passes when none are found. Pass all free-text output fields (letter body, goal
+ * text, next steps, section content) so a term buried in any field is caught.
+ */
+export function checkDiagnosticLanguage(texts: readonly string[]): GuardrailVerdict {
+  for (const text of texts) {
+    for (const pattern of DIAGNOSTIC_TERMS) {
+      const match = pattern.exec(text);
+      if (match !== null) {
+        return refuse(
+          'diagnostic_language_detected',
+          `Diagnostic or clinical term detected: "${match[0]}". Output must not contain ` +
+            'diagnostic, clinical, or disability labels.',
+        );
+      }
+    }
+  }
+  return PASSED;
+}
