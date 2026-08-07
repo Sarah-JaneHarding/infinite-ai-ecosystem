@@ -444,6 +444,79 @@ next calendar day as `scheduledOn`. Adequate = fidelityRate ≥ 80%. `evidenceId
 include all `planEvidenceIds` plus the `evidenceId` from every delivered session.
 No diagnostic language; fidelity metrics are the only outputs.
 
+#### AC-08 — SBST Meeting Scribe
+
+| Field           | Value                                                                                                                                                                                                                                        |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-02                                                                                                                                                                                                                                       |
+| Purpose         | `intervention`                                                                                                                                                                                                                               |
+| Input           | `AC08Input`: tenantId, meetingId, termId, scheduledOn, participantRoles[] (≥ 1), agendaItems[] (≥ 1, each with learnerId, siasStatus, recommendedDecision, contextSummary, evidenceIds[])                                                    |
+| Output          | `AC08Result`: `{ status: "scribed", minutesId, termId, scheduledOn, participantRoles[], decisions[] (learnerId, decision, sbstRatificationId, nextSteps[]), actionItems[], evidenceIds[], requiresChairConfirmation: true }` · `needs_input` |
+| Model           | `support.screen`                                                                                                                                                                                                                             |
+| Guardrails      | `pii_guard`, `diagnosis_guard`                                                                                                                                                                                                               |
+| Budget          | 2 000 tokens · $0.006 per run                                                                                                                                                                                                                |
+| Eval set        | `AC-08` (21 cases covering all four decision types, multi-learner meetings, evidence ID union, needs_input paths, no diagnostic language, no person names)                                                                                   |
+| Approval gate   | Chair confirmation required — `requiresChairConfirmation` is always `true`                                                                                                                                                                   |
+| Writes to Brain | Yes — ratified minutes are a versioned support fact                                                                                                                                                                                          |
+| Prompt          | `packages/prompts/src/AC-08/1.0.0.prompt.md`                                                                                                                                                                                                 |
+| Contract        | `packages/agents/src/mod-02/AC-08.contract.ts`                                                                                                                                                                                               |
+
+AC-08 converts a structured meeting agenda into ratified minutes. Decision types are
+`ratify_intervention`, `ratify_exit`, `ratify_referral`, and `defer`. A `defer` decision
+produces `sbstRatificationId: null`; every non-defer decision produces a freshly generated
+UUID. `nextSteps` are always framed by role (e.g., "Learning Support Educator to…"), never
+by personal name. `evidenceIds` in the output is the union of all `evidenceIds` across
+every agenda item. `requiresChairConfirmation` is always `true` — no code path may omit it.
+
+#### AC-09 — SIAS Compiler
+
+| Field           | Value                                                                                                                                                                                                                                      |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Module          | MOD-02                                                                                                                                                                                                                                     |
+| Purpose         | `intervention`                                                                                                                                                                                                                             |
+| Input           | `AC09Input`: tenantId, learnerId, termId, siasStatus (must be `"REFERRAL_PENDING"`), sbstRatificationId, screenHistory[], interventionHistory[], progressSummary, evidenceIds[]                                                            |
+| Output          | `AC09Result`: `{ status: "compiled", compilationId, learnerId, termId, sbstRatificationId, sections[] (≥ 1), evidenceIds[], requiresSignOff: true }` · `{ status: "state_machine_blocked", detail }` · `{ status: "needs_input", detail }` |
+| Model           | `support.screen`                                                                                                                                                                                                                           |
+| Guardrails      | `pii_guard`, `diagnosis_guard`                                                                                                                                                                                                             |
+| Budget          | 2 500 tokens · $0.008 per run                                                                                                                                                                                                              |
+| Eval set        | `AC-09` (21 cases covering REFERRAL_PENDING success, seven blocked states, section order, no diagnostic language, evidence ID pass-through, sbstRatificationId echoed)                                                                     |
+| Approval gate   | Sign-off required — `requiresSignOff` is always `true`                                                                                                                                                                                     |
+| Writes to Brain | Yes — compiled referral pack is a versioned support fact                                                                                                                                                                                   |
+| Prompt          | `packages/prompts/src/AC-09/1.0.0.prompt.md`                                                                                                                                                                                               |
+| Contract        | `packages/agents/src/mod-02/AC-09.contract.ts`                                                                                                                                                                                             |
+
+AC-09 is a SIAS state-machine enforcement point: it accepts input only when
+`siasStatus === 'REFERRAL_PENDING'`; any other status yields `state_machine_blocked`. The
+compiled pack contains exactly five sections in order: (1) Learner Support History,
+(2) Intervention Record, (3) Progress Summary, (4) Referral Basis, (5) SBST Ratification.
+The SBST Ratification section must cite the `sbstRatificationId` from input.
+`requiresSignOff` is always `true`. Evidence IDs pass through unchanged.
+
+#### AC-10 — Parent Report Writer
+
+| Field           | Value                                                                                                                                                                                                                                                 |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-02                                                                                                                                                                                                                                                |
+| Purpose         | `intervention`                                                                                                                                                                                                                                        |
+| Input           | `AC10Input`: tenantId, learnerId, termId, planId, sbstRatificationId, homeLanguage (SA ISO 639 code), targetReadabilityGrade (1–12), progressSummary (trendDirection, currentPercentile, goalPercentile, recommendation, weeksElapsed), evidenceIds[] |
+| Output          | `AC10Result`: `{ status: "written", reportId, learnerId, termId, homeLanguage, reportText, estimatedReadabilityGrade, readabilityAdequate, evidenceIds[] }` · `needs_input`                                                                           |
+| Model           | `support.screen`                                                                                                                                                                                                                                      |
+| Guardrails      | `pii_guard`, `diagnosis_guard`, `readability_guard`                                                                                                                                                                                                   |
+| Budget          | 1 500 tokens · $0.005 per run                                                                                                                                                                                                                         |
+| Eval set        | `AC-10` (21 cases covering all 11 SA language codes, all recommendation types, readability band checks, needs_input paths, no diagnostic language, no learner name, no raw percentiles to guardian)                                                   |
+| Approval gate   | Human review required before letter is dispatched                                                                                                                                                                                                     |
+| Writes to Brain | No — parent letters are dispatched deliverables, not versioned support facts                                                                                                                                                                          |
+| Prompt          | `packages/prompts/src/AC-10/1.0.0.prompt.md`                                                                                                                                                                                                          |
+| Contract        | `packages/agents/src/mod-02/AC-10.contract.ts`                                                                                                                                                                                                        |
+
+AC-10 writes a plain-language progress letter for the guardian in the learner's home
+language (`homeLanguage` is one of the 11 official SA ISO codes). The letter body must be
+at or below `targetReadabilityGrade + 1` Flesch-Kincaid grade level.
+`readabilityAdequate = estimatedReadabilityGrade ≤ targetReadabilityGrade + 1`. The letter
+never uses diagnostic or clinical language, never names the learner, and never quotes raw
+percentile scores — the trend is translated into everyday language. All evidence IDs pass
+through unchanged.
+
 ### MOD-03 Data Collection & Warehouse — Stage 09
 
 | ID    | Agent                   | Output                                                          |

@@ -394,3 +394,208 @@ export const AC07Result = z.discriminatedUnion('status', [
   }),
 ]);
 export type AC07Result = z.infer<typeof AC07Result>;
+
+// ---------------------------------------------------------------------------
+// AC-08 SBST Meeting Scribe
+// ---------------------------------------------------------------------------
+
+/** ISO 639-1 / 639-3 codes for the eleven official South African languages. */
+export const SA_HOME_LANGUAGE_CODES = [
+  'zu',
+  'xh',
+  'af',
+  'en',
+  'nso',
+  'tn',
+  'st',
+  'ts',
+  'ss',
+  've',
+  'nr',
+] as const;
+export type SaHomeLanguageCode = (typeof SA_HOME_LANGUAGE_CODES)[number];
+export const SaHomeLanguageCodeSchema = z.enum(
+  SA_HOME_LANGUAGE_CODES as unknown as [string, ...string[]],
+);
+
+export const SbstDecisionType = z.enum([
+  'ratify_intervention',
+  'ratify_exit',
+  'ratify_referral',
+  'defer',
+]);
+export type SbstDecisionType = z.infer<typeof SbstDecisionType>;
+
+export const MeetingAgendaItem = z.object({
+  learnerId: z.string().uuid(),
+  /** Current SIAS state for this learner. */
+  siasStatus: z.string().min(1),
+  recommendedDecision: SbstDecisionType,
+  /** De-identified context summary — no PII, no diagnostic language. */
+  contextSummary: z.string().min(1),
+  evidenceIds: z.array(z.string().min(1)).min(1),
+});
+export type MeetingAgendaItem = z.infer<typeof MeetingAgendaItem>;
+
+export const AC08Input = z.object({
+  tenantId: z.string().uuid(),
+  meetingId: z.string().uuid(),
+  termId: z.string().uuid(),
+  /** ISO date of the meeting. */
+  scheduledOn: z.string().date(),
+  /** Roles of attendees — never names. */
+  participantRoles: z.array(z.string().min(1)).min(1),
+  agendaItems: z.array(MeetingAgendaItem).min(1),
+});
+export type AC08Input = z.infer<typeof AC08Input>;
+
+export const MeetingDecisionRecord = z.object({
+  learnerId: z.string().uuid(),
+  decision: SbstDecisionType,
+  /** Present when decision is not 'defer'; null when deferred. */
+  sbstRatificationId: z.string().uuid().nullable(),
+  nextSteps: z.array(z.string().min(1)).min(1),
+});
+export type MeetingDecisionRecord = z.infer<typeof MeetingDecisionRecord>;
+
+export const AC08Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('scribed'),
+    minutesId: z.string().uuid(),
+    termId: z.string().uuid(),
+    scheduledOn: z.string().date(),
+    participantRoles: z.array(z.string().min(1)).min(1),
+    decisions: z.array(MeetingDecisionRecord).min(1),
+    /** Meeting-level action items (not learner-specific). */
+    actionItems: z.array(z.string().min(1)),
+    /** Union of all evidence IDs from all agenda items. */
+    evidenceIds: z.array(z.string().min(1)).min(1),
+    /** The chair must always confirm minutes before they enter the record. */
+    requiresChairConfirmation: z.literal(true),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+  }),
+]);
+export type AC08Result = z.infer<typeof AC08Result>;
+
+// ---------------------------------------------------------------------------
+// AC-09 SIAS Compiler
+// ---------------------------------------------------------------------------
+
+export const ScreenHistoryEntry = z.object({
+  screenId: z.string().uuid(),
+  termId: z.string().uuid(),
+  compositePercentile: z.number().min(0).max(100),
+  tier: SupportTierSchema,
+});
+export type ScreenHistoryEntry = z.infer<typeof ScreenHistoryEntry>;
+
+export const InterventionHistoryEntry = z.object({
+  planId: z.string().uuid(),
+  goal: z.string().min(1),
+  tier: z.enum(['TIER_2', 'TIER_3']),
+  durationWeeks: z.number().int().min(1),
+});
+export type InterventionHistoryEntry = z.infer<typeof InterventionHistoryEntry>;
+
+export const ProgressSummary = z.object({
+  trendDirection: TrendDirection,
+  currentPercentile: z.number().min(0).max(100),
+  goalPercentile: z.number().min(0).max(100),
+  recommendation: MonitoringRecommendation,
+});
+export type ProgressSummary = z.infer<typeof ProgressSummary>;
+
+export const SiasSection = z.object({
+  sectionName: z.string().min(1),
+  content: z.string().min(1),
+});
+export type SiasSection = z.infer<typeof SiasSection>;
+
+export const AC09Input = z.object({
+  tenantId: z.string().uuid(),
+  learnerId: z.string().uuid(),
+  termId: z.string().uuid(),
+  /** Must be REFERRAL_PENDING; the state machine blocks compilation in any other state. */
+  siasStatus: z.literal('REFERRAL_PENDING'),
+  /** Proof that an SBST ratification has been stored before the referral pack is compiled. */
+  sbstRatificationId: z.string().uuid(),
+  screenHistory: z.array(ScreenHistoryEntry).min(1),
+  interventionHistory: z.array(InterventionHistoryEntry).min(0),
+  progressSummary: ProgressSummary,
+  evidenceIds: z.array(z.string().min(1)).min(1),
+});
+export type AC09Input = z.infer<typeof AC09Input>;
+
+export const AC09Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('compiled'),
+    compilationId: z.string().uuid(),
+    learnerId: z.string().uuid(),
+    termId: z.string().uuid(),
+    sbstRatificationId: z.string().uuid(),
+    sections: z.array(SiasSection).min(1),
+    evidenceIds: z.array(z.string().min(1)).min(1),
+    /** A SIAS referral pack always requires sign-off before submission. */
+    requiresSignOff: z.literal(true),
+  }),
+  z.object({
+    status: z.literal('state_machine_blocked'),
+    detail: z.string().min(1),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+  }),
+]);
+export type AC09Result = z.infer<typeof AC09Result>;
+
+// ---------------------------------------------------------------------------
+// AC-10 Parent Report Writer
+// ---------------------------------------------------------------------------
+
+export const ParentProgressSummary = z.object({
+  trendDirection: TrendDirection,
+  currentPercentile: z.number().min(0).max(100),
+  goalPercentile: z.number().min(0).max(100),
+  recommendation: MonitoringRecommendation,
+  weeksElapsed: z.number().int().min(1),
+});
+export type ParentProgressSummary = z.infer<typeof ParentProgressSummary>;
+
+export const AC10Input = z.object({
+  tenantId: z.string().uuid(),
+  learnerId: z.string().uuid(),
+  termId: z.string().uuid(),
+  planId: z.string().uuid(),
+  sbstRatificationId: z.string().uuid(),
+  homeLanguage: SaHomeLanguageCodeSchema,
+  /** Target Flesch-Kincaid grade level for the report text (1–12). */
+  targetReadabilityGrade: z.number().int().min(1).max(12),
+  progressSummary: ParentProgressSummary,
+  evidenceIds: z.array(z.string().min(1)).min(1),
+});
+export type AC10Input = z.infer<typeof AC10Input>;
+
+export const AC10Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('written'),
+    reportId: z.string().uuid(),
+    learnerId: z.string().uuid(),
+    termId: z.string().uuid(),
+    homeLanguage: SaHomeLanguageCodeSchema,
+    reportText: z.string().min(1),
+    /** Estimated Flesch-Kincaid grade level of the generated reportText. */
+    estimatedReadabilityGrade: z.number().int().min(1).max(12),
+    /** True when estimatedReadabilityGrade ≤ targetReadabilityGrade + 1. */
+    readabilityAdequate: z.boolean(),
+    evidenceIds: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+  }),
+]);
+export type AC10Result = z.infer<typeof AC10Result>;

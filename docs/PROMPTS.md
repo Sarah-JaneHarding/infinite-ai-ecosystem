@@ -84,3 +84,6 @@ Each prompt is listed here with its agent, current champion version and owner as
 | AC-05 | 1.0.0   | support.screen | `packages/prompts/src/AC-05/1.0.0.prompt.md` | AC-05@1.0.0 | stage-10 |
 | AC-06 | 1.0.0   | support.screen | `packages/prompts/src/AC-06/1.0.0.prompt.md` | AC-06@1.0.0 | stage-10 |
 | AC-07 | 1.0.0   | support.screen | `packages/prompts/src/AC-07/1.0.0.prompt.md` | AC-07@1.0.0 | stage-10 |
+| AC-08 | 1.0.0   | support.screen | `packages/prompts/src/AC-08/1.0.0.prompt.md` | AC-08@1.0.0 | stage-10 |
+| AC-09 | 1.0.0   | support.screen | `packages/prompts/src/AC-09/1.0.0.prompt.md` | AC-09@1.0.0 | stage-10 |
+| AC-10 | 1.0.0   | support.screen | `packages/prompts/src/AC-10/1.0.0.prompt.md` | AC-10@1.0.0 | stage-10 |
