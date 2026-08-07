@@ -3506,3 +3506,43 @@ Tests: 163 passing (19 insight-synthesiser + 13 nextstep-recommender + 23 learne
 `pnpm lint` and `pnpm typecheck` clean.
 
 Step 8 (analytics views for `analytics_ro`) is next.
+
+### Stage 09 — Step 8: Analytics views for `analytics_ro`
+
+**What was built**
+
+Migration `20260807080200_stage09_analytics_views` creates three de-identified, read-only
+views and grants SELECT on them — and only them — to `analytics_ro`:
+
+- `v_analytics_ingest_run` — one row per ingest run; operational metadata only; no
+  learner data.
+- `v_analytics_quality_report` — quality score and blocking flag per run; no learner
+  data.
+- `v_analytics_domain_event` — per-event metadata; `learner_id` replaced by
+  `encode(digest(learner_id::text, 'sha256'), 'hex')` (SHA-256 hex via pgcrypto); `payload`
+  JSONB excluded entirely.
+
+No base-table grants are issued to `analytics_ro`. The views inherit the underlying
+tables' RLS policies, so the role still sees only the current tenant's data; the caller
+must set `app.tenant_id` before querying.
+
+Integration test `packages/db/test/analytics-views.integration.spec.ts` proves:
+
+1. `analytics_ro` CAN select from all three views when tenant context is set.
+2. View results contain only the current tenant's rows (cross-tenant rows invisible).
+3. `v_analytics_domain_event` rows contain `learner_token` (a 64-char hex string) and
+   NOT `learner_id` or `payload`.
+4. `learner_token` is stable across repeated queries for the same learner.
+5. `analytics_ro` is DENIED direct SELECT on `domain_event_log`, `ingest_run`,
+   `ingest_quality_report`, `learner`, and `learner_identifier`.
+6. `analytics_ro` has no `BYPASSRLS` privilege.
+7. Querying a view without tenant context raises an error (not a silent empty set).
+
+Tests: 14 integration tests in `analytics-views.integration.spec.ts` (all require
+Testcontainers / real Postgres; no unit-tier stub).
+
+Exit gate item "No raw PII observable from the analytics role, proven by test": PASS —
+the test at point 3 above asserts that `learner_id` is absent from the view columns and
+that `learner_token` does not equal the raw UUID.
+
+Step 9 (end-to-end integration tests) is next.
