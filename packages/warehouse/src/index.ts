@@ -71,6 +71,22 @@ export {
 } from './learner360/learner360-builder.js';
 
 export {
+  synthesiseInsight,
+  type InsightContext,
+  type InsightEvent,
+  type InsightEventStore,
+  type InsightModelAdapter,
+  type InsightModelOutput,
+} from './insight/insight-synthesiser.js';
+
+export {
+  recommendNextStep,
+  type InsightStore,
+  type NextStepModelAdapter,
+  type NextStepModelOutput,
+} from './nextstep/nextstep-recommender.js';
+
+export {
   DW01Input,
   DW02Input,
   DW02Result,

@@ -3434,3 +3434,75 @@ Tests: 131 passing (23 learner360-builder + 20 quality-sentinel + 15 schema-mapp
 26 connector + 34 types + 13 csv-parser). `pnpm lint` and `pnpm typecheck` clean.
 
 Step 7 (DW-07 Insight Synthesiser) is next.
+
+### Stage 09 — Step 7: DW-07 Insight Synthesiser + DW-08 Next-Step Recommender
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the insight synthesiser (DW-07) and next-step recommender (DW-08). Both use an
+injected model adapter so the unit tier runs without a real model; the deterministic paths
+are fully covered in the unit tier and the narrative/description paths are tested via the
+eval harness.
+
+**New files in `packages/warehouse/src/insight/`:**
+
+- `insight-synthesiser.ts` — exports `synthesiseInsight(input, store, model, now?)`.
+
+  Two outcomes:
+  - `ok` — one `Insight` in the `insights` array with `narrative`, `sourceEventIds`,
+    `confidenceScore`, `dataPointCount`, `generatedAt`, `scope`, `domain`, `scopeId`.
+  - `needs_input` — no unblocked events found; returns `scope`, `scopeId`, and `detail`.
+
+  Deterministic fields: all insight metadata except `narrative` and `sourceEventIds`.
+  `confidenceScore = min(1, unblocked_events / expectedDataPointCount)`; defaults to 1
+  when `expectedDataPointCount` is not provided. Blocked events are excluded from
+  `dataPointCount` and are not passed to the model adapter. `generatedAt = now`.
+
+  Injected interfaces exported: `InsightEvent`, `InsightContext`, `InsightEventStore`,
+  `InsightModelAdapter`, `InsightModelOutput`.
+
+**New files in `packages/warehouse/src/nextstep/`:**
+
+- `nextstep-recommender.ts` — exports `recommendNextStep(input, store, model)`.
+
+  Two outcomes:
+  - `ok` — one `NextStep` with `description`, `owner`, `dueDate`, `insightId`, `rationale`.
+  - `needs_input` — insight not found for the requested `insightId`.
+
+  Deterministic fields: `dueDate = insight.generatedAt + 7 calendar days`;
+  `insightId = input.insightId`; `owner` from scope×domain lookup table:
+  - LEARNER + ATTENDANCE → "class teacher"
+  - CLASS + ASSESSMENT → "HOD"
+  - GRADE + BEHAVIOUR → "deputy principal"
+  - SCHOOL + WELLBEING → "school psychologist"
+  - default → "class teacher"
+
+  `description` and `rationale` come from the injected `NextStepModelAdapter`.
+
+  Injected interfaces exported: `InsightStore`, `NextStepModelAdapter`, `NextStepModelOutput`.
+
+**New unit test files:**
+
+- `test/insight/insight-synthesiser.spec.ts` — 19 tests:
+  - needs_input (3): no events; all blocked; correct scope/scopeId in response.
+  - ok metadata (6): scope, scopeId, domain, generatedAt, narrative, sourceEventIds.
+  - Confidence score (5): dataPointCount; confidence = 1 when no expected; partial
+    confidence; clamped to 1; blocked events excluded.
+  - Model receives unblocked events only (1).
+  - Multi-tenant store wiring (1): tenantId, scope, scopeId, domain, termNumber,
+    academicYear forwarded correctly.
+
+- `test/nextstep/nextstep-recommender.spec.ts` — 13 tests:
+  - needs_input (2): no insight; detail contains insightId.
+  - ok deterministic (4): status, insightId pass-through, dueDate +7 days, time-of-day
+    preserved in dueDate.
+  - Owner resolution (4): all four scope×domain mappings.
+  - Model-generated fields (2): description and rationale.
+  - Multi-tenant store wiring (1): tenantId and insightId forwarded correctly.
+
+Tests: 163 passing (19 insight-synthesiser + 13 nextstep-recommender + 23 learner360 +
+20 quality-sentinel + 15 schema-mapper + 26 connector + 34 types + 13 csv-parser).
+`pnpm lint` and `pnpm typecheck` clean.
+
+Step 8 (analytics views for `analytics_ro`) is next.
