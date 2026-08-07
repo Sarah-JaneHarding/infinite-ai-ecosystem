@@ -23,17 +23,26 @@ export const TENANT_OWNED_TABLES = [
   'class_group',
   'consent_record',
   'data_subject_request',
+  // Stage 09 — MOD-03 warehouse tables
+  'domain_event_log',
   'grade',
   'guardian',
   'guardian_link',
+  'ingest_quality_report',
+  'ingest_run',
+  'ingest_source',
   'learner',
+  'learner_360',
   'learner_identifier',
   'orchestrator_run',
   'orchestrator_step_run',
   'phase',
+  'raw_ingest_record',
   'retention_rule',
   'role_assignment',
   'school',
+  'screening_feature',
+  'source_field_mapping',
   'staff_member',
   'subject',
   'teaching_assignment',
@@ -89,6 +98,9 @@ export const APPEND_ONLY_TABLES = [
   'brain_node',
   'brain_procedure',
   'consent_record',
+  // Stage 09 — the event log and run audit are ledgers; both refuse UPDATE/DELETE
+  'domain_event_log',
+  'ingest_run',
 ] as const;
 
 export type TenantOwnedTable = (typeof TENANT_OWNED_TABLES)[number];

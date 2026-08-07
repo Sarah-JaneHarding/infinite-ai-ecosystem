@@ -1,0 +1,26 @@
+{
+  "name": "@infinite-ai/warehouse",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MOD-03 Data Collection & Warehouse: ingestion, schema mapping, quality, Learner-360, insight.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  },
+  "dependencies": {
+    "@infinite-ai/contracts": "workspace:*",
+    "zod": "3.25.76"
+  }
+}

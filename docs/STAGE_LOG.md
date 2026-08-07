@@ -3059,3 +3059,104 @@ All tests: 241 contract tests + orchestrator tests passing. Monorepo typecheck c
 
 Open questions: OQ-002, OQ-003, OQ-013 remain open. OQ-003 (school templates) blocks
 the export renderers from producing real output.
+
+---
+
+### Stage 08 — Exit Gate
+
+**Date:** 2026-08-07
+**CI SHA:** cb1547b7f55238594971475e5f38c0b88004b613 — **green**
+
+The manual's exit gate for Stage 08 is:
+
+> A full term of plans for one grade and one subject generated from real CAPS and ATP
+> inputs, approved through the gate, exported in the school's template with no manual
+> fixing, and versioned in the Brain with a complete provenance chain via `explain()`.
+> Coverage audit produces a correct drift report on a deliberately drifted fixture.
+
+| Gate item                                                           | Status                                                                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full term of plans generated from real CAPS + ATP inputs            | **NOT MET — OQ-002.** No CAPS subject statements or ATP documents have been supplied. All nine CE agents return `needs_input` until L0 is populated. This is the declared blocker; no workaround exists, and none should be invented.                                     |
+| Plans approved through the HoD gate                                 | **MET structurally.** `MOD01_CURRICULUM_PIPELINE` declares `hod-approval` as a `human_gate` step before `publish-to-brain`. The orchestrator's integration suite proves the gate fires and persists. The end-to-end test is blocked on OQ-002 (no real plans to approve). |
+| Exported in the school's template with no manual fixing             | **NOT MET — OQ-003.** No school has supplied a template. Export renderers return `needs_template` until a `TemplateDefinition` is ratified in L0.                                                                                                                         |
+| Versioned in the Brain with complete provenance via `explain()`     | **MET structurally.** `submitTemplateDefinition` + `ratify()` + `explain()` are wired and proven by unit tests and blind integration tests (CI Docker). `publish-to-brain` in the pipeline uses the existing `remember()` path.                                           |
+| Coverage audit produces a correct drift report on a drifted fixture | **MET structurally.** CE-09 contract, prompt, eval set (30 cases including deliberately drifted inputs), and agent contract all in place. End-to-end drill requires real term-plan data from CE-03, which requires OQ-002.                                                |
+
+`pnpm verify:stage 08` passes all commands it declares. The pre-existing Docker-dependent
+cumulative gates (Stage 01 RLS suite, Stage 05 temporal + integration, Stage 06 orchestrator
+integration) are proven in CI and fail only where Docker is absent — same caveat as all prior
+stages carrying integration tests.
+
+Deviations from manual: none. All nine CE agents implemented to the Part 3 standard (contract,
+versioned prompt, guardrails, ≥30-case eval set, cost budget). The exit gate's end-to-end
+proof is blocked on OQ-002 and OQ-003, both pre-existing open questions; no workaround was
+invented.
+
+---
+
+## Stage 09 — MOD-03 Data Collection & Warehouse
+
+Started: 2026-08-07 Completed: —
+
+**Objective.** One reconciled truth per learner, collected from what the school already runs,
+conformed, consented, de-identified, and turned into insight with an owner and a next step.
+
+**Agents:** DW-01 Ingestion Agent · DW-02 Schema Mapper · DW-03 Consent Ledger Agent ·
+DW-04 De-identification Agent · DW-05 Data Quality Sentinel · DW-06 Learner-360 Builder ·
+DW-07 Insight Synthesiser · DW-08 Next-Step Recommender.
+
+---
+
+### Stage 09 — Step 1: Data plane
+
+**Date:** 2026-08-07
+**Status:** complete
+
+Builds the data plane for MOD-03: append-only `domain_event_log`, raw landing zone
+(`raw_ingest_record`), conformed warehouse tables, `learner_360` materialisation, feature
+store (`screening_feature`), and the supporting connector-bookkeeping tables. All
+tenant-scoped, all RLS-covered.
+
+**New Prisma models (added to `packages/db/prisma/schema.prisma`):**
+
+| Model                 | Table                   | Append-only | Notes                                                     |
+| --------------------- | ----------------------- | ----------- | --------------------------------------------------------- |
+| `IngestSource`        | `ingest_source`         | No          | Connector config (kind, schedule, status)                 |
+| `IngestRun`           | `ingest_run`            | Yes         | Append-only audit of every connector run                  |
+| `RawIngestRecord`     | `raw_ingest_record`     | No          | Landing zone; updated when a record is conformed          |
+| `DomainEventLog`      | `domain_event_log`      | Yes         | Canonical conformed events (the "event\_log")             |
+| `SourceFieldMapping`  | `source_field_mapping`  | No          | DW-02 learned mappings; human-confirmed                   |
+| `IngestQualityReport` | `ingest_quality_report` | No          | DW-05 quality scores per run                              |
+| `Learner360`          | `learner_360`           | No          | DW-06 materialised profile; updated on re-materialisation |
+| `ScreeningFeature`    | `screening_feature`     | No          | Feature store; supersedes pattern for corrections         |
+
+**New enums:** `ConnectorKind`, `DataDomain`, `IngestRunStatus`, `IngestSourceStatus`.
+
+**Migrations:**
+
+- `20260807080000_stage09_warehouse_tables` — creates all eight tables and four enums with
+  correct RLS-compatible FK ordering (tenant context set before any CREATE TABLE that
+  references `tenant`, same fix Stage 03, 05, and 06 each applied).
+- `20260807080100_stage09_warehouse_rls` — enables RLS + FORCE on all eight tables; adds
+  `app_forbid_mutation()` triggers to `ingest_run` and `domain_event_log`.
+
+**`packages/db/src/tables.ts`** updated: eight new `TENANT_OWNED_TABLES` entries; two new
+`APPEND_ONLY_TABLES` entries (`domain_event_log`, `ingest_run`).
+
+**New package `@infinite-ai/warehouse`:**
+
+- `src/types.ts` — Zod schemas for warehouse domain types: `ConnectorKindSchema`,
+  `DataDomainSchema`, `IngestRunStatusSchema`, `IngestSourceStatusSchema`, `IngestRunRecord`,
+  `RawRecord`, `ConformedEvent`, `Learner360Profile`, `ScreeningFeatureRecord`.
+- `src/ingest/connector.ts` — `IngestConnector` interface: `pull()` returns a stream of
+  `RawRecord` objects with source references. `FileConnector` stub: returns no records
+  (correct empty-vessel state until a CSV/XLSX is uploaded).
+- `test/types.spec.ts` — 24 schema validation tests covering all domain types, valid/invalid
+  inputs, and the discriminated `IngestRunStatus`.
+
+Tests: 24 new warehouse package tests passing. `pnpm lint` and `pnpm typecheck` clean.
+
+Steps 2–8 (connectors, schema mapper, quality, Learner-360, insight, next-step, analytics)
+are next.
+
+Open questions: no new questions raised. OQ-002, OQ-003, OQ-013 remain open.

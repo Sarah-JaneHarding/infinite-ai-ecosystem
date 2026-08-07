@@ -79,6 +79,15 @@ model Tenant {
   orchestratorRuns     OrchestratorRun[]
   orchestratorStepRuns OrchestratorStepRun[]
   approvalTasks        ApprovalTask[]
+  // Stage 09 — MOD-03 Data Collection & Warehouse
+  ingestSources        IngestSource[]
+  ingestRuns           IngestRun[]
+  rawIngestRecords     RawIngestRecord[]
+  domainEventLogs      DomainEventLog[]
+  sourceFieldMappings  SourceFieldMapping[]
+  ingestQualityReports IngestQualityReport[]
+  learner360s          Learner360[]
+  screeningFeatures    ScreeningFeature[]
 
   @@map("tenant")
 }
@@ -386,8 +395,12 @@ model Learner {
   school      School              @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   grade       Grade               @relation(fields: [gradeId], references: [id])
   classGroup  ClassGroup?         @relation(fields: [classGroupId], references: [id])
-  identifiers LearnerIdentifier[]
-  guardians   GuardianLink[]
+  identifiers       LearnerIdentifier[]
+  guardians         GuardianLink[]
+  // Stage 09 — MOD-03 warehouse relations
+  domainEventLogs   DomainEventLog[]
+  learner360        Learner360?
+  screeningFeatures ScreeningFeature[]
 
   @@unique([tenantId, token])
   @@index([tenantId])
@@ -1383,4 +1396,241 @@ model ApprovalTask {
   @@index([tenantId])
   @@index([tenantId, decision])
   @@map("approval_task")
+}
+
+// ---------------------------------------------------------------------------
+// Stage 09 — MOD-03 Data Collection & Warehouse
+// ---------------------------------------------------------------------------
+
+enum ConnectorKind {
+  FILE_CSV
+  FILE_XLSX
+  SIS_API
+  SCREENER_API
+  ATTENDANCE_API
+  BEHAVIOUR_API
+  MANUAL_UPLOAD
+
+  @@map("connector_kind")
+}
+
+enum IngestSourceStatus {
+  ACTIVE
+  PAUSED
+  ERROR
+
+  @@map("ingest_source_status")
+}
+
+enum IngestRunStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+  PARTIALLY_SUCCEEDED
+  QUARANTINED
+
+  @@map("ingest_run_status")
+}
+
+enum DataDomain {
+  ATTENDANCE
+  ASSESSMENT
+  BEHAVIOUR
+  WELLBEING
+  DEMOGRAPHIC
+  SCREENER
+
+  @@map("data_domain")
+}
+
+/// Configuration record for each external data source a school has connected.
+/// Updated by the admin UI — not append-only.
+model IngestSource {
+  id            String             @id @default(uuid()) @db.Uuid
+  tenantId      String             @map("tenant_id") @db.Uuid
+  name          String
+  connectorKind ConnectorKind      @map("connector_kind")
+  /// References the encrypted credential bundle in the secrets store — never inline.
+  configRef     String             @map("config_ref")
+  schedule      String?
+  status        IngestSourceStatus @default(ACTIVE)
+  lastRunAt     DateTime?          @map("last_run_at")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  createdBy     String?            @map("created_by") @db.Uuid
+  version       Int                @default(1)
+
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  runs   IngestRun[]
+
+  @@index([tenantId])
+  @@map("ingest_source")
+}
+
+/// Append-only audit of every connector run. Never updated or deleted.
+model IngestRun {
+  id               String          @id @default(uuid()) @db.Uuid
+  tenantId         String          @map("tenant_id") @db.Uuid
+  sourceId         String          @map("source_id") @db.Uuid
+  connectorKind    ConnectorKind   @map("connector_kind")
+  status           IngestRunStatus
+  recordsReceived  Int?            @map("records_received")
+  recordsConformed Int?            @map("records_conformed")
+  recordsRejected  Int?            @map("records_rejected")
+  errorDetail      String?         @map("error_detail")
+  startedAt        DateTime        @map("started_at")
+  completedAt      DateTime?       @map("completed_at")
+  traceId          String?         @map("trace_id")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  createdBy        String?         @map("created_by") @db.Uuid
+
+  tenant        Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source        IngestSource         @relation(fields: [sourceId], references: [id])
+  rawRecords    RawIngestRecord[]
+  qualityReport IngestQualityReport?
+
+  @@index([tenantId])
+  @@index([tenantId, sourceId])
+  @@map("ingest_run")
+}
+
+/// The raw landing zone: each record exactly as received from the source system,
+/// before DW-02 schema mapping. Updated once when a record is conformed (to record
+/// the `conformedAt` timestamp and `conformedId`), then immutable.
+model RawIngestRecord {
+  id             String    @id @default(uuid()) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  ingestRunId    String    @map("ingest_run_id") @db.Uuid
+  /// Human-readable reference to the row in the source file (e.g. "row 42 of attendance_2026_t1.csv").
+  sourceRef      String    @map("source_ref")
+  payload        Json
+  schemaVersion  String?   @map("schema_version")
+  conformedAt    DateTime? @map("conformed_at")
+  conformedId    String?   @map("conformed_id") @db.Uuid
+  rejectedReason String?   @map("rejected_reason")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  ingestRun IngestRun @relation(fields: [ingestRunId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, ingestRunId])
+  @@map("raw_ingest_record")
+}
+
+/// The canonical "event_log": append-only conformed domain events. This is the
+/// single source of truth for all learner-related events downstream in the system.
+model DomainEventLog {
+  id          String     @id @default(uuid()) @db.Uuid
+  tenantId    String     @map("tenant_id") @db.Uuid
+  learnerId   String     @map("learner_id") @db.Uuid
+  domain      DataDomain
+  /// Structured event type within the domain (e.g. "attendance.present", "assessment.mark_recorded").
+  eventType   String     @map("event_type")
+  occurredAt  DateTime   @map("occurred_at")
+  payload     Json
+  rawRecordId String?    @map("raw_record_id") @db.Uuid
+  sourceId    String?    @map("source_id") @db.Uuid
+  createdAt   DateTime   @default(now()) @map("created_at")
+  createdBy   String?    @map("created_by") @db.Uuid
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  learner Learner @relation(fields: [learnerId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, learnerId])
+  @@index([tenantId, domain])
+  @@map("domain_event_log")
+}
+
+/// DW-02 Schema Mapper: learned mappings from source fields to canonical fields.
+/// `humanConfirmed` starts false for auto-inferred mappings; the DW-02 agent raises
+/// a `human_gate` step the first time a new source shape is seen.
+model SourceFieldMapping {
+  id             String        @id @default(uuid()) @db.Uuid
+  tenantId       String        @map("tenant_id") @db.Uuid
+  connectorKind  ConnectorKind @map("connector_kind")
+  sourceField    String        @map("source_field")
+  canonicalField String        @map("canonical_field")
+  transformFn    String?       @map("transform_fn")
+  humanConfirmed Boolean       @default(false) @map("human_confirmed")
+  confirmedBy    String?       @map("confirmed_by") @db.Uuid
+  confirmedAt    DateTime?     @map("confirmed_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  createdBy      String?       @map("created_by") @db.Uuid
+  version        Int           @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, connectorKind, sourceField])
+  @@index([tenantId])
+  @@map("source_field_mapping")
+}
+
+/// DW-05 Data Quality Sentinel: one quality report per ingest run.
+/// `blockedDownstream` is set to true when the quality score falls below the threshold;
+/// downstream analytics are suppressed until a re-run clears it.
+model IngestQualityReport {
+  id                String    @id @default(uuid()) @db.Uuid
+  tenantId          String    @map("tenant_id") @db.Uuid
+  ingestRunId       String    @unique @map("ingest_run_id") @db.Uuid
+  qualityScore      Float     @map("quality_score")
+  issues            Json
+  blockedDownstream Boolean   @default(false) @map("blocked_downstream")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  createdBy         String?   @map("created_by") @db.Uuid
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  ingestRun IngestRun @relation(fields: [ingestRunId], references: [id])
+
+  @@index([tenantId])
+  @@map("ingest_quality_report")
+}
+
+/// DW-06 Learner-360 Builder: one materialised profile per learner.
+/// Re-materialised deterministically after each successful ingest run.
+model Learner360 {
+  id                 String    @id @default(uuid()) @db.Uuid
+  tenantId           String    @map("tenant_id") @db.Uuid
+  learnerId          String    @unique @map("learner_id") @db.Uuid
+  attendanceSummary  Json?     @map("attendance_summary")
+  academicSummary    Json?     @map("academic_summary")
+  behaviourSummary   Json?     @map("behaviour_summary")
+  wellbeingSummary   Json?     @map("wellbeing_summary")
+  screenerResults    Json?     @map("screener_results")
+  dataQualityNote    String?   @map("data_quality_note")
+  lastMaterialisedAt DateTime  @map("last_materialised_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  version            Int       @default(1)
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  learner Learner @relation(fields: [learnerId], references: [id])
+
+  @@index([tenantId])
+  @@map("learner_360")
+}
+
+/// Feature store for screening features consumed by DW-07 and AC-01 (Stage 10).
+/// New features supersede old ones via the `supersedes` UUID pointer rather than
+/// UPDATE — consistent with the Brain's own append-preferred pattern.
+model ScreeningFeature {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  learnerId    String   @map("learner_id") @db.Uuid
+  featureName  String   @map("feature_name")
+  featureValue Float    @map("feature_value")
+  asAt         DateTime @map("as_at")
+  sourceRunId  String?  @map("source_run_id") @db.Uuid
+  supersedes   String?  @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  learner Learner @relation(fields: [learnerId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, learnerId])
+  @@index([tenantId, learnerId, featureName, asAt(sort: Desc)])
+  @@map("screening_feature")
 }
