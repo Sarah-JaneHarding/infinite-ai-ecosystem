@@ -1,0 +1,580 @@
+[
+  {
+    "id": "tb04-ok-mc-knowledge-gr5-001",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR5-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000101",
+      "gradeLabel": "Grade 5",
+      "subject": "Natural Sciences",
+      "topic": "Properties of matter",
+      "cognitiveLevel": "KNOWLEDGE",
+      "itemType": "multiple_choice",
+      "count": 4,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-001"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ASSESSMENT_ITEM" },
+      { "type": "exact_match", "field": "items.length", "value": 4 },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "options.length === 4"
+      },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "cognitiveLevel === 'KNOWLEDGE'"
+      }
+    ],
+    "tags": ["happy-path", "multiple-choice", "knowledge"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-ok-short-answer-comprehension-gr6-002",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR6-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000102",
+      "gradeLabel": "Grade 6",
+      "subject": "English Home Language",
+      "topic": "Comprehension strategies",
+      "cognitiveLevel": "COMPREHENSION",
+      "itemType": "short_answer",
+      "count": 5,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-010"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 5 },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "options.length === 0"
+      },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "cognitiveLevel === 'COMPREHENSION'"
+      }
+    ],
+    "tags": ["happy-path", "short-answer", "comprehension"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-ok-extended-response-analysis-gr7-003",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR7-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000103",
+      "gradeLabel": "Grade 7",
+      "subject": "Social Sciences",
+      "topic": "Human rights in the Constitution",
+      "cognitiveLevel": "ANALYSIS",
+      "itemType": "extended_response",
+      "count": 2,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-020", "doc-021"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 2 },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "options.length === 0"
+      },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "cognitiveLevel === 'ANALYSIS'"
+      }
+    ],
+    "tags": ["happy-path", "extended-response", "analysis"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-ok-true-false-gr4-004",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR4-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000104",
+      "gradeLabel": "Grade 4",
+      "subject": "Mathematics",
+      "topic": "Properties of 2D shapes",
+      "cognitiveLevel": "KNOWLEDGE",
+      "itemType": "true_false",
+      "count": 6,
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-030"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 6 },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "options.length === 0"
+      }
+    ],
+    "tags": ["happy-path", "true-false"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-ok-count-20-max-005",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR7-TERM4-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000105",
+      "gradeLabel": "Grade 7",
+      "subject": "English Home Language",
+      "topic": "Persuasive writing techniques",
+      "cognitiveLevel": "APPLICATION",
+      "itemType": "multiple_choice",
+      "count": 20,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-040"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 20 },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "options.length === 4"
+      }
+    ],
+    "tags": ["happy-path", "max-count"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-ok-count-1-min-006",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR6-TERM2-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000106",
+      "gradeLabel": "Grade 6",
+      "subject": "Natural Sciences",
+      "topic": "Energy and change",
+      "cognitiveLevel": "SYNTHESIS",
+      "itemType": "extended_response",
+      "count": 1,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-050"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 1 }
+    ],
+    "tags": ["happy-path", "min-count"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-no-source-document-007",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR5-TERM3-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000107",
+      "gradeLabel": "Grade 5",
+      "subject": "Mathematics",
+      "topic": "Volume",
+      "cognitiveLevel": "APPLICATION",
+      "itemType": "short_answer",
+      "count": 4,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-nonexistent-777"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": { "simulateNoGrounding": true },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_source_document" },
+      { "type": "field_present", "field": "detail" }
+    ],
+    "tags": ["refusal", "no-source"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-no-answer-key-in-output-008",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR5-TERM1-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000108",
+      "gradeLabel": "Grade 5",
+      "subject": "English Home Language",
+      "topic": "Figurative language",
+      "cognitiveLevel": "COMPREHENSION",
+      "itemType": "multiple_choice",
+      "count": 3,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-060"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_absent", "field": "items[0].modelAnswer" },
+      { "type": "field_absent", "field": "items[0].markingCriteria" },
+      { "type": "field_absent", "field": "items[0].correctOptionId" }
+    ],
+    "tags": ["security", "no-answer-key"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-total-marks-sum-correct-009",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR7-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000109",
+      "gradeLabel": "Grade 7",
+      "subject": "Mathematics",
+      "topic": "Algebra: expressions",
+      "cognitiveLevel": "APPLICATION",
+      "itemType": "short_answer",
+      "count": 5,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-070"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_equals_sum", "field": "totalMarks", "sumOf": "items[*].marks" }
+    ],
+    "tags": ["schema", "marks-sum"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-no-pii-in-output-010",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR6-TERM2-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000110",
+      "gradeLabel": "Grade 6",
+      "subject": "Social Sciences",
+      "topic": "Democracy in South Africa",
+      "cognitiveLevel": "KNOWLEDGE",
+      "itemType": "multiple_choice",
+      "count": 4,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-080"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "no_pii", "fields": ["items"] }
+    ],
+    "tags": ["security", "pii-guard"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-item-ids-are-uuids-011",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR5-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000111",
+      "gradeLabel": "Grade 5",
+      "subject": "Natural Sciences",
+      "topic": "Food chains",
+      "cognitiveLevel": "COMPREHENSION",
+      "itemType": "short_answer",
+      "count": 3,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-090"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "uuid_format(itemId)"
+      }
+    ],
+    "tags": ["schema", "uuid-ids"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-needs-input-missing-caps-id-012",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "",
+      "lessonId": "00000000-0000-0000-0000-000000000112",
+      "gradeLabel": "Grade 5",
+      "subject": "English Home Language",
+      "topic": "Poetry",
+      "cognitiveLevel": "EVALUATION",
+      "itemType": "extended_response",
+      "count": 2,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-100"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      { "type": "field_present", "field": "missingFields" }
+    ],
+    "tags": ["refusal", "missing-caps-id"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-mc-option-ids-distinct-013",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR7-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000113",
+      "gradeLabel": "Grade 7",
+      "subject": "Natural Sciences",
+      "topic": "Cells",
+      "cognitiveLevel": "KNOWLEDGE",
+      "itemType": "multiple_choice",
+      "count": 3,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-110"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "distinct_option_ids"
+      }
+    ],
+    "tags": ["schema", "distinct-options"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-ok-afrikaans-items-014",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-AF-GR5-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000114",
+      "gradeLabel": "Grade 5",
+      "subject": "Afrikaans Home Language",
+      "topic": "Woordsoorte",
+      "cognitiveLevel": "COMPREHENSION",
+      "itemType": "short_answer",
+      "count": 4,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "af",
+      "sourceDocumentIds": ["doc-120"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 4 }
+    ],
+    "tags": ["happy-path", "afrikaans"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-cited-sources-subset-015",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR7-TERM4-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000115",
+      "gradeLabel": "Grade 7",
+      "subject": "Social Sciences",
+      "topic": "Globalisation",
+      "cognitiveLevel": "ANALYSIS",
+      "itemType": "short_answer",
+      "count": 4,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-130", "doc-131"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "subset_of", "field": "citedSourceIds", "of": ["doc-130", "doc-131"] }
+    ],
+    "tags": ["grounding"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-readability-check-present-016",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR6-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000116",
+      "gradeLabel": "Grade 6",
+      "subject": "Mathematics",
+      "topic": "Geometry: angles",
+      "cognitiveLevel": "APPLICATION",
+      "itemType": "short_answer",
+      "count": 5,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-140"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_present", "field": "readabilityCheckResult" }
+    ],
+    "tags": ["readability"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-ok-evaluation-level-017",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR7-TERM2-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000117",
+      "gradeLabel": "Grade 7",
+      "subject": "English Home Language",
+      "topic": "Evaluating media texts",
+      "cognitiveLevel": "EVALUATION",
+      "itemType": "extended_response",
+      "count": 2,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-150"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "cognitiveLevel === 'EVALUATION'"
+      }
+    ],
+    "tags": ["happy-path", "evaluation-level"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-needs-input-no-linkage-018",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR6-TERM4-TOPIC1",
+      "gradeLabel": "Grade 6",
+      "subject": "Natural Sciences",
+      "topic": "Ecosystems",
+      "cognitiveLevel": "COMPREHENSION",
+      "itemType": "multiple_choice",
+      "count": 5,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-160"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["refusal", "missing-linkage"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-ok-intervention-linkage-019",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR4-TERM3-TOPIC2",
+      "interventionId": "00000000-0000-0000-0000-000000000201",
+      "gradeLabel": "Grade 4",
+      "subject": "English Home Language",
+      "topic": "Comprehension: main idea",
+      "cognitiveLevel": "COMPREHENSION",
+      "itemType": "short_answer",
+      "count": 3,
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-170"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_present", "field": "linkage.interventionId" }
+    ],
+    "tags": ["happy-path", "intervention-linkage"],
+    "source": "stage-11-authored"
+  },
+  {
+    "id": "tb04-ok-synthesis-level-020",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR6-TERM4-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000118",
+      "gradeLabel": "Grade 6",
+      "subject": "Social Sciences",
+      "topic": "Climate change and communities",
+      "cognitiveLevel": "SYNTHESIS",
+      "itemType": "extended_response",
+      "count": 2,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-180", "doc-181"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "all_items_satisfy",
+        "field": "items",
+        "condition": "cognitiveLevel === 'SYNTHESIS'"
+      },
+      { "type": "exact_match", "field": "artefactType", "value": "ASSESSMENT_ITEM" }
+    ],
+    "tags": ["happy-path", "synthesis-level"],
+    "source": "stage-11-authored"
+  }
+]

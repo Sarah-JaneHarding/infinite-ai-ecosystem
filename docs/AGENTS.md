@@ -600,3 +600,124 @@ verification gate: `disagreement` blocks release; `verified` allows it.
 `pedagogicalPurpose` field. No image data or generative image call is involved.
 
 TB agent contracts, prompt files, and eval sets come in Stage 11 Step 2.
+
+### Step 2 — TB-01 / TB-03 / TB-04 / TB-05 contracts, prompts, eval sets
+
+**Date:** 2026-08-10
+
+#### TB-01 — Worksheet Builder
+
+| Field            | Value                                                         |
+| ---------------- | ------------------------------------------------------------- |
+| ID               | TB-01                                                         |
+| Version          | 1.0.0                                                         |
+| Module           | MOD-04                                                        |
+| Purpose          | planning                                                      |
+| Model            | plan.author                                                   |
+| Guardrails       | pii_guard, source_grounding_guard                             |
+| Budget           | 4 000 tokens / $0.02                                          |
+| requiresApproval | false                                                         |
+| writesToBrain    | false                                                         |
+| Eval set         | `packages/evals/sets/TB-01/worksheet-builder.json` (21 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject,
+learningObjectives (≥1), targetReadabilityBand, language, sourceDocumentIds (≥1), requestedBy,
+differentiationTier? (SUPPORT | STANDARD | EXTENSION).
+
+**Outputs (discriminated union on `status`):**
+
+- `ok` — WORKSHEET artefact: sections (≥1 WorksheetSection each with ≥1 question),
+  readabilityCheckResult, citedSourceIds ⊆ sourceDocumentIds, differentiationTier (nullable).
+- `needs_input` — required field absent or unresolvable.
+- `no_source_document` — sourceDocumentIds empty, absent, or insufficient for grounding.
+
+All content must be grounded in cited documents. The agent refuses rather than fabricates.
+
+#### TB-03 — Reading Passage Generator
+
+| Field            | Value                                                                 |
+| ---------------- | --------------------------------------------------------------------- |
+| ID               | TB-03                                                                 |
+| Version          | 1.0.0                                                                 |
+| Module           | MOD-04                                                                |
+| Purpose          | planning                                                              |
+| Model            | plan.author                                                           |
+| Guardrails       | pii_guard, source_grounding_guard, readability_guard                  |
+| Budget           | 3 000 tokens / $0.015                                                 |
+| requiresApproval | false                                                                 |
+| writesToBrain    | false                                                                 |
+| Eval set         | `packages/evals/sets/TB-03/reading-passage-generator.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + linkage, gradeLabel, subject, topic, targetReadabilityBand,
+wordCountTarget (int, positive), language, decodable (bool, default false), sourceDocumentIds (≥1),
+requestedBy.
+
+**Outputs:**
+
+- `ok` — READING_PASSAGE artefact: title, body (word count ±10% of target), wordCount,
+  readabilityCheckResult, isDecodable, citedSourceIds.
+- `readability_out_of_band` — measuredGrade outside targetBand; passage is discarded rather than
+  delivered with a warning.
+- `needs_input` / `no_source_document` — same semantics as TB-01.
+
+When `decodable: true`, the passage must use only letter-sound correspondences up to the learner's
+current Foundation Phase decoding phase (no silent-letter or digraph words beyond the phase).
+
+#### TB-04 — Item Writer
+
+| Field            | Value                                                   |
+| ---------------- | ------------------------------------------------------- |
+| ID               | TB-04                                                   |
+| Version          | 1.0.0                                                   |
+| Module           | MOD-04                                                  |
+| Purpose          | planning                                                |
+| Model            | plan.author                                             |
+| Guardrails       | pii_guard, source_grounding_guard                       |
+| Budget           | 3 500 tokens / $0.018                                   |
+| requiresApproval | false                                                   |
+| writesToBrain    | false                                                   |
+| Eval set         | `packages/evals/sets/TB-04/item-writer.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + linkage, gradeLabel, subject, topic, cognitiveLevel (Bloom's
+lowercase enum), itemType (multiple_choice | short_answer | extended_response | true_false), count
+(1–20), targetReadabilityBand, language, sourceDocumentIds (≥1), requestedBy.
+
+**Outputs:**
+
+- `ok` — ASSESSMENT_ITEM artefact: items[] (AssessmentItem), totalMarks, readabilityCheckResult,
+  citedSourceIds. Multiple-choice items carry exactly four MCOptions; no answer key in this output.
+- `needs_input` / `no_source_document`.
+
+The answer key for TB-04 items is produced exclusively by TB-05.
+
+#### TB-05 — Memo & Marking Guide Agent
+
+| Field            | Value                                                          |
+| ---------------- | -------------------------------------------------------------- |
+| ID               | TB-05                                                          |
+| Version          | 1.0.0                                                          |
+| Module           | MOD-04                                                         |
+| Purpose          | planning                                                       |
+| Model            | plan.verify                                                    |
+| Guardrails       | pii_guard                                                      |
+| Budget           | 3 000 tokens / $0.015                                          |
+| requiresApproval | **true** — marking memo release requires teacher approval gate |
+| writesToBrain    | false                                                          |
+| Eval set         | `packages/evals/sets/TB-05/memo-marking-guide.json` (21 cases) |
+
+**Inputs:** tenantId, capsTopicId + linkage, gradeLabel, assessmentArtefactId (the TB-04 output
+UUID), items[] (TB05ItemInput: itemId, questionText, itemType, options, marks), language,
+requestedBy.
+
+**Outputs:**
+
+- `verified` — MARKING_MEMO artefact: answerKey[] (AnswerKeyEntry with modelAnswer,
+  markingCriteria, correctOptionId?), verificationItems[] (TB05VerificationItem: authorAnswer,
+  verifierAnswer, agrees: true for all), totalMarks. Released only when all items agree.
+- `disagreement_flagged` — flaggedItems[] (items where agrees=false), allItems[] (complete
+  set for audit), detail. Blocks release; teacher must adjudicate before any further action.
+- `needs_input`.
+
+The agent runs two independent passes internally (plan.author then plan.verify). A single item
+where the verifier disagrees with the author triggers `disagreement_flagged`. The MARKING_MEMO
+artefact is never delivered until the teacher adjudication gate (`requiresApproval: true`) clears.
