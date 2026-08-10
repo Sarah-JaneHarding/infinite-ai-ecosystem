@@ -1,0 +1,586 @@
+[
+  {
+    "id": "TB06-AF-001",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-EHL-GR4-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000001",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000002",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Comprehension\n1. What is the main idea of the passage?\n2. Name two animals mentioned in the text.\n3. Write a sentence using the word 'habitat'.",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "HOME_LANGUAGE_ADAPTED"
+      },
+      { "type": "exact_match", "field": "targetLanguage", "value": "af" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false }
+    ],
+    "tags": ["afrikaans", "worksheet", "comprehension", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-002",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000003",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000004",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "The Water Cycle\n\nWater moves continuously between the ocean, atmosphere and land. Evaporation occurs when sunlight heats water in rivers, lakes and the sea. The water vapour rises and forms clouds. When clouds become heavy enough, water falls as rain or snow. This is called precipitation.",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The adaptedContent is grammatically correct Afrikaans and accurately conveys the same information as the English source, including the water cycle stages."
+      }
+    ],
+    "rubric": "Evaluate whether the Afrikaans text is fluent, grade-appropriate, and captures all scientific content from the source: evaporation, water vapour, clouds, precipitation.",
+    "tags": ["afrikaans", "reading-passage", "natural-sciences", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-003",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000005",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000006",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "1. A shopkeeper has 48 apples. He arranges them equally in 6 baskets. How many apples are in each basket? (2 marks)\n2. Write the number 3 249 in words. (1 mark)\n3. Round 4 673 to the nearest hundred. (1 mark)",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans adaptation preserves the mathematical content exactly — same numbers, same mark allocations, same three questions — and uses correct Afrikaans mathematical terminology."
+      }
+    ],
+    "rubric": "Check that all numbers, mark allocations, and operations are preserved exactly. Afrikaans mathematical vocabulary should be standard (e.g. 'appels', 'mandjies', 'naaste honderdtal').",
+    "tags": ["afrikaans", "assessment-item", "mathematics", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-004",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-SS-GR7-TOPIC-3",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000007",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000008",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "SUPPORT TIER\nSection A: Match each term to its definition.\n1. Province — a) A large area of land governed by its own regional government\n2. Municipality — b) A local government area within a province\n3. Ward — c) A subdivision of a municipality for election purposes",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans adaptation preserves the matching exercise structure with correct Afrikaans civic terms and maintains the numbered format."
+      }
+    ],
+    "rubric": "Verify that the SUPPORT TIER label is translated, all three numbered pairs are present, and Afrikaans civic terms are accurate (provinsie, munisipaliteit, wyk).",
+    "tags": ["afrikaans", "worksheet", "social-sciences", "support-tier", "grade-7"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-005",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "10",
+      "capsTopicId": "CAPS-HIST-GR10-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000009",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000010",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "EXTENSION TIER\n1. Analyse two primary sources from the apartheid era and evaluate how effectively they represent the experiences of township residents. (10 marks)\n2. Compare the causes of the 1976 Soweto Uprising with those of the 1960 Sharpeville Massacre. Use evidence from the documents provided. (8 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans adaptation uses academic register appropriate for FET History and preserves the analytical verbs (analiseer, evalueer, vergelyk), mark allocations, and historical event names."
+      }
+    ],
+    "rubric": "Check that mark allocations (10 and 8 marks) are preserved, historical events retain their names, and the Afrikaans uses appropriate FET academic register.",
+    "tags": ["afrikaans", "assessment-item", "history", "extension-tier", "grade-10"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-006",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-EHL-GR3-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000011",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000012",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Thandi's Garden\n\nThandi has a small garden. She grows tomatoes and beans. Every morning she waters her plants. Her mother helps her pull out the weeds. At the end of summer, Thandi sells her tomatoes at the market for R5 each.",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans text uses simple Foundation Phase vocabulary appropriate for Grade 3, preserves the South African context (rand currency, market reference), and does not add or remove content."
+      }
+    ],
+    "rubric": "Verify simple sentence structure, correct rand symbol (R5), and grade-3-appropriate Afrikaans vocabulary. No content additions.",
+    "tags": ["afrikaans", "reading-passage", "foundation-phase", "grade-3"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-007",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-4",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000013",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000014",
+      "sourceArtefactType": "MARKING_MEMO",
+      "content": "Question 1: What are the three states of matter?\nModel answer: Solid, liquid and gas. (Award 1 mark for each correct state, max 3 marks.)\nQuestion 2: Give one property of a solid.\nModel answer: A solid has a definite shape and a definite volume. (Award 2 marks for both properties, 1 mark for one property only.)",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans marking memo preserves all mark allocations exactly and uses correct Afrikaans scientific terminology for states of matter."
+      }
+    ],
+    "rubric": "Verify mark allocations are unchanged, scientific terms are correctly translated (vaste stof, vloeistof, gas), and marking instructions are clear.",
+    "tags": ["afrikaans", "marking-memo", "natural-sciences", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-008",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-TECH-GR8-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000015",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000016",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Design Activity: Bridge Challenge\nInstructions: Using only 20 wooden craft sticks and white glue, design and build a bridge that can hold the most weight.\n1. Sketch your design below. (3 marks)\n2. List the forces acting on your bridge. (2 marks)\n3. After testing, explain one change you would make to improve your design. (3 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      { "type": "exact_match", "field": "targetLanguage", "value": "af" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans adaptation is correct even though the LoLT is isiZulu. All mark allocations and design activity instructions are preserved."
+      }
+    ],
+    "rubric": "LoLT differs from target language — adaptation should still be in Afrikaans. Check mark allocations (3, 2, 3), numbers (20 sticks), and Technology design terminology.",
+    "tags": ["afrikaans", "worksheet", "technology", "grade-8", "lolt-differs"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-009",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "9",
+      "capsTopicId": "CAPS-EMS-GR9-TOPIC-2",
+      "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000017",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000018",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Economic activity types:\n1. Primary sector — Involves extraction of natural resources (mining, farming, fishing)\n2. Secondary sector — Involves manufacturing and processing\n3. Tertiary sector — Involves services (banking, education, retail)\nTask: Classify each of the following as primary, secondary or tertiary: a) coal mining  b) bread baking  c) teaching",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans translation correctly names all three economic sectors and preserves the classification task with all three examples."
+      }
+    ],
+    "rubric": "Verify three sectors (primêre, sekondêre, tersiêre), three classification examples (steenkoolmynbou, broodbak, onderwys), and task instruction preserved.",
+    "tags": ["afrikaans", "worksheet", "economic-management-sciences", "grade-9"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-010",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-EHL-GR4-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000019",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000020",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Name: ___________ Date: ___________\nSection B: Vocabulary\nFill in the missing word from the box: [brave, journey, exhausted, discovered]\n1. After the long hike, the children were ___________ .\n2. Columbus ___________ America in 1492.\n3. The firefighter was ___________ for saving the dog.\n4. The ship began its long ___________ across the Atlantic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans worksheet preserves the word box, all four fill-in blanks with correct sentence structure, and the Name/Date header. The word box contains the Afrikaans equivalents of the four words."
+      }
+    ],
+    "rubric": "Word box must have exactly four words in Afrikaans. Four numbered sentences with blanks. Name and Date header preserved.",
+    "tags": ["afrikaans", "worksheet", "vocabulary", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-011",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-3",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000021",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000022",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section C: Problem solving\nA school tuck shop sells sandwiches for R12.50 each and cold drinks for R8.00 each. Sipho buys 3 sandwiches and 2 cold drinks.\n1. Calculate the total cost. Show all working. (3 marks)\n2. Sipho pays with R60. Calculate his change. (2 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans adaptation preserves all monetary values (R12.50, R8.00, R60), quantities (3 sandwiches, 2 cold drinks), mark allocations (3 and 2 marks), and the working instruction."
+      }
+    ],
+    "rubric": "All rand values and quantities must be identical to the source. No fabricated numbers. 'Show all working' instruction must appear.",
+    "tags": ["afrikaans", "worksheet", "mathematics", "money", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-012",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-LS-GR5-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000023",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000024",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Recycling at Riverside Primary\n\nEvery Friday, learners at Riverside Primary School sort their waste into three bins: paper, plastic and food scraps. The paper and plastic go to a recycling company in Johannesburg. The food scraps are composted in the school garden. Last year, the school recycled 450 kg of paper and 230 kg of plastic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans text preserves all factual data (450 kg paper, 230 kg plastic, Johannesburg, Friday routine) and uses correct environmental vocabulary."
+      }
+    ],
+    "rubric": "Check that 450 kg and 230 kg are preserved, Johannesburg appears, and no fabricated statistics appear.",
+    "tags": ["afrikaans", "reading-passage", "life-skills", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-013",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "11",
+      "capsTopicId": "CAPS-GEOG-GR11-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000025",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000026",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "1. Study the population pyramid for South Africa (2011 Census). Describe two demographic trends visible in the pyramid. (4 marks)\n2. Explain the impact of HIV/AIDS on the 25–34 age cohort visible in the pyramid. (6 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans adaptation uses correct FET Geography academic register, preserves mark allocations (4 and 6), the 2011 Census reference, and the 25-34 age cohort specification."
+      }
+    ],
+    "rubric": "Mark allocations 4 and 6 must be preserved. '2011 Sensus' (Afrikaans spelling) or '2011 Census' acceptable. Age cohort 25-34 must appear. No fabricated data.",
+    "tags": ["afrikaans", "assessment-item", "geography", "grade-11"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-014",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-MATH-GR3-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000027",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000028",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Count and colour:\n1. Colour 5 stars. ★★★★★★★★★★\n2. How many stars are not coloured? ____\n3. Write the number that is 2 more than 7. ____\n4. Circle the biggest number: 9  4  7  2",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans worksheet uses simple Foundation Phase language, preserves all numbers and star symbols, and keeps all four tasks in correct numbered order."
+      }
+    ],
+    "rubric": "Stars (★) must appear in task 1. Numbers 5, 7, 9, 4, 2 must all appear. Simple Afrikaans instruction words (kleur, tel, skryf, omkring).",
+    "tags": ["afrikaans", "worksheet", "mathematics", "foundation-phase", "grade-3"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-015",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-NS-GR8-TOPIC-3",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000029",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000030",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Practical Activity: Testing for Starch\nMaterials: iodine solution, food samples (bread, potato, cheese, apple), white tile\nMethod:\n1. Place a small piece of each food on the white tile.\n2. Add 2 drops of iodine solution to each sample.\n3. Observe and record any colour change.\nResults table: | Food | Colour change | Starch present? |\n| Bread | | |\n| Potato | | |\n| Cheese | | |\n| Apple | | |",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans adaptation preserves the practical activity structure including materials list, numbered method steps, and results table with all four food samples."
+      }
+    ],
+    "rubric": "Results table must have all four foods (brood, aartappel, kaas, appel), three columns, and the numbered method steps. Materials list preserved.",
+    "tags": ["afrikaans", "worksheet", "natural-sciences", "practical", "grade-8"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-016",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-EHL-GR4-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000031",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000032",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Learner name: [REDACTED] Class: 4B Date: [REDACTED]",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans output does not contain any learner personal information. The [REDACTED] placeholders are preserved or replaced with blank lines, not filled in with invented names."
+      }
+    ],
+    "rubric": "No learner names or personal information in the output. [REDACTED] tokens or blank lines are acceptable. No invented personal data.",
+    "tags": ["afrikaans", "worksheet", "no-pii", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-017",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-EHL-GR4-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000033",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000034",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Comprehension",
+      "sourceLanguage": "af",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["afrikaans", "same-language-refusal", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-018",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000035",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000036",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_source_content" }
+    ],
+    "tags": ["afrikaans", "empty-content-refusal", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-019",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000037",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Fractions",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["afrikaans", "missing-linkage", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-AF-020",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-NS-GR7-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000039",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000040",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "South Africa's Biomes\n\nSouth Africa has nine major biomes ranging from the Succulent Karoo, one of the world's biodiversity hotspots, to the vast Savanna that covers 33% of the country's land surface. The Fynbos biome, found mostly in the Western Cape, is home to over 9 000 plant species, 70% of which are endemic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "af",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Afrikaans text preserves all statistical data (nine biomes, 33%, 9 000 plant species, 70% endemic), SA place names (Wes-Kaap, Savanna, Fynbos, Suksulente Karoo), and does not fabricate any facts."
+      }
+    ],
+    "rubric": "Verify: nine biomes, 33%, 9 000 plant species, 70% endemic, Western Cape reference. No invented statistics.",
+    "tags": [
+      "afrikaans",
+      "reading-passage",
+      "natural-sciences",
+      "grade-7",
+      "no-fabrication"
+    ],
+    "source": "specification"
+  }
+]

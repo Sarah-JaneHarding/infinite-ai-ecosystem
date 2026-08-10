@@ -1,0 +1,586 @@
+[
+  {
+    "id": "TB06-ST-001",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-1",
+      "lessonId": "66666666-7777-8888-9999-000000000501",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000502",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Comprehension\n1. What is the main idea of the passage?\n2. Name two animals mentioned in the text.\n3. Write a sentence using the word 'habitat'.",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "HOME_LANGUAGE_ADAPTED"
+      },
+      { "type": "exact_match", "field": "targetLanguage", "value": "st" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false }
+    ],
+    "tags": ["sesotho", "worksheet", "comprehension", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-002",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-2",
+      "lessonId": "66666666-7777-8888-9999-000000000503",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000504",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "The Water Cycle\n\nWater moves continuously between the ocean, atmosphere and land. Evaporation occurs when sunlight heats water. The water vapour rises and forms clouds. When clouds become heavy enough, water falls as rain.",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho adaptation is grammatically correct and captures all four water cycle stages from the English source."
+      }
+    ],
+    "rubric": "Fluent Sesotho. Evaporation, water vapour, clouds and rainfall all present.",
+    "tags": ["sesotho", "reading-passage", "natural-sciences", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-003",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "interventionId": "66666666-7777-8888-9999-000000000505",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000506",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "1. A shopkeeper has 48 apples in 6 baskets equally. How many apples per basket? (2 marks)\n2. Write 3 249 in words. (1 mark)\n3. Round 4 673 to the nearest hundred. (1 mark)",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho adaptation preserves numbers (48, 6, 3 249, 4 673) and mark allocations (2, 1, 1) exactly."
+      }
+    ],
+    "rubric": "All numbers and mark allocations unchanged. Three questions in Sesotho.",
+    "tags": ["sesotho", "assessment-item", "mathematics", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-004",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-HL-GR3-TOPIC-1",
+      "lessonId": "66666666-7777-8888-9999-000000000507",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000508",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Thandi's Garden\n\nThandi has a small garden. She grows tomatoes and beans. Every morning she waters her plants. Her mother helps pull out the weeds. At summer's end, Thandi sells tomatoes at the market for R5 each.",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho text uses Foundation Phase vocabulary for Grade 3, preserves R5 and market reference."
+      }
+    ],
+    "rubric": "Simple Sesotho sentences. R5 preserved. Grade-3-appropriate vocabulary.",
+    "tags": ["sesotho", "reading-passage", "foundation-phase", "grade-3"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-005",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-3",
+      "lessonId": "66666666-7777-8888-9999-000000000509",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000510",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "A school tuck shop sells sandwiches for R12.50 each and cold drinks for R8.00 each. Sipho buys 3 sandwiches and 2 cold drinks.\n1. Calculate the total cost. Show all working. (3 marks)\n2. Sipho pays with R60. Calculate his change. (2 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho adaptation preserves all monetary values (R12.50, R8.00, R60), quantities (3, 2), and mark allocations (3, 2)."
+      }
+    ],
+    "rubric": "All rand values and quantities unchanged. Mark allocations 3 and 2.",
+    "tags": ["sesotho", "worksheet", "mathematics", "money", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-006",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-4",
+      "lessonId": "66666666-7777-8888-9999-000000000511",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000512",
+      "sourceArtefactType": "MARKING_MEMO",
+      "content": "Question 1: What are the three states of matter?\nModel answer: Solid, liquid and gas. (Award 1 mark each, max 3 marks.)\nQuestion 2: Give one property of a solid.\nModel answer: A solid has a definite shape and volume. (2 marks for both, 1 mark for one.)",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho marking memo preserves all mark allocations (max 3, 2, 1) and uses correct Sesotho scientific terminology."
+      }
+    ],
+    "rubric": "Mark allocations max 3, 2, 1 preserved. Sesotho scientific terms.",
+    "tags": ["sesotho", "marking-memo", "natural-sciences", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-007",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-TECH-GR8-TOPIC-1",
+      "lessonId": "66666666-7777-8888-9999-000000000513",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000514",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Design Activity: Bridge Challenge\nUsing only 20 wooden craft sticks and white glue, design and build a bridge.\n1. Sketch your design. (3 marks)\n2. List the forces acting on your bridge. (2 marks)\n3. After testing, explain one improvement. (3 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      { "type": "exact_match", "field": "targetLanguage", "value": "st" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Output is in Sesotho (not Afrikaans LoLT). Mark allocations (3, 2, 3) and 20 sticks preserved."
+      }
+    ],
+    "rubric": "Sesotho output despite Afrikaans LoLT. Mark allocations 3, 2, 3. 20 sticks.",
+    "tags": ["sesotho", "worksheet", "technology", "grade-8", "lolt-differs"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-008",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "9",
+      "capsTopicId": "CAPS-EMS-GR9-TOPIC-2",
+      "interventionId": "66666666-7777-8888-9999-000000000515",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000516",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Economic activity types:\n1. Primary sector — extraction of natural resources (mining, farming, fishing)\n2. Secondary sector — manufacturing and processing\n3. Tertiary sector — services (banking, education, retail)\nTask: Classify: a) coal mining  b) bread baking  c) teaching",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho translation correctly names all three economic sectors and preserves all three classification examples."
+      }
+    ],
+    "rubric": "Three sectors in Sesotho. Three examples preserved.",
+    "tags": ["sesotho", "worksheet", "economic-management-sciences", "grade-9"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-009",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "10",
+      "capsTopicId": "CAPS-HIST-GR10-TOPIC-2",
+      "lessonId": "66666666-7777-8888-9999-000000000517",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000518",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "EXTENSION TIER\n1. Analyse two primary sources from the apartheid era. Evaluate how effectively they represent township residents' experiences. (10 marks)\n2. Compare the causes of the 1976 Soweto Uprising with those of the 1960 Sharpeville Massacre. (8 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho adaptation uses FET History register, preserves mark allocations (10 and 8) and historical event names."
+      }
+    ],
+    "rubric": "Mark allocations 10 and 8. Historical events preserved. Analytical verbs in Sesotho.",
+    "tags": ["sesotho", "assessment-item", "history", "extension-tier", "grade-10"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-010",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-NS-GR7-TOPIC-2",
+      "lessonId": "66666666-7777-8888-9999-000000000519",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000520",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "South Africa's Biomes\n\nSouth Africa has nine major biomes. The Savanna covers 33% of the country's land surface. The Fynbos biome is home to over 9 000 plant species, 70% of which are endemic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho text preserves all statistics (nine biomes, 33%, 9 000 plant species, 70% endemic) without fabricating any facts."
+      }
+    ],
+    "rubric": "Nine biomes, 33%, 9 000 species, 70% endemic. No fabricated statistics.",
+    "tags": [
+      "sesotho",
+      "reading-passage",
+      "natural-sciences",
+      "grade-7",
+      "no-fabrication"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-011",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "11",
+      "capsTopicId": "CAPS-GEOG-GR11-TOPIC-1",
+      "lessonId": "66666666-7777-8888-9999-000000000521",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000522",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "1. Study the population pyramid for South Africa (2011 Census). Describe two demographic trends. (4 marks)\n2. Explain the impact of HIV/AIDS on the 25–34 age cohort. (6 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho adaptation preserves mark allocations (4 and 6), 2011 Census reference, and 25-34 age cohort."
+      }
+    ],
+    "rubric": "Mark allocations 4 and 6. 2011 Census. Age cohort 25-34.",
+    "tags": ["sesotho", "assessment-item", "geography", "grade-11"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-012",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-NS-GR8-TOPIC-3",
+      "lessonId": "66666666-7777-8888-9999-000000000523",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000524",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Practical Activity: Testing for Starch\nMaterials: iodine solution, food samples (bread, potato, cheese, apple), white tile\nMethod:\n1. Place a small piece of each food on the tile.\n2. Add 2 drops of iodine solution.\n3. Observe and record colour change.\nResults table: | Food | Colour change | Starch present? |\n| Bread | | |\n| Potato | | |\n| Cheese | | |\n| Apple | | |",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho adaptation preserves the practical activity structure: materials list, numbered method steps, and results table with four food samples."
+      }
+    ],
+    "rubric": "Results table with four foods, three columns, numbered steps in Sesotho.",
+    "tags": ["sesotho", "worksheet", "natural-sciences", "practical", "grade-8"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-013",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-LS-GR5-TOPIC-1",
+      "lessonId": "66666666-7777-8888-9999-000000000525",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000526",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Recycling at Riverside Primary\n\nEvery Friday learners sort waste into three bins: paper, plastic and food scraps. Paper and plastic go to a recycling company in Johannesburg. Last year the school recycled 450 kg of paper and 230 kg of plastic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho text preserves all factual data (450 kg paper, 230 kg plastic, Johannesburg) without fabrication."
+      }
+    ],
+    "rubric": "450 kg and 230 kg preserved. Johannesburg mentioned. No fabricated data.",
+    "tags": ["sesotho", "reading-passage", "life-skills", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-014",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-SS-GR7-TOPIC-3",
+      "lessonId": "66666666-7777-8888-9999-000000000527",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000528",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "SUPPORT TIER\nSection A: Match each term to its definition.\n1. Province — a) A large area governed by its own regional government\n2. Municipality — b) A local government area within a province\n3. Ward — c) A subdivision of a municipality for election purposes",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho adaptation preserves the matching exercise structure and uses correct civic terms."
+      }
+    ],
+    "rubric": "Three numbered pairs preserved. SUPPORT TIER label in Sesotho. Civic terms correct.",
+    "tags": ["sesotho", "worksheet", "social-sciences", "support-tier", "grade-7"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-015",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-2",
+      "lessonId": "66666666-7777-8888-9999-000000000529",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000530",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Name: ___________ Date: ___________\nSection B: Vocabulary\nFill in the missing word: [brave, journey, exhausted, discovered]\n1. After the long hike, the children were ___________ .\n2. Columbus ___________ America in 1492.\n3. The firefighter was ___________ for saving the dog.\n4. The ship began its long ___________ across the Atlantic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho worksheet preserves the word box with four Sesotho equivalents, all four numbered fill-in-blank sentences, and the Name/Date header."
+      }
+    ],
+    "rubric": "Four-word box in Sesotho. Four numbered sentences with blanks. Name/Date header.",
+    "tags": ["sesotho", "worksheet", "vocabulary", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-016",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-1",
+      "lessonId": "66666666-7777-8888-9999-000000000531",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000532",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Learner name: [REDACTED] Class: 4B Date: [REDACTED]",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho output contains no learner personal information. Redacted placeholders are preserved or replaced with blank lines, not filled with invented names."
+      }
+    ],
+    "rubric": "No learner PII in output. Redacted tokens or blank lines acceptable.",
+    "tags": ["sesotho", "worksheet", "no-pii", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-017",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-1",
+      "lessonId": "66666666-7777-8888-9999-000000000533",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000534",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Comprehension",
+      "sourceLanguage": "st",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["sesotho", "same-language-refusal", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-018",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-1",
+      "lessonId": "66666666-7777-8888-9999-000000000535",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000536",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_source_content" }
+    ],
+    "tags": ["sesotho", "empty-content-refusal", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-019",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000537",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Fractions",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["sesotho", "missing-linkage", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ST-020",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-MATH-GR3-TOPIC-1",
+      "lessonId": "66666666-7777-8888-9999-000000000539",
+      "sourceArtefactId": "66666666-7777-8888-9999-000000000540",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Count and colour:\n1. Colour 5 stars. ★★★★★★★★★★\n2. How many stars are not coloured? ____\n3. Write the number that is 2 more than 7. ____\n4. Circle the biggest number: 9  4  7  2",
+      "sourceLanguage": "en",
+      "targetLanguage": "st",
+      "loltLanguage": "st",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The Sesotho worksheet uses simple Foundation Phase language, preserves all numbers and star symbols, and keeps all four tasks in numbered order."
+      }
+    ],
+    "rubric": "Stars (★) in task 1. Numbers 5, 7, 9, 4, 2 preserved. Simple Sesotho instructions.",
+    "tags": ["sesotho", "worksheet", "mathematics", "foundation-phase", "grade-3"],
+    "source": "specification"
+  }
+]

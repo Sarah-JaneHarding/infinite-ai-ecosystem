@@ -1,4 +1,4 @@
-// @infinite-ai/contracts — toolbox sub-module barrel (Stage 11 steps 1–2).
+// @infinite-ai/contracts — toolbox sub-module barrel (Stage 11 steps 1–3).
 
 export {
   ARTEFACT_TYPE_TO_AGENT,
@@ -29,6 +29,7 @@ export {
   AssessmentItem,
   AssessmentItemType,
   MCOption,
+  OfficialLanguage,
   TB01Input,
   TB01Result,
   TB03Input,
@@ -39,6 +40,8 @@ export {
   TB05ItemInput,
   TB05Result,
   TB05VerificationItem,
+  TB06Input,
+  TB06Result,
   TBOutputLinkage,
   VerifierAnswers,
   WorksheetDifferentiationTier,
