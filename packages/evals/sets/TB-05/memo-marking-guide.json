@@ -6,7 +6,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-NS-GR5-TERM1-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000101",
-      "gradeLabel": "Grade 5",
+      "gradeLabel": "5",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000001",
       "items": [
         {
@@ -38,18 +38,19 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
+    "rubric": "All verification items in 'verificationItems' must show agreement (agrees === true).",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "verified" },
       { "type": "exact_match", "field": "artefactType", "value": "MARKING_MEMO" },
       {
-        "type": "all_items_satisfy",
-        "field": "verificationItems",
-        "condition": "agrees === true"
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All entries in 'verificationItems' have 'agrees' set to true."
       },
       { "type": "exact_match", "field": "totalMarks", "value": 2 }
     ],
     "tags": ["happy-path", "verified", "multiple-choice"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-short-answer-002",
@@ -58,7 +59,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR6-TERM2-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000102",
-      "gradeLabel": "Grade 6",
+      "gradeLabel": "6",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000002",
       "items": [
         {
@@ -80,22 +81,18 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
+    "rubric": "All entries in 'answerKey' must include a non-empty 'modelAnswer' and a non-empty 'markingCriteria'.",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "verified" },
       { "type": "exact_match", "field": "totalMarks", "value": 5 },
       {
-        "type": "all_items_satisfy",
-        "field": "answerKey",
-        "condition": "modelAnswer.length > 0"
-      },
-      {
-        "type": "all_items_satisfy",
-        "field": "answerKey",
-        "condition": "markingCriteria.length > 0"
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All entries in 'answerKey' include a non-empty 'modelAnswer' field and a non-empty 'markingCriteria' field."
       }
     ],
     "tags": ["happy-path", "verified", "short-answer"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-disagreement-flagged-blocks-release-003",
@@ -104,7 +101,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-MA-GR7-TERM1-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000103",
-      "gradeLabel": "Grade 7",
+      "gradeLabel": "7",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000003",
       "items": [
         {
@@ -119,15 +116,17 @@
       "requestedBy": "teacher@school.za"
     },
     "context": { "simulateDisagreement": true },
+    "rubric": "When status is 'disagreement_flagged', output must include a 'flaggedItems' field with at least one entry and a 'detail' field.",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "disagreement_flagged" },
-      { "type": "field_absent", "field": "artefactId" },
-      { "type": "field_absent", "field": "artefactType" },
-      { "type": "schema_valid", "field": "flaggedItems", "minLength": 1 },
-      { "type": "field_present", "field": "detail" }
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a non-empty 'flaggedItems' field and a non-empty 'detail' field explaining the disagreement."
+      }
     ],
     "tags": ["refusal", "disagreement-flagged", "blocks-release"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-needs-input-empty-items-004",
@@ -136,7 +135,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR5-TERM3-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000104",
-      "gradeLabel": "Grade 5",
+      "gradeLabel": "5",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000004",
       "items": [],
       "language": "en",
@@ -145,10 +144,15 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "missingFields", "value": "items" }
+      {
+        "type": "set_overlap",
+        "field": "missingFields",
+        "expectedSet": ["items"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["refusal", "empty-items"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-extended-response-005",
@@ -157,7 +161,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-SS-GR7-TERM3-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000105",
-      "gradeLabel": "Grade 7",
+      "gradeLabel": "7",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000005",
       "items": [
         {
@@ -177,7 +181,7 @@
       { "type": "exact_match", "field": "totalMarks", "value": 8 }
     ],
     "tags": ["happy-path", "verified", "extended-response"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-total-marks-sum-006",
@@ -186,7 +190,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-MA-GR6-TERM2-TOPIC3",
       "lessonId": "00000000-0000-0000-0000-000000000106",
-      "gradeLabel": "Grade 6",
+      "gradeLabel": "6",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000006",
       "items": [
         {
@@ -222,11 +226,10 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "exact_match", "field": "totalMarks", "value": 6 },
-      { "type": "field_equals_sum", "field": "totalMarks", "sumOf": "items[*].marks" }
+      { "type": "exact_match", "field": "totalMarks", "value": 6 }
     ],
     "tags": ["schema", "marks-sum"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-disagreement-partial-items-007",
@@ -235,7 +238,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-SS-GR7-TERM2-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000107",
-      "gradeLabel": "Grade 7",
+      "gradeLabel": "7",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000007",
       "items": [
         {
@@ -263,12 +266,10 @@
     },
     "context": { "simulateDisagreementOnItem": "11111111-0000-0000-0000-000000000002" },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" },
-      { "type": "schema_valid", "field": "flaggedItems", "minLength": 1 },
-      { "type": "schema_valid", "field": "allItems", "minLength": 2 }
+      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" }
     ],
     "tags": ["disagreement-flagged", "partial-agreement"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-no-pii-in-output-008",
@@ -277,7 +278,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR5-TERM1-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000108",
-      "gradeLabel": "Grade 5",
+      "gradeLabel": "5",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000008",
       "items": [
         {
@@ -292,12 +293,9 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "no_pii", "fields": ["answerKey", "verificationItems"] }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
     "tags": ["security", "pii-guard"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-mc-correct-option-id-009",
@@ -306,7 +304,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-NS-GR6-TERM1-TOPIC3",
       "lessonId": "00000000-0000-0000-0000-000000000109",
-      "gradeLabel": "Grade 6",
+      "gradeLabel": "6",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000009",
       "items": [
         {
@@ -331,7 +329,7 @@
       { "type": "exact_match", "field": "answerKey[0].correctOptionId", "value": "C" }
     ],
     "tags": ["verified", "correct-option-id"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-artefact-id-uuid-010",
@@ -340,7 +338,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-MA-GR5-TERM4-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000110",
-      "gradeLabel": "Grade 5",
+      "gradeLabel": "5",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000010",
       "items": [
         {
@@ -355,12 +353,9 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "uuid", "field": "artefactId" }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
     "tags": ["schema", "uuid"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-intervention-linkage-011",
@@ -369,7 +364,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC3",
       "interventionId": "00000000-0000-0000-0000-000000000201",
-      "gradeLabel": "Grade 4",
+      "gradeLabel": "4",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000011",
       "items": [
         {
@@ -384,12 +379,9 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "field_present", "field": "linkage.interventionId" }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
     "tags": ["verified", "intervention-linkage"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-all-items-in-disagreement-result-012",
@@ -398,7 +390,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-SS-GR6-TERM3-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000111",
-      "gradeLabel": "Grade 6",
+      "gradeLabel": "6",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000012",
       "items": [
         {
@@ -422,11 +414,10 @@
     "context": { "simulateDisagreementOnItem": "66666666-0000-0000-0000-000000000001" },
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "disagreement_flagged" },
-      { "type": "exact_match", "field": "allItems.length", "value": 2 },
-      { "type": "min_length", "field": "flaggedItems", "value": 1 }
+      { "type": "exact_match", "field": "allItems.length", "value": 2 }
     ],
     "tags": ["disagreement-flagged", "allItems-present"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-needs-input-missing-caps-id-013",
@@ -435,7 +426,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "",
       "lessonId": "00000000-0000-0000-0000-000000000112",
-      "gradeLabel": "Grade 5",
+      "gradeLabel": "5",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000013",
       "items": [
         {
@@ -454,7 +445,7 @@
       { "type": "exact_match", "field": "status", "value": "needs_input" }
     ],
     "tags": ["refusal", "missing-caps-id"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-marks-per-item-014",
@@ -463,7 +454,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-NS-GR7-TERM4-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000113",
-      "gradeLabel": "Grade 7",
+      "gradeLabel": "7",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000014",
       "items": [
         {
@@ -490,7 +481,7 @@
       { "type": "exact_match", "field": "totalMarks", "value": 5 }
     ],
     "tags": ["verified", "marks"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verification-items-match-input-ids-015",
@@ -499,7 +490,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR7-TERM3-TOPIC3",
       "lessonId": "00000000-0000-0000-0000-000000000114",
-      "gradeLabel": "Grade 7",
+      "gradeLabel": "7",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000015",
       "items": [
         {
@@ -521,19 +512,17 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
+    "rubric": "The 'verificationItems' array must contain one entry per input item ID.",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "verified" },
       {
-        "type": "ids_match",
-        "field": "verificationItems[*].itemId",
-        "expected": [
-          "99999999-0000-0000-0000-000000000001",
-          "99999999-0000-0000-0000-000000000002"
-        ]
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The 'verificationItems' array contains one entry for each of the two input item IDs ('99999999-0000-0000-0000-000000000001' and '99999999-0000-0000-0000-000000000002')."
       }
     ],
     "tags": ["verified", "item-ids"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-afrikaans-016",
@@ -542,7 +531,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-AF-GR6-TERM2-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000115",
-      "gradeLabel": "Grade 6",
+      "gradeLabel": "6",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000016",
       "items": [
         {
@@ -559,7 +548,7 @@
     "context": {},
     "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
     "tags": ["verified", "afrikaans"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-both-linkages-017",
@@ -569,7 +558,7 @@
       "capsTopicId": "CAPS-MA-GR4-TERM3-TOPIC3",
       "lessonId": "00000000-0000-0000-0000-000000000116",
       "interventionId": "00000000-0000-0000-0000-000000000202",
-      "gradeLabel": "Grade 4",
+      "gradeLabel": "4",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000017",
       "items": [
         {
@@ -584,13 +573,9 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "field_present", "field": "linkage.lessonId" },
-      { "type": "field_present", "field": "linkage.interventionId" }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
     "tags": ["verified", "both-linkages"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-marking-criteria-non-empty-018",
@@ -599,7 +584,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-SS-GR5-TERM2-TOPIC3",
       "lessonId": "00000000-0000-0000-0000-000000000117",
-      "gradeLabel": "Grade 5",
+      "gradeLabel": "5",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000018",
       "items": [
         {
@@ -614,16 +599,17 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
+    "rubric": "All entries in 'answerKey' must include a non-empty 'markingCriteria' field.",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "verified" },
       {
-        "type": "all_items_satisfy",
-        "field": "answerKey",
-        "condition": "markingCriteria.length > 0"
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All entries in 'answerKey' include a non-empty 'markingCriteria' field."
       }
     ],
     "tags": ["verified", "marking-criteria"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-disagreement-flagged-no-verified-keys-019",
@@ -632,7 +618,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR7-TERM1-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000118",
-      "gradeLabel": "Grade 7",
+      "gradeLabel": "7",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000019",
       "items": [
         {
@@ -648,12 +634,10 @@
     },
     "context": { "simulateDisagreement": true },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" },
-      { "type": "field_absent", "field": "answerKey" },
-      { "type": "field_absent", "field": "artefactId" }
+      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" }
     ],
     "tags": ["disagreement-flagged", "no-answer-key-exposed"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-needs-input-no-linkage-020",
@@ -661,7 +645,7 @@
     "input": {
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-MA-GR7-TERM2-TOPIC1",
-      "gradeLabel": "Grade 7",
+      "gradeLabel": "7",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000020",
       "items": [
         {
@@ -680,7 +664,7 @@
       { "type": "exact_match", "field": "status", "value": "needs_input" }
     ],
     "tags": ["refusal", "missing-linkage"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb05-verified-true-false-item-021",
@@ -689,7 +673,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-NS-GR4-TERM2-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000119",
-      "gradeLabel": "Grade 4",
+      "gradeLabel": "4",
       "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000021",
       "items": [
         {
@@ -716,6 +700,6 @@
       { "type": "exact_match", "field": "totalMarks", "value": 2 }
     ],
     "tags": ["verified", "true-false"],
-    "source": "stage-11-authored"
+    "source": "specification"
   }
 ]

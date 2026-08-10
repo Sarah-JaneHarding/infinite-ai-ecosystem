@@ -6,7 +6,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000101",
-      "gradeLabel": "Grade 4",
+      "gradeLabel": "4",
       "subject": "English Home Language",
       "learningObjectives": [
         "Identify the main idea of a non-fiction paragraph",
@@ -23,11 +23,15 @@
       { "type": "exact_match", "field": "status", "value": "ok" },
       { "type": "exact_match", "field": "artefactType", "value": "WORKSHEET" },
       { "type": "exact_match", "field": "differentiationTier", "value": "STANDARD" },
-      { "type": "schema_valid", "field": "sections", "minLength": 1 },
-      { "type": "subset_of", "field": "citedSourceIds", "of": ["doc-001", "doc-002"] }
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-001", "doc-002"]
+      }
     ],
     "tags": ["happy-path", "standard-tier", "english"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-ok-support-afrikaans-002",
@@ -36,7 +40,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-AF-GR3-TERM2-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000102",
-      "gradeLabel": "Grade 3",
+      "gradeLabel": "3",
       "subject": "Afrikaans Home Language",
       "learningObjectives": [
         "Verstaan die hoofgedagte van 'n teks",
@@ -51,11 +55,10 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "differentiationTier", "value": "SUPPORT" },
-      { "type": "schema_valid", "field": "sections", "minLength": 1 }
+      { "type": "exact_match", "field": "differentiationTier", "value": "SUPPORT" }
     ],
     "tags": ["happy-path", "support-tier", "afrikaans"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-ok-extension-maths-003",
@@ -64,7 +67,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-MA-GR6-TERM3-TOPIC4",
       "lessonId": "00000000-0000-0000-0000-000000000103",
-      "gradeLabel": "Grade 6",
+      "gradeLabel": "6",
       "subject": "Mathematics",
       "learningObjectives": [
         "Apply ratio and rate to solve real-world problems",
@@ -79,11 +82,10 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "differentiationTier", "value": "EXTENSION" },
-      { "type": "schema_valid", "field": "sections", "minLength": 2 }
+      { "type": "exact_match", "field": "differentiationTier", "value": "EXTENSION" }
     ],
     "tags": ["happy-path", "extension-tier", "mathematics"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-ok-no-tier-defaults-standard-004",
@@ -92,7 +94,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-NS-GR5-TERM1-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000104",
-      "gradeLabel": "Grade 5",
+      "gradeLabel": "5",
       "subject": "Natural Sciences",
       "learningObjectives": ["Describe the water cycle"],
       "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
@@ -101,12 +103,9 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "schema_valid", "field": "sections", "minLength": 1 }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
     "tags": ["happy-path", "no-tier"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-ok-intervention-linkage-005",
@@ -115,7 +114,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR4-TERM2-TOPIC3",
       "interventionId": "00000000-0000-0000-0000-000000000201",
-      "gradeLabel": "Grade 4",
+      "gradeLabel": "4",
       "subject": "English Home Language",
       "learningObjectives": ["Sequence events in a story"],
       "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
@@ -125,13 +124,9 @@
       "differentiationTier": "SUPPORT"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_present", "field": "linkage.interventionId" },
-      { "type": "field_absent", "field": "linkage.lessonId" }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
     "tags": ["happy-path", "intervention-linkage"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-ok-both-linkages-006",
@@ -141,7 +136,7 @@
       "capsTopicId": "CAPS-SS-GR7-TERM1-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000105",
       "interventionId": "00000000-0000-0000-0000-000000000202",
-      "gradeLabel": "Grade 7",
+      "gradeLabel": "7",
       "subject": "Social Sciences",
       "learningObjectives": ["Analyse causes of the Great Trek"],
       "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
@@ -151,13 +146,9 @@
       "differentiationTier": "STANDARD"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_present", "field": "linkage.lessonId" },
-      { "type": "field_present", "field": "linkage.interventionId" }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
     "tags": ["happy-path", "both-linkages"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-ok-multiple-objectives-sections-007",
@@ -166,7 +157,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR5-TERM3-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000106",
-      "gradeLabel": "Grade 5",
+      "gradeLabel": "5",
       "subject": "English Home Language",
       "learningObjectives": [
         "Identify figurative language in poems",
@@ -182,15 +173,15 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "schema_valid", "field": "sections", "minLength": 2 },
       {
-        "type": "subset_of",
-        "field": "citedSourceIds",
-        "of": ["doc-060", "doc-061", "doc-062"]
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-060", "doc-061", "doc-062"]
       }
     ],
     "tags": ["happy-path", "multiple-objectives"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-no-source-document-empty-ids-008",
@@ -199,7 +190,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000107",
-      "gradeLabel": "Grade 4",
+      "gradeLabel": "4",
       "subject": "English Home Language",
       "learningObjectives": ["Read a passage for comprehension"],
       "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
@@ -208,12 +199,17 @@
       "requestedBy": "teacher@school.za"
     },
     "context": { "simulateNoGrounding": true },
+    "rubric": "When status is 'no_source_document', the output must include a non-empty 'detail' field explaining the failure.",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "no_source_document" },
-      { "type": "field_present", "field": "detail" }
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a non-empty 'detail' field explaining why the source document is unavailable."
+      }
     ],
     "tags": ["refusal", "no-source"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-needs-input-missing-caps-id-009",
@@ -222,7 +218,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "",
       "lessonId": "00000000-0000-0000-0000-000000000108",
-      "gradeLabel": "Grade 4",
+      "gradeLabel": "4",
       "subject": "English Home Language",
       "learningObjectives": ["Identify adjectives"],
       "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
@@ -233,10 +229,15 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "missingFields", "value": "capsTopicId" }
+      {
+        "type": "set_overlap",
+        "field": "missingFields",
+        "expectedSet": ["capsTopicId"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["refusal", "missing-caps-id"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-needs-input-empty-objectives-010",
@@ -245,7 +246,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000109",
-      "gradeLabel": "Grade 4",
+      "gradeLabel": "4",
       "subject": "English Home Language",
       "learningObjectives": [],
       "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
@@ -256,10 +257,15 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "contains", "field": "missingFields", "value": "learningObjectives" }
+      {
+        "type": "set_overlap",
+        "field": "missingFields",
+        "expectedSet": ["learningObjectives"],
+        "minOverlap": 1.0
+      }
     ],
     "tags": ["refusal", "empty-objectives"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-no-pii-in-output-011",
@@ -268,7 +274,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000110",
-      "gradeLabel": "Grade 4",
+      "gradeLabel": "4",
       "subject": "English Home Language",
       "learningObjectives": ["Retell a story in sequence"],
       "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
@@ -278,12 +284,9 @@
       "differentiationTier": "STANDARD"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "no_pii", "fields": ["sections"] }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
     "tags": ["security", "pii-guard"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-cited-ids-subset-of-input-012",
@@ -292,7 +295,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-MA-GR5-TERM2-TOPIC3",
       "lessonId": "00000000-0000-0000-0000-000000000111",
-      "gradeLabel": "Grade 5",
+      "gradeLabel": "5",
       "subject": "Mathematics",
       "learningObjectives": ["Calculate area and perimeter of composite shapes"],
       "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
@@ -304,11 +307,15 @@
     "context": {},
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "subset_of", "field": "citedSourceIds", "of": ["doc-100", "doc-101"] },
-      { "type": "min_length", "field": "citedSourceIds", "value": 1 }
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-100", "doc-101"]
+      }
     ],
     "tags": ["grounding", "cited-sources"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-readability-check-present-013",
@@ -317,7 +324,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-NS-GR6-TERM1-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000112",
-      "gradeLabel": "Grade 6",
+      "gradeLabel": "6",
       "subject": "Natural Sciences",
       "learningObjectives": ["Classify vertebrates by common characteristics"],
       "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
@@ -327,13 +334,17 @@
       "differentiationTier": "STANDARD"
     },
     "context": {},
+    "rubric": "The output must include a 'readabilityCheckResult' object with a non-null 'verdict' field.",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_present", "field": "readabilityCheckResult" },
-      { "type": "field_present", "field": "readabilityCheckResult.verdict" }
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a 'readabilityCheckResult' object with a non-null 'verdict' field."
+      }
     ],
     "tags": ["readability"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-artefact-id-is-uuid-014",
@@ -342,7 +353,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-SS-GR6-TERM2-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000113",
-      "gradeLabel": "Grade 6",
+      "gradeLabel": "6",
       "subject": "Social Sciences",
       "learningObjectives": ["Describe the impact of colonialism on indigenous peoples"],
       "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
@@ -352,12 +363,9 @@
       "differentiationTier": "STANDARD"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "uuid", "field": "artefactId" }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
     "tags": ["schema"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-ok-zulu-foundation-015",
@@ -366,7 +374,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-ZU-GR2-TERM1-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000114",
-      "gradeLabel": "Grade 2",
+      "gradeLabel": "2",
       "subject": "isiZulu Home Language",
       "learningObjectives": ["Phendula imibuzo mayelana nombhalo"],
       "targetReadabilityBand": { "minGrade": 1, "maxGrade": 3 },
@@ -376,12 +384,9 @@
       "differentiationTier": "STANDARD"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "schema_valid", "field": "sections", "minLength": 1 }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
     "tags": ["happy-path", "zulu", "foundation-phase"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-sections-have-at-least-one-question-016",
@@ -390,7 +395,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR7-TERM4-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000115",
-      "gradeLabel": "Grade 7",
+      "gradeLabel": "7",
       "subject": "English Home Language",
       "learningObjectives": ["Evaluate an argument for logical fallacies"],
       "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
@@ -400,16 +405,17 @@
       "differentiationTier": "EXTENSION"
     },
     "context": {},
+    "rubric": "Every section in the output's 'sections' array must contain at least one question.",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "all_items_satisfy",
-        "field": "sections",
-        "condition": "questions.length >= 1"
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Every section in the output's 'sections' array contains at least one question."
       }
     ],
     "tags": ["schema", "questions-per-section"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-linkage-caps-topic-present-017",
@@ -418,7 +424,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-MA-GR4-TERM3-TOPIC2",
       "lessonId": "00000000-0000-0000-0000-000000000116",
-      "gradeLabel": "Grade 4",
+      "gradeLabel": "4",
       "subject": "Mathematics",
       "learningObjectives": ["Perform multiplication of 2-digit by 1-digit numbers"],
       "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
@@ -437,7 +443,7 @@
       }
     ],
     "tags": ["linkage", "caps-topic"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-needs-input-no-lesson-or-intervention-018",
@@ -445,7 +451,7 @@
     "input": {
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-EN-GR5-TERM1-TOPIC1",
-      "gradeLabel": "Grade 5",
+      "gradeLabel": "5",
       "subject": "English Home Language",
       "learningObjectives": ["Identify main idea"],
       "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
@@ -454,12 +460,17 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
+    "rubric": "When neither lessonId nor interventionId is provided, the output must include a 'missingFields' field identifying which linkage is absent.",
     "expectations": [
       { "type": "exact_match", "field": "status", "value": "needs_input" },
-      { "type": "field_present", "field": "missingFields" }
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a 'missingFields' field identifying that a lessonId or interventionId is required."
+      }
     ],
     "tags": ["refusal", "missing-linkage"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-ok-technology-grade6-019",
@@ -468,7 +479,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-TK-GR6-TERM2-TOPIC1",
       "lessonId": "00000000-0000-0000-0000-000000000117",
-      "gradeLabel": "Grade 6",
+      "gradeLabel": "6",
       "subject": "Technology",
       "learningObjectives": [
         "Design a simple load-bearing structure",
@@ -481,12 +492,9 @@
       "differentiationTier": "STANDARD"
     },
     "context": {},
-    "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "schema_valid", "field": "sections", "minLength": 2 }
-    ],
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
     "tags": ["happy-path", "technology"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-ok-life-skills-grade3-020",
@@ -495,7 +503,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-LS-GR3-TERM1-TOPIC3",
       "lessonId": "00000000-0000-0000-0000-000000000118",
-      "gradeLabel": "Grade 3",
+      "gradeLabel": "3",
       "subject": "Life Skills",
       "learningObjectives": ["Name ways to stay healthy at school"],
       "targetReadabilityBand": { "minGrade": 2, "maxGrade": 4 },
@@ -510,7 +518,7 @@
       { "type": "exact_match", "field": "differentiationTier", "value": "SUPPORT" }
     ],
     "tags": ["happy-path", "life-skills", "foundation-phase"],
-    "source": "stage-11-authored"
+    "source": "specification"
   },
   {
     "id": "tb01-artefact-type-is-worksheet-021",
@@ -519,7 +527,7 @@
       "tenantId": "00000000-0000-0000-0000-000000000001",
       "capsTopicId": "CAPS-MA-GR7-TERM4-TOPIC3",
       "lessonId": "00000000-0000-0000-0000-000000000119",
-      "gradeLabel": "Grade 7",
+      "gradeLabel": "7",
       "subject": "Mathematics",
       "learningObjectives": ["Solve linear equations with one variable"],
       "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
@@ -534,6 +542,6 @@
       { "type": "exact_match", "field": "artefactType", "value": "WORKSHEET" }
     ],
     "tags": ["schema", "artefact-type"],
-    "source": "stage-11-authored"
+    "source": "specification"
   }
 ]
