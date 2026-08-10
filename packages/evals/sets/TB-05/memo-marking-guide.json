@@ -1,0 +1,705 @@
+[
+  {
+    "id": "tb05-verified-all-mc-agree-001",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR5-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000101",
+      "gradeLabel": "5",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000001",
+      "items": [
+        {
+          "itemId": "bbbbbbbb-0000-0000-0000-000000000001",
+          "questionText": "Which of the following is a property of solids?",
+          "itemType": "multiple_choice",
+          "options": [
+            { "optionId": "A", "text": "They take the shape of their container." },
+            { "optionId": "B", "text": "They have a definite shape and volume." },
+            { "optionId": "C", "text": "They flow easily." },
+            { "optionId": "D", "text": "They expand to fill any container." }
+          ],
+          "marks": 1
+        },
+        {
+          "itemId": "bbbbbbbb-0000-0000-0000-000000000002",
+          "questionText": "What happens to water when it is heated to 100°C?",
+          "itemType": "multiple_choice",
+          "options": [
+            { "optionId": "A", "text": "It freezes." },
+            { "optionId": "B", "text": "It becomes a gas." },
+            { "optionId": "C", "text": "It turns into ice." },
+            { "optionId": "D", "text": "It becomes heavier." }
+          ],
+          "marks": 1
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All verification items in 'verificationItems' must show agreement (agrees === true).",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "verified" },
+      { "type": "exact_match", "field": "artefactType", "value": "MARKING_MEMO" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All entries in 'verificationItems' have 'agrees' set to true."
+      },
+      { "type": "exact_match", "field": "totalMarks", "value": 2 }
+    ],
+    "tags": ["happy-path", "verified", "multiple-choice"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-short-answer-002",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR6-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000102",
+      "gradeLabel": "6",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000002",
+      "items": [
+        {
+          "itemId": "cccccccc-0000-0000-0000-000000000001",
+          "questionText": "Name TWO comprehension strategies a reader can use before reading a text.",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 2
+        },
+        {
+          "itemId": "cccccccc-0000-0000-0000-000000000002",
+          "questionText": "Explain in your own words what 'inferring' means when reading.",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 3
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All entries in 'answerKey' must include a non-empty 'modelAnswer' and a non-empty 'markingCriteria'.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "verified" },
+      { "type": "exact_match", "field": "totalMarks", "value": 5 },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All entries in 'answerKey' include a non-empty 'modelAnswer' field and a non-empty 'markingCriteria' field."
+      }
+    ],
+    "tags": ["happy-path", "verified", "short-answer"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-disagreement-flagged-blocks-release-003",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR7-TERM1-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000103",
+      "gradeLabel": "7",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000003",
+      "items": [
+        {
+          "itemId": "dddddddd-0000-0000-0000-000000000001",
+          "questionText": "What is the value of x in: 2x + 4 = 10?",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 3
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": { "simulateDisagreement": true },
+    "rubric": "When status is 'disagreement_flagged', output must include a 'flaggedItems' field with at least one entry and a 'detail' field.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a non-empty 'flaggedItems' field and a non-empty 'detail' field explaining the disagreement."
+      }
+    ],
+    "tags": ["refusal", "disagreement-flagged", "blocks-release"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-needs-input-empty-items-004",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR5-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000104",
+      "gradeLabel": "5",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000004",
+      "items": [],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "set_overlap",
+        "field": "missingFields",
+        "expectedSet": ["items"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["refusal", "empty-items"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-extended-response-005",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR7-TERM3-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000105",
+      "gradeLabel": "7",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000005",
+      "items": [
+        {
+          "itemId": "eeeeeeee-0000-0000-0000-000000000001",
+          "questionText": "Discuss TWO impacts of apartheid on the education system. Use evidence from the sources to support your answer.",
+          "itemType": "extended_response",
+          "options": [],
+          "marks": 8
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "verified" },
+      { "type": "exact_match", "field": "totalMarks", "value": 8 }
+    ],
+    "tags": ["happy-path", "verified", "extended-response"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-total-marks-sum-006",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR6-TERM2-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000106",
+      "gradeLabel": "6",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000006",
+      "items": [
+        {
+          "itemId": "ffffffff-0000-0000-0000-000000000001",
+          "questionText": "What is 25% of 80?",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 2
+        },
+        {
+          "itemId": "ffffffff-0000-0000-0000-000000000002",
+          "questionText": "Calculate the area of a rectangle with length 12 cm and width 7 cm.",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 3
+        },
+        {
+          "itemId": "ffffffff-0000-0000-0000-000000000003",
+          "questionText": "Which fraction is equivalent to 0.75?",
+          "itemType": "multiple_choice",
+          "options": [
+            { "optionId": "A", "text": "1/4" },
+            { "optionId": "B", "text": "3/4" },
+            { "optionId": "C", "text": "2/3" },
+            { "optionId": "D", "text": "1/2" }
+          ],
+          "marks": 1
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "verified" },
+      { "type": "exact_match", "field": "totalMarks", "value": 6 }
+    ],
+    "tags": ["schema", "marks-sum"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-disagreement-partial-items-007",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR7-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000107",
+      "gradeLabel": "7",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000007",
+      "items": [
+        {
+          "itemId": "11111111-0000-0000-0000-000000000001",
+          "questionText": "What is the capital of South Africa?",
+          "itemType": "multiple_choice",
+          "options": [
+            { "optionId": "A", "text": "Cape Town" },
+            { "optionId": "B", "text": "Johannesburg" },
+            { "optionId": "C", "text": "Pretoria" },
+            { "optionId": "D", "text": "Durban" }
+          ],
+          "marks": 1
+        },
+        {
+          "itemId": "11111111-0000-0000-0000-000000000002",
+          "questionText": "Identify TWO functions of the legislature in South Africa.",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 4
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": { "simulateDisagreementOnItem": "11111111-0000-0000-0000-000000000002" },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" }
+    ],
+    "tags": ["disagreement-flagged", "partial-agreement"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-no-pii-in-output-008",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR5-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000108",
+      "gradeLabel": "5",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000008",
+      "items": [
+        {
+          "itemId": "22222222-0000-0000-0000-000000000001",
+          "questionText": "What is the main idea of the passage?",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 2
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
+    "tags": ["security", "pii-guard"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-mc-correct-option-id-009",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR6-TERM1-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000109",
+      "gradeLabel": "6",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000009",
+      "items": [
+        {
+          "itemId": "33333333-0000-0000-0000-000000000001",
+          "questionText": "Which organ system is responsible for pumping blood around the body?",
+          "itemType": "multiple_choice",
+          "options": [
+            { "optionId": "A", "text": "Digestive system" },
+            { "optionId": "B", "text": "Respiratory system" },
+            { "optionId": "C", "text": "Circulatory system" },
+            { "optionId": "D", "text": "Nervous system" }
+          ],
+          "marks": 1
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "verified" },
+      { "type": "exact_match", "field": "answerKey[0].correctOptionId", "value": "C" }
+    ],
+    "tags": ["verified", "correct-option-id"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-artefact-id-uuid-010",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR5-TERM4-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000110",
+      "gradeLabel": "5",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000010",
+      "items": [
+        {
+          "itemId": "44444444-0000-0000-0000-000000000001",
+          "questionText": "A bag has 5 red balls and 3 blue balls. What is the probability of picking a blue ball?",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 2
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
+    "tags": ["schema", "uuid"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-intervention-linkage-011",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC3",
+      "interventionId": "00000000-0000-0000-0000-000000000201",
+      "gradeLabel": "4",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000011",
+      "items": [
+        {
+          "itemId": "55555555-0000-0000-0000-000000000001",
+          "questionText": "Put the events of the story in the correct order: A, B, C, D.",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 2
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
+    "tags": ["verified", "intervention-linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-all-items-in-disagreement-result-012",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR6-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000111",
+      "gradeLabel": "6",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000012",
+      "items": [
+        {
+          "itemId": "66666666-0000-0000-0000-000000000001",
+          "questionText": "What does the term 'democracy' mean?",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 2
+        },
+        {
+          "itemId": "66666666-0000-0000-0000-000000000002",
+          "questionText": "Name ONE right guaranteed by the South African Constitution.",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 1
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": { "simulateDisagreementOnItem": "66666666-0000-0000-0000-000000000001" },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" },
+      { "type": "exact_match", "field": "allItems.length", "value": 2 }
+    ],
+    "tags": ["disagreement-flagged", "allItems-present"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-needs-input-missing-caps-id-013",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "",
+      "lessonId": "00000000-0000-0000-0000-000000000112",
+      "gradeLabel": "5",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000013",
+      "items": [
+        {
+          "itemId": "77777777-0000-0000-0000-000000000001",
+          "questionText": "What is photosynthesis?",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 3
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["refusal", "missing-caps-id"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-marks-per-item-014",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR7-TERM4-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000113",
+      "gradeLabel": "7",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000014",
+      "items": [
+        {
+          "itemId": "88888888-0000-0000-0000-000000000001",
+          "questionText": "Describe the role of mitochondria in the cell.",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 4
+        },
+        {
+          "itemId": "88888888-0000-0000-0000-000000000002",
+          "questionText": "True or false: All plant cells contain chloroplasts.",
+          "itemType": "true_false",
+          "options": [],
+          "marks": 1
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "verified" },
+      { "type": "exact_match", "field": "totalMarks", "value": 5 }
+    ],
+    "tags": ["verified", "marks"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verification-items-match-input-ids-015",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR7-TERM3-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000114",
+      "gradeLabel": "7",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000015",
+      "items": [
+        {
+          "itemId": "99999999-0000-0000-0000-000000000001",
+          "questionText": "Identify the narrative technique used in paragraph 2.",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 3
+        },
+        {
+          "itemId": "99999999-0000-0000-0000-000000000002",
+          "questionText": "Explain the symbolism of the bird in the poem.",
+          "itemType": "extended_response",
+          "options": [],
+          "marks": 6
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "The 'verificationItems' array must contain one entry per input item ID.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "verified" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The 'verificationItems' array contains one entry for each of the two input item IDs ('99999999-0000-0000-0000-000000000001' and '99999999-0000-0000-0000-000000000002')."
+      }
+    ],
+    "tags": ["verified", "item-ids"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-afrikaans-016",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-AF-GR6-TERM2-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000115",
+      "gradeLabel": "6",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000016",
+      "items": [
+        {
+          "itemId": "aaaaaaaa-1111-0000-0000-000000000001",
+          "questionText": "Wat is die hoofgedagte van die gedig?",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 2
+        }
+      ],
+      "language": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
+    "tags": ["verified", "afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-both-linkages-017",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR4-TERM3-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000116",
+      "interventionId": "00000000-0000-0000-0000-000000000202",
+      "gradeLabel": "4",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000017",
+      "items": [
+        {
+          "itemId": "bbbbbbbb-1111-0000-0000-000000000001",
+          "questionText": "What is 6 × 7?",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 1
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
+    "tags": ["verified", "both-linkages"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-marking-criteria-non-empty-018",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR5-TERM2-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000117",
+      "gradeLabel": "5",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000018",
+      "items": [
+        {
+          "itemId": "cccccccc-1111-0000-0000-000000000001",
+          "questionText": "Name TWO natural resources found in South Africa.",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 2
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All entries in 'answerKey' must include a non-empty 'markingCriteria' field.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "verified" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All entries in 'answerKey' include a non-empty 'markingCriteria' field."
+      }
+    ],
+    "tags": ["verified", "marking-criteria"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-disagreement-flagged-no-verified-keys-019",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR7-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000118",
+      "gradeLabel": "7",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000019",
+      "items": [
+        {
+          "itemId": "dddddddd-1111-0000-0000-000000000001",
+          "questionText": "Analyse how the author uses irony in the extract.",
+          "itemType": "extended_response",
+          "options": [],
+          "marks": 6
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": { "simulateDisagreement": true },
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" }
+    ],
+    "tags": ["disagreement-flagged", "no-answer-key-exposed"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-needs-input-no-linkage-020",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR7-TERM2-TOPIC1",
+      "gradeLabel": "7",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000020",
+      "items": [
+        {
+          "itemId": "eeeeeeee-1111-0000-0000-000000000001",
+          "questionText": "Solve: 3(x - 2) = 9.",
+          "itemType": "short_answer",
+          "options": [],
+          "marks": 3
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["refusal", "missing-linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "tb05-verified-true-false-item-021",
+    "agentId": "TB-05",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR4-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000119",
+      "gradeLabel": "4",
+      "assessmentArtefactId": "aaaaaaaa-0000-0000-0000-000000000021",
+      "items": [
+        {
+          "itemId": "ffffffff-1111-0000-0000-000000000001",
+          "questionText": "True or false: Plants make their own food through photosynthesis.",
+          "itemType": "true_false",
+          "options": [],
+          "marks": 1
+        },
+        {
+          "itemId": "ffffffff-1111-0000-0000-000000000002",
+          "questionText": "True or false: The sun is a planet.",
+          "itemType": "true_false",
+          "options": [],
+          "marks": 1
+        }
+      ],
+      "language": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "verified" },
+      { "type": "exact_match", "field": "totalMarks", "value": 2 }
+    ],
+    "tags": ["verified", "true-false"],
+    "source": "specification"
+  }
+]

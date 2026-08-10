@@ -1,0 +1,596 @@
+[
+  {
+    "id": "tb04-ok-mc-knowledge-gr5-001",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR5-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000101",
+      "gradeLabel": "5",
+      "subject": "Natural Sciences",
+      "topic": "Properties of matter",
+      "cognitiveLevel": "knowledge",
+      "itemType": "multiple_choice",
+      "count": 4,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-001"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All items must be multiple-choice with exactly 4 options each, and each item must have cognitiveLevel set to 'knowledge'.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ASSESSMENT_ITEM" },
+      { "type": "exact_match", "field": "items.length", "value": 4 },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All items in 'items' are multiple-choice with exactly 4 options each, and each item has cognitiveLevel 'knowledge'."
+      }
+    ],
+    "tags": ["happy-path", "multiple-choice", "knowledge"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-ok-short-answer-comprehension-gr6-002",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR6-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000102",
+      "gradeLabel": "6",
+      "subject": "English Home Language",
+      "topic": "Comprehension strategies",
+      "cognitiveLevel": "comprehension",
+      "itemType": "short_answer",
+      "count": 5,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-010"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All items must be short-answer with no options, and each item must have cognitiveLevel 'comprehension'.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 5 },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All items in 'items' are short-answer type with an empty options array, and each has cognitiveLevel 'comprehension'."
+      }
+    ],
+    "tags": ["happy-path", "short-answer", "comprehension"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-ok-extended-response-analysis-gr7-003",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR7-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000103",
+      "gradeLabel": "7",
+      "subject": "Social Sciences",
+      "topic": "Human rights in the Constitution",
+      "cognitiveLevel": "analysis",
+      "itemType": "extended_response",
+      "count": 2,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-020", "doc-021"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All items must be extended-response with no options, and each must have cognitiveLevel 'analysis'.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 2 },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All items in 'items' are extended-response type with an empty options array, and each has cognitiveLevel 'analysis'."
+      }
+    ],
+    "tags": ["happy-path", "extended-response", "analysis"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-ok-true-false-gr4-004",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR4-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000104",
+      "gradeLabel": "4",
+      "subject": "Mathematics",
+      "topic": "Properties of 2D shapes",
+      "cognitiveLevel": "knowledge",
+      "itemType": "true_false",
+      "count": 6,
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-030"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All items must be true-false type with no options.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 6 },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All items in 'items' are true-false type with an empty options array."
+      }
+    ],
+    "tags": ["happy-path", "true-false"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-ok-count-20-max-005",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR7-TERM4-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000105",
+      "gradeLabel": "7",
+      "subject": "English Home Language",
+      "topic": "Persuasive writing techniques",
+      "cognitiveLevel": "application",
+      "itemType": "multiple_choice",
+      "count": 20,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-040"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All items must be multiple-choice with exactly 4 options each.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 20 },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All items in 'items' are multiple-choice with exactly 4 options each."
+      }
+    ],
+    "tags": ["happy-path", "max-count"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-ok-count-1-min-006",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR6-TERM2-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000106",
+      "gradeLabel": "6",
+      "subject": "Natural Sciences",
+      "topic": "Energy and change",
+      "cognitiveLevel": "synthesis",
+      "itemType": "extended_response",
+      "count": 1,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-050"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 1 }
+    ],
+    "tags": ["happy-path", "min-count"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-no-source-document-007",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR5-TERM3-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000107",
+      "gradeLabel": "5",
+      "subject": "Mathematics",
+      "topic": "Volume",
+      "cognitiveLevel": "application",
+      "itemType": "short_answer",
+      "count": 4,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-nonexistent-777"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": { "simulateNoGrounding": true },
+    "rubric": "When status is 'no_source_document', the output must include a non-empty 'detail' field.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_source_document" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a non-empty 'detail' field explaining why the source document is unavailable."
+      }
+    ],
+    "tags": ["refusal", "no-source"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-no-answer-key-in-output-008",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR5-TERM1-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000108",
+      "gradeLabel": "5",
+      "subject": "English Home Language",
+      "topic": "Figurative language",
+      "cognitiveLevel": "comprehension",
+      "itemType": "multiple_choice",
+      "count": 3,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-060"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "Output items must not expose any answer key fields (modelAnswer, markingCriteria, correctOptionId).",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output items do not contain any answer key fields such as 'modelAnswer', 'markingCriteria', or 'correctOptionId'."
+      }
+    ],
+    "tags": ["security", "no-answer-key"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-total-marks-sum-correct-009",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR7-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000109",
+      "gradeLabel": "7",
+      "subject": "Mathematics",
+      "topic": "Algebra: expressions",
+      "cognitiveLevel": "application",
+      "itemType": "short_answer",
+      "count": 5,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-070"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "The 'totalMarks' field must equal the sum of all individual item marks.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The 'totalMarks' field in the output equals the sum of all individual item 'marks' values."
+      }
+    ],
+    "tags": ["schema", "marks-sum"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-no-pii-in-output-010",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR6-TERM2-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000110",
+      "gradeLabel": "6",
+      "subject": "Social Sciences",
+      "topic": "Democracy in South Africa",
+      "cognitiveLevel": "knowledge",
+      "itemType": "multiple_choice",
+      "count": 4,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-080"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["security", "pii-guard"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-item-ids-are-uuids-011",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR5-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000111",
+      "gradeLabel": "5",
+      "subject": "Natural Sciences",
+      "topic": "Food chains",
+      "cognitiveLevel": "comprehension",
+      "itemType": "short_answer",
+      "count": 3,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-090"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All items must have an 'itemId' field in valid UUID format.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All items in 'items' have an 'itemId' field that is a valid UUID (format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)."
+      }
+    ],
+    "tags": ["schema", "uuid-ids"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-needs-input-missing-caps-id-012",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "",
+      "lessonId": "00000000-0000-0000-0000-000000000112",
+      "gradeLabel": "5",
+      "subject": "English Home Language",
+      "topic": "Poetry",
+      "cognitiveLevel": "evaluation",
+      "itemType": "extended_response",
+      "count": 2,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-100"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "When required input is missing, the output must include a 'missingFields' field.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a 'missingFields' field identifying which required fields are absent."
+      }
+    ],
+    "tags": ["refusal", "missing-caps-id"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-mc-option-ids-distinct-013",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR7-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000113",
+      "gradeLabel": "7",
+      "subject": "Natural Sciences",
+      "topic": "Cells",
+      "cognitiveLevel": "knowledge",
+      "itemType": "multiple_choice",
+      "count": 3,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-110"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All multiple-choice items must have distinct option IDs within each item.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All multiple-choice items have distinct option IDs — no duplicate 'optionId' values appear within a single item."
+      }
+    ],
+    "tags": ["schema", "distinct-options"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-ok-afrikaans-items-014",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-AF-GR5-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000114",
+      "gradeLabel": "5",
+      "subject": "Afrikaans Home Language",
+      "topic": "Woordsoorte",
+      "cognitiveLevel": "comprehension",
+      "itemType": "short_answer",
+      "count": 4,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "af",
+      "sourceDocumentIds": ["doc-120"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "items.length", "value": 4 }
+    ],
+    "tags": ["happy-path", "afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-cited-sources-subset-015",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR7-TERM4-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000115",
+      "gradeLabel": "7",
+      "subject": "Social Sciences",
+      "topic": "Globalisation",
+      "cognitiveLevel": "analysis",
+      "itemType": "short_answer",
+      "count": 4,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-130", "doc-131"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-130", "doc-131"]
+      }
+    ],
+    "tags": ["grounding"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-readability-check-present-016",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR6-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000116",
+      "gradeLabel": "6",
+      "subject": "Mathematics",
+      "topic": "Geometry: angles",
+      "cognitiveLevel": "application",
+      "itemType": "short_answer",
+      "count": 5,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-140"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "The output must include a 'readabilityCheckResult' field.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a 'readabilityCheckResult' field with a verdict on whether item language is within the target readability band."
+      }
+    ],
+    "tags": ["readability"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-ok-evaluation-level-017",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR7-TERM2-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000117",
+      "gradeLabel": "7",
+      "subject": "English Home Language",
+      "topic": "Evaluating media texts",
+      "cognitiveLevel": "evaluation",
+      "itemType": "extended_response",
+      "count": 2,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-150"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All items must have cognitiveLevel set to 'evaluation'.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All items in 'items' have cognitiveLevel set to 'evaluation'."
+      }
+    ],
+    "tags": ["happy-path", "evaluation-level"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-needs-input-no-linkage-018",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR6-TERM4-TOPIC1",
+      "gradeLabel": "6",
+      "subject": "Natural Sciences",
+      "topic": "Ecosystems",
+      "cognitiveLevel": "comprehension",
+      "itemType": "multiple_choice",
+      "count": 5,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-160"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["refusal", "missing-linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-ok-intervention-linkage-019",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR4-TERM3-TOPIC2",
+      "interventionId": "00000000-0000-0000-0000-000000000201",
+      "gradeLabel": "4",
+      "subject": "English Home Language",
+      "topic": "Comprehension: main idea",
+      "cognitiveLevel": "comprehension",
+      "itemType": "short_answer",
+      "count": 3,
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-170"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["happy-path", "intervention-linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "tb04-ok-synthesis-level-020",
+    "agentId": "TB-04",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR6-TERM4-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000118",
+      "gradeLabel": "6",
+      "subject": "Social Sciences",
+      "topic": "Climate change and communities",
+      "cognitiveLevel": "synthesis",
+      "itemType": "extended_response",
+      "count": 2,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-180", "doc-181"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "All items must have cognitiveLevel set to 'synthesis'.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All items in 'items' have cognitiveLevel set to 'synthesis'."
+      },
+      { "type": "exact_match", "field": "artefactType", "value": "ASSESSMENT_ITEM" }
+    ],
+    "tags": ["happy-path", "synthesis-level"],
+    "source": "specification"
+  }
+]

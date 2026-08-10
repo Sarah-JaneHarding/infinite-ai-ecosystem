@@ -53,4 +53,9 @@ export { DW06Contract } from './mod-03/DW-06.contract.js';
 export { DW07Contract } from './mod-03/DW-07.contract.js';
 export { DW08Contract } from './mod-03/DW-08.contract.js';
 
+export { TB01Contract } from './mod-04/TB-01.contract.js';
+export { TB03Contract } from './mod-04/TB-03.contract.js';
+export { TB04Contract } from './mod-04/TB-04.contract.js';
+export { TB05Contract } from './mod-04/TB-05.contract.js';
+
 export const PACKAGE_NAME = '@infinite-ai/agents' as const;

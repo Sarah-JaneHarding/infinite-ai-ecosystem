@@ -3778,3 +3778,157 @@ into the GROUNDING section and the lock hash recomputed.
 `scripts/verify-stage.ts` Stage 10 expanded to 6 verification commands.
 
 `pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean.
+
+---
+
+## Stage 10 — MOD-02 Support Analytics Centre (RTI / MTSS / SIAS)
+
+Started: 2026-08-07 Completed: 2026-08-07
+Exit gate: PASS
+Tests: 97 unit tests passing across `@infinite-ai/analytics` and `@infinite-ai/guardrails`, 0 skipped. Coverage: 97.67% branches (global aggregate; threshold 95%).
+Deviations from manual: None.
+Open questions raised: None.
+
+**Exit gate, walked item by item**
+
+| Gate item                                                                           | Result                                                                                                                                                                                                 |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Twelve golden learner scenarios produce the expected tier and the expected evidence | PASS — `test/golden-scenarios.spec.ts` 27 tests, 12 learner profiles; percentiles verified against actual tier band boundaries (REFERRAL < 15, TIER_3 15–34, TIER_2 35–54, TIER_1 ≥ 55)                |
+| Core-health gate blocks tiering on a failing-core fixture                           | PASS — `test/golden-scenarios.spec.ts` fixture with failing class (50% TIER_1 < 80% threshold) and passing class (90% TIER_1) both verified                                                            |
+| Diagnosis red-team 100% refused                                                     | PASS — `test/diagnosis-redteam.spec.ts` 26 tests (one per clinical term + multi-field + structural guards); all 26 refused; permitted term "screening" passes                                          |
+| Safeguarding drill pages a human within the SLO and writes no summary               | PASS — `test/safeguarding-drill.spec.ts` 10 tests; escalation clears all 5 history fields; `GuardrailEscalationError` thrown with category; no summary produced                                        |
+| Bias monitor fires on the skewed fixture                                            | PASS — `test/bias-monitor.spec.ts` 11 tests; groupB at 17% vs 2.5% population fires; groupA at 2% does not; boundary conditions at exactly 2.0× (strict >) and MIN_POPULATION=10 (inclusive) confirmed |
+| `pnpm verify:stage 10` exits 0                                                      | PASS — CI green on commit `2417f89`; all three checks (`install → lint → typecheck → unit → build`, `forbidden patterns`, `RLS isolation suite`) pass                                                  |
+
+---
+
+### Stage 11 — Step 1: Toolbox artefact model and renderer contracts
+
+**Date:** 2026-08-07
+
+**What was built**
+
+`packages/contracts/src/toolbox/` — four new schema files:
+
+1. **`artefact.ts`** — Core artefact type model:
+   - `ToolboxArtefactType` enum: 11 values (WORKSHEET through VISUAL_BRIEF), one per TB agent.
+   - `ARTEFACT_TYPE_TO_AGENT`: fixed map from type to producing agent ID.
+   - `ArtefactLinkage`: requires `capsTopicId` + at least one of `lessonId` / `interventionId`;
+     `superRefine` enforces the "at least one linkage" strict parameter.
+   - `ToolboxArtefact`: base schema with tenant, language, createdBy/At, approvedBy/At (null
+     until teacher approval gate fires).
+   - `VisualBrief`: extends base with `brief` (text only) + `pedagogicalPurpose`; `artefactType`
+     is a literal `'VISUAL_BRIEF'` — no image bytes, no generative image call.
+
+2. **`renderer.ts`** — Render dispatch contract:
+   - `ToolboxOutputFormat`: PRINT_HTML, PDF, DOCX, SLIDES.
+   - `FORMAT_SUPPORT`: fixed per-type format allow-list (BOARD_DECK → SLIDES only;
+     VISUAL_BRIEF → PRINT_HTML only; MARKING_MEMO → PDF/DOCX; others → PRINT_HTML/PDF/DOCX).
+   - `RenderRequest` / `RenderResult` (discriminated union: accepted / needs_template /
+     format_not_supported).
+   - `dispatchRender()`: checks format support before template availability; returns a typed
+     refusal rather than throwing.
+
+3. **`readability.ts`** — Readability check contract:
+   - `GradeBand`: min/max grade bounds with a `superRefine` check (maxGrade ≥ minGrade).
+   - `ReadabilityCheckInput` / `ReadabilityCheckResult` (within_band / below_band / above_band /
+     cannot_measure); `cannot_measure` exists for languages without a validated metric (used by
+     TB-06 human-review-required path in Step 3).
+
+4. **`answer-key.ts`** — TB-05 independent verification contract:
+   - `AnswerKeyItem`: question, authorAnswer, verifierAnswer, agrees flag.
+   - `AnswerKeyVerificationResult` (verified / disagreement); `disagreement` blocks release and
+     lists all flagged items.
+
+All four schemas re-exported through `packages/contracts/src/index.ts`.
+`test/exports.spec.ts` updated to assert the 15 new runtime exports.
+`test/toolbox.spec.ts`: 39 tests covering all schemas and `dispatchRender`.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (29 packages, 280 contracts tests).
+
+---
+
+### Stage 11 — Step 2: TB-01 / TB-03 / TB-04 / TB-05 agent contracts, prompts, eval sets
+
+**Date:** 2026-08-10
+
+**What was built**
+
+Four TB agent contracts in `packages/agents/src/mod-04/`:
+
+1. **TB-01 Worksheet Builder** (`TB-01.contract.ts`):
+   - `inputSchema`: `TB01Input` — extends `TBLinkageBase` (capsTopicId + lessonId/interventionId)
+     with tenantId, gradeLabel, subject, learningObjectives (≥1), targetReadabilityBand, language,
+     sourceDocumentIds (≥1), requestedBy, differentiationTier?. `superRefine` enforces at least
+     one linkage field.
+   - `outputSchema`: `TB01Result` — discriminated union: ok (WORKSHEET artefact with sections,
+     readabilityCheckResult, citedSourceIds, differentiationTier), needs_input, no_source_document.
+   - purpose: `planning`, model: `plan.author`, guardrails: pii_guard + source_grounding_guard,
+     budget: 4 000 tokens / $0.02, requiresApproval: false.
+
+2. **TB-03 Reading Passage Generator** (`TB-03.contract.ts`):
+   - `inputSchema`: `TB03Input` — adds wordCountTarget (int, positive), decodable (bool, default
+     false), topic.
+   - `outputSchema`: `TB03Result` — adds `readability_out_of_band` variant (measuredGrade outside
+     targetBand is a refusal, not a warning).
+   - purpose: `planning`, model: `plan.author`, guardrails: pii_guard + source_grounding_guard +
+     readability_guard, budget: 3 000 tokens / $0.015.
+
+3. **TB-04 Item Writer** (`TB-04.contract.ts`):
+   - `inputSchema`: `TB04Input` — adds cognitiveLevel, itemType, count (1–20).
+   - `outputSchema`: `TB04Result` — ok variant carries items (AssessmentItem[]) with no answer key;
+     answer key is TB-05's domain.
+   - `AssessmentItem` carries exactly four `MCOption`s for multiple_choice, empty for other types.
+   - purpose: `planning`, model: `plan.author`, guardrails: pii_guard + source_grounding_guard,
+     budget: 3 500 tokens / $0.018.
+
+4. **TB-05 Memo & Marking Guide Agent** (`TB-05.contract.ts`):
+   - `inputSchema`: `TB05Input` — takes assessmentArtefactId + items (TB05ItemInput[]).
+   - `outputSchema`: `TB05Result` — three variants: verified (MARKING_MEMO artefact, answerKey,
+     verificationItems, totalMarks), disagreement_flagged (blocks release; flaggedItems + allItems),
+     needs_input.
+   - Two-pass independent-verification: author answers first, verifier answers independently;
+     a single disagreement triggers `disagreement_flagged` and requires teacher adjudication.
+   - purpose: `planning`, model: `plan.verify`, guardrails: pii_guard, requiresApproval: true.
+
+**Schemas** (`packages/contracts/src/toolbox/agents.ts`):
+
+- `TBLinkageBase` / `requireOneLinkage` — shared base object and superRefine helper; `.extend()`
+  is called on the plain `ZodObject` before superRefine, avoiding the `ZodEffects.extend` error.
+- `TBOutputLinkage` — output-side linkage (no superRefine constraint on output).
+- `WorksheetDifferentiationTier` / `WorksheetSection` (TB-01).
+- `AssessmentItemType` / `MCOption` / `AssessmentItem` (TB-04 / TB-05).
+- `TB05ItemInput` / `AnswerKeyEntry` / `VerifierAnswers` / `TB05VerificationItem` (TB-05).
+- All 18 new exports wired through `packages/contracts/src/toolbox/index.ts` and
+  `packages/contracts/src/index.ts`; `test/exports.spec.ts` updated.
+
+**Prompts** (`packages/prompts/src/TB-{01,03,04,05}/1.0.0.prompt.md`):
+
+- All four use the mandated 8-section format (ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE,
+  REFUSAL, OUTPUT SCHEMA, SELF-CHECK).
+- Hashes locked in `packages/prompts/prompt-lock.json` (TB-01, TB-03, TB-04, TB-05 @ 1.0.0).
+- TB-03: `readability_out_of_band` is a refusal, not a warning; decodable constraint spelled out.
+- TB-04: no answer key in output; exactly four options for MC items.
+- TB-05: two-pass verification protocol; MARKING_MEMO artefactType; disagreement blocks release.
+
+**Eval sets** (≥ 20 cases each, `packages/evals/sets/TB-{01,03,04,05}/`):
+
+- TB-01: 21 cases (3 tiers × 3 languages, intervention linkage, no_source_document, needs_input,
+  no-linkage rejection, no-PII assertion, citedSourceIds subset, artefact UUID / type checks).
+- TB-03: 20 cases (decodable/non-decodable, readability_out_of_band, no_source_document,
+  needs_input, afrikaans, zulu, word count edge cases).
+- TB-04: 20 cases (4 itemTypes × 3 cognitiveLevel spreads, count 1–20, no answer key, no PII,
+  MC = 4 options, non-MC = 0 options, item-count exact match, totalMarks sum).
+- TB-05: 21 cases (verified/disagreement_flagged/needs_input, all four itemTypes, 4-language, 2
+  linkage modes, MARKING_MEMO artefactType, UUID artefactId, totalMarks sum, flaggedItems/
+  allItems completeness).
+
+**Contract tests** (`packages/contracts/test/toolbox-agents.spec.ts`):
+
+- 64 tests covering every schema, including linkage-refusal, empty-collection rejection, MC
+  option count, cognitiveLevel and gradeLabel validation, and TB-05 disagreement blocking.
+
+`packages/agents/src/index.ts` updated to export TB01Contract, TB03Contract, TB04Contract,
+TB05Contract.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (29 packages, 344 contracts tests).

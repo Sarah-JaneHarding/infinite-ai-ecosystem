@@ -1,0 +1,555 @@
+[
+  {
+    "id": "tb03-ok-english-gr5-001",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR5-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000101",
+      "gradeLabel": "5",
+      "subject": "Natural Sciences",
+      "topic": "The water cycle",
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "wordCountTarget": 250,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-001"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "The output must include non-empty 'title' and 'body' fields and the word count must be within 10% of 250.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "READING_PASSAGE" },
+      { "type": "exact_match", "field": "isDecodable", "value": false },
+      {
+        "type": "numeric_tolerance",
+        "field": "wordCount",
+        "expected": 250,
+        "tolerance": 25
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes non-empty 'title' and 'body' fields."
+      }
+    ],
+    "tags": ["happy-path", "non-decodable", "natural-sciences"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-ok-decodable-gr2-002",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR2-TERM1-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000102",
+      "gradeLabel": "2",
+      "subject": "English Home Language",
+      "topic": "Animals on the farm",
+      "targetReadabilityBand": { "minGrade": 1, "maxGrade": 3 },
+      "wordCountTarget": 100,
+      "language": "en",
+      "decodable": true,
+      "sourceDocumentIds": ["doc-010"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "isDecodable", "value": true },
+      {
+        "type": "numeric_tolerance",
+        "field": "wordCount",
+        "expected": 100,
+        "tolerance": 10
+      }
+    ],
+    "tags": ["happy-path", "decodable", "foundation-phase"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-ok-afrikaans-gr4-003",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-AF-GR4-TERM3-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000103",
+      "gradeLabel": "4",
+      "subject": "Afrikaans Home Language",
+      "topic": "Die see en sy lewe",
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "wordCountTarget": 200,
+      "language": "af",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-020"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "numeric_tolerance",
+        "field": "wordCount",
+        "expected": 200,
+        "tolerance": 20
+      }
+    ],
+    "tags": ["happy-path", "afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-ok-intervention-linkage-004",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR3-TERM2-TOPIC1",
+      "interventionId": "00000000-0000-0000-0000-000000000201",
+      "gradeLabel": "3",
+      "subject": "English Home Language",
+      "topic": "Helping at home",
+      "targetReadabilityBand": { "minGrade": 2, "maxGrade": 4 },
+      "wordCountTarget": 150,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-030"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["happy-path", "intervention-linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-ok-word-count-large-005",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR7-TERM1-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000104",
+      "gradeLabel": "7",
+      "subject": "Social Sciences",
+      "topic": "The effects of apartheid on South African society",
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "wordCountTarget": 400,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-040", "doc-041"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "numeric_tolerance",
+        "field": "wordCount",
+        "expected": 400,
+        "tolerance": 40
+      }
+    ],
+    "tags": ["happy-path", "large-word-count", "social-sciences"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-no-source-document-006",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR5-TERM1-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000105",
+      "gradeLabel": "5",
+      "subject": "English Home Language",
+      "topic": "Rainforests",
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "wordCountTarget": 200,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-nonexistent-888"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": { "simulateNoGrounding": true },
+    "rubric": "When status is 'no_source_document', the output must include a non-empty 'detail' field.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_source_document" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a non-empty 'detail' field explaining why the source document is unavailable."
+      }
+    ],
+    "tags": ["refusal", "no-source"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-readability-out-of-band-007",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR3-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000106",
+      "gradeLabel": "3",
+      "subject": "English Home Language",
+      "topic": "Seasons",
+      "targetReadabilityBand": { "minGrade": 2, "maxGrade": 4 },
+      "wordCountTarget": 150,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-050"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": { "simulateReadabilityOutOfBand": true, "measuredGrade": 7.2 },
+    "rubric": "When status is 'readability_out_of_band', output must include 'measuredGrade', 'targetBand', and 'detail' fields.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "readability_out_of_band" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes 'measuredGrade', 'targetBand', and 'detail' fields explaining the readability issue."
+      }
+    ],
+    "tags": ["refusal", "readability-out-of-band"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-needs-input-missing-caps-id-008",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "",
+      "lessonId": "00000000-0000-0000-0000-000000000107",
+      "gradeLabel": "4",
+      "subject": "English Home Language",
+      "topic": "Seasons",
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "wordCountTarget": 200,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-060"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "When required input is missing, the output must include a 'missingFields' field.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a 'missingFields' field identifying which required input field is absent."
+      }
+    ],
+    "tags": ["refusal", "missing-caps-id"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-no-pii-in-output-009",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR5-TERM2-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000108",
+      "gradeLabel": "5",
+      "subject": "English Home Language",
+      "topic": "Community helpers",
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "wordCountTarget": 200,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-070"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["security", "pii-guard"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-artefact-id-uuid-010",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR6-TERM1-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000109",
+      "gradeLabel": "6",
+      "subject": "Mathematics",
+      "topic": "Fractions in everyday life",
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "wordCountTarget": 180,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-080"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["schema"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-cited-sources-subset-011",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR7-TERM3-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000110",
+      "gradeLabel": "7",
+      "subject": "Natural Sciences",
+      "topic": "Photosynthesis",
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "wordCountTarget": 300,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-090", "doc-091", "doc-092"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-090", "doc-091", "doc-092"]
+      }
+    ],
+    "tags": ["grounding"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-ok-zulu-gr3-012",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-ZU-GR3-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000111",
+      "gradeLabel": "3",
+      "subject": "isiZulu Home Language",
+      "topic": "Izilwane zasendle",
+      "targetReadabilityBand": { "minGrade": 2, "maxGrade": 4 },
+      "wordCountTarget": 150,
+      "language": "zu",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-100"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "The output must include a non-empty 'body' field.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a non-empty 'body' field containing the generated passage."
+      }
+    ],
+    "tags": ["happy-path", "zulu"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-readability-result-present-013",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR6-TERM1-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000112",
+      "gradeLabel": "6",
+      "subject": "English Home Language",
+      "topic": "The life of Nelson Mandela",
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "wordCountTarget": 300,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-110"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "The output must include a 'readabilityCheckResult' object with a non-null 'verdict' field.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a 'readabilityCheckResult' object with a non-null 'verdict' field."
+      }
+    ],
+    "tags": ["readability"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-ok-decodable-false-default-014",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR4-TERM2-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000113",
+      "gradeLabel": "4",
+      "subject": "English Home Language",
+      "topic": "Rainwater harvesting",
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "wordCountTarget": 200,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-120"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "isDecodable", "value": false }
+    ],
+    "tags": ["schema", "decodable-flag"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-ok-both-linkages-015",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR5-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000114",
+      "interventionId": "00000000-0000-0000-0000-000000000202",
+      "gradeLabel": "5",
+      "subject": "Social Sciences",
+      "topic": "South African government structures",
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "wordCountTarget": 220,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-130"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["happy-path", "both-linkages"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-needs-input-no-linkage-016",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR5-TERM1-TOPIC1",
+      "gradeLabel": "5",
+      "subject": "English Home Language",
+      "topic": "Rainforests",
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "wordCountTarget": 200,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-140"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["refusal", "missing-linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-ok-title-non-empty-017",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-TK-GR5-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000115",
+      "gradeLabel": "5",
+      "subject": "Technology",
+      "topic": "Levers and pulleys",
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "wordCountTarget": 250,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-150"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["schema", "title-present"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-ok-caps-linkage-in-output-018",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR7-TERM2-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000116",
+      "gradeLabel": "7",
+      "subject": "Mathematics",
+      "topic": "Probability in real life",
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "wordCountTarget": 280,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-160"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "linkage.capsTopicId",
+        "value": "CAPS-MA-GR7-TERM2-TOPIC3"
+      }
+    ],
+    "tags": ["linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-ok-word-count-small-019",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR1-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000117",
+      "gradeLabel": "1",
+      "subject": "English Home Language",
+      "topic": "My family",
+      "targetReadabilityBand": { "minGrade": 1, "maxGrade": 2 },
+      "wordCountTarget": 60,
+      "language": "en",
+      "decodable": true,
+      "sourceDocumentIds": ["doc-170"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "numeric_tolerance",
+        "field": "wordCount",
+        "expected": 60,
+        "tolerance": 6
+      },
+      { "type": "exact_match", "field": "isDecodable", "value": true }
+    ],
+    "tags": ["happy-path", "decodable", "grade1"],
+    "source": "specification"
+  },
+  {
+    "id": "tb03-artefact-type-reading-passage-020",
+    "agentId": "TB-03",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR6-TERM4-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000118",
+      "gradeLabel": "6",
+      "subject": "English Home Language",
+      "topic": "The ocean ecosystem",
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "wordCountTarget": 320,
+      "language": "en",
+      "decodable": false,
+      "sourceDocumentIds": ["doc-180"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "READING_PASSAGE" }
+    ],
+    "tags": ["schema", "artefact-type"],
+    "source": "specification"
+  }
+]

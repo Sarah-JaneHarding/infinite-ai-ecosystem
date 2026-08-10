@@ -1,0 +1,547 @@
+[
+  {
+    "id": "tb01-ok-standard-english-001",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000101",
+      "gradeLabel": "4",
+      "subject": "English Home Language",
+      "learningObjectives": [
+        "Identify the main idea of a non-fiction paragraph",
+        "Distinguish between fact and opinion"
+      ],
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-001", "doc-002"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "WORKSHEET" },
+      { "type": "exact_match", "field": "differentiationTier", "value": "STANDARD" },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-001", "doc-002"]
+      }
+    ],
+    "tags": ["happy-path", "standard-tier", "english"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-ok-support-afrikaans-002",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-AF-GR3-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000102",
+      "gradeLabel": "3",
+      "subject": "Afrikaans Home Language",
+      "learningObjectives": [
+        "Verstaan die hoofgedagte van 'n teks",
+        "Identifiseer ondersteunende detail"
+      ],
+      "targetReadabilityBand": { "minGrade": 2, "maxGrade": 4 },
+      "language": "af",
+      "sourceDocumentIds": ["doc-010"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "SUPPORT"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "differentiationTier", "value": "SUPPORT" }
+    ],
+    "tags": ["happy-path", "support-tier", "afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-ok-extension-maths-003",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR6-TERM3-TOPIC4",
+      "lessonId": "00000000-0000-0000-0000-000000000103",
+      "gradeLabel": "6",
+      "subject": "Mathematics",
+      "learningObjectives": [
+        "Apply ratio and rate to solve real-world problems",
+        "Justify strategies used for multi-step problems"
+      ],
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-020", "doc-021"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "EXTENSION"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "differentiationTier", "value": "EXTENSION" }
+    ],
+    "tags": ["happy-path", "extension-tier", "mathematics"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-ok-no-tier-defaults-standard-004",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR5-TERM1-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000104",
+      "gradeLabel": "5",
+      "subject": "Natural Sciences",
+      "learningObjectives": ["Describe the water cycle"],
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-030"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["happy-path", "no-tier"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-ok-intervention-linkage-005",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR4-TERM2-TOPIC3",
+      "interventionId": "00000000-0000-0000-0000-000000000201",
+      "gradeLabel": "4",
+      "subject": "English Home Language",
+      "learningObjectives": ["Sequence events in a story"],
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-040"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "SUPPORT"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["happy-path", "intervention-linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-ok-both-linkages-006",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR7-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000105",
+      "interventionId": "00000000-0000-0000-0000-000000000202",
+      "gradeLabel": "7",
+      "subject": "Social Sciences",
+      "learningObjectives": ["Analyse causes of the Great Trek"],
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-050", "doc-051"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["happy-path", "both-linkages"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-ok-multiple-objectives-sections-007",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR5-TERM3-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000106",
+      "gradeLabel": "5",
+      "subject": "English Home Language",
+      "learningObjectives": [
+        "Identify figurative language in poems",
+        "Compare the moods of two poems",
+        "Write a response to a poem"
+      ],
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-060", "doc-061", "doc-062"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-060", "doc-061", "doc-062"]
+      }
+    ],
+    "tags": ["happy-path", "multiple-objectives"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-no-source-document-empty-ids-008",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000107",
+      "gradeLabel": "4",
+      "subject": "English Home Language",
+      "learningObjectives": ["Read a passage for comprehension"],
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-missing-999"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": { "simulateNoGrounding": true },
+    "rubric": "When status is 'no_source_document', the output must include a non-empty 'detail' field explaining the failure.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_source_document" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a non-empty 'detail' field explaining why the source document is unavailable."
+      }
+    ],
+    "tags": ["refusal", "no-source"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-needs-input-missing-caps-id-009",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "",
+      "lessonId": "00000000-0000-0000-0000-000000000108",
+      "gradeLabel": "4",
+      "subject": "English Home Language",
+      "learningObjectives": ["Identify adjectives"],
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-070"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "set_overlap",
+        "field": "missingFields",
+        "expectedSet": ["capsTopicId"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["refusal", "missing-caps-id"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-needs-input-empty-objectives-010",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000109",
+      "gradeLabel": "4",
+      "subject": "English Home Language",
+      "learningObjectives": [],
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-080"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "set_overlap",
+        "field": "missingFields",
+        "expectedSet": ["learningObjectives"],
+        "minOverlap": 1.0
+      }
+    ],
+    "tags": ["refusal", "empty-objectives"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-no-pii-in-output-011",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000110",
+      "gradeLabel": "4",
+      "subject": "English Home Language",
+      "learningObjectives": ["Retell a story in sequence"],
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-090"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["security", "pii-guard"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-cited-ids-subset-of-input-012",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR5-TERM2-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000111",
+      "gradeLabel": "5",
+      "subject": "Mathematics",
+      "learningObjectives": ["Calculate area and perimeter of composite shapes"],
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-100", "doc-101"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-100", "doc-101"]
+      }
+    ],
+    "tags": ["grounding", "cited-sources"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-readability-check-present-013",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-NS-GR6-TERM1-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000112",
+      "gradeLabel": "6",
+      "subject": "Natural Sciences",
+      "learningObjectives": ["Classify vertebrates by common characteristics"],
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-110"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "rubric": "The output must include a 'readabilityCheckResult' object with a non-null 'verdict' field.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a 'readabilityCheckResult' object with a non-null 'verdict' field."
+      }
+    ],
+    "tags": ["readability"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-artefact-id-is-uuid-014",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-SS-GR6-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000113",
+      "gradeLabel": "6",
+      "subject": "Social Sciences",
+      "learningObjectives": ["Describe the impact of colonialism on indigenous peoples"],
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-120"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["schema"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-ok-zulu-foundation-015",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-ZU-GR2-TERM1-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000114",
+      "gradeLabel": "2",
+      "subject": "isiZulu Home Language",
+      "learningObjectives": ["Phendula imibuzo mayelana nombhalo"],
+      "targetReadabilityBand": { "minGrade": 1, "maxGrade": 3 },
+      "language": "zu",
+      "sourceDocumentIds": ["doc-130"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["happy-path", "zulu", "foundation-phase"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-sections-have-at-least-one-question-016",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR7-TERM4-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000115",
+      "gradeLabel": "7",
+      "subject": "English Home Language",
+      "learningObjectives": ["Evaluate an argument for logical fallacies"],
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-140"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "EXTENSION"
+    },
+    "context": {},
+    "rubric": "Every section in the output's 'sections' array must contain at least one question.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Every section in the output's 'sections' array contains at least one question."
+      }
+    ],
+    "tags": ["schema", "questions-per-section"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-linkage-caps-topic-present-017",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR4-TERM3-TOPIC2",
+      "lessonId": "00000000-0000-0000-0000-000000000116",
+      "gradeLabel": "4",
+      "subject": "Mathematics",
+      "learningObjectives": ["Perform multiplication of 2-digit by 1-digit numbers"],
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-150"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "linkage.capsTopicId",
+        "value": "CAPS-MA-GR4-TERM3-TOPIC2"
+      }
+    ],
+    "tags": ["linkage", "caps-topic"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-needs-input-no-lesson-or-intervention-018",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-EN-GR5-TERM1-TOPIC1",
+      "gradeLabel": "5",
+      "subject": "English Home Language",
+      "learningObjectives": ["Identify main idea"],
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-160"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": {},
+    "rubric": "When neither lessonId nor interventionId is provided, the output must include a 'missingFields' field identifying which linkage is absent.",
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The output includes a 'missingFields' field identifying that a lessonId or interventionId is required."
+      }
+    ],
+    "tags": ["refusal", "missing-linkage"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-ok-technology-grade6-019",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-TK-GR6-TERM2-TOPIC1",
+      "lessonId": "00000000-0000-0000-0000-000000000117",
+      "gradeLabel": "6",
+      "subject": "Technology",
+      "learningObjectives": [
+        "Design a simple load-bearing structure",
+        "Identify properties of materials suitable for structures"
+      ],
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-170", "doc-171"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["happy-path", "technology"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-ok-life-skills-grade3-020",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-LS-GR3-TERM1-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000118",
+      "gradeLabel": "3",
+      "subject": "Life Skills",
+      "learningObjectives": ["Name ways to stay healthy at school"],
+      "targetReadabilityBand": { "minGrade": 2, "maxGrade": 4 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-180"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "SUPPORT"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "differentiationTier", "value": "SUPPORT" }
+    ],
+    "tags": ["happy-path", "life-skills", "foundation-phase"],
+    "source": "specification"
+  },
+  {
+    "id": "tb01-artefact-type-is-worksheet-021",
+    "agentId": "TB-01",
+    "input": {
+      "tenantId": "00000000-0000-0000-0000-000000000001",
+      "capsTopicId": "CAPS-MA-GR7-TERM4-TOPIC3",
+      "lessonId": "00000000-0000-0000-0000-000000000119",
+      "gradeLabel": "7",
+      "subject": "Mathematics",
+      "learningObjectives": ["Solve linear equations with one variable"],
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-190"],
+      "requestedBy": "teacher@school.za",
+      "differentiationTier": "STANDARD"
+    },
+    "context": {},
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "WORKSHEET" }
+    ],
+    "tags": ["schema", "artefact-type"],
+    "source": "specification"
+  }
+]
