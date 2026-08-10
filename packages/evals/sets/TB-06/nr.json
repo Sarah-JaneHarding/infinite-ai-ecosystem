@@ -1,0 +1,635 @@
+[
+  {
+    "id": "TB06-NR-001",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-1",
+      "lessonId": "11111111-2222-3333-4444-000000000701",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000702",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Comprehension\n1. What is the main idea of the passage?\n2. Name two animals mentioned in the text.\n3. Write a sentence using the word 'habitat'.",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "HOME_LANGUAGE_ADAPTED"
+      },
+      { "type": "exact_match", "field": "targetLanguage", "value": "nr" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiNdebele adaptation is an honest attempt at translation and the reviewReason field is non-empty, explaining that isiNdebele is a Tier-2 language requiring human review."
+      }
+    ],
+    "rubric": "requiresHumanReview is true. reviewReason present. Honest isiNdebele translation attempt.",
+    "tags": ["isindebele", "worksheet", "comprehension", "grade-4", "tier-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-002",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-2",
+      "lessonId": "11111111-2222-3333-4444-000000000703",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000704",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "The Water Cycle\n\nWater moves continuously between the ocean, atmosphere and land. Evaporation occurs when sunlight heats water. The water vapour rises and forms clouds. When clouds become heavy enough, water falls as rain.",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiNdebele water cycle text captures all four stages, requiresHumanReview is true, and reviewReason explains the Tier-2 status."
+      }
+    ],
+    "rubric": "requiresHumanReview true. reviewReason present. Evaporation, water vapour, clouds, rain in isiNdebele attempt.",
+    "tags": ["isindebele", "reading-passage", "natural-sciences", "grade-5", "tier-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-003",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "interventionId": "11111111-2222-3333-4444-000000000705",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000706",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "1. A shopkeeper has 48 apples in 6 baskets equally. How many apples per basket? (2 marks)\n2. Write 3 249 in words. (1 mark)\n3. Round 4 673 to the nearest hundred. (1 mark)",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiNdebele adaptation preserves numbers (48, 6, 3 249, 4 673) and mark allocations (2, 1, 1). requiresHumanReview is true with a reviewReason."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Numbers and mark allocations unchanged. reviewReason present.",
+    "tags": ["isindebele", "assessment-item", "mathematics", "grade-6", "tier-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-004",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-HL-GR3-TOPIC-1",
+      "lessonId": "11111111-2222-3333-4444-000000000707",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000708",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Thandi's Garden\n\nThandi has a small garden. She grows tomatoes and beans. Every morning she waters her plants. Her mother helps pull out the weeds. At summer's end, Thandi sells tomatoes at the market for R5 each.",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiNdebele text preserves R5 and the market reference. requiresHumanReview is true and reviewReason is present."
+      }
+    ],
+    "rubric": "requiresHumanReview true. R5 preserved. reviewReason present. Foundation Phase vocabulary.",
+    "tags": ["isindebele", "reading-passage", "foundation-phase", "grade-3", "tier-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-005",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-3",
+      "lessonId": "11111111-2222-3333-4444-000000000709",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000710",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "A school tuck shop sells sandwiches for R12.50 each and cold drinks for R8.00 each. Sipho buys 3 sandwiches and 2 cold drinks.\n1. Calculate the total cost. Show all working. (3 marks)\n2. Sipho pays with R60. Calculate his change. (2 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Monetary values (R12.50, R8.00, R60), quantities (3, 2), and mark allocations (3, 2) are preserved. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Rand values and quantities unchanged. Mark allocations 3 and 2.",
+    "tags": ["isindebele", "worksheet", "mathematics", "money", "grade-6", "tier-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-006",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-4",
+      "lessonId": "11111111-2222-3333-4444-000000000711",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000712",
+      "sourceArtefactType": "MARKING_MEMO",
+      "content": "Question 1: What are the three states of matter?\nModel answer: Solid, liquid and gas. (Award 1 mark each, max 3 marks.)\nQuestion 2: Give one property of a solid.\nModel answer: A solid has a definite shape and volume. (2 marks for both, 1 mark for one.)",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Mark allocations (max 3, 2, 1) are preserved in the isiNdebele memo. requiresHumanReview is true and reviewReason is present."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Mark allocations max 3, 2, 1 preserved. reviewReason present.",
+    "tags": ["isindebele", "marking-memo", "natural-sciences", "grade-5", "tier-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-007",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-TECH-GR8-TOPIC-1",
+      "lessonId": "11111111-2222-3333-4444-000000000713",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000714",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Design Activity: Bridge Challenge\nUsing only 20 wooden craft sticks and white glue, design and build a bridge.\n1. Sketch your design. (3 marks)\n2. List the forces acting on your bridge. (2 marks)\n3. After testing, explain one improvement. (3 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      { "type": "exact_match", "field": "targetLanguage", "value": "nr" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Output is in isiNdebele (not isiZulu LoLT). Mark allocations (3, 2, 3) and 20 sticks preserved. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. isiNdebele output despite isiZulu LoLT. Mark allocations 3, 2, 3.",
+    "tags": [
+      "isindebele",
+      "worksheet",
+      "technology",
+      "grade-8",
+      "lolt-differs",
+      "tier-2"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-008",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "9",
+      "capsTopicId": "CAPS-EMS-GR9-TOPIC-2",
+      "interventionId": "11111111-2222-3333-4444-000000000715",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000716",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Economic activity types:\n1. Primary sector — extraction of natural resources (mining, farming, fishing)\n2. Secondary sector — manufacturing and processing\n3. Tertiary sector — services (banking, education, retail)\nTask: Classify: a) coal mining  b) bread baking  c) teaching",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All three economic sectors and three examples preserved in isiNdebele. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Three sectors in isiNdebele. Three examples preserved.",
+    "tags": [
+      "isindebele",
+      "worksheet",
+      "economic-management-sciences",
+      "grade-9",
+      "tier-2"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-009",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "10",
+      "capsTopicId": "CAPS-HIST-GR10-TOPIC-2",
+      "lessonId": "11111111-2222-3333-4444-000000000717",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000718",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "EXTENSION TIER\n1. Analyse two primary sources from the apartheid era. Evaluate how effectively they represent township residents' experiences. (10 marks)\n2. Compare the causes of the 1976 Soweto Uprising with those of the 1960 Sharpeville Massacre. (8 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Mark allocations (10 and 8) and historical event names preserved in isiNdebele attempt. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Mark allocations 10 and 8. Historical events preserved.",
+    "tags": [
+      "isindebele",
+      "assessment-item",
+      "history",
+      "extension-tier",
+      "grade-10",
+      "tier-2"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-010",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-NS-GR7-TOPIC-2",
+      "lessonId": "11111111-2222-3333-4444-000000000719",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000720",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "South Africa's Biomes\n\nSouth Africa has nine major biomes. The Savanna covers 33% of the country's land surface. The Fynbos biome is home to over 9 000 plant species, 70% of which are endemic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Statistics (nine biomes, 33%, 9 000 species, 70% endemic) preserved without fabrication. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Nine biomes, 33%, 9 000, 70% intact. No fabrication.",
+    "tags": [
+      "isindebele",
+      "reading-passage",
+      "natural-sciences",
+      "grade-7",
+      "no-fabrication",
+      "tier-2"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-011",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "11",
+      "capsTopicId": "CAPS-GEOG-GR11-TOPIC-1",
+      "lessonId": "11111111-2222-3333-4444-000000000721",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000722",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "1. Study the population pyramid for South Africa (2011 Census). Describe two demographic trends. (4 marks)\n2. Explain the impact of HIV/AIDS on the 25–34 age cohort. (6 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Mark allocations (4 and 6), 2011 Census and 25-34 cohort preserved. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Mark allocations 4 and 6. 2011 Census. Age cohort 25-34.",
+    "tags": ["isindebele", "assessment-item", "geography", "grade-11", "tier-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-012",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-NS-GR8-TOPIC-3",
+      "lessonId": "11111111-2222-3333-4444-000000000723",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000724",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Practical Activity: Testing for Starch\nMaterials: iodine solution, food samples (bread, potato, cheese, apple), white tile\nMethod:\n1. Place a small piece of each food on the tile.\n2. Add 2 drops of iodine solution.\n3. Observe and record colour change.\nResults table: | Food | Colour change | Starch present? |\n| Bread | | |\n| Potato | | |\n| Cheese | | |\n| Apple | | |",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Practical activity structure (materials, numbered steps, four-food results table) preserved in isiNdebele. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Results table with four foods, three columns, numbered steps.",
+    "tags": [
+      "isindebele",
+      "worksheet",
+      "natural-sciences",
+      "practical",
+      "grade-8",
+      "tier-2"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-013",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-LS-GR5-TOPIC-1",
+      "lessonId": "11111111-2222-3333-4444-000000000725",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000726",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Recycling at Riverside Primary\n\nEvery Friday learners sort waste into three bins: paper, plastic and food scraps. Paper and plastic go to a recycling company in Johannesburg. Last year the school recycled 450 kg of paper and 230 kg of plastic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Factual data (450 kg, 230 kg, Johannesburg) preserved without fabrication. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. 450 kg and 230 kg preserved. Johannesburg mentioned. No fabrication.",
+    "tags": ["isindebele", "reading-passage", "life-skills", "grade-5", "tier-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-014",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-SS-GR7-TOPIC-3",
+      "lessonId": "11111111-2222-3333-4444-000000000727",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000728",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "SUPPORT TIER\nSection A: Match each term to its definition.\n1. Province — a) A large area governed by its own regional government\n2. Municipality — b) A local government area within a province\n3. Ward — c) A subdivision of a municipality for election purposes",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Matching exercise structure and three civic terms preserved in isiNdebele. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Three numbered pairs. Civic terms in isiNdebele.",
+    "tags": [
+      "isindebele",
+      "worksheet",
+      "social-sciences",
+      "support-tier",
+      "grade-7",
+      "tier-2"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-015",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-2",
+      "lessonId": "11111111-2222-3333-4444-000000000729",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000730",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Name: ___________ Date: ___________\nSection B: Vocabulary\nFill in the missing word: [brave, journey, exhausted, discovered]\n1. After the long hike, the children were ___________ .\n2. Columbus ___________ America in 1492.\n3. The firefighter was ___________ for saving the dog.\n4. The ship began its long ___________ across the Atlantic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Word box with four isiNdebele equivalents, four numbered sentences with blanks, and Name/Date header preserved. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Four-word box in isiNdebele. Four numbered sentences. Name/Date header.",
+    "tags": ["isindebele", "worksheet", "vocabulary", "grade-4", "tier-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-016",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-1",
+      "lessonId": "11111111-2222-3333-4444-000000000731",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000732",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Learner name: [REDACTED] Class: 4B Date: [REDACTED]",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "No learner PII in output. Redacted placeholders preserved or replaced with blank lines. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. No learner PII. Redacted tokens or blank lines.",
+    "tags": ["isindebele", "worksheet", "no-pii", "grade-4", "tier-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-017",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-1",
+      "lessonId": "11111111-2222-3333-4444-000000000733",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000734",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Comprehension",
+      "sourceLanguage": "nr",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["isindebele", "same-language-refusal", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-018",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-1",
+      "lessonId": "11111111-2222-3333-4444-000000000735",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000736",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_source_content" }
+    ],
+    "tags": ["isindebele", "empty-content-refusal", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-019",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000737",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Fractions",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["isindebele", "missing-linkage", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-NR-020",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-MATH-GR3-TOPIC-1",
+      "lessonId": "11111111-2222-3333-4444-000000000739",
+      "sourceArtefactId": "11111111-2222-3333-4444-000000000740",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Count and colour:\n1. Colour 5 stars. ★★★★★★★★★★\n2. How many stars are not coloured? ____\n3. Write the number that is 2 more than 7. ____\n4. Circle the biggest number: 9  4  7  2",
+      "sourceLanguage": "en",
+      "targetLanguage": "nr",
+      "loltLanguage": "nr",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": true },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "All numbers and star symbols preserved in the isiNdebele worksheet. Four tasks in numbered order. requiresHumanReview is true."
+      }
+    ],
+    "rubric": "requiresHumanReview true. Stars (★) preserved. Numbers 5, 7, 9, 4, 2 intact. Four ordered tasks.",
+    "tags": [
+      "isindebele",
+      "worksheet",
+      "mathematics",
+      "foundation-phase",
+      "grade-3",
+      "tier-2"
+    ],
+    "source": "specification"
+  }
+]

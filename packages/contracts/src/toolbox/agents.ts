@@ -1,7 +1,8 @@
-// TB agent input/output schemas — Stage 11 step 2.
+// TB agent input/output schemas — Stage 11 steps 2–3.
 //
 // TB-01 (Worksheet Builder), TB-03 (Reading Passage Generator),
-// TB-04 (Item Writer), TB-05 (Memo & Marking Guide Agent).
+// TB-04 (Item Writer), TB-05 (Memo & Marking Guide Agent),
+// TB-06 (Home-Language Adapter).
 //
 // Every input enforces the strict parameter: capsTopicId is required, and at least one of
 // lessonId or interventionId must be present. Every 'no_source_document' output variant
@@ -10,11 +11,16 @@
 //
 // TB-05's 'disagreement_flagged' output blocks release to the teacher: the marking memo
 // is never seen until the independent-verification pass agrees on every item.
+//
+// TB-06's 'requiresHumanReview' flag is set when adapting to a language where the model's
+// quality is below the shipping threshold — the output is produced but must be reviewed by
+// a qualified human translator before delivery. No language is shipped without an eval set.
 
 import { z } from 'zod';
 
 import { CognitiveLevel } from '../curriculum/planning.js';
 import { GradeLabel } from '../curriculum/framework.js';
+import { ToolboxArtefactType } from './artefact.js';
 import { GradeBand, ReadabilityCheckResult } from './readability.js';
 
 // ---------------------------------------------------------------------------
@@ -308,3 +314,82 @@ export const TB05Result = z.discriminatedUnion('status', [
   }),
 ]);
 export type TB05Result = z.infer<typeof TB05Result>;
+
+// ---------------------------------------------------------------------------
+// TB-06 — Home-Language Adapter (all eleven official South African languages)
+// ---------------------------------------------------------------------------
+
+/** The eleven official South African languages (ISO 639-1 / ISO 639-3 codes). */
+export const OfficialLanguage = z.enum([
+  'af', // Afrikaans
+  'en', // English
+  'nr', // isiNdebele
+  'xh', // isiXhosa
+  'zu', // isiZulu
+  'nso', // Sesotho sa Leboa (Northern Sotho / Sepedi)
+  'st', // Sesotho
+  'tn', // Setswana
+  'ss', // siSwati
+  've', // Tshivenda
+  'ts', // Xitsonga
+]);
+export type OfficialLanguage = z.infer<typeof OfficialLanguage>;
+
+export const TB06Input = TBLinkageBase.extend({
+  tenantId: z.string().uuid(),
+  gradeLabel: GradeLabel,
+  /** UUID of the source artefact being adapted. */
+  sourceArtefactId: z.string().uuid(),
+  /** Type of the source artefact — determines how content is structured for adaptation. */
+  sourceArtefactType: ToolboxArtefactType,
+  /** Full text content of the source artefact to adapt. */
+  content: z.string().min(1),
+  /** ISO code of the source language. */
+  sourceLanguage: OfficialLanguage,
+  /** ISO code of the target language. Must differ from sourceLanguage. */
+  targetLanguage: OfficialLanguage,
+  /** The school's declared Language of Learning and Teaching for this class. */
+  loltLanguage: OfficialLanguage,
+  requestedBy: z.string().min(1),
+})
+  .superRefine(requireOneLinkage)
+  .superRefine((v, ctx) => {
+    if (v.sourceLanguage === v.targetLanguage) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['targetLanguage'],
+        message: 'targetLanguage must differ from sourceLanguage.',
+      });
+    }
+  });
+export type TB06Input = z.infer<typeof TB06Input>;
+
+export const TB06Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('ok'),
+    artefactId: z.string().uuid(),
+    artefactType: z.literal('HOME_LANGUAGE_ADAPTED'),
+    linkage: TBOutputLinkage,
+    adaptedContent: z.string().min(1),
+    targetLanguage: OfficialLanguage,
+    /**
+     * When true, a qualified human translator must review this output before it is delivered.
+     * Set for languages where the model's quality is below the shipping threshold.
+     * The artefact pipeline must not deliver a requiresHumanReview=true artefact without a
+     * recorded human-review approval.
+     */
+    requiresHumanReview: z.boolean(),
+    /** Present whenever requiresHumanReview is true — explains which quality concern applies. */
+    reviewReason: z.string().min(1).optional(),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+    missingFields: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('no_source_content'),
+    detail: z.string().min(1),
+  }),
+]);
+export type TB06Result = z.infer<typeof TB06Result>;

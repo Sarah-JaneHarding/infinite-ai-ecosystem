@@ -3932,3 +3932,71 @@ Four TB agent contracts in `packages/agents/src/mod-04/`:
 TB05Contract.
 
 `pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (29 packages, 344 contracts tests).
+
+### Stage 11 — Step 3: TB-06 Home-Language Adapter contract, prompt, eval sets
+
+**Date:** 2026-08-10
+
+**What was built**
+
+**Contract** (`packages/agents/src/mod-04/TB-06.contract.ts`):
+
+- `inputSchema`: `TB06Input` — extends `TBLinkageBase` with tenantId, gradeLabel, sourceArtefactId,
+  sourceArtefactType (`ToolboxArtefactType`), content (min 1), sourceLanguage, targetLanguage,
+  loltLanguage (all `OfficialLanguage`), requestedBy. Two `superRefine` passes: one from
+  `requireOneLinkage`, one that rejects `sourceLanguage === targetLanguage` with a validation error.
+- `outputSchema`: `TB06Result` — discriminated union: `ok` (HOME_LANGUAGE_ADAPTED artefact,
+  adaptedContent, targetLanguage, requiresHumanReview boolean, optional reviewReason),
+  `needs_input`, `no_source_content`.
+- `OfficialLanguage` enum: all 11 official South African ISO codes (af, en, nr, xh, zu, nso, st, tn,
+  ss, ve, ts).
+- purpose: `planning`, model: `plan.author`, tools: [], guardrails: pii_guard, budget: 4 000 tokens
+  / $0.02, requiresApproval: false, writesToBrain: false.
+
+**Language quality tiers** (from prompt spec):
+
+- Tier 1 (no human review required): af, en, zu, xh, tn, st, nso — `requiresHumanReview: false`.
+- Tier 2 (human review required): nr, ss, ve, ts — `requiresHumanReview: true` and `reviewReason`
+  must be present on every `ok` result. The artefact pipeline must not deliver Tier-2 output without
+  a recorded human-review approval.
+
+**Prompt** (`packages/prompts/src/TB-06/1.0.0.prompt.md`):
+
+- 8-section format: ROLE, LANGUAGE QUALITY TIERS, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT
+  SCHEMA, SELF-CHECK.
+- Tier-2 clause: any output in nr/ss/ve/ts must set `requiresHumanReview: true` and populate
+  `reviewReason`.
+- LoLT-awareness: the prompt distinguishes `loltLanguage` (the learner's home language of teaching)
+  from `targetLanguage` (the adaptation target); output is always in `targetLanguage`.
+- Hash locked in `packages/prompts/prompt-lock.json` (TB-06 @ 1.0.0).
+
+**Eval sets** (20 cases per language, `packages/evals/sets/TB-06/{af,en,zu,xh,nso,st,tn,nr,ss,ve,ts}.json`):
+
+- 11 files, 220 cases total (one per official South African language).
+- Tier-1 files (af, en, zu, xh, nso, st, tn): all `ok` cases assert `requiresHumanReview: false`.
+- Tier-2 files (nr, ss, ve, ts): all `ok` cases assert `requiresHumanReview: true` and an
+  `llm_judge` criterion verifying `reviewReason` is non-empty and explains the tier-2 status.
+- Case variety per file: worksheets (all 3 tiers: SUPPORT/STANDARD/EXTENSION), reading passages,
+  assessment items, marking memos, LoLT-differs (targetLanguage ≠ loltLanguage), no-PII check,
+  same-language refusal (`needs_input`), empty content (`no_source_content`), missing-linkage
+  refusal (`needs_input`), Foundation Phase (Grades 1–3), Intermediate/Senior/FET phases.
+- All expectation types are from the valid set (exact_match, llm_judge only; no forbidden types).
+
+**Schemas** (`packages/contracts/src/toolbox/agents.ts`):
+
+- `OfficialLanguage` — `z.enum` of all 11 ISO codes; `ToolboxArtefactType` imported from
+  `./artefact.js` (HOME_LANGUAGE_ADAPTED was already defined there).
+- `TB06Input` / `TB06Result` — 3 new exports wired through `packages/contracts/src/toolbox/index.ts`
+  and `packages/contracts/src/index.ts`; `test/exports.spec.ts` updated (sorted position fixed).
+
+**Contract tests** (`packages/contracts/test/toolbox-agents.spec.ts`):
+
+- New `describe` blocks: `OfficialLanguage` (11 valid codes, rejects non-SA codes), `TB06Input`
+  (valid input, all 11 target languages, same-source-target rejection, missing linkage, empty
+  content, invalid artefactType/targetLanguage), `TB06Result` (ok with both boolean states, rejects
+  empty adaptedContent / wrong artefactType, needs_input / no_source_content, empty missingFields).
+
+`packages/agents/src/index.ts` updated to export TB06Contract.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (330 agents tests, 362 contracts tests,
+144 evals tests).

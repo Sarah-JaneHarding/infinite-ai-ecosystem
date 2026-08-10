@@ -1,0 +1,586 @@
+[
+  {
+    "id": "TB06-ZU-001",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-1",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000201",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000202",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Comprehension\n1. What is the main idea of the passage?\n2. Name two animals mentioned in the text.\n3. Write a sentence using the word 'habitat'.",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "HOME_LANGUAGE_ADAPTED"
+      },
+      { "type": "exact_match", "field": "targetLanguage", "value": "zu" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false }
+    ],
+    "tags": ["isizulu", "worksheet", "comprehension", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-002",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-2",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000203",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000204",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "The Water Cycle\n\nWater moves continuously between the ocean, atmosphere and land. Evaporation occurs when sunlight heats water in rivers, lakes and the sea. The water vapour rises and forms clouds. When clouds become heavy enough, water falls as rain or snow.",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The adaptedContent is grammatically correct isiZulu and accurately conveys the water cycle information from the English source."
+      }
+    ],
+    "rubric": "Evaluate whether the isiZulu text is fluent and captures evaporation, water vapour, clouds, and precipitation.",
+    "tags": ["isizulu", "reading-passage", "natural-sciences", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-003",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "interventionId": "cccccccc-dddd-eeee-ffff-000000000205",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000206",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "1. A shopkeeper has 48 apples arranged equally in 6 baskets. How many apples in each basket? (2 marks)\n2. Write the number 3 249 in words. (1 mark)\n3. Round 4 673 to the nearest hundred. (1 mark)",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu adaptation preserves numbers (48, 6, 3 249, 4 673) and mark allocations (2, 1, 1) exactly."
+      }
+    ],
+    "rubric": "All numbers and mark allocations preserved exactly. Three questions present.",
+    "tags": ["isizulu", "assessment-item", "mathematics", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-004",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-HL-GR3-TOPIC-1",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000207",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000208",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Thandi's Garden\n\nThandi has a small garden. She grows tomatoes and beans. Every morning she waters her plants. Her mother helps pull out the weeds. At summer's end, Thandi sells tomatoes at the market for R5 each.",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu text uses Foundation Phase vocabulary appropriate for Grade 3, preserves R5 and market reference, and does not add content beyond the source."
+      }
+    ],
+    "rubric": "Simple sentences, R5 preserved, garden and market context. Grade-3-appropriate isiZulu.",
+    "tags": ["isizulu", "reading-passage", "foundation-phase", "grade-3"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-005",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-SS-GR7-TOPIC-3",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000209",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000210",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "SUPPORT TIER\nSection A: Match each term to its definition.\n1. Province — a) A large area governed by its own regional government\n2. Municipality — b) A local government area within a province\n3. Ward — c) A subdivision of a municipality for election purposes",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu adaptation preserves the matching exercise structure and uses correct isiZulu civic terms for province, municipality, and ward."
+      }
+    ],
+    "rubric": "Three numbered pairs preserved. Civic terms accurately translated. SUPPORT TIER label translated.",
+    "tags": ["isizulu", "worksheet", "social-sciences", "support-tier", "grade-7"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-006",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-3",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000211",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000212",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "A school tuck shop sells sandwiches for R12.50 each and cold drinks for R8.00 each. Sipho buys 3 sandwiches and 2 cold drinks.\n1. Calculate the total cost. Show all working. (3 marks)\n2. Sipho pays with R60. Calculate his change. (2 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu adaptation preserves all monetary values (R12.50, R8.00, R60), quantities (3, 2), and mark allocations (3, 2)."
+      }
+    ],
+    "rubric": "R12.50, R8.00, R60 preserved. Mark allocations 3 and 2. Show working instruction present.",
+    "tags": ["isizulu", "worksheet", "mathematics", "money", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-007",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-4",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000213",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000214",
+      "sourceArtefactType": "MARKING_MEMO",
+      "content": "Question 1: What are the three states of matter?\nModel answer: Solid, liquid and gas. (Award 1 mark for each correct state, max 3 marks.)\nQuestion 2: Give one property of a solid.\nModel answer: A solid has a definite shape and a definite volume. (Award 2 marks for both properties, 1 mark for one property only.)",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu marking memo preserves all mark allocations (max 3, 2, 1) and uses correct isiZulu scientific terminology for states of matter."
+      }
+    ],
+    "rubric": "Mark allocations max 3, 2, 1 unchanged. States of matter terms in isiZulu.",
+    "tags": ["isizulu", "marking-memo", "natural-sciences", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-008",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-TECH-GR8-TOPIC-1",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000215",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000216",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Design Activity: Bridge Challenge\nUsing only 20 wooden craft sticks and white glue, design and build a bridge.\n1. Sketch your design below. (3 marks)\n2. List the forces acting on your bridge. (2 marks)\n3. After testing, explain one change to improve your design. (3 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "af",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      { "type": "exact_match", "field": "targetLanguage", "value": "zu" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu adaptation is correct even though the LoLT is Afrikaans. Mark allocations (3, 2, 3) and material quantity (20 sticks) are preserved."
+      }
+    ],
+    "rubric": "Output is in isiZulu regardless of LoLT being Afrikaans. Mark allocations 3, 2, 3. 20 sticks.",
+    "tags": ["isizulu", "worksheet", "technology", "grade-8", "lolt-differs"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-009",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "9",
+      "capsTopicId": "CAPS-EMS-GR9-TOPIC-2",
+      "interventionId": "cccccccc-dddd-eeee-ffff-000000000217",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000218",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Economic activity types:\n1. Primary sector — extraction of natural resources (mining, farming, fishing)\n2. Secondary sector — manufacturing and processing\n3. Tertiary sector — services (banking, education, retail)\nTask: Classify: a) coal mining  b) bread baking  c) teaching",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu translation correctly names all three economic sectors and preserves the classification task with all three examples."
+      }
+    ],
+    "rubric": "Three sectors (primary, secondary, tertiary) in isiZulu. Three examples preserved.",
+    "tags": ["isizulu", "worksheet", "economic-management-sciences", "grade-9"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-010",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "10",
+      "capsTopicId": "CAPS-HIST-GR10-TOPIC-2",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000219",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000220",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "EXTENSION TIER\n1. Analyse two primary sources from the apartheid era. Evaluate how effectively they represent township residents' experiences. (10 marks)\n2. Compare the causes of the 1976 Soweto Uprising with those of the 1960 Sharpeville Massacre. (8 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu adaptation uses FET History register, preserves mark allocations (10 and 8) and historical event names."
+      }
+    ],
+    "rubric": "Mark allocations 10 and 8. Historical event names preserved. Analytical verbs in isiZulu.",
+    "tags": ["isizulu", "assessment-item", "history", "extension-tier", "grade-10"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-011",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "11",
+      "capsTopicId": "CAPS-GEOG-GR11-TOPIC-1",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000221",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000222",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "1. Study the population pyramid for South Africa (2011 Census). Describe two demographic trends visible in the pyramid. (4 marks)\n2. Explain the impact of HIV/AIDS on the 25–34 age cohort. (6 marks)",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu adaptation preserves mark allocations (4 and 6), 2011 Census reference, and 25-34 age cohort in FET Geography register."
+      }
+    ],
+    "rubric": "Mark allocations 4 and 6. 2011 Census. Age cohort 25-34.",
+    "tags": ["isizulu", "assessment-item", "geography", "grade-11"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-012",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-NS-GR7-TOPIC-2",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000223",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000224",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "South Africa's Biomes\n\nSouth Africa has nine major biomes. The Savanna covers 33% of the country's land surface. The Fynbos biome, found mostly in the Western Cape, is home to over 9 000 plant species, 70% of which are endemic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu text preserves all statistics (nine biomes, 33%, 9 000 plant species, 70% endemic) and South African place names."
+      }
+    ],
+    "rubric": "Nine biomes, 33%, 9 000 plant species, 70% endemic. No fabricated statistics.",
+    "tags": [
+      "isizulu",
+      "reading-passage",
+      "natural-sciences",
+      "grade-7",
+      "no-fabrication"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-013",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-NS-GR8-TOPIC-3",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000225",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000226",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Practical Activity: Testing for Starch\nMaterials: iodine solution, food samples (bread, potato, cheese, apple), white tile\nMethod:\n1. Place a small piece of each food on the tile.\n2. Add 2 drops of iodine solution.\n3. Observe and record colour change.\nResults table: | Food | Colour change | Starch present? |\n| Bread | | |\n| Potato | | |\n| Cheese | | |\n| Apple | | |",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu adaptation preserves the practical activity structure including materials list, numbered method steps, and results table with all four food samples."
+      }
+    ],
+    "rubric": "Results table with four foods, three columns, numbered steps, materials list — all in isiZulu.",
+    "tags": ["isizulu", "worksheet", "natural-sciences", "practical", "grade-8"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-014",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-LS-GR5-TOPIC-1",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000227",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000228",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Recycling at Riverside Primary\n\nEvery Friday, learners sort waste into three bins: paper, plastic and food scraps. Paper and plastic go to a recycling company in Johannesburg. Food scraps are composted in the school garden. Last year, the school recycled 450 kg of paper and 230 kg of plastic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu text preserves all factual data (450 kg paper, 230 kg plastic, Johannesburg, Friday routine) without fabricating statistics."
+      }
+    ],
+    "rubric": "450 kg and 230 kg preserved. Johannesburg mentioned. No fabricated data.",
+    "tags": ["isizulu", "reading-passage", "life-skills", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-015",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-2",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000229",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000230",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Name: ___________ Date: ___________\nSection B: Vocabulary\nFill in the missing word: [brave, journey, exhausted, discovered]\n1. After the long hike, the children were ___________ .\n2. Columbus ___________ America in 1492.\n3. The firefighter was ___________ for saving the dog.\n4. The ship began its long ___________ across the Atlantic.",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu worksheet preserves the word box with four isiZulu equivalents, all four numbered fill-in-blank sentences, and the Name/Date header."
+      }
+    ],
+    "rubric": "Four-word box in isiZulu. Four numbered sentences with blanks. Name and Date header.",
+    "tags": ["isizulu", "worksheet", "vocabulary", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-016",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-1",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000231",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000232",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Learner name: [REDACTED] Class: 4B Date: [REDACTED]",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu output does not contain any learner personal information. Redacted placeholders are preserved or replaced with blank lines."
+      }
+    ],
+    "rubric": "No learner PII in output. Redacted tokens or blank lines acceptable.",
+    "tags": ["isizulu", "worksheet", "no-pii", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-017",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-HL-GR4-TOPIC-1",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000233",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000234",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Comprehension",
+      "sourceLanguage": "zu",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["isizulu", "same-language-refusal", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-018",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-1",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000235",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000236",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_source_content" }
+    ],
+    "tags": ["isizulu", "empty-content-refusal", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-019",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000237",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Fractions",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["isizulu", "missing-linkage", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-ZU-020",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-MATH-GR3-TOPIC-1",
+      "lessonId": "cccccccc-dddd-eeee-ffff-000000000239",
+      "sourceArtefactId": "cccccccc-dddd-eeee-ffff-000000000240",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Count and colour:\n1. Colour 5 stars. ★★★★★★★★★★\n2. How many stars are not coloured? ____\n3. Write the number that is 2 more than 7. ____\n4. Circle the biggest number: 9  4  7  2",
+      "sourceLanguage": "en",
+      "targetLanguage": "zu",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The isiZulu worksheet uses simple Foundation Phase language, preserves all numbers and star symbols, and keeps all four tasks in numbered order."
+      }
+    ],
+    "rubric": "Stars (★) in task 1. Numbers 5, 7, 9, 4, 2 preserved. Simple isiZulu instructions.",
+    "tags": ["isizulu", "worksheet", "mathematics", "foundation-phase", "grade-3"],
+    "source": "specification"
+  }
+]

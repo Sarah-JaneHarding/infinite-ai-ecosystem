@@ -1,0 +1,613 @@
+[
+  {
+    "id": "TB06-EN-001",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-AHL-GR4-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000101",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000102",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Afdeling A: Begrip\n1. Wat is die hoofgedagte van die gedeelte?\n2. Noem twee diere wat in die teks genoem word.\n3. Skryf 'n sin met die woord 'habitat'.",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "HOME_LANGUAGE_ADAPTED"
+      },
+      { "type": "exact_match", "field": "targetLanguage", "value": "en" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false }
+    ],
+    "tags": ["english", "worksheet", "comprehension", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-002",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000103",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000104",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "UMjikelezo Wamanzi\n\nAmanzi ahamba njalo phakathi koLwandle, umoya nezwe. Ukuvapola kwenzeka lapho ilanga lishisa amanzi emifuleni, emadamini naseLwandleni. Inkungu yamanzi enyuka yenza amafu. Lapho amafu esinda ngokwanele, amanzi awela phansi njengomvula noma yiqhwa.",
+      "sourceLanguage": "zu",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English translation accurately conveys the isiZulu passage about the water cycle, including the stages of evaporation, water vapour forming clouds, and precipitation."
+      }
+    ],
+    "rubric": "Evaluate faithfulness to the isiZulu source: all four water cycle stages must appear in English.",
+    "tags": ["english", "reading-passage", "natural-sciences", "grade-5", "from-zulu"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-003",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000105",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000106",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "1. Umthengisi unama-48 amaapula. Uwabeka ngokulinganayo kumaqoqo ama-6. Mangaki ama-apula akuqoqo ngalinye? (2 amaphuzu)\n2. Bhala inombolo u-3 249 ngamagama. (1 iphuzu)\n3. Jikelezisa u-4 673 esibingelelweni esiseduzane kwamakhulu. (1 iphuzu)",
+      "sourceLanguage": "zu",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English translation preserves the exact numbers (48 apples, 6 baskets, 3 249, 4 673) and mark allocations (2, 1, 1) from the isiZulu source."
+      }
+    ],
+    "rubric": "Numbers 48, 6, 3 249, 4 673 and mark allocations 2, 1, 1 must appear unchanged.",
+    "tags": ["english", "assessment-item", "mathematics", "grade-6", "from-zulu"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-004",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-LS-GR5-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000107",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000108",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Indlela Yokulondoloza iMfundo yethu\n\nEskoleni sifunda izinto ezithi emva kwalokho sizisebenzise empilweni yethu yonke. Izingane ezikhangela izinto ezisha ngokukhuthala zithola amathuba amahle empilweni. Funda, buza imibuzo futhi ufune ukwazi okuningi.",
+      "sourceLanguage": "zu",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English translation captures the motivational educational message from the isiZulu passage using grade-5 appropriate vocabulary."
+      }
+    ],
+    "rubric": "Check that the translated message is encouraging and grade-appropriate. No fabricated claims beyond the source content.",
+    "tags": ["english", "reading-passage", "life-skills", "grade-5", "from-zulu"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-005",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "9",
+      "capsTopicId": "CAPS-SS-GR9-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000109",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000110",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Sektion C: Demokratiese deelname\n1. Beskryf die rol van die kieserskommissie in Suid-Afrika. (3 punte)\n2. Noem twee maniere waarop burgers aan demokrasie kan deelneem buiten stemming. (4 punte)\n3. Verduidelik waarom skeidingsmagte belangrik is vir 'n demokratiese staat. (3 punte)",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English translation preserves all three questions, mark allocations (3, 4, 3), and uses correct Social Sciences terminology for electoral commission and separation of powers."
+      }
+    ],
+    "rubric": "Mark allocations 3, 4, 3 must appear. Electoral commission and separation of powers terminology must be correct. Section heading preserved.",
+    "tags": ["english", "worksheet", "social-sciences", "grade-9", "from-afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-006",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-HL-GR3-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000111",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000112",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "INgadi kaThandi\n\nUThandi unensimu encane. Uyakhulisa amatamati nezimbewu. Njalo ekuseni uyasinya izitshalo zakhe. Unina umsiza nokukhipha ukhula. Ekupheleni kehlobo, uThandi uthengisa amatamati akhe emakethe nge-R5 ngalinye.",
+      "sourceLanguage": "zu",
+      "targetLanguage": "en",
+      "loltLanguage": "zu",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English translation uses simple Foundation Phase language, preserves the R5 price and market reference, and does not add content beyond what is in the isiZulu source."
+      }
+    ],
+    "rubric": "Simple sentences, R5 preserved, garden and market context preserved. No content additions.",
+    "tags": [
+      "english",
+      "reading-passage",
+      "foundation-phase",
+      "grade-3",
+      "from-zulu",
+      "lolt-differs"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-007",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-NS-GR7-TOPIC-3",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000113",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000114",
+      "sourceArtefactType": "MARKING_MEMO",
+      "content": "Vraag 1: Wat is die drie toestande van materie?\nModelantwoord: Vaste stowwe, vloeistowwe en gasse. (Gee 1 punt vir elke korrekte toestand, maks 3 punte.)\nVraag 2: Gee een eienskap van 'n vaste stof.\nModelantwoord: 'n Vaste stof het 'n vaste vorm en 'n vaste volume. (Gee 2 punte vir albei eienskappe, 1 punt vir slegs een eienskap.)",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English marking memo preserves exact mark allocations (max 3, 2 and 1) and uses correct English scientific terms for states of matter."
+      }
+    ],
+    "rubric": "Mark allocations max 3, 2, 1 must be preserved. Scientific terms: solid, liquid, gas, definite shape, definite volume.",
+    "tags": ["english", "marking-memo", "natural-sciences", "grade-7", "from-afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-008",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "10",
+      "capsTopicId": "CAPS-HIST-GR10-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000115",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000116",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "Uitbreiding: 1. Ontleed twee primêre bronne uit die apartheidstydperk en evalueer hoe effektief hulle die ervarings van township-inwoners verteenwoordig. (10 punte)\n2. Vergelyk die oorsake van die 1976 Soweto-opstand met dié van die 1960 Sharpeville-slagting. Gebruik bewyse uit die verskafde dokumente. (8 punte)",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English translation uses FET History academic register, preserves mark allocations (10 and 8), historical event names (1976 Soweto Uprising, 1960 Sharpeville Massacre), and analytical instruction verbs."
+      }
+    ],
+    "rubric": "Mark allocations 10 and 8 preserved. Historical events by name. Analytical verbs: analyse, evaluate, compare.",
+    "tags": ["english", "assessment-item", "history", "grade-10", "from-afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-009",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-3",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000117",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000118",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Afdeling C: Probleemoplossing\n'n Skool se tuckshop verkoop toebroodjies teen R12.50 elk en koeldranke teen R8.00 elk. Sipho koop 3 toebroodjies en 2 koeldranke.\n1. Bereken die totale koste. Wys alle berekeninge. (3 punte)\n2. Sipho betaal met R60. Bereken sy wisselgeld. (2 punte)",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English translation preserves all monetary values (R12.50, R8.00, R60), quantities, mark allocations (3 and 2 marks), and the working instruction."
+      }
+    ],
+    "rubric": "All rand values identical to source. Mark allocations 3 and 2 preserved. 'Show all working' in English.",
+    "tags": ["english", "worksheet", "mathematics", "money", "grade-6", "from-afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-010",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-TECH-GR8-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000119",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000120",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Ontwerp-aktiwiteit: Brug-uitdaging\nInstruksies: Gebruik slegs 20 houtjies en witgom, ontwerp en bou 'n brug wat die meeste gewig kan dra.\n1. Skets jou ontwerp hieronder. (3 punte)\n2. Lys die kragte wat op jou brug inwerk. (2 punte)\n3. Ná toetsing, verduidelik een verandering wat jy sou maak om jou ontwerp te verbeter. (3 punte)",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English adaptation preserves all three tasks, mark allocations (3, 2, 3), the material quantities (20 sticks), and uses Technology Design instruction language."
+      }
+    ],
+    "rubric": "Three tasks numbered. Mark allocations 3, 2, 3. 20 sticks. Design and build terminology.",
+    "tags": ["english", "worksheet", "technology", "grade-8", "from-afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-011",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "11",
+      "capsTopicId": "CAPS-GEOG-GR11-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000121",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000122",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "1. Bestudeer die bevolkingspiraan van Suid-Afrika (2011-sensus). Beskryf twee demografiese neigings sigbaar in die piraan. (4 punte)\n2. Verduidelik die impak van MIV/vigs op die 25-34 ouderdomsgroep sigbaar in die piraan. (6 punte)",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English translation uses FET Geography academic register, preserves mark allocations (4 and 6), the 2011 Census reference, the 25-34 age cohort, and uses 'population pyramid' as the English term."
+      }
+    ],
+    "rubric": "Mark allocations 4 and 6. '2011 Census'. Age cohort '25-34'. 'Population pyramid' in English.",
+    "tags": ["english", "assessment-item", "geography", "grade-11", "from-afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-012",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-AHL-GR4-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000123",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000124",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Naam: ___________ Datum: ___________\nAfdeling B: Woordeskat\nVul die ontbrekende woord in uit die blokkie: [dapper, reis, uitgeput, ontdek]\n1. Na die lang staptog was die kinders ___________.\n2. Columbus het Amerika in 1492 ___________.\n3. Die brandweerman was ___________ vir die red van die hond.\n4. Die skip het sy lang ___________ oor die Atlantiese Oseaan begin.",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English worksheet preserves the word box with four English words, all four numbered fill-in-blank sentences, and the Name/Date header."
+      }
+    ],
+    "rubric": "Word box has exactly four English words. Four numbered sentences with blanks. Name and Date header present.",
+    "tags": ["english", "worksheet", "vocabulary", "grade-4", "from-afrikaans"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-013",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-MATH-GR3-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000125",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000126",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Tel en kleur:\n1. Kleur 5 sterre. ★★★★★★★★★★\n2. Hoeveel sterre is nie ingekleur nie? ____\n3. Skryf die getal wat 2 meer is as 7. ____\n4. Omkring die grootste getal: 9  4  7  2",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English worksheet uses simple Foundation Phase language, preserves all numbers and star symbols, and keeps all four tasks in correct numbered order."
+      }
+    ],
+    "rubric": "Stars (★) in task 1. Numbers 5, 7, 9, 4, 2 preserved. Simple English instructions: colour, count, write, circle.",
+    "tags": [
+      "english",
+      "worksheet",
+      "mathematics",
+      "foundation-phase",
+      "grade-3",
+      "from-afrikaans"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-014",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-NS-GR7-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000127",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000128",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Izinhlanga zakwa-Afrika-Borwa\n\nINingizimu Afrika inemvelo emihlanu emikhulu: iSavanna, iFynbos, iNomvula, iKaroo Esucculente kanye neForest. IBiome iSavanna igubha u-33% womhlaba wezwe. IBiome iFynbos, etholakala kakhulu eKapa naseNtshonalanga, inezihlahla eziyi-9 000, u-70% zazo zingamazibuze.",
+      "sourceLanguage": "zu",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English translation preserves all statistical data (33%, 9 000 plant species, 70% endemic), South African biome names, and does not fabricate any ecological facts."
+      }
+    ],
+    "rubric": "Verify: 33%, 9 000 plant species, 70% endemic. Western Cape reference. No invented statistics.",
+    "tags": [
+      "english",
+      "reading-passage",
+      "natural-sciences",
+      "grade-7",
+      "from-zulu",
+      "no-fabrication"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-015",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "9",
+      "capsTopicId": "CAPS-EMS-GR9-TOPIC-2",
+      "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000129",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000130",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Izinhlobo zemisebenzi yezomnotho:\n1. Umkhakha wokuqala — Ukukhipha izinsiza zemvelo (umbiwa, ukulima, ukudoba)\n2. Umkhakha wesibili — Ukwenziwa nokucubungula izimpahla\n3. Umkhakha wesithathu — Izinsizakalo (amabhange, imfundo, ukuthenga nokudayisa)\nUmsebenzi: Hlela lezi: a) ukumba amalahle  b) ukubhaka isinkwa  c) ukufundisa",
+      "sourceLanguage": "zu",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English translation correctly names all three economic sectors and preserves the classification task with all three examples (coal mining, bread baking, teaching)."
+      }
+    ],
+    "rubric": "Three sectors (primary, secondary, tertiary). Three examples: coal mining, bread baking, teaching.",
+    "tags": [
+      "english",
+      "worksheet",
+      "economic-management-sciences",
+      "grade-9",
+      "from-zulu"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-016",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000131",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000132",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_source_content" }
+    ],
+    "tags": ["english", "empty-content-refusal", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-017",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-AHL-GR4-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000133",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000134",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Comprehension",
+      "sourceLanguage": "en",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["english", "same-language-refusal", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-018",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000135",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Afdeling A: Breuke",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["english", "missing-linkage", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-019",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-NS-GR8-TOPIC-3",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000137",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000138",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Praktiese aktiwiteit: Toets vir stysel\nMateriaal: jodiumoplossing, voedselmonsters (brood, aartappel, kaas, appel), wit tegel\nMetode:\n1. Plaas 'n klein stukkie van elke voedsel op die wit tegel.\n2. Voeg 2 druppels jodiumoplossing by elke monster.\n3. Neem waar en teken enige kleurverandering aan.\nResultatetabel: | Voedsel | Kleurverandering | Stysel teenwoordig? |\n| Brood | | |\n| Aartappel | | |\n| Kaas | | |\n| Appel | | |",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "requiresHumanReview", "value": false },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English adaptation preserves the practical activity structure with materials list, numbered method steps, and results table with all four food items."
+      }
+    ],
+    "rubric": "Results table must have all four foods (bread, potato, cheese, apple), three columns, numbered steps.",
+    "tags": [
+      "english",
+      "worksheet",
+      "natural-sciences",
+      "practical",
+      "grade-8",
+      "from-afrikaans"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB06-EN-020",
+    "agentId": "TB-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-AHL-GR4-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000139",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000000140",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Leerder naam: [GESKRAP] Klas: 4B Datum: [GESKRAP]",
+      "sourceLanguage": "af",
+      "targetLanguage": "en",
+      "loltLanguage": "en",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The English output does not contain any learner personal information. Redacted placeholders are preserved or replaced with blank lines, not filled with invented names."
+      }
+    ],
+    "rubric": "No learner names or PII in output. Redacted tokens or blank lines acceptable. No invented personal data.",
+    "tags": ["english", "worksheet", "no-pii", "grade-4", "from-afrikaans"],
+    "source": "specification"
+  }
+]

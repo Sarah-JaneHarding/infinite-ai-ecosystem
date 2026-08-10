@@ -1,13 +1,15 @@
-// Toolbox agent contracts — Stage 11 step 2.
+// Toolbox agent contracts — Stage 11 steps 2–3.
 //
 // Covers: TB-01 (Worksheet Builder), TB-03 (Reading Passage Generator),
-// TB-04 (Item Writer), TB-05 (Memo & Marking Guide Agent) input/output schemas.
+// TB-04 (Item Writer), TB-05 (Memo & Marking Guide Agent),
+// TB-06 (Home-Language Adapter) input/output schemas.
 //
 // Key invariants verified:
 //   - TBLinkageInput requires at least one of lessonId / interventionId
 //   - no_source_document output blocks fabrication
 //   - TB-05 disagreement_flagged blocks release (no artefactId in that variant)
 //   - MC items must have exactly four options; other types have none
+//   - TB-06 rejects same source/target language; requiresHumanReview flag present in ok result
 
 import { describe, expect, it } from 'vitest';
 
@@ -16,6 +18,7 @@ import {
   AssessmentItem,
   AssessmentItemType,
   MCOption,
+  OfficialLanguage,
   TB01Input,
   TB01Result,
   TB03Input,
@@ -26,6 +29,8 @@ import {
   TB05ItemInput,
   TB05Result,
   TB05VerificationItem,
+  TB06Input,
+  TB06Result,
   TBOutputLinkage,
   VerifierAnswers,
   WorksheetDifferentiationTier,
@@ -860,5 +865,199 @@ describe('TB05Result', () => {
     if (result.success && result.data.status === 'verified') {
       expect(result.data.artefactType).toBe('MARKING_MEMO');
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// OfficialLanguage
+// ---------------------------------------------------------------------------
+
+describe('OfficialLanguage', () => {
+  it('accepts all eleven official language codes', () => {
+    const codes = ['af', 'en', 'nr', 'xh', 'zu', 'nso', 'st', 'tn', 'ss', 've', 'ts'];
+    for (const code of codes) {
+      expect(OfficialLanguage.safeParse(code).success).toBe(true);
+    }
+  });
+
+  it('rejects an unlisted code', () => {
+    expect(OfficialLanguage.safeParse('fr').success).toBe(false);
+  });
+
+  it('rejects an empty string', () => {
+    expect(OfficialLanguage.safeParse('').success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// TB06Input
+// ---------------------------------------------------------------------------
+
+function baseTB06Input(overrides: Record<string, unknown> = {}) {
+  return {
+    tenantId: UUID,
+    capsTopicId: 'CAPS-EHL-GR4-TOPIC-1',
+    lessonId: UUID,
+    gradeLabel: '4',
+    sourceArtefactId: UUID2,
+    sourceArtefactType: 'WORKSHEET',
+    content: 'Section A: Read the passage and answer the questions.',
+    sourceLanguage: 'en',
+    targetLanguage: 'af',
+    loltLanguage: 'af',
+    requestedBy: 'teacher@school.za',
+    ...overrides,
+  };
+}
+
+describe('TB06Input', () => {
+  it('accepts a valid home-language adapter input', () => {
+    expect(TB06Input.safeParse(baseTB06Input()).success).toBe(true);
+  });
+
+  it('accepts with interventionId instead of lessonId', () => {
+    expect(
+      TB06Input.safeParse(baseTB06Input({ lessonId: undefined, interventionId: UUID }))
+        .success,
+    ).toBe(true);
+  });
+
+  it('accepts all eleven official target languages', () => {
+    const codes = ['af', 'en', 'nr', 'xh', 'zu', 'nso', 'st', 'tn', 'ss', 've', 'ts'];
+    for (const code of codes) {
+      const src = code === 'en' ? 'af' : 'en';
+      expect(
+        TB06Input.safeParse(baseTB06Input({ sourceLanguage: src, targetLanguage: code }))
+          .success,
+      ).toBe(true);
+    }
+  });
+
+  it('rejects when sourceLanguage equals targetLanguage', () => {
+    const result = TB06Input.safeParse(
+      baseTB06Input({ sourceLanguage: 'en', targetLanguage: 'en' }),
+    );
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.map((i) => i.message).join(' ')).toMatch(
+        /targetLanguage must differ/,
+      );
+    }
+  });
+
+  it('rejects when neither lessonId nor interventionId is present', () => {
+    const result = TB06Input.safeParse(
+      baseTB06Input({ lessonId: undefined, interventionId: undefined }),
+    );
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects with empty content', () => {
+    expect(TB06Input.safeParse(baseTB06Input({ content: '' })).success).toBe(false);
+  });
+
+  it('rejects with invalid sourceArtefactType', () => {
+    expect(
+      TB06Input.safeParse(baseTB06Input({ sourceArtefactType: 'UNKNOWN_TYPE' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects with invalid targetLanguage', () => {
+    expect(TB06Input.safeParse(baseTB06Input({ targetLanguage: 'pt' })).success).toBe(
+      false,
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// TB06Result
+// ---------------------------------------------------------------------------
+
+describe('TB06Result', () => {
+  it('accepts a valid ok result with requiresHumanReview false', () => {
+    expect(
+      TB06Result.safeParse({
+        status: 'ok',
+        artefactId: UUID,
+        artefactType: 'HOME_LANGUAGE_ADAPTED',
+        linkage: baseLinkage(),
+        adaptedContent: 'Afdeling A: Lees die teks en beantwoord die vrae.',
+        targetLanguage: 'af',
+        requiresHumanReview: false,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts a valid ok result with requiresHumanReview true and reviewReason', () => {
+    expect(
+      TB06Result.safeParse({
+        status: 'ok',
+        artefactId: UUID,
+        artefactType: 'HOME_LANGUAGE_ADAPTED',
+        linkage: baseLinkage(),
+        adaptedContent: 'Ingcenye A: Funda umbhalo uphendule imibuzo.',
+        targetLanguage: 'nr',
+        requiresHumanReview: true,
+        reviewReason:
+          'isiNdebele quality below shipping threshold — human review required.',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects ok result with empty adaptedContent', () => {
+    expect(
+      TB06Result.safeParse({
+        status: 'ok',
+        artefactId: UUID,
+        artefactType: 'HOME_LANGUAGE_ADAPTED',
+        linkage: baseLinkage(),
+        adaptedContent: '',
+        targetLanguage: 'af',
+        requiresHumanReview: false,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects ok result with wrong artefactType', () => {
+    expect(
+      TB06Result.safeParse({
+        status: 'ok',
+        artefactId: UUID,
+        artefactType: 'WORKSHEET',
+        linkage: baseLinkage(),
+        adaptedContent: 'Translated content.',
+        targetLanguage: 'af',
+        requiresHumanReview: false,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('accepts needs_input result', () => {
+    expect(
+      TB06Result.safeParse({
+        status: 'needs_input',
+        detail: 'sourceLanguage and targetLanguage are the same.',
+        missingFields: ['targetLanguage'],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts no_source_content result', () => {
+    expect(
+      TB06Result.safeParse({
+        status: 'no_source_content',
+        detail: 'Content field is empty.',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects needs_input result with empty missingFields', () => {
+    expect(
+      TB06Result.safeParse({
+        status: 'needs_input',
+        detail: 'Something missing.',
+        missingFields: [],
+      }).success,
+    ).toBe(false);
   });
 });
