@@ -26,6 +26,9 @@
     "test:redteam:diagnosis": "pnpm --filter @infinite-ai/guardrails exec vitest run test/diagnosis-redteam.spec.ts",
     "test:drill:safeguarding": "pnpm --filter @infinite-ai/analytics exec vitest run test/safeguarding-drill.spec.ts",
     "test:bias-monitor": "pnpm --filter @infinite-ai/analytics exec vitest run test/bias-monitor.spec.ts",
+    "test:readability": "pnpm --filter @infinite-ai/contracts exec vitest run test/toolbox-readability-bands.spec.ts",
+    "test:answer-key-verification": "pnpm --filter @infinite-ai/contracts exec vitest run test/toolbox-answer-key-verification.spec.ts",
+    "test:accessibility": "pnpm --filter @infinite-ai/contracts exec vitest run test/toolbox-accessibility-validator.spec.ts",
     "typecheck": "turbo run typecheck",
     "verify:stage": "tsx scripts/verify-stage.ts"
   },

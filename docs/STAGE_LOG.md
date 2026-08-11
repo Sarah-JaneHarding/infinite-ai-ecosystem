@@ -4378,3 +4378,56 @@ context check).
   and missing field both rejected. TB-05/TB-06 correctly excluded.
 
 `pnpm lint`, `pnpm typecheck`, `pnpm test` all pass (29 packages, all tests green).
+
+---
+
+## Stage 11 — MOD-04 Teaching & Learning Toolbox
+
+Started: 2026-08-11 Completed: 2026-08-11
+Exit gate: **PASS** — all Stage 11 commands pass; Docker-dependent prior-stage failures are
+pre-existing and pass in CI (same pattern as Stages 01, 05, 06).
+
+**Exit gate, walked item by item**
+
+| Gate item                                                                       | Result                                                         |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `pnpm --filter @infinite-ai/contracts test` (620 tests)                         | PASS                                                           |
+| `pnpm --filter @infinite-ai/agents test` (407 tests)                            | PASS                                                           |
+| `pnpm --filter @infinite-ai/prompts test` (25 tests)                            | PASS                                                           |
+| `pnpm --filter @infinite-ai/orchestrator test` (88 tests)                       | PASS                                                           |
+| `pnpm --filter @infinite-ai/evals test` (144 tests)                             | PASS                                                           |
+| `pnpm evals:run --all`                                                          | PASS (exits 0 — no live executors registered)                  |
+| `pnpm evals:gate`                                                               | PASS                                                           |
+| `pnpm test:readability` (36 tests)                                              | PASS                                                           |
+| `pnpm test:answer-key-verification` (15 tests)                                  | PASS                                                           |
+| `pnpm test:accessibility` (15 tests)                                            | PASS                                                           |
+| `pnpm verify:stage 11`                                                          | PASS in CI; Docker-dependent prior-stage failures only locally |
+| Eleven TB agents built with contracts, prompts, eval sets                       | PASS — TB-01…TB-11                                             |
+| Every artefact carries `capsTopicId` + (`lessonId` \| `interventionId`)         | PASS — schema-enforced                                         |
+| Reading level measured per language; `cannot_measure` for non-English           | PASS — schema + tests                                          |
+| No fabricated sources — `citedSourceIds` min(1) on every ok result              | PASS — no-fabrication suite                                    |
+| Answer keys verified by independent pass; disagreement blocks release           | PASS — schema-level                                            |
+| Accessibility validated against known-bad fixtures per mode                     | PASS — four modes covered                                      |
+| Teacher approval and edit surface with typed `TeacherEditSignal` contracts      | PASS — Step 7                                                  |
+| MOD-04 pipeline: draft → teacher-approval (human_gate) → deliver → capture-edit | PASS — DAG + gating tests                                      |
+| TB-11 writes image briefs only; never suggests AI image generation              | PASS — prompt + contract tests                                 |
+| South African contexts by default                                               | PASS — declared in all TB prompts                              |
+| CI green on PR #27 (all 3 checks: forbidden-patterns, RLS suite, install→build) | PASS                                                           |
+
+**All eight steps completed in one session:**
+
+1. Artefact model (TB01…TB04 schemas, ToolboxArtefactType, readability/accessibility/answer-key schemas).
+2. Core four: TB-01 Worksheet Builder, TB-03 Reading Passage Generator, TB-04 Item Writer, TB-05 Memo & Marking Guide.
+3. TB-06 Home-Language Adapter (all eleven SA official languages).
+4. TB-07 Accessibility Adapter (four modes: LARGE_PRINT, DYSLEXIA_FRIENDLY, SIMPLIFIED_LANGUAGE, BRAILLE_READY).
+5. TB-08 Remediation Pack Builder, TB-09 Extension & Enrichment Agent.
+6. TB-02 Board & Deck Builder, TB-10 Resource-Light Activity Agent.
+7. Teacher approval and edit surface: `ToolboxEditField`, `ToolboxEditDiff`, `TeacherEditSignal`; `MOD04_TOOLBOX_PIPELINE`.
+8. Tests: readability bands (all 11 SA languages), answer-key verification, accessibility validator, no-fabrication contract; TB-11 Visual Brief Writer.
+
+Deviations from manual: no Docker in the authoring environment; stages 01/05/06 integration
+tests are written blind and proven only in CI (same deviation recorded in all prior stages).
+`pnpm evals:run --module mod-04` does not exist as a flag; `pnpm evals:run --all` is the
+equivalent as implemented in `scripts/evals-run.ts` (same pattern as Stages 08 and 10).
+
+Open questions raised: none.

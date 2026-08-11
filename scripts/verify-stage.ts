@@ -163,7 +163,36 @@ const STAGES: readonly Stage[] = [
       'pnpm test:bias-monitor',
     ],
   },
-  { id: '11', name: 'MOD-04 Teaching & Learning Toolbox', commands: [] },
+  {
+    id: '11',
+    name: 'MOD-04 Teaching & Learning Toolbox',
+    commands: [
+      // Contract tests for all eleven TB-xx Zod schemas — input/output, readability bands,
+      // answer-key verification, accessibility validator, no-fabrication guard. All pure
+      // unit-tier; no Docker required.
+      'pnpm --filter @infinite-ai/contracts test',
+      // All eleven TB agent contracts validated (id, module, purpose, guardrails, budget,
+      // prompt ref, eval set ref). 407 tests total.
+      'pnpm --filter @infinite-ai/agents test',
+      // Prompt lock integrity: every TB-01..TB-11 prompt hash matches the lockfile,
+      // confirming no prompt was silently edited after the last ratification run.
+      'pnpm --filter @infinite-ai/prompts test',
+      // MOD-04 pipeline DAG structural integrity (validatePipelineDag), gating proof
+      // (deliver-artefact behind teacher human_gate), export dispatcher routing.
+      'pnpm --filter @infinite-ai/orchestrator test',
+      // Eval harness unit tests.
+      'pnpm --filter @infinite-ai/evals test',
+      // Smoke-run all eval sets (exits 0 when no live executor is registered).
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+      // Stage 11-specific cross-cutting test suites named explicitly in the manual's
+      // verification block — run here as named suite commands so the failure diagnosis
+      // is targeted rather than buried in the full contracts run above.
+      'pnpm test:readability',
+      'pnpm test:answer-key-verification',
+      'pnpm test:accessibility',
+    ],
+  },
   { id: '12', name: 'MOD-05 Teaching Analytics & PD Studio', commands: [] },
   { id: '13', name: 'LE Learning Engine', commands: [] },
   { id: '14', name: 'Experience surfaces', commands: [] },
