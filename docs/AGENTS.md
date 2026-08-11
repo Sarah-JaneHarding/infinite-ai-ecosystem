@@ -1233,3 +1233,208 @@ The only agent with a suppression path. When `cohortSize < MINIMUM_COHORT_SIZE` 
 | Contract        | `packages/agents/src/mod-05/PD-08.contract.ts`                                                                                                                |
 
 `activityType` is one of: `micro_course_completion`, `coaching_cycle_completion`, `peer_observation`, `formal_workshop`, `self_directed_study`, `mentoring`. `policyDocumentIds` must be non-empty — no policy corpus, no ok result. `citedPolicyDocumentId` is required on every ok outcome; `no_policy_match` is a first-class terminal status with no `pointsAwarded`, no `citedPolicyDocumentId`, and no `policyReference` — the system never fabricates CPTD points.
+
+---
+
+## Stage 13 — LE Learning Engine
+
+The Learning Engine (LE) is a tenant-local, feedback-driven loop that observes teacher
+corrections, mines patterns, runs controlled prompt-evolution experiments, and (after
+mandatory human ratification) promotes challenger prompts to champion. It never exposes
+learner PII, never writes to the commons without k-anonymity clearance, and never
+promotes without a human approving the gatekeeper's verdict.
+
+### Key constants
+
+| Constant                        | Value | Location                                       |
+| ------------------------------- | ----- | ---------------------------------------------- |
+| `COMMONS_K_ANONYMITY_THRESHOLD` | 5     | `packages/contracts/src/learning/le-agents.ts` |
+| `PATTERN_MIN_SAMPLE_SIZE`       | 10    | `packages/contracts/src/learning/le-agents.ts` |
+
+### Maturity levels
+
+`cold_start` → `locally_calibrated` → `evidence_led` → `institutional`.
+Logic in `packages/learning/src/maturity-report.ts`.
+
+### Agents
+
+#### LE-01 — Correction Ingester
+
+| Field           | Value                                                                                                    |
+| --------------- | -------------------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                                       |
+| Purpose         | `learning_engine`                                                                                        |
+| Input           | `LE01Input`: tenantId, teacherRef, editDiff (artefact edit), sessionContext?                             |
+| Output          | `LE01Result`: ingested (learningEventId, correctionType, extractedSignals[], ingested: true) or rejected |
+| Model           | `le.ingest`                                                                                              |
+| Guardrails      | `pii_guard`                                                                                              |
+| Budget          | 500 tokens · $0.002 per run                                                                              |
+| Eval set        | `LE-01` (20 cases)                                                                                       |
+| Approval gate   | None                                                                                                     |
+| Writes to Brain | Yes                                                                                                      |
+| Prompt          | `packages/prompts/src/LE-01/1.0.0.prompt.md`                                                             |
+| Contract        | `packages/agents/src/le/LE-01.contract.ts`                                                               |
+
+`correctionType` is one of: `content_accuracy`, `pedagogical_approach`, `differentiation`, `curriculum_alignment`, `language_register`, `cultural_relevance`, `assessment_design`. `extractedSignals` are key-value pairs where keys are drawn from observed teacher intent.
+
+#### LE-02 — HITL Event Processor
+
+| Field           | Value                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------ |
+| Module          | LE                                                                                               |
+| Purpose         | `learning_engine`                                                                                |
+| Input           | `LE02Input`: tenantId, eventType, artefactId, artefactType, rejectionReason?, correctionSummary? |
+| Output          | `LE02Result`: processed (eventId, eventType, normalizedSignal, weightAdjustment) or skipped      |
+| Model           | `le.hitl`                                                                                        |
+| Guardrails      | `pii_guard`                                                                                      |
+| Budget          | 500 tokens · $0.002 per run                                                                      |
+| Eval set        | `LE-02` (20 cases)                                                                               |
+| Approval gate   | None                                                                                             |
+| Writes to Brain | Yes                                                                                              |
+| Prompt          | `packages/prompts/src/LE-02/1.0.0.prompt.md`                                                     |
+| Contract        | `packages/agents/src/le/LE-02.contract.ts`                                                       |
+
+`eventType` is one of: `teacher_accept`, `teacher_reject`, `teacher_edit`, `hod_override`. `weightAdjustment` is a signed float (negative = downweight, positive = upweight). `skipped` is returned when the event carries insufficient signal.
+
+#### LE-03 — Pattern Miner
+
+| Field           | Value                                                                                              |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                                 |
+| Purpose         | `learning_engine`                                                                                  |
+| Input           | `LE03Input`: tenantId, capsTopicId, correctionWindow (ISO 8601), minSampleSize?                    |
+| Output          | `LE03Result`: mined (patternId, capsTopicId, pattern, sampleSize, confidence) or insufficient_data |
+| Model           | `le.mine`                                                                                          |
+| Guardrails      | `pii_guard`                                                                                        |
+| Budget          | 1 500 tokens · $0.006 per run                                                                      |
+| Eval set        | `LE-03` (20 cases)                                                                                 |
+| Approval gate   | None                                                                                               |
+| Writes to Brain | Yes                                                                                                |
+| Prompt          | `packages/prompts/src/LE-03/1.0.0.prompt.md`                                                       |
+| Contract        | `packages/agents/src/le/LE-03.contract.ts`                                                         |
+
+`insufficient_data` is returned when fewer than 5 unique teacher refs appear in the correction window (k-anonymity pre-check). Patterns are described as natural-language strings with an associated confidence score (0–1). No teacher identifiers appear in any output.
+
+#### LE-04 — Attribution Scorer
+
+| Field           | Value                                                                                        |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                           |
+| Purpose         | `learning_engine`                                                                            |
+| Input           | `LE04Input`: tenantId, patternId, attributionWindow, outcomeSignals[]                        |
+| Output          | `LE04Result`: scored (patternId, attributionScore, method, evidenceCount) or below_threshold |
+| Model           | `le.attribute`                                                                               |
+| Guardrails      | `pii_guard`                                                                                  |
+| Budget          | 1 500 tokens · $0.006 per run                                                                |
+| Eval set        | `LE-04` (20 cases)                                                                           |
+| Approval gate   | None                                                                                         |
+| Writes to Brain | Yes                                                                                          |
+| Prompt          | `packages/prompts/src/LE-04/1.0.0.prompt.md`                                                 |
+| Contract        | `packages/agents/src/le/LE-04.contract.ts`                                                   |
+
+`below_threshold` is returned when `evidenceCount < PATTERN_MIN_SAMPLE_SIZE` (10). `method` is one of: `temporal_proximity`, `cohort_comparison`, `pre_post_assessment`, `teacher_reported`. Attribution scores ≥ 0.7 are considered strong evidence.
+
+#### LE-05 — Exemplar Curator
+
+| Field           | Value                                                                                        |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                           |
+| Purpose         | `learning_engine`                                                                            |
+| Input           | `LE05Input`: tenantId, agentId, candidateArtefactId, artefactType, evaluationCriteria[]      |
+| Output          | `LE05Result`: evaluated (candidateId, artefactId, exemplarScore, rationale, promoted: false) |
+| Model           | `le.curate`                                                                                  |
+| Guardrails      | `pii_guard`                                                                                  |
+| Budget          | 3 000 tokens · $0.015 per run                                                                |
+| Eval set        | `LE-05` (20 cases)                                                                           |
+| Approval gate   | **Yes** — human must ratify before any exemplar enters the few-shot set                      |
+| Writes to Brain | **No** — candidates only; `promoted: z.literal(false)` is structurally enforced              |
+| Prompt          | `packages/prompts/src/LE-05/1.0.0.prompt.md`                                                 |
+| Contract        | `packages/agents/src/le/LE-05.contract.ts`                                                   |
+
+`ExemplarCandidate.promoted` is `z.literal(false)` — it is a schema error for this field to be `true`. Promotion only occurs through a separate ratification event. `exemplarScore` is 0–1; ≥ 0.8 is recommended for promotion.
+
+#### LE-06 — Prompt Evolver
+
+| Field           | Value                                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                                      |
+| Purpose         | `learning_engine`                                                                                       |
+| Input           | `LE06Input`: tenantId, agentId, currentPromptVersion, minedPatterns[], improvementHypothesis            |
+| Output          | `LE06Result`: evolved (challengerId, agentId, challengerVersion, promptDiff, hypothesis, isLive: false) |
+| Model           | `le.evolve`                                                                                             |
+| Guardrails      | `pii_guard`                                                                                             |
+| Budget          | 4 000 tokens · $0.020 per run                                                                           |
+| Eval set        | `LE-06` (20 cases)                                                                                      |
+| Approval gate   | **Yes** — challenger must pass LE-07 and be ratified before going live                                  |
+| Writes to Brain | **No** — challenger prompt is never live without LE-07 + ratification                                   |
+| Prompt          | `packages/prompts/src/LE-06/1.0.0.prompt.md`                                                            |
+| Contract        | `packages/agents/src/le/LE-06.contract.ts`                                                              |
+
+`PromptChallenger.isLive` is `z.literal(false)` — structurally impossible to be live without passing the eval gate. `challengerVersion` follows semver; `promptDiff` is a structured patch object.
+
+#### LE-07 — Eval Gatekeeper
+
+| Field           | Value                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                                          |
+| Purpose         | `learning_engine`                                                                                           |
+| Input           | `LE07Input`: tenantId, agentId, challengerId, championEvalResults[], challengerEvalResults[], biasProfiles? |
+| Output          | `LE07Result`: verdict (result: promote/hold/reject/reject_bias_divergence, rationale, evalDeltaSummary)     |
+| Model           | `le.gate`                                                                                                   |
+| Guardrails      | `pii_guard`                                                                                                 |
+| Budget          | 2 000 tokens · $0.008 per run                                                                               |
+| Eval set        | `LE-07` (20 cases)                                                                                          |
+| Approval gate   | **Yes** — verdict is advisory; human ratification required for any promotion                                |
+| Writes to Brain | **No** — verdict only; promotion is a downstream Brain write                                                |
+| Prompt          | `packages/prompts/src/LE-07/1.0.0.prompt.md`                                                                |
+| Contract        | `packages/agents/src/le/LE-07.contract.ts`                                                                  |
+
+Priority order: regression check → bias check (`reject_bias_divergence`) → overall improvement check. A challenger that improves the mean but regresses any group is blocked as `reject_bias_divergence`. `GatekeeperVerdict` is one of: `promote`, `hold`, `reject`, `reject_bias_divergence`.
+
+#### LE-08 — Commons Publisher
+
+| Field           | Value                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                          |
+| Purpose         | `learning_engine`                                                                           |
+| Input           | `LE08Input`: tenantId, patternId, tenantOptIn, contributingTenantRefs[], promotionLog[]     |
+| Output          | `LE08Result`: published (publicationId, patternId, target, publishedAt) or blocked (reason) |
+| Model           | `le.publish`                                                                                |
+| Guardrails      | `pii_guard`                                                                                 |
+| Budget          | 1 000 tokens · $0.004 per run                                                               |
+| Eval set        | `LE-08` (20 cases)                                                                          |
+| Approval gate   | **Yes** — publication to commons requires human ratification                                |
+| Writes to Brain | **Yes** — the published-pattern registry is a Brain write                                   |
+| Prompt          | `packages/prompts/src/LE-08/1.0.0.prompt.md`                                                |
+| Contract        | `packages/agents/src/le/LE-08.contract.ts`                                                  |
+
+Block conditions: `no_opt_in` (tenant has not opted into commons sharing), `below_threshold` (fewer than `COMMONS_K_ANONYMITY_THRESHOLD` = 5 contributing tenants). k-anonymity logic in `packages/learning/src/commons-publisher.ts`.
+
+#### LE-09 — Decay Watchdog
+
+| Field           | Value                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                                          |
+| Purpose         | `learning_engine`                                                                                           |
+| Input           | `LE09Input`: tenantId, patternId, capsTopicId, capsVersion, lastValidatedAt, ageMonths, revalidationResult? |
+| Output          | `LE09Result`: assessed (patternId, decision, reason, decayReason?, recommendedAction)                       |
+| Model           | `le.decay`                                                                                                  |
+| Guardrails      | `pii_guard`                                                                                                 |
+| Budget          | 800 tokens · $0.003 per run                                                                                 |
+| Eval set        | `LE-09` (20 cases)                                                                                          |
+| Approval gate   | None                                                                                                        |
+| Writes to Brain | Yes                                                                                                         |
+| Prompt          | `packages/prompts/src/LE-09/1.0.0.prompt.md`                                                                |
+| Contract        | `packages/agents/src/le/LE-09.contract.ts`                                                                  |
+
+Priority: CAPS version change → `invalidated`; revalidation result present → `valid` or `invalidated`; TTL exceeded (> 12 months) → `revalidation_required`; otherwise → `valid`. `DecayReason` is one of: `caps_version_change`, `outcome_evidence_declined`, `cohort_size_below_threshold`, `staleness_ttl_exceeded`. Logic in `packages/learning/src/decay-agent.ts`.
+
+### Pure logic packages
+
+| Package                 | File                   | What it tests                                                                |
+| ----------------------- | ---------------------- | ---------------------------------------------------------------------------- |
+| `@infinite-ai/learning` | `promotion-gate.ts`    | promote / reject_regression / reject_bias_divergence / reject_no_improvement |
+| `@infinite-ai/learning` | `commons-publisher.ts` | k-anonymity block / no_opt_in block / allowed                                |
+| `@infinite-ai/learning` | `decay-agent.ts`       | decay decision priority ordering                                             |
+| `@infinite-ai/learning` | `promotion-log.ts`     | append-only log, rollback command generation                                 |
+| `@infinite-ai/learning` | `maturity-report.ts`   | maturity level assignment (cold_start → institutional)                       |

@@ -1,0 +1,620 @@
+[
+  {
+    "id": "LE05-001",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR5-NS-WATER",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-1-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-002",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR7-MATH-FRACTION",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-2-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-003",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR9-ENG-POETRY",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-3-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-004",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-4-0005-0005-000000000005",
+          "evalScore": 0.4,
+          "firstPassAcceptanceRate": 0.3,
+          "attributionConfidence": 0.3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "no_candidates"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-005",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR8-MATH-ALGEBRA",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-5-0005-0005-000000000005",
+          "evalScore": 0.4,
+          "firstPassAcceptanceRate": 0.3,
+          "attributionConfidence": 0.3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "no_candidates"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-006",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR6-SS-ENVIRONMENTS",
+      "agentId": "TB-01",
+      "candidates": []
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-007",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR10-PHYS-ENERGY",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-7-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-008",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR11-CHEM-REACTIONS",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-8-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-009",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR12-MATH-CALCULUS",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-9-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-010",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR3-MATH-PATTERNS",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-10-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-011",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR2-MATH-COUNTING",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-11-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-012",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-12-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-013",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR1-ENG-PHONICS",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-13-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-014",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR5-NS-ECOSYSTEMS",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-14-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-015",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR7-MATH-PROBABILITY",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-15-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-016",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR9-LO-CAREER",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-16-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-017",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR10-BIO-GENETICS",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-17-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-018",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR8-SS-DEMOCRACY",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-18-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-019",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR11-PHYS-WAVES",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-19-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE05-020",
+    "agentId": "LE-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR12-ENG-DRAMA",
+      "agentId": "TB-01",
+      "candidates": [
+        {
+          "artefactId": "gggggggg-20-0005-0005-000000000005",
+          "evalScore": 0.85,
+          "firstPassAcceptanceRate": 0.78,
+          "attributionConfidence": 0.6
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "candidates[0].promoted",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  }
+]

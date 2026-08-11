@@ -1,0 +1,725 @@
+[
+  {
+    "id": "LE08-001",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000001",
+        "capsTopicId": "CAPS-GR5-NS-WATER",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd",
+        "00000004-aaaa-bbbb-cccc-dddddddddddd",
+        "00000005-aaaa-bbbb-cccc-dddddddddddd",
+        "00000006-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "published"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-002",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": false,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000002",
+        "capsTopicId": "CAPS-GR7-MATH-FRACTION",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd",
+        "00000004-aaaa-bbbb-cccc-dddddddddddd",
+        "00000005-aaaa-bbbb-cccc-dddddddddddd",
+        "00000006-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_no_opt_in"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-003",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000003",
+        "capsTopicId": "CAPS-GR9-ENG-POETRY",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      },
+      {
+        "type": "exact_match",
+        "field": "required",
+        "value": 5
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-004",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000004",
+        "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      },
+      {
+        "type": "exact_match",
+        "field": "required",
+        "value": 5
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-005",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000005",
+        "capsTopicId": "CAPS-GR8-MATH-ALGEBRA",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      },
+      {
+        "type": "exact_match",
+        "field": "required",
+        "value": 5
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-006",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000006",
+        "capsTopicId": "CAPS-GR6-SS-ENVIRONMENTS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      },
+      {
+        "type": "exact_match",
+        "field": "contributingTenantCount",
+        "value": 0
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-007",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000007",
+        "capsTopicId": "CAPS-GR10-PHYS-ENERGY",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd",
+        "00000004-aaaa-bbbb-cccc-dddddddddddd",
+        "00000005-aaaa-bbbb-cccc-dddddddddddd",
+        "00000006-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "published"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-008",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": false,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000008",
+        "capsTopicId": "CAPS-GR11-CHEM-REACTIONS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-009",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000009",
+        "capsTopicId": "CAPS-GR12-MATH-CALCULUS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd",
+        "00000004-aaaa-bbbb-cccc-dddddddddddd",
+        "00000005-aaaa-bbbb-cccc-dddddddddddd",
+        "00000006-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "published"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-010",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": false,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000010",
+        "capsTopicId": "CAPS-GR3-MATH-PATTERNS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-011",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000011",
+        "capsTopicId": "CAPS-GR2-MATH-COUNTING",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd",
+        "00000004-aaaa-bbbb-cccc-dddddddddddd",
+        "00000005-aaaa-bbbb-cccc-dddddddddddd",
+        "00000006-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "published"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-012",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": false,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000012",
+        "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-013",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000013",
+        "capsTopicId": "CAPS-GR1-ENG-PHONICS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd",
+        "00000004-aaaa-bbbb-cccc-dddddddddddd",
+        "00000005-aaaa-bbbb-cccc-dddddddddddd",
+        "00000006-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "published"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-014",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": false,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000014",
+        "capsTopicId": "CAPS-GR5-NS-ECOSYSTEMS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-015",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000015",
+        "capsTopicId": "CAPS-GR7-MATH-PROBABILITY",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd",
+        "00000004-aaaa-bbbb-cccc-dddddddddddd",
+        "00000005-aaaa-bbbb-cccc-dddddddddddd",
+        "00000006-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "published"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-016",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": false,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000016",
+        "capsTopicId": "CAPS-GR9-LO-CAREER",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-017",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000017",
+        "capsTopicId": "CAPS-GR10-BIO-GENETICS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd",
+        "00000004-aaaa-bbbb-cccc-dddddddddddd",
+        "00000005-aaaa-bbbb-cccc-dddddddddddd",
+        "00000006-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "published"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-018",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": false,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000018",
+        "capsTopicId": "CAPS-GR8-SS-DEMOCRACY",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-019",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": true,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000019",
+        "capsTopicId": "CAPS-GR11-PHYS-WAVES",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd",
+        "00000004-aaaa-bbbb-cccc-dddddddddddd",
+        "00000005-aaaa-bbbb-cccc-dddddddddddd",
+        "00000006-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "published"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE08-020",
+    "agentId": "LE-08",
+    "input": {
+      "tenantOptIn": false,
+      "publishingTenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "iiiiiiii-0008-0008-0008-000000000020",
+        "capsTopicId": "CAPS-GR12-ENG-DRAMA",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.15,
+        "confidenceInterval": [-0.02, 0.32],
+        "biasChecked": true,
+        "minedAt": "2026-08-01T08:00:00.000Z"
+      },
+      "contributingTenantRefs": [
+        "00000001-aaaa-bbbb-cccc-dddddddddddd",
+        "00000002-aaaa-bbbb-cccc-dddddddddddd",
+        "00000003-aaaa-bbbb-cccc-dddddddddddd"
+      ],
+      "deidentifiedPayload": {}
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed_below_threshold"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  }
+]

@@ -1,0 +1,2133 @@
+[
+  {
+    "id": "LE04-001",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR5-NS-WATER",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000001",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-002",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR7-MATH-FRACTION",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000002",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-003",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR9-ENG-POETRY",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000003",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-004",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000004",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 8,
+          "meanScoreDelta": 0.1
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000004",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 8,
+          "meanScoreDelta": 0.1
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000004",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 8,
+          "meanScoreDelta": 0.1
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000004",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 8,
+          "meanScoreDelta": 0.1
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000004",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 8,
+          "meanScoreDelta": 0.1
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "below_threshold"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-005",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR8-MATH-ALGEBRA",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000004",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 8,
+          "meanScoreDelta": 0.1
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000004",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 8,
+          "meanScoreDelta": 0.1
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000004",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 8,
+          "meanScoreDelta": 0.1
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000004",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 8,
+          "meanScoreDelta": 0.1
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000004",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 8,
+          "meanScoreDelta": 0.1
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "below_threshold"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-006",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR6-SS-ENVIRONMENTS",
+      "attributions": [],
+      "stratificationFields": []
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-007",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR10-PHYS-ENERGY",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000007",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-008",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR11-CHEM-REACTIONS",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000008",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-009",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR12-MATH-CALCULUS",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000009",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-010",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR3-MATH-PATTERNS",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000010",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-011",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR2-MATH-COUNTING",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000011",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-012",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000012",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-013",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR1-ENG-PHONICS",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000013",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-014",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR5-NS-ECOSYSTEMS",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000014",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-015",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR7-MATH-PROBABILITY",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000015",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-016",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR9-LO-CAREER",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000016",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-017",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR10-BIO-GENETICS",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000017",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-018",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR8-SS-DEMOCRACY",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000018",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-019",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR11-PHYS-WAVES",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000019",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE04-020",
+    "agentId": "LE-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-GR12-ENG-DRAMA",
+      "attributions": [
+        {
+          "artefactId": "ffffffff-0001-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0002-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0003-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0004-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0005-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0006-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0007-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0008-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0009-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0010-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0011-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        },
+        {
+          "artefactId": "ffffffff-0012-0004-0004-000000000020",
+          "agentId": "TB-01",
+          "method": "pre_post_assessment",
+          "confidence": 0.6,
+          "cohortSize": 10,
+          "meanScoreDelta": 0.08
+        }
+      ],
+      "stratificationFields": ["language_group"]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  }
+]

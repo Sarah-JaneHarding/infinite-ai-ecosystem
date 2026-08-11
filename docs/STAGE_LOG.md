@@ -4492,3 +4492,39 @@ tests are written blind and proven only in CI (same deviation recorded in all pr
 equivalent as implemented in `scripts/evals-run.ts` (same pattern as Stages 08, 10, 11).
 
 Open questions raised: none.
+
+---
+
+## Stage 13 — LE Learning Engine
+
+**Date:** 2026-08-11
+**Branch:** `claude/continue-building-mpf8sl`
+**Stage gate:** `pnpm verify:stage 13` — all commands exit 0
+
+### Exit gate walk
+
+1. **LE wire contracts.** All 9 LE agent input/output Zod schemas in `packages/contracts/src/learning/le-agents.ts`. Key constants: `COMMONS_K_ANONYMITY_THRESHOLD = 5`, `PATTERN_MIN_SAMPLE_SIZE = 10`. Structural constraints: `ExemplarCandidate.promoted: z.literal(false)`, `PromptChallenger.isLive: z.literal(false)` — promotion and live-state cannot be `true` at the schema level.
+2. **Purpose table extended.** `learning_engine` added to the POPIA `Purpose` enum and `PURPOSES` array with `categories: ['STAFF_PRACTICE', 'ACADEMIC_PERFORMANCE']`, `permitsReidentification: false`, `permitsModelProcessing: true`.
+3. **Nine LE agent contracts.** All in `packages/agents/src/le/LE-0{1..9}.contract.ts` with `module: 'LE'`, `purpose: 'learning_engine'`, `pii_guard` in guardrails, cost budgets. LE-05, LE-06, LE-07, LE-08 have `requiresApproval: true`. LE-01..04, LE-09 have `requiresApproval: false`. Only LE-05, LE-06, LE-07 have `writesToBrain: false`; LE-08 and collection agents write to Brain.
+4. **Nine prompt files.** `packages/prompts/src/LE-0{1..9}/1.0.0.prompt.md` — each with ROLE, GROUNDING, TASK, HARD CONSTRAINTS. LE-07 enforces regression → bias → improvement priority order. All added to `packages/prompts/prompt-lock.json`.
+5. **`@infinite-ai/learning` package.** New package at `packages/learning/` with five pure-function modules:
+   - `promotion-gate.ts` — gate decision with bias-divergence-first priority.
+   - `commons-publisher.ts` — k-anonymity enforcement.
+   - `decay-agent.ts` — pattern invalidation/TTL logic.
+   - `promotion-log.ts` — append-only promotion log, rollback command generation.
+   - `maturity-report.ts` — cold_start → locally_calibrated → evidence_led → institutional.
+6. **41 unit tests** across 5 spec files in `packages/learning/test/`, covering happy paths plus failure paths for every pure function.
+7. **16 LE contract tests** in `packages/agents/test/le/LE-agents.contract.spec.ts` covering: module/purpose registration, pii_guard, cost budgets, distinct IDs, semver versions, requiresApproval split, writesToBrain split.
+8. **Nine eval sets.** 20 cases each in `packages/evals/sets/LE-0{1..9}/main.json` — total 180 new eval cases.
+9. **Export surface.** 35 new LE types/constants exported from `@infinite-ai/contracts/src/index.ts`; exports spec updated with all new names in sorted order (763 contracts tests pass).
+10. **verify-stage.ts** Stage 13 commands populated.
+11. **AGENTS.md** Stage 13 section added with full agent tables.
+
+**Defects found and fixed:**
+
+- `promotion-log.spec.ts` test fixture included artefact-level fields (`artefactId`, `artefactType`, `capsTopicId`, `editDiff`) that are not part of `PromotionLogEntry`, and was missing `challengerId`. Fixed by aligning the fixture to the schema.
+- `promotion-log.ts` array index access returned `PromotionRecord | undefined` under strict TypeScript (noUncheckedIndexedAccess). Fixed by extracting to local variable with explicit undefined guard.
+
+**Deviations from manual:** no Docker in the authoring environment; database integration tests are written blind and proven only in CI. `pnpm evals:run --all` used in the verify gate (same pattern as all prior stages).
+
+Open questions raised: none.

@@ -1,0 +1,746 @@
+[
+  {
+    "id": "LE06-001",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "factual",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected factual issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-002",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "curriculum_alignment",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected curriculum_alignment issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-003",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "tone",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected tone issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-004",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are an excellent planning agent."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "factual",
+          "frequency": 1,
+          "representativeExample": "One minor issue."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "no_improvement_found"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-005",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are an excellent planning agent."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "factual",
+          "frequency": 1,
+          "representativeExample": "One minor issue."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "no_improvement_found"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-006",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are an agent."
+      },
+      "correctionPatterns": []
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-007",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "factual",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected factual issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-008",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "curriculum_alignment",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected curriculum_alignment issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-009",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "tone",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected tone issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-010",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "readability",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected readability issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-011",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "template_structure",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected template_structure issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-012",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "completeness",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected completeness issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-013",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "factual",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected factual issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-014",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "curriculum_alignment",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected curriculum_alignment issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-015",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "tone",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected tone issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-016",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "readability",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected readability issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-017",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "template_structure",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected template_structure issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-018",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "completeness",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected completeness issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-019",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "factual",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected factual issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE06-020",
+    "agentId": "LE-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "championPrompt": {
+        "version": "1.0.0",
+        "content": "You are a lesson planning agent. Follow CAPS requirements."
+      },
+      "correctionPatterns": [
+        {
+          "correctionType": "curriculum_alignment",
+          "frequency": 8,
+          "representativeExample": "Teachers frequently corrected curriculum_alignment issues."
+        },
+        {
+          "correctionType": "completeness",
+          "frequency": 5,
+          "representativeExample": "Missing worked examples."
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "challenger.isLive",
+        "value": false
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  }
+]

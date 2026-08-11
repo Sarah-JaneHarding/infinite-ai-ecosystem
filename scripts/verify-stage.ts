@@ -223,7 +223,20 @@ const STAGES: readonly Stage[] = [
       'pnpm test:cptd',
     ],
   },
-  { id: '13', name: 'LE Learning Engine', commands: [] },
+  {
+    id: '13',
+    name: 'LE Learning Engine',
+    commands: [
+      // Core learning logic — promotion gate, k-anonymity, decay, maturity, promotion log.
+      'pnpm --filter @infinite-ai/learning test',
+      // Agent contracts — all 9 LE agents, module/purpose/pii_guard/budget/requiresApproval/writesToBrain.
+      'pnpm --filter @infinite-ai/agents test le/LE-agents.contract',
+      // Wire contracts — LE01..LE09 input/output types, promotion log, maturity, constants.
+      'pnpm --filter @infinite-ai/contracts test',
+      // Eval harness — all LE eval sets (20 cases each, LE-01..LE-09) recognised.
+      'pnpm --filter @infinite-ai/evals test',
+    ],
+  },
   { id: '14', name: 'Experience surfaces', commands: [] },
   { id: '15', name: 'Observability, SLOs, DR', commands: [] },
   { id: '16', name: 'Security hardening', commands: [] },
