@@ -1,0 +1,41 @@
+// MOD-05 Teaching Analytics & PD Studio contracts — Stage 12.
+
+export {
+  ArtefactEditRate,
+  AssessmentItemSignal,
+  AssessmentSignal,
+  CohortSuppressionResult,
+  CoverageSignal,
+  MINIMUM_COHORT_SIZE,
+  TeachingSignal,
+  TopicDeliveryStatus,
+  WalkthroughFocus,
+  WalkthroughNote,
+} from './signals.js';
+
+export {
+  CoachingSession,
+  FlaggedItem,
+  MicroCourseModule,
+  ObservationTheme,
+  PD01Input,
+  PD01Result,
+  PD02Input,
+  PD02Result,
+  PD03Input,
+  PD03Result,
+  PD04Input,
+  PD04Result,
+  PD05Input,
+  PD05Result,
+  PD06Input,
+  PD06Result,
+  PD07Input,
+  PD07Result,
+  PD08Input,
+  PD08Result,
+  PD02CognitiveLevelCounts,
+  PDNeedArea,
+  PriorityGap,
+  TopicGap,
+} from './pd-agents.js';
