@@ -29,6 +29,10 @@
     "test:readability": "pnpm --filter @infinite-ai/contracts exec vitest run test/toolbox-readability-bands.spec.ts",
     "test:answer-key-verification": "pnpm --filter @infinite-ai/contracts exec vitest run test/toolbox-answer-key-verification.spec.ts",
     "test:accessibility": "pnpm --filter @infinite-ai/contracts exec vitest run test/toolbox-accessibility-validator.spec.ts",
+    "test:aggregation-thresholds": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-suppression.spec.ts",
+    "test:no-ranking-endpoints": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-no-ranking.spec.ts",
+    "test:course-structure": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-course-structure.spec.ts",
+    "test:cptd": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-cptd.spec.ts",
     "typecheck": "turbo run typecheck",
     "verify:stage": "tsx scripts/verify-stage.ts"
   },

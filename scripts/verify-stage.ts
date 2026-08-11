@@ -193,7 +193,36 @@ const STAGES: readonly Stage[] = [
       'pnpm test:accessibility',
     ],
   },
-  { id: '12', name: 'MOD-05 Teaching Analytics & PD Studio', commands: [] },
+  {
+    id: '12',
+    name: 'MOD-05 Teaching Analytics & PD Studio',
+    commands: [
+      // PD agent schemas (PD-01..PD-08), signal model, and all cross-cutting contracts.
+      'pnpm --filter @infinite-ai/contracts test',
+      // All 8 PD agent contracts validated (id, module, purpose, guardrails, budget,
+      // prompt ref, eval set ref). 39 contract tests total.
+      'pnpm --filter @infinite-ai/agents test',
+      // Prompt lock integrity: every PD-01..PD-08 prompt hash matches the lockfile.
+      'pnpm --filter @infinite-ai/prompts test',
+      // MOD-05 pipeline DAG structural integrity (validatePipelineDag), gating proof
+      // (deliver-pd-intervention behind HoD human_gate), CPTD pipeline.
+      'pnpm --filter @infinite-ai/orchestrator test',
+      // Eval harness unit tests.
+      'pnpm --filter @infinite-ai/evals test',
+      // Smoke-run all eval sets (exits 0 when no live executor is registered).
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+      // Stage 12 cross-cutting test suites — explicitly named so a failure is targeted.
+      // Cohort suppression: MINIMUM_COHORT_SIZE = 5, suppressed path leaks no data.
+      'pnpm test:aggregation-thresholds',
+      // No-ranking: Zod strips rank/percentile/ordinal from all PD agent ok outputs.
+      'pnpm test:no-ranking-endpoints',
+      // Micro-course: 20–40 min, exportable: true, modules/checkItems/citedSourceIds.
+      'pnpm test:course-structure',
+      // CPTD: citedPolicyDocumentId required on ok; no_policy_match has no pointsAwarded.
+      'pnpm test:cptd',
+    ],
+  },
   { id: '13', name: 'LE Learning Engine', commands: [] },
   { id: '14', name: 'Experience surfaces', commands: [] },
   { id: '15', name: 'Observability, SLOs, DR', commands: [] },
