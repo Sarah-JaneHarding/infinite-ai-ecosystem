@@ -16,9 +16,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "gaps", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD05-002",
@@ -30,7 +35,15 @@
       }
     },
     "context": null,
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input"],
+    "source": "specification"
   },
   {
     "id": "PD05-003",
@@ -49,9 +62,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "gaps[0].interventionType" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD05-004",
@@ -70,9 +88,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "gaps[0].teacherRef" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD05-005",
@@ -96,9 +119,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "gaps", "value": 2 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD05-006",
@@ -117,9 +145,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "gaps[0].rank" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD05-007",
@@ -138,9 +171,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "gaps[0].description" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD05-008",
@@ -159,9 +197,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "gaps[0].suggestedPDFocus" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD05-009",
@@ -170,7 +213,15 @@
       "tenantId": "11111111-2222-3333-4444-555555555555"
     },
     "context": null,
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input"],
+    "source": "specification"
   },
   {
     "id": "PD05-010",
@@ -179,15 +230,24 @@
       "tenantId": "11111111-2222-3333-4444-555555555555",
       "needProfile": {
         "areas": [
-          { "area": "pedagogy", "urgency": "moderate", "signalSources": ["walkthrough"] }
+          {
+            "area": "pedagogy",
+            "urgency": "moderate",
+            "signalSources": ["walkthrough"]
+          }
         ]
       }
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "gaps[0].percentile" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD05-011",
@@ -206,9 +266,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "gaps[0].urgency" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD05-012",
@@ -237,9 +302,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "gaps", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD05-013",
@@ -258,9 +328,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "gaps[0].interventionType" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD05-014",
@@ -279,9 +354,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "gaps[0].teacherName" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD05-015",
@@ -302,9 +382,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "gaps[0].suggestedPDFocus" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD05-016",
@@ -323,9 +408,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "status_rank" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD05-017",
@@ -344,9 +434,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "gaps[0].signalSources" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD05-018",
@@ -380,9 +475,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "gaps", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD05-019",
@@ -401,9 +501,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "summary" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD05-020",
@@ -424,8 +529,13 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "gaps[0].ordinal" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   }
 ]

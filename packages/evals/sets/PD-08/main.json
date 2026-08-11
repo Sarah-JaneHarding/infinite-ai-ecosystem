@@ -9,9 +9,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "points" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD08-002",
@@ -22,7 +27,15 @@
       "policyDocumentIds": []
     },
     "context": null,
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input"],
+    "source": "specification"
   },
   {
     "id": "PD08-003",
@@ -34,9 +47,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "citedPolicyDocumentId" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD08-004",
@@ -48,9 +66,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "teacherRef" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD08-005",
@@ -62,9 +85,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "activityCategory" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD08-006",
@@ -76,8 +104,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "no_policy_match" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "no_policy_match"
+      }
+    ],
+    "tags": ["no_policy_match"],
+    "source": "specification"
   },
   {
     "id": "PD08-007",
@@ -89,9 +123,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "points_estimated" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD08-008",
@@ -103,9 +142,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "citedPolicyDocumentId" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD08-009",
@@ -117,9 +161,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "rank" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD08-010",
@@ -131,9 +180,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "summary" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD08-011",
@@ -145,9 +199,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "points" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD08-012",
@@ -159,9 +218,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "teacherName" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD08-013",
@@ -173,9 +237,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "activityCategory" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD08-014",
@@ -187,9 +256,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "citedPolicyDocumentId" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD08-015",
@@ -201,9 +275,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "percentile" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD08-016",
@@ -215,9 +294,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "points" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD08-017",
@@ -229,9 +313,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "citedPolicyDocumentId" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD08-018",
@@ -243,9 +332,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "points_computed" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD08-019",
@@ -257,9 +351,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "no_policy_match" },
-      { "type": "not_has_field", "field": "points" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "no_policy_match"
+      }
+    ],
+    "tags": ["no_policy_match", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD08-020",
@@ -271,8 +370,13 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "ordinal" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   }
 ]

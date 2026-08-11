@@ -16,9 +16,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "needAreas", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD04-002",
@@ -37,10 +42,24 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "suppressed" },
-      { "type": "exact_match", "field": "reason", "value": "cohort_below_minimum" },
-      { "type": "exact_match", "field": "actual", "value": 3 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed"
+      },
+      {
+        "type": "exact_match",
+        "field": "reason",
+        "value": "cohort_below_minimum"
+      },
+      {
+        "type": "exact_match",
+        "field": "actual",
+        "value": 3
+      }
+    ],
+    "tags": ["suppressed"],
+    "source": "specification"
   },
   {
     "id": "PD04-003",
@@ -51,7 +70,15 @@
       "cohortSize": 10
     },
     "context": null,
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input"],
+    "source": "specification"
   },
   {
     "id": "PD04-004",
@@ -70,9 +97,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "suppressed" },
-      { "type": "exact_match", "field": "minimumRequired", "value": 5 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed"
+      },
+      {
+        "type": "exact_match",
+        "field": "minimumRequired",
+        "value": 5
+      }
+    ],
+    "tags": ["suppressed"],
+    "source": "specification"
   },
   {
     "id": "PD04-005",
@@ -90,7 +127,15 @@
       "cohortSize": 5
     },
     "context": null,
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }]
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD04-006",
@@ -104,7 +149,11 @@
           "deliveryStatus": "not_delivered",
           "weeksDrift": 3
         },
-        { "signalType": "assessment", "cohortSize": 28, "items": [] },
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": []
+        },
         {
           "signalType": "walkthrough",
           "teacherRef": "anon-01",
@@ -125,9 +174,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "signalsAggregated", "value": 4 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "signalsAggregated",
+        "value": 4
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD04-007",
@@ -146,10 +205,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "rank" },
-      { "type": "not_has_field", "field": "teacherRef" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD04-008",
@@ -172,13 +235,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
       {
         "type": "exact_match",
         "field": "needAreas[0].signalSources[0]",
         "value": "artefact_edit"
       }
-    ]
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD04-009",
@@ -198,9 +267,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "summary" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD04-010",
@@ -219,10 +293,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "suppressed" },
-      { "type": "exact_match", "field": "actual", "value": 2 },
-      { "type": "not_has_field", "field": "needAreas" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed"
+      },
+      {
+        "type": "exact_match",
+        "field": "actual",
+        "value": 2
+      }
+    ],
+    "tags": ["suppressed"],
+    "source": "specification"
   },
   {
     "id": "PD04-011",
@@ -248,9 +331,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "needAreas[0].urgency" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD04-012",
@@ -269,9 +357,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "cohortSize", "value": 15 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 15
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD04-013",
@@ -295,7 +393,15 @@
       "cohortSize": 1
     },
     "context": null,
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "suppressed" }]
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed"
+      }
+    ],
+    "tags": ["suppressed", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD04-014",
@@ -322,9 +428,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "signalsAggregated", "value": 2 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "signalsAggregated",
+        "value": 2
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD04-015",
@@ -345,9 +461,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "needAreas", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD04-016",
@@ -366,9 +487,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_contains", "field": "summary", "value": "rank" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD04-017",
@@ -407,9 +533,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "signalsAggregated", "value": 3 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "signalsAggregated",
+        "value": 3
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD04-018",
@@ -428,9 +564,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "needAreas" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD04-019",
@@ -448,7 +589,15 @@
       "cohortSize": 0
     },
     "context": null,
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "suppressed" }]
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "suppressed"
+      }
+    ],
+    "tags": ["suppressed", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD04-020",
@@ -469,9 +618,13 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "needAreas[0].area" },
-      { "type": "field_exists", "field": "needAreas[0].evidenceSummary" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   }
 ]

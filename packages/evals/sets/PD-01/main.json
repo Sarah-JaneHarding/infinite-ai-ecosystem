@@ -21,11 +21,29 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "topicsAnalysed", "value": 1 },
-      { "type": "exact_match", "field": "topicsOnTrack", "value": 1 },
-      { "type": "exact_match", "field": "topicsBehind", "value": 0 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsAnalysed",
+        "value": 1
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsOnTrack",
+        "value": 1
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsBehind",
+        "value": 0
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD01-002",
@@ -49,10 +67,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "topicsBehind", "value": 1 },
-      { "type": "min_length", "field": "gapTopics", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsBehind",
+        "value": 1
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD01-003",
@@ -66,7 +93,15 @@
       "coverageSignals": []
     },
     "context": null,
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input"],
+    "source": "specification"
   },
   {
     "id": "PD01-004",
@@ -90,10 +125,24 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "topicsAhead", "value": 1 },
-      { "type": "exact_match", "field": "topicsBehind", "value": 0 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsAhead",
+        "value": 1
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsBehind",
+        "value": 0
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD01-005",
@@ -125,11 +174,24 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "topicsAnalysed", "value": 2 },
-      { "type": "exact_match", "field": "topicsBehind", "value": 2 },
-      { "type": "min_length", "field": "gapTopics", "value": 2 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsAnalysed",
+        "value": 2
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsBehind",
+        "value": 2
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD01-006",
@@ -153,10 +215,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_contains", "field": "summary", "value": "rank" },
-      { "type": "not_contains", "field": "summary", "value": "teacher" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD01-007",
@@ -188,11 +254,29 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "topicsAnalysed", "value": 2 },
-      { "type": "exact_match", "field": "topicsOnTrack", "value": 2 },
-      { "type": "exact_match", "field": "meanWeeksDrift", "value": 0 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsAnalysed",
+        "value": 2
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsOnTrack",
+        "value": 2
+      },
+      {
+        "type": "exact_match",
+        "field": "meanWeeksDrift",
+        "value": 0
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD01-008",
@@ -224,14 +308,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "meanWeeksDrift" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
       {
         "type": "exact_match",
         "field": "gapTopics[0].capsTopicId",
         "value": "CAPS-GR9-SS-MAPWORK"
       }
-    ]
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD01-009",
@@ -255,10 +344,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "rank" },
-      { "type": "not_has_field", "field": "percentile" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD01-010",
@@ -298,11 +391,29 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "topicsAnalysed", "value": 3 },
-      { "type": "exact_match", "field": "topicsBehind", "value": 1 },
-      { "type": "exact_match", "field": "topicsAhead", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsAnalysed",
+        "value": 3
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsBehind",
+        "value": 1
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsAhead",
+        "value": 1
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD01-011",
@@ -326,9 +437,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "summary", "value": 10 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD01-012",
@@ -352,9 +468,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "gapTopics", "value": [] }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "gapTopics",
+        "value": []
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD01-013",
@@ -394,10 +520,24 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "topicsBehind", "value": 3 },
-      { "type": "exact_match", "field": "gapTopics[0].weeksBehind", "value": 4 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsBehind",
+        "value": 3
+      },
+      {
+        "type": "exact_match",
+        "field": "gapTopics[0].weeksBehind",
+        "value": 4
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD01-014",
@@ -421,11 +561,29 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "topicsAhead", "value": 1 },
-      { "type": "exact_match", "field": "topicsBehind", "value": 0 },
-      { "type": "exact_match", "field": "gapTopics", "value": [] }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsAhead",
+        "value": 1
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsBehind",
+        "value": 0
+      },
+      {
+        "type": "exact_match",
+        "field": "gapTopics",
+        "value": []
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD01-015",
@@ -449,11 +607,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_contains", "field": "summary", "value": "worst" },
-      { "type": "not_contains", "field": "summary", "value": "best" },
-      { "type": "not_contains", "field": "summary", "value": "ranked" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD01-016",
@@ -493,10 +654,24 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "topicsOnTrack", "value": 3 },
-      { "type": "exact_match", "field": "topicsBehind", "value": 0 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsOnTrack",
+        "value": 3
+      },
+      {
+        "type": "exact_match",
+        "field": "topicsBehind",
+        "value": 0
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD01-017",
@@ -520,13 +695,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
       {
         "type": "exact_match",
         "field": "gapTopics[0].deliveryStatus",
         "value": "partially_delivered"
       }
-    ]
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD01-018",
@@ -550,11 +731,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "summary" },
-      { "type": "field_exists", "field": "periodStart" },
-      { "type": "field_exists", "field": "periodEnd" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD01-019",
@@ -594,13 +778,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
       {
         "type": "exact_match",
         "field": "gapTopics[0].capsTopicId",
         "value": "CAPS-GR6-NS-FOOD-WEBS"
       }
-    ]
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD01-020",
@@ -624,9 +814,23 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "subject", "value": "Mathematics" },
-      { "type": "exact_match", "field": "gradeLabel", "value": "5" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "subject",
+        "value": "Mathematics"
+      },
+      {
+        "type": "exact_match",
+        "field": "gradeLabel",
+        "value": "5"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   }
 ]

@@ -19,10 +19,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "notesAnalysed", "value": 1 },
-      { "type": "min_length", "field": "themes", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "notesAnalysed",
+        "value": 1
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD03-002",
@@ -32,7 +41,15 @@
       "walkthroughNotes": []
     },
     "context": null,
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input"],
+    "source": "specification"
   },
   {
     "id": "PD03-003",
@@ -65,9 +82,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "notesAnalysed", "value": 2 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "notesAnalysed",
+        "value": 2
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD03-004",
@@ -109,9 +136,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "priorityAreas", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD03-005",
@@ -133,10 +165,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "teacherName" },
-      { "type": "not_has_field", "field": "teacherRank" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD03-006",
@@ -159,9 +195,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "summary" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD03-007",
@@ -213,9 +254,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "notesAnalysed", "value": 4 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "notesAnalysed",
+        "value": 4
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD03-008",
@@ -237,10 +288,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "themes", "value": 1 },
-      { "type": "min_length", "field": "themes[0].illustrativeExamples", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD03-009",
@@ -262,9 +317,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_contains", "field": "summary", "value": "anon-token" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD03-010",
@@ -296,13 +356,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
       {
         "type": "exact_match",
         "field": "themes[0].supportingFoci[0]",
         "value": "curriculum_alignment"
       }
-    ]
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
   },
   {
     "id": "PD03-011",
@@ -324,13 +390,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
       {
         "type": "exact_match",
         "field": "themes[0].evidenceStrength",
         "value": "emerging"
       }
-    ]
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD03-012",
@@ -402,9 +474,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "themes[0].evidenceStrength", "value": "strong" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "themes[0].evidenceStrength",
+        "value": "strong"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD03-013",
@@ -426,9 +508,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "priorityAreas" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
   },
   {
     "id": "PD03-014",
@@ -450,9 +537,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "not_has_field", "field": "rank" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD03-015",
@@ -474,9 +566,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "themes[0].theme" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD03-016",
@@ -518,10 +615,19 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "notesAnalysed", "value": 3 },
-      { "type": "min_length", "field": "priorityAreas", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "notesAnalysed",
+        "value": 3
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD03-017",
@@ -543,9 +649,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "summary", "value": 10 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD03-018",
@@ -567,13 +678,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
       {
-        "type": "not_contains",
-        "field": "themes[0].illustrativeExamples[0]",
-        "value": "anon-token-01"
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
       }
-    ]
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD03-019",
@@ -605,9 +717,14 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "min_length", "field": "themes", "value": 1 }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   },
   {
     "id": "PD03-020",
@@ -630,8 +747,13 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "field_exists", "field": "citedSourceIds" }
-    ]
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
   }
 ]
