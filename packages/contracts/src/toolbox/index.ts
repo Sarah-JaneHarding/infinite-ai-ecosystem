@@ -30,6 +30,8 @@ export {
 
 export { AnswerKeyItem, AnswerKeyVerificationResult } from './answer-key.js';
 
+export { TeacherEditSignal, ToolboxEditDiff, ToolboxEditField } from './approval.js';
+
 export {
   ActivityStep,
   AnswerKeyEntry,

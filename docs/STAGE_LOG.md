@@ -4234,3 +4234,94 @@ Two new content-authoring agents:
 `pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (394 agents tests, 473 contracts tests,
 25 prompts tests, 144 evals tests). `pnpm evals:gate` exits 0 (no executor registered — schema
 validation only at this stage).
+
+---
+
+### Stage 11 — Step 7: Teacher approval and edit surface
+
+**Date:** 2026-08-11
+
+**What was built**
+
+The teacher approval and edit surface: typed contracts for the diff a teacher produces when
+editing an AI artefact, the Brain signal captured from that diff, and the MOD-04 pipeline
+that orchestrates every Toolbox request end-to-end.
+
+**Approval contracts** (`packages/contracts/src/toolbox/approval.ts`):
+
+- `ToolboxEditField` — one field-level change: `field` (JSON-path style, e.g.
+  `slides[2].content`), `before`, `after`. All three are non-empty strings (min(1)).
+- `ToolboxEditDiff` — the full diff a teacher produces: `artefactId` (UUID), `artefactType`
+  (ToolboxArtefactType enum), `editedAt` (ISO datetime), `editedBy` (non-empty email/name),
+  `fieldEdits[]` (min 1 — an EDITED outcome with no edits is a contract violation),
+  `totalCharactersChanged` (non-negative integer, 0 accepted for reformatting-only edits).
+- `TeacherEditSignal` — the Brain write: adds `signalId` / `tenantId` (both UUIDs),
+  `agentId` (which TB agent produced the artefact), `capsTopicId` (curriculum anchor for
+  routing the signal in Stage 13 prompt improvement loops), `capturedAt`.
+- All three exported from `packages/contracts/src/toolbox/index.ts` and from the main
+  `packages/contracts/src/index.ts` barrel (sorted positions: `TeacherEditSignal` between
+  `TBOutputLinkage` and `TemplateDefinition`; `ToolboxEditDiff` and `ToolboxEditField`
+  between `ToolboxArtefactType` and `ToolboxOutputFormat`).
+- `packages/contracts/test/exports.spec.ts` updated to assert the three new names in their
+  sorted positions.
+
+**Contract tests** (`packages/contracts/test/toolbox-approval.spec.ts`):
+
+19 tests across three describe blocks:
+
+- `ToolboxEditField` (4): accepts valid, rejects empty field path, rejects empty before,
+  rejects empty after.
+- `ToolboxEditDiff` (8): accepts valid; rejects non-UUID artefactId; rejects invalid
+  artefactType; rejects empty fieldEdits (contract violation); rejects negative
+  totalCharactersChanged; rejects non-integer (1.5); accepts zero (reformatting); accepts
+  multiple field edits.
+- `TeacherEditSignal` (7): accepts valid; rejects non-UUID signalId; rejects non-UUID
+  tenantId; rejects empty agentId; rejects empty capsTopicId; rejects signal with empty
+  fieldEdits inside editDiff; correctly round-trips agentId.
+
+**MOD-04 pipeline** (`packages/orchestrator/src/pipelines/mod-04.ts`):
+
+Four-step pipeline generic across all eleven TB agents:
+
+```
+draft-artefact (tool_call) → teacher-approval (human_gate) → deliver-artefact (tool_call) → capture-edit-signal (tool_call, next: null)
+```
+
+Key design decisions:
+
+- `draft-artefact` uses `toolbox.draft_artefact` (reads `agentId` from run input) rather
+  than a per-agent `agent_call` step — one pipeline covers all eleven TB outputs.
+- `teacher-approval` requiredRole: `'teacher'`, timeoutMs: 604 800 000 (7 days).
+- `deliver-artefact` is irreversible — `validatePipelineGating` asserts it is only ever
+  reachable through the teacher gate.
+- `capture-edit-signal` writes a `TeacherEditSignal` to the Brain on EDITED outcomes;
+  is a no-op for plain APPROVED outcomes. Brain writes are append-only, so no compensation
+  step is needed.
+- Compensation: `compensate-draft` → `toolbox.void_draft`; `compensate-deliver` →
+  `toolbox.void_delivery` (append-only retraction event, not a deletion).
+- `PipelineDefinition.parse()` + `validatePipelineDag()` run at module load — mis-wired
+  references and forward cycles are deployment errors, not runtime surprises.
+- Exported from `packages/orchestrator/src/index.ts` as `MOD04_TOOLBOX_PIPELINE`.
+
+**Pipeline tests** (`packages/orchestrator/test/pipelines/mod-04.spec.ts`):
+
+12 tests:
+
+1. Valid DAG (validatePipelineDag does not throw).
+2. Gating validation (validatePipelineGating with IRREVERSIBLE_TOOLS: {deliver_artefact,
+   capture_edit_signal} does not throw).
+3. Entry point is `draft-artefact`.
+4. id `'mod-04-toolbox'`, version matches semver.
+5. `teacher-approval` is human_gate with requiredRole `'teacher'`.
+6. `teacher-approval` has 7-day timeout (604 800 000 ms).
+7. `teacher-approval.next` is `'deliver-artefact'`.
+8. `deliver-artefact` calls `toolbox.deliver_artefact`.
+9. `deliver-artefact` compensatesWith `'compensate-deliver'`; compensation uses
+   `toolbox.void_delivery`.
+10. `capture-edit-signal` calls `toolbox.capture_edit_signal` and has `next: null`.
+11. `draft-artefact` compensatesWith `'compensate-draft'`; compensation uses
+    `toolbox.void_draft`.
+12. `draft-artefact` calls `toolbox.draft_artefact` (generic dispatch).
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (492 contracts tests, 88
+orchestrator tests).

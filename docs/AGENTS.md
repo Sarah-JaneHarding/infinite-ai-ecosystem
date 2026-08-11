@@ -928,3 +928,44 @@ NO_PRINTING | NO_DEVICES | NO_ELECTRICITY | ORAL_ONLY).
 NO_DEVICES — no tablets, computers, smartboards, or electronic tools; NO_ELECTRICITY — no powered
 equipment (implies NO_DEVICES); ORAL_ONLY — no writing, printing, or devices (all steps spoken or
 physical). Multiple constraints stack; the agent must satisfy all simultaneously.
+
+---
+
+### Step 7 — Teacher Approval and Edit Surface
+
+Stage 11 Step 7 introduces the typed contracts and the MOD-04 pipeline that orchestrate every
+Teaching & Learning Toolbox request end-to-end.
+
+#### MOD-04 Toolbox Pipeline
+
+The `MOD04_TOOLBOX_PIPELINE` (`packages/orchestrator/src/pipelines/mod-04.ts`) is the single
+pipeline definition that covers all eleven TB agents:
+
+```
+draft-artefact → teacher-approval ◆ → deliver-artefact → capture-edit-signal
+```
+
+| Step                  | Kind         | Key properties                                                                     |
+| --------------------- | ------------ | ---------------------------------------------------------------------------------- |
+| `draft-artefact`      | tool_call    | `toolbox.draft_artefact`; dispatches to TB-01…TB-11 via `agentId` in run input     |
+| `teacher-approval`    | human_gate   | requiredRole: `teacher`; timeoutMs: 604 800 000 (7 days)                           |
+| `deliver-artefact`    | tool_call    | `toolbox.deliver_artefact`; irreversible — gating validation asserts gate required |
+| `capture-edit-signal` | tool_call    | `toolbox.capture_edit_signal`; Brain append-only write; no-op on plain APPROVED    |
+| `compensate-draft`    | compensation | `toolbox.void_draft` — soft-deletes the draft record                               |
+| `compensate-deliver`  | compensation | `toolbox.void_delivery` — append-only retraction event (not a deletion)            |
+
+**Design rationale:** `draft-artefact` dispatches via a single `tool_call` step rather than
+branching into eleven `agent_call` steps, keeping the pipeline definition generic and avoiding
+duplication. The pipeline is generic across all TB outputs at the orchestrator layer; agent
+selection happens in the `toolbox.draft_artefact` tool implementation.
+
+#### TeacherEditSignal contracts
+
+| Schema              | Location                                     | Purpose                                             |
+| ------------------- | -------------------------------------------- | --------------------------------------------------- |
+| `ToolboxEditField`  | `packages/contracts/src/toolbox/approval.ts` | One field-level change (field, before, after)       |
+| `ToolboxEditDiff`   | `packages/contracts/src/toolbox/approval.ts` | Full diff from a teacher's EDITED approval decision |
+| `TeacherEditSignal` | `packages/contracts/src/toolbox/approval.ts` | Brain write carrying diff + curriculum anchor       |
+
+`TeacherEditSignal.capsTopicId` anchors the signal to the CAPS topic the artefact addressed,
+enabling Stage 13 prompt-improvement loops to route signals to the right agent's eval set.
