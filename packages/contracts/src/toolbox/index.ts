@@ -67,6 +67,8 @@ export {
   TB09Result,
   TB10Input,
   TB10Result,
+  TB11Input,
+  TB11Result,
   TBOutputLinkage,
   VerifierAnswers,
   WorksheetDifferentiationTier,

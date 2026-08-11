@@ -969,3 +969,69 @@ selection happens in the `toolbox.draft_artefact` tool implementation.
 
 `TeacherEditSignal.capsTopicId` anchors the signal to the CAPS topic the artefact addressed,
 enabling Stage 13 prompt-improvement loops to route signals to the right agent's eval set.
+
+---
+
+### Step 8 — TB-11 Visual Brief Writer, four test suites, and no-fabrication contract
+
+Stage 11 Step 8 completes the MOD-04 Teaching & Learning Toolbox by adding the eleventh agent
+(TB-11 Visual Brief Writer) together with four new test suites that cross-cut the entire toolbox
+contract surface.
+
+#### TB-11 — Visual Brief Writer
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-11                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard, source_grounding_guard                |
+| Budget           | 2 000 tokens / $0.01                             |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-11/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject, topic,
+learningObjectives[] (≥1), language, sourceDocumentIds (≥1), requestedBy, visualContext? (string).
+
+**Outputs:**
+
+- `ok` — VISUAL_BRIEF artefact: brief (image description for a human artist), pedagogicalPurpose
+  (educational intent statement), suggestedCompositionNotes? (orientation, format, palette),
+  citedSourceIds ⊆ sourceDocumentIds (≥1).
+- `needs_input` — linkage missing (neither lessonId nor interventionId present).
+- `no_source_document` — sourceDocumentIds empty or documents insufficient to ground the brief.
+
+**Key constraints:** text-only output — TB-11 never suggests AI image generation, produces image
+bytes, or encodes images. Briefs describe what a human artist or photographer should produce.
+No targetReadabilityBand is required because visual briefs are commissioned by teachers, not
+consumed directly by learners.
+
+#### Four cross-cutting test suites
+
+**Readability bands** (`packages/contracts/test/toolbox-readability-bands.spec.ts`):
+Tests `GradeBand`, `ReadabilityCheckInput` (all 11 SA official languages via `it.each`), and all
+four `ReadabilityCheckResult` verdict shapes. Documents that `cannot_measure` is the correct
+path for non-English languages where no validated metric is available; must carry `language` and
+a non-empty `reason`.
+
+**Answer-key verification** (`packages/contracts/test/toolbox-answer-key-verification.spec.ts`):
+Tests `AnswerKeyVerificationResult` disagreement mechanics — confirms flaggedItems ≥ 1, allItems
+≥ 1, `agrees: false` is recorded, and no `artefactId` is present on a disagreement result
+(delivery is blocked until an author reviews the flagged items).
+
+**Accessibility validator** (`packages/contracts/test/toolbox-accessibility-validator.spec.ts`):
+Tests all four `AccessibilityMode` values and known-bad fixtures for each mode (LARGE_PRINT:
+font_size_spec and contrast missing; DYSLEXIA_FRIENDLY: italics present; SIMPLIFIED_LANGUAGE:
+avg_sentence_length > 15 words; BRAILLE_READY: colour-only references). Documents that the
+schema does not correlate check results with the overall verdict — that enforcement is the
+guardrail layer's responsibility.
+
+**No-fabrication** (`packages/contracts/test/toolbox-no-fabrication.spec.ts`):
+Asserts the no-fabrication rule at schema level. Tests: `no_source_document` is a first-class
+schema outcome for all agents that declare it (TB-01…TB-04, TB-08…TB-11); an `ok` result must
+carry `citedSourceIds` of at least one entry (empty array is rejected); and a missing
+`citedSourceIds` field on an `ok` result is also rejected. TB-05 (uses `disagreement_flagged`)
+and TB-06 (uses `no_source_content`) are correctly excluded from the `no_source_document` suite.

@@ -58,6 +58,8 @@ import {
   TB09Result,
   TB10Input,
   TB10Result,
+  TB11Input,
+  TB11Result,
   TBOutputLinkage,
   VerifierAnswers,
   WorksheetDifferentiationTier,
@@ -2180,6 +2182,132 @@ describe('TB10Result', () => {
       TB10Result.safeParse({
         status: 'no_source_document',
         detail: 'No source documents supplied for grounding.',
+      }).success,
+    ).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// TB-11 — Visual Brief Writer
+// ---------------------------------------------------------------------------
+
+function baseTB11Input(overrides: Record<string, unknown> = {}) {
+  return {
+    tenantId: UUID,
+    capsTopicId: 'CAPS-NS-GR4-WATER',
+    lessonId: UUID,
+    gradeLabel: '4',
+    subject: 'Natural Sciences',
+    topic: 'The Water Cycle',
+    learningObjectives: ['Learners can describe evaporation and condensation.'],
+    language: 'en',
+    sourceDocumentIds: ['doc-water-cycle-001'],
+    requestedBy: 'teacher@school.za',
+    ...overrides,
+  };
+}
+
+function baseTB11OkResult(overrides: Record<string, unknown> = {}) {
+  return {
+    status: 'ok',
+    artefactId: UUID,
+    artefactType: 'VISUAL_BRIEF',
+    linkage: { capsTopicId: 'CAPS-NS-GR4-WATER', lessonId: UUID },
+    brief:
+      'A diagram showing water evaporating from a lake, rising as vapour, forming clouds, and falling as rain.',
+    pedagogicalPurpose:
+      'Illustrate the stages of the water cycle to reinforce understanding of evaporation and condensation.',
+    citedSourceIds: ['doc-water-cycle-001'],
+    ...overrides,
+  };
+}
+
+describe('TB11Input', () => {
+  it('accepts a valid TB-11 input', () => {
+    expect(TB11Input.safeParse(baseTB11Input()).success).toBe(true);
+  });
+
+  it('accepts an input with optional visualContext', () => {
+    expect(
+      TB11Input.safeParse(
+        baseTB11Input({ visualContext: 'classroom wall display, A2 size' }),
+      ).success,
+    ).toBe(true);
+  });
+
+  it('accepts input linked via interventionId instead of lessonId', () => {
+    const { lessonId: _l, ...rest } = baseTB11Input() as Record<string, unknown>;
+    expect(TB11Input.safeParse({ ...rest, interventionId: UUID }).success).toBe(true);
+  });
+
+  it('rejects input missing both lessonId and interventionId', () => {
+    const { lessonId: _l, ...rest } = baseTB11Input() as Record<string, unknown>;
+    expect(TB11Input.safeParse(rest).success).toBe(false);
+  });
+
+  it('rejects input with empty learningObjectives', () => {
+    expect(TB11Input.safeParse(baseTB11Input({ learningObjectives: [] })).success).toBe(
+      false,
+    );
+  });
+
+  it('rejects input with empty sourceDocumentIds', () => {
+    expect(TB11Input.safeParse(baseTB11Input({ sourceDocumentIds: [] })).success).toBe(
+      false,
+    );
+  });
+});
+
+describe('TB11Result', () => {
+  it('accepts a valid ok result', () => {
+    expect(TB11Result.safeParse(baseTB11OkResult()).success).toBe(true);
+  });
+
+  it('accepts ok result with optional suggestedCompositionNotes', () => {
+    expect(
+      TB11Result.safeParse(
+        baseTB11OkResult({ suggestedCompositionNotes: 'Use warm colours for the sun.' }),
+      ).success,
+    ).toBe(true);
+  });
+
+  it('rejects ok result with wrong artefactType', () => {
+    expect(
+      TB11Result.safeParse(baseTB11OkResult({ artefactType: 'WORKSHEET' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects ok result with empty brief', () => {
+    expect(TB11Result.safeParse(baseTB11OkResult({ brief: '' })).success).toBe(false);
+  });
+
+  it('rejects ok result with empty pedagogicalPurpose', () => {
+    expect(
+      TB11Result.safeParse(baseTB11OkResult({ pedagogicalPurpose: '' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects ok result with empty citedSourceIds — fabrication guard', () => {
+    expect(TB11Result.safeParse(baseTB11OkResult({ citedSourceIds: [] })).success).toBe(
+      false,
+    );
+  });
+
+  it('accepts needs_input result', () => {
+    expect(
+      TB11Result.safeParse({
+        status: 'needs_input',
+        detail: 'Both lessonId and interventionId are missing.',
+        missingFields: ['lessonId'],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts no_source_document result', () => {
+    expect(
+      TB11Result.safeParse({
+        status: 'no_source_document',
+        detail: 'No source documents supplied; cannot ground the visual brief.',
       }).success,
     ).toBe(true);
   });

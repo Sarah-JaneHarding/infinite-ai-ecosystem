@@ -148,6 +148,8 @@ describe('package export surface', () => {
       'TB09Result',
       'TB10Input',
       'TB10Result',
+      'TB11Input',
+      'TB11Result',
       'TBOutputLinkage',
       'TeacherEditSignal',
       'TemplateDefinition',

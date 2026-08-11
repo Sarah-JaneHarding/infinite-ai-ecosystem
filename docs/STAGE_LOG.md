@@ -4325,3 +4325,56 @@ Key design decisions:
 
 `pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (492 contracts tests, 88
 orchestrator tests).
+
+---
+
+### Step 8 — TB-11 Visual Brief Writer, four test suites, and no-fabrication contract
+
+**TB-11 agent** (`packages/agents/src/mod-04/TB-11.contract.ts`):
+id: `TB-11`, module: `MOD-04`, purpose: `planning`, model: `plan.author`, guardrails:
+`['pii_guard', 'source_grounding_guard']`, budget: `{ maxTokens: 2000, maxCostUsd: 0.01 }`,
+`requiresApproval: false`, `writesToBrain: false`, evalSetRef: `'TB-11'`.
+
+Exported from `packages/agents/src/index.ts`.
+
+**TB-11 contract tests** (`packages/agents/test/mod-04/TB-11.contract.spec.ts`):
+13 tests — id, module, purpose, promptRef (TB-11@1.0.0), requiresApproval, writesToBrain, model,
+evalSetRef, pii_guard present, source_grounding_guard present, tools empty, maxTokens > 0,
+maxCostUsd ≤ 0.05.
+
+**TB11Input / TB11Result schemas** (`packages/contracts/src/toolbox/agents.ts`):
+Added after TB10Result. Input: tenantId, capsTopicId, lessonId?, interventionId?, gradeLabel,
+subject, topic, learningObjectives (min 1), language, sourceDocumentIds (min 1), requestedBy,
+visualContext?. Result discriminated union: ok (VISUAL_BRIEF artefactType, brief ≥ 1 char,
+pedagogicalPurpose ≥ 1 char, suggestedCompositionNotes?, citedSourceIds min 1) | needs_input |
+no_source_document.
+
+**TB-11 prompt** (`packages/prompts/src/TB-11/1.0.0.prompt.md`):
+8-section structure (ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA,
+SELF-CHECK). Constraints: text-only output, no AI image tool suggestions, no learner PII, South
+African context, written in declared language.
+
+Prompt lock updated (`packages/prompts/prompt-lock.json`): `TB-11@1.0.0` → hash recorded.
+
+**TB-11 eval set** (`packages/evals/sets/TB-11/main.json`):
+20 cases — Cases 1–10 happy_path (subjects, grades, languages, visualContext variants);
+cases 11–13 must_not_regress (no-AI-generation guard, PII guard, citation guard);
+cases 14–20 adversarial (empty sourceDocumentIds → no_source_document, missing linkage →
+needs_input, anti-fabrication, text-only guard, PII adversarial, visualContext constraint, SA
+context check).
+
+**Four cross-cutting test suites:**
+
+- `packages/contracts/test/toolbox-readability-bands.spec.ts` — GradeBand, ReadabilityCheckInput
+  for all 11 SA official languages, all four ReadabilityCheckResult verdict shapes including
+  cannot_measure for non-English.
+- `packages/contracts/test/toolbox-answer-key-verification.spec.ts` — AnswerKeyVerificationResult
+  disagreement mechanics; confirms no artefactId on disagreement (delivery blocked).
+- `packages/contracts/test/toolbox-accessibility-validator.spec.ts` — all four AccessibilityMode
+  values; known-bad fixtures for each mode; documents that schema does not correlate checks with
+  verdict (guardrail layer responsibility).
+- `packages/contracts/test/toolbox-no-fabrication.spec.ts` — no_source_document as first-class
+  outcome for TB-01…TB-04, TB-08…TB-11; ok result requires citedSourceIds min 1; empty array
+  and missing field both rejected. TB-05/TB-06 correctly excluded.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass (29 packages, all tests green).

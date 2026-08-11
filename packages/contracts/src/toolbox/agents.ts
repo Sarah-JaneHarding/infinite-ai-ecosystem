@@ -733,3 +733,55 @@ export const TB10Result = z.discriminatedUnion('status', [
   }),
 ]);
 export type TB10Result = z.infer<typeof TB10Result>;
+
+// ---------------------------------------------------------------------------
+// TB-11 — Visual Brief Writer
+// ---------------------------------------------------------------------------
+
+/**
+ * Input for TB-11. Like other TB agents it requires CAPS topic linkage and at least
+ * one source document (no image brief may be fabricated without grounding). There is
+ * no targetReadabilityBand: the brief is written for a teacher/artist, not a learner.
+ *
+ * `visualContext` optionally describes the intended display setting (e.g. "classroom
+ * display", "worksheet illustration") to help the artist frame the composition.
+ */
+export const TB11Input = TBLinkageBase.extend({
+  tenantId: z.string().uuid(),
+  gradeLabel: GradeLabel,
+  subject: z.string().min(1),
+  topic: z.string().min(1),
+  learningObjectives: z.array(z.string().min(1)).min(1),
+  language: z.string().min(2).max(5),
+  sourceDocumentIds: z.array(z.string().min(1)).min(1),
+  requestedBy: z.string().min(1),
+  /** Optional context about the intended display setting for the image. */
+  visualContext: z.string().optional(),
+}).superRefine(requireOneLinkage);
+export type TB11Input = z.infer<typeof TB11Input>;
+
+export const TB11Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('ok'),
+    artefactId: z.string().uuid(),
+    artefactType: z.literal('VISUAL_BRIEF'),
+    linkage: TBOutputLinkage,
+    /** Written description of the image the teacher should commission. */
+    brief: z.string().min(1),
+    /** What pedagogical concept or skill the image must serve. */
+    pedagogicalPurpose: z.string().min(1),
+    /** Optional composition notes for the artist or photographer. */
+    suggestedCompositionNotes: z.string().optional(),
+    citedSourceIds: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+    missingFields: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('no_source_document'),
+    detail: z.string().min(1),
+  }),
+]);
+export type TB11Result = z.infer<typeof TB11Result>;
