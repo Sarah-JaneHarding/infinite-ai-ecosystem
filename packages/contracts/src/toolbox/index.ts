@@ -31,6 +31,7 @@ export {
 export { AnswerKeyItem, AnswerKeyVerificationResult } from './answer-key.js';
 
 export {
+  ActivityStep,
   AnswerKeyEntry,
   AssessmentItem,
   AssessmentItemType,
@@ -38,9 +39,14 @@ export {
   ExtensionSection,
   MCOption,
   OfficialLanguage,
+  PresentationPurpose,
   RemediationSection,
+  ResourceConstraint,
+  Slide,
   TB01Input,
   TB01Result,
+  TB02Input,
+  TB02Result,
   TB03Input,
   TB03Result,
   TB04Input,
@@ -57,6 +63,8 @@ export {
   TB08Result,
   TB09Input,
   TB09Result,
+  TB10Input,
+  TB10Result,
   TBOutputLinkage,
   VerifierAnswers,
   WorksheetDifferentiationTier,

@@ -1,8 +1,9 @@
-// TB agent input/output schemas — Stage 11 steps 2–3.
+// TB agent input/output schemas — Stage 11 steps 2–6.
 //
-// TB-01 (Worksheet Builder), TB-03 (Reading Passage Generator),
-// TB-04 (Item Writer), TB-05 (Memo & Marking Guide Agent),
-// TB-06 (Home-Language Adapter).
+// TB-01 (Worksheet Builder), TB-02 (Board & Deck Builder),
+// TB-03 (Reading Passage Generator), TB-04 (Item Writer),
+// TB-05 (Memo & Marking Guide Agent), TB-06 (Home-Language Adapter),
+// TB-10 (Resource-Light Activity Agent).
 //
 // Every input enforces the strict parameter: capsTopicId is required, and at least one of
 // lessonId or interventionId must be present. Every 'no_source_document' output variant
@@ -113,6 +114,74 @@ export const TB01Result = z.discriminatedUnion('status', [
   }),
 ]);
 export type TB01Result = z.infer<typeof TB01Result>;
+
+// ---------------------------------------------------------------------------
+// TB-02 — Board & Deck Builder
+// ---------------------------------------------------------------------------
+
+/**
+ * The instructional purpose of the presentation deck.
+ * INTRODUCTION — opens a new topic or concept.
+ * LESSON — delivers the core lesson content.
+ * REVIEW — revisits and consolidates prior learning.
+ * CONSOLIDATION — synthesises and checks understanding at the end of a unit.
+ */
+export const PresentationPurpose = z.enum([
+  'INTRODUCTION',
+  'LESSON',
+  'REVIEW',
+  'CONSOLIDATION',
+]);
+export type PresentationPurpose = z.infer<typeof PresentationPurpose>;
+
+/** One slide in a board or presentation deck. */
+export const Slide = z.object({
+  title: z.string().min(1),
+  /** Body text, bullet points, or narrative content for this slide. */
+  content: z.string().min(1),
+  /** Optional presenter notes — spoken context not shown to learners. */
+  speakerNotes: z.string().min(1).optional(),
+});
+export type Slide = z.infer<typeof Slide>;
+
+export const TB02Input = TBLinkageBase.extend({
+  tenantId: z.string().uuid(),
+  gradeLabel: GradeLabel,
+  subject: z.string().min(1),
+  topic: z.string().min(1),
+  learningObjectives: z.array(z.string().min(1)).min(1),
+  targetReadabilityBand: GradeBand,
+  language: z.string().min(2).max(5),
+  sourceDocumentIds: z.array(z.string().min(1)).min(1),
+  requestedBy: z.string().min(1),
+  presentationPurpose: PresentationPurpose.optional(),
+  /** Desired number of slides. The agent should aim for this count ±2. */
+  slideCount: z.number().int().min(3).max(30).optional(),
+}).superRefine(requireOneLinkage);
+export type TB02Input = z.infer<typeof TB02Input>;
+
+export const TB02Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('ok'),
+    artefactId: z.string().uuid(),
+    artefactType: z.literal('BOARD_DECK'),
+    linkage: TBOutputLinkage,
+    slides: z.array(Slide).min(1),
+    presentationPurpose: PresentationPurpose.nullable(),
+    readabilityCheckResult: ReadabilityCheckResult,
+    citedSourceIds: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+    missingFields: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('no_source_document'),
+    detail: z.string().min(1),
+  }),
+]);
+export type TB02Result = z.infer<typeof TB02Result>;
 
 // ---------------------------------------------------------------------------
 // TB-03 — Reading Passage Generator
@@ -591,3 +660,76 @@ export const TB09Result = z.discriminatedUnion('status', [
   }),
 ]);
 export type TB09Result = z.infer<typeof TB09Result>;
+
+// ---------------------------------------------------------------------------
+// TB-10 — Resource-Light Activity Agent
+// ---------------------------------------------------------------------------
+
+/**
+ * Classroom resource constraints the activity must respect.
+ * NO_PRINTING — no printed materials; everything oral or on the board.
+ * NO_DEVICES — no phones, tablets, or computers.
+ * NO_ELECTRICITY — no mains power; no projectors, no electric devices.
+ * ORAL_ONLY — everything delivered and responded to verbally; no writing.
+ */
+export const ResourceConstraint = z.enum([
+  'NO_PRINTING',
+  'NO_DEVICES',
+  'NO_ELECTRICITY',
+  'ORAL_ONLY',
+]);
+export type ResourceConstraint = z.infer<typeof ResourceConstraint>;
+
+/** One step in a resource-light classroom activity. */
+export const ActivityStep = z.object({
+  instruction: z.string().min(1),
+  /** Expected duration for this step in minutes. */
+  durationMinutes: z.number().int().positive().optional(),
+});
+export type ActivityStep = z.infer<typeof ActivityStep>;
+
+export const TB10Input = TBLinkageBase.extend({
+  tenantId: z.string().uuid(),
+  gradeLabel: GradeLabel,
+  subject: z.string().min(1),
+  topic: z.string().min(1),
+  learningObjectives: z.array(z.string().min(1)).min(1),
+  /** Target total duration of the activity in minutes. */
+  activityDurationMinutes: z.number().int().positive(),
+  targetReadabilityBand: GradeBand,
+  language: z.string().min(2).max(5),
+  sourceDocumentIds: z.array(z.string().min(1)).min(1),
+  requestedBy: z.string().min(1),
+  /** Resource constraints the activity must respect. Absent means no special constraints. */
+  resourceConstraints: z.array(ResourceConstraint).optional(),
+}).superRefine(requireOneLinkage);
+export type TB10Input = z.infer<typeof TB10Input>;
+
+export const TB10Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('ok'),
+    artefactId: z.string().uuid(),
+    artefactType: z.literal('ACTIVITY_PLAN'),
+    linkage: TBOutputLinkage,
+    activityTitle: z.string().min(1),
+    /** Brief overview of the activity for the teacher. */
+    overview: z.string().min(1),
+    /** Materials needed — must respect any declared resourceConstraints. */
+    materials: z.array(z.string().min(1)),
+    steps: z.array(ActivityStep).min(1),
+    /** Adaptations for learners who need more support or more challenge. */
+    adaptations: z.array(z.string().min(1)),
+    readabilityCheckResult: ReadabilityCheckResult,
+    citedSourceIds: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+    missingFields: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('no_source_document'),
+    detail: z.string().min(1),
+  }),
+]);
+export type TB10Result = z.infer<typeof TB10Result>;

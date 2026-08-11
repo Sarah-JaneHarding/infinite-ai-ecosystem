@@ -721,3 +721,210 @@ requestedBy.
 The agent runs two independent passes internally (plan.author then plan.verify). A single item
 where the verifier disagrees with the author triggers `disagreement_flagged`. The MARKING_MEMO
 artefact is never delivered until the teacher adjudication gate (`requiresApproval: true`) clears.
+
+### Step 3 — TB-06 Home-Language Adapter contract, prompt, eval sets
+
+**Date:** 2026-08-10
+
+#### TB-06 — Home-Language Adapter
+
+| Field            | Value                                                                                                    |
+| ---------------- | -------------------------------------------------------------------------------------------------------- |
+| ID               | TB-06                                                                                                    |
+| Version          | 1.0.0                                                                                                    |
+| Module           | MOD-04                                                                                                   |
+| Purpose          | planning                                                                                                 |
+| Model            | plan.author                                                                                              |
+| Guardrails       | pii_guard                                                                                                |
+| Budget           | 4 000 tokens / $0.02                                                                                     |
+| requiresApproval | false                                                                                                    |
+| writesToBrain    | false                                                                                                    |
+| Eval set         | `packages/evals/sets/TB-06/{af,en,zu,xh,nso,st,tn,nr,ss,ve,ts}.json` (220 cases total — 20 per language) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, sourceArtefactId,
+sourceArtefactType, content (min 1), sourceLanguage, targetLanguage, loltLanguage (all `OfficialLanguage`
+— one of the 11 South African ISO codes: af, en, nr, xh, zu, nso, st, tn, ss, ve, ts), requestedBy.
+Source and target language must differ.
+
+**Outputs:**
+
+- `ok` — HOME_LANGUAGE_ADAPTED artefact: adaptedContent, targetLanguage, requiresHumanReview
+  (bool), reviewReason? (required when requiresHumanReview is true).
+- `needs_input` — required field absent, linkage missing, or sourceLanguage === targetLanguage.
+- `no_source_content` — content field absent or empty.
+
+**Language quality tiers:** Tier 1 (af, en, zu, xh, tn, st, nso) — `requiresHumanReview: false`.
+Tier 2 (nr, ss, ve, ts) — `requiresHumanReview: true` and `reviewReason` required; the pipeline
+must not deliver Tier-2 output without a recorded human-review approval.
+
+### Step 4 — TB-07 Accessibility Adapter contract, prompt, eval set
+
+**Date:** 2026-08-11
+
+#### TB-07 — Accessibility Adapter
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-07                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard                                        |
+| Budget           | 5 000 tokens / $0.025                            |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-07/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, sourceArtefactId,
+sourceArtefactType, content (min 1), language (ISO code), accessibilityMode (`AccessibilityMode`
+enum: LARGE_PRINT | DYSLEXIA_FRIENDLY | SIMPLIFIED_LANGUAGE | BRAILLE_READY), requestedBy.
+
+**Outputs:**
+
+- `ok` — ACCESSIBLE_ARTEFACT: adaptedContent, accessibilityMode, accessibilityCheckResult
+  (verdict='pass', all named checks passing).
+- `accessibility_check_failed` — accessibilityMode, accessibilityCheckResult (verdict='fail'),
+  detail. Returned when best-effort adaptation cannot meet mode requirements.
+- `needs_input` — linkage missing or required field absent.
+- `no_source_content` — content field absent or empty.
+
+**Named checks per mode:** LARGE_PRINT (font_size_spec, line_length, single_column, contrast);
+DYSLEXIA_FRIENDLY (font_spec, line_spacing, line_length, left_align_only, no_italics);
+SIMPLIFIED_LANGUAGE (avg_sentence_length, technical_terms_addressed, readability_within_band);
+BRAILLE_READY (no_colour_only_references, no_image_only_content, linear_layout, math_linear_notation).
+BRAILLE_READY requires `[TACTILE GRAPHIC REQUIRED: <description>]` flags for visual elements.
+
+### Step 5 — TB-08 Remediation Pack Builder and TB-09 Extension & Enrichment Agent
+
+**Date:** 2026-08-11
+
+#### TB-08 — Remediation Pack Builder
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-08                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard, source_grounding_guard                |
+| Budget           | 4 000 tokens / $0.02                             |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-08/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject, topic,
+missedSkills[] (≥1), targetReadabilityBand, language, sourceDocumentIds (≥1), requestedBy.
+
+**Outputs:**
+
+- `ok` — REMEDIATION_PACK artefact: sections[] (one `RemediationSection` per missed skill — each
+  with explanation, workedExamples ≥2, practiceItems ≥3), readabilityCheckResult, citedSourceIds.
+- `needs_input` — missedSkills absent or empty, or linkage missing.
+- `no_source_document` — sourceDocumentIds empty or insufficient.
+
+All explanations are plain-language re-teaching, not re-presentations of the original content.
+Worked examples are annotated step-by-step; practice items are graduated in difficulty.
+
+#### TB-09 — Extension & Enrichment Agent
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-09                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard, source_grounding_guard                |
+| Budget           | 4 000 tokens / $0.02                             |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-09/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject, topic,
+masteredSkills[] (≥1), enrichmentFocus (`EnrichmentFocus` enum: DEEPER_EXPLORATION |
+CHALLENGE_TASKS | CROSS_CURRICULAR | HIGHER_ORDER_THINKING), targetReadabilityBand, language,
+sourceDocumentIds (≥1), requestedBy. Optional: connectingSubject (required when focus is
+CROSS_CURRICULAR).
+
+**Outputs:**
+
+- `ok` — EXTENSION_PACK artefact: sections[] (`ExtensionSection[]` — title, enrichmentFocus,
+  content, tasks[]), readabilityCheckResult, citedSourceIds.
+- `needs_input` — masteredSkills absent or empty, or linkage missing.
+- `no_source_document` — sourceDocumentIds empty or insufficient.
+
+**Focus modes:** DEEPER_EXPLORATION — nuance, edge cases, the "why behind the rule";
+CHALLENGE_TASKS — higher Bloom tier with less scaffolding; CROSS_CURRICULAR — explicitly named
+connecting subject grounded in curriculum; HIGHER_ORDER_THINKING — synthesis, evaluation, and
+creation at top Bloom tiers, framing for open-ended responses. Pack builds FROM mastery, not
+re-teaching.
+
+### Step 6 — TB-02 Board & Deck Builder and TB-10 Resource-Light Activity Agent
+
+**Date:** 2026-08-11
+
+#### TB-02 — Board & Deck Builder
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-02                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard, source_grounding_guard                |
+| Budget           | 4 000 tokens / $0.02                             |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-02/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject, topic,
+learningObjectives[] (≥1), targetReadabilityBand, language, sourceDocumentIds (≥1), requestedBy,
+presentationPurpose? (INTRODUCTION | LESSON | REVIEW | CONSOLIDATION), slideCount? (3–30 int).
+
+**Outputs:**
+
+- `ok` — BOARD_DECK artefact: slides[] (≥1 `Slide` — title, content, speakerNotes?),
+  presentationPurpose (nullable), readabilityCheckResult, citedSourceIds ⊆ sourceDocumentIds.
+- `needs_input` — linkage missing or required field absent.
+- `no_source_document` — sourceDocumentIds empty or insufficient.
+
+The BOARD_DECK artefact renders only to SLIDES format; no print or PDF render is supported.
+All slide content must be grounded in cited documents; the agent refuses rather than fabricates.
+Decks go to teacher review before delivery (`requiresApproval: false` — review is a pipeline
+concern, not a contract-level gate for this agent).
+
+#### TB-10 — Resource-Light Activity Agent
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-10                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard, source_grounding_guard                |
+| Budget           | 4 000 tokens / $0.02                             |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-10/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject, topic,
+learningObjectives[] (≥1), activityDurationMinutes (int, positive), targetReadabilityBand, language,
+sourceDocumentIds (≥1), requestedBy, resourceConstraints[]? (`ResourceConstraint` enum:
+NO_PRINTING | NO_DEVICES | NO_ELECTRICITY | ORAL_ONLY).
+
+**Outputs:**
+
+- `ok` — ACTIVITY_PLAN artefact: activityTitle, overview, materials[], steps[] (≥1 `ActivityStep`
+  — instruction + optional durationMinutes), adaptations[] (differentiation strategies),
+  readabilityCheckResult, citedSourceIds ⊆ sourceDocumentIds.
+- `needs_input` — linkage missing, activityDurationMinutes ≤ 0, or required field absent.
+- `no_source_document` — sourceDocumentIds empty or insufficient.
+
+**Constraint semantics (stacking):** NO_PRINTING — no handouts, worksheets, or printed items;
+NO_DEVICES — no tablets, computers, smartboards, or electronic tools; NO_ELECTRICITY — no powered
+equipment (implies NO_DEVICES); ORAL_ONLY — no writing, printing, or devices (all steps spoken or
+physical). Multiple constraints stack; the agent must satisfy all simultaneously.

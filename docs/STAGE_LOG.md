@@ -4150,3 +4150,87 @@ Two new content-authoring agents completing Stage 11's targeted-support suite:
 25 prompts tests, 144 evals tests).
 
 Step 6 (TB-02 Board & Deck Builder and TB-10 Resource-Light Activity Agent) is next.
+
+### Stage 11 — Step 6: TB-02 Board & Deck Builder and TB-10 Resource-Light Activity Agent
+
+**Date:** 2026-08-11
+
+**What was built**
+
+Two new content-authoring agents:
+
+- **TB-02 Board & Deck Builder**: produces a slide deck (`BOARD_DECK`) for a given lesson or
+  intervention. Input carries `presentationPurpose` (INTRODUCTION | LESSON | REVIEW | CONSOLIDATION,
+  optional) and `slideCount` (3–30, optional). Output carries `slides[]` (each with title, content,
+  and optional speakerNotes), `presentationPurpose` (nullable), `readabilityCheckResult`, and
+  `citedSourceIds ⊆ sourceDocumentIds`. Renders only to SLIDES; no PDF or PRINT render format.
+  Refuses with `needs_input` if linkage is absent; refuses with `no_source_document` if
+  sourceDocumentIds is empty.
+
+- **TB-10 Resource-Light Activity Agent**: produces an activity plan (`ACTIVITY_PLAN`) optimised for
+  classrooms with limited resources. Input carries `resourceConstraints[]` (optional enum:
+  NO_PRINTING | NO_DEVICES | NO_ELECTRICITY | ORAL_ONLY). Output carries `activityTitle`, `overview`,
+  `materials[]`, `steps[]` (ActivityStep: instruction + optional durationMinutes), `adaptations[]`,
+  `readabilityCheckResult`, and `citedSourceIds`. Each constraint tightens the materials and steps:
+  NO_PRINTING excludes handouts; NO_DEVICES excludes electronic tools; NO_ELECTRICITY excludes
+  any powered equipment; ORAL_ONLY removes all writing and printing. Multiple constraints stack.
+  Refuses with `needs_input` if linkage is absent or `activityDurationMinutes` ≤ 0; refuses with
+  `no_source_document` if sourceDocumentIds is empty.
+
+**Schemas** (`packages/contracts/src/toolbox/agents.ts`):
+
+- `PresentationPurpose` enum (INTRODUCTION, LESSON, REVIEW, CONSOLIDATION).
+- `Slide` object (title, content, speakerNotes?).
+- `TB02Input` / `TB02Result` — linked to `TBLinkageBase` via `superRefine(requireOneLinkage)`.
+- `ResourceConstraint` enum (NO_PRINTING, NO_DEVICES, NO_ELECTRICITY, ORAL_ONLY).
+- `ActivityStep` object (instruction, durationMinutes?).
+- `TB10Input` / `TB10Result` — same linkage pattern.
+- All 8 new types wired through `packages/contracts/src/toolbox/index.ts` and
+  `packages/contracts/src/index.ts`; `test/exports.spec.ts` updated (sorted positions: ActivityStep
+  after ActivityKind; PresentationPurpose after Phase; ResourceConstraint after RenderResult; Slide
+  after SchoolCalendarBlock; TB02*/TB10* after TB01Result and TB09Result respectively).
+
+**Contract tests** (`packages/contracts/test/toolbox-agents.spec.ts`):
+
+- 47 new tests (473 total from 426): PresentationPurpose (4), Slide (3), TB02Input (7), TB02Result
+  (8), ResourceConstraint (4), ActivityStep (3), TB10Input (6), TB10Result (7).
+- Key invariants: slideCount 3–30; BOARD_DECK artefactType; activityDurationMinutes must be
+  positive; ACTIVITY_PLAN artefactType; all error branches validated.
+
+**Prompts**:
+
+- `packages/prompts/src/TB-02/1.0.0.prompt.md` — 8-section format. GROUNDING explains the four
+  presentation purposes and the BOARD_DECK render constraint. Hash locked in prompt-lock.json.
+- `packages/prompts/src/TB-10/1.0.0.prompt.md` — 8-section format. GROUNDING includes a
+  `## RESOURCE CONSTRAINT DEFINITIONS` subsection (not a top-level `#` heading) defining all four
+  constraint modes. Hash locked in prompt-lock.json.
+
+**Eval sets**:
+
+- `packages/evals/sets/TB-02/main.json` — 20 cases: 13 happy_path (LESSON, INTRODUCTION, REVIEW,
+  CONSOLIDATION purposes; Afrikaans; interventionId; Grade 2–Grade 12; multi-subject), 5
+  adversarial (no_source_document, needs_input-missing-linkage, needs_input-empty-objectives,
+  citation integrity, no-PII), 3 must_not_regress. All cases carry typed `expectations`,
+  `context: null`, `source: "specification"`.
+- `packages/evals/sets/TB-10/main.json` — 20 cases: 10 happy_path (no constraints, NO_PRINTING,
+  NO_DEVICES, NO_ELECTRICITY, ORAL_ONLY, multiple constraints, all four constraints, interventionId,
+  Afrikaans), 3 must_not_regress (adaptations non-empty, step durations approximate target,
+  citedSourceIds ⊆ sourceDocumentIds), 5 adversarial (empty sourceDocumentIds, missing linkage,
+  NO_PRINTING verified, ORAL_ONLY verified, PII guard, source grounding, invalid duration).
+
+**Agent contracts** (`packages/agents/src/mod-04/`):
+
+- `TB-02.contract.ts`: guardrails `['pii_guard', 'source_grounding_guard']`, budget 4 000 tokens /
+  $0.02, model `plan.author`, no tools, no approval, no brain write.
+- `TB-10.contract.ts`: same budget, guardrails, and model configuration.
+- Both exported from `packages/agents/src/index.ts`.
+
+**Agent contract tests** (`packages/agents/test/mod-04/`):
+
+- `TB-02.contract.spec.ts` — 13 tests (id, module, purpose, promptRef, requiresApproval,
+  writesToBrain, model, evalSetRef, pii_guard, source_grounding_guard, tools, maxTokens, maxCostUsd).
+- `TB-10.contract.spec.ts` — 13 tests (same pattern).
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (394 agents tests, 473 contracts tests,
+25 prompts tests, 144 evals tests). `pnpm evals:gate` exits 0 (no executor registered — schema
+validation only at this stage).

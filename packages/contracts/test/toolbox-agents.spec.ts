@@ -1,19 +1,22 @@
-// Toolbox agent contracts — Stage 11 steps 2–5.
+// Toolbox agent contracts — Stage 11 steps 2–6.
 //
-// Covers: TB-01 (Worksheet Builder), TB-03 (Reading Passage Generator),
-// TB-04 (Item Writer), TB-05 (Memo & Marking Guide Agent),
-// TB-06 (Home-Language Adapter), TB-07 (Accessibility Adapter),
-// TB-08 (Remediation Pack Builder), TB-09 (Extension & Enrichment Agent).
+// Covers: TB-01 (Worksheet Builder), TB-02 (Board & Deck Builder),
+// TB-03 (Reading Passage Generator), TB-04 (Item Writer),
+// TB-05 (Memo & Marking Guide Agent), TB-06 (Home-Language Adapter),
+// TB-07 (Accessibility Adapter), TB-08 (Remediation Pack Builder),
+// TB-09 (Extension & Enrichment Agent), TB-10 (Resource-Light Activity Agent).
 //
 // Key invariants verified:
 //   - TBLinkageInput requires at least one of lessonId / interventionId
 //   - no_source_document output blocks fabrication
+//   - TB-02 slides ≥1; presentationPurpose is nullable in output
 //   - TB-05 disagreement_flagged blocks release (no artefactId in that variant)
 //   - MC items must have exactly four options; other types have none
 //   - TB-06 rejects same source/target language; requiresHumanReview flag present in ok result
 //   - TB-07 accessibilityCheckResult.verdict must be 'pass' on ok, 'fail' on check_failed
 //   - TB-08 sections ≥1; each section has explanation, workedExamples, practiceItems
 //   - TB-09 enrichmentFocus must be a valid enum value; sections ≥1
+//   - TB-10 steps ≥1; materials must honour resourceConstraints; activityDurationMinutes positive
 
 import { describe, expect, it } from 'vitest';
 
@@ -21,6 +24,7 @@ import {
   AccessibilityCheckItem,
   AccessibilityCheckResult,
   AccessibilityMode,
+  ActivityStep,
   AnswerKeyEntry,
   AssessmentItem,
   AssessmentItemType,
@@ -28,9 +32,14 @@ import {
   ExtensionSection,
   MCOption,
   OfficialLanguage,
+  PresentationPurpose,
   RemediationSection,
+  ResourceConstraint,
+  Slide,
   TB01Input,
   TB01Result,
+  TB02Input,
+  TB02Result,
   TB03Input,
   TB03Result,
   TB04Input,
@@ -47,6 +56,8 @@ import {
   TB08Result,
   TB09Input,
   TB09Result,
+  TB10Input,
+  TB10Result,
   TBOutputLinkage,
   VerifierAnswers,
   WorksheetDifferentiationTier,
@@ -1788,5 +1799,388 @@ describe('TB09Result', () => {
     expect(TB09Result.safeParse(baseTB09OkResult({ citedSourceIds: [] })).success).toBe(
       false,
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// PresentationPurpose
+// ---------------------------------------------------------------------------
+
+describe('PresentationPurpose', () => {
+  it.each(['INTRODUCTION', 'LESSON', 'REVIEW', 'CONSOLIDATION'] as const)(
+    'accepts %s',
+    (purpose) => {
+      expect(PresentationPurpose.safeParse(purpose).success).toBe(true);
+    },
+  );
+
+  it('rejects an unknown purpose', () => {
+    expect(PresentationPurpose.safeParse('REVISION').success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Slide
+// ---------------------------------------------------------------------------
+
+describe('Slide', () => {
+  it('accepts a slide with title and content', () => {
+    expect(
+      Slide.safeParse({
+        title: 'What is Energy?',
+        content: 'Energy is the ability to do work.',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts a slide with optional speakerNotes', () => {
+    expect(
+      Slide.safeParse({
+        title: 'Forms of Energy',
+        content: 'Kinetic, potential, thermal, chemical, electrical.',
+        speakerNotes: 'Ask learners to give examples of each form.',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects a slide with empty title', () => {
+    expect(Slide.safeParse({ title: '', content: 'Some content.' }).success).toBe(false);
+  });
+
+  it('rejects a slide with empty content', () => {
+    expect(Slide.safeParse({ title: 'Valid Title', content: '' }).success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// TB-02 — Board & Deck Builder
+// ---------------------------------------------------------------------------
+
+function baseTB02Input(overrides: Record<string, unknown> = {}) {
+  return {
+    tenantId: UUID,
+    capsTopicId: 'CAPS-NS-GR6-TOPIC-2',
+    lessonId: UUID,
+    gradeLabel: '6',
+    subject: 'Natural Sciences',
+    topic: 'Energy and Change',
+    learningObjectives: ['Identify forms of energy and give examples of each.'],
+    targetReadabilityBand: baseBand(),
+    language: 'en',
+    sourceDocumentIds: [UUID2],
+    requestedBy: 'teacher@school.za',
+    ...overrides,
+  };
+}
+
+function baseTB02OkResult(overrides: Record<string, unknown> = {}) {
+  return {
+    status: 'ok' as const,
+    artefactId: UUID2,
+    artefactType: 'BOARD_DECK' as const,
+    linkage: baseLinkage(),
+    slides: [
+      {
+        title: 'What is Energy?',
+        content: 'Energy is the ability to do work. It exists in many forms.',
+        speakerNotes: 'Ask learners: where do you find energy in your home?',
+      },
+    ],
+    presentationPurpose: 'LESSON' as const,
+    readabilityCheckResult: baseReadabilityCheckResult(),
+    citedSourceIds: [UUID2],
+    ...overrides,
+  };
+}
+
+describe('TB02Input', () => {
+  it('accepts valid input with lessonId', () => {
+    expect(TB02Input.safeParse(baseTB02Input()).success).toBe(true);
+  });
+
+  it('accepts valid input with interventionId', () => {
+    expect(
+      TB02Input.safeParse(baseTB02Input({ lessonId: undefined, interventionId: UUID }))
+        .success,
+    ).toBe(true);
+  });
+
+  it('accepts with optional presentationPurpose', () => {
+    expect(
+      TB02Input.safeParse(baseTB02Input({ presentationPurpose: 'INTRODUCTION' })).success,
+    ).toBe(true);
+  });
+
+  it('accepts with optional slideCount', () => {
+    expect(TB02Input.safeParse(baseTB02Input({ slideCount: 10 })).success).toBe(true);
+  });
+
+  it('rejects input missing both lessonId and interventionId', () => {
+    expect(
+      TB02Input.safeParse(
+        baseTB02Input({ lessonId: undefined, interventionId: undefined }),
+      ).success,
+    ).toBe(false);
+  });
+
+  it('rejects with empty learningObjectives', () => {
+    expect(TB02Input.safeParse(baseTB02Input({ learningObjectives: [] })).success).toBe(
+      false,
+    );
+  });
+
+  it('rejects with empty sourceDocumentIds', () => {
+    expect(TB02Input.safeParse(baseTB02Input({ sourceDocumentIds: [] })).success).toBe(
+      false,
+    );
+  });
+});
+
+describe('TB02Result', () => {
+  it('accepts a valid ok result', () => {
+    expect(TB02Result.safeParse(baseTB02OkResult()).success).toBe(true);
+  });
+
+  it('accepts ok result with null presentationPurpose', () => {
+    expect(
+      TB02Result.safeParse(baseTB02OkResult({ presentationPurpose: null })).success,
+    ).toBe(true);
+  });
+
+  it('rejects ok result with wrong artefactType', () => {
+    expect(
+      TB02Result.safeParse(baseTB02OkResult({ artefactType: 'WORKSHEET' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects ok result with empty slides', () => {
+    expect(TB02Result.safeParse(baseTB02OkResult({ slides: [] })).success).toBe(false);
+  });
+
+  it('rejects ok result with empty citedSourceIds', () => {
+    expect(TB02Result.safeParse(baseTB02OkResult({ citedSourceIds: [] })).success).toBe(
+      false,
+    );
+  });
+
+  it('accepts needs_input result', () => {
+    expect(
+      TB02Result.safeParse({
+        status: 'needs_input',
+        detail: 'learningObjectives is empty.',
+        missingFields: ['learningObjectives'],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts no_source_document result', () => {
+    expect(
+      TB02Result.safeParse({
+        status: 'no_source_document',
+        detail: 'No source documents supplied for grounding.',
+      }).success,
+    ).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ResourceConstraint
+// ---------------------------------------------------------------------------
+
+describe('ResourceConstraint', () => {
+  it.each(['NO_PRINTING', 'NO_DEVICES', 'NO_ELECTRICITY', 'ORAL_ONLY'] as const)(
+    'accepts %s',
+    (constraint) => {
+      expect(ResourceConstraint.safeParse(constraint).success).toBe(true);
+    },
+  );
+
+  it('rejects an unknown constraint', () => {
+    expect(ResourceConstraint.safeParse('NO_INTERNET').success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ActivityStep
+// ---------------------------------------------------------------------------
+
+describe('ActivityStep', () => {
+  it('accepts a step with instruction only', () => {
+    expect(
+      ActivityStep.safeParse({ instruction: 'Ask learners to form pairs.' }).success,
+    ).toBe(true);
+  });
+
+  it('accepts a step with instruction and durationMinutes', () => {
+    expect(
+      ActivityStep.safeParse({
+        instruction: 'Discuss the question in pairs.',
+        durationMinutes: 5,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects a step with empty instruction', () => {
+    expect(ActivityStep.safeParse({ instruction: '' }).success).toBe(false);
+  });
+
+  it('rejects a step with non-positive durationMinutes', () => {
+    expect(
+      ActivityStep.safeParse({ instruction: 'Do something.', durationMinutes: 0 })
+        .success,
+    ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// TB-10 — Resource-Light Activity Agent
+// ---------------------------------------------------------------------------
+
+function baseTB10Input(overrides: Record<string, unknown> = {}) {
+  return {
+    tenantId: UUID,
+    capsTopicId: 'CAPS-NS-GR5-TOPIC-1',
+    lessonId: UUID,
+    gradeLabel: '5',
+    subject: 'Natural Sciences',
+    topic: 'The water cycle',
+    learningObjectives: ['Describe the stages of the water cycle.'],
+    activityDurationMinutes: 30,
+    targetReadabilityBand: baseBand(),
+    language: 'en',
+    sourceDocumentIds: [UUID2],
+    requestedBy: 'teacher@school.za',
+    ...overrides,
+  };
+}
+
+function baseTB10OkResult(overrides: Record<string, unknown> = {}) {
+  return {
+    status: 'ok' as const,
+    artefactId: UUID2,
+    artefactType: 'ACTIVITY_PLAN' as const,
+    linkage: baseLinkage(),
+    activityTitle: 'Water Cycle Relay',
+    overview: 'Learners act out the stages of the water cycle in a physical relay game.',
+    materials: ['Open floor space', 'Labels for each stage written on paper'],
+    steps: [
+      {
+        instruction: 'Arrange learners in a circle representing the water cycle.',
+        durationMinutes: 5,
+      },
+      {
+        instruction: 'Each learner calls out a stage and mimes the process.',
+        durationMinutes: 15,
+      },
+      {
+        instruction: 'Discuss which stage is most important and why.',
+        durationMinutes: 10,
+      },
+    ],
+    adaptations: [
+      'For learners who need more support: provide a word bank of stage names.',
+      'For learners who need more challenge: ask them to explain the energy source driving each stage.',
+    ],
+    readabilityCheckResult: baseReadabilityCheckResult(),
+    citedSourceIds: [UUID2],
+    ...overrides,
+  };
+}
+
+describe('TB10Input', () => {
+  it('accepts valid input with lessonId', () => {
+    expect(TB10Input.safeParse(baseTB10Input()).success).toBe(true);
+  });
+
+  it('accepts valid input with interventionId', () => {
+    expect(
+      TB10Input.safeParse(baseTB10Input({ lessonId: undefined, interventionId: UUID }))
+        .success,
+    ).toBe(true);
+  });
+
+  it('accepts with optional resourceConstraints', () => {
+    expect(
+      TB10Input.safeParse(
+        baseTB10Input({ resourceConstraints: ['NO_PRINTING', 'NO_DEVICES'] }),
+      ).success,
+    ).toBe(true);
+  });
+
+  it('rejects input missing both lessonId and interventionId', () => {
+    expect(
+      TB10Input.safeParse(
+        baseTB10Input({ lessonId: undefined, interventionId: undefined }),
+      ).success,
+    ).toBe(false);
+  });
+
+  it('rejects with empty learningObjectives', () => {
+    expect(TB10Input.safeParse(baseTB10Input({ learningObjectives: [] })).success).toBe(
+      false,
+    );
+  });
+
+  it('rejects with non-positive activityDurationMinutes', () => {
+    expect(
+      TB10Input.safeParse(baseTB10Input({ activityDurationMinutes: 0 })).success,
+    ).toBe(false);
+  });
+
+  it('rejects with empty sourceDocumentIds', () => {
+    expect(TB10Input.safeParse(baseTB10Input({ sourceDocumentIds: [] })).success).toBe(
+      false,
+    );
+  });
+});
+
+describe('TB10Result', () => {
+  it('accepts a valid ok result', () => {
+    expect(TB10Result.safeParse(baseTB10OkResult()).success).toBe(true);
+  });
+
+  it('accepts ok result with empty materials array', () => {
+    expect(TB10Result.safeParse(baseTB10OkResult({ materials: [] })).success).toBe(true);
+  });
+
+  it('accepts ok result with empty adaptations array', () => {
+    expect(TB10Result.safeParse(baseTB10OkResult({ adaptations: [] })).success).toBe(
+      true,
+    );
+  });
+
+  it('rejects ok result with wrong artefactType', () => {
+    expect(
+      TB10Result.safeParse(baseTB10OkResult({ artefactType: 'WORKSHEET' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects ok result with empty steps', () => {
+    expect(TB10Result.safeParse(baseTB10OkResult({ steps: [] })).success).toBe(false);
+  });
+
+  it('rejects ok result with empty citedSourceIds', () => {
+    expect(TB10Result.safeParse(baseTB10OkResult({ citedSourceIds: [] })).success).toBe(
+      false,
+    );
+  });
+
+  it('accepts needs_input result', () => {
+    expect(
+      TB10Result.safeParse({
+        status: 'needs_input',
+        detail: 'activityDurationMinutes must be a positive integer.',
+        missingFields: ['activityDurationMinutes'],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts no_source_document result', () => {
+    expect(
+      TB10Result.safeParse({
+        status: 'no_source_document',
+        detail: 'No source documents supplied for grounding.',
+      }).success,
+    ).toBe(true);
   });
 });
