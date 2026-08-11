@@ -483,7 +483,6 @@ describe('PD06Result', () => {
 
   it('requires exportable: true — courses must be exportable', () => {
     const withoutExportable = { ...ok };
-    // @ts-expect-error — testing schema rejection of wrong value
     expect(
       PD06Result.safeParse({ ...withoutExportable, exportable: false }).success,
     ).toBe(false);
