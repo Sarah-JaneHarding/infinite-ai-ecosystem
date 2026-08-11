@@ -1,8 +1,9 @@
-// Toolbox agent contracts — Stage 11 steps 2–4.
+// Toolbox agent contracts — Stage 11 steps 2–5.
 //
 // Covers: TB-01 (Worksheet Builder), TB-03 (Reading Passage Generator),
 // TB-04 (Item Writer), TB-05 (Memo & Marking Guide Agent),
-// TB-06 (Home-Language Adapter), TB-07 (Accessibility Adapter) input/output schemas.
+// TB-06 (Home-Language Adapter), TB-07 (Accessibility Adapter),
+// TB-08 (Remediation Pack Builder), TB-09 (Extension & Enrichment Agent).
 //
 // Key invariants verified:
 //   - TBLinkageInput requires at least one of lessonId / interventionId
@@ -11,6 +12,8 @@
 //   - MC items must have exactly four options; other types have none
 //   - TB-06 rejects same source/target language; requiresHumanReview flag present in ok result
 //   - TB-07 accessibilityCheckResult.verdict must be 'pass' on ok, 'fail' on check_failed
+//   - TB-08 sections ≥1; each section has explanation, workedExamples, practiceItems
+//   - TB-09 enrichmentFocus must be a valid enum value; sections ≥1
 
 import { describe, expect, it } from 'vitest';
 
@@ -21,8 +24,11 @@ import {
   AnswerKeyEntry,
   AssessmentItem,
   AssessmentItemType,
+  EnrichmentFocus,
+  ExtensionSection,
   MCOption,
   OfficialLanguage,
+  RemediationSection,
   TB01Input,
   TB01Result,
   TB03Input,
@@ -37,6 +43,10 @@ import {
   TB06Result,
   TB07Input,
   TB07Result,
+  TB08Input,
+  TB08Result,
+  TB09Input,
+  TB09Result,
   TBOutputLinkage,
   VerifierAnswers,
   WorksheetDifferentiationTier,
@@ -56,6 +66,10 @@ function baseLinkage(overrides: Record<string, unknown> = {}) {
 
 function baseBand() {
   return { minGrade: 3, maxGrade: 5 };
+}
+
+function baseReadabilityCheckResult() {
+  return { verdict: 'within_band' as const, measuredGrade: 4, targetBand: baseBand() };
 }
 
 function baseTB01Input(overrides: Record<string, unknown> = {}) {
@@ -1413,5 +1427,366 @@ describe('TB07Result', () => {
         missingFields: [],
       }).success,
     ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// RemediationSection
+// ---------------------------------------------------------------------------
+
+describe('RemediationSection', () => {
+  it('accepts a valid section', () => {
+    expect(
+      RemediationSection.safeParse({
+        skillId: 'CAPS-MATH-GR4-FRACTIONS-1',
+        skillDescription: 'Identify equivalent fractions using diagrams.',
+        explanation:
+          'Two fractions are equivalent when they represent the same part of a whole.',
+        workedExamples: ['½ = 2/4 because both show half of the same whole.'],
+        practiceItems: ['Circle the fraction equal to ¼: 2/8, 3/8, 1/6.'],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects a section with empty workedExamples', () => {
+    expect(
+      RemediationSection.safeParse({
+        skillId: 'CAPS-MATH-GR4-FRACTIONS-1',
+        skillDescription: 'Identify equivalent fractions.',
+        explanation:
+          'Two fractions are equivalent when they represent the same part of a whole.',
+        workedExamples: [],
+        practiceItems: ['Circle the fraction equal to ¼: 2/8, 3/8, 1/6.'],
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a section with empty practiceItems', () => {
+    expect(
+      RemediationSection.safeParse({
+        skillId: 'CAPS-MATH-GR4-FRACTIONS-1',
+        skillDescription: 'Identify equivalent fractions.',
+        explanation:
+          'Two fractions are equivalent when they represent the same part of a whole.',
+        workedExamples: ['½ = 2/4 because both show half of the same whole.'],
+        practiceItems: [],
+      }).success,
+    ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// TB-08 — Remediation Pack Builder
+// ---------------------------------------------------------------------------
+
+function baseTB08Input(overrides: Record<string, unknown> = {}) {
+  return {
+    tenantId: UUID,
+    capsTopicId: 'CAPS-MATH-GR5-TOPIC-3',
+    lessonId: UUID,
+    gradeLabel: '5',
+    subject: 'Mathematics',
+    missedSkills: [
+      {
+        skillId: 'CAPS-MATH-GR5-FRAC-1',
+        skillDescription: 'Add fractions with unlike denominators.',
+      },
+    ],
+    targetReadabilityBand: baseBand(),
+    language: 'en',
+    sourceDocumentIds: [UUID2],
+    requestedBy: 'teacher@school.za',
+    ...overrides,
+  };
+}
+
+function baseTB08OkResult(overrides: Record<string, unknown> = {}) {
+  return {
+    status: 'ok' as const,
+    artefactId: UUID2,
+    artefactType: 'REMEDIATION_PACK' as const,
+    linkage: baseLinkage(),
+    sections: [
+      {
+        skillId: 'CAPS-MATH-GR5-FRAC-1',
+        skillDescription: 'Add fractions with unlike denominators.',
+        explanation: 'To add fractions with different denominators, find the LCM.',
+        workedExamples: ['¼ + ⅓ = 3/12 + 4/12 = 7/12'],
+        practiceItems: ['Calculate: ½ + ⅓ = ?'],
+      },
+    ],
+    readabilityCheckResult: baseReadabilityCheckResult(),
+    citedSourceIds: [UUID2],
+    ...overrides,
+  };
+}
+
+describe('TB08Input', () => {
+  it('accepts valid input with lessonId', () => {
+    expect(TB08Input.safeParse(baseTB08Input()).success).toBe(true);
+  });
+
+  it('accepts valid input with interventionId', () => {
+    expect(
+      TB08Input.safeParse(baseTB08Input({ lessonId: undefined, interventionId: UUID }))
+        .success,
+    ).toBe(true);
+  });
+
+  it('rejects input missing both lessonId and interventionId', () => {
+    expect(TB08Input.safeParse(baseTB08Input({ lessonId: undefined })).success).toBe(
+      false,
+    );
+  });
+
+  it('rejects input with empty missedSkills', () => {
+    expect(TB08Input.safeParse(baseTB08Input({ missedSkills: [] })).success).toBe(false);
+  });
+
+  it('rejects input with empty sourceDocumentIds', () => {
+    expect(TB08Input.safeParse(baseTB08Input({ sourceDocumentIds: [] })).success).toBe(
+      false,
+    );
+  });
+
+  it('rejects input with missing tenantId', () => {
+    const { tenantId: _t, ...rest } = baseTB08Input();
+    expect(TB08Input.safeParse(rest).success).toBe(false);
+  });
+});
+
+describe('TB08Result', () => {
+  it('accepts a valid ok result', () => {
+    expect(TB08Result.safeParse(baseTB08OkResult()).success).toBe(true);
+  });
+
+  it('rejects ok result with wrong artefactType', () => {
+    expect(
+      TB08Result.safeParse(baseTB08OkResult({ artefactType: 'WORKSHEET' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects ok result with empty sections', () => {
+    expect(TB08Result.safeParse(baseTB08OkResult({ sections: [] })).success).toBe(false);
+  });
+
+  it('rejects ok result with empty citedSourceIds', () => {
+    expect(TB08Result.safeParse(baseTB08OkResult({ citedSourceIds: [] })).success).toBe(
+      false,
+    );
+  });
+
+  it('accepts needs_input result', () => {
+    expect(
+      TB08Result.safeParse({
+        status: 'needs_input',
+        detail: 'missedSkills is empty.',
+        missingFields: ['missedSkills'],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts no_source_document result', () => {
+    expect(
+      TB08Result.safeParse({
+        status: 'no_source_document',
+        detail: 'No source documents supplied for grounding.',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects needs_input with empty missingFields', () => {
+    expect(
+      TB08Result.safeParse({
+        status: 'needs_input',
+        detail: 'Something is missing.',
+        missingFields: [],
+      }).success,
+    ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// EnrichmentFocus
+// ---------------------------------------------------------------------------
+
+describe('EnrichmentFocus', () => {
+  it.each([
+    'DEEPER_EXPLORATION',
+    'CHALLENGE_TASKS',
+    'CROSS_CURRICULAR',
+    'HIGHER_ORDER_THINKING',
+  ] as const)('accepts %s', (focus) => {
+    expect(EnrichmentFocus.safeParse(focus).success).toBe(true);
+  });
+
+  it('rejects an unknown focus value', () => {
+    expect(EnrichmentFocus.safeParse('REVISION').success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ExtensionSection
+// ---------------------------------------------------------------------------
+
+describe('ExtensionSection', () => {
+  it('accepts a valid section', () => {
+    expect(
+      ExtensionSection.safeParse({
+        title: 'Exploring Irrational Numbers',
+        enrichmentFocus: 'DEEPER_EXPLORATION',
+        content: 'Pi and the square root of 2 cannot be expressed as fractions.',
+        tasks: [
+          'Research three other irrational numbers and explain why they are irrational.',
+        ],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects a section with an invalid enrichmentFocus', () => {
+    expect(
+      ExtensionSection.safeParse({
+        title: 'Challenge',
+        enrichmentFocus: 'REMEDIATION',
+        content: 'Some content.',
+        tasks: ['Task 1'],
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a section with empty tasks', () => {
+    expect(
+      ExtensionSection.safeParse({
+        title: 'Deeper Exploration',
+        enrichmentFocus: 'HIGHER_ORDER_THINKING',
+        content: 'Evaluating sources of evidence.',
+        tasks: [],
+      }).success,
+    ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// TB-09 — Extension & Enrichment Agent
+// ---------------------------------------------------------------------------
+
+function baseTB09Input(overrides: Record<string, unknown> = {}) {
+  return {
+    tenantId: UUID,
+    capsTopicId: 'CAPS-NS-GR6-TOPIC-1',
+    lessonId: UUID,
+    gradeLabel: '6',
+    subject: 'Natural Sciences',
+    topic: 'Energy and Change',
+    masteredSkills: [
+      {
+        skillId: 'CAPS-NS-GR6-ENERGY-1',
+        skillDescription: 'Describe forms of energy and energy transfer.',
+      },
+    ],
+    enrichmentFocus: 'CHALLENGE_TASKS' as const,
+    targetReadabilityBand: baseBand(),
+    language: 'en',
+    sourceDocumentIds: [UUID2],
+    requestedBy: 'teacher@school.za',
+    ...overrides,
+  };
+}
+
+function baseTB09OkResult(overrides: Record<string, unknown> = {}) {
+  return {
+    status: 'ok' as const,
+    artefactId: UUID2,
+    artefactType: 'EXTENSION_PACK' as const,
+    linkage: baseLinkage(),
+    sections: [
+      {
+        title: 'Challenge: Energy Audit',
+        enrichmentFocus: 'CHALLENGE_TASKS' as const,
+        content: 'Conduct an energy audit of your home.',
+        tasks: ['List five appliances and estimate their daily energy use in kWh.'],
+      },
+    ],
+    readabilityCheckResult: baseReadabilityCheckResult(),
+    citedSourceIds: [UUID2],
+    ...overrides,
+  };
+}
+
+describe('TB09Input', () => {
+  it('accepts valid input with lessonId', () => {
+    expect(TB09Input.safeParse(baseTB09Input()).success).toBe(true);
+  });
+
+  it('accepts valid input with interventionId', () => {
+    expect(
+      TB09Input.safeParse(baseTB09Input({ lessonId: undefined, interventionId: UUID }))
+        .success,
+    ).toBe(true);
+  });
+
+  it('rejects input missing both lessonId and interventionId', () => {
+    expect(TB09Input.safeParse(baseTB09Input({ lessonId: undefined })).success).toBe(
+      false,
+    );
+  });
+
+  it('rejects input with empty masteredSkills', () => {
+    expect(TB09Input.safeParse(baseTB09Input({ masteredSkills: [] })).success).toBe(
+      false,
+    );
+  });
+
+  it('rejects input with invalid enrichmentFocus', () => {
+    expect(
+      TB09Input.safeParse(baseTB09Input({ enrichmentFocus: 'REMEDIATION' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects input with empty sourceDocumentIds', () => {
+    expect(TB09Input.safeParse(baseTB09Input({ sourceDocumentIds: [] })).success).toBe(
+      false,
+    );
+  });
+});
+
+describe('TB09Result', () => {
+  it('accepts a valid ok result', () => {
+    expect(TB09Result.safeParse(baseTB09OkResult()).success).toBe(true);
+  });
+
+  it('rejects ok result with wrong artefactType', () => {
+    expect(
+      TB09Result.safeParse(baseTB09OkResult({ artefactType: 'WORKSHEET' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects ok result with empty sections', () => {
+    expect(TB09Result.safeParse(baseTB09OkResult({ sections: [] })).success).toBe(false);
+  });
+
+  it('accepts needs_input result', () => {
+    expect(
+      TB09Result.safeParse({
+        status: 'needs_input',
+        detail: 'masteredSkills is required.',
+        missingFields: ['masteredSkills'],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts no_source_document result', () => {
+    expect(
+      TB09Result.safeParse({
+        status: 'no_source_document',
+        detail: 'No source documents supplied for grounding.',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects ok result with empty citedSourceIds', () => {
+    expect(TB09Result.safeParse(baseTB09OkResult({ citedSourceIds: [] })).success).toBe(
+      false,
+    );
   });
 });

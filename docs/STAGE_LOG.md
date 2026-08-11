@@ -4081,3 +4081,72 @@ TB05Contract.
 25 prompts tests, 144 evals tests).
 
 Step 5 (TB-08 Remediation Pack Builder and TB-09 Extension & Enrichment Agent) is next.
+
+### Stage 11 — Step 5: TB-08 Remediation Pack Builder and TB-09 Extension & Enrichment Agent
+
+**What was built**
+
+Two new content-authoring agents completing Stage 11's targeted-support suite:
+
+- **TB-08 Remediation Pack Builder**: receives `missedSkills[]` and produces one `RemediationSection`
+  per missed skill — each with a plain-language `explanation`, two-or-more annotated `workedExamples`,
+  and three-or-more graduated `practiceItems`. Grounded in `sourceDocumentIds`; refuses with
+  `no_source_document` if documents are insufficient; refuses with `needs_input` if `missedSkills`
+  is empty or absent.
+
+- **TB-09 Extension & Enrichment Agent**: receives `masteredSkills[]` and an `enrichmentFocus` enum,
+  produces `ExtensionSection[]` with title, enrichmentFocus, framing content, and tasks. Four focus
+  modes supported: DEEPER_EXPLORATION (nuance, edge cases, the "why"), CHALLENGE_TASKS (higher Bloom
+  tier, less scaffolding), CROSS_CURRICULAR (explicitly named connecting subject, grounded in curriculum),
+  HIGHER_ORDER_THINKING (synthesis/evaluation/creation at top Bloom tiers, framing for open-ended
+  responses). Pack must build FROM mastery, not re-teach it.
+
+**Prompts** (`packages/prompts/src/TB-08/1.0.0.prompt.md`, `TB-09/1.0.0.prompt.md`):
+
+- 8-section format: ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA, SELF-CHECK.
+- TB-09 GROUNDING section includes an `## ENRICHMENT FOCUS DEFINITIONS` subsection (note: NOT a top-level
+  `#` heading — the loader enforces exactly 8 top-level sections) defining requirements per focus mode.
+- Both hashes locked in `packages/prompts/prompt-lock.json`.
+
+**Schemas** (`packages/contracts/src/toolbox/agents.ts`):
+
+- `RemediationSection`, `TB08Input`, `TB08Result` — 3 new exports.
+- `EnrichmentFocus`, `ExtensionSection`, `TB09Input`, `TB09Result` — 4 new exports.
+- Wired through `packages/contracts/src/toolbox/index.ts` and `packages/contracts/src/index.ts`.
+- `test/exports.spec.ts` updated (EnrichmentFocus between EmbeddingsResponse and EvidenceItem;
+  ExtensionSection after ExportResult; RemediationSection between ReadabilityCheckResult and
+  RenderRequest; TB08*/TB09* between TB07Result and TBOutputLinkage).
+
+**Contract tests** (`packages/contracts/test/toolbox-agents.spec.ts`):
+
+- 36 new tests (426 total from 390): RemediationSection (3), TB08Input (6), TB08Result (7),
+  EnrichmentFocus (5), ExtensionSection (3), TB09Input (6), TB09Result (6).
+
+**Eval sets**:
+
+- `packages/evals/sets/TB-08/main.json` — 20 cases covering Math/English/Natural Sciences/Social
+  Sciences/History across Grades 2–12 (Foundation, Intermediate, Senior, FET), multiple subjects,
+  lessonId and interventionId paths, multi-skill (2-section) cases, Afrikaans language, and one
+  `needs_input` error path (TB08-020: empty missedSkills).
+- `packages/evals/sets/TB-09/main.json` — 20 cases covering all four enrichmentFocus modes across
+  Grades 2–12, multiple subjects, lessonId and interventionId paths, Afrikaans language (TB09-007),
+  and one `needs_input` error path (TB09-020: empty masteredSkills). Both source-doc-only citation
+  checks and llm_judge criteria used throughout.
+
+**Agent contracts** (`packages/agents/src/mod-04/`):
+
+- `TB-08.contract.ts`: guardrails `['pii_guard', 'source_grounding_guard']`, budget 4000 tokens /
+  $0.02, model `plan.author`, no tools, no approval, no brain write.
+- `TB-09.contract.ts`: same budget, guardrails, model configuration as TB-08.
+- Both exported from `packages/agents/src/index.ts`.
+
+**Agent contract tests** (`packages/agents/test/mod-04/`):
+
+- `TB-08.contract.spec.ts` — 13 tests (id, module, purpose, promptRef, requiresApproval,
+  writesToBrain, model, evalSetRef, pii_guard, source_grounding_guard, tools, maxTokens, maxCostUsd).
+- `TB-09.contract.spec.ts` — 13 tests (same pattern).
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (368 agents tests, 426 contracts tests,
+25 prompts tests, 144 evals tests).
+
+Step 6 (TB-02 Board & Deck Builder and TB-10 Resource-Light Activity Agent) is next.

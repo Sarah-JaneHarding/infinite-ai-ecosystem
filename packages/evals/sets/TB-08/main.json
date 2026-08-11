@@ -1,0 +1,683 @@
+{
+  "cases": [
+    {
+      "id": "TB08-001",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-MATH-GR5-FRACTIONS",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000001",
+        "gradeLabel": "5",
+        "subject": "Mathematics",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-MATH-GR5-FRAC-1",
+            "skillDescription": "Add fractions with unlike denominators."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-math-gr5-fractions"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        { "type": "exact_match", "field": "artefactType", "value": "REMEDIATION_PACK" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "Each RemediationSection includes a plain-language explanation, at least two worked examples, and at least two practice items targeting adding fractions with unlike denominators."
+        },
+        {
+          "type": "citation_presence",
+          "minCitations": 1,
+          "citedIdsField": "citedSourceIds",
+          "validIds": ["doc-math-gr5-fractions"]
+        }
+      ],
+      "rubric": "The remediation pack for adding fractions with unlike denominators must re-teach finding the LCM, show step-by-step worked examples, and provide practice items of graduated difficulty appropriate for Grade 5.",
+      "tags": ["remediation", "mathematics", "fractions", "grade-5", "must_not_regress"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-002",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-ENG-GR3-PHONICS",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000002",
+        "gradeLabel": "3",
+        "subject": "English Home Language",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-ENG-GR3-PHON-1",
+            "skillDescription": "Decode words with the 'tion' spelling pattern."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 2, "maxGrade": 4 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-eng-gr3-phonics"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        { "type": "exact_match", "field": "artefactType", "value": "REMEDIATION_PACK" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The explanation uses Foundation Phase appropriate language — short sentences and familiar words. The worked examples demonstrate decoding step by step. Practice items ask the learner to read and write 'tion' words."
+        }
+      ],
+      "rubric": "Foundation Phase remediation for decoding the 'tion' pattern must return to concrete phonics: explain the sound, show words with 'tion' broken into syllables, and give short, decodable practice words.",
+      "tags": ["remediation", "english", "phonics", "foundation-phase", "grade-3"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-003",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-NS-GR6-ENERGY",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000003",
+        "gradeLabel": "6",
+        "subject": "Natural Sciences",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-NS-GR6-ENERGY-1",
+            "skillDescription": "Identify and describe renewable and non-renewable energy sources."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-ns-gr6-energy"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The remediation section distinguishes clearly between renewable and non-renewable energy sources, gives real-world examples, and asks the learner to classify further examples in the practice items."
+        },
+        {
+          "type": "citation_presence",
+          "minCitations": 1,
+          "citedIdsField": "citedSourceIds",
+          "validIds": ["doc-ns-gr6-energy"]
+        }
+      ],
+      "rubric": "Content must be grounded in the supplied Natural Sciences source. Examples must include both renewable (solar, wind) and non-renewable (coal, oil) sources with brief explanations of each.",
+      "tags": ["remediation", "natural-sciences", "energy", "grade-6"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-004",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-MATH-GR9-ALGEBRA",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000004",
+        "gradeLabel": "9",
+        "subject": "Mathematics",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-MATH-GR9-ALG-1",
+            "skillDescription": "Factorise quadratic expressions of the form ax² + bx + c."
+          },
+          {
+            "skillId": "CAPS-MATH-GR9-ALG-2",
+            "skillDescription": "Solve quadratic equations by factorisation."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 8, "maxGrade": 10 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-math-gr9-algebra"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        { "type": "exact_match", "field": "artefactType", "value": "REMEDIATION_PACK" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "Two RemediationSections are produced — one for factorisation and one for solving by factorisation. Each section's worked examples show every algebraic step. Practice items cover both skills with varying coefficients."
+        }
+      ],
+      "rubric": "Senior Phase algebra remediation must show systematic factorisation steps (trial factors, grouping, or the 'ac' method) and demonstrate how the zeros of the quadratic follow from the factors.",
+      "tags": ["remediation", "mathematics", "algebra", "grade-9", "multi-skill"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-005",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-SS-GR7-GEOGRAPHY",
+        "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000005",
+        "gradeLabel": "7",
+        "subject": "Social Sciences",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-SS-GR7-GEO-1",
+            "skillDescription": "Read and interpret a topographic map using contour lines."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-ss-gr7-mapwork"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The explanation covers what contour lines represent and how to read them. Worked examples walk through reading a contour map step by step. Practice items ask the learner to interpret contour intervals and identify terrain features."
+        }
+      ],
+      "rubric": "Contour line remediation should use simple, stepped language. Diagrams are described in words. Practice items should include tasks like 'which side is steeper' and 'estimate the altitude at point X'.",
+      "tags": ["remediation", "social-sciences", "mapwork", "grade-7", "intervention"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-006",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-ENG-GR10-COMPREHENSION",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000006",
+        "gradeLabel": "10",
+        "subject": "English First Additional Language",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-ENG-GR10-COMP-1",
+            "skillDescription": "Identify the main idea and supporting details in an expository text."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 9, "maxGrade": 11 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-eng-gr10-comprehension"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The explanation distinguishes main ideas from supporting details using the correct terminology. Worked examples annotate a short passage to show which sentence is the main idea and which are supporting details. Practice items ask the learner to do the same with fresh short passages."
+        }
+      ],
+      "rubric": "FET comprehension remediation must use appropriate academic register. The worked examples must model the annotation process explicitly before the learner attempts the practice items.",
+      "tags": ["remediation", "english", "comprehension", "grade-10", "fet"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-007",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-MATH-GR4-MEASUREMENT",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000007",
+        "gradeLabel": "4",
+        "subject": "Mathematics",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-MATH-GR4-MEAS-1",
+            "skillDescription": "Convert between millimetres, centimetres, and metres."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+        "language": "af",
+        "sourceDocumentIds": ["doc-math-gr4-measurement-af"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The pack is written entirely in Afrikaans. The explanation covers the relationship between mm, cm, and m using familiar examples (a ruler, a door). Worked examples show step-by-step conversion. Practice items are clearly stated in Afrikaans."
+        }
+      ],
+      "rubric": "Measurement remediation in Afrikaans must use simple, grade-appropriate vocabulary. Conversion steps must be shown explicitly. Practice items should use everyday objects as measurement contexts.",
+      "tags": ["remediation", "mathematics", "measurement", "grade-4", "afrikaans"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-008",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-NS-GR4-LIFE-PROCESSES",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000008",
+        "gradeLabel": "4",
+        "subject": "Natural Sciences and Technology",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-NS-GR4-LP-1",
+            "skillDescription": "Name the seven life processes of living things."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-ns-gr4-life-processes"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "All seven life processes are named and briefly explained. A memory strategy (e.g. acronym MRS GREN or equivalent) is offered if present in the source. Practice items test recall and application of each process."
+        }
+      ],
+      "rubric": "Intermediate Phase Natural Sciences remediation for life processes should use simple descriptions of each process with examples from familiar animals or plants. Practice must reinforce all seven processes.",
+      "tags": ["remediation", "natural-sciences", "life-processes", "grade-4"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-009",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-MATH-GR11-TRIGONOMETRY",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000009",
+        "gradeLabel": "11",
+        "subject": "Mathematics",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-MATH-GR11-TRIG-1",
+            "skillDescription": "Apply the sine rule to solve non-right-angled triangles."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 10, "maxGrade": 12 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-math-gr11-trigonometry"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The explanation states the sine rule correctly and explains when it applies (given two sides and an opposite angle, or two angles and a side). Worked examples show the full algebraic substitution and solution steps. Practice items include both finding a side and finding an angle."
+        }
+      ],
+      "rubric": "FET trigonometry remediation must state the sine rule formula accurately, show substitution into the formula as a separate step, and check that solutions are in the correct range. Notation must follow CAPS conventions.",
+      "tags": ["remediation", "mathematics", "trigonometry", "grade-11", "fet"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-010",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-ENG-GR2-WRITING",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000010",
+        "gradeLabel": "2",
+        "subject": "English Home Language",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-ENG-GR2-WRITE-1",
+            "skillDescription": "Write a simple three-sentence paragraph with a topic sentence."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 1, "maxGrade": 3 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-eng-gr2-writing"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The explanation clearly names what a topic sentence is and what two supporting sentences do. The worked example shows an annotated three-sentence paragraph. Practice items give a topic sentence and ask the learner to add two supporting sentences."
+        }
+      ],
+      "rubric": "Foundation Phase writing remediation must use the simplest possible language. The worked example must be clearly labelled (Topic sentence: … Supporting sentence 1: … Supporting sentence 2: …).",
+      "tags": ["remediation", "english", "writing", "foundation-phase", "grade-2"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-011",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-MATH-GR8-GEOMETRY",
+        "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000011",
+        "gradeLabel": "8",
+        "subject": "Mathematics",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-MATH-GR8-GEOM-1",
+            "skillDescription": "Identify and apply the properties of parallel lines cut by a transversal."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 7, "maxGrade": 9 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-math-gr8-geometry"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "All relevant angle relationships (corresponding, alternate, co-interior) are named and defined. Worked examples label the angle pairs in a diagram described in words. Practice items ask the learner to calculate missing angles with reasons."
+        }
+      ],
+      "rubric": "Parallel lines remediation must name each angle relationship correctly (corresponding angles equal, alternate angles equal, co-interior angles supplementary) and require the learner to provide a reason with each answer.",
+      "tags": ["remediation", "mathematics", "geometry", "grade-8", "intervention"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-012",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-HIST-GR9-COLD-WAR",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000012",
+        "gradeLabel": "9",
+        "subject": "Social Sciences",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-HIST-GR9-CW-1",
+            "skillDescription": "Explain the causes of the Cold War between the USA and the USSR."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 8, "maxGrade": 10 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-hist-gr9-cold-war"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "At least three causes of the Cold War are clearly stated and explained with evidence from the source document. Worked examples model how to structure a cause-and-effect response. Practice items ask the learner to explain causes in their own structured paragraphs."
+        }
+      ],
+      "rubric": "History remediation must be grounded in the source document. Causes must be specific (e.g. ideological differences, post-WWII power vacuum, Truman Doctrine) and not vague generalisations. Writing frame in the practice items should scaffold the expected response structure.",
+      "tags": ["remediation", "history", "cold-war", "grade-9"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-013",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-MATH-GR12-STATISTICS",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000013",
+        "gradeLabel": "12",
+        "subject": "Mathematics",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-MATH-GR12-STAT-1",
+            "skillDescription": "Calculate the standard deviation and interpret it in context."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 11, "maxGrade": 12 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-math-gr12-statistics"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The formula for standard deviation is stated correctly. Worked examples compute standard deviation step by step for a small data set and interpret the result in terms of spread. Practice items require both calculation and interpretation."
+        }
+      ],
+      "rubric": "FET statistics remediation must show the full calculation method (mean, deviations, squared deviations, variance, then square root). The interpretation step must be present and accurate — 'a larger standard deviation indicates more spread'.",
+      "tags": ["remediation", "mathematics", "statistics", "grade-12", "fet"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-014",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-ENG-GR5-GRAMMAR",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000014",
+        "gradeLabel": "5",
+        "subject": "English Home Language",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-ENG-GR5-GRAM-1",
+            "skillDescription": "Identify and use subject-verb agreement in sentences."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-eng-gr5-grammar"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The explanation states the rule clearly (singular subject → singular verb; plural subject → plural verb). Worked examples show at least four sentences corrected from error to correct form. Practice items include error-correction and sentence-completion exercises."
+        }
+      ],
+      "rubric": "Grammar remediation for subject-verb agreement should show clear, contrasting correct and incorrect examples. Practice items must not be trivially easy — include compound subjects and intervening phrases.",
+      "tags": ["remediation", "english", "grammar", "grade-5"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-015",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-MATH-GR6-DECIMALS",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000015",
+        "gradeLabel": "6",
+        "subject": "Mathematics",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-MATH-GR6-DEC-1",
+            "skillDescription": "Multiply a decimal number by a whole number."
+          },
+          {
+            "skillId": "CAPS-MATH-GR6-DEC-2",
+            "skillDescription": "Divide a decimal number by a whole number."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-math-gr6-decimals"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "Two sections are produced — one for multiplication and one for division of decimals. Each section addresses place value alignment explicitly. Worked examples show the full written method. Practice items use familiar monetary and measurement contexts."
+        }
+      ],
+      "rubric": "Decimal operations remediation must address the most common error: misalignment of the decimal point. Worked examples must show place value columns explicitly. Use money and measurement contexts to make the content concrete.",
+      "tags": ["remediation", "mathematics", "decimals", "grade-6", "multi-skill"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-016",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-NS-GR8-MATTER",
+        "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000016",
+        "gradeLabel": "8",
+        "subject": "Natural Sciences",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-NS-GR8-MAT-1",
+            "skillDescription": "Distinguish between physical and chemical changes to matter."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 7, "maxGrade": 9 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-ns-gr8-matter"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The explanation clearly distinguishes physical changes (reversible, no new substance) from chemical changes (irreversible, new substance formed) with multiple examples of each. Practice items ask the learner to classify given changes and justify their answer."
+        }
+      ],
+      "rubric": "Natural Sciences remediation for changes to matter must use the correct scientific criteria for classification: identity of substance, reversibility, new product formation. Practice items must require justification, not just classification.",
+      "tags": ["remediation", "natural-sciences", "matter", "grade-8", "intervention"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-017",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-MATH-GR10-FUNCTIONS",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000017",
+        "gradeLabel": "10",
+        "subject": "Mathematics",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-MATH-GR10-FUNC-1",
+            "skillDescription": "Sketch the graph of y = ax² + q and identify the turning point, axis of symmetry, and intercepts."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 9, "maxGrade": 11 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-math-gr10-functions"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The explanation covers the effect of 'a' (direction and shape) and 'q' (vertical shift) on the parabola. Worked examples show how to find and label the turning point, axis of symmetry, and intercepts for specific values. Practice items require both sketching and feature identification."
+        }
+      ],
+      "rubric": "FET parabola remediation must address the three features explicitly: turning point (0; q), axis of symmetry (x = 0), y-intercept (q), and x-intercepts (when they exist). The effect of 'a' on the shape (narrow/wide, up/down) must be explained.",
+      "tags": ["remediation", "mathematics", "functions", "grade-10", "fet"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-018",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-ENG-GR8-POETRY",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000018",
+        "gradeLabel": "8",
+        "subject": "English Home Language",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-ENG-GR8-POET-1",
+            "skillDescription": "Identify and explain the effect of imagery in a poem."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 7, "maxGrade": 9 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-eng-gr8-poetry"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The explanation defines imagery and gives examples of simile, metaphor, and personification. Worked examples analyse a line or two from a poem in the source, identifying the image type and explaining its effect. Practice items give short lines and ask for identification and effect."
+        }
+      ],
+      "rubric": "Poetry remediation for imagery must teach both identification AND the 'so what' — what feeling or idea does the image create? The worked example must model a full response: 'The poet uses [image type] when they write [quote]. This creates the impression of [effect].'",
+      "tags": ["remediation", "english", "poetry", "grade-8"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-019",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-NS-GR5-FOOD-CHAINS",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000019",
+        "gradeLabel": "5",
+        "subject": "Natural Sciences and Technology",
+        "missedSkills": [
+          {
+            "skillId": "CAPS-NS-GR5-FC-1",
+            "skillDescription": "Draw and label a food chain with at least three organisms."
+          }
+        ],
+        "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-ns-gr5-food-chains"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "ok" },
+        {
+          "type": "llm_judge",
+          "minScore": 0.8,
+          "criterion": "The explanation defines producer, consumer (primary and secondary), and predator using familiar organisms. Worked examples show two complete food chains described in words with arrows indicating energy flow. Practice items ask the learner to draw and label their own food chains."
+        }
+      ],
+      "rubric": "Food chain remediation must use organisms familiar to South African learners. Arrow direction (energy flow from prey to predator) must be explicit. Producer → Primary consumer → Secondary consumer structure must be labelled in examples.",
+      "tags": ["remediation", "natural-sciences", "food-chains", "grade-5"],
+      "source": "specification"
+    },
+    {
+      "id": "TB08-020",
+      "agentId": "TB-08",
+      "input": {
+        "tenantId": "11111111-2222-3333-4444-555555555555",
+        "capsTopicId": "CAPS-MATH-GR7-RATIOS",
+        "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000020",
+        "gradeLabel": "7",
+        "subject": "Mathematics",
+        "missedSkills": [],
+        "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+        "language": "en",
+        "sourceDocumentIds": ["doc-math-gr7-ratios"],
+        "requestedBy": "teacher@school.za"
+      },
+      "context": null,
+      "expectations": [
+        { "type": "exact_match", "field": "status", "value": "needs_input" },
+        {
+          "type": "set_overlap",
+          "field": "missingFields",
+          "expectedSet": ["missedSkills"],
+          "minOverlap": 1.0
+        }
+      ],
+      "rubric": "When missedSkills is an empty array, the agent must return needs_input identifying missedSkills as the missing field.",
+      "tags": ["needs-input", "empty-skills", "error-path"],
+      "source": "specification"
+    }
+  ]
+}

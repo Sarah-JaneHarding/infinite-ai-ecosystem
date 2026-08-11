@@ -445,3 +445,149 @@ export const TB07Result = z.discriminatedUnion('status', [
   }),
 ]);
 export type TB07Result = z.infer<typeof TB07Result>;
+
+// ---------------------------------------------------------------------------
+// TB-08 — Remediation Pack Builder
+// ---------------------------------------------------------------------------
+
+/**
+ * One remediation section, targeting a single missed skill.
+ * Explanation re-teaches the concept; worked examples model it; practice items
+ * let the learner attempt it independently.
+ */
+export const RemediationSection = z.object({
+  skillId: z.string().min(1),
+  skillDescription: z.string().min(1),
+  /** Plain-language re-teaching of the concept. */
+  explanation: z.string().min(1),
+  /** Step-by-step solved examples showing the skill applied. */
+  workedExamples: z.array(z.string().min(1)).min(1),
+  /** Practice questions the learner attempts independently after the examples. */
+  practiceItems: z.array(z.string().min(1)).min(1),
+});
+export type RemediationSection = z.infer<typeof RemediationSection>;
+
+export const TB08Input = TBLinkageBase.extend({
+  tenantId: z.string().uuid(),
+  gradeLabel: GradeLabel,
+  subject: z.string().min(1),
+  /**
+   * Skills identified as missed in assessment. Each entry has a CAPS sub-skill
+   * identifier and a human-readable description of what the learner could not do.
+   * The sub-skill graph in L1 is used to select prerequisite concepts where needed.
+   */
+  missedSkills: z
+    .array(
+      z.object({
+        skillId: z.string().min(1),
+        skillDescription: z.string().min(1),
+      }),
+    )
+    .min(1),
+  targetReadabilityBand: GradeBand,
+  language: z.string().min(2).max(5),
+  sourceDocumentIds: z.array(z.string().min(1)).min(1),
+  requestedBy: z.string().min(1),
+}).superRefine(requireOneLinkage);
+export type TB08Input = z.infer<typeof TB08Input>;
+
+export const TB08Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('ok'),
+    artefactId: z.string().uuid(),
+    artefactType: z.literal('REMEDIATION_PACK'),
+    linkage: TBOutputLinkage,
+    /** One section per missed skill, in the order supplied in the input. */
+    sections: z.array(RemediationSection).min(1),
+    readabilityCheckResult: ReadabilityCheckResult,
+    /** Every cited source must appear in the input's sourceDocumentIds. */
+    citedSourceIds: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+    missingFields: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('no_source_document'),
+    detail: z.string().min(1),
+  }),
+]);
+export type TB08Result = z.infer<typeof TB08Result>;
+
+// ---------------------------------------------------------------------------
+// TB-09 — Extension & Enrichment Agent
+// ---------------------------------------------------------------------------
+
+/**
+ * The kind of extension activity the agent should produce.
+ * DEEPER_EXPLORATION — goes further within the same topic.
+ * CHALLENGE_TASKS — harder versions of the same skill type.
+ * CROSS_CURRICULAR — applies the skill in a different subject context.
+ * HIGHER_ORDER_THINKING — synthesis, evaluation, or creation tasks (top Bloom tiers).
+ */
+export const EnrichmentFocus = z.enum([
+  'DEEPER_EXPLORATION',
+  'CHALLENGE_TASKS',
+  'CROSS_CURRICULAR',
+  'HIGHER_ORDER_THINKING',
+]);
+export type EnrichmentFocus = z.infer<typeof EnrichmentFocus>;
+
+/** One enrichment section, targeting a particular focus type. */
+export const ExtensionSection = z.object({
+  title: z.string().min(1),
+  enrichmentFocus: EnrichmentFocus,
+  /** Explanatory text, background, or challenge framing for this section. */
+  content: z.string().min(1),
+  /** Ordered tasks or challenge questions the learner works through. */
+  tasks: z.array(z.string().min(1)).min(1),
+});
+export type ExtensionSection = z.infer<typeof ExtensionSection>;
+
+export const TB09Input = TBLinkageBase.extend({
+  tenantId: z.string().uuid(),
+  gradeLabel: GradeLabel,
+  subject: z.string().min(1),
+  topic: z.string().min(1),
+  /**
+   * Skills the learner has already mastered — the starting point for extension.
+   * The agent builds on these rather than re-teaching them.
+   */
+  masteredSkills: z
+    .array(
+      z.object({
+        skillId: z.string().min(1),
+        skillDescription: z.string().min(1),
+      }),
+    )
+    .min(1),
+  enrichmentFocus: EnrichmentFocus,
+  targetReadabilityBand: GradeBand,
+  language: z.string().min(2).max(5),
+  sourceDocumentIds: z.array(z.string().min(1)).min(1),
+  requestedBy: z.string().min(1),
+}).superRefine(requireOneLinkage);
+export type TB09Input = z.infer<typeof TB09Input>;
+
+export const TB09Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('ok'),
+    artefactId: z.string().uuid(),
+    artefactType: z.literal('EXTENSION_PACK'),
+    linkage: TBOutputLinkage,
+    sections: z.array(ExtensionSection).min(1),
+    readabilityCheckResult: ReadabilityCheckResult,
+    citedSourceIds: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+    missingFields: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('no_source_document'),
+    detail: z.string().min(1),
+  }),
+]);
+export type TB09Result = z.infer<typeof TB09Result>;
