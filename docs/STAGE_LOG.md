@@ -4000,3 +4000,84 @@ TB05Contract.
 
 `pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (330 agents tests, 362 contracts tests,
 144 evals tests).
+
+### Stage 11 — Step 4: TB-07 Accessibility Adapter contract, prompt, eval set
+
+**Date:** 2026-08-11
+
+**What was built**
+
+**Accessibility model** (`packages/contracts/src/toolbox/accessibility.ts`):
+
+- `AccessibilityMode` enum: four modes — `LARGE_PRINT`, `DYSLEXIA_FRIENDLY`, `SIMPLIFIED_LANGUAGE`,
+  `BRAILLE_READY`.
+- `AccessibilityCheckItem`: one named check (`name`, `required`, `measured`, `pass` boolean).
+  Representative check names per mode documented in file comments.
+- `AccessibilityCheckResult`: aggregated result (`mode`, `checks` array, `verdict` enum `pass|fail`).
+  verdict is 'pass' only when every individual check passes. Mirrors `ReadabilityCheckResult` in
+  structure and intent.
+
+**Contract** (`packages/agents/src/mod-04/TB-07.contract.ts`):
+
+- `inputSchema`: `TB07Input` — TBLinkageBase extended with tenantId, gradeLabel, sourceArtefactId,
+  sourceArtefactType, content (min 1), language (ISO code), accessibilityMode, requestedBy.
+  Enforces linkage (at least one of lessonId/interventionId) via `requireOneLinkage` superRefine.
+- `outputSchema`: `TB07Result` — discriminated union:
+  - `ok` (ACCESSIBLE_ARTEFACT, adaptedContent, accessibilityMode, accessibilityCheckResult with verdict='pass')
+  - `accessibility_check_failed` (accessibilityMode, accessibilityCheckResult with verdict='fail', detail)
+  - `needs_input` / `no_source_content`
+- purpose: `planning`, model: `plan.author`, tools: [], guardrails: pii_guard, budget: 5 000 tokens /
+  $0.025, requiresApproval: false, writesToBrain: false.
+
+**Prompt** (`packages/prompts/src/TB-07/1.0.0.prompt.md`):
+
+- 8-section format: ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA, SELF-CHECK.
+- GROUNDING section defines all four modes with specific requirements and named check identifiers:
+  - LARGE_PRINT: font_size_spec (≥18pt), line_length (≤60), single_column, contrast
+  - DYSLEXIA_FRIENDLY: font_spec (OpenDyslexic/Arial/Lexie), line_spacing (1.5), line_length, left_align_only, no_italics
+  - SIMPLIFIED_LANGUAGE: avg_sentence_length (≤15 words), technical_terms_addressed, readability_within_band
+  - BRAILLE_READY: no_colour_only_references, no_image_only_content, linear_layout, math_linear_notation
+- BRAILLE_READY requires `[TACTILE GRAPHIC REQUIRED: <description>]` flags for visual elements.
+- `accessibility_check_failed` returned when best-effort adaptation cannot meet mode requirements.
+- Hash locked in `packages/prompts/prompt-lock.json` (TB-07@1.0.0).
+
+**Eval set** (`packages/evals/sets/TB-07/main.json`):
+
+- 20 cases in a single file covering all four modes and multiple artefact types:
+  - LARGE_PRINT (TB07-001 to TB07-003, TB07-016, TB07-020): worksheet, reading passage, assessment item,
+    Foundation Phase Grade R, Afrikaans language
+  - DYSLEXIA_FRIENDLY (TB07-004 to TB07-006, TB07-017): worksheet, reading passage, marking memo,
+    italic-replacement check, FET/Senior Phase
+  - SIMPLIFIED_LANGUAGE (TB07-007 to TB07-009, TB07-018): reading passage (technical vocabulary),
+    Foundation Phase worksheet, FET assessment item
+  - BRAILLE_READY (TB07-010 to TB07-012, TB07-019): colour-reference replacement, table linearisation,
+    diagram flagging with [TACTILE GRAPHIC REQUIRED:], map visual reference replacement
+  - Error paths: TB07-013 (`accessibility_check_failed` — university-level physics content for Grade 1),
+    TB07-014 (`no_source_content`), TB07-015 (`needs_input` — missing linkage)
+- `llm_judge` criteria on all ok cases; `refusal_correctness` on the missing-linkage case.
+
+**Schemas** (`packages/contracts/src/toolbox/agents.ts`, `accessibility.ts`):
+
+- `AccessibilityMode`, `AccessibilityCheckItem`, `AccessibilityCheckResult` — 3 new exports.
+- `TB07Input` / `TB07Result` — 2 new exports.
+- Wired through `packages/contracts/src/toolbox/index.ts` and `packages/contracts/src/index.ts`.
+- `test/exports.spec.ts` updated (AccessibilityCheckItem, AccessibilityCheckResult, AccessibilityMode
+  between ATPWeek and ActivityKind; TB07Input, TB07Result between TB06Result and TBOutputLinkage).
+
+**Contract tests** (`packages/contracts/test/toolbox-agents.spec.ts`):
+
+- 46 new tests (390 total from 344): AccessibilityMode (3), AccessibilityCheckItem (3),
+  AccessibilityCheckResult (5), TB07Input (8), TB07Result (11).
+- Key invariants: all four modes accepted; `accessibility_check_failed` requires non-empty detail;
+  `ok` result rejects wrong artefactType or empty adaptedContent; `needs_input` rejects empty missingFields.
+
+**Agent contract test** (`packages/agents/test/mod-04/TB-07.contract.spec.ts`):
+
+- 12 tests covering id, module, purpose, promptRef, requiresApproval, writesToBrain, model, evalSetRef,
+  guardrails, tools, token budget, cost budget.
+- First test file to establish `packages/agents/test/mod-04/` directory.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (342 agents tests, 390 contracts tests,
+25 prompts tests, 144 evals tests).
+
+Step 5 (TB-08 Remediation Pack Builder and TB-09 Extension & Enrichment Agent) is next.

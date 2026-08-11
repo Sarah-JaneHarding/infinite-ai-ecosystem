@@ -1,8 +1,8 @@
-// Toolbox agent contracts — Stage 11 steps 2–3.
+// Toolbox agent contracts — Stage 11 steps 2–4.
 //
 // Covers: TB-01 (Worksheet Builder), TB-03 (Reading Passage Generator),
 // TB-04 (Item Writer), TB-05 (Memo & Marking Guide Agent),
-// TB-06 (Home-Language Adapter) input/output schemas.
+// TB-06 (Home-Language Adapter), TB-07 (Accessibility Adapter) input/output schemas.
 //
 // Key invariants verified:
 //   - TBLinkageInput requires at least one of lessonId / interventionId
@@ -10,10 +10,14 @@
 //   - TB-05 disagreement_flagged blocks release (no artefactId in that variant)
 //   - MC items must have exactly four options; other types have none
 //   - TB-06 rejects same source/target language; requiresHumanReview flag present in ok result
+//   - TB-07 accessibilityCheckResult.verdict must be 'pass' on ok, 'fail' on check_failed
 
 import { describe, expect, it } from 'vitest';
 
 import {
+  AccessibilityCheckItem,
+  AccessibilityCheckResult,
+  AccessibilityMode,
   AnswerKeyEntry,
   AssessmentItem,
   AssessmentItemType,
@@ -31,6 +35,8 @@ import {
   TB05VerificationItem,
   TB06Input,
   TB06Result,
+  TB07Input,
+  TB07Result,
   TBOutputLinkage,
   VerifierAnswers,
   WorksheetDifferentiationTier,
@@ -1054,6 +1060,354 @@ describe('TB06Result', () => {
   it('rejects needs_input result with empty missingFields', () => {
     expect(
       TB06Result.safeParse({
+        status: 'needs_input',
+        detail: 'Something missing.',
+        missingFields: [],
+      }).success,
+    ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AccessibilityMode
+// ---------------------------------------------------------------------------
+
+describe('AccessibilityMode', () => {
+  it('accepts all four modes', () => {
+    const modes = [
+      'LARGE_PRINT',
+      'DYSLEXIA_FRIENDLY',
+      'SIMPLIFIED_LANGUAGE',
+      'BRAILLE_READY',
+    ];
+    for (const mode of modes) {
+      expect(AccessibilityMode.safeParse(mode).success).toBe(true);
+    }
+  });
+
+  it('rejects an unlisted mode', () => {
+    expect(AccessibilityMode.safeParse('LARGE_FONT').success).toBe(false);
+  });
+
+  it('rejects an empty string', () => {
+    expect(AccessibilityMode.safeParse('').success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AccessibilityCheckItem
+// ---------------------------------------------------------------------------
+
+describe('AccessibilityCheckItem', () => {
+  it('accepts a passing check item', () => {
+    expect(
+      AccessibilityCheckItem.safeParse({
+        name: 'font_size_spec',
+        required: 'font size ≥ 18pt specified',
+        measured: '18pt directive present',
+        pass: true,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts a failing check item', () => {
+    expect(
+      AccessibilityCheckItem.safeParse({
+        name: 'line_length',
+        required: '≤ 60 chars/line',
+        measured: 'max line 72 chars',
+        pass: false,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects a check item with empty name', () => {
+    expect(
+      AccessibilityCheckItem.safeParse({
+        name: '',
+        required: 'font size ≥ 18pt',
+        measured: '18pt',
+        pass: true,
+      }).success,
+    ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AccessibilityCheckResult
+// ---------------------------------------------------------------------------
+
+function baseCheckResult(overrides: Record<string, unknown> = {}) {
+  return {
+    mode: 'LARGE_PRINT',
+    checks: [
+      {
+        name: 'font_size_spec',
+        required: 'font size ≥ 18pt',
+        measured: '18pt directive present',
+        pass: true,
+      },
+      {
+        name: 'line_length',
+        required: '≤ 60 chars/line',
+        measured: 'max line 45 chars',
+        pass: true,
+      },
+    ],
+    verdict: 'pass',
+    ...overrides,
+  };
+}
+
+describe('AccessibilityCheckResult', () => {
+  it('accepts a passing result', () => {
+    expect(AccessibilityCheckResult.safeParse(baseCheckResult()).success).toBe(true);
+  });
+
+  it('accepts a failing result', () => {
+    expect(
+      AccessibilityCheckResult.safeParse(
+        baseCheckResult({
+          checks: [
+            {
+              name: 'font_size_spec',
+              required: 'font size ≥ 18pt',
+              measured: 'no directive',
+              pass: false,
+            },
+          ],
+          verdict: 'fail',
+        }),
+      ).success,
+    ).toBe(true);
+  });
+
+  it('rejects result with no checks', () => {
+    expect(
+      AccessibilityCheckResult.safeParse(baseCheckResult({ checks: [] })).success,
+    ).toBe(false);
+  });
+
+  it('rejects unknown verdict', () => {
+    expect(
+      AccessibilityCheckResult.safeParse(baseCheckResult({ verdict: 'unknown' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects unknown mode', () => {
+    expect(
+      AccessibilityCheckResult.safeParse(baseCheckResult({ mode: 'MAGNIFIED' })).success,
+    ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// TB07Input
+// ---------------------------------------------------------------------------
+
+function baseTB07Input(overrides: Record<string, unknown> = {}) {
+  return {
+    tenantId: UUID,
+    capsTopicId: 'CAPS-NS-GR5-TOPIC-3',
+    lessonId: UUID,
+    gradeLabel: '5',
+    sourceArtefactId: UUID2,
+    sourceArtefactType: 'WORKSHEET',
+    content: 'Section A: Questions about food chains.',
+    language: 'en',
+    accessibilityMode: 'LARGE_PRINT',
+    requestedBy: 'teacher@school.za',
+    ...overrides,
+  };
+}
+
+describe('TB07Input', () => {
+  it('accepts a valid accessibility adapter input', () => {
+    expect(TB07Input.safeParse(baseTB07Input()).success).toBe(true);
+  });
+
+  it('accepts with interventionId instead of lessonId', () => {
+    expect(
+      TB07Input.safeParse(baseTB07Input({ lessonId: undefined, interventionId: UUID }))
+        .success,
+    ).toBe(true);
+  });
+
+  it('accepts all four accessibility modes', () => {
+    const modes = [
+      'LARGE_PRINT',
+      'DYSLEXIA_FRIENDLY',
+      'SIMPLIFIED_LANGUAGE',
+      'BRAILLE_READY',
+    ];
+    for (const mode of modes) {
+      expect(
+        TB07Input.safeParse(baseTB07Input({ accessibilityMode: mode })).success,
+      ).toBe(true);
+    }
+  });
+
+  it('rejects when neither lessonId nor interventionId is present', () => {
+    const result = TB07Input.safeParse(
+      baseTB07Input({ lessonId: undefined, interventionId: undefined }),
+    );
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects with empty content', () => {
+    expect(TB07Input.safeParse(baseTB07Input({ content: '' })).success).toBe(false);
+  });
+
+  it('rejects with invalid accessibilityMode', () => {
+    expect(
+      TB07Input.safeParse(baseTB07Input({ accessibilityMode: 'ZOOM_TEXT' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects with invalid sourceArtefactType', () => {
+    expect(
+      TB07Input.safeParse(baseTB07Input({ sourceArtefactType: 'UNKNOWN' })).success,
+    ).toBe(false);
+  });
+
+  it('rejects language code that is too short', () => {
+    expect(TB07Input.safeParse(baseTB07Input({ language: 'e' })).success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// TB07Result
+// ---------------------------------------------------------------------------
+
+function baseAccessibilityCheckResult(verdict: 'pass' | 'fail' = 'pass') {
+  return {
+    mode: 'LARGE_PRINT',
+    checks: [
+      {
+        name: 'font_size_spec',
+        required: 'font size ≥ 18pt',
+        measured: '18pt directive present',
+        pass: verdict === 'pass',
+      },
+    ],
+    verdict,
+  };
+}
+
+describe('TB07Result', () => {
+  it('accepts a valid ok result', () => {
+    expect(
+      TB07Result.safeParse({
+        status: 'ok',
+        artefactId: UUID,
+        artefactType: 'ACCESSIBLE_ARTEFACT',
+        linkage: baseLinkage(),
+        adaptedContent:
+          '[LAYOUT: minimum font size 18pt]\nSection A: Questions about food chains.',
+        accessibilityMode: 'LARGE_PRINT',
+        accessibilityCheckResult: baseAccessibilityCheckResult('pass'),
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts all four modes in ok result', () => {
+    const modes = [
+      'LARGE_PRINT',
+      'DYSLEXIA_FRIENDLY',
+      'SIMPLIFIED_LANGUAGE',
+      'BRAILLE_READY',
+    ];
+    for (const mode of modes) {
+      expect(
+        TB07Result.safeParse({
+          status: 'ok',
+          artefactId: UUID,
+          artefactType: 'ACCESSIBLE_ARTEFACT',
+          linkage: baseLinkage(),
+          adaptedContent: 'Adapted content.',
+          accessibilityMode: mode,
+          accessibilityCheckResult: {
+            mode,
+            checks: [{ name: 'c', required: 'r', measured: 'm', pass: true }],
+            verdict: 'pass',
+          },
+        }).success,
+      ).toBe(true);
+    }
+  });
+
+  it('rejects ok result with empty adaptedContent', () => {
+    expect(
+      TB07Result.safeParse({
+        status: 'ok',
+        artefactId: UUID,
+        artefactType: 'ACCESSIBLE_ARTEFACT',
+        linkage: baseLinkage(),
+        adaptedContent: '',
+        accessibilityMode: 'LARGE_PRINT',
+        accessibilityCheckResult: baseAccessibilityCheckResult('pass'),
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects ok result with wrong artefactType', () => {
+    expect(
+      TB07Result.safeParse({
+        status: 'ok',
+        artefactId: UUID,
+        artefactType: 'WORKSHEET',
+        linkage: baseLinkage(),
+        adaptedContent: 'Adapted content.',
+        accessibilityMode: 'LARGE_PRINT',
+        accessibilityCheckResult: baseAccessibilityCheckResult('pass'),
+      }).success,
+    ).toBe(false);
+  });
+
+  it('accepts accessibility_check_failed result', () => {
+    expect(
+      TB07Result.safeParse({
+        status: 'accessibility_check_failed',
+        accessibilityMode: 'SIMPLIFIED_LANGUAGE',
+        accessibilityCheckResult: baseAccessibilityCheckResult('fail'),
+        detail: 'Content too technical for Grade 1 — human remediation required.',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects accessibility_check_failed result with empty detail', () => {
+    expect(
+      TB07Result.safeParse({
+        status: 'accessibility_check_failed',
+        accessibilityMode: 'SIMPLIFIED_LANGUAGE',
+        accessibilityCheckResult: baseAccessibilityCheckResult('fail'),
+        detail: '',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('accepts needs_input result', () => {
+    expect(
+      TB07Result.safeParse({
+        status: 'needs_input',
+        detail: 'Neither lessonId nor interventionId provided.',
+        missingFields: ['lessonId'],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts no_source_content result', () => {
+    expect(
+      TB07Result.safeParse({
+        status: 'no_source_content',
+        detail: 'Content field is empty.',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects needs_input result with empty missingFields', () => {
+    expect(
+      TB07Result.safeParse({
         status: 'needs_input',
         detail: 'Something missing.',
         missingFields: [],

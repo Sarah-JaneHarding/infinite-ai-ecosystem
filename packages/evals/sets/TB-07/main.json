@@ -1,0 +1,717 @@
+[
+  {
+    "id": "TB07-001",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-3",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001001",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001002",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: The Food Chain\n1. Define the term 'producer' in a food chain. (2)\n2. Name two consumers found in a grassland food chain. (2)\n3. Explain what happens to energy as it moves from one trophic level to the next. (3)",
+      "language": "en",
+      "accessibilityMode": "LARGE_PRINT",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      { "type": "exact_match", "field": "accessibilityMode", "value": "LARGE_PRINT" },
+      {
+        "type": "llm_judge",
+        "prompt": "Does the adaptedContent include a layout directive specifying a minimum font size of 18pt or larger?",
+        "field": "adaptedContent",
+        "passCriteria": "The adapted content must contain a directive or annotation indicating a minimum font size of at least 18pt."
+      }
+    ],
+    "tags": ["large-print", "worksheet", "grade-5", "natural-sciences"],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-002",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-HL-GR3-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001003",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001004",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "My Family\n\nI have a big family. My mother and father live with me. I also have a brother named Sipho. We eat supper together every night. On Saturdays we go to the park.",
+      "language": "en",
+      "accessibilityMode": "LARGE_PRINT",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      { "type": "exact_match", "field": "accessibilityMode", "value": "LARGE_PRINT" },
+      {
+        "type": "llm_judge",
+        "prompt": "Does the adaptedContent preserve the family story content faithfully (same family members, same events) without adding or removing any facts?",
+        "field": "adaptedContent",
+        "passCriteria": "The adapted content must contain the same narrative facts as the source: mother, father, brother Sipho, supper together every night, park on Saturdays."
+      }
+    ],
+    "tags": [
+      "large-print",
+      "reading-passage",
+      "grade-3",
+      "foundation-phase",
+      "home-language"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-003",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "9",
+      "capsTopicId": "CAPS-MATH-GR9-TOPIC-2",
+      "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001005",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001006",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "Question 1: Solve for x: 3x + 7 = 22. Show all working. (3)\nQuestion 2: Factorise: x² - 9. (2)\nQuestion 3: A bag contains 5 red marbles and 3 blue marbles. What is the probability of drawing a red marble? (2)",
+      "language": "en",
+      "accessibilityMode": "LARGE_PRINT",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      { "type": "exact_match", "field": "accessibilityMode", "value": "LARGE_PRINT" },
+      {
+        "type": "llm_judge",
+        "prompt": "Does the adaptedContent include single-column layout directive and preserve all three maths questions with their marks and working instructions intact?",
+        "field": "adaptedContent",
+        "passCriteria": "Must have a single-column directive and all three questions (solve for x, factorise, probability) with marks allocations preserved."
+      }
+    ],
+    "tags": ["large-print", "assessment-item", "grade-9", "mathematics", "senior-phase"],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-004",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-SS-GR7-TOPIC-4",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001007",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001008",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: South African Geography\n1. Name the nine provinces of South Africa. (9)\n2. Which province is the smallest in area? (1)\n3. Describe two ways that the Drakensberg Mountains affect the climate of KwaZulu-Natal. (4)",
+      "language": "en",
+      "accessibilityMode": "DYSLEXIA_FRIENDLY",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "DYSLEXIA_FRIENDLY"
+      },
+      {
+        "type": "llm_judge",
+        "prompt": "Does the adaptedContent specify a dyslexia-friendly font (OpenDyslexic, Arial, or Lexie Readable) and a line spacing of at least 1.5?",
+        "field": "adaptedContent",
+        "passCriteria": "The adapted content must include a font directive naming one of the approved dyslexia-friendly fonts and a line-spacing directive of 1.5 or greater."
+      }
+    ],
+    "tags": [
+      "dyslexia-friendly",
+      "worksheet",
+      "grade-7",
+      "social-sciences",
+      "senior-phase"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-005",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "10",
+      "capsTopicId": "CAPS-EFL-GR10-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001009",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001010",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "The Importance of Reading\n\nReading develops critical thinking skills and expands vocabulary. Learners who read regularly perform better across all subjects. Research shows that just 20 minutes of independent reading per day significantly improves comprehension. Schools that prioritise reading culture see measurable improvements in academic outcomes.",
+      "language": "en",
+      "accessibilityMode": "DYSLEXIA_FRIENDLY",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "DYSLEXIA_FRIENDLY"
+      },
+      {
+        "type": "llm_judge",
+        "prompt": "Does the adaptedContent specify left-aligned text only (no full justification) and avoid italic text?",
+        "field": "adaptedContent",
+        "passCriteria": "Must include a left-alignment directive and must not use italic text formatting."
+      }
+    ],
+    "tags": ["dyslexia-friendly", "reading-passage", "grade-10", "english", "fet"],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-006",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-1",
+      "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001011",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001012",
+      "sourceArtefactType": "MARKING_MEMO",
+      "content": "Question 1: What is photosynthesis? (2)\nModel answer: Photosynthesis is the process by which plants use sunlight, water and carbon dioxide to produce food (glucose) and oxygen. (2 marks: 1 for sunlight/water/CO2, 1 for food/oxygen product)\nQuestion 2: Name the green pigment in leaves. (1)\nModel answer: Chlorophyll (1 mark)",
+      "language": "en",
+      "accessibilityMode": "DYSLEXIA_FRIENDLY",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "DYSLEXIA_FRIENDLY"
+      },
+      {
+        "type": "llm_judge",
+        "prompt": "Does the adaptedContent preserve both model answers and mark allocations from the source memo exactly?",
+        "field": "adaptedContent",
+        "passCriteria": "Both model answers (photosynthesis definition and chlorophyll) and mark allocations (2 marks and 1 mark) must be preserved intact."
+      }
+    ],
+    "tags": [
+      "dyslexia-friendly",
+      "marking-memo",
+      "grade-5",
+      "natural-sciences",
+      "intermediate-phase"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-007",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-NS-GR6-TOPIC-2",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001013",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001014",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Terrestrial Biomes\n\nBiomes are large geographical areas characterised by specific vegetation and animal communities that have adapted to the prevailing climatic conditions. South Africa contains six major biomes, including the Fynbos biome, which is a global biodiversity hotspot endemic to the Western Cape. The savanna biome, the largest in southern Africa, is defined by its characteristic sparse tree cover interspersed with grassland, supporting large mammalian herbivores and their predators.",
+      "language": "en",
+      "accessibilityMode": "SIMPLIFIED_LANGUAGE",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "SIMPLIFIED_LANGUAGE"
+      },
+      {
+        "type": "llm_judge",
+        "prompt": "Has the adapted passage simplified the vocabulary and sentence length while preserving the meaning? Specifically: does it still mention six biomes, Fynbos (Western Cape), and savanna (trees and grass, large animals)?",
+        "field": "adaptedContent",
+        "passCriteria": "Must mention six biomes, the Fynbos biome in the Western Cape, and the savanna biome with its trees, grass, and large animals — using simpler vocabulary and shorter sentences than the source."
+      }
+    ],
+    "tags": [
+      "simplified-language",
+      "reading-passage",
+      "grade-6",
+      "natural-sciences",
+      "intermediate-phase"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-008",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "3",
+      "capsTopicId": "CAPS-HL-GR3-TOPIC-3",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001015",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001016",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Activity: Describing My Community\n1. Write three sentences about your community. Use adjectives to describe it. (3)\n2. Draw a map of your street and label three landmarks. (3)\n3. Write a paragraph describing what you like most about where you live. Use at least two time connectives. (4)",
+      "language": "en",
+      "accessibilityMode": "SIMPLIFIED_LANGUAGE",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "SIMPLIFIED_LANGUAGE"
+      },
+      {
+        "type": "llm_judge",
+        "prompt": "Does the adapted worksheet keep all three tasks (community sentences, map drawing, paragraph), preserve all marks allocations, and use simple vocabulary suitable for Grade 3?",
+        "field": "adaptedContent",
+        "passCriteria": "All three tasks must be present with correct marks (3, 3, 4). Language must be simpler than the source and appropriate for Grade 3."
+      }
+    ],
+    "tags": [
+      "simplified-language",
+      "worksheet",
+      "grade-3",
+      "foundation-phase",
+      "home-language"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-009",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "11",
+      "capsTopicId": "CAPS-PHYS-GR11-TOPIC-5",
+      "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001017",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001018",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "Question 1: Define Newton's Second Law of Motion. (2)\nQuestion 2: A net force of 30 N acts on an object of mass 6 kg. Calculate the acceleration of the object. Show all working and give units. (4)\nQuestion 3: Explain why a heavier object does not fall faster than a lighter object in a vacuum. (3)",
+      "language": "en",
+      "accessibilityMode": "SIMPLIFIED_LANGUAGE",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "SIMPLIFIED_LANGUAGE"
+      },
+      {
+        "type": "llm_judge",
+        "prompt": "Do all three questions retain their exact numerical values (30 N, 6 kg) and mark allocations (2, 4, 3) in the adapted version?",
+        "field": "adaptedContent",
+        "passCriteria": "The values 30 N, 6 kg, and mark allocations 2, 4, 3 must all appear correctly in the adapted content."
+      }
+    ],
+    "tags": [
+      "simplified-language",
+      "assessment-item",
+      "grade-11",
+      "physical-sciences",
+      "fet"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-010",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "4",
+      "capsTopicId": "CAPS-SS-GR4-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001019",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001020",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Rivers of South Africa\n\nSouth Africa has many rivers. The Orange River is the longest river in South Africa. It starts in the Drakensberg mountains and flows west to the Atlantic Ocean. The Vaal River is a major tributary of the Orange River. Rivers provide water for farming and for people to drink.",
+      "language": "en",
+      "accessibilityMode": "BRAILLE_READY",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      { "type": "exact_match", "field": "accessibilityMode", "value": "BRAILLE_READY" },
+      {
+        "type": "llm_judge",
+        "prompt": "Does the adapted passage preserve all factual content (Orange River, Drakensberg, Vaal River) and use no colour-only references or layout-only formatting?",
+        "field": "adaptedContent",
+        "passCriteria": "All facts must be preserved. No colour names used as the sole identifier of anything. No visual layout that would be lost in braille."
+      }
+    ],
+    "tags": [
+      "braille-ready",
+      "reading-passage",
+      "grade-4",
+      "social-sciences",
+      "intermediate-phase"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-011",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "9",
+      "capsTopicId": "CAPS-NS-GR9-TOPIC-3",
+      "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001021",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001022",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Periodic Table\n1. Look at the red elements on the periodic table. These are metals. List four properties of metals. (4)\n2. Study the table below and answer the questions:\n| Element | Symbol | Atomic Number |\n| Hydrogen | H | 1 |\n| Helium | He | 2 |\n| Lithium | Li | 3 |\n2a. Which element has the highest atomic number in the table? (1)\n2b. Write the symbol for Hydrogen. (1)",
+      "language": "en",
+      "accessibilityMode": "BRAILLE_READY",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      { "type": "exact_match", "field": "accessibilityMode", "value": "BRAILLE_READY" },
+      {
+        "type": "llm_judge",
+        "prompt": "Has the colour reference ('red elements') been replaced with a non-colour identifier, and has the table been converted to linear text with element names, symbols, and atomic numbers preserved?",
+        "field": "adaptedContent",
+        "passCriteria": "Must not say 'red elements' — must identify metals by some other means. The table data (H/1, He/2, Li/3) must appear as linear text, not as a visual table."
+      }
+    ],
+    "tags": [
+      "braille-ready",
+      "worksheet",
+      "grade-9",
+      "natural-sciences",
+      "senior-phase",
+      "colour-reference",
+      "table-linearisation"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-012",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "12",
+      "capsTopicId": "CAPS-MATH-GR12-TOPIC-4",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001023",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001024",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "Question 1: Evaluate: ∫(2x + 3) dx from x=1 to x=4. Show all working. (5)\nQuestion 2: The graph below shows f(x) = x². Find the area enclosed between f(x), the x-axis and the lines x = 0 and x = 3. [See diagram]\nShow all working. (4)",
+      "language": "en",
+      "accessibilityMode": "BRAILLE_READY",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      { "type": "exact_match", "field": "accessibilityMode", "value": "BRAILLE_READY" },
+      {
+        "type": "llm_judge",
+        "prompt": "Has the '[See diagram]' reference been replaced with a TACTILE GRAPHIC REQUIRED flag or a complete textual description? Is the integral notation in linear form?",
+        "field": "adaptedContent",
+        "passCriteria": "The diagram reference must be replaced with [TACTILE GRAPHIC REQUIRED: ...] or a text description. The integral must appear in linear notation. Mark allocations (5 and 4) must be preserved."
+      }
+    ],
+    "tags": [
+      "braille-ready",
+      "assessment-item",
+      "grade-12",
+      "mathematics",
+      "fet",
+      "diagram-flag"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-013",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "1",
+      "capsTopicId": "CAPS-NS-GR1-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001025",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001026",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Quantum Entanglement and Non-Locality\n\nQuantum entanglement is a phenomenon in which two or more particles become correlated in such a way that the quantum state of each particle cannot be described independently of the others, even when separated by large distances. This non-locality violates classical notions of separability and has been experimentally verified through violations of Bell's inequalities. The EPR paradox, proposed by Einstein, Podolsky and Rosen, argued that quantum mechanics was incomplete; however, subsequent experimental evidence has consistently supported the standard Copenhagen interpretation.",
+      "language": "en",
+      "accessibilityMode": "SIMPLIFIED_LANGUAGE",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "accessibility_check_failed" },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "SIMPLIFIED_LANGUAGE"
+      },
+      {
+        "type": "llm_judge",
+        "prompt": "Does the accessibilityCheckResult.verdict equal 'fail'?",
+        "field": "accessibilityCheckResult",
+        "passCriteria": "The verdict field of accessibilityCheckResult must be 'fail', indicating the content cannot be simplified to Grade 1 level without losing core meaning."
+      }
+    ],
+    "tags": [
+      "simplified-language",
+      "accessibility-check-failed",
+      "grade-1",
+      "foundation-phase",
+      "technical-content"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-014",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "6",
+      "capsTopicId": "CAPS-NS-GR6-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001027",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001028",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "",
+      "language": "en",
+      "accessibilityMode": "LARGE_PRINT",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_source_content" }
+    ],
+    "tags": ["no-source-content", "error-path", "large-print"],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-015",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-SS-GR8-TOPIC-2",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001029",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Section A: Colonialism in Africa\n1. Define the term 'colonialism'. (2)\n2. Name two African countries that were colonised by Britain. (2)",
+      "language": "en",
+      "accessibilityMode": "DYSLEXIA_FRIENDLY",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "refusal_correctness",
+        "field": "missingFields",
+        "required": true,
+        "reason": "Neither lessonId nor interventionId is present — linkage is missing."
+      }
+    ],
+    "tags": ["needs-input", "missing-linkage", "dyslexia-friendly", "error-path"],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-016",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "R",
+      "capsTopicId": "CAPS-HL-GRR-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001030",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001031",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Activity: My Body\nPoint to your nose. Point to your ear. Point to your knee.\nDraw a circle around the picture of the nose.\nColour in the picture of the ear.",
+      "language": "en",
+      "accessibilityMode": "LARGE_PRINT",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      { "type": "exact_match", "field": "accessibilityMode", "value": "LARGE_PRINT" },
+      {
+        "type": "llm_judge",
+        "prompt": "Does the adapted content include a font size directive of at least 18pt, suitable for a Grade R learner with low vision?",
+        "field": "adaptedContent",
+        "passCriteria": "Must specify font size ≥ 18pt. Appropriate for Grade R / pre-reader context."
+      }
+    ],
+    "tags": ["large-print", "worksheet", "grade-R", "foundation-phase", "body-literacy"],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-017",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "8",
+      "capsTopicId": "CAPS-MATH-GR8-TOPIC-3",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001032",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001033",
+      "sourceArtefactType": "ASSESSMENT_ITEM",
+      "content": "Question 1: *Simplify* the following expression: 3(2x − 4) + 5x. Show all steps. (3)\nQuestion 2: *Solve* for y: 2y + 6 = 18. (2)\nQuestion 3: *Determine* the value of 4² − (3 × 2). (2)",
+      "language": "en",
+      "accessibilityMode": "DYSLEXIA_FRIENDLY",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "DYSLEXIA_FRIENDLY"
+      },
+      {
+        "type": "llm_judge",
+        "prompt": "Has the italic text (*Simplify*, *Solve*, *Determine*) been replaced with bold or underline formatting, and are all three questions and mark allocations preserved?",
+        "field": "adaptedContent",
+        "passCriteria": "The key verbs must no longer be in italic. All three questions with marks (3, 2, 2) must be present. A dyslexia-friendly font directive must be included."
+      }
+    ],
+    "tags": [
+      "dyslexia-friendly",
+      "assessment-item",
+      "grade-8",
+      "mathematics",
+      "senior-phase",
+      "italic-replacement"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-018",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "5",
+      "capsTopicId": "CAPS-NS-GR5-TOPIC-4",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001034",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001035",
+      "sourceArtefactType": "READING_PASSAGE",
+      "content": "Metamorphosis\n\nMetamorphosis is the biological process of transformation from an immature form to an adult form in two or more distinct stages. Complete metamorphosis (holometabolism) consists of four stages: egg, larva, pupa and imago. Incomplete metamorphosis (hemimetabolism) consists of three stages: egg, nymph and adult. Butterflies undergo complete metamorphosis, whereas grasshoppers undergo incomplete metamorphosis.",
+      "language": "en",
+      "accessibilityMode": "SIMPLIFIED_LANGUAGE",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "SIMPLIFIED_LANGUAGE"
+      },
+      {
+        "type": "llm_judge",
+        "prompt": "Has the adapted passage replaced or explained the technical terms 'holometabolism', 'hemimetabolism', and 'imago', while still conveying the key facts about butterflies (complete, 4 stages) and grasshoppers (incomplete, 3 stages)?",
+        "field": "adaptedContent",
+        "passCriteria": "Technical jargon (holometabolism, hemimetabolism, imago) must be simplified or explained. Core facts (butterflies: 4-stage complete; grasshoppers: 3-stage incomplete) must be preserved."
+      }
+    ],
+    "tags": [
+      "simplified-language",
+      "reading-passage",
+      "grade-5",
+      "natural-sciences",
+      "technical-terms"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-019",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "7",
+      "capsTopicId": "CAPS-SS-GR7-TOPIC-2",
+      "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001036",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001037",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Section A: Map Work\n1. See the map on page 2. Identify the country shaded in grey. (1)\n2. Using the map, name the ocean to the west of South Africa. (1)\n3. The green areas on the map show national parks. Name two national parks in South Africa. (2)",
+      "language": "en",
+      "accessibilityMode": "BRAILLE_READY",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      { "type": "exact_match", "field": "accessibilityMode", "value": "BRAILLE_READY" },
+      {
+        "type": "llm_judge",
+        "prompt": "Have the visual map references been replaced or flagged? Specifically: 'see the map on page 2', 'shaded in grey', 'using the map', and 'green areas on the map' must not appear as the sole source of information without a tactile graphic flag or textual substitute.",
+        "field": "adaptedContent",
+        "passCriteria": "All colour-dependent and map-visual references must be replaced with [TACTILE GRAPHIC REQUIRED: ...] flags or textual descriptions. The questions must remain answerable without sight of the original map."
+      }
+    ],
+    "tags": [
+      "braille-ready",
+      "worksheet",
+      "grade-7",
+      "social-sciences",
+      "map-work",
+      "colour-reference",
+      "visual-reference"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB07-020",
+    "agentId": "TB-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gradeLabel": "9",
+      "capsTopicId": "CAPS-MATH-GR9-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001038",
+      "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001039",
+      "sourceArtefactType": "WORKSHEET",
+      "content": "Afdeling A: Heelgetalle\n1. Bereken: 48 ÷ 6 + 3 × 2. Toon alle berekeninge. (3)\n2. Skryf 2 340 000 in wetenskaplike notasie. (2)\n3. Die temperatuur daal van −3°C na −11°C. Hoeveel grade het dit gedaal? (2)",
+      "language": "af",
+      "accessibilityMode": "LARGE_PRINT",
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      { "type": "exact_match", "field": "accessibilityMode", "value": "LARGE_PRINT" },
+      {
+        "type": "llm_judge",
+        "prompt": "Is the adapted content in Afrikaans, does it include a large-print font size directive (≥ 18pt), and do all three questions and their marks (3, 2, 2) appear intact?",
+        "field": "adaptedContent",
+        "passCriteria": "Content must remain in Afrikaans. A font size directive of ≥ 18pt must be present. All three questions with marks must be preserved."
+      }
+    ],
+    "tags": [
+      "large-print",
+      "worksheet",
+      "grade-9",
+      "mathematics",
+      "afrikaans",
+      "senior-phase"
+    ],
+    "source": "specification"
+  }
+]

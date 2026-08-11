@@ -21,6 +21,7 @@ import { z } from 'zod';
 import { CognitiveLevel } from '../curriculum/planning.js';
 import { GradeLabel } from '../curriculum/framework.js';
 import { ToolboxArtefactType } from './artefact.js';
+import { AccessibilityCheckResult, AccessibilityMode } from './accessibility.js';
 import { GradeBand, ReadabilityCheckResult } from './readability.js';
 
 // ---------------------------------------------------------------------------
@@ -393,3 +394,54 @@ export const TB06Result = z.discriminatedUnion('status', [
   }),
 ]);
 export type TB06Result = z.infer<typeof TB06Result>;
+
+// ---------------------------------------------------------------------------
+// TB-07 — Accessibility Adapter
+// ---------------------------------------------------------------------------
+
+export const TB07Input = TBLinkageBase.extend({
+  tenantId: z.string().uuid(),
+  gradeLabel: GradeLabel,
+  /** UUID of the source artefact being adapted. */
+  sourceArtefactId: z.string().uuid(),
+  /** Type of the source artefact — determines how content is structured for adaptation. */
+  sourceArtefactType: ToolboxArtefactType,
+  /** Full text content of the source artefact to adapt. */
+  content: z.string().min(1),
+  /** ISO 639-1 language code the content is written in. */
+  language: z.string().min(2).max(5),
+  /** The accessibility mode to apply. */
+  accessibilityMode: AccessibilityMode,
+  requestedBy: z.string().min(1),
+}).superRefine(requireOneLinkage);
+export type TB07Input = z.infer<typeof TB07Input>;
+
+export const TB07Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('ok'),
+    artefactId: z.string().uuid(),
+    artefactType: z.literal('ACCESSIBLE_ARTEFACT'),
+    linkage: TBOutputLinkage,
+    adaptedContent: z.string().min(1),
+    accessibilityMode: AccessibilityMode,
+    /** All checks must pass when status is 'ok'. */
+    accessibilityCheckResult: AccessibilityCheckResult,
+  }),
+  z.object({
+    status: z.literal('accessibility_check_failed'),
+    accessibilityMode: AccessibilityMode,
+    /** One or more checks failed; the adapted content cannot meet the mode's requirements. */
+    accessibilityCheckResult: AccessibilityCheckResult,
+    detail: z.string().min(1),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+    missingFields: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('no_source_content'),
+    detail: z.string().min(1),
+  }),
+]);
+export type TB07Result = z.infer<typeof TB07Result>;

@@ -1,4 +1,4 @@
-// @infinite-ai/contracts — toolbox sub-module barrel (Stage 11 steps 1–3).
+// @infinite-ai/contracts — toolbox sub-module barrel (Stage 11 steps 1–4).
 
 export {
   ARTEFACT_TYPE_TO_AGENT,
@@ -7,6 +7,12 @@ export {
   ToolboxArtefactType,
   VisualBrief,
 } from './artefact.js';
+
+export {
+  AccessibilityCheckItem,
+  AccessibilityCheckResult,
+  AccessibilityMode,
+} from './accessibility.js';
 
 export {
   FORMAT_SUPPORT,
@@ -42,6 +48,8 @@ export {
   TB05VerificationItem,
   TB06Input,
   TB06Result,
+  TB07Input,
+  TB07Result,
   TBOutputLinkage,
   VerifierAnswers,
   WorksheetDifferentiationTier,

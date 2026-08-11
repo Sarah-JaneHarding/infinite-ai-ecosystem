@@ -167,6 +167,9 @@ export {
 
 export {
   ARTEFACT_TYPE_TO_AGENT,
+  AccessibilityCheckItem,
+  AccessibilityCheckResult,
+  AccessibilityMode,
   AnswerKeyEntry,
   AnswerKeyItem,
   AnswerKeyVerificationResult,
@@ -193,6 +196,8 @@ export {
   TB05VerificationItem,
   TB06Input,
   TB06Result,
+  TB07Input,
+  TB07Result,
   TBOutputLinkage,
   ToolboxArtefact,
   ToolboxArtefactType,
