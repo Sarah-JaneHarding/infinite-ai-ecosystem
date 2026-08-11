@@ -16,14 +16,27 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
-      { "type": "exact_match", "field": "accessibilityMode", "value": "LARGE_PRINT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "LARGE_PRINT"
+      },
       {
         "type": "llm_judge",
         "prompt": "Does the adaptedContent include a layout directive specifying a minimum font size of 18pt or larger?",
         "field": "adaptedContent",
-        "passCriteria": "The adapted content must contain a directive or annotation indicating a minimum font size of at least 18pt."
+        "passCriteria": "The adapted content must contain a directive or annotation indicating a minimum font size of at least 18pt.",
+        "minScore": 0.8
       }
     ],
     "tags": ["large-print", "worksheet", "grade-5", "natural-sciences"],
@@ -46,14 +59,27 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
-      { "type": "exact_match", "field": "accessibilityMode", "value": "LARGE_PRINT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "LARGE_PRINT"
+      },
       {
         "type": "llm_judge",
         "prompt": "Does the adaptedContent preserve the family story content faithfully (same family members, same events) without adding or removing any facts?",
         "field": "adaptedContent",
-        "passCriteria": "The adapted content must contain the same narrative facts as the source: mother, father, brother Sipho, supper together every night, park on Saturdays."
+        "passCriteria": "The adapted content must contain the same narrative facts as the source: mother, father, brother Sipho, supper together every night, park on Saturdays.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -75,21 +101,34 @@
       "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001005",
       "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001006",
       "sourceArtefactType": "ASSESSMENT_ITEM",
-      "content": "Question 1: Solve for x: 3x + 7 = 22. Show all working. (3)\nQuestion 2: Factorise: x² - 9. (2)\nQuestion 3: A bag contains 5 red marbles and 3 blue marbles. What is the probability of drawing a red marble? (2)",
+      "content": "Question 1: Solve for x: 3x + 7 = 22. Show all working. (3)\nQuestion 2: Factorise: x\u00b2 - 9. (2)\nQuestion 3: A bag contains 5 red marbles and 3 blue marbles. What is the probability of drawing a red marble? (2)",
       "language": "en",
       "accessibilityMode": "LARGE_PRINT",
       "requestedBy": "teacher@school.za"
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
-      { "type": "exact_match", "field": "accessibilityMode", "value": "LARGE_PRINT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "LARGE_PRINT"
+      },
       {
         "type": "llm_judge",
         "prompt": "Does the adaptedContent include single-column layout directive and preserve all three maths questions with their marks and working instructions intact?",
         "field": "adaptedContent",
-        "passCriteria": "Must have a single-column directive and all three questions (solve for x, factorise, probability) with marks allocations preserved."
+        "passCriteria": "Must have a single-column directive and all three questions (solve for x, factorise, probability) with marks allocations preserved.",
+        "minScore": 0.8
       }
     ],
     "tags": ["large-print", "assessment-item", "grade-9", "mathematics", "senior-phase"],
@@ -112,8 +151,16 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
       {
         "type": "exact_match",
         "field": "accessibilityMode",
@@ -123,7 +170,8 @@
         "type": "llm_judge",
         "prompt": "Does the adaptedContent specify a dyslexia-friendly font (OpenDyslexic, Arial, or Lexie Readable) and a line spacing of at least 1.5?",
         "field": "adaptedContent",
-        "passCriteria": "The adapted content must include a font directive naming one of the approved dyslexia-friendly fonts and a line-spacing directive of 1.5 or greater."
+        "passCriteria": "The adapted content must include a font directive naming one of the approved dyslexia-friendly fonts and a line-spacing directive of 1.5 or greater.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -152,8 +200,16 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
       {
         "type": "exact_match",
         "field": "accessibilityMode",
@@ -163,7 +219,8 @@
         "type": "llm_judge",
         "prompt": "Does the adaptedContent specify left-aligned text only (no full justification) and avoid italic text?",
         "field": "adaptedContent",
-        "passCriteria": "Must include a left-alignment directive and must not use italic text formatting."
+        "passCriteria": "Must include a left-alignment directive and must not use italic text formatting.",
+        "minScore": 0.8
       }
     ],
     "tags": ["dyslexia-friendly", "reading-passage", "grade-10", "english", "fet"],
@@ -186,8 +243,16 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
       {
         "type": "exact_match",
         "field": "accessibilityMode",
@@ -197,7 +262,8 @@
         "type": "llm_judge",
         "prompt": "Does the adaptedContent preserve both model answers and mark allocations from the source memo exactly?",
         "field": "adaptedContent",
-        "passCriteria": "Both model answers (photosynthesis definition and chlorophyll) and mark allocations (2 marks and 1 mark) must be preserved intact."
+        "passCriteria": "Both model answers (photosynthesis definition and chlorophyll) and mark allocations (2 marks and 1 mark) must be preserved intact.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -226,8 +292,16 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
       {
         "type": "exact_match",
         "field": "accessibilityMode",
@@ -237,7 +311,8 @@
         "type": "llm_judge",
         "prompt": "Has the adapted passage simplified the vocabulary and sentence length while preserving the meaning? Specifically: does it still mention six biomes, Fynbos (Western Cape), and savanna (trees and grass, large animals)?",
         "field": "adaptedContent",
-        "passCriteria": "Must mention six biomes, the Fynbos biome in the Western Cape, and the savanna biome with its trees, grass, and large animals — using simpler vocabulary and shorter sentences than the source."
+        "passCriteria": "Must mention six biomes, the Fynbos biome in the Western Cape, and the savanna biome with its trees, grass, and large animals \u2014 using simpler vocabulary and shorter sentences than the source.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -266,8 +341,16 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
       {
         "type": "exact_match",
         "field": "accessibilityMode",
@@ -277,7 +360,8 @@
         "type": "llm_judge",
         "prompt": "Does the adapted worksheet keep all three tasks (community sentences, map drawing, paragraph), preserve all marks allocations, and use simple vocabulary suitable for Grade 3?",
         "field": "adaptedContent",
-        "passCriteria": "All three tasks must be present with correct marks (3, 3, 4). Language must be simpler than the source and appropriate for Grade 3."
+        "passCriteria": "All three tasks must be present with correct marks (3, 3, 4). Language must be simpler than the source and appropriate for Grade 3.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -306,8 +390,16 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
       {
         "type": "exact_match",
         "field": "accessibilityMode",
@@ -317,7 +409,8 @@
         "type": "llm_judge",
         "prompt": "Do all three questions retain their exact numerical values (30 N, 6 kg) and mark allocations (2, 4, 3) in the adapted version?",
         "field": "adaptedContent",
-        "passCriteria": "The values 30 N, 6 kg, and mark allocations 2, 4, 3 must all appear correctly in the adapted content."
+        "passCriteria": "The values 30 N, 6 kg, and mark allocations 2, 4, 3 must all appear correctly in the adapted content.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -346,14 +439,27 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
-      { "type": "exact_match", "field": "accessibilityMode", "value": "BRAILLE_READY" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "BRAILLE_READY"
+      },
       {
         "type": "llm_judge",
         "prompt": "Does the adapted passage preserve all factual content (Orange River, Drakensberg, Vaal River) and use no colour-only references or layout-only formatting?",
         "field": "adaptedContent",
-        "passCriteria": "All facts must be preserved. No colour names used as the sole identifier of anything. No visual layout that would be lost in braille."
+        "passCriteria": "All facts must be preserved. No colour names used as the sole identifier of anything. No visual layout that would be lost in braille.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -382,14 +488,27 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
-      { "type": "exact_match", "field": "accessibilityMode", "value": "BRAILLE_READY" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "BRAILLE_READY"
+      },
       {
         "type": "llm_judge",
         "prompt": "Has the colour reference ('red elements') been replaced with a non-colour identifier, and has the table been converted to linear text with element names, symbols, and atomic numbers preserved?",
         "field": "adaptedContent",
-        "passCriteria": "Must not say 'red elements' — must identify metals by some other means. The table data (H/1, He/2, Li/3) must appear as linear text, not as a visual table."
+        "passCriteria": "Must not say 'red elements' \u2014 must identify metals by some other means. The table data (H/1, He/2, Li/3) must appear as linear text, not as a visual table.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -413,21 +532,34 @@
       "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001023",
       "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001024",
       "sourceArtefactType": "ASSESSMENT_ITEM",
-      "content": "Question 1: Evaluate: ∫(2x + 3) dx from x=1 to x=4. Show all working. (5)\nQuestion 2: The graph below shows f(x) = x². Find the area enclosed between f(x), the x-axis and the lines x = 0 and x = 3. [See diagram]\nShow all working. (4)",
+      "content": "Question 1: Evaluate: \u222b(2x + 3) dx from x=1 to x=4. Show all working. (5)\nQuestion 2: The graph below shows f(x) = x\u00b2. Find the area enclosed between f(x), the x-axis and the lines x = 0 and x = 3. [See diagram]\nShow all working. (4)",
       "language": "en",
       "accessibilityMode": "BRAILLE_READY",
       "requestedBy": "teacher@school.za"
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
-      { "type": "exact_match", "field": "accessibilityMode", "value": "BRAILLE_READY" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "BRAILLE_READY"
+      },
       {
         "type": "llm_judge",
         "prompt": "Has the '[See diagram]' reference been replaced with a TACTILE GRAPHIC REQUIRED flag or a complete textual description? Is the integral notation in linear form?",
         "field": "adaptedContent",
-        "passCriteria": "The diagram reference must be replaced with [TACTILE GRAPHIC REQUIRED: ...] or a text description. The integral must appear in linear notation. Mark allocations (5 and 4) must be preserved."
+        "passCriteria": "The diagram reference must be replaced with [TACTILE GRAPHIC REQUIRED: ...] or a text description. The integral must appear in linear notation. Mark allocations (5 and 4) must be preserved.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -457,7 +589,11 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "accessibility_check_failed" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "accessibility_check_failed"
+      },
       {
         "type": "exact_match",
         "field": "accessibilityMode",
@@ -467,7 +603,8 @@
         "type": "llm_judge",
         "prompt": "Does the accessibilityCheckResult.verdict equal 'fail'?",
         "field": "accessibilityCheckResult",
-        "passCriteria": "The verdict field of accessibilityCheckResult must be 'fail', indicating the content cannot be simplified to Grade 1 level without losing core meaning."
+        "passCriteria": "The verdict field of accessibilityCheckResult must be 'fail', indicating the content cannot be simplified to Grade 1 level without losing core meaning.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -496,7 +633,11 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "no_source_content" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "no_source_content"
+      }
     ],
     "tags": ["no-source-content", "error-path", "large-print"],
     "source": "specification"
@@ -517,12 +658,16 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
       {
-        "type": "refusal_correctness",
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      },
+      {
+        "type": "set_overlap",
         "field": "missingFields",
-        "required": true,
-        "reason": "Neither lessonId nor interventionId is present — linkage is missing."
+        "expectedSet": ["lessonId", "interventionId"],
+        "minOverlap": 0.5
       }
     ],
     "tags": ["needs-input", "missing-linkage", "dyslexia-friendly", "error-path"],
@@ -545,14 +690,27 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
-      { "type": "exact_match", "field": "accessibilityMode", "value": "LARGE_PRINT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "LARGE_PRINT"
+      },
       {
         "type": "llm_judge",
         "prompt": "Does the adapted content include a font size directive of at least 18pt, suitable for a Grade R learner with low vision?",
         "field": "adaptedContent",
-        "passCriteria": "Must specify font size ≥ 18pt. Appropriate for Grade R / pre-reader context."
+        "passCriteria": "Must specify font size \u2265 18pt. Appropriate for Grade R / pre-reader context.",
+        "minScore": 0.8
       }
     ],
     "tags": ["large-print", "worksheet", "grade-R", "foundation-phase", "body-literacy"],
@@ -568,15 +726,23 @@
       "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001032",
       "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001033",
       "sourceArtefactType": "ASSESSMENT_ITEM",
-      "content": "Question 1: *Simplify* the following expression: 3(2x − 4) + 5x. Show all steps. (3)\nQuestion 2: *Solve* for y: 2y + 6 = 18. (2)\nQuestion 3: *Determine* the value of 4² − (3 × 2). (2)",
+      "content": "Question 1: *Simplify* the following expression: 3(2x \u2212 4) + 5x. Show all steps. (3)\nQuestion 2: *Solve* for y: 2y + 6 = 18. (2)\nQuestion 3: *Determine* the value of 4\u00b2 \u2212 (3 \u00d7 2). (2)",
       "language": "en",
       "accessibilityMode": "DYSLEXIA_FRIENDLY",
       "requestedBy": "teacher@school.za"
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
       {
         "type": "exact_match",
         "field": "accessibilityMode",
@@ -586,7 +752,8 @@
         "type": "llm_judge",
         "prompt": "Has the italic text (*Simplify*, *Solve*, *Determine*) been replaced with bold or underline formatting, and are all three questions and mark allocations preserved?",
         "field": "adaptedContent",
-        "passCriteria": "The key verbs must no longer be in italic. All three questions with marks (3, 2, 2) must be present. A dyslexia-friendly font directive must be included."
+        "passCriteria": "The key verbs must no longer be in italic. All three questions with marks (3, 2, 2) must be present. A dyslexia-friendly font directive must be included.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -616,8 +783,16 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
       {
         "type": "exact_match",
         "field": "accessibilityMode",
@@ -627,7 +802,8 @@
         "type": "llm_judge",
         "prompt": "Has the adapted passage replaced or explained the technical terms 'holometabolism', 'hemimetabolism', and 'imago', while still conveying the key facts about butterflies (complete, 4 stages) and grasshoppers (incomplete, 3 stages)?",
         "field": "adaptedContent",
-        "passCriteria": "Technical jargon (holometabolism, hemimetabolism, imago) must be simplified or explained. Core facts (butterflies: 4-stage complete; grasshoppers: 3-stage incomplete) must be preserved."
+        "passCriteria": "Technical jargon (holometabolism, hemimetabolism, imago) must be simplified or explained. Core facts (butterflies: 4-stage complete; grasshoppers: 3-stage incomplete) must be preserved.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -656,14 +832,27 @@
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
-      { "type": "exact_match", "field": "accessibilityMode", "value": "BRAILLE_READY" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "BRAILLE_READY"
+      },
       {
         "type": "llm_judge",
         "prompt": "Have the visual map references been replaced or flagged? Specifically: 'see the map on page 2', 'shaded in grey', 'using the map', and 'green areas on the map' must not appear as the sole source of information without a tactile graphic flag or textual substitute.",
         "field": "adaptedContent",
-        "passCriteria": "All colour-dependent and map-visual references must be replaced with [TACTILE GRAPHIC REQUIRED: ...] flags or textual descriptions. The questions must remain answerable without sight of the original map."
+        "passCriteria": "All colour-dependent and map-visual references must be replaced with [TACTILE GRAPHIC REQUIRED: ...] flags or textual descriptions. The questions must remain answerable without sight of the original map.",
+        "minScore": 0.8
       }
     ],
     "tags": [
@@ -687,21 +876,34 @@
       "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001038",
       "sourceArtefactId": "aaaaaaaa-bbbb-cccc-dddd-000000001039",
       "sourceArtefactType": "WORKSHEET",
-      "content": "Afdeling A: Heelgetalle\n1. Bereken: 48 ÷ 6 + 3 × 2. Toon alle berekeninge. (3)\n2. Skryf 2 340 000 in wetenskaplike notasie. (2)\n3. Die temperatuur daal van −3°C na −11°C. Hoeveel grade het dit gedaal? (2)",
+      "content": "Afdeling A: Heelgetalle\n1. Bereken: 48 \u00f7 6 + 3 \u00d7 2. Toon alle berekeninge. (3)\n2. Skryf 2 340 000 in wetenskaplike notasie. (2)\n3. Die temperatuur daal van \u22123\u00b0C na \u221211\u00b0C. Hoeveel grade het dit gedaal? (2)",
       "language": "af",
       "accessibilityMode": "LARGE_PRINT",
       "requestedBy": "teacher@school.za"
     },
     "context": null,
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "ok" },
-      { "type": "exact_match", "field": "artefactType", "value": "ACCESSIBLE_ARTEFACT" },
-      { "type": "exact_match", "field": "accessibilityMode", "value": "LARGE_PRINT" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "ACCESSIBLE_ARTEFACT"
+      },
+      {
+        "type": "exact_match",
+        "field": "accessibilityMode",
+        "value": "LARGE_PRINT"
+      },
       {
         "type": "llm_judge",
-        "prompt": "Is the adapted content in Afrikaans, does it include a large-print font size directive (≥ 18pt), and do all three questions and their marks (3, 2, 2) appear intact?",
+        "prompt": "Is the adapted content in Afrikaans, does it include a large-print font size directive (\u2265 18pt), and do all three questions and their marks (3, 2, 2) appear intact?",
         "field": "adaptedContent",
-        "passCriteria": "Content must remain in Afrikaans. A font size directive of ≥ 18pt must be present. All three questions with marks must be preserved."
+        "passCriteria": "Content must remain in Afrikaans. A font size directive of \u2265 18pt must be present. All three questions with marks must be preserved.",
+        "minScore": 0.8
       }
     ],
     "tags": [
