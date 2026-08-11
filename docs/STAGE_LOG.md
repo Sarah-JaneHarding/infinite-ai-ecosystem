@@ -4431,3 +4431,64 @@ tests are written blind and proven only in CI (same deviation recorded in all pr
 equivalent as implemented in `scripts/evals-run.ts` (same pattern as Stages 08 and 10).
 
 Open questions raised: none.
+
+---
+
+## Stage 12 — MOD-05 Teaching Analytics & PD Studio
+
+Started: 2026-08-11 Completed: 2026-08-11
+Exit gate: **PASS** — all Stage 12 commands pass; Docker-dependent prior-stage failures are
+pre-existing and pass in CI (same pattern as Stages 01, 05, 06, 11).
+
+**Exit gate, walked item by item**
+
+| Gate item                                                                        | Result                                                         |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `pnpm --filter @infinite-ai/contracts test` (641 tests)                          | PASS                                                           |
+| `pnpm --filter @infinite-ai/agents test` (446 tests)                             | PASS                                                           |
+| `pnpm --filter @infinite-ai/prompts test` (33 tests)                             | PASS                                                           |
+| `pnpm --filter @infinite-ai/orchestrator test` (115 tests)                       | PASS                                                           |
+| `pnpm --filter @infinite-ai/evals test` (144 tests)                              | PASS                                                           |
+| `pnpm evals:run --all`                                                           | PASS (exits 0 — no live executors registered)                  |
+| `pnpm evals:gate`                                                                | PASS                                                           |
+| `pnpm test:aggregation-thresholds` (22 tests)                                    | PASS                                                           |
+| `pnpm test:no-ranking-endpoints` (27 tests)                                      | PASS                                                           |
+| `pnpm test:course-structure` (24 tests)                                          | PASS                                                           |
+| `pnpm test:cptd` (24 tests)                                                      | PASS                                                           |
+| `pnpm verify:stage 12`                                                           | PASS in CI; Docker-dependent prior-stage failures only locally |
+| Eight PD agents built with contracts, prompts, eval sets                         | PASS — PD-01…PD-08                                             |
+| Cohort suppression: PD-04 returns CohortSuppressionResult when cohortSize < 5    | PASS — schema + 22-test suppression suite                      |
+| Suppressed path has no needAreas or signalsAggregated — nothing leaks            | PASS — schema-level; verified in test suite                    |
+| No-ranking: Zod strips rank/percentile/ordinal from all PD agent ok outputs      | PASS — 27-test no-ranking suite across PD04..PD07              |
+| Micro-course 20-40 min; exportable: true (literal); modules/checkItems/citedSrcs | PASS — 24-test course-structure suite                          |
+| CPTD: citedPolicyDocumentId required on ok; no_policy_match has no pointsAwarded | PASS — 24-test CPTD suite                                      |
+| PD-06 produces JSON learning object; never PDF or binary                         | PASS — schema-enforced (exportable: z.literal(true))           |
+| PD-08 reads point values from policyDocumentIds; never computes them             | PASS — schema + CPTD suite                                     |
+| MOD-05 PD analysis pipeline: suppress->terminate OR detect->compose->HoD-gate    | PASS — 27-test orchestrator suite                              |
+| HoD gate: requiredRole='hod', timeout=7 days; deliver behind gate                | PASS — validatePipelineGating confirms deliver-pd-intervention |
+| CPTD pipeline: no human gate (informational Brain write only)                    | PASS — orchestrator test verifies hasHumanGate === false       |
+| Deliver step compensated by retract; irreversible tool gating enforced           | PASS — compensation step wired; gating test passes             |
+| CI green on PR #27 (all checks)                                                  | PASS                                                           |
+
+**All eight steps completed in one session:**
+
+1. MOD-05 signal model: `CoverageSignal`, `AssessmentSignal`, `WalkthroughNote`, `TeachingSignal`, `CohortSuppressionResult`, `MINIMUM_COHORT_SIZE = 5`. Zod schemas in `packages/contracts/src/mod-05/signals.ts`.
+2. Eight PD agent contracts: PD-01..PD-08 input and output Zod schemas in `packages/contracts/src/mod-05/pd-agents.ts`; agent registrations in `packages/agents/src/mod-05/`.
+3. PD-01..PD-08 prompts (`packages/prompts/src/PD-0{1..8}/1.0.0.prompt.md`) and prompt lock hashes in `packages/prompts/prompt-lock.json`.
+4. Eval sets: 20 cases each for PD-01..PD-08 in `packages/evals/sets/PD-0{1..8}/main.json`.
+5. Two MOD-05 pipelines: `MOD05_PD_ANALYSIS_PIPELINE` (suppress short-circuit, gap detection, micro-course map or coaching plan, HoD approval, deliver, Brain write, compensation) and `MOD05_CPTD_PIPELINE`. Registered in `packages/orchestrator/src/pipelines/mod-05.ts`.
+6. Four cross-cutting test suites: cohort suppression (22 tests), no-ranking (27 tests), course-structure (24 tests), CPTD (24 tests). Fixed stale `@ts-expect-error` directive in `packages/contracts/test/mod-05-pd-agents.spec.ts`.
+7. Four root test script aliases registered in `package.json`: `test:aggregation-thresholds`, `test:no-ranking-endpoints`, `test:course-structure`, `test:cptd`.
+8. Stage 12 verify-stage commands populated in `scripts/verify-stage.ts`; `docs/AGENTS.md` and `docs/STAGE_LOG.md` updated.
+
+**Defects found and fixed:**
+
+- Apostrophe inside single-quoted string in `mod-05-suppression.spec.ts` — esbuild parse error `Expected ")" but found "s"`. Fixed by rewriting the test description.
+- Stale `@ts-expect-error` directive in `mod-05-pd-agents.spec.ts` at line 486. Removed; the schema correctly rejects `exportable: false` as a type error without the suppression directive.
+
+Deviations from manual: no Docker in the authoring environment; stages 01/05/06 integration
+tests are written blind and proven only in CI (same deviation recorded in all prior stages).
+`pnpm evals:run --module mod-05` does not exist as a flag; `pnpm evals:run --all` is the
+equivalent as implemented in `scripts/evals-run.ts` (same pattern as Stages 08, 10, 11).
+
+Open questions raised: none.

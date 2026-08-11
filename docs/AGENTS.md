@@ -1035,3 +1035,201 @@ schema outcome for all agents that declare it (TB-01…TB-04, TB-08…TB-11); an
 carry `citedSourceIds` of at least one entry (empty array is rejected); and a missing
 `citedSourceIds` field on an `ok` result is also rejected. TB-05 (uses `disagreement_flagged`)
 and TB-06 (uses `no_source_content`) are correctly excluded from the `no_source_document` suite.
+
+---
+
+### MOD-05 Teaching Analytics & PD Studio — Stage 12
+
+| ID    | Agent                      | Output                                                                           |
+| ----- | -------------------------- | -------------------------------------------------------------------------------- |
+| PD-01 | Coverage vs Pacing Analyst | Topic gap list, weeks-drift metrics, pacing summary — no teacher ranking         |
+| PD-02 | Assessment Quality Analyst | Psychometric indicators, flagged items, cognitive-level distribution             |
+| PD-03 | Observation Analyst        | Cross-cutting themes from anonymised walkthrough notes, priority PD areas        |
+| PD-04 | Practice Signal Aggregator | Unified PD need profile, or CohortSuppressionResult when cohort < 5              |
+| PD-05 | PD Gap Detector            | Priority gaps ordered by urgency, with suggested intervention type               |
+| PD-06 | Micro-Course Composer      | Structured 20–40 min learning object (exportable JSON); grounded in source docs  |
+| PD-07 | Coaching Plan Agent        | Coaching conversation plan for the human coach; sessions with prompts + evidence |
+| PD-08 | CPTD Tracker               | CPTD point log read from L0 policy; no computed values; `no_policy_match` path   |
+
+**Cross-cutting constraints (enforced at schema level):**
+
+- **No rankings** — no PD output carries a teacher rank, percentile, or ordinal position relative to peers. The schemas structurally exclude these fields; Zod strips any stray ranking field on parse.
+- **Cohort suppression** — PD-04 returns `CohortSuppressionResult` when `cohortSize < MINIMUM_COHORT_SIZE` (5). The suppressed path carries no `needAreas` or `signalsAggregated` — nothing leaks.
+- **CPTD values from policy only** — PD-08 reads point values from `policyDocumentIds` supplied in the input. The model never computes CPTD points; `citedPolicyDocumentId` is required on every ok result.
+- **Developmental framing** — outputs are patterns, themes, plans, and courses, not evaluations of individual teachers.
+
+#### Pipeline wiring
+
+Two pipelines are registered in `packages/orchestrator/src/pipelines/mod-05.ts`:
+
+**`MOD05_PD_ANALYSIS_PIPELINE`** (`mod-05-pd-analysis`):
+
+```
+aggregate-signals (PD-04) → branch-on-suppression
+  suppressed → record-suppression [terminal]
+  ok         → detect-gaps (PD-05) → branch-on-intervention
+                  micro_course  → compose-micro-courses (map over PD-06) → hod-approval ◆
+                  coaching_plan → compose-coaching-plan (PD-07) ──────────→ hod-approval ◆
+                                                                             → deliver-pd-intervention
+                                                                             → record-to-brain
+```
+
+**`MOD05_CPTD_PIPELINE`** (`mod-05-cptd`):
+
+```
+compute-cptd (PD-08) → record-cptd [terminal]
+```
+
+The CPTD pipeline has no human gate — CPTD logging is an informational Brain write, not an artefact visible to teachers.
+
+#### PD-01 — Coverage vs Pacing Analyst
+
+| Field           | Value                                                                                                |
+| --------------- | ---------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                               |
+| Purpose         | `pd_analytics`                                                                                       |
+| Input           | `PD01Input`: tenantId, subject, gradeLabel, periodStart, periodEnd, coverageSignals[] (≥1)           |
+| Output          | `PD01Result`: ok (topicsAnalysed, topicsBehind, meanWeeksDrift, gapTopics[], summary) or needs_input |
+| Model           | `pd.coverage`                                                                                        |
+| Guardrails      | `pii_guard`                                                                                          |
+| Budget          | 1 500 tokens · $0.005 per run                                                                        |
+| Eval set        | `PD-01` (20 cases)                                                                                   |
+| Approval gate   | None                                                                                                 |
+| Writes to Brain | No                                                                                                   |
+| Prompt          | `packages/prompts/src/PD-01/1.0.0.prompt.md`                                                         |
+| Contract        | `packages/agents/src/mod-05/PD-01.contract.ts`                                                       |
+
+Deterministic analysis of topic coverage against the ATP pacing plan. `gapTopics[]` carries topics with `deliveryStatus` = `not_delivered` or `partially_delivered` and `weeksBehind`. No teacher-level comparison; no ranking fields anywhere in the output.
+
+#### PD-02 — Assessment Quality Analyst
+
+| Field           | Value                                                                                                                                                      |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                                                                     |
+| Purpose         | `pd_analytics`                                                                                                                                             |
+| Input           | `PD02Input`: tenantId, assessmentSignals[] (≥1), capsTopicId? , gradeLabel?                                                                                |
+| Output          | `PD02Result`: ok (itemsAnalysed, meanDifficulty, meanDiscrimination, meanMarkingConsistency, cognitiveLevelCounts, flaggedItems[], summary) or needs_input |
+| Model           | `pd.assess`                                                                                                                                                |
+| Guardrails      | `pii_guard`                                                                                                                                                |
+| Budget          | 1 500 tokens · $0.005 per run                                                                                                                              |
+| Eval set        | `PD-02` (20 cases)                                                                                                                                         |
+| Approval gate   | None                                                                                                                                                       |
+| Writes to Brain | No                                                                                                                                                         |
+| Prompt          | `packages/prompts/src/PD-02/1.0.0.prompt.md`                                                                                                               |
+| Contract        | `packages/agents/src/mod-05/PD-02.contract.ts`                                                                                                             |
+
+Psychometric indicators (difficulty ∈ [0,1], discrimination ∈ [-1,1], marking consistency ∈ [0,1]) are computed from `AssessmentSignal` data. `FlaggedItem.concern` is one of: `low_difficulty`, `high_difficulty`, `poor_discrimination`, `negative_discrimination`, `low_marking_consistency`. Output is about assessment quality, not teacher quality — no individual teacher comparison.
+
+#### PD-03 — Observation Analyst
+
+| Field           | Value                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                           |
+| Purpose         | `pd_analytics`                                                                                                   |
+| Input           | `PD03Input`: tenantId, walkthroughNotes[] (≥1), focus? (one of six areas), sourceDocumentIds[]?                  |
+| Output          | `PD03Result`: ok (notesAnalysed, themes[] (≥1), priorityAreas[] (≥1), summary, citedSourceIds[]?) or needs_input |
+| Model           | `pd.observe`                                                                                                     |
+| Guardrails      | `pii_guard`, `source_grounding_guard`                                                                            |
+| Budget          | 2 000 tokens · $0.01 per run                                                                                     |
+| Eval set        | `PD-03` (20 cases)                                                                                               |
+| Approval gate   | None                                                                                                             |
+| Writes to Brain | No                                                                                                               |
+| Prompt          | `packages/prompts/src/PD-03/1.0.0.prompt.md`                                                                     |
+| Contract        | `packages/agents/src/mod-05/PD-03.contract.ts`                                                                   |
+
+Synthesises anonymised `WalkthroughNote` data into cross-cutting `ObservationTheme` records (theme, supportingFoci[], evidenceStrength: emerging/consistent/strong, illustrativeExamples[]). All teacher references in the input must be de-identified before this agent is invoked; it never sees names or teacher identifiers.
+
+#### PD-04 — Practice Signal Aggregator
+
+| Field           | Value                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                           |
+| Purpose         | `pd_analytics`                                                                                                   |
+| Input           | `PD04Input`: tenantId, signals[] (≥1, all four types), cohortSize (int ≥0), subject?, gradeLabel?                |
+| Output          | `PD04Result`: ok (signalsAggregated, cohortSize, needAreas[], summary) or CohortSuppressionResult or needs_input |
+| Model           | `pd.aggregate`                                                                                                   |
+| Guardrails      | `pii_guard`                                                                                                      |
+| Budget          | 2 000 tokens · $0.008 per run                                                                                    |
+| Eval set        | `PD-04` (20 cases)                                                                                               |
+| Approval gate   | None                                                                                                             |
+| Writes to Brain | No                                                                                                               |
+| Prompt          | `packages/prompts/src/PD-04/1.0.0.prompt.md`                                                                     |
+| Contract        | `packages/agents/src/mod-05/PD-04.contract.ts`                                                                   |
+
+The only agent with a suppression path. When `cohortSize < MINIMUM_COHORT_SIZE` (5), the output must be `CohortSuppressionResult` — `{ status: 'suppressed', reason: 'cohort_below_minimum', minimumRequired: 5, actual: N, detail: string }`. The suppressed path carries no `needAreas` or `signalsAggregated`. `PDNeedArea.signalSources` is a subset of `['coverage', 'assessment', 'walkthrough', 'artefact_edit']`.
+
+#### PD-05 — PD Gap Detector
+
+| Field           | Value                                                                                          |
+| --------------- | ---------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                         |
+| Purpose         | `pd_analytics`                                                                                 |
+| Input           | `PD05Input`: tenantId, needProfile (PD-04 output, typed as unknown), availableInterventions[]? |
+| Output          | `PD05Result`: ok (priorityGaps[] (≥1), topPriorityGap, summary) or needs_input                 |
+| Model           | `pd.detect`                                                                                    |
+| Guardrails      | `pii_guard`                                                                                    |
+| Budget          | 1 500 tokens · $0.006 per run                                                                  |
+| Eval set        | `PD-05` (20 cases)                                                                             |
+| Approval gate   | None                                                                                           |
+| Writes to Brain | No                                                                                             |
+| Prompt          | `packages/prompts/src/PD-05/1.0.0.prompt.md`                                                   |
+| Contract        | `packages/agents/src/mod-05/PD-05.contract.ts`                                                 |
+
+`PriorityGap.suggestedInterventionType` is one of: `micro_course`, `coaching_cycle`, `peer_observation`, `resource_provision`. Gaps are ordered by urgency (high → medium → low). `topPriorityGap` is the single highest-urgency item. No ranking fields; no teacher-level identifiers.
+
+#### PD-06 — Micro-Course Composer
+
+| Field           | Value                                                                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                                                                                |
+| Purpose         | `pd_analytics`                                                                                                                                                        |
+| Input           | `PD06Input`: tenantId, gap (unknown), sourceDocumentIds[] (≥1), targetDurationMinutes (int, 20–40), language (2–5 chars)                                              |
+| Output          | `PD06Result`: ok (courseId, title, targetGap, totalEstimatedMinutes 20–40, modules[] (≥1), checkItems[] (≥1), citedSourceIds[] (≥1), exportable: true) or needs_input |
+| Model           | `pd.compose`                                                                                                                                                          |
+| Guardrails      | `pii_guard`, `source_grounding_guard`                                                                                                                                 |
+| Budget          | 3 000 tokens · $0.015 per run                                                                                                                                         |
+| Eval set        | `PD-06` (20 cases)                                                                                                                                                    |
+| Approval gate   | None (HoD gate is in the pipeline, not the agent)                                                                                                                     |
+| Writes to Brain | No                                                                                                                                                                    |
+| Prompt          | `packages/prompts/src/PD-06/1.0.0.prompt.md`                                                                                                                          |
+| Contract        | `packages/agents/src/mod-05/PD-06.contract.ts`                                                                                                                        |
+
+`exportable: z.literal(true)` — the ok result always carries this constant; `false` is a schema error, not a valid outcome. `totalEstimatedMinutes` is enforced 20–40 by the schema. `MicroCourseModule.type` is one of: `input`, `model`, `deliberate_practice`, `check_for_understanding`. All content grounded in `sourceDocumentIds`; output is a JSON learning object, never a PDF or binary.
+
+#### PD-07 — Coaching Plan Agent
+
+| Field           | Value                                                                                                                           |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                                          |
+| Purpose         | `pd_analytics`                                                                                                                  |
+| Input           | `PD07Input`: tenantId, gap (unknown), courseId? (UUID), sessionCount (int, 1–6), sourceDocumentIds[] (≥1), language (2–5 chars) |
+| Output          | `PD07Result`: ok (planId, targetGap, sessions[] (≥1), goalStatement, citedSourceIds[] (≥1)) or needs_input                      |
+| Model           | `pd.coach`                                                                                                                      |
+| Guardrails      | `pii_guard`, `source_grounding_guard`                                                                                           |
+| Budget          | 2 500 tokens · $0.012 per run                                                                                                   |
+| Eval set        | `PD-07` (20 cases)                                                                                                              |
+| Approval gate   | None (HoD gate is in the pipeline)                                                                                              |
+| Writes to Brain | No                                                                                                                              |
+| Prompt          | `packages/prompts/src/PD-07/1.0.0.prompt.md`                                                                                    |
+| Contract        | `packages/agents/src/mod-05/PD-07.contract.ts`                                                                                  |
+
+`CoachingSession` carries: `sessionNumber` (positive int), `focus`, `openingPrompts[]` (≥1, conversation starters for the human coach), `evidencePoints[]` (≥1, evidence the coach should reference), `observationFocus?`, `estimatedMinutes` (positive int). The plan is developmental, not evaluative — no teacher scoring, no ranking fields.
+
+#### PD-08 — CPTD Tracker
+
+| Field           | Value                                                                                                                                                         |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                                                                        |
+| Purpose         | `pd_analytics`                                                                                                                                                |
+| Input           | `PD08Input`: tenantId, teacherRef (anonymised), activityType (one of 6), durationMinutes (positive int), completedAt (datetime), policyDocumentIds[] (≥1)     |
+| Output          | `PD08Result`: ok (teacherRef, activityType, pointsAwarded ≥0, policyReference, citedPolicyDocumentId, loggedAt, cycleTotal) or no_policy_match or needs_input |
+| Model           | `pd.cptd`                                                                                                                                                     |
+| Guardrails      | `pii_guard`, `source_grounding_guard`                                                                                                                         |
+| Budget          | 1 000 tokens · $0.004 per run                                                                                                                                 |
+| Eval set        | `PD-08` (20 cases)                                                                                                                                            |
+| Approval gate   | None                                                                                                                                                          |
+| Writes to Brain | No (write happens in the CPTD pipeline via `brain.record_cptd_activity`)                                                                                      |
+| Prompt          | `packages/prompts/src/PD-08/1.0.0.prompt.md`                                                                                                                  |
+| Contract        | `packages/agents/src/mod-05/PD-08.contract.ts`                                                                                                                |
+
+`activityType` is one of: `micro_course_completion`, `coaching_cycle_completion`, `peer_observation`, `formal_workshop`, `self_directed_study`, `mentoring`. `policyDocumentIds` must be non-empty — no policy corpus, no ok result. `citedPolicyDocumentId` is required on every ok outcome; `no_policy_match` is a first-class terminal status with no `pointsAwarded`, no `citedPolicyDocumentId`, and no `policyReference` — the system never fabricates CPTD points.
