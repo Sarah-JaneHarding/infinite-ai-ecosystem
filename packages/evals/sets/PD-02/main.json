@@ -1,0 +1,612 @@
+[
+  {
+    "id": "PD02-001",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.62,
+              "discriminationIndex": 0.35,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "apply"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "itemsAnalysed", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD02-002",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": []
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+  },
+  {
+    "id": "PD02-003",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 25,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.91,
+              "discriminationIndex": 0.3,
+              "markingConsistency": 0.85,
+              "cognitiveLevel": "remember"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "flaggedItems", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD02-004",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 30,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.1,
+              "discriminationIndex": 0.4,
+              "markingConsistency": 0.88,
+              "cognitiveLevel": "analyse"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "flaggedItems", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD02-005",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.6,
+              "discriminationIndex": -0.1,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "evaluate"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "flaggedItems", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD02-006",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 25,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.6,
+              "discriminationIndex": 0.3,
+              "markingConsistency": 0.5,
+              "cognitiveLevel": "create"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "flaggedItems", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD02-007",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 30,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.6,
+              "discriminationIndex": 0.35,
+              "markingConsistency": 0.88,
+              "cognitiveLevel": "understand"
+            },
+            {
+              "itemId": "q2",
+              "difficultyIndex": 0.55,
+              "discriminationIndex": 0.4,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "apply"
+            },
+            {
+              "itemId": "q3",
+              "difficultyIndex": 0.7,
+              "discriminationIndex": 0.3,
+              "markingConsistency": 0.85,
+              "cognitiveLevel": "analyse"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "itemsAnalysed", "value": 3 },
+      { "type": "exact_match", "field": "flaggedItems", "value": [] }
+    ]
+  },
+  {
+    "id": "PD02-008",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.62,
+              "discriminationIndex": 0.35,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "apply"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "rank" },
+      { "type": "not_has_field", "field": "teacherPercentile" }
+    ]
+  },
+  {
+    "id": "PD02-009",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 20,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.6,
+              "discriminationIndex": 0.3,
+              "markingConsistency": 0.88,
+              "cognitiveLevel": "remember"
+            },
+            {
+              "itemId": "q2",
+              "difficultyIndex": 0.7,
+              "discriminationIndex": 0.35,
+              "markingConsistency": 0.92,
+              "cognitiveLevel": "understand"
+            }
+          ]
+        }
+      ],
+      "capsTopicId": "CAPS-GR5-NS-WATER"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "cognitiveLevelCounts" }
+    ]
+  },
+  {
+    "id": "PD02-010",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.15,
+              "discriminationIndex": 0.1,
+              "markingConsistency": 0.6,
+              "cognitiveLevel": "apply"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "flaggedItems", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD02-011",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 30,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.5,
+              "discriminationIndex": 0.4,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "evaluate"
+            },
+            {
+              "itemId": "q2",
+              "difficultyIndex": 0.45,
+              "discriminationIndex": 0.38,
+              "markingConsistency": 0.88,
+              "cognitiveLevel": "create"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "summary", "value": 10 }
+    ]
+  },
+  {
+    "id": "PD02-012",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.62,
+              "discriminationIndex": 0.35,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "apply"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_contains", "field": "summary", "value": "ranked" },
+      { "type": "not_contains", "field": "summary", "value": "teacher name" }
+    ]
+  },
+  {
+    "id": "PD02-013",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 25,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.6,
+              "discriminationIndex": 0.3,
+              "markingConsistency": 0.88,
+              "cognitiveLevel": "remember"
+            },
+            {
+              "itemId": "q2",
+              "difficultyIndex": 0.55,
+              "discriminationIndex": 0.35,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "understand"
+            },
+            {
+              "itemId": "q3",
+              "difficultyIndex": 0.5,
+              "discriminationIndex": 0.4,
+              "markingConsistency": 0.85,
+              "cognitiveLevel": "apply"
+            },
+            {
+              "itemId": "q4",
+              "difficultyIndex": 0.45,
+              "discriminationIndex": 0.38,
+              "markingConsistency": 0.88,
+              "cognitiveLevel": "analyse"
+            },
+            {
+              "itemId": "q5",
+              "difficultyIndex": 0.4,
+              "discriminationIndex": 0.3,
+              "markingConsistency": 0.82,
+              "cognitiveLevel": "evaluate"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "itemsAnalysed", "value": 5 }
+    ]
+  },
+  {
+    "id": "PD02-014",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.62,
+              "discriminationIndex": 0.35,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "apply"
+            }
+          ]
+        }
+      ],
+      "gradeLabel": "5"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "meanDifficulty" },
+      { "type": "field_exists", "field": "meanDiscrimination" }
+    ]
+  },
+  {
+    "id": "PD02-015",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 30,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.88,
+              "discriminationIndex": 0.25,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "remember"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "flaggedItems[0].concern",
+        "value": "low_difficulty"
+      }
+    ]
+  },
+  {
+    "id": "PD02-016",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.62,
+              "discriminationIndex": -0.2,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "apply"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "flaggedItems[0].concern",
+        "value": "negative_discrimination"
+      }
+    ]
+  },
+  {
+    "id": "PD02-017",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.62,
+              "discriminationIndex": 0.35,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "apply"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "cognitiveLevelCounts.apply" }
+    ]
+  },
+  {
+    "id": "PD02-018",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.12,
+              "discriminationIndex": 0.35,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "apply"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "flaggedItems[0].concern",
+        "value": "high_difficulty"
+      }
+    ]
+  },
+  {
+    "id": "PD02-019",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 30,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.55,
+              "discriminationIndex": 0.15,
+              "markingConsistency": 0.88,
+              "cognitiveLevel": "understand"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "flaggedItems[0].concern",
+        "value": "poor_discrimination"
+      }
+    ]
+  },
+  {
+    "id": "PD02-020",
+    "agentId": "PD-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "assessmentSignals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.6,
+              "discriminationIndex": 0.35,
+              "markingConsistency": 0.88,
+              "cognitiveLevel": "remember"
+            },
+            {
+              "itemId": "q2",
+              "difficultyIndex": 0.65,
+              "discriminationIndex": 0.4,
+              "markingConsistency": 0.9,
+              "cognitiveLevel": "create"
+            }
+          ]
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "itemsAnalysed", "value": 2 },
+      { "type": "field_exists", "field": "meanMarkingConsistency" }
+    ]
+  }
+]

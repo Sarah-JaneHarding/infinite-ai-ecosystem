@@ -1,0 +1,637 @@
+[
+  {
+    "id": "PD03-001",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "pedagogy",
+          "notes": "Teacher used concrete manipulatives for fractions.",
+          "evidenceStrength": 3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "notesAnalysed", "value": 1 },
+      { "type": "min_length", "field": "themes", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD03-002",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": []
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+  },
+  {
+    "id": "PD03-003",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "assessment_practice",
+          "notes": "Assessment tasks aligned with cognitive demand.",
+          "evidenceStrength": 2
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-02",
+          "observationDate": "2026-08-02",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "assessment_practice",
+          "notes": "Questions were predominantly recall level.",
+          "evidenceStrength": 3
+        }
+      ],
+      "focus": "assessment_practice"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "notesAnalysed", "value": 2 }
+    ]
+  },
+  {
+    "id": "PD03-004",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "4",
+          "subject": "Natural Sciences",
+          "focus": "learner_engagement",
+          "notes": "Learners were actively participating in group work.",
+          "evidenceStrength": 4
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-02",
+          "observationDate": "2026-08-02",
+          "gradeLabel": "4",
+          "subject": "Natural Sciences",
+          "focus": "learner_engagement",
+          "notes": "Learners remained disengaged during explanation phase.",
+          "evidenceStrength": 3
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-03",
+          "observationDate": "2026-08-03",
+          "gradeLabel": "4",
+          "subject": "Natural Sciences",
+          "focus": "learner_engagement",
+          "notes": "Effective use of questioning kept most learners on task.",
+          "evidenceStrength": 3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "priorityAreas", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD03-005",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "6",
+          "subject": "Social Sciences",
+          "focus": "curriculum_alignment",
+          "notes": "Lesson content matched the ATP for term 3.",
+          "evidenceStrength": 3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "teacherName" },
+      { "type": "not_has_field", "field": "teacherRank" }
+    ]
+  },
+  {
+    "id": "PD03-006",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "language_of_instruction",
+          "notes": "Teacher code-switched between isiZulu and English to clarify concepts.",
+          "evidenceStrength": 3
+        }
+      ],
+      "sourceDocumentIds": ["doc-language-policy-001"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "summary" }
+    ]
+  },
+  {
+    "id": "PD03-007",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "7",
+          "subject": "Technology",
+          "focus": "pedagogy",
+          "notes": "Teacher demonstrated design process clearly.",
+          "evidenceStrength": 2
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-02",
+          "observationDate": "2026-08-02",
+          "gradeLabel": "7",
+          "subject": "Technology",
+          "focus": "pedagogy",
+          "notes": "Design brief was unclear; learners struggled to start.",
+          "evidenceStrength": 3
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-03",
+          "observationDate": "2026-08-03",
+          "gradeLabel": "7",
+          "subject": "Technology",
+          "focus": "pedagogy",
+          "notes": "Structured scaffolding evident in problem-solving sequence.",
+          "evidenceStrength": 4
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-04",
+          "observationDate": "2026-08-04",
+          "gradeLabel": "7",
+          "subject": "Technology",
+          "focus": "pedagogy",
+          "notes": "Limited differentiation for learners who finished early.",
+          "evidenceStrength": 2
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "notesAnalysed", "value": 4 }
+    ]
+  },
+  {
+    "id": "PD03-008",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "classroom_management",
+          "notes": "Transitions between activities were slow.",
+          "evidenceStrength": 2
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "themes", "value": 1 },
+      { "type": "min_length", "field": "themes[0].illustrativeExamples", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD03-009",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "pedagogy",
+          "notes": "Effective use of think-pair-share.",
+          "evidenceStrength": 3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_contains", "field": "summary", "value": "anon-token" }
+    ]
+  },
+  {
+    "id": "PD03-010",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "8",
+          "subject": "Natural Sciences",
+          "focus": "curriculum_alignment",
+          "notes": "Concepts covered aligned with CAPS topic sequence.",
+          "evidenceStrength": 4
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-02",
+          "observationDate": "2026-08-02",
+          "gradeLabel": "8",
+          "subject": "Natural Sciences",
+          "focus": "curriculum_alignment",
+          "notes": "Lesson skipped prerequisite concept from previous week.",
+          "evidenceStrength": 3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "themes[0].supportingFoci[0]",
+        "value": "curriculum_alignment"
+      }
+    ]
+  },
+  {
+    "id": "PD03-011",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "pedagogy",
+          "notes": "Good.",
+          "evidenceStrength": 1
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "themes[0].evidenceStrength",
+        "value": "emerging"
+      }
+    ]
+  },
+  {
+    "id": "PD03-012",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "assessment_practice",
+          "notes": "Formative assessment built into each activity.",
+          "evidenceStrength": 3
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-02",
+          "observationDate": "2026-08-02",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "assessment_practice",
+          "notes": "Exit tickets used consistently.",
+          "evidenceStrength": 4
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-03",
+          "observationDate": "2026-08-03",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "assessment_practice",
+          "notes": "Feedback given verbally at end of class.",
+          "evidenceStrength": 3
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-04",
+          "observationDate": "2026-08-04",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "assessment_practice",
+          "notes": "Marking rubric shared with learners at start.",
+          "evidenceStrength": 4
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-05",
+          "observationDate": "2026-08-05",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "assessment_practice",
+          "notes": "Peer assessment used effectively.",
+          "evidenceStrength": 3
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-06",
+          "observationDate": "2026-08-06",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "assessment_practice",
+          "notes": "Written comments on workbooks were developmental.",
+          "evidenceStrength": 4
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "themes[0].evidenceStrength", "value": "strong" }
+    ]
+  },
+  {
+    "id": "PD03-013",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "pedagogy",
+          "notes": "Strong questioning technique observed.",
+          "evidenceStrength": 3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "priorityAreas" }
+    ]
+  },
+  {
+    "id": "PD03-014",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "learner_engagement",
+          "notes": "Learner voice was central to lesson structure.",
+          "evidenceStrength": 4
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "rank" }
+    ]
+  },
+  {
+    "id": "PD03-015",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "6",
+          "subject": "Life Skills",
+          "focus": "classroom_management",
+          "notes": "Clear routines evident; learners knew expectations.",
+          "evidenceStrength": 3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "themes[0].theme" }
+    ]
+  },
+  {
+    "id": "PD03-016",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "pedagogy",
+          "notes": "Abstract concepts introduced before concrete examples.",
+          "evidenceStrength": 3
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-02",
+          "observationDate": "2026-08-02",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "pedagogy",
+          "notes": "Concrete-representational-abstract sequence followed.",
+          "evidenceStrength": 4
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-03",
+          "observationDate": "2026-08-03",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "pedagogy",
+          "notes": "Conceptual understanding not always connected to procedural.",
+          "evidenceStrength": 3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "notesAnalysed", "value": 3 },
+      { "type": "min_length", "field": "priorityAreas", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD03-017",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "9",
+          "subject": "Mathematics",
+          "focus": "language_of_instruction",
+          "notes": "Mathematical vocabulary used correctly and consistently.",
+          "evidenceStrength": 4
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "summary", "value": 10 }
+    ]
+  },
+  {
+    "id": "PD03-018",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "curriculum_alignment",
+          "notes": "Content aligned to term 3 ATP week 4.",
+          "evidenceStrength": 3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "not_contains",
+        "field": "themes[0].illustrativeExamples[0]",
+        "value": "anon-token-01"
+      }
+    ]
+  },
+  {
+    "id": "PD03-019",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "pedagogy",
+          "notes": "Differentiated tasks provided for different readiness levels.",
+          "evidenceStrength": 4
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-02",
+          "observationDate": "2026-08-02",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "pedagogy",
+          "notes": "Extension tasks absent for learners who completed early.",
+          "evidenceStrength": 3
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "themes", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD03-020",
+    "agentId": "PD-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "walkthroughNotes": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-token-01",
+          "observationDate": "2026-08-01",
+          "gradeLabel": "5",
+          "subject": "Mathematics",
+          "focus": "assessment_practice",
+          "notes": "Learners given rubric before task was set.",
+          "evidenceStrength": 4
+        }
+      ],
+      "sourceDocumentIds": ["doc-assessment-framework-001"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "citedSourceIds" }
+    ]
+  }
+]

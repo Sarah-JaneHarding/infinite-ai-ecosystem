@@ -1,0 +1,363 @@
+[
+  {
+    "id": "PD06-001",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "formative_assessment",
+        "urgency": "high",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-001", "pd-src-002"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "course.title" }
+    ]
+  },
+  {
+    "id": "PD06-002",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "formative_assessment",
+        "urgency": "high",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": []
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+  },
+  {
+    "id": "PD06-003",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "formative_assessment",
+        "urgency": "high",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-001"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "course.modules" }
+    ]
+  },
+  {
+    "id": "PD06-004",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "questioning_technique",
+        "urgency": "moderate",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-003"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "course.estimatedMinutes" }
+    ]
+  },
+  {
+    "id": "PD06-005",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "curriculum_pacing",
+        "urgency": "critical",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-001", "pd-src-002"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "course.exportable", "value": true }
+    ]
+  },
+  {
+    "id": "PD06-006",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "assessment_quality",
+        "urgency": "high",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-004"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "course.citedSourceIds", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD06-007",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "differentiation",
+        "urgency": "moderate",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-001"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "course.modules[0].checkItems", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD06-008",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "marking_consistency",
+        "urgency": "high",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-002", "pd-src-005"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "course.teacherRef" }
+    ]
+  },
+  {
+    "id": "PD06-009",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "feedback_quality",
+        "urgency": "low",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-006"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "course.learningObjectives" }
+    ]
+  },
+  {
+    "id": "PD06-010",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "curriculum_alignment",
+        "urgency": "critical",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-001"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "course.rank" }
+    ]
+  },
+  {
+    "id": "PD06-011",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "lesson_planning",
+        "urgency": "high",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-003"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "course.modules[0].title" }
+    ]
+  },
+  {
+    "id": "PD06-012",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "formative_assessment",
+        "urgency": "high",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-001"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "course.modules[0].content" }
+    ]
+  },
+  {
+    "id": "PD06-013",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "pedagogy",
+        "urgency": "moderate",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-007"],
+      "subject": "Mathematics",
+      "gradeLabel": "8"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "course.title" }
+    ]
+  },
+  {
+    "id": "PD06-014",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "questioning_technique",
+        "urgency": "high",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-002"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "course.teacherName" }
+    ]
+  },
+  {
+    "id": "PD06-015",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "assessment_quality",
+        "urgency": "critical",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-004", "pd-src-005"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "course.estimatedMinutes" }
+    ]
+  },
+  {
+    "id": "PD06-016",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "differentiation",
+        "urgency": "high",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-008"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "course.modules", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD06-017",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "subject_content_knowledge",
+        "urgency": "moderate",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-001"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "summary" }
+    ]
+  },
+  {
+    "id": "PD06-018",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "feedback_quality",
+        "urgency": "high",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-002", "pd-src-003"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "course.percentile" }
+    ]
+  },
+  {
+    "id": "PD06-019",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "curriculum_pacing",
+        "urgency": "critical",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-001"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "course.citedSourceIds", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD06-020",
+    "agentId": "PD-06",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "gap": {
+        "area": "marking_consistency",
+        "urgency": "moderate",
+        "interventionType": "micro_course"
+      },
+      "sourceDocumentIds": ["pd-src-005", "pd-src-006"],
+      "subject": "English Home Language",
+      "gradeLabel": "10"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "course.exportable", "value": true }
+    ]
+  }
+]

@@ -1,0 +1,431 @@
+[
+  {
+    "id": "PD05-001",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "formative_assessment",
+            "urgency": "high",
+            "signalSources": ["coverage", "walkthrough"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "gaps", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD05-002",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": []
+      }
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+  },
+  {
+    "id": "PD05-003",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "curriculum_pacing",
+            "urgency": "critical",
+            "signalSources": ["coverage"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "gaps[0].interventionType" }
+    ]
+  },
+  {
+    "id": "PD05-004",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "questioning_technique",
+            "urgency": "moderate",
+            "signalSources": ["walkthrough"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "gaps[0].teacherRef" }
+    ]
+  },
+  {
+    "id": "PD05-005",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "assessment_quality",
+            "urgency": "high",
+            "signalSources": ["assessment"]
+          },
+          {
+            "area": "differentiation",
+            "urgency": "moderate",
+            "signalSources": ["walkthrough"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "gaps", "value": 2 }
+    ]
+  },
+  {
+    "id": "PD05-006",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "curriculum_pacing",
+            "urgency": "critical",
+            "signalSources": ["coverage"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "gaps[0].rank" }
+    ]
+  },
+  {
+    "id": "PD05-007",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "formative_assessment",
+            "urgency": "low",
+            "signalSources": ["assessment"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "gaps[0].description" }
+    ]
+  },
+  {
+    "id": "PD05-008",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "marking_consistency",
+            "urgency": "high",
+            "signalSources": ["assessment"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "gaps[0].suggestedPDFocus" }
+    ]
+  },
+  {
+    "id": "PD05-009",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555"
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+  },
+  {
+    "id": "PD05-010",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          { "area": "pedagogy", "urgency": "moderate", "signalSources": ["walkthrough"] }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "gaps[0].percentile" }
+    ]
+  },
+  {
+    "id": "PD05-011",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "curriculum_alignment",
+            "urgency": "critical",
+            "signalSources": ["coverage", "walkthrough"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "gaps[0].urgency" }
+    ]
+  },
+  {
+    "id": "PD05-012",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "formative_assessment",
+            "urgency": "high",
+            "signalSources": ["coverage"]
+          },
+          {
+            "area": "questioning_technique",
+            "urgency": "high",
+            "signalSources": ["walkthrough"]
+          },
+          {
+            "area": "assessment_quality",
+            "urgency": "moderate",
+            "signalSources": ["assessment"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "gaps", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD05-013",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "lesson_planning",
+            "urgency": "high",
+            "signalSources": ["artefact_edit"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "gaps[0].interventionType" }
+    ]
+  },
+  {
+    "id": "PD05-014",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "differentiation",
+            "urgency": "critical",
+            "signalSources": ["walkthrough", "assessment"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "gaps[0].teacherName" }
+    ]
+  },
+  {
+    "id": "PD05-015",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "subject_content_knowledge",
+            "urgency": "moderate",
+            "signalSources": ["assessment"]
+          }
+        ]
+      },
+      "subject": "Mathematics",
+      "gradeLabel": "7"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "gaps[0].suggestedPDFocus" }
+    ]
+  },
+  {
+    "id": "PD05-016",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "feedback_quality",
+            "urgency": "low",
+            "signalSources": ["walkthrough"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "status_rank" }
+    ]
+  },
+  {
+    "id": "PD05-017",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "formative_assessment",
+            "urgency": "high",
+            "signalSources": ["coverage", "assessment", "walkthrough"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "gaps[0].signalSources" }
+    ]
+  },
+  {
+    "id": "PD05-018",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "curriculum_pacing",
+            "urgency": "critical",
+            "signalSources": ["coverage"]
+          },
+          {
+            "area": "formative_assessment",
+            "urgency": "high",
+            "signalSources": ["walkthrough"]
+          },
+          {
+            "area": "assessment_quality",
+            "urgency": "moderate",
+            "signalSources": ["assessment"]
+          },
+          {
+            "area": "lesson_planning",
+            "urgency": "low",
+            "signalSources": ["artefact_edit"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "gaps", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD05-019",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "questioning_technique",
+            "urgency": "moderate",
+            "signalSources": ["walkthrough"]
+          }
+        ]
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "summary" }
+    ]
+  },
+  {
+    "id": "PD05-020",
+    "agentId": "PD-05",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "needProfile": {
+        "areas": [
+          {
+            "area": "marking_consistency",
+            "urgency": "critical",
+            "signalSources": ["assessment"]
+          }
+        ]
+      },
+      "subject": "English Home Language",
+      "gradeLabel": "9"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "gaps[0].ordinal" }
+    ]
+  }
+]

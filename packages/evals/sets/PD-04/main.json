@@ -1,0 +1,477 @@
+[
+  {
+    "id": "PD04-001",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 3
+        }
+      ],
+      "cohortSize": 8
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "needAreas", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD04-002",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 3
+        }
+      ],
+      "cohortSize": 3
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "suppressed" },
+      { "type": "exact_match", "field": "reason", "value": "cohort_below_minimum" },
+      { "type": "exact_match", "field": "actual", "value": 3 }
+    ]
+  },
+  {
+    "id": "PD04-003",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [],
+      "cohortSize": 10
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+  },
+  {
+    "id": "PD04-004",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 2
+        }
+      ],
+      "cohortSize": 4
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "suppressed" },
+      { "type": "exact_match", "field": "minimumRequired", "value": 5 }
+    ]
+  },
+  {
+    "id": "PD04-005",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 2
+        }
+      ],
+      "cohortSize": 5
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }]
+  },
+  {
+    "id": "PD04-006",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 3
+        },
+        { "signalType": "assessment", "cohortSize": 28, "items": [] },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-01",
+          "focus": "pedagogy",
+          "notes": "Limited differentiation.",
+          "evidenceStrength": 2
+        },
+        {
+          "signalType": "artefact_edit",
+          "agentId": "TB-01",
+          "artefactType": "WORKSHEET",
+          "editedArtefacts": 8,
+          "totalArtefacts": 10,
+          "meanEditDepth": 0.45
+        }
+      ],
+      "cohortSize": 12
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "signalsAggregated", "value": 4 }
+    ]
+  },
+  {
+    "id": "PD04-007",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 2
+        }
+      ],
+      "cohortSize": 8
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "rank" },
+      { "type": "not_has_field", "field": "teacherRef" }
+    ]
+  },
+  {
+    "id": "PD04-008",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "artefact_edit",
+          "agentId": "TB-01",
+          "artefactType": "WORKSHEET",
+          "editedArtefacts": 9,
+          "totalArtefacts": 10,
+          "meanEditDepth": 0.65
+        }
+      ],
+      "cohortSize": 6,
+      "subject": "Mathematics",
+      "gradeLabel": "5"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "needAreas[0].signalSources[0]",
+        "value": "artefact_edit"
+      }
+    ]
+  },
+  {
+    "id": "PD04-009",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-01",
+          "focus": "pedagogy",
+          "notes": "Multiple missed opportunities for formative assessment.",
+          "evidenceStrength": 3
+        }
+      ],
+      "cohortSize": 7
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "summary" }
+    ]
+  },
+  {
+    "id": "PD04-010",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 2
+        }
+      ],
+      "cohortSize": 2
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "suppressed" },
+      { "type": "exact_match", "field": "actual", "value": 2 },
+      { "type": "not_has_field", "field": "needAreas" }
+    ]
+  },
+  {
+    "id": "PD04-011",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "assessment",
+          "cohortSize": 28,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.1,
+              "discriminationIndex": -0.2,
+              "markingConsistency": 0.5,
+              "cognitiveLevel": "remember"
+            }
+          ]
+        }
+      ],
+      "cohortSize": 10
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "needAreas[0].urgency" }
+    ]
+  },
+  {
+    "id": "PD04-012",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "delivered",
+          "weeksDrift": 0
+        }
+      ],
+      "cohortSize": 15
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "cohortSize", "value": 15 }
+    ]
+  },
+  {
+    "id": "PD04-013",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 4
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-ENERGY",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 2
+        }
+      ],
+      "cohortSize": 1
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "suppressed" }]
+  },
+  {
+    "id": "PD04-014",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-01",
+          "focus": "curriculum_alignment",
+          "notes": "Content well aligned to CAPS.",
+          "evidenceStrength": 4
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-02",
+          "focus": "curriculum_alignment",
+          "notes": "Sequencing of topics not matching ATP.",
+          "evidenceStrength": 3
+        }
+      ],
+      "cohortSize": 9
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "signalsAggregated", "value": 2 }
+    ]
+  },
+  {
+    "id": "PD04-015",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "artefact_edit",
+          "agentId": "TB-03",
+          "artefactType": "LESSON_PLAN",
+          "editedArtefacts": 5,
+          "totalArtefacts": 5,
+          "meanEditDepth": 0.8
+        }
+      ],
+      "cohortSize": 6
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "needAreas", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD04-016",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 3
+        }
+      ],
+      "cohortSize": 6
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_contains", "field": "summary", "value": "rank" }
+    ]
+  },
+  {
+    "id": "PD04-017",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 3
+        },
+        {
+          "signalType": "assessment",
+          "cohortSize": 25,
+          "items": [
+            {
+              "itemId": "q1",
+              "difficultyIndex": 0.9,
+              "discriminationIndex": -0.1,
+              "markingConsistency": 0.55,
+              "cognitiveLevel": "remember"
+            }
+          ]
+        },
+        {
+          "signalType": "walkthrough",
+          "teacherRef": "anon-01",
+          "focus": "pedagogy",
+          "notes": "Pedagogy needs development.",
+          "evidenceStrength": 2
+        }
+      ],
+      "cohortSize": 8
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "signalsAggregated", "value": 3 }
+    ]
+  },
+  {
+    "id": "PD04-018",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "ahead_of_plan",
+          "weeksDrift": -1
+        }
+      ],
+      "cohortSize": 10
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "needAreas" }
+    ]
+  },
+  {
+    "id": "PD04-019",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 2
+        }
+      ],
+      "cohortSize": 0
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "suppressed" }]
+  },
+  {
+    "id": "PD04-020",
+    "agentId": "PD-04",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "signals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 3
+        }
+      ],
+      "cohortSize": 20,
+      "subject": "Natural Sciences",
+      "gradeLabel": "5"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "needAreas[0].area" },
+      { "type": "field_exists", "field": "needAreas[0].evidenceSummary" }
+    ]
+  }
+]

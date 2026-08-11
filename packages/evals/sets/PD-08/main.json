@@ -1,0 +1,278 @@
+[
+  {
+    "id": "PD08-001",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Attended a three-day workshop on formative assessment strategies.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "points" }
+    ]
+  },
+  {
+    "id": "PD08-002",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Completed an online micro-course on differentiated instruction.",
+      "policyDocumentIds": []
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+  },
+  {
+    "id": "PD08-003",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Participated in a subject-specific curriculum workshop for two days.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "citedPolicyDocumentId" }
+    ]
+  },
+  {
+    "id": "PD08-004",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Held an individual coaching session with school principal.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "teacherRef" }
+    ]
+  },
+  {
+    "id": "PD08-005",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Conducted a professional learning community meeting focused on data use.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "activityCategory" }
+    ]
+  },
+  {
+    "id": "PD08-006",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "An activity type that does not match any CPTD policy clause.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_policy_match" }
+    ]
+  },
+  {
+    "id": "PD08-007",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Read a research article on cognitive load theory.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "points_estimated" }
+    ]
+  },
+  {
+    "id": "PD08-008",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Completed five hours of peer observation with structured feedback.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "citedPolicyDocumentId" }
+    ]
+  },
+  {
+    "id": "PD08-009",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Attended a national conference on inclusive education.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "rank" }
+    ]
+  },
+  {
+    "id": "PD08-010",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Completed online course on assessment for learning.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "summary" }
+    ]
+  },
+  {
+    "id": "PD08-011",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Wrote and published a journal article on literacy in the foundation phase.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "points" }
+    ]
+  },
+  {
+    "id": "PD08-012",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Mentored a student teacher for one term.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "teacherName" }
+    ]
+  },
+  {
+    "id": "PD08-013",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Participated in a school-based action research project on questioning techniques.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "activityCategory" }
+    ]
+  },
+  {
+    "id": "PD08-014",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Attended a one-day subject advisor workshop on CAPS implementation.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "citedPolicyDocumentId" }
+    ]
+  },
+  {
+    "id": "PD08-015",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Led a professional learning community session on data-driven instruction.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "percentile" }
+    ]
+  },
+  {
+    "id": "PD08-016",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Undertook a formal qualification upgrade — National Professional Diploma in Education.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "points" }
+    ]
+  },
+  {
+    "id": "PD08-017",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Completed a SACE-accredited CPD course on inclusive education.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "citedPolicyDocumentId" }
+    ]
+  },
+  {
+    "id": "PD08-018",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Presented a paper at an education research symposium.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "points_computed" }
+    ]
+  },
+  {
+    "id": "PD08-019",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Totally made up category with no possible CPTD classification.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "no_policy_match" },
+      { "type": "not_has_field", "field": "points" }
+    ]
+  },
+  {
+    "id": "PD08-020",
+    "agentId": "PD-08",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "activityDescription": "Participated in a three-month teacher exchange programme with another school.",
+      "policyDocumentIds": ["sace-cptd-2023"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "ordinal" }
+    ]
+  }
+]

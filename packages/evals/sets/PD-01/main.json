@@ -1,0 +1,632 @@
+[
+  {
+    "id": "PD01-001",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Natural Sciences",
+      "gradeLabel": "5",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "delivered",
+          "weeksDrift": 0,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": "2026-07-06"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "topicsAnalysed", "value": 1 },
+      { "type": "exact_match", "field": "topicsOnTrack", "value": 1 },
+      { "type": "exact_match", "field": "topicsBehind", "value": 0 }
+    ]
+  },
+  {
+    "id": "PD01-002",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Mathematics",
+      "gradeLabel": "6",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR6-MATH-FRACTIONS",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 3,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": null
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "topicsBehind", "value": 1 },
+      { "type": "min_length", "field": "gapTopics", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD01-003",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Mathematics",
+      "gradeLabel": "4",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": []
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "needs_input" }]
+  },
+  {
+    "id": "PD01-004",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Natural Sciences",
+      "gradeLabel": "5",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-ENERGY",
+          "deliveryStatus": "ahead_of_plan",
+          "weeksDrift": -1,
+          "plannedWeek": "2026-08-10",
+          "deliveredWeek": "2026-08-03"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "topicsAhead", "value": 1 },
+      { "type": "exact_match", "field": "topicsBehind", "value": 0 }
+    ]
+  },
+  {
+    "id": "PD01-005",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Life Skills",
+      "gradeLabel": "3",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR3-LS-HEALTH",
+          "deliveryStatus": "partially_delivered",
+          "weeksDrift": 2,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": "2026-07-13"
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR3-LS-MOVEMENT",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 4,
+          "plannedWeek": "2026-07-13",
+          "deliveredWeek": null
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "topicsAnalysed", "value": 2 },
+      { "type": "exact_match", "field": "topicsBehind", "value": 2 },
+      { "type": "min_length", "field": "gapTopics", "value": 2 }
+    ]
+  },
+  {
+    "id": "PD01-006",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Mathematics",
+      "gradeLabel": "7",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR7-MATH-INTEGERS",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 5,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": null
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_contains", "field": "summary", "value": "rank" },
+      { "type": "not_contains", "field": "summary", "value": "teacher" }
+    ]
+  },
+  {
+    "id": "PD01-007",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "English Home Language",
+      "gradeLabel": "R",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GRR-EHL-PHONICS",
+          "deliveryStatus": "delivered",
+          "weeksDrift": 0,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": "2026-07-06"
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GRR-EHL-LISTENING",
+          "deliveryStatus": "delivered",
+          "weeksDrift": 0,
+          "plannedWeek": "2026-07-13",
+          "deliveredWeek": "2026-07-13"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "topicsAnalysed", "value": 2 },
+      { "type": "exact_match", "field": "topicsOnTrack", "value": 2 },
+      { "type": "exact_match", "field": "meanWeeksDrift", "value": 0 }
+    ]
+  },
+  {
+    "id": "PD01-008",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Social Sciences",
+      "gradeLabel": "9",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR9-SS-DEMOCRACY",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 1,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": null
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR9-SS-MAPWORK",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 3,
+          "plannedWeek": "2026-07-13",
+          "deliveredWeek": null
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "meanWeeksDrift" },
+      {
+        "type": "exact_match",
+        "field": "gapTopics[0].capsTopicId",
+        "value": "CAPS-GR9-SS-MAPWORK"
+      }
+    ]
+  },
+  {
+    "id": "PD01-009",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Technology",
+      "gradeLabel": "8",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR8-TECH-STRUCTURES",
+          "deliveryStatus": "partially_delivered",
+          "weeksDrift": 1,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": "2026-07-13"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_has_field", "field": "rank" },
+      { "type": "not_has_field", "field": "percentile" }
+    ]
+  },
+  {
+    "id": "PD01-010",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Natural Sciences",
+      "gradeLabel": "5",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "delivered",
+          "weeksDrift": 0,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": "2026-07-06"
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-ENERGY",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 2,
+          "plannedWeek": "2026-07-20",
+          "deliveredWeek": null
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-MATTER",
+          "deliveryStatus": "ahead_of_plan",
+          "weeksDrift": -1,
+          "plannedWeek": "2026-08-10",
+          "deliveredWeek": "2026-08-03"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "topicsAnalysed", "value": 3 },
+      { "type": "exact_match", "field": "topicsBehind", "value": 1 },
+      { "type": "exact_match", "field": "topicsAhead", "value": 1 }
+    ]
+  },
+  {
+    "id": "PD01-011",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Mathematics",
+      "gradeLabel": "12",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR12-MATH-CALCULUS",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 6,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": null
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "min_length", "field": "summary", "value": 10 }
+    ]
+  },
+  {
+    "id": "PD01-012",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Afrikaans Home Language",
+      "gradeLabel": "2",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR2-AHL-LEES",
+          "deliveryStatus": "delivered",
+          "weeksDrift": 0,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": "2026-07-06"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "gapTopics", "value": [] }
+    ]
+  },
+  {
+    "id": "PD01-013",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Physical Sciences",
+      "gradeLabel": "11",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR11-PS-MECHANICS",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 2,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": null
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR11-PS-ELECTRICITY",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 4,
+          "plannedWeek": "2026-07-13",
+          "deliveredWeek": null
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR11-PS-WAVES",
+          "deliveryStatus": "partially_delivered",
+          "weeksDrift": 1,
+          "plannedWeek": "2026-07-20",
+          "deliveredWeek": "2026-07-27"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "topicsBehind", "value": 3 },
+      { "type": "exact_match", "field": "gapTopics[0].weeksBehind", "value": 4 }
+    ]
+  },
+  {
+    "id": "PD01-014",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Mathematics",
+      "gradeLabel": "1",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR1-MATH-COUNTING",
+          "deliveryStatus": "ahead_of_plan",
+          "weeksDrift": -2,
+          "plannedWeek": "2026-08-10",
+          "deliveredWeek": "2026-07-27"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "topicsAhead", "value": 1 },
+      { "type": "exact_match", "field": "topicsBehind", "value": 0 },
+      { "type": "exact_match", "field": "gapTopics", "value": [] }
+    ]
+  },
+  {
+    "id": "PD01-015",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Natural Sciences",
+      "gradeLabel": "5",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 3,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": null
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "not_contains", "field": "summary", "value": "worst" },
+      { "type": "not_contains", "field": "summary", "value": "best" },
+      { "type": "not_contains", "field": "summary", "value": "ranked" }
+    ]
+  },
+  {
+    "id": "PD01-016",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "History",
+      "gradeLabel": "10",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR10-HIST-IMPERIALISM",
+          "deliveryStatus": "delivered",
+          "weeksDrift": 0,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": "2026-07-06"
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR10-HIST-COLONIALISM",
+          "deliveryStatus": "delivered",
+          "weeksDrift": 0,
+          "plannedWeek": "2026-07-13",
+          "deliveredWeek": "2026-07-13"
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR10-HIST-RESISTANCE",
+          "deliveryStatus": "delivered",
+          "weeksDrift": 0,
+          "plannedWeek": "2026-07-20",
+          "deliveredWeek": "2026-07-20"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "topicsOnTrack", "value": 3 },
+      { "type": "exact_match", "field": "topicsBehind", "value": 0 }
+    ]
+  },
+  {
+    "id": "PD01-017",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Mathematics",
+      "gradeLabel": "5",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-MATH-FRACTIONS",
+          "deliveryStatus": "partially_delivered",
+          "weeksDrift": 2,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": "2026-07-13"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "gapTopics[0].deliveryStatus",
+        "value": "partially_delivered"
+      }
+    ]
+  },
+  {
+    "id": "PD01-018",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Economic and Management Sciences",
+      "gradeLabel": "8",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR8-EMS-ENTREPRENEURSHIP",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 2,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": null
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "field_exists", "field": "summary" },
+      { "type": "field_exists", "field": "periodStart" },
+      { "type": "field_exists", "field": "periodEnd" }
+    ]
+  },
+  {
+    "id": "PD01-019",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Natural Sciences",
+      "gradeLabel": "6",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR6-NS-EARTH",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 1,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": null
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR6-NS-ECOSYSTEMS",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 3,
+          "plannedWeek": "2026-07-13",
+          "deliveredWeek": null
+        },
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR6-NS-FOOD-WEBS",
+          "deliveryStatus": "not_delivered",
+          "weeksDrift": 5,
+          "plannedWeek": "2026-07-20",
+          "deliveredWeek": null
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "gapTopics[0].capsTopicId",
+        "value": "CAPS-GR6-NS-FOOD-WEBS"
+      }
+    ]
+  },
+  {
+    "id": "PD01-020",
+    "agentId": "PD-01",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "subject": "Mathematics",
+      "gradeLabel": "5",
+      "periodStart": "2026-07-01",
+      "periodEnd": "2026-08-31",
+      "coverageSignals": [
+        {
+          "signalType": "coverage",
+          "capsTopicId": "CAPS-GR5-MATH-SHAPES",
+          "deliveryStatus": "delivered",
+          "weeksDrift": 0,
+          "plannedWeek": "2026-07-06",
+          "deliveredWeek": "2026-07-06"
+        }
+      ]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "subject", "value": "Mathematics" },
+      { "type": "exact_match", "field": "gradeLabel", "value": "5" }
+    ]
+  }
+]
