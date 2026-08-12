@@ -19,6 +19,7 @@
   "dependencies": {
     "@infinite-ai/design-system": "workspace:*",
     "@infinite-ai/policy": "workspace:*",
+    "@infinite-ai/security": "workspace:*",
     "next": "16.3.0",
     "next-auth": "4.24.15",
     "react": "19.2.8",

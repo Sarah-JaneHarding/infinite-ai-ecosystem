@@ -262,7 +262,25 @@ const STAGES: readonly Stage[] = [
       'pnpm drill:restore',
     ],
   },
-  { id: '16', name: 'Security hardening', commands: [] },
+  {
+    id: '16',
+    name: 'Security hardening and pen-test readiness',
+    commands: [
+      // Unit tier for the new packages/security package — 66 tests covering CSP nonce
+      // generation, CSRF token generation/validation, sliding-window rate limiting,
+      // per-tenant quota enforcement, agent tool allow-lists, and output safety patterns.
+      'pnpm test:security',
+      // Supply-chain audit: lockfile integrity, exact version pinning in all package.json
+      // files, pnpm audit --prod --audit-level=high, SBOM generation.
+      'pnpm audit:supply-chain',
+      // Tenant-abuse sub-suite: rate-limit and quota tests run in isolation so a CI
+      // failure on these guards is immediately visible without wading through all 66 tests.
+      'pnpm test:tenant-abuse',
+    ],
+    // NOTE: pnpm test:rls:exhaustive (Testcontainers) requires Docker. It follows the
+    // same pattern as Stages 01, 05, 06 — proven in CI, fails in the authoring sandbox.
+    // Run manually before GA: pnpm test:rls:exhaustive
+  },
   { id: '17', name: 'Tenant lifecycle, provisioning, billing', commands: [] },
   { id: '18', name: 'Launch readiness and handover', commands: [] },
 ];

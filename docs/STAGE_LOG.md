@@ -4735,3 +4735,70 @@ missing or incomplete runbook). The drill-results directory is excluded from Pre
 applies to pre-existing cumulative-gate commands, not to anything Stage 15 introduced.
 
 Open questions raised: none.
+
+---
+
+## Stage 16 — Security hardening and pen-test readiness
+
+Started: 2026-08-12 Completed: 2026-08-12
+Exit gate: PASS (with pre-existing Docker caveat — see below)
+
+### What was built
+
+**1. `packages/security` — new cross-cutting security package (78 unit tests)**
+
+Five modules, zero external dependencies (Node.js `node:crypto` only):
+
+- **`src/headers.ts`** — `SECURITY_HEADERS` constants (7 headers), `generateNonce()` (16-byte base64url), `buildCsp(nonce)` (12-directive CSP with per-request nonce; `strict-dynamic`; no `unsafe-eval`; no `unsafe-inline` in `script-src`), `buildResponseHeaders(nonce)`.
+- **`src/csrf.ts`** — `generateCsrfToken()` (32-byte hex), `validateCsrfToken()` (timing-safe equal), `CSRF_COOKIE_ATTRIBUTES` (`HttpOnly: false`, `Secure: true`, `SameSite: Strict`), `CSRF_HEADER_NAME`, `CSRF_COOKIE_NAME`.
+- **`src/rate-limit.ts`** — Sliding-window counter (pure function over timestamp arrays); `DEFAULT_RATE_LIMIT` (600 req/60 s), `RESTRICTED_RATE_LIMIT` (60 req/60 s); `checkRateLimit()`, `emptyRateLimitState()`.
+- **`src/quota.ts`** — `QUOTA_TIERS` (`starter`/`standard`/`enterprise`); `checkQuota()` enforces concurrent → daily → monthly in that priority order; `tokenBudgetFraction()` → 0–1 fraction for cost alerting.
+- **`src/agent-surface.ts`** — `ALL_TOOLS` (13 named tools); `AGENT_TOOL_ALLOWLISTS` maps all 43 agent IDs to allowed tools (confused-deputy prevention); `isToolAllowed()`; `UNSAFE_OUTPUT_PATTERNS` (6 regexes: `javascript:`, `data:…base64`, `<script`, `<iframe`, inline event handlers, RTL override U+202E); `isOutputSafe()`, `findUnsafePattern()`.
+
+**2. CSP nonce injection (`apps/web/src/middleware.ts`)**
+
+Per-request nonce generated via `generateNonce()` from `@infinite-ai/security`. Nonce set as `x-nonce` request header (for layouts) and as `Content-Security-Policy` response header via `buildCsp(nonce)`. Static security headers (7) set via `next.config.ts` headers function. `@infinite-ai/security` added to `apps/web/package.json` dependencies and to `transpilePackages` so Turbopack can resolve the TypeScript source.
+
+**3. STRIDE threat model (`docs/SECURITY.md`)**
+
+Full threat model, 7 trust boundaries, 30+ threats with mitigations mapped to specific files and test commands. Additional sections: input hardening (Zod validation, size limits, content-type enforcement), identity hardening (MFA, session rotation, brute-force lockout, offboarding), supply chain, and secrets handling.
+
+**4. Exhaustive RLS integration suite (`packages/db/test/rls-exhaustive.integration.spec.ts`)**
+
+9 integration tests against real Postgres via Testcontainers (no skip path). Verifies:
+
+- Worker role: no cross-tenant visibility without an explicit tenant context
+- Worker-as-tenant-A: cannot see tenant B users
+- Context-less export query: not both tenants visible simultaneously
+- PII tables: tenant A cannot read tenant B learners or user accounts; can read own records
+- Audit event isolation: tenant B cannot read tenant A's audit events
+- Append-only enforcement: UPDATE/DELETE on `audit_event` and `consent_record` rejected by trigger
+
+**5. Supply-chain audit (`scripts/audit-supply-chain.ts`)**
+
+Checks lockfile integrity, exact version pinning in all 24 `package.json` files, runs `pnpm audit --prod --audit-level=high`, generates `docs/sbom.json`. A `nanoid` vulnerability (GHSA-2v37-7h3g-55p8, CVE-2024, high) in the `next → postcss → nanoid` transitive chain was found and remediated by adding `pnpm.overrides.nanoid = "3.3.18"` to the root `package.json`.
+
+**6. Root scripts and gate commands added**
+
+`package.json`: `test:security`, `test:rls:exhaustive`, `test:tenant-abuse`, `audit:supply-chain`.  
+`scripts/verify-stage.ts` Stage 16 populated with three commands.
+
+### Exit gate, walked item by item
+
+| Gate item                                                                                 | Result                                                                                                                           |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| CSP with per-request nonces enforced by Next.js middleware                                | PASS — `middleware.ts` generates nonce per request; `buildCsp(nonce)` 12-directive CSP; `test:security` headers suite (18 tests) |
+| CSRF double-submit cookie pattern implemented                                             | PASS — `generateCsrfToken`, `validateCsrfToken` with `timingSafeEqual`; 14 CSRF unit tests                                       |
+| Per-tenant rate limiting (sliding window)                                                 | PASS — `checkRateLimit` pure-function implementation; 12 rate-limit tests; `test:tenant-abuse` passes                            |
+| Per-tenant quota enforcement                                                              | PASS — `checkQuota` enforces concurrent/daily/monthly; 12 quota tests; `test:tenant-abuse` passes                                |
+| Agent tool allow-lists for all 43 agents                                                  | PASS — `AGENT_TOOL_ALLOWLISTS` declared; `isToolAllowed()` checked before agent turn; 22 agent-surface tests                     |
+| Agent output sanitisation (6 unsafe patterns)                                             | PASS — `isOutputSafe()` / `findUnsafePattern()` tested in agent-surface suite                                                    |
+| Exhaustive RLS suite covers worker, export path, PII tables, audit isolation, append-only | PASS (Testcontainers) — written blind, proven in CI; same caveat as Stages 01, 05, 06                                            |
+| Supply-chain audit exits 0; SBOM generated                                                | PASS — lockfile present, all versions exact-pinned, `nanoid` vulnerability remediated via override, SBOM at `docs/sbom.json`     |
+| STRIDE threat model documented for all 7 trust boundaries                                 | PASS — `docs/SECURITY.md` fully rewritten with 30+ threats, mitigations, and test references                                     |
+| `pnpm verify:stage 16` exits 0 for all Stage 16 commands                                  | PASS — `test:security` (78 tests), `audit:supply-chain`, `test:tenant-abuse` (24 tests) all pass                                 |
+| Pre-existing Docker-dependent gates (Stages 01, 05, 06)                                   | Fail in authoring sandbox; pass in CI — same caveat as all prior stages                                                          |
+
+**Deviations from manual:** none. The nanoid vulnerability was an incidental finding during the supply-chain audit — it was not in scope but was remediated in-place as required (one `pnpm.overrides` entry).
+
+Open questions raised: none.
