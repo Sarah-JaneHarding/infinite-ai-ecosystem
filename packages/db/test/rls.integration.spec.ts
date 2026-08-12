@@ -395,6 +395,56 @@ async function seedTwoTenants(): Promise<void> {
         },
       });
 
+      // Stage 17 — billing and provisioning tables. Seeded here for the same reason every
+      // earlier stage's tables are: this suite is the proof that every tenant-owned table is
+      // isolated, and the fixture guard above refuses a table with no row.
+      const provRecord = await tx.provisioningRecord.create({
+        data: { tenantId, steps: [], readiness: 0 },
+      });
+      const sub = await tx.subscription.create({
+        data: {
+          tenantId,
+          tierName: 'starter',
+          status: 'ACTIVE',
+          startsOn: new Date('2026-08-01'),
+        },
+      });
+      // append-only — INSERT is allowed; UPDATE/DELETE are blocked by trigger.
+      const meteringEvent = await tx.tenantMeteringEvent.create({
+        data: {
+          tenantId,
+          agentId: 'seed-agent',
+          tokensUsed: 1_000,
+          costCents: 10,
+          at: new Date('2026-08-07T08:00:00Z'),
+        },
+      });
+      const meteringPeriod = await tx.meteringPeriod.create({
+        data: {
+          tenantId,
+          periodStart: new Date('2026-08-01T00:00:00Z'),
+          periodEnd: new Date('2026-09-01T00:00:00Z'),
+          totalTokens: 1_000,
+          totalCostCents: 10,
+          learnerCount: 1,
+          educatorCount: 1,
+          eventCount: 1,
+          status: 'OPEN',
+        },
+      });
+      const invoice = await tx.tenantInvoice.create({
+        data: {
+          tenantId,
+          subscriptionId: sub.id,
+          meteringPeriodId: meteringPeriod.id,
+          lineItems: [],
+          subtotalCents: 0,
+          vatCents: 0,
+          totalCents: 0,
+          status: 'DRAFT',
+        },
+      });
+
       const created: Record<string, string> = {
         academic_year: year.id,
         approval_task: approvalTask.id,
@@ -420,9 +470,11 @@ async function seedTwoTenants(): Promise<void> {
         learner: learner.id,
         learner_360: learner360.id,
         learner_identifier: identifier.id,
+        metering_period: meteringPeriod.id,
         orchestrator_run: orchestratorRun.id,
         orchestrator_step_run: orchestratorStepRun.id,
         phase: phase.id,
+        provisioning_record: provRecord.id,
         role_assignment: role.id,
         school: school.id,
         staff_member: staff.id,
@@ -431,7 +483,10 @@ async function seedTwoTenants(): Promise<void> {
         screening_feature: screeningFeature.id,
         source_field_mapping: sourceFieldMapping.id,
         subject: subject.id,
+        subscription: sub.id,
         teaching_assignment: assignment.id,
+        tenant_invoice: invoice.id,
+        tenant_metering_event: meteringEvent.id,
         tenant_setting: setting.id,
         term: term.id,
         user_account: user.id,
