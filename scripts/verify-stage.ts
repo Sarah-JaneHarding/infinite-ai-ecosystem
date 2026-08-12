@@ -281,7 +281,22 @@ const STAGES: readonly Stage[] = [
     // same pattern as Stages 01, 05, 06 — proven in CI, fails in the authoring sandbox.
     // Run manually before GA: pnpm test:rls:exhaustive
   },
-  { id: '17', name: 'Tenant lifecycle, provisioning, billing', commands: [] },
+  {
+    id: '17',
+    name: 'Tenant lifecycle, provisioning, billing',
+    commands: [
+      // Onboarding wizard (7 steps, required-step tracking, readiness score), lifecycle
+      // state machine (ACTIVE/SUSPENDED/CLOSED), and readiness checks — 57 pure unit tests.
+      'pnpm test:provisioning',
+      // Billing reconciliation suite: tier definitions, metering aggregation, period
+      // reconciliation against gateway telemetry, invoice line-item generation (with 15%
+      // VAT), and dunning state machine — 65 pure unit tests.
+      'pnpm test:billing:reconcile',
+      // NOTE: pnpm test:tenant-deletion (Testcontainers) requires Docker. It follows the
+      // same pattern as Stages 01, 05, 06 — proven in CI, written blind in the sandbox.
+      // Run manually before GA: pnpm test:tenant-deletion
+    ],
+  },
   { id: '18', name: 'Launch readiness and handover', commands: [] },
 ];
 

@@ -44,6 +44,9 @@
     "test:rls:exhaustive": "pnpm --filter @infinite-ai/db exec vitest run test/rls-exhaustive.integration.spec.ts",
     "test:tenant-abuse": "pnpm --filter @infinite-ai/security test:tenant-abuse",
     "audit:supply-chain": "tsx scripts/audit-supply-chain.ts",
+    "test:provisioning": "pnpm --filter @infinite-ai/provisioning test",
+    "test:billing:reconcile": "pnpm --filter @infinite-ai/billing test:reconcile",
+    "test:tenant-deletion": "pnpm --filter @infinite-ai/db exec vitest run test/tenant-deletion.integration.spec.ts",
     "verify:stage": "tsx scripts/verify-stage.ts"
   },
   "devDependencies": {

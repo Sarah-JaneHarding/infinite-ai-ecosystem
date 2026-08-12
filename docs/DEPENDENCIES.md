@@ -406,6 +406,12 @@ to the library itself. No proprietary source is combined with axe-core; the pack
 dev dependency only and ships no code to end users. The exception is recorded here
 explicitly as rule 9 requires.
 
+## Stage 17 — Tenant lifecycle, provisioning, billing
+
+No new external runtime dependencies were added. Both `packages/provisioning` and
+`packages/billing` use only `zod` (already in the tree, MIT) plus standard Node.js.
+Their `devDependencies` (`typescript`, `vitest`) are already present in the workspace.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

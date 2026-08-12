@@ -49,6 +49,12 @@ export const TENANT_OWNED_TABLES = [
   'tenant_setting',
   'term',
   'user_account',
+  // Stage 17 — tenant lifecycle, provisioning, billing
+  'metering_period',
+  'provisioning_record',
+  'subscription',
+  'tenant_invoice',
+  'tenant_metering_event',
 ] as const;
 
 /**
@@ -101,6 +107,8 @@ export const APPEND_ONLY_TABLES = [
   // Stage 09 — the event log and run audit are ledgers; both refuse UPDATE/DELETE
   'domain_event_log',
   'ingest_run',
+  // Stage 17 — metering events are a gateway usage ledger; immutability enforced by trigger
+  'tenant_metering_event',
 ] as const;
 
 export type TenantOwnedTable = (typeof TENANT_OWNED_TABLES)[number];

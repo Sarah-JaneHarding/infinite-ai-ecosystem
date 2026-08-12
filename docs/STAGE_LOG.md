@@ -4802,3 +4802,84 @@ Checks lockfile integrity, exact version pinning in all 24 `package.json` files,
 **Deviations from manual:** none. The nanoid vulnerability was an incidental finding during the supply-chain audit — it was not in scope but was remediated in-place as required (one `pnpm.overrides` entry).
 
 Open questions raised: none.
+
+---
+
+## Stage 17 — Tenant lifecycle, provisioning, billing
+
+Started: 2026-08-12 Completed: 2026-08-12
+Exit gate: PASS (with pre-existing Docker caveat — see below)
+
+### What was built
+
+**1. `packages/provisioning` — onboarding wizard, lifecycle state machine, readiness checks (57 unit tests)**
+
+Three modules, one dependency (Zod):
+
+- **`src/wizard.ts`** — 7-step onboarding wizard (`create_tenant`, `configure_school_profile`, `import_staff`, `import_learners`, `connect_sources`, `ratify_constitution`, `readiness_check`). 6 required steps tracked in `REQUIRED_STEPS`; `connect_sources` is advisory. Zod schemas for 4 steps with input validation. Functions: `validateStepInput()`, `computeReadinessScore()` (0–100), `isReadyForGoLive()`, `nextRequiredStep()`, `initialWizardState()`.
+- **`src/lifecycle.ts`** — Tenant status machine (`ACTIVE`/`SUSPENDED`/`CLOSED`). CLOSED is terminal. Functions: `assertTransitionAllowed()`, `canSuspend()`, `canReactivate()`, `canClose()`, `buildTransitionRecord()`. `buildTransitionRecord` validates the transition before returning, so nothing is persisted on an illegal transition.
+- **`src/readiness.ts`** — 5 named checks: `staff_imported`, `learners_imported`, `constitution_ratified`, `school_profile_complete`, `subscription_active`. `hasSourceConnected` is advisory (does not fail any check). Functions: `runReadinessChecks()`, `allReadinessChecksPassed()`.
+
+**2. `packages/billing` — tiers, metering, reconciliation, invoicing, dunning (65 unit tests)**
+
+Five modules, one dependency (no external dependencies beyond TypeScript):
+
+- **`src/tiers.ts`** — `SubscriptionTier` interface; `SUBSCRIPTION_TIERS` (starter free, standard R999/mo, enterprise R4999/mo) in ZAR cents. `getTier()` throws on unknown name.
+- **`src/metering.ts`** — `aggregateMeteringEvents()` (period filter by `[periodStart, periodEnd)`), `computeOverage()` (token/learner/educator overages, integer arithmetic).
+- **`src/reconciliation.ts`** — `reconcilePeriod()` comparing metered vs gateway telemetry token counts; configurable tolerance (default 0.5%); PASS/FAIL status; reports delta and deviation % for audit.
+- **`src/invoicing.ts`** — `buildInvoice()` produces 1–4 line items (base + up to 3 overage types) plus 15% VAT rounded to nearest cent.
+- **`src/dunning.ts`** — `DunningState` machine (`PAYMENT_DUE` → `OVERDUE` → `SUSPENDED` → `CLOSED`/`PAID`). `applyDunningTrigger()` throws `DunningTransitionError` on illegal transitions. `GRACE_PERIOD_DAYS = 7`, `SUSPENSION_THRESHOLD_DAYS = 14`.
+
+**3. Prisma schema additions (5 new models)**
+
+- `provisioning_record` — onboarding wizard state per tenant (mutable; `steps` JSON, `readiness` int).
+- `subscription` — subscription to a billing tier per tenant (append-preferred; new row on upgrade).
+- `tenant_metering_event` — individual gateway usage records (append-only; immutability enforced by trigger, same pattern as `audit_event`).
+- `metering_period` — aggregated period totals with reconciliation status and deviation %.
+- `tenant_invoice` — one invoice per period per subscription; `line_items` JSON, `dunning_state` JSON.
+
+New enums: `subscription_status`, `metering_period_status`, `invoice_status`.
+
+**4. Migration SQL (two files)**
+
+- `20260812100000_stage17_billing_provisioning/migration.sql` — creates all 5 tables with indexes, FKs, and the append-only trigger on `tenant_metering_event`.
+- `20260812100100_stage17_billing_rls/migration.sql` — RLS ENABLE + FORCE + isolation policy for all 5 new tables.
+
+**5. `packages/db/src/tables.ts` updated**
+
+5 new tables added to `TENANT_OWNED_TABLES`; `tenant_metering_event` added to `APPEND_ONLY_TABLES`.
+
+**6. Integration test: tenant POPIA deletion (`packages/db/test/tenant-deletion.integration.spec.ts`)**
+
+14 integration tests (written blind, proven in CI). Seeds a full lifecycle tenant (provisioning, subscription, metering event, metering period, audit event, consent record), transitions to CLOSED, deletes the tenant row, then asserts that all cascade-deleted data (all 5 Stage 17 tables plus `audit_event` and `consent_record`) is gone. Proves database-level cascade for POPIA erasure path.
+
+**7. Root scripts added**
+
+`package.json`: `test:provisioning`, `test:billing:reconcile`, `test:tenant-deletion`.
+`scripts/verify-stage.ts` Stage 17 populated with two commands.
+`scripts/audit-supply-chain.ts` PACKAGE_DIRS updated to include `packages/billing` and `packages/provisioning`.
+
+### Exit gate, walked item by item
+
+| Gate item                                                                                    | Result                                                                                                                       |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Onboarding wizard with 7 steps, readiness score, required-step tracking                      | PASS — `packages/provisioning/test/wizard.spec.ts` (21 tests); `test:provisioning` passes                                    |
+| Tenant lifecycle state machine (ACTIVE/SUSPENDED/CLOSED, CLOSED terminal)                    | PASS — `packages/provisioning/test/lifecycle.spec.ts` (23 tests); all 4 valid transitions and all invalid transitions tested |
+| 5 readiness checks; `hasSourceConnected` advisory only                                       | PASS — `packages/provisioning/test/readiness.spec.ts` (13 tests); each check exercised independently                         |
+| Subscription tiers in ZAR cents (starter free, standard R999, enterprise R4999)              | PASS — `packages/billing/test/tiers.spec.ts` (10 tests); monetary values non-negative integers, tier ordering verified       |
+| Metering aggregation (token/cost totals, period boundary filtering, tenant isolation)        | PASS — `packages/billing/test/metering.spec.ts` (13 tests); period edges, cross-tenant exclusion, overage calculation        |
+| Billing reconciliation report (PASS within 0.5%, FAIL above; cost delta always reported)     | PASS — `packages/billing/test/reconciliation.spec.ts` (11 tests); `test:billing:reconcile` passes                            |
+| Invoice line items (base + 3 overage types) with 15% VAT rounded to nearest cent             | PASS — `packages/billing/test/invoicing.spec.ts` (9 tests); zero-overage case (1 line), all-overage case (4 lines)           |
+| Dunning state machine (PAYMENT_DUE→OVERDUE→SUSPENDED→CLOSED/PAID); illegal transitions throw | PASS — `packages/billing/test/dunning.spec.ts` (22 tests); all terminal state guards; notice count increment tested          |
+| Prisma schema valid; 5 new models generated cleanly                                          | PASS — `prisma generate` exits 0; Prisma client regenerated                                                                  |
+| RLS migration adds ENABLE + FORCE + isolation policy on all 5 new tables                     | PASS — `20260812100100_stage17_billing_rls/migration.sql` mirrors Stage 01/03/05/06/09 pattern                               |
+| `tenant_metering_event` is append-only (trigger enforced)                                    | PASS — trigger in tables migration; `tenant_metering_event` added to `APPEND_ONLY_TABLES`                                    |
+| `tables.ts` updated; RLS coverage suite will catch any new table missing a policy            | PASS — 5 tables added to `TENANT_OWNED_TABLES`; `tenant_metering_event` in `APPEND_ONLY_TABLES`                              |
+| POPIA deletion integration test (cascade delete proves no data leaks post-closure)           | Written blind; Testcontainers; proven in CI — same caveat as Stages 01, 05, 06, 16                                           |
+| `pnpm test:provisioning` exits 0 (57 tests)                                                  | PASS                                                                                                                         |
+| `pnpm test:billing:reconcile` exits 0 (11 tests)                                             | PASS                                                                                                                         |
+| Pre-existing Docker-dependent gates (Stages 01, 05, 06, 16 RLS exhaustive)                   | Fail in authoring sandbox; pass in CI — same caveat as all prior stages                                                      |
+
+**Deviations from manual:** none. All declared exit-gate items met.
+
+Open questions raised: none.

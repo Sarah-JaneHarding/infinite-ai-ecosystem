@@ -39,6 +39,8 @@ const PACKAGE_DIRS: readonly string[] = [
   'packages/orchestrator',
   'packages/policy',
   'packages/prompts',
+  'packages/billing',
+  'packages/provisioning',
   'packages/security',
   'packages/telemetry',
   'packages/testkit',
