@@ -13,6 +13,12 @@
 // 6. Audit event isolation — tenant A cannot read tenant B's audit events.
 //
 // Runs against real Postgres via Testcontainers; no skip path (rule 2).
+//
+// Context-less query design note: the RLS policies use current_setting('app.tenant_id', false)
+// — the RAISING form (second arg = false). A raw query without a tenant context therefore
+// throws PrismaClientKnownRequestError with code 42704 ("unrecognized configuration parameter").
+// Both outcomes (zero rows OR 42704) prove isolation: the policy is blocking. Tests that cover
+// this path catch the 42704 error and treat it as a pass.
 
 import { randomUUID } from 'node:crypto';
 
@@ -94,17 +100,26 @@ async function seedTwoTenants(): Promise<void> {
   }
 }
 
+/** Returns true if the error is Postgres 42704 "unrecognized configuration parameter". */
+function isNoTenantContext(err: unknown): boolean {
+  const msg = String(err);
+  return msg.includes('42704') || msg.includes('unrecognized configuration parameter');
+}
+
 describe('Background/worker role — no implicit cross-tenant access', () => {
   it('worker cannot query tenants without an explicit tenant context', async () => {
-    // A worker that forgets to call asTenant should see zero rows, not all tenants.
-    // The tenant table uses SELF_KEYED_TENANT policy so its RLS applies.
-    const result = await workerRw.$queryRaw<{ count: bigint }[]>`
-      SELECT count(*) FROM tenant
-    `;
-    // Without a tenant context the policy returns nothing (empty result) or the
-    // session-based policy returns only the worker's own tenant — never ALL tenants.
-    // The safe assertion is: not more than one tenant visible without a context.
-    expect(Number(result[0]?.count ?? 0)).toBeLessThanOrEqual(1);
+    // Without a tenant context the RLS policy raises 42704 ("unrecognized configuration
+    // parameter app.tenant_id") or returns zero rows. Both prove isolation is working.
+    try {
+      const result = await workerRw.$queryRaw<{ count: bigint }[]>`
+        SELECT count(*) FROM tenant
+      `;
+      // If we get here the policy returned rows without raising. Must be ≤1 (not both tenants).
+      expect(Number(result[0]?.count ?? 0)).toBeLessThanOrEqual(1);
+    } catch (err) {
+      // 42704 is the expected error when no tenant context has been established.
+      expect(isNoTenantContext(err)).toBe(true);
+    }
   });
 
   it('worker querying as tenant A cannot see tenant B users', async () => {
@@ -117,17 +132,23 @@ describe('Background/worker role — no implicit cross-tenant access', () => {
 });
 
 describe('Data export path — context-less query must not return all rows', () => {
-  it('queryRaw for learner without tenant context returns 0 or only own-tenant rows', async () => {
-    const result = await appRw.$queryRaw<{ tenant_id: string }[]>`
-      SELECT tenant_id FROM learner
-    `;
-    const uniqueTenants = new Set(result.map((r) => r.tenant_id));
-    // Without a tenant context: zero rows (policy blocks) or at most own-tenant rows.
-    // The critical assertion is that BOTH test tenants are not visible simultaneously.
-    if (uniqueTenants.size > 1) {
-      throw new Error(
-        `Cross-tenant data visible without tenant context: ${[...uniqueTenants].join(', ')}`,
-      );
+  it('queryRaw for learner without tenant context raises or returns only own-tenant rows', async () => {
+    // Without a tenant context: either the RLS policy raises 42704 (the raising form of
+    // current_setting) or returns zero rows. Both are valid proof that all tenants are not
+    // simultaneously visible.
+    try {
+      const result = await appRw.$queryRaw<{ tenant_id: string }[]>`
+        SELECT tenant_id FROM learner
+      `;
+      const uniqueTenants = new Set(result.map((r) => r.tenant_id));
+      if (uniqueTenants.size > 1) {
+        throw new Error(
+          `Cross-tenant data visible without tenant context: ${[...uniqueTenants].join(', ')}`,
+        );
+      }
+    } catch (err) {
+      // 42704 is the expected error when no tenant context has been established.
+      if (!isNoTenantContext(err)) throw err;
     }
   });
 });
@@ -162,23 +183,21 @@ describe('Audit event isolation', () => {
   let auditEventIdA: string;
 
   beforeAll(async () => {
-    // Write an audit event in tenant A's context.
     const id = randomUUID();
     auditEventIdA = id;
+    // Use Prisma's typed create so column names always track the schema.
+    // hash is required on audit_event — use a deterministic placeholder for test rows.
     await asTenant(migrator, TENANT_A, ACTOR, async (tx) => {
-      await tx.$executeRaw`
-        INSERT INTO audit_event (id, tenant_id, actor_id, action, resource_type, resource_id, payload, created_at)
-        VALUES (
-          ${id}::uuid,
-          ${TENANT_A}::uuid,
-          ${ACTOR}::uuid,
-          'rls_exhaustive_test',
-          'test',
-          ${id}::uuid,
-          '{}'::jsonb,
-          now()
-        )
-      `;
+      await tx.auditEvent.create({
+        data: {
+          id,
+          tenantId: TENANT_A,
+          actorId: ACTOR,
+          action: 'rls_exhaustive_test',
+          resourceType: 'test',
+          hash: Buffer.from(`test-hash-${id}`),
+        },
+      });
     });
   });
 
@@ -205,23 +224,31 @@ describe('Append-only tables — UPDATE and DELETE rejected', () => {
   beforeAll(async () => {
     auditEventId = randomUUID();
     consentRecordId = randomUUID();
-    const subjectId = randomUUID();
 
     await asTenant(migrator, TENANT_A, ACTOR, async (tx) => {
-      await tx.$executeRaw`
-        INSERT INTO audit_event (id, tenant_id, actor_id, action, resource_type, resource_id, payload, created_at)
-        VALUES (
-          ${auditEventId}::uuid, ${TENANT_A}::uuid, ${ACTOR}::uuid,
-          'append_only_test', 'test', ${auditEventId}::uuid, '{}'::jsonb, now()
-        )
-      `;
-      await tx.$executeRaw`
-        INSERT INTO consent_record (id, tenant_id, subject_id, granted_by, purpose, granted, valid_from, created_at)
-        VALUES (
-          ${consentRecordId}::uuid, ${TENANT_A}::uuid, ${subjectId}::uuid,
-          ${ACTOR}::uuid, 'CURRICULUM', true, now(), now()
-        )
-      `;
+      await tx.auditEvent.create({
+        data: {
+          id: auditEventId,
+          tenantId: TENANT_A,
+          actorId: ACTOR,
+          action: 'append_only_test',
+          resourceType: 'test',
+          hash: Buffer.from(`test-hash-${auditEventId}`),
+        },
+      });
+      await tx.consentRecord.create({
+        data: {
+          id: consentRecordId,
+          tenantId: TENANT_A,
+          subjectToken: `LNR_${TENANT_A.slice(0, 6).toUpperCase()}`,
+          category: 'DEMOGRAPHIC',
+          purpose: 'CURRICULUM',
+          basis: 'CONSENT',
+          decision: 'GRANTED',
+          source: 'GUARDIAN_PORTAL',
+          effectiveFrom: new Date(),
+        },
+      });
     });
   });
 
@@ -249,7 +276,7 @@ describe('Append-only tables — UPDATE and DELETE rejected', () => {
     await expect(
       asTenant(migrator, TENANT_A, ACTOR, async (tx) => {
         return tx.$executeRaw`
-          UPDATE consent_record SET granted = false WHERE id = ${consentRecordId}::uuid
+          UPDATE consent_record SET decision = 'WITHDRAWN' WHERE id = ${consentRecordId}::uuid
         `;
       }),
     ).rejects.toThrow();
