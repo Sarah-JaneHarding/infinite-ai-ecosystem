@@ -6,3 +6,5 @@ build
 coverage
 pnpm-lock.yaml
 *.generated.ts
+# Next.js auto-generated type declaration — do not format manually.
+apps/web/next-env.d.ts
