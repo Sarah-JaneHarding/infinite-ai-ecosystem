@@ -37,6 +37,9 @@
     "test:e2e": "pnpm --filter @infinite-ai/web test:e2e",
     "test:a11y": "pnpm --filter @infinite-ai/web test:a11y",
     "test:lighthouse": "pnpm --filter @infinite-ai/web test:lighthouse",
+    "test:telemetry-coverage": "pnpm --filter @infinite-ai/telemetry test:trace-coverage",
+    "test:log-scrubbing": "pnpm --filter @infinite-ai/telemetry test:log-scrub",
+    "drill:restore": "tsx scripts/drill-restore.ts",
     "verify:stage": "tsx scripts/verify-stage.ts"
   },
   "devDependencies": {

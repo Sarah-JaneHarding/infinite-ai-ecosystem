@@ -250,7 +250,18 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/web test',
     ],
   },
-  { id: '15', name: 'Observability, SLOs, DR', commands: [] },
+  {
+    id: '15',
+    name: 'Observability, SLOs, DR',
+    commands: [
+      // Trace-coverage contract: verifies span contracts for gateway and brain are wired.
+      'pnpm test:telemetry-coverage',
+      // PII log-scrubbing: SA ID, email, phone, payment card patterns scrubbed from logs.
+      'pnpm test:log-scrubbing',
+      // Paper restore-drill: all 8 runbooks exist and declare RTO/RPO.
+      'pnpm drill:restore',
+    ],
+  },
   { id: '16', name: 'Security hardening', commands: [] },
   { id: '17', name: 'Tenant lifecycle, provisioning, billing', commands: [] },
   { id: '18', name: 'Launch readiness and handover', commands: [] },

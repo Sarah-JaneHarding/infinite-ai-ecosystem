@@ -4607,3 +4607,131 @@ Open questions raised: none.
 - Home-language support and offline queue are structural commitments (shell responsive layout, `min-h-dvh` for viewport stability); full PWA manifest and service worker are deferred to Stage 15 (Observability) which adds the infrastructure needed to safely manage cache invalidation.
 
 Open questions raised: none.
+
+---
+
+## Stage 15 — Observability, SLOs, DR
+
+Started: 2026-08-12 Completed: 2026-08-12
+Exit gate: PASS (with pre-existing Docker caveat, same as all prior stages)
+Tests: 84 telemetry tests passing (84 total), 0 skipped.
+
+### What was built
+
+**1. SLO catalog (`packages/telemetry/src/slos.ts`)**
+
+Five SLOs covering the critical platform paths:
+
+| SLO ID               | Target | Window  | Description                            |
+| -------------------- | ------ | ------- | -------------------------------------- |
+| `web_availability`   | 99.9%  | 30 days | HTTP 5xx error rate at the gateway     |
+| `agent_run_success`  | 99%    | 30 days | Agent runs that complete without error |
+| `time_to_artefact`   | 95%    | 30 days | Artefact delivered within 30 seconds   |
+| `approval_queue_age` | 99%    | 30 days | Approval queue age < 24 hours          |
+| `ingest_freshness`   | 99%    | 30 days | Ingest data fresh within 1 hour        |
+
+Four burn-rate windows (Google SRE pattern):
+
+| Window | Multiplier | Severity |
+| ------ | ---------- | -------- |
+| 1h     | 14.4×      | page     |
+| 6h     | 6×         | page     |
+| 24h    | 3×         | ticket   |
+| 72h    | 1×         | watch    |
+
+`isBurning()` and `monthlyErrorBudgetSeconds()` exported for alert evaluation.
+
+**2. Alert catalog (`packages/telemetry/src/alerts.ts`)**
+
+Eight alert rules, each naming the on-call owner role, a runbook filename, and a
+first-action sentence:
+
+- `web_availability_burn_rate` → platform engineer (runbook: `region-loss.md`)
+- `agent_run_success_burn_rate` → platform engineer (runbook: `queue-backlog.md`)
+- `time_to_artefact_burn_rate` → platform engineer (runbook: `queue-backlog.md`)
+- `approval_queue_age_burn_rate` → platform engineer (runbook: `queue-backlog.md`)
+- `ingest_freshness_burn_rate` → platform engineer (runbook: `queue-backlog.md`)
+- `guardrail_spike` → ML safety lead (runbook: `bad-prompt-promotion-rollback.md`)
+- `cost_anomaly` → platform engineer (no SLO; billing anomaly)
+- `brain_latency` → platform engineer (no SLO; Brain retrieval P99)
+
+**3. Metric name registry (`packages/telemetry/src/metrics.ts`)**
+
+25+ typed metric name constants (HTTP, agent, guardrail, brain, cost, queue, ingest)
+and dimension key constants. `MetricName` type derived from `typeof METRICS[keyof typeof METRICS]`.
+
+**4. PII log scrubber (`packages/telemetry/src/log-scrub.ts`)**
+
+Four patterns applied in order to every serialised log line before sink emission:
+
+| Pattern name      | What it catches                | Replacement        |
+| ----------------- | ------------------------------ | ------------------ |
+| `sa_id_number`    | 13-digit SA ID numbers         | `[SA-ID-REDACTED]` |
+| `email_address`   | RFC-5322-simplified email      | `[EMAIL-REDACTED]` |
+| `sa_phone_number` | SA mobile in 0XX / +27 formats | `[PHONE-REDACTED]` |
+| `payment_card`    | 15-16 digit PAN patterns       | `[CARD-REDACTED]`  |
+
+`scrubPii(text)` and `scrubFields(value)` (recursive tree walker) exported.
+
+**5. Trace coverage tests (`packages/telemetry/test/trace-coverage.spec.ts`)**
+
+7 tests using `InMemorySpanExporter` + `SimpleSpanProcessor` from
+`@opentelemetry/sdk-trace-base` proving the span contracts for:
+
+- `gateway.chat_completions` and `gateway.embeddings` span names
+- `brain.retrieve` span name
+- Exception recording via `span.recordException`
+- Unique span IDs across independent spans
+- NOOP_TRACER behaviour (does not emit spans)
+
+**6. PII scrubber tests (`packages/telemetry/test/log-scrub.spec.ts`)**
+
+15 tests covering happy paths, mixed-content strings, recursive field walking, and
+non-mutating behaviour of `scrubFields`.
+
+**7. Eight restore runbooks (`docs/RUNBOOKS/`)**
+
+Each declares an explicit RTO, an explicit RPO, a first-action sentence, a diagnosis
+guide, and a post-incident recording checklist:
+
+| Runbook                            | RTO      | RPO     |
+| ---------------------------------- | -------- | ------- |
+| `database-restore.md`              | ≤ 60min  | ≤ 5min  |
+| `brain-restore.md`                 | ≤ 120min | ≤ 60min |
+| `provider-outage.md`               | ≤ 5min   | 0       |
+| `queue-backlog.md`                 | ≤ 30min  | 0       |
+| `bad-prompt-promotion-rollback.md` | ≤ 15min  | 0       |
+| `tenant-data-erasure.md`           | ≤ 8h     | N/A     |
+| `suspected-breach.md`              | ≤ 4h     | N/A     |
+| `region-loss.md`                   | ≤ 4h     | ≤ 60min |
+
+`tenant-data-erasure.md` and `suspected-breach.md` cross-reference POPIA §22 and §24
+obligations and the 72-hour Information Regulator notification window.
+`region-loss.md` flags the POPIA §72 data-residency constraint on cross-border failover.
+
+**8. Paper restore drill (`scripts/drill-restore.ts`)**
+
+Verifies that all 8 runbooks exist and declare both `RTO` and `RPO`. Writes a dated
+drill-result record to `docs/RUNBOOKS/drill-results/`. Exits 0 (all pass) or 1 (any
+missing or incomplete runbook). The drill-results directory is excluded from Prettier.
+
+**9. Root scripts and gate commands added**
+
+`package.json`: `test:telemetry-coverage`, `test:log-scrubbing`, `drill:restore`.
+`scripts/verify-stage.ts` Stage 15 populated with three commands.
+
+### Exit gate, walked item by item
+
+| Gate item                                                                                                            | Result                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| OTel trace spans cover the gateway and Brain hot paths                                                               | PASS — `trace-coverage.spec.ts` (7 tests) proves span contracts via InMemorySpanExporter      |
+| Structured log lines scrub SA ID, email, phone, payment card before emission                                         | PASS — `log-scrub.spec.ts` (15 tests) proves all four patterns and recursive field walking    |
+| Five SLOs defined with burn-rate windows and alert rules                                                             | PASS — `slos.spec.ts` (17 tests) and `alerts.spec.ts` (7 tests)                               |
+| Restore runbooks exist with stated RTO and RPO                                                                       | PASS — `pnpm drill:restore` exits 0; all 8 runbooks verified; drill record written 2026-08-12 |
+| `pnpm verify:stage 15` exits 0 for all Stage 15 commands                                                             | PASS — `test:telemetry-coverage`, `test:log-scrubbing`, `drill:restore` all pass              |
+| Pre-existing Docker-dependent gates (Stage 01 RLS, Stage 05 temporal/integration, Stage 06 orchestrator integration) | Fail in authoring sandbox; pass in CI — same caveat as all prior stages                       |
+
+**Deviations from manual:** none. All declared exit-gate items met. The Docker footnote
+applies to pre-existing cumulative-gate commands, not to anything Stage 15 introduced.
+
+Open questions raised: none.
