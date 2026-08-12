@@ -3,19 +3,37 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Next.js app \u2014 every role surface.",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "exports": {
-    ".": "./src/index.ts"
-  },
+  "description": "Next.js app — every role surface.",
   "scripts": {
-    "build": "tsc --build",
+    "build": "next build",
+    "dev": "next dev",
+    "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "lint": "eslint src"
+    "test:unit": "vitest run tests/unit",
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test --grep @a11y",
+    "test:lighthouse": "node scripts/lighthouse.mjs",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@infinite-ai/design-system": "workspace:*",
+    "@infinite-ai/policy": "workspace:*",
+    "next": "16.3.0",
+    "next-auth": "4.24.15",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "3.25.76"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.62.1",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "autoprefixer": "10.5.4",
+    "postcss": "8.5.26",
+    "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
     "vitest": "3.2.7"
   }

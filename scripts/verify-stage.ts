@@ -237,7 +237,19 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/evals test',
     ],
   },
-  { id: '14', name: 'Experience surfaces', commands: [] },
+  {
+    id: '14',
+    name: 'Experience surfaces',
+    commands: [
+      // Design system: token value assertions and barrel export completeness.
+      'pnpm --filter @infinite-ai/design-system test',
+      // Web app: unit tests for the role-routing model and env loader.
+      // E2E, a11y and Lighthouse tests require a running Next.js server and are
+      // run separately via pnpm test:e2e / test:a11y / test:lighthouse (mirrors the
+      // pattern Stage 01 uses for its Docker-dependent integration suite).
+      'pnpm --filter @infinite-ai/web test',
+    ],
+  },
   { id: '15', name: 'Observability, SLOs, DR', commands: [] },
   { id: '16', name: 'Security hardening', commands: [] },
   { id: '17', name: 'Tenant lifecycle, provisioning, billing', commands: [] },

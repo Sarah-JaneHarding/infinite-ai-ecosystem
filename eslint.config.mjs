@@ -189,6 +189,13 @@ export default tseslint.config(
     rules: { 'no-restricted-globals': 'off', 'no-restricted-syntax': 'off' },
   },
   {
+    // apps/web has its own web-specific env loader (Stage 14, same rationale as the
+    // gateway's config exemption). All other web source files consume values through
+    // getWebEnv() rather than reading process.env directly.
+    files: ['apps/web/src/lib/env.ts'],
+    rules: { 'no-restricted-globals': 'off', 'no-restricted-syntax': 'off' },
+  },
+  {
     // The one sanctioned way to emit a log line (§6.1: "console.log in committed code —
     // use the logger"). It writes to stdout directly rather than through console, which
     // is also forbidden — every other file in the repo calls into this module instead of
@@ -258,6 +265,24 @@ export default tseslint.config(
       'no-restricted-globals': 'off',
       'no-restricted-syntax': 'off',
     },
+  },
+
+  {
+    // Playwright E2E tests access process.env (CI flag, base URL) and import
+    // test-only helpers — the same shape of exception the orchestrator integration
+    // suite has. Confined to apps/web's e2e and a11y test directories.
+    files: ['apps/web/tests/**/*.ts', 'apps/web/playwright.config.ts'],
+    rules: {
+      'no-restricted-globals': 'off',
+      'no-restricted-syntax': 'off',
+      'no-restricted-imports': 'off',
+    },
+  },
+  {
+    // Next.js config files and app-level server files (middleware, next.config)
+    // need access to process.env and Next.js APIs.
+    files: ['apps/web/next.config.ts', 'apps/web/src/middleware.ts'],
+    rules: { 'no-restricted-globals': 'off', 'no-restricted-syntax': 'off' },
   },
 
   prettier,

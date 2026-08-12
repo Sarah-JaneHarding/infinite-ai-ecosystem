@@ -34,6 +34,9 @@
     "test:course-structure": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-course-structure.spec.ts",
     "test:cptd": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-cptd.spec.ts",
     "typecheck": "turbo run typecheck",
+    "test:e2e": "pnpm --filter @infinite-ai/web test:e2e",
+    "test:a11y": "pnpm --filter @infinite-ai/web test:a11y",
+    "test:lighthouse": "pnpm --filter @infinite-ai/web test:lighthouse",
     "verify:stage": "tsx scripts/verify-stage.ts"
   },
   "devDependencies": {

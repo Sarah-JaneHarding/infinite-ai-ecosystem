@@ -4528,3 +4528,82 @@ Open questions raised: none.
 **Deviations from manual:** no Docker in the authoring environment; database integration tests are written blind and proven only in CI. `pnpm evals:run --all` used in the verify gate (same pattern as all prior stages).
 
 Open questions raised: none.
+
+---
+
+## Stage 14 — Experience surfaces
+
+**Date:** 2026-08-12
+**Branch:** `claude/continue-building-mpf8sl`
+**Stage gate:** `pnpm verify:stage 14` — all commands exit 0
+
+### Exit gate walk
+
+1. **Design system implemented.** `packages/design-system` is now a real React component library (was a stub). Delivers:
+   - `src/tokens.css` — all design tokens as CSS custom properties (8 hues + deep partners, typography, 12-rung space ladder, 7-value radius ladder, shadow levels, motion tokens). Light and dark mode via `prefers-color-scheme` and `data-theme` attribute. Spectrum gradient class.
+   - `src/tokens.ts` — TypeScript constants mirroring the CSS values exactly (`COLORS`, `SPECTRUM`, `FONTS`, `SPACE`, `RADIUS`, `MOTION`, `CARD_GRADIENT`).
+   - Five React components: `InfinityMark` (radiating two-circle SVG with spectrum gradient), `Button` (four variants, three sizes, `'use client'`), `Card`, `ModularCard` (135° hue→deep gradient header, Playfair title, mono eyebrow, emoji, status pill, lift on hover), `Badge`, `StatusPill` (pending/approved/rejected/draft/live).
+   - 17 unit tests across 2 spec files; all pass.
+
+2. **apps/web converted from stub to Next.js 16 App Router.** Full replacement:
+   - `next.config.ts`, `postcss.config.ts`, `playwright.config.ts`.
+   - Tailwind v4 CSS-first config consuming the design token custom properties.
+   - `src/lib/env.ts` — Zod-validated web env loader (NEXTAUTH\_SECRET, Keycloak IDs, issuer); test-mode fallback so unit tests run without credentials.
+   - `src/auth.ts` — next-auth v4 with Keycloak OIDC provider, JWT strategy, role claim extraction from `realm_access.roles`.
+   - `src/middleware.ts` — `withAuth` protecting all routes except `/sign-in` and `/api/auth`.
+   - `src/lib/roles.ts` — `ROLE_HOME`, `ROLE_LABEL`, `ROLE_NAV`, `ROLE_HUE` keyed on the 9 roles from `packages/policy`; `roleCanViewPath()` enforces path-level access without a database.
+
+3. **Nine role surfaces built.** Every surface is a server component page that checks the session role and redirects `/` if mismatched:
+   - **Teacher Studio** (`/teacher`): "Tomorrow's lesson" flow (AI draft → approve/edit/reject with status feedback) and "Learner is stuck" flow (de-identified intervention suggestions with explicit PII disclaimer).
+   - **HoD Console** (`/hod`): pending approvals list with StatusPill and review links; curriculum coverage progress bars with ARIA `progressbar` roles.
+   - **SMT Dashboard** (`/smt`): system health, learner tier distribution, PD overview.
+   - **SBST Casebook** (`/sbst`): SIAS case files table with phase, stage, status, next-review date.
+   - **Parent Portal** (`/guardian`): school notices and progress summary; strict data minimisation.
+   - **Learner Space** (`/learner`): daily activities with ModularCard layout; no learner PII in UI.
+   - **District Rollup** (`/district`): de-identified aggregate table across schools; "De-identified" badge visible.
+   - **Prompt Builder** (`/admin/prompts`): prompt registry table; "Propose challenger" and "View ratification" actions; live champions cannot be edited directly (UI enforces this).
+   - **Run Inspector** (`/platform/runs`): cross-tenant agent run table with agent ID, tenant, status, duration, timestamp.
+
+4. **Approval experience.** `ApprovalDetail` component built once and shared:
+   - Shows artefact type, subject, topic, agent version badge, evidence badges.
+   - Diff against previous version shown inline.
+   - Approve / Edit / Reject decision with required-reason validation for rejection.
+   - Append-only note shown to user ("The record is append-only and cannot be undone.").
+   - Roles without approval authority see read-only view.
+
+5. **Shared shell.** `(shell)/layout.tsx` server component with:
+   - `Header` — InfinityMark, tenant name, username, role label, approval queue count, sign-out.
+   - `Nav` — active-state highlighting with `aria-current="page"`.
+   - `ImpersonationBanner` — renders when a platform admin is impersonating.
+   - Responsive: sidebar hidden on mobile, main content scrollable independently.
+   - Skip-to-content link in root layout for keyboard accessibility.
+
+6. **Auth API route.** `app/api/auth/[...nextauth]/route.ts` — GET and POST handlers.
+
+7. **Sign-in page.** Public page with InfinityMark, tagline "Educate · Innovate · Transform", Keycloak sign-in button, trust sentence "AI drafts; the teacher decides."
+
+8. **Unit tests — 18 pass:**
+   - `tests/unit/roles.spec.ts` (15 tests): `ROLE_HOME`, `ROLE_LABEL`, `ROLE_NAV` completeness; `roleCanViewPath()` happy paths plus cross-role denials, nested path matching, school-role approval access.
+   - `tests/unit/env.spec.ts` (3 tests): env loader happy path, caching, cache reset.
+
+9. **E2E and a11y tests written.** `tests/e2e/teacher.spec.ts` — sign-in page brand elements, unauthenticated redirect for three role paths. `tests/a11y/axe.spec.ts` — zero critical/serious axe violations on sign-in page. These require the Next.js dev server (via `playwright.config.ts` `webServer`); run via `pnpm test:e2e` / `pnpm test:a11y` separate from the verify gate.
+
+10. **Lighthouse script.** `apps/web/scripts/lighthouse.mjs` — FCP < 1500ms and TBT < 300ms budgets; run via `pnpm test:lighthouse`.
+
+11. **verify-stage.ts Stage 14 populated.** Two commands: design-system test, web unit test. E2E/a11y/Lighthouse run separately (same pattern as Stage 01's Docker-dependent integration suite).
+
+12. **Root package.json scripts added.** `test:e2e`, `test:a11y`, `test:lighthouse`.
+
+13. **DEPENDENCIES.md updated.** All new packages recorded: `react`, `@types/react`, `next`, `react-dom`, `@types/react-dom`, `next-auth`, `zod`, `tailwindcss`, `@tailwindcss/postcss`, `postcss`, `autoprefixer`, `@playwright/test`, `@axe-core/playwright`. Justification for next-auth v4 and @axe-core/playwright MPL-2.0 licence recorded.
+
+**Defects found and fixed:**
+
+- `tests/unit/env.spec.ts` assigned to `process.env['NODE_ENV']` which TypeScript types as `readonly` under `@types/node`. Fixed by removing the assignment (Vitest sets `NODE_ENV=test` automatically).
+- `apps/web/package.json` missing `"type": "module"` and `zod` dependency, causing Vitest to fail on env.spec.ts. Fixed.
+
+**Deviations from manual:**
+
+- E2E, a11y and Lighthouse tests require a running Next.js server. They are written and wired to `playwright.config.ts`'s `webServer` config, but are run as separate root scripts rather than inside `verify-stage.ts` — the same pattern Stage 01 uses for its Docker-dependent integration suite. The verify gate covers unit-tier tests that prove the routing model and env loader are correct without a browser.
+- Home-language support and offline queue are structural commitments (shell responsive layout, `min-h-dvh` for viewport stability); full PWA manifest and service worker are deferred to Stage 15 (Observability) which adds the infrastructure needed to safely manage cache invalidation.
+
+Open questions raised: none.

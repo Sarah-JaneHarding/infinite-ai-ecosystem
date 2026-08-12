@@ -1,0 +1,132 @@
+/**
+ * INFINITE-AI design tokens — CSS custom properties.
+ *
+ * Import in the root layout to make tokens available across the app:
+ *   @import '@infinite-ai/design-system/tokens.css';
+ *
+ * All values come from docs/BRAND_KIT.md (candidate, pending Stage 14 ratification).
+ */
+
+:root {
+  /* ── Colour — eight hues, each with a deep partner ────────────────────── */
+  --iai-red: #e4483f;
+  --iai-red-deep: #b11d15;
+  --iai-orange: #f2811f;
+  --iai-orange-deep: #b45706;
+  --iai-amber: #f5b400;
+  --iai-amber-deep: #a77a00;
+  --iai-green: #2fae66;
+  --iai-green-deep: #1e7845;
+  --iai-teal: #159e94;
+  --iai-teal-deep: #0c6e67;
+  --iai-blue: #1565c0;
+  --iai-blue-deep: #0d47a1;
+  --iai-indigo: #4a4fc4;
+  --iai-indigo-deep: #2b2f8d;
+  --iai-violet: #7b2fbe;
+  --iai-violet-deep: #5c1fa3;
+
+  /* ── Semantic surface ──────────────────────────────────────────────────── */
+  --iai-bg: #ffffff;
+  --iai-bg-subtle: #f7f8fa;
+  --iai-border: #e2e5ea;
+  --iai-text: #111827;
+  --iai-text-subtle: #6b7280;
+
+  /* ── Brand primary (blue) ─────────────────────────────────────────────── */
+  --iai-primary: var(--iai-blue);
+  --iai-primary-deep: var(--iai-blue-deep);
+  --iai-primary-text: #ffffff;
+
+  /* ── Typography ─────────────────────────────────────────────────────────── */
+  --iai-font-title: 'Playfair Display', Georgia, serif;
+  --iai-font-body: 'DM Sans', system-ui, sans-serif;
+  --iai-font-mono: 'Space Mono', 'Courier New', monospace;
+
+  /* ── Space ladder (1px-honest) ─────────────────────────────────────────── */
+  --iai-space-1: 2px;
+  --iai-space-2: 3px;
+  --iai-space-3: 4px;
+  --iai-space-4: 5px;
+  --iai-space-5: 9px;
+  --iai-space-6: 11px;
+  --iai-space-7: 13px;
+  --iai-space-8: 15px;
+  --iai-space-9: 18px;
+  --iai-space-10: 22px;
+  --iai-space-11: 26px;
+  --iai-space-12: 32px;
+
+  /* ── Radius ─────────────────────────────────────────────────────────────── */
+  --iai-radius-sm: 6px;
+  --iai-radius-md: 9px;
+  --iai-radius-lg: 12px;
+  --iai-radius-xl: 16px;
+  --iai-radius-2xl: 18px;
+  --iai-radius-3xl: 24px;
+  --iai-radius-full: 30px;
+
+  /* ── Shadow (paper) ─────────────────────────────────────────────────────── */
+  --iai-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --iai-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --iai-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+
+  /* ── Motion ─────────────────────────────────────────────────────────────── */
+  --iai-duration-fast: 140ms;
+  --iai-duration-base: 200ms;
+  --iai-duration-slow: 250ms;
+  --iai-duration-progress: 800ms;
+  --iai-duration-drift: 9000ms;
+  --iai-easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Dark mode ────────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --iai-bg: #0f1117;
+    --iai-bg-subtle: #1a1d27;
+    --iai-border: #2d3148;
+    --iai-text: #f0f2f5;
+    --iai-text-subtle: #9ca3af;
+    --iai-shadow-sm: none;
+    --iai-shadow-md: none;
+    --iai-shadow-lg: none;
+  }
+}
+
+:root[data-theme='dark'] {
+  --iai-bg: #0f1117;
+  --iai-bg-subtle: #1a1d27;
+  --iai-border: #2d3148;
+  --iai-text: #f0f2f5;
+  --iai-text-subtle: #9ca3af;
+  --iai-shadow-sm: none;
+  --iai-shadow-md: none;
+  --iai-shadow-lg: none;
+}
+
+/* ── Spectrum gradient (infinity mark + wordmark clip) ────────────────────── */
+.iai-spectrum {
+  background: linear-gradient(
+    135deg,
+    var(--iai-red) 0%,
+    var(--iai-orange) 14%,
+    var(--iai-amber) 28%,
+    var(--iai-green) 42%,
+    var(--iai-teal) 57%,
+    var(--iai-blue) 71%,
+    var(--iai-indigo) 85%,
+    var(--iai-violet) 100%
+  );
+}
+
+/* ── Card lift on hover ───────────────────────────────────────────────────── */
+.iai-card-lift {
+  transition:
+    transform var(--iai-duration-slow) var(--iai-easing-default),
+    box-shadow var(--iai-duration-slow) var(--iai-easing-default);
+}
+.iai-card-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--iai-shadow-lg);
+}
