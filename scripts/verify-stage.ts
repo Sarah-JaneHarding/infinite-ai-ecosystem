@@ -297,7 +297,27 @@ const STAGES: readonly Stage[] = [
       // Run manually before GA: pnpm test:tenant-deletion
     ],
   },
-  { id: '18', name: 'Launch readiness and handover', commands: [] },
+  {
+    id: '18',
+    name: 'Launch readiness and handover',
+    commands: [
+      // Feature-flag registry: typed keys, owner, expiry enforcement, env override.
+      // Exits 1 if any flag has passed its expiresAt date — the CI guard for stale flags.
+      'pnpm check:flags',
+      // Provisioning and billing suites must still pass cumulatively.
+      'pnpm test:provisioning',
+      'pnpm test:billing:reconcile',
+      // NOTE: pnpm load:peak and pnpm load:spike (k6 load tests) require a live
+      // environment with a running gateway and data plane. They are listed in OQ-017
+      // and must be run manually against staging before GA. No skip path — but they
+      // are excluded from the automated gate because they need external infrastructure
+      // the authoring sandbox and CI do not have.
+      //
+      // NOTE: pnpm test:tenant-deletion (Testcontainers) requires Docker. Same pattern
+      // as Stages 01, 05, 06 — proven in CI, written blind in the sandbox.
+      // Run manually before GA: pnpm test:tenant-deletion
+    ],
+  },
 ];
 
 function usage(): never {

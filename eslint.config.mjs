@@ -169,6 +169,19 @@ export default tseslint.config(
   },
 
   // ---------------------------------------------------------------------------
+  // k6 load-test scripts. k6 injects __ENV and other globals at runtime; they
+  // are not Node or browser globals, so they must be declared explicitly here.
+  // ---------------------------------------------------------------------------
+  {
+    files: ['scripts/load/**/*.js'],
+    languageOptions: {
+      globals: {
+        __ENV: 'readonly',
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------------------
   // Exemptions, each narrow and justified.
   // ---------------------------------------------------------------------------
   {

@@ -11,4 +11,13 @@ export {
   type Env,
 } from './env.js';
 
+export {
+  FeatureFlagSchema,
+  FLAGS,
+  expiredFlags,
+  isEnabled,
+  type FeatureFlag,
+  type FlagKey,
+} from './flags.js';
+
 export const PACKAGE_NAME = '@infinite-ai/config' as const;
