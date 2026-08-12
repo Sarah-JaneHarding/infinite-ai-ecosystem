@@ -1,0 +1,1190 @@
+[
+  {
+    "id": "TB09-001",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR5-FRACTIONS",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000001",
+      "gradeLabel": "5",
+      "subject": "Mathematics",
+      "topic": "Fractions",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-MATH-GR5-FRAC-1",
+          "skillDescription": "Add fractions with unlike denominators."
+        },
+        {
+          "skillId": "CAPS-MATH-GR5-FRAC-2",
+          "skillDescription": "Subtract fractions with unlike denominators."
+        }
+      ],
+      "enrichmentFocus": "DEEPER_EXPLORATION",
+      "targetReadabilityBand": {
+        "minGrade": 4,
+        "maxGrade": 6
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr5-fractions"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The extension pack explores fraction concepts beyond adding and subtracting with unlike denominators \u2014 it must introduce mixed numbers, improper fractions, or related deeper concepts not re-taught from the mastered skills. Each section must have at least one task."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr5-fractions"]
+      }
+    ],
+    "rubric": "DEEPER_EXPLORATION of fractions at Grade 5: extends beyond the mastered skills (adding/subtracting with unlike denominators) to nuance such as mixed numbers, improper fractions, or multiplicative reasoning. Does not re-teach the mastered operations.",
+    "tags": [
+      "extension",
+      "mathematics",
+      "fractions",
+      "grade-5",
+      "deeper-exploration",
+      "must_not_regress"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-002",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-ENG-GR3-PHONICS",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000002",
+      "gradeLabel": "3",
+      "subject": "English",
+      "topic": "Phonics and spelling patterns",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-ENG-GR3-PHON-1",
+          "skillDescription": "Read and spell words with the 'tion' suffix pattern."
+        }
+      ],
+      "enrichmentFocus": "CHALLENGE_TASKS",
+      "targetReadabilityBand": {
+        "minGrade": 2,
+        "maxGrade": 4
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-eng-gr3-phonics"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The tasks are more cognitively demanding than basic 'tion' pattern recognition \u2014 they require applying the pattern in new or more complex word contexts, sorting, constructing sentences, or analysing unfamiliar words. Tasks do not re-teach the 'tion' pattern from scratch. Reading level is appropriate for Grade 3."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-eng-gr3-phonics"]
+      }
+    ],
+    "rubric": "CHALLENGE_TASKS for 'tion' suffix phonics at Grade 3: tasks must be harder applications \u2014 unfamiliar words, multi-step spelling tasks, or sentence-level application. Not re-teaching the suffix rule.",
+    "tags": [
+      "extension",
+      "english",
+      "phonics",
+      "grade-3",
+      "challenge-tasks",
+      "foundation-phase"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-003",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-NS-GR6-ENERGY",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000003",
+      "gradeLabel": "6",
+      "subject": "Natural Sciences",
+      "topic": "Renewable and non-renewable energy sources",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-NS-GR6-ENERGY-1",
+          "skillDescription": "Distinguish between renewable and non-renewable energy sources with examples."
+        },
+        {
+          "skillId": "CAPS-NS-GR6-ENERGY-2",
+          "skillDescription": "Describe the environmental impact of burning fossil fuels."
+        }
+      ],
+      "enrichmentFocus": "CROSS_CURRICULAR",
+      "targetReadabilityBand": {
+        "minGrade": 5,
+        "maxGrade": 7
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ns-gr6-energy", "doc-ss-gr6-environment"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The extension pack explicitly names a connecting subject (e.g. Social Sciences, Geography) and grounds the connection in curriculum content. Tasks require the learner to apply their energy knowledge in that subject context, not just recognise the connection."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ns-gr6-energy", "doc-ss-gr6-environment"]
+      }
+    ],
+    "rubric": "CROSS_CURRICULAR extension for energy at Grade 6: must name the connecting subject and concept explicitly. Tasks should apply mastered knowledge of renewable/non-renewable energy in a Social Sciences or Geography context.",
+    "tags": ["extension", "natural-sciences", "energy", "grade-6", "cross-curricular"],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-004",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR9-ALGEBRA",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000004",
+      "gradeLabel": "9",
+      "subject": "Mathematics",
+      "topic": "Quadratic equations",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-MATH-GR9-ALG-1",
+          "skillDescription": "Factorise quadratic expressions of the form ax\u00b2 + bx + c."
+        },
+        {
+          "skillId": "CAPS-MATH-GR9-ALG-2",
+          "skillDescription": "Solve quadratic equations by factorisation."
+        }
+      ],
+      "enrichmentFocus": "HIGHER_ORDER_THINKING",
+      "targetReadabilityBand": {
+        "minGrade": 8,
+        "maxGrade": 10
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr9-algebra"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Tasks are explicitly at synthesis, evaluation, or creation level \u2014 e.g. designing a quadratic problem with a specific solution set, evaluating a peer's factorisation approach, or arguing which method is most efficient. The pack provides framing for what 'good' looks like and tasks have more than one defensible answer."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr9-algebra"]
+      }
+    ],
+    "rubric": "HIGHER_ORDER_THINKING for quadratic equations at Grade 9: open-ended synthesis or evaluation tasks requiring the learner to reason about the nature of solutions, design problems, or evaluate approaches \u2014 not just solve more equations.",
+    "tags": [
+      "extension",
+      "mathematics",
+      "quadratics",
+      "grade-9",
+      "higher-order-thinking"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-005",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-SS-GR7-MAPWORK",
+      "interventionId": "bbbbbbbb-cccc-dddd-eeee-000000000005",
+      "gradeLabel": "7",
+      "subject": "Social Sciences",
+      "topic": "Mapwork \u2014 contour lines and relief",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-SS-GR7-MAP-1",
+          "skillDescription": "Read contour lines to determine the height of a point on a map."
+        },
+        {
+          "skillId": "CAPS-SS-GR7-MAP-2",
+          "skillDescription": "Identify landforms (valley, ridge, cliff) from contour patterns."
+        }
+      ],
+      "enrichmentFocus": "DEEPER_EXPLORATION",
+      "targetReadabilityBand": {
+        "minGrade": 6,
+        "maxGrade": 8
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ss-gr7-mapwork"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The pack goes beyond reading contour heights and identifying basic landforms \u2014 it introduces at least one deeper concept such as gradient/slope calculation, cross-section drawing, or interpreting drainage patterns. Tasks require analysis, not just recall."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ss-gr7-mapwork"]
+      }
+    ],
+    "rubric": "DEEPER_EXPLORATION of contour lines at Grade 7 (via interventionId): extends beyond height reading and basic landform identification to gradient, cross-sections, or drainage \u2014 concepts not re-taught from the mastered skills.",
+    "tags": [
+      "extension",
+      "social-sciences",
+      "mapwork",
+      "grade-7",
+      "deeper-exploration",
+      "intervention"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-006",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-ENG-GR10-COMPREHENSION",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000006",
+      "gradeLabel": "10",
+      "subject": "English",
+      "topic": "Reading comprehension \u2014 identifying the main idea",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-ENG-GR10-COMP-1",
+          "skillDescription": "Identify the main idea of a paragraph."
+        },
+        {
+          "skillId": "CAPS-ENG-GR10-COMP-2",
+          "skillDescription": "Distinguish main idea from supporting details."
+        }
+      ],
+      "enrichmentFocus": "CHALLENGE_TASKS",
+      "targetReadabilityBand": {
+        "minGrade": 9,
+        "maxGrade": 11
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-eng-gr10-comprehension"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The tasks are cognitively harder than identifying the main idea in straightforward paragraphs \u2014 they involve inferring implied main ideas, synthesising across multiple paragraphs, or evaluating how well a text's structure supports its main idea. Tasks are well-defined despite being more demanding."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-eng-gr10-comprehension"]
+      }
+    ],
+    "rubric": "CHALLENGE_TASKS for comprehension at Grade 10 FET: more demanding applications of main-idea skills \u2014 implied main ideas, multi-paragraph synthesis, or structural evaluation. Not re-teaching the skill.",
+    "tags": [
+      "extension",
+      "english",
+      "comprehension",
+      "grade-10",
+      "challenge-tasks",
+      "fet"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-007",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR4-MEASUREMENT",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000007",
+      "gradeLabel": "4",
+      "subject": "Wiskunde",
+      "topic": "Meting \u2014 omskakeling van eenhede",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-MATH-GR4-MEAS-1",
+          "skillDescription": "Skakel sentimeter na meter om en andersom."
+        }
+      ],
+      "enrichmentFocus": "CROSS_CURRICULAR",
+      "targetReadabilityBand": {
+        "minGrade": 3,
+        "maxGrade": 5
+      },
+      "language": "af",
+      "sourceDocumentIds": ["doc-math-gr4-meting"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Die uitbreiding is in Afrikaans geskryf en koppel meting (cm/m omskakeling) uitdruklik aan 'n ander vakgebied. Die vakverbinding word eksplisiet genoem. Take vereis dat die leerder die vaardigheid toepas, nie net die verbinding herken nie."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr4-meting"]
+      }
+    ],
+    "rubric": "CROSS_CURRICULAR uitbreiding vir meting (Afrikaans) by Graad 4: die aansluitende vak moet uitdruklik genoem word; take vereis toepassing van die meesteervaardigheid in 'n ander vakskonteks.",
+    "tags": [
+      "extension",
+      "mathematics",
+      "measurement",
+      "grade-4",
+      "cross-curricular",
+      "afrikaans"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-008",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-NS-GR4-LIFE-PROCESSES",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000008",
+      "gradeLabel": "4",
+      "subject": "Natural Sciences",
+      "topic": "The seven life processes of living things",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-NS-GR4-LIFE-1",
+          "skillDescription": "Name and briefly describe the seven life processes: movement, respiration, sensitivity, growth, reproduction, excretion, nutrition."
+        }
+      ],
+      "enrichmentFocus": "HIGHER_ORDER_THINKING",
+      "targetReadabilityBand": {
+        "minGrade": 3,
+        "maxGrade": 5
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ns-gr4-life-processes"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Tasks require synthesis, evaluation, or creation \u2014 e.g. designing a classification activity, evaluating whether an unusual organism is living, or creating a short argument. The framing explains what a good response looks like. Tasks have more than one defensible answer. Language is appropriate for Grade 4."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ns-gr4-life-processes"]
+      }
+    ],
+    "rubric": "HIGHER_ORDER_THINKING for life processes at Grade 4: open-ended tasks at synthesis/evaluation level \u2014 designing, arguing, or evaluating using the seven life processes. Framing explains what 'good' looks like.",
+    "tags": [
+      "extension",
+      "natural-sciences",
+      "life-processes",
+      "grade-4",
+      "higher-order-thinking"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-009",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR11-TRIG",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000009",
+      "gradeLabel": "11",
+      "subject": "Mathematics",
+      "topic": "Trigonometry \u2014 sine rule",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-MATH-GR11-TRIG-1",
+          "skillDescription": "Apply the sine rule to find unknown sides and angles in non-right-angled triangles."
+        }
+      ],
+      "enrichmentFocus": "DEEPER_EXPLORATION",
+      "targetReadabilityBand": {
+        "minGrade": 10,
+        "maxGrade": 12
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr11-trig"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The pack goes deeper within the CAPS trigonometry topic \u2014 introducing edge cases (ambiguous case), the cosine rule relationship, or the derivation reasoning behind the sine rule. At least one concept not in the standard lesson is introduced with a brief in-text definition. Tasks require analysis, not just routine application."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr11-trig"]
+      }
+    ],
+    "rubric": "DEEPER_EXPLORATION of the sine rule at Grade 11: introduces nuance such as the ambiguous case or connects to the cosine rule, using appropriate academic register with specialist terms defined in-text.",
+    "tags": [
+      "extension",
+      "mathematics",
+      "trigonometry",
+      "grade-11",
+      "deeper-exploration",
+      "fet"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-010",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-ENG-GR2-WRITING",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000010",
+      "gradeLabel": "2",
+      "subject": "English",
+      "topic": "Writing simple sentences and short paragraphs",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-ENG-GR2-WRITE-1",
+          "skillDescription": "Write a simple sentence with a capital letter and full stop."
+        },
+        {
+          "skillId": "CAPS-ENG-GR2-WRITE-2",
+          "skillDescription": "Write two or three related sentences about a topic."
+        }
+      ],
+      "enrichmentFocus": "HIGHER_ORDER_THINKING",
+      "targetReadabilityBand": {
+        "minGrade": 1,
+        "maxGrade": 3
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-eng-gr2-writing"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Tasks are open-ended creative or evaluative writing activities appropriate for Grade 2 \u2014 e.g. composing a short story with a beginning/middle/end, or choosing between two sentence versions and explaining which is better. Language is very simple (Foundation Phase). Framing explains what good looks like in accessible terms."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-eng-gr2-writing"]
+      }
+    ],
+    "rubric": "HIGHER_ORDER_THINKING for writing at Grade 2 (Foundation Phase): creative or evaluative tasks appropriate for young learners \u2014 simple language, concrete prompts, framing in accessible terms.",
+    "tags": [
+      "extension",
+      "english",
+      "writing",
+      "grade-2",
+      "higher-order-thinking",
+      "foundation-phase"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-011",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR8-GEOMETRY",
+      "interventionId": "bbbbbbbb-cccc-dddd-eeee-000000000011",
+      "gradeLabel": "8",
+      "subject": "Mathematics",
+      "topic": "Geometry \u2014 parallel lines cut by a transversal",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-MATH-GR8-GEO-1",
+          "skillDescription": "Name and identify corresponding, alternate, and co-interior angles formed by parallel lines cut by a transversal."
+        },
+        {
+          "skillId": "CAPS-MATH-GR8-GEO-2",
+          "skillDescription": "Calculate unknown angles using properties of parallel lines."
+        }
+      ],
+      "enrichmentFocus": "CHALLENGE_TASKS",
+      "targetReadabilityBand": {
+        "minGrade": 7,
+        "maxGrade": 9
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr8-geometry"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Tasks are more cognitively demanding than standard parallel-lines problems: they may involve multiple transversals, proofs, or finding angles where the parallel-line property is embedded in a more complex figure. No new content is introduced that has not been taught; tasks are solvable with mastered skills plus effort."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr8-geometry"]
+      }
+    ],
+    "rubric": "CHALLENGE_TASKS for parallel lines geometry at Grade 8 (via interventionId): harder, multi-step applications of angle properties \u2014 not new content, just greater complexity and less scaffolding.",
+    "tags": [
+      "extension",
+      "mathematics",
+      "geometry",
+      "grade-8",
+      "challenge-tasks",
+      "intervention"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-012",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-HIST-GR9-COLD-WAR",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000012",
+      "gradeLabel": "9",
+      "subject": "History",
+      "topic": "The Cold War \u2014 causes and superpowers",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-HIST-GR9-CW-1",
+          "skillDescription": "Explain the main causes of the Cold War."
+        },
+        {
+          "skillId": "CAPS-HIST-GR9-CW-2",
+          "skillDescription": "Describe the role of the USA and USSR as superpowers in the Cold War."
+        }
+      ],
+      "enrichmentFocus": "CROSS_CURRICULAR",
+      "targetReadabilityBand": {
+        "minGrade": 8,
+        "maxGrade": 10
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-hist-gr9-cold-war", "doc-geo-gr9-global-regions"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The pack explicitly names a connecting subject (e.g. Geography) and links Cold War geopolitics to spatial or geographic curriculum content. Tasks require the learner to apply historical knowledge in the named subject's context \u2014 not just recognise the connection."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-hist-gr9-cold-war", "doc-geo-gr9-global-regions"]
+      }
+    ],
+    "rubric": "CROSS_CURRICULAR extension linking Cold War history to Geography at Grade 9: explicit subject name, grounded connection, tasks requiring application of historical skills in a geographic context.",
+    "tags": ["extension", "history", "cold-war", "grade-9", "cross-curricular"],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-013",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR12-STATS",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000013",
+      "gradeLabel": "12",
+      "subject": "Mathematics",
+      "topic": "Statistics \u2014 standard deviation and variance",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-MATH-GR12-STATS-1",
+          "skillDescription": "Calculate the standard deviation of a data set."
+        },
+        {
+          "skillId": "CAPS-MATH-GR12-STATS-2",
+          "skillDescription": "Interpret standard deviation in context."
+        }
+      ],
+      "enrichmentFocus": "HIGHER_ORDER_THINKING",
+      "targetReadabilityBand": {
+        "minGrade": 11,
+        "maxGrade": 12
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr12-statistics"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Tasks are at synthesis or evaluation level \u2014 e.g. designing a data collection task where standard deviation matters, evaluating competing claims about data spread, or comparing two data sets and arguing which is more consistent. The pack provides framing about what a complete response looks like, and tasks have more than one defensible answer."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr12-statistics"]
+      }
+    ],
+    "rubric": "HIGHER_ORDER_THINKING for standard deviation at Grade 12 FET: synthesis/evaluation tasks that go beyond calculation into design, comparison, and argumentation about data spread.",
+    "tags": [
+      "extension",
+      "mathematics",
+      "statistics",
+      "grade-12",
+      "higher-order-thinking",
+      "fet"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-014",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-ENG-GR5-GRAMMAR",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000014",
+      "gradeLabel": "5",
+      "subject": "English",
+      "topic": "Subject-verb agreement",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-ENG-GR5-GRAM-1",
+          "skillDescription": "Apply subject-verb agreement rules for singular and plural subjects in simple sentences."
+        }
+      ],
+      "enrichmentFocus": "DEEPER_EXPLORATION",
+      "targetReadabilityBand": {
+        "minGrade": 4,
+        "maxGrade": 6
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-eng-gr5-grammar"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The pack introduces at least one grammatical concept or context not covered in the standard lesson \u2014 e.g. compound subjects, collective nouns, or indefinite pronoun agreement. Specialist terms are introduced with brief in-text definitions. Tasks require analysis, not just recall. Does not re-teach basic singular/plural agreement."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-eng-gr5-grammar"]
+      }
+    ],
+    "rubric": "DEEPER_EXPLORATION of subject-verb agreement at Grade 5: extends to nuance (compound subjects, collective nouns) with in-text definitions. Tasks require analysis. Does not re-teach what was already mastered.",
+    "tags": ["extension", "english", "grammar", "grade-5", "deeper-exploration"],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-015",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR6-DECIMALS",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000015",
+      "gradeLabel": "6",
+      "subject": "Mathematics",
+      "topic": "Decimal fractions \u2014 multiplication and division",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-MATH-GR6-DEC-1",
+          "skillDescription": "Multiply a decimal fraction by a whole number."
+        },
+        {
+          "skillId": "CAPS-MATH-GR6-DEC-2",
+          "skillDescription": "Divide a decimal fraction by a whole number."
+        }
+      ],
+      "enrichmentFocus": "CHALLENGE_TASKS",
+      "targetReadabilityBand": {
+        "minGrade": 5,
+        "maxGrade": 7
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr6-decimals"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The tasks are harder applications of decimal multiplication and division \u2014 multi-step word problems, real-world contexts with more complexity, or problems embedded in unfamiliar scenarios. No new decimal rules are introduced. Tasks are solvable with mastered skills plus effort."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr6-decimals"]
+      }
+    ],
+    "rubric": "CHALLENGE_TASKS for decimal multiplication/division at Grade 6: multi-step or contextually complex problems using only skills already mastered. No new content introduced.",
+    "tags": ["extension", "mathematics", "decimals", "grade-6", "challenge-tasks"],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-016",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-NS-GR8-MATTER",
+      "interventionId": "bbbbbbbb-cccc-dddd-eeee-000000000016",
+      "gradeLabel": "8",
+      "subject": "Natural Sciences",
+      "topic": "Physical and chemical changes",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-NS-GR8-MAT-1",
+          "skillDescription": "Distinguish between physical and chemical changes using observable evidence."
+        }
+      ],
+      "enrichmentFocus": "CROSS_CURRICULAR",
+      "targetReadabilityBand": {
+        "minGrade": 7,
+        "maxGrade": 9
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ns-gr8-matter", "doc-tech-gr8-materials"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The pack names a connecting subject explicitly (e.g. Technology) and grounds the connection in actual curriculum content from the source documents. Tasks require applying the skill of distinguishing physical/chemical changes in that subject's context \u2014 not just naming the connection."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ns-gr8-matter", "doc-tech-gr8-materials"]
+      }
+    ],
+    "rubric": "CROSS_CURRICULAR extension linking physical/chemical changes to Technology at Grade 8 (via interventionId): explicit subject name, grounded connection to materials technology, tasks requiring application.",
+    "tags": [
+      "extension",
+      "natural-sciences",
+      "matter",
+      "grade-8",
+      "cross-curricular",
+      "intervention"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-017",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR10-FUNCTIONS",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000017",
+      "gradeLabel": "10",
+      "subject": "Mathematics",
+      "topic": "Functions \u2014 parabola y = ax\u00b2 + q",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-MATH-GR10-FUNC-1",
+          "skillDescription": "Sketch the parabola y = ax\u00b2 + q and identify the axis of symmetry, turning point, and y-intercept."
+        },
+        {
+          "skillId": "CAPS-MATH-GR10-FUNC-2",
+          "skillDescription": "Describe the effect of a and q on the shape and position of the parabola."
+        }
+      ],
+      "enrichmentFocus": "DEEPER_EXPLORATION",
+      "targetReadabilityBand": {
+        "minGrade": 9,
+        "maxGrade": 11
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr10-functions"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The pack introduces at least one concept beyond the standard y = ax\u00b2 + q content \u2014 e.g. the vertex form, finding the equation from given points, or the relationship to real-world projectile motion. Specialist terms are introduced with brief in-text definitions. Tasks require analysis or reasoning beyond routine sketching."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr10-functions"]
+      }
+    ],
+    "rubric": "DEEPER_EXPLORATION of the parabola at Grade 10 FET: introduces nuance beyond standard y = ax\u00b2 + q \u2014 vertex form, deriving equations from coordinates, or applications. Specialist terms defined in-text.",
+    "tags": [
+      "extension",
+      "mathematics",
+      "functions",
+      "grade-10",
+      "deeper-exploration",
+      "fet"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-018",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-ENG-GR8-POETRY",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000018",
+      "gradeLabel": "8",
+      "subject": "English",
+      "topic": "Poetry \u2014 imagery and figurative language",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-ENG-GR8-POE-1",
+          "skillDescription": "Identify and explain the effect of simile, metaphor, and personification in a poem."
+        }
+      ],
+      "enrichmentFocus": "HIGHER_ORDER_THINKING",
+      "targetReadabilityBand": {
+        "minGrade": 7,
+        "maxGrade": 9
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-eng-gr8-poetry"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "Tasks are at synthesis or creation level \u2014 e.g. writing an original verse using imagery, evaluating competing interpretations of a poem's central image, or arguing whether a particular image is effective. Framing explains what a strong response looks like. Tasks have more than one defensible answer."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-eng-gr8-poetry"]
+      }
+    ],
+    "rubric": "HIGHER_ORDER_THINKING for poetry imagery at Grade 8: creative or evaluative tasks (write, argue, evaluate) requiring more than identification \u2014 framing is clear about expected response type.",
+    "tags": ["extension", "english", "poetry", "grade-8", "higher-order-thinking"],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-019",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-NS-GR5-ECOSYSTEMS",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000019",
+      "gradeLabel": "5",
+      "subject": "Natural Sciences",
+      "topic": "Food chains and food webs",
+      "masteredSkills": [
+        {
+          "skillId": "CAPS-NS-GR5-ECO-1",
+          "skillDescription": "Construct and interpret a simple food chain."
+        },
+        {
+          "skillId": "CAPS-NS-GR5-ECO-2",
+          "skillDescription": "Explain the roles of producers, consumers, and decomposers."
+        }
+      ],
+      "enrichmentFocus": "CROSS_CURRICULAR",
+      "targetReadabilityBand": {
+        "minGrade": 4,
+        "maxGrade": 6
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ns-gr5-ecosystems", "doc-math-gr5-fractions"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "EXTENSION_PACK"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The pack names a connecting subject explicitly (e.g. Mathematics) and grounds the connection in curriculum content from the source documents. Tasks require the learner to apply food-chain knowledge in a mathematical context \u2014 e.g. using fractions or ratios to reason about energy transfer \u2014 not just recognise the connection."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ns-gr5-ecosystems", "doc-math-gr5-fractions"]
+      }
+    ],
+    "rubric": "CROSS_CURRICULAR extension linking food chains to Mathematics at Grade 5: explicit subject name, tasks that apply food-chain knowledge using mathematical skills (fractions, ratios) from the source documents.",
+    "tags": [
+      "extension",
+      "natural-sciences",
+      "ecosystems",
+      "grade-5",
+      "cross-curricular"
+    ],
+    "source": "specification"
+  },
+  {
+    "id": "TB09-020",
+    "agentId": "TB-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR7-ALGEBRA",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000020",
+      "gradeLabel": "7",
+      "subject": "Mathematics",
+      "topic": "Algebraic expressions",
+      "masteredSkills": [],
+      "enrichmentFocus": "DEEPER_EXPLORATION",
+      "targetReadabilityBand": {
+        "minGrade": 6,
+        "maxGrade": 8
+      },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr7-algebra"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      },
+      {
+        "type": "set_overlap",
+        "field": "missingFields",
+        "expectedSet": ["masteredSkills"],
+        "minOverlap": 1.0
+      }
+    ],
+    "rubric": "When masteredSkills is an empty array, TB-09 must return needs_input identifying masteredSkills as a missing/invalid field \u2014 the agent cannot build an extension pack with no starting point.",
+    "tags": ["error-path", "needs-input", "mathematics", "grade-7", "must_not_regress"],
+    "source": "specification"
+  }
+]

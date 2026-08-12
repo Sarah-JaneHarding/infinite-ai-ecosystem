@@ -1,0 +1,575 @@
+[
+  {
+    "id": "PD07-001",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "formative_assessment",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-001"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-002",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-001"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["needs_input"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-003",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "formative_assessment",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-001"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "plan.sessions.length",
+        "value": 3
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-004",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "questioning_technique",
+            "urgency": "moderate",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 2,
+        "sourceDocumentIds": ["pd-src-002"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-005",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "differentiation",
+            "urgency": "critical",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 4,
+        "sourceDocumentIds": ["pd-src-001", "pd-src-003"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-006",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "curriculum_pacing",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-004"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-007",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "assessment_quality",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-002"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-008",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "marking_consistency",
+            "urgency": "moderate",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 2,
+        "sourceDocumentIds": ["pd-src-005"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-009",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "formative_assessment",
+            "urgency": "critical",
+            "interventionType": "coaching"
+          },
+          {
+            "area": "questioning_technique",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 5,
+        "sourceDocumentIds": ["pd-src-001", "pd-src-002"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-010",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "pedagogy",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-003"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-011",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "curriculum_alignment",
+            "urgency": "moderate",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-001"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-012",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "lesson_planning",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-006"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-013",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "feedback_quality",
+            "urgency": "critical",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-002", "pd-src-004"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-014",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "differentiation",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-001"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-015",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "subject_content_knowledge",
+            "urgency": "moderate",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 2,
+        "sourceDocumentIds": ["pd-src-007"]
+      },
+      "subject": "Natural Sciences",
+      "gradeLabel": "6"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-016",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "questioning_technique",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-003"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-017",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "formative_assessment",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-001"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-018",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "curriculum_pacing",
+            "urgency": "critical",
+            "interventionType": "coaching"
+          },
+          {
+            "area": "formative_assessment",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 4,
+        "sourceDocumentIds": ["pd-src-001", "pd-src-002", "pd-src-004"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-019",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "marking_consistency",
+            "urgency": "high",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-005"]
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "PD07-020",
+    "agentId": "PD-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "coachingContext": {
+        "gaps": [
+          {
+            "area": "pedagogy",
+            "urgency": "moderate",
+            "interventionType": "coaching"
+          }
+        ],
+        "sessionCount": 3,
+        "sourceDocumentIds": ["pd-src-008"],
+        "subject": "Mathematics",
+        "gradeLabel": "11"
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      }
+    ],
+    "tags": ["happy_path", "adversarial"],
+    "source": "specification"
+  }
+]

@@ -721,3 +721,720 @@ requestedBy.
 The agent runs two independent passes internally (plan.author then plan.verify). A single item
 where the verifier disagrees with the author triggers `disagreement_flagged`. The MARKING_MEMO
 artefact is never delivered until the teacher adjudication gate (`requiresApproval: true`) clears.
+
+### Step 3 — TB-06 Home-Language Adapter contract, prompt, eval sets
+
+**Date:** 2026-08-10
+
+#### TB-06 — Home-Language Adapter
+
+| Field            | Value                                                                                                    |
+| ---------------- | -------------------------------------------------------------------------------------------------------- |
+| ID               | TB-06                                                                                                    |
+| Version          | 1.0.0                                                                                                    |
+| Module           | MOD-04                                                                                                   |
+| Purpose          | planning                                                                                                 |
+| Model            | plan.author                                                                                              |
+| Guardrails       | pii_guard                                                                                                |
+| Budget           | 4 000 tokens / $0.02                                                                                     |
+| requiresApproval | false                                                                                                    |
+| writesToBrain    | false                                                                                                    |
+| Eval set         | `packages/evals/sets/TB-06/{af,en,zu,xh,nso,st,tn,nr,ss,ve,ts}.json` (220 cases total — 20 per language) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, sourceArtefactId,
+sourceArtefactType, content (min 1), sourceLanguage, targetLanguage, loltLanguage (all `OfficialLanguage`
+— one of the 11 South African ISO codes: af, en, nr, xh, zu, nso, st, tn, ss, ve, ts), requestedBy.
+Source and target language must differ.
+
+**Outputs:**
+
+- `ok` — HOME_LANGUAGE_ADAPTED artefact: adaptedContent, targetLanguage, requiresHumanReview
+  (bool), reviewReason? (required when requiresHumanReview is true).
+- `needs_input` — required field absent, linkage missing, or sourceLanguage === targetLanguage.
+- `no_source_content` — content field absent or empty.
+
+**Language quality tiers:** Tier 1 (af, en, zu, xh, tn, st, nso) — `requiresHumanReview: false`.
+Tier 2 (nr, ss, ve, ts) — `requiresHumanReview: true` and `reviewReason` required; the pipeline
+must not deliver Tier-2 output without a recorded human-review approval.
+
+### Step 4 — TB-07 Accessibility Adapter contract, prompt, eval set
+
+**Date:** 2026-08-11
+
+#### TB-07 — Accessibility Adapter
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-07                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard                                        |
+| Budget           | 5 000 tokens / $0.025                            |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-07/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, sourceArtefactId,
+sourceArtefactType, content (min 1), language (ISO code), accessibilityMode (`AccessibilityMode`
+enum: LARGE_PRINT | DYSLEXIA_FRIENDLY | SIMPLIFIED_LANGUAGE | BRAILLE_READY), requestedBy.
+
+**Outputs:**
+
+- `ok` — ACCESSIBLE_ARTEFACT: adaptedContent, accessibilityMode, accessibilityCheckResult
+  (verdict='pass', all named checks passing).
+- `accessibility_check_failed` — accessibilityMode, accessibilityCheckResult (verdict='fail'),
+  detail. Returned when best-effort adaptation cannot meet mode requirements.
+- `needs_input` — linkage missing or required field absent.
+- `no_source_content` — content field absent or empty.
+
+**Named checks per mode:** LARGE_PRINT (font_size_spec, line_length, single_column, contrast);
+DYSLEXIA_FRIENDLY (font_spec, line_spacing, line_length, left_align_only, no_italics);
+SIMPLIFIED_LANGUAGE (avg_sentence_length, technical_terms_addressed, readability_within_band);
+BRAILLE_READY (no_colour_only_references, no_image_only_content, linear_layout, math_linear_notation).
+BRAILLE_READY requires `[TACTILE GRAPHIC REQUIRED: <description>]` flags for visual elements.
+
+### Step 5 — TB-08 Remediation Pack Builder and TB-09 Extension & Enrichment Agent
+
+**Date:** 2026-08-11
+
+#### TB-08 — Remediation Pack Builder
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-08                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard, source_grounding_guard                |
+| Budget           | 4 000 tokens / $0.02                             |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-08/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject, topic,
+missedSkills[] (≥1), targetReadabilityBand, language, sourceDocumentIds (≥1), requestedBy.
+
+**Outputs:**
+
+- `ok` — REMEDIATION_PACK artefact: sections[] (one `RemediationSection` per missed skill — each
+  with explanation, workedExamples ≥2, practiceItems ≥3), readabilityCheckResult, citedSourceIds.
+- `needs_input` — missedSkills absent or empty, or linkage missing.
+- `no_source_document` — sourceDocumentIds empty or insufficient.
+
+All explanations are plain-language re-teaching, not re-presentations of the original content.
+Worked examples are annotated step-by-step; practice items are graduated in difficulty.
+
+#### TB-09 — Extension & Enrichment Agent
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-09                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard, source_grounding_guard                |
+| Budget           | 4 000 tokens / $0.02                             |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-09/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject, topic,
+masteredSkills[] (≥1), enrichmentFocus (`EnrichmentFocus` enum: DEEPER_EXPLORATION |
+CHALLENGE_TASKS | CROSS_CURRICULAR | HIGHER_ORDER_THINKING), targetReadabilityBand, language,
+sourceDocumentIds (≥1), requestedBy. Optional: connectingSubject (required when focus is
+CROSS_CURRICULAR).
+
+**Outputs:**
+
+- `ok` — EXTENSION_PACK artefact: sections[] (`ExtensionSection[]` — title, enrichmentFocus,
+  content, tasks[]), readabilityCheckResult, citedSourceIds.
+- `needs_input` — masteredSkills absent or empty, or linkage missing.
+- `no_source_document` — sourceDocumentIds empty or insufficient.
+
+**Focus modes:** DEEPER_EXPLORATION — nuance, edge cases, the "why behind the rule";
+CHALLENGE_TASKS — higher Bloom tier with less scaffolding; CROSS_CURRICULAR — explicitly named
+connecting subject grounded in curriculum; HIGHER_ORDER_THINKING — synthesis, evaluation, and
+creation at top Bloom tiers, framing for open-ended responses. Pack builds FROM mastery, not
+re-teaching.
+
+### Step 6 — TB-02 Board & Deck Builder and TB-10 Resource-Light Activity Agent
+
+**Date:** 2026-08-11
+
+#### TB-02 — Board & Deck Builder
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-02                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard, source_grounding_guard                |
+| Budget           | 4 000 tokens / $0.02                             |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-02/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject, topic,
+learningObjectives[] (≥1), targetReadabilityBand, language, sourceDocumentIds (≥1), requestedBy,
+presentationPurpose? (INTRODUCTION | LESSON | REVIEW | CONSOLIDATION), slideCount? (3–30 int).
+
+**Outputs:**
+
+- `ok` — BOARD_DECK artefact: slides[] (≥1 `Slide` — title, content, speakerNotes?),
+  presentationPurpose (nullable), readabilityCheckResult, citedSourceIds ⊆ sourceDocumentIds.
+- `needs_input` — linkage missing or required field absent.
+- `no_source_document` — sourceDocumentIds empty or insufficient.
+
+The BOARD_DECK artefact renders only to SLIDES format; no print or PDF render is supported.
+All slide content must be grounded in cited documents; the agent refuses rather than fabricates.
+Decks go to teacher review before delivery (`requiresApproval: false` — review is a pipeline
+concern, not a contract-level gate for this agent).
+
+#### TB-10 — Resource-Light Activity Agent
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-10                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard, source_grounding_guard                |
+| Budget           | 4 000 tokens / $0.02                             |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-10/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject, topic,
+learningObjectives[] (≥1), activityDurationMinutes (int, positive), targetReadabilityBand, language,
+sourceDocumentIds (≥1), requestedBy, resourceConstraints[]? (`ResourceConstraint` enum:
+NO_PRINTING | NO_DEVICES | NO_ELECTRICITY | ORAL_ONLY).
+
+**Outputs:**
+
+- `ok` — ACTIVITY_PLAN artefact: activityTitle, overview, materials[], steps[] (≥1 `ActivityStep`
+  — instruction + optional durationMinutes), adaptations[] (differentiation strategies),
+  readabilityCheckResult, citedSourceIds ⊆ sourceDocumentIds.
+- `needs_input` — linkage missing, activityDurationMinutes ≤ 0, or required field absent.
+- `no_source_document` — sourceDocumentIds empty or insufficient.
+
+**Constraint semantics (stacking):** NO_PRINTING — no handouts, worksheets, or printed items;
+NO_DEVICES — no tablets, computers, smartboards, or electronic tools; NO_ELECTRICITY — no powered
+equipment (implies NO_DEVICES); ORAL_ONLY — no writing, printing, or devices (all steps spoken or
+physical). Multiple constraints stack; the agent must satisfy all simultaneously.
+
+---
+
+### Step 7 — Teacher Approval and Edit Surface
+
+Stage 11 Step 7 introduces the typed contracts and the MOD-04 pipeline that orchestrate every
+Teaching & Learning Toolbox request end-to-end.
+
+#### MOD-04 Toolbox Pipeline
+
+The `MOD04_TOOLBOX_PIPELINE` (`packages/orchestrator/src/pipelines/mod-04.ts`) is the single
+pipeline definition that covers all eleven TB agents:
+
+```
+draft-artefact → teacher-approval ◆ → deliver-artefact → capture-edit-signal
+```
+
+| Step                  | Kind         | Key properties                                                                     |
+| --------------------- | ------------ | ---------------------------------------------------------------------------------- |
+| `draft-artefact`      | tool_call    | `toolbox.draft_artefact`; dispatches to TB-01…TB-11 via `agentId` in run input     |
+| `teacher-approval`    | human_gate   | requiredRole: `teacher`; timeoutMs: 604 800 000 (7 days)                           |
+| `deliver-artefact`    | tool_call    | `toolbox.deliver_artefact`; irreversible — gating validation asserts gate required |
+| `capture-edit-signal` | tool_call    | `toolbox.capture_edit_signal`; Brain append-only write; no-op on plain APPROVED    |
+| `compensate-draft`    | compensation | `toolbox.void_draft` — soft-deletes the draft record                               |
+| `compensate-deliver`  | compensation | `toolbox.void_delivery` — append-only retraction event (not a deletion)            |
+
+**Design rationale:** `draft-artefact` dispatches via a single `tool_call` step rather than
+branching into eleven `agent_call` steps, keeping the pipeline definition generic and avoiding
+duplication. The pipeline is generic across all TB outputs at the orchestrator layer; agent
+selection happens in the `toolbox.draft_artefact` tool implementation.
+
+#### TeacherEditSignal contracts
+
+| Schema              | Location                                     | Purpose                                             |
+| ------------------- | -------------------------------------------- | --------------------------------------------------- |
+| `ToolboxEditField`  | `packages/contracts/src/toolbox/approval.ts` | One field-level change (field, before, after)       |
+| `ToolboxEditDiff`   | `packages/contracts/src/toolbox/approval.ts` | Full diff from a teacher's EDITED approval decision |
+| `TeacherEditSignal` | `packages/contracts/src/toolbox/approval.ts` | Brain write carrying diff + curriculum anchor       |
+
+`TeacherEditSignal.capsTopicId` anchors the signal to the CAPS topic the artefact addressed,
+enabling Stage 13 prompt-improvement loops to route signals to the right agent's eval set.
+
+---
+
+### Step 8 — TB-11 Visual Brief Writer, four test suites, and no-fabrication contract
+
+Stage 11 Step 8 completes the MOD-04 Teaching & Learning Toolbox by adding the eleventh agent
+(TB-11 Visual Brief Writer) together with four new test suites that cross-cut the entire toolbox
+contract surface.
+
+#### TB-11 — Visual Brief Writer
+
+| Field            | Value                                            |
+| ---------------- | ------------------------------------------------ |
+| ID               | TB-11                                            |
+| Version          | 1.0.0                                            |
+| Module           | MOD-04                                           |
+| Purpose          | planning                                         |
+| Model            | plan.author                                      |
+| Guardrails       | pii_guard, source_grounding_guard                |
+| Budget           | 2 000 tokens / $0.01                             |
+| requiresApproval | false                                            |
+| writesToBrain    | false                                            |
+| Eval set         | `packages/evals/sets/TB-11/main.json` (20 cases) |
+
+**Inputs:** tenantId, capsTopicId + (lessonId | interventionId), gradeLabel, subject, topic,
+learningObjectives[] (≥1), language, sourceDocumentIds (≥1), requestedBy, visualContext? (string).
+
+**Outputs:**
+
+- `ok` — VISUAL_BRIEF artefact: brief (image description for a human artist), pedagogicalPurpose
+  (educational intent statement), suggestedCompositionNotes? (orientation, format, palette),
+  citedSourceIds ⊆ sourceDocumentIds (≥1).
+- `needs_input` — linkage missing (neither lessonId nor interventionId present).
+- `no_source_document` — sourceDocumentIds empty or documents insufficient to ground the brief.
+
+**Key constraints:** text-only output — TB-11 never suggests AI image generation, produces image
+bytes, or encodes images. Briefs describe what a human artist or photographer should produce.
+No targetReadabilityBand is required because visual briefs are commissioned by teachers, not
+consumed directly by learners.
+
+#### Four cross-cutting test suites
+
+**Readability bands** (`packages/contracts/test/toolbox-readability-bands.spec.ts`):
+Tests `GradeBand`, `ReadabilityCheckInput` (all 11 SA official languages via `it.each`), and all
+four `ReadabilityCheckResult` verdict shapes. Documents that `cannot_measure` is the correct
+path for non-English languages where no validated metric is available; must carry `language` and
+a non-empty `reason`.
+
+**Answer-key verification** (`packages/contracts/test/toolbox-answer-key-verification.spec.ts`):
+Tests `AnswerKeyVerificationResult` disagreement mechanics — confirms flaggedItems ≥ 1, allItems
+≥ 1, `agrees: false` is recorded, and no `artefactId` is present on a disagreement result
+(delivery is blocked until an author reviews the flagged items).
+
+**Accessibility validator** (`packages/contracts/test/toolbox-accessibility-validator.spec.ts`):
+Tests all four `AccessibilityMode` values and known-bad fixtures for each mode (LARGE_PRINT:
+font_size_spec and contrast missing; DYSLEXIA_FRIENDLY: italics present; SIMPLIFIED_LANGUAGE:
+avg_sentence_length > 15 words; BRAILLE_READY: colour-only references). Documents that the
+schema does not correlate check results with the overall verdict — that enforcement is the
+guardrail layer's responsibility.
+
+**No-fabrication** (`packages/contracts/test/toolbox-no-fabrication.spec.ts`):
+Asserts the no-fabrication rule at schema level. Tests: `no_source_document` is a first-class
+schema outcome for all agents that declare it (TB-01…TB-04, TB-08…TB-11); an `ok` result must
+carry `citedSourceIds` of at least one entry (empty array is rejected); and a missing
+`citedSourceIds` field on an `ok` result is also rejected. TB-05 (uses `disagreement_flagged`)
+and TB-06 (uses `no_source_content`) are correctly excluded from the `no_source_document` suite.
+
+---
+
+### MOD-05 Teaching Analytics & PD Studio — Stage 12
+
+| ID    | Agent                      | Output                                                                           |
+| ----- | -------------------------- | -------------------------------------------------------------------------------- |
+| PD-01 | Coverage vs Pacing Analyst | Topic gap list, weeks-drift metrics, pacing summary — no teacher ranking         |
+| PD-02 | Assessment Quality Analyst | Psychometric indicators, flagged items, cognitive-level distribution             |
+| PD-03 | Observation Analyst        | Cross-cutting themes from anonymised walkthrough notes, priority PD areas        |
+| PD-04 | Practice Signal Aggregator | Unified PD need profile, or CohortSuppressionResult when cohort < 5              |
+| PD-05 | PD Gap Detector            | Priority gaps ordered by urgency, with suggested intervention type               |
+| PD-06 | Micro-Course Composer      | Structured 20–40 min learning object (exportable JSON); grounded in source docs  |
+| PD-07 | Coaching Plan Agent        | Coaching conversation plan for the human coach; sessions with prompts + evidence |
+| PD-08 | CPTD Tracker               | CPTD point log read from L0 policy; no computed values; `no_policy_match` path   |
+
+**Cross-cutting constraints (enforced at schema level):**
+
+- **No rankings** — no PD output carries a teacher rank, percentile, or ordinal position relative to peers. The schemas structurally exclude these fields; Zod strips any stray ranking field on parse.
+- **Cohort suppression** — PD-04 returns `CohortSuppressionResult` when `cohortSize < MINIMUM_COHORT_SIZE` (5). The suppressed path carries no `needAreas` or `signalsAggregated` — nothing leaks.
+- **CPTD values from policy only** — PD-08 reads point values from `policyDocumentIds` supplied in the input. The model never computes CPTD points; `citedPolicyDocumentId` is required on every ok result.
+- **Developmental framing** — outputs are patterns, themes, plans, and courses, not evaluations of individual teachers.
+
+#### Pipeline wiring
+
+Two pipelines are registered in `packages/orchestrator/src/pipelines/mod-05.ts`:
+
+**`MOD05_PD_ANALYSIS_PIPELINE`** (`mod-05-pd-analysis`):
+
+```
+aggregate-signals (PD-04) → branch-on-suppression
+  suppressed → record-suppression [terminal]
+  ok         → detect-gaps (PD-05) → branch-on-intervention
+                  micro_course  → compose-micro-courses (map over PD-06) → hod-approval ◆
+                  coaching_plan → compose-coaching-plan (PD-07) ──────────→ hod-approval ◆
+                                                                             → deliver-pd-intervention
+                                                                             → record-to-brain
+```
+
+**`MOD05_CPTD_PIPELINE`** (`mod-05-cptd`):
+
+```
+compute-cptd (PD-08) → record-cptd [terminal]
+```
+
+The CPTD pipeline has no human gate — CPTD logging is an informational Brain write, not an artefact visible to teachers.
+
+#### PD-01 — Coverage vs Pacing Analyst
+
+| Field           | Value                                                                                                |
+| --------------- | ---------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                               |
+| Purpose         | `pd_analytics`                                                                                       |
+| Input           | `PD01Input`: tenantId, subject, gradeLabel, periodStart, periodEnd, coverageSignals[] (≥1)           |
+| Output          | `PD01Result`: ok (topicsAnalysed, topicsBehind, meanWeeksDrift, gapTopics[], summary) or needs_input |
+| Model           | `pd.coverage`                                                                                        |
+| Guardrails      | `pii_guard`                                                                                          |
+| Budget          | 1 500 tokens · $0.005 per run                                                                        |
+| Eval set        | `PD-01` (20 cases)                                                                                   |
+| Approval gate   | None                                                                                                 |
+| Writes to Brain | No                                                                                                   |
+| Prompt          | `packages/prompts/src/PD-01/1.0.0.prompt.md`                                                         |
+| Contract        | `packages/agents/src/mod-05/PD-01.contract.ts`                                                       |
+
+Deterministic analysis of topic coverage against the ATP pacing plan. `gapTopics[]` carries topics with `deliveryStatus` = `not_delivered` or `partially_delivered` and `weeksBehind`. No teacher-level comparison; no ranking fields anywhere in the output.
+
+#### PD-02 — Assessment Quality Analyst
+
+| Field           | Value                                                                                                                                                      |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                                                                     |
+| Purpose         | `pd_analytics`                                                                                                                                             |
+| Input           | `PD02Input`: tenantId, assessmentSignals[] (≥1), capsTopicId? , gradeLabel?                                                                                |
+| Output          | `PD02Result`: ok (itemsAnalysed, meanDifficulty, meanDiscrimination, meanMarkingConsistency, cognitiveLevelCounts, flaggedItems[], summary) or needs_input |
+| Model           | `pd.assess`                                                                                                                                                |
+| Guardrails      | `pii_guard`                                                                                                                                                |
+| Budget          | 1 500 tokens · $0.005 per run                                                                                                                              |
+| Eval set        | `PD-02` (20 cases)                                                                                                                                         |
+| Approval gate   | None                                                                                                                                                       |
+| Writes to Brain | No                                                                                                                                                         |
+| Prompt          | `packages/prompts/src/PD-02/1.0.0.prompt.md`                                                                                                               |
+| Contract        | `packages/agents/src/mod-05/PD-02.contract.ts`                                                                                                             |
+
+Psychometric indicators (difficulty ∈ [0,1], discrimination ∈ [-1,1], marking consistency ∈ [0,1]) are computed from `AssessmentSignal` data. `FlaggedItem.concern` is one of: `low_difficulty`, `high_difficulty`, `poor_discrimination`, `negative_discrimination`, `low_marking_consistency`. Output is about assessment quality, not teacher quality — no individual teacher comparison.
+
+#### PD-03 — Observation Analyst
+
+| Field           | Value                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                           |
+| Purpose         | `pd_analytics`                                                                                                   |
+| Input           | `PD03Input`: tenantId, walkthroughNotes[] (≥1), focus? (one of six areas), sourceDocumentIds[]?                  |
+| Output          | `PD03Result`: ok (notesAnalysed, themes[] (≥1), priorityAreas[] (≥1), summary, citedSourceIds[]?) or needs_input |
+| Model           | `pd.observe`                                                                                                     |
+| Guardrails      | `pii_guard`, `source_grounding_guard`                                                                            |
+| Budget          | 2 000 tokens · $0.01 per run                                                                                     |
+| Eval set        | `PD-03` (20 cases)                                                                                               |
+| Approval gate   | None                                                                                                             |
+| Writes to Brain | No                                                                                                               |
+| Prompt          | `packages/prompts/src/PD-03/1.0.0.prompt.md`                                                                     |
+| Contract        | `packages/agents/src/mod-05/PD-03.contract.ts`                                                                   |
+
+Synthesises anonymised `WalkthroughNote` data into cross-cutting `ObservationTheme` records (theme, supportingFoci[], evidenceStrength: emerging/consistent/strong, illustrativeExamples[]). All teacher references in the input must be de-identified before this agent is invoked; it never sees names or teacher identifiers.
+
+#### PD-04 — Practice Signal Aggregator
+
+| Field           | Value                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                           |
+| Purpose         | `pd_analytics`                                                                                                   |
+| Input           | `PD04Input`: tenantId, signals[] (≥1, all four types), cohortSize (int ≥0), subject?, gradeLabel?                |
+| Output          | `PD04Result`: ok (signalsAggregated, cohortSize, needAreas[], summary) or CohortSuppressionResult or needs_input |
+| Model           | `pd.aggregate`                                                                                                   |
+| Guardrails      | `pii_guard`                                                                                                      |
+| Budget          | 2 000 tokens · $0.008 per run                                                                                    |
+| Eval set        | `PD-04` (20 cases)                                                                                               |
+| Approval gate   | None                                                                                                             |
+| Writes to Brain | No                                                                                                               |
+| Prompt          | `packages/prompts/src/PD-04/1.0.0.prompt.md`                                                                     |
+| Contract        | `packages/agents/src/mod-05/PD-04.contract.ts`                                                                   |
+
+The only agent with a suppression path. When `cohortSize < MINIMUM_COHORT_SIZE` (5), the output must be `CohortSuppressionResult` — `{ status: 'suppressed', reason: 'cohort_below_minimum', minimumRequired: 5, actual: N, detail: string }`. The suppressed path carries no `needAreas` or `signalsAggregated`. `PDNeedArea.signalSources` is a subset of `['coverage', 'assessment', 'walkthrough', 'artefact_edit']`.
+
+#### PD-05 — PD Gap Detector
+
+| Field           | Value                                                                                          |
+| --------------- | ---------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                         |
+| Purpose         | `pd_analytics`                                                                                 |
+| Input           | `PD05Input`: tenantId, needProfile (PD-04 output, typed as unknown), availableInterventions[]? |
+| Output          | `PD05Result`: ok (priorityGaps[] (≥1), topPriorityGap, summary) or needs_input                 |
+| Model           | `pd.detect`                                                                                    |
+| Guardrails      | `pii_guard`                                                                                    |
+| Budget          | 1 500 tokens · $0.006 per run                                                                  |
+| Eval set        | `PD-05` (20 cases)                                                                             |
+| Approval gate   | None                                                                                           |
+| Writes to Brain | No                                                                                             |
+| Prompt          | `packages/prompts/src/PD-05/1.0.0.prompt.md`                                                   |
+| Contract        | `packages/agents/src/mod-05/PD-05.contract.ts`                                                 |
+
+`PriorityGap.suggestedInterventionType` is one of: `micro_course`, `coaching_cycle`, `peer_observation`, `resource_provision`. Gaps are ordered by urgency (high → medium → low). `topPriorityGap` is the single highest-urgency item. No ranking fields; no teacher-level identifiers.
+
+#### PD-06 — Micro-Course Composer
+
+| Field           | Value                                                                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                                                                                |
+| Purpose         | `pd_analytics`                                                                                                                                                        |
+| Input           | `PD06Input`: tenantId, gap (unknown), sourceDocumentIds[] (≥1), targetDurationMinutes (int, 20–40), language (2–5 chars)                                              |
+| Output          | `PD06Result`: ok (courseId, title, targetGap, totalEstimatedMinutes 20–40, modules[] (≥1), checkItems[] (≥1), citedSourceIds[] (≥1), exportable: true) or needs_input |
+| Model           | `pd.compose`                                                                                                                                                          |
+| Guardrails      | `pii_guard`, `source_grounding_guard`                                                                                                                                 |
+| Budget          | 3 000 tokens · $0.015 per run                                                                                                                                         |
+| Eval set        | `PD-06` (20 cases)                                                                                                                                                    |
+| Approval gate   | None (HoD gate is in the pipeline, not the agent)                                                                                                                     |
+| Writes to Brain | No                                                                                                                                                                    |
+| Prompt          | `packages/prompts/src/PD-06/1.0.0.prompt.md`                                                                                                                          |
+| Contract        | `packages/agents/src/mod-05/PD-06.contract.ts`                                                                                                                        |
+
+`exportable: z.literal(true)` — the ok result always carries this constant; `false` is a schema error, not a valid outcome. `totalEstimatedMinutes` is enforced 20–40 by the schema. `MicroCourseModule.type` is one of: `input`, `model`, `deliberate_practice`, `check_for_understanding`. All content grounded in `sourceDocumentIds`; output is a JSON learning object, never a PDF or binary.
+
+#### PD-07 — Coaching Plan Agent
+
+| Field           | Value                                                                                                                           |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                                          |
+| Purpose         | `pd_analytics`                                                                                                                  |
+| Input           | `PD07Input`: tenantId, gap (unknown), courseId? (UUID), sessionCount (int, 1–6), sourceDocumentIds[] (≥1), language (2–5 chars) |
+| Output          | `PD07Result`: ok (planId, targetGap, sessions[] (≥1), goalStatement, citedSourceIds[] (≥1)) or needs_input                      |
+| Model           | `pd.coach`                                                                                                                      |
+| Guardrails      | `pii_guard`, `source_grounding_guard`                                                                                           |
+| Budget          | 2 500 tokens · $0.012 per run                                                                                                   |
+| Eval set        | `PD-07` (20 cases)                                                                                                              |
+| Approval gate   | None (HoD gate is in the pipeline)                                                                                              |
+| Writes to Brain | No                                                                                                                              |
+| Prompt          | `packages/prompts/src/PD-07/1.0.0.prompt.md`                                                                                    |
+| Contract        | `packages/agents/src/mod-05/PD-07.contract.ts`                                                                                  |
+
+`CoachingSession` carries: `sessionNumber` (positive int), `focus`, `openingPrompts[]` (≥1, conversation starters for the human coach), `evidencePoints[]` (≥1, evidence the coach should reference), `observationFocus?`, `estimatedMinutes` (positive int). The plan is developmental, not evaluative — no teacher scoring, no ranking fields.
+
+#### PD-08 — CPTD Tracker
+
+| Field           | Value                                                                                                                                                         |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-05                                                                                                                                                        |
+| Purpose         | `pd_analytics`                                                                                                                                                |
+| Input           | `PD08Input`: tenantId, teacherRef (anonymised), activityType (one of 6), durationMinutes (positive int), completedAt (datetime), policyDocumentIds[] (≥1)     |
+| Output          | `PD08Result`: ok (teacherRef, activityType, pointsAwarded ≥0, policyReference, citedPolicyDocumentId, loggedAt, cycleTotal) or no_policy_match or needs_input |
+| Model           | `pd.cptd`                                                                                                                                                     |
+| Guardrails      | `pii_guard`, `source_grounding_guard`                                                                                                                         |
+| Budget          | 1 000 tokens · $0.004 per run                                                                                                                                 |
+| Eval set        | `PD-08` (20 cases)                                                                                                                                            |
+| Approval gate   | None                                                                                                                                                          |
+| Writes to Brain | No (write happens in the CPTD pipeline via `brain.record_cptd_activity`)                                                                                      |
+| Prompt          | `packages/prompts/src/PD-08/1.0.0.prompt.md`                                                                                                                  |
+| Contract        | `packages/agents/src/mod-05/PD-08.contract.ts`                                                                                                                |
+
+`activityType` is one of: `micro_course_completion`, `coaching_cycle_completion`, `peer_observation`, `formal_workshop`, `self_directed_study`, `mentoring`. `policyDocumentIds` must be non-empty — no policy corpus, no ok result. `citedPolicyDocumentId` is required on every ok outcome; `no_policy_match` is a first-class terminal status with no `pointsAwarded`, no `citedPolicyDocumentId`, and no `policyReference` — the system never fabricates CPTD points.
+
+---
+
+## Stage 13 — LE Learning Engine
+
+The Learning Engine (LE) is a tenant-local, feedback-driven loop that observes teacher
+corrections, mines patterns, runs controlled prompt-evolution experiments, and (after
+mandatory human ratification) promotes challenger prompts to champion. It never exposes
+learner PII, never writes to the commons without k-anonymity clearance, and never
+promotes without a human approving the gatekeeper's verdict.
+
+### Key constants
+
+| Constant                        | Value | Location                                       |
+| ------------------------------- | ----- | ---------------------------------------------- |
+| `COMMONS_K_ANONYMITY_THRESHOLD` | 5     | `packages/contracts/src/learning/le-agents.ts` |
+| `PATTERN_MIN_SAMPLE_SIZE`       | 10    | `packages/contracts/src/learning/le-agents.ts` |
+
+### Maturity levels
+
+`cold_start` → `locally_calibrated` → `evidence_led` → `institutional`.
+Logic in `packages/learning/src/maturity-report.ts`.
+
+### Agents
+
+#### LE-01 — Correction Ingester
+
+| Field           | Value                                                                                                    |
+| --------------- | -------------------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                                       |
+| Purpose         | `learning_engine`                                                                                        |
+| Input           | `LE01Input`: tenantId, teacherRef, editDiff (artefact edit), sessionContext?                             |
+| Output          | `LE01Result`: ingested (learningEventId, correctionType, extractedSignals[], ingested: true) or rejected |
+| Model           | `le.ingest`                                                                                              |
+| Guardrails      | `pii_guard`                                                                                              |
+| Budget          | 500 tokens · $0.002 per run                                                                              |
+| Eval set        | `LE-01` (20 cases)                                                                                       |
+| Approval gate   | None                                                                                                     |
+| Writes to Brain | Yes                                                                                                      |
+| Prompt          | `packages/prompts/src/LE-01/1.0.0.prompt.md`                                                             |
+| Contract        | `packages/agents/src/le/LE-01.contract.ts`                                                               |
+
+`correctionType` is one of: `content_accuracy`, `pedagogical_approach`, `differentiation`, `curriculum_alignment`, `language_register`, `cultural_relevance`, `assessment_design`. `extractedSignals` are key-value pairs where keys are drawn from observed teacher intent.
+
+#### LE-02 — HITL Event Processor
+
+| Field           | Value                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------ |
+| Module          | LE                                                                                               |
+| Purpose         | `learning_engine`                                                                                |
+| Input           | `LE02Input`: tenantId, eventType, artefactId, artefactType, rejectionReason?, correctionSummary? |
+| Output          | `LE02Result`: processed (eventId, eventType, normalizedSignal, weightAdjustment) or skipped      |
+| Model           | `le.hitl`                                                                                        |
+| Guardrails      | `pii_guard`                                                                                      |
+| Budget          | 500 tokens · $0.002 per run                                                                      |
+| Eval set        | `LE-02` (20 cases)                                                                               |
+| Approval gate   | None                                                                                             |
+| Writes to Brain | Yes                                                                                              |
+| Prompt          | `packages/prompts/src/LE-02/1.0.0.prompt.md`                                                     |
+| Contract        | `packages/agents/src/le/LE-02.contract.ts`                                                       |
+
+`eventType` is one of: `teacher_accept`, `teacher_reject`, `teacher_edit`, `hod_override`. `weightAdjustment` is a signed float (negative = downweight, positive = upweight). `skipped` is returned when the event carries insufficient signal.
+
+#### LE-03 — Pattern Miner
+
+| Field           | Value                                                                                              |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                                 |
+| Purpose         | `learning_engine`                                                                                  |
+| Input           | `LE03Input`: tenantId, capsTopicId, correctionWindow (ISO 8601), minSampleSize?                    |
+| Output          | `LE03Result`: mined (patternId, capsTopicId, pattern, sampleSize, confidence) or insufficient_data |
+| Model           | `le.mine`                                                                                          |
+| Guardrails      | `pii_guard`                                                                                        |
+| Budget          | 1 500 tokens · $0.006 per run                                                                      |
+| Eval set        | `LE-03` (20 cases)                                                                                 |
+| Approval gate   | None                                                                                               |
+| Writes to Brain | Yes                                                                                                |
+| Prompt          | `packages/prompts/src/LE-03/1.0.0.prompt.md`                                                       |
+| Contract        | `packages/agents/src/le/LE-03.contract.ts`                                                         |
+
+`insufficient_data` is returned when fewer than 5 unique teacher refs appear in the correction window (k-anonymity pre-check). Patterns are described as natural-language strings with an associated confidence score (0–1). No teacher identifiers appear in any output.
+
+#### LE-04 — Attribution Scorer
+
+| Field           | Value                                                                                        |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                           |
+| Purpose         | `learning_engine`                                                                            |
+| Input           | `LE04Input`: tenantId, patternId, attributionWindow, outcomeSignals[]                        |
+| Output          | `LE04Result`: scored (patternId, attributionScore, method, evidenceCount) or below_threshold |
+| Model           | `le.attribute`                                                                               |
+| Guardrails      | `pii_guard`                                                                                  |
+| Budget          | 1 500 tokens · $0.006 per run                                                                |
+| Eval set        | `LE-04` (20 cases)                                                                           |
+| Approval gate   | None                                                                                         |
+| Writes to Brain | Yes                                                                                          |
+| Prompt          | `packages/prompts/src/LE-04/1.0.0.prompt.md`                                                 |
+| Contract        | `packages/agents/src/le/LE-04.contract.ts`                                                   |
+
+`below_threshold` is returned when `evidenceCount < PATTERN_MIN_SAMPLE_SIZE` (10). `method` is one of: `temporal_proximity`, `cohort_comparison`, `pre_post_assessment`, `teacher_reported`. Attribution scores ≥ 0.7 are considered strong evidence.
+
+#### LE-05 — Exemplar Curator
+
+| Field           | Value                                                                                        |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                           |
+| Purpose         | `learning_engine`                                                                            |
+| Input           | `LE05Input`: tenantId, agentId, candidateArtefactId, artefactType, evaluationCriteria[]      |
+| Output          | `LE05Result`: evaluated (candidateId, artefactId, exemplarScore, rationale, promoted: false) |
+| Model           | `le.curate`                                                                                  |
+| Guardrails      | `pii_guard`                                                                                  |
+| Budget          | 3 000 tokens · $0.015 per run                                                                |
+| Eval set        | `LE-05` (20 cases)                                                                           |
+| Approval gate   | **Yes** — human must ratify before any exemplar enters the few-shot set                      |
+| Writes to Brain | **No** — candidates only; `promoted: z.literal(false)` is structurally enforced              |
+| Prompt          | `packages/prompts/src/LE-05/1.0.0.prompt.md`                                                 |
+| Contract        | `packages/agents/src/le/LE-05.contract.ts`                                                   |
+
+`ExemplarCandidate.promoted` is `z.literal(false)` — it is a schema error for this field to be `true`. Promotion only occurs through a separate ratification event. `exemplarScore` is 0–1; ≥ 0.8 is recommended for promotion.
+
+#### LE-06 — Prompt Evolver
+
+| Field           | Value                                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                                      |
+| Purpose         | `learning_engine`                                                                                       |
+| Input           | `LE06Input`: tenantId, agentId, currentPromptVersion, minedPatterns[], improvementHypothesis            |
+| Output          | `LE06Result`: evolved (challengerId, agentId, challengerVersion, promptDiff, hypothesis, isLive: false) |
+| Model           | `le.evolve`                                                                                             |
+| Guardrails      | `pii_guard`                                                                                             |
+| Budget          | 4 000 tokens · $0.020 per run                                                                           |
+| Eval set        | `LE-06` (20 cases)                                                                                      |
+| Approval gate   | **Yes** — challenger must pass LE-07 and be ratified before going live                                  |
+| Writes to Brain | **No** — challenger prompt is never live without LE-07 + ratification                                   |
+| Prompt          | `packages/prompts/src/LE-06/1.0.0.prompt.md`                                                            |
+| Contract        | `packages/agents/src/le/LE-06.contract.ts`                                                              |
+
+`PromptChallenger.isLive` is `z.literal(false)` — structurally impossible to be live without passing the eval gate. `challengerVersion` follows semver; `promptDiff` is a structured patch object.
+
+#### LE-07 — Eval Gatekeeper
+
+| Field           | Value                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                                          |
+| Purpose         | `learning_engine`                                                                                           |
+| Input           | `LE07Input`: tenantId, agentId, challengerId, championEvalResults[], challengerEvalResults[], biasProfiles? |
+| Output          | `LE07Result`: verdict (result: promote/hold/reject/reject_bias_divergence, rationale, evalDeltaSummary)     |
+| Model           | `le.gate`                                                                                                   |
+| Guardrails      | `pii_guard`                                                                                                 |
+| Budget          | 2 000 tokens · $0.008 per run                                                                               |
+| Eval set        | `LE-07` (20 cases)                                                                                          |
+| Approval gate   | **Yes** — verdict is advisory; human ratification required for any promotion                                |
+| Writes to Brain | **No** — verdict only; promotion is a downstream Brain write                                                |
+| Prompt          | `packages/prompts/src/LE-07/1.0.0.prompt.md`                                                                |
+| Contract        | `packages/agents/src/le/LE-07.contract.ts`                                                                  |
+
+Priority order: regression check → bias check (`reject_bias_divergence`) → overall improvement check. A challenger that improves the mean but regresses any group is blocked as `reject_bias_divergence`. `GatekeeperVerdict` is one of: `promote`, `hold`, `reject`, `reject_bias_divergence`.
+
+#### LE-08 — Commons Publisher
+
+| Field           | Value                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                          |
+| Purpose         | `learning_engine`                                                                           |
+| Input           | `LE08Input`: tenantId, patternId, tenantOptIn, contributingTenantRefs[], promotionLog[]     |
+| Output          | `LE08Result`: published (publicationId, patternId, target, publishedAt) or blocked (reason) |
+| Model           | `le.publish`                                                                                |
+| Guardrails      | `pii_guard`                                                                                 |
+| Budget          | 1 000 tokens · $0.004 per run                                                               |
+| Eval set        | `LE-08` (20 cases)                                                                          |
+| Approval gate   | **Yes** — publication to commons requires human ratification                                |
+| Writes to Brain | **Yes** — the published-pattern registry is a Brain write                                   |
+| Prompt          | `packages/prompts/src/LE-08/1.0.0.prompt.md`                                                |
+| Contract        | `packages/agents/src/le/LE-08.contract.ts`                                                  |
+
+Block conditions: `no_opt_in` (tenant has not opted into commons sharing), `below_threshold` (fewer than `COMMONS_K_ANONYMITY_THRESHOLD` = 5 contributing tenants). k-anonymity logic in `packages/learning/src/commons-publisher.ts`.
+
+#### LE-09 — Decay Watchdog
+
+| Field           | Value                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------- |
+| Module          | LE                                                                                                          |
+| Purpose         | `learning_engine`                                                                                           |
+| Input           | `LE09Input`: tenantId, patternId, capsTopicId, capsVersion, lastValidatedAt, ageMonths, revalidationResult? |
+| Output          | `LE09Result`: assessed (patternId, decision, reason, decayReason?, recommendedAction)                       |
+| Model           | `le.decay`                                                                                                  |
+| Guardrails      | `pii_guard`                                                                                                 |
+| Budget          | 800 tokens · $0.003 per run                                                                                 |
+| Eval set        | `LE-09` (20 cases)                                                                                          |
+| Approval gate   | None                                                                                                        |
+| Writes to Brain | Yes                                                                                                         |
+| Prompt          | `packages/prompts/src/LE-09/1.0.0.prompt.md`                                                                |
+| Contract        | `packages/agents/src/le/LE-09.contract.ts`                                                                  |
+
+Priority: CAPS version change → `invalidated`; revalidation result present → `valid` or `invalidated`; TTL exceeded (> 12 months) → `revalidation_required`; otherwise → `valid`. `DecayReason` is one of: `caps_version_change`, `outcome_evidence_declined`, `cohort_size_below_threshold`, `staleness_ttl_exceeded`. Logic in `packages/learning/src/decay-agent.ts`.
+
+### Pure logic packages
+
+| Package                 | File                   | What it tests                                                                |
+| ----------------------- | ---------------------- | ---------------------------------------------------------------------------- |
+| `@infinite-ai/learning` | `promotion-gate.ts`    | promote / reject_regression / reject_bias_divergence / reject_no_improvement |
+| `@infinite-ai/learning` | `commons-publisher.ts` | k-anonymity block / no_opt_in block / allowed                                |
+| `@infinite-ai/learning` | `decay-agent.ts`       | decay decision priority ordering                                             |
+| `@infinite-ai/learning` | `promotion-log.ts`     | append-only log, rollback command generation                                 |
+| `@infinite-ai/learning` | `maturity-report.ts`   | maturity level assignment (cold_start → institutional)                       |

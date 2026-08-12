@@ -58,6 +58,7 @@ export const Purpose = z.enum([
   'reporting_district',
   'pd_analytics',
   'product_improvement',
+  'learning_engine',
 ]);
 export type Purpose = z.infer<typeof Purpose>;
 
@@ -165,6 +166,16 @@ export const PURPOSES: readonly PurposeDefinition[] = [
     categories: [],
     permitsReidentification: false,
     permitsModelProcessing: false,
+  },
+  {
+    purpose: 'learning_engine',
+    description:
+      'Tenant-local learning from teacher corrections and aggregated, de-identified outcome ' +
+      'signals. Never individual learner data; never re-identification. Cross-school ' +
+      'publication requires explicit opt-in and k-anonymity enforcement (Stage 13).',
+    categories: ['STAFF_PRACTICE', 'ACADEMIC_PERFORMANCE'],
+    permitsReidentification: false,
+    permitsModelProcessing: true,
   },
 ];
 

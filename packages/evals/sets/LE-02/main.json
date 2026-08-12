@@ -1,0 +1,631 @@
+[
+  {
+    "id": "LE02-001",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000001",
+      "agentId": "TB-01",
+      "artefactId": "dddddddd-0002-0002-0002-000000000001",
+      "artefactType": "lesson_plan",
+      "capsTopicId": "CAPS-GR5-NS-WATER",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "intro",
+            "before": "This leson is about water.",
+            "after": "This lesson is about the water cycle."
+          }
+        ],
+        "totalCharactersChanged": 25,
+        "editedAt": "2026-08-01T10:05:00.000Z"
+      },
+      "reasonCode": "factual"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "primaryCorrectionType", "value": "factual" }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-002",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000002",
+      "agentId": "TB-02",
+      "artefactId": "dddddddd-0002-0002-0002-000000000002",
+      "artefactType": "worksheet",
+      "capsTopicId": "CAPS-GR7-MATH-FRACTION",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "sections[0].content",
+            "before": "Learners will solve fractions.",
+            "after": "Learners will solve proper and improper fractions as per CAPS term 2 requirements."
+          }
+        ],
+        "totalCharactersChanged": 50,
+        "editedAt": "2026-08-02T09:35:00.000Z"
+      },
+      "reasonCode": "curriculum_alignment"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "primaryCorrectionType",
+        "value": "curriculum_alignment"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-003",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000003",
+      "agentId": "TB-03",
+      "artefactId": "dddddddd-0002-0002-0002-000000000003",
+      "artefactType": "assessment",
+      "capsTopicId": "CAPS-GR9-ENG-POETRY",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "instructions",
+            "before": "Write a poem about nature using big words and complex structures.",
+            "after": "Write a short poem about nature using simple, expressive language."
+          }
+        ],
+        "totalCharactersChanged": 45,
+        "editedAt": "2026-08-03T11:05:00.000Z"
+      },
+      "reasonCode": "readability"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "primaryCorrectionType", "value": "readability" }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-004",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000004",
+      "agentId": "TB-04",
+      "artefactId": "dddddddd-0002-0002-0002-000000000004",
+      "artefactType": "slide_deck",
+      "capsTopicId": "CAPS-GR10-PHYS-ENERGY",
+      "editDiff": {
+        "fieldEdits": [],
+        "totalCharactersChanged": 0,
+        "editedAt": "2026-08-04T14:05:00.000Z"
+      }
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-005",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000005",
+      "agentId": "TB-05",
+      "artefactId": "dddddddd-0002-0002-0002-000000000005",
+      "artefactType": "remediation_pack",
+      "capsTopicId": "CAPS-GR8-MATH-ALGEBRA",
+      "editDiff": {
+        "fieldEdits": [
+          { "field": "sections[0].title", "before": "Introduction", "after": "Overview" },
+          {
+            "field": "sections[1].content",
+            "before": "Practice exercises here.",
+            "after": "Practice exercises with worked examples as per template requirements."
+          }
+        ],
+        "totalCharactersChanged": 55,
+        "editedAt": "2026-08-05T08:05:00.000Z"
+      },
+      "reasonCode": "template_structure"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "primaryCorrectionType",
+        "value": "template_structure"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-006",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000006",
+      "agentId": "TB-06",
+      "artefactId": "dddddddd-0002-0002-0002-000000000006",
+      "artefactType": "extension_activity",
+      "capsTopicId": "CAPS-GR6-SS-ENVIRONMENTS",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "description",
+            "before": "Students will complete the activity.",
+            "after": "Learners will investigate environmental change using the provided resources."
+          }
+        ],
+        "totalCharactersChanged": 52,
+        "editedAt": "2026-08-06T10:05:00.000Z"
+      },
+      "reasonCode": "tone"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "primaryCorrectionType", "value": "tone" }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-007",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000007",
+      "agentId": "TB-07",
+      "artefactId": "dddddddd-0002-0002-0002-000000000007",
+      "artefactType": "assessment",
+      "capsTopicId": "CAPS-GR11-CHEM-REACTIONS",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "rubric.criteria[0]",
+            "before": "Partial answer.",
+            "after": "Partial answer with one correct step shown."
+          },
+          {
+            "field": "rubric.criteria[1]",
+            "before": "Full answer.",
+            "after": "Full answer with all steps correctly shown and units stated."
+          },
+          {
+            "field": "instructions",
+            "before": "Answer all questions.",
+            "after": "Answer all questions. Show all working."
+          }
+        ],
+        "totalCharactersChanged": 90,
+        "editedAt": "2026-08-07T09:05:00.000Z"
+      },
+      "reasonCode": "completeness"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "primaryCorrectionType", "value": "completeness" }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-008",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000008",
+      "agentId": "TB-08",
+      "artefactId": "dddddddd-0002-0002-0002-000000000008",
+      "artefactType": "rubric",
+      "capsTopicId": "CAPS-GR12-MATH-CALCULUS",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "descriptors[0]",
+            "before": "Wrong answer.",
+            "after": "Answer is incorrect; working is not shown."
+          }
+        ],
+        "totalCharactersChanged": 28,
+        "editedAt": "2026-08-08T11:35:00.000Z"
+      }
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-009",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000009",
+      "agentId": "TB-09",
+      "artefactId": "dddddddd-0002-0002-0002-000000000009",
+      "artefactType": "lesson_plan",
+      "capsTopicId": "CAPS-GR3-MATH-PATTERNS",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "learningObjective",
+            "before": "Learners will do patterns.",
+            "after": "Learners will identify, describe and extend number patterns."
+          }
+        ],
+        "totalCharactersChanged": 42,
+        "editedAt": "2026-08-09T13:05:00.000Z"
+      },
+      "reasonCode": "curriculum_alignment"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "primaryCorrectionType",
+        "value": "curriculum_alignment"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-010",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000010",
+      "agentId": "TB-10",
+      "artefactId": "dddddddd-0002-0002-0002-000000000010",
+      "artefactType": "assessment",
+      "capsTopicId": "CAPS-GR2-MATH-COUNTING",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "question[0].text",
+            "before": "Count the objects.",
+            "after": "Count the objects and write the number below each group."
+          }
+        ],
+        "totalCharactersChanged": 40,
+        "editedAt": "2026-08-10T15:05:00.000Z"
+      },
+      "reasonCode": "completeness"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "primaryCorrectionType", "value": "completeness" }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-011",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000011",
+      "agentId": "TB-01",
+      "artefactId": "dddddddd-0002-0002-0002-000000000011",
+      "artefactType": "lesson_plan",
+      "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "intro",
+            "before": "Today we recycle.",
+            "after": "Today we will explore the three Rs: Reduce, Reuse, Recycle."
+          }
+        ],
+        "totalCharactersChanged": 45,
+        "editedAt": "2026-08-11T09:05:00.000Z"
+      },
+      "reasonCode": "curriculum_alignment"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "primaryCorrectionType",
+        "value": "curriculum_alignment"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-012",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000012",
+      "agentId": "TB-02",
+      "artefactId": "dddddddd-0002-0002-0002-000000000012",
+      "artefactType": "worksheet",
+      "capsTopicId": "CAPS-GR6-MATH-GEOMETRY",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "intro",
+            "before": "Do the shapes.",
+            "after": "Identify and name the 2D shapes shown."
+          }
+        ],
+        "totalCharactersChanged": 32,
+        "editedAt": "2026-08-12T10:05:00.000Z"
+      }
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-013",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000013",
+      "agentId": "TB-03",
+      "artefactId": "dddddddd-0002-0002-0002-000000000013",
+      "artefactType": "assessment",
+      "capsTopicId": "CAPS-GR9-LO-CAREER",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "question[0]",
+            "before": "Describe career options.",
+            "after": "Describe three career options in the technology sector and explain the qualifications required for each."
+          }
+        ],
+        "totalCharactersChanged": 78,
+        "editedAt": "2026-08-13T14:05:00.000Z"
+      },
+      "reasonCode": "completeness"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "primaryCorrectionType", "value": "completeness" }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-014",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000014",
+      "agentId": "TB-04",
+      "artefactId": "dddddddd-0002-0002-0002-000000000014",
+      "artefactType": "slide_deck",
+      "capsTopicId": "CAPS-GR10-BIO-GENETICS",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "slides[0].content",
+            "before": "DNA is a molecule.",
+            "after": "DNA (deoxyribonucleic acid) is the hereditary molecule found in all living cells."
+          }
+        ],
+        "totalCharactersChanged": 60,
+        "editedAt": "2026-08-14T11:05:00.000Z"
+      },
+      "reasonCode": "factual"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "primaryCorrectionType", "value": "factual" }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-015",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000015",
+      "agentId": "TB-05",
+      "artefactId": "dddddddd-0002-0002-0002-000000000015",
+      "artefactType": "remediation_pack",
+      "capsTopicId": "CAPS-GR8-SS-DEMOCRACY",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "section[0].title",
+            "before": "Part A",
+            "after": "Part A: Understanding Democracy"
+          }
+        ],
+        "totalCharactersChanged": 22,
+        "editedAt": "2026-08-15T09:05:00.000Z"
+      }
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-016",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000016",
+      "agentId": "TB-06",
+      "artefactId": "dddddddd-0002-0002-0002-000000000016",
+      "artefactType": "extension_activity",
+      "capsTopicId": "CAPS-GR5-NS-ECOSYSTEMS",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "activity.instructions",
+            "before": "Students complete independently.",
+            "after": "Learners complete in pairs, discussing their observations."
+          }
+        ],
+        "totalCharactersChanged": 38,
+        "editedAt": "2026-08-16T10:05:00.000Z"
+      },
+      "reasonCode": "tone"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "primaryCorrectionType", "value": "tone" }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-017",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000017",
+      "agentId": "TB-07",
+      "artefactId": "dddddddd-0002-0002-0002-000000000017",
+      "artefactType": "assessment",
+      "capsTopicId": "CAPS-GR11-PHYS-WAVES",
+      "editDiff": {
+        "fieldEdits": [
+          { "field": "question[0].marks", "before": "5 marks", "after": "4 marks" },
+          { "field": "question[1].marks", "before": "5 marks", "after": "6 marks" }
+        ],
+        "totalCharactersChanged": 4,
+        "editedAt": "2026-08-17T14:35:00.000Z"
+      }
+    },
+    "context": null,
+    "expectations": [{ "type": "exact_match", "field": "status", "value": "ok" }],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-018",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000018",
+      "agentId": "TB-08",
+      "artefactId": "dddddddd-0002-0002-0002-000000000018",
+      "artefactType": "rubric",
+      "capsTopicId": "CAPS-GR12-ENG-DRAMA",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "criteria[0].level4",
+            "before": "Excellent performance.",
+            "after": "Excellent performance demonstrating confident projection, clear diction, and sustained character."
+          }
+        ],
+        "totalCharactersChanged": 65,
+        "editedAt": "2026-08-18T09:05:00.000Z"
+      },
+      "reasonCode": "completeness"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "primaryCorrectionType", "value": "completeness" }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-019",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000019",
+      "agentId": "TB-09",
+      "artefactId": "dddddddd-0002-0002-0002-000000000019",
+      "artefactType": "lesson_plan",
+      "capsTopicId": "CAPS-GR3-NS-PLANTS",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "activities[0]",
+            "before": "Look at plants.",
+            "after": "Observe and record three characteristics of the plants provided."
+          },
+          {
+            "field": "activities[1]",
+            "before": "Draw plants.",
+            "after": "Draw and label the main parts of a flowering plant."
+          }
+        ],
+        "totalCharactersChanged": 88,
+        "editedAt": "2026-08-19T11:05:00.000Z"
+      },
+      "reasonCode": "curriculum_alignment"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "exact_match",
+        "field": "primaryCorrectionType",
+        "value": "curriculum_alignment"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE02-020",
+    "agentId": "LE-02",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "learningEventId": "cccccccc-0002-0002-0002-000000000020",
+      "agentId": "TB-10",
+      "artefactId": "dddddddd-0002-0002-0002-000000000020",
+      "artefactType": "assessment",
+      "capsTopicId": "CAPS-GR1-ENG-PHONICS",
+      "editDiff": {
+        "fieldEdits": [
+          {
+            "field": "task[0].text",
+            "before": "Circle the words.",
+            "after": "Circle the words that begin with the letter 's'."
+          }
+        ],
+        "totalCharactersChanged": 28,
+        "editedAt": "2026-08-20T13:05:00.000Z"
+      },
+      "reasonCode": "completeness"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "primaryCorrectionType", "value": "completeness" }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  }
+]

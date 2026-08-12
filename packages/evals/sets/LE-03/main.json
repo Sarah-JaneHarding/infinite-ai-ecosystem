@@ -1,0 +1,1552 @@
+[
+  {
+    "id": "LE03-001",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000001",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR5-NS-WATER",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-002",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000002",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR7-MATH-FRACTION",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-003",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000003",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR9-ENG-POETRY",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-004",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000004",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-a",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 60,
+          "outcomeDate": "2026-08-10"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "insufficient_data"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-005",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000005",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR8-MATH-ALGEBRA",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-a",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 60,
+          "outcomeDate": "2026-08-10"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "insufficient_data"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-006",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000006",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR6-SS-ENVIRONMENTS",
+      "outcomeSignals": [],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-007",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000007",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR10-PHYS-ENERGY",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-008",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000008",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR11-CHEM-REACTIONS",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-009",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000009",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR12-MATH-CALCULUS",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-010",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000010",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR3-MATH-PATTERNS",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-011",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000011",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR2-MATH-COUNTING",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-012",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000012",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-013",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000013",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR1-ENG-PHONICS",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-014",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000014",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR5-NS-ECOSYSTEMS",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-015",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000015",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR7-MATH-PROBABILITY",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-016",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000016",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR9-LO-CAREER",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-017",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000017",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR10-BIO-GENETICS",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-018",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000018",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR8-SS-DEMOCRACY",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-019",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000019",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR11-PHYS-WAVES",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE03-020",
+    "agentId": "LE-03",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "artefactId": "eeeeeeee-0003-0003-0003-000000000020",
+      "artefactType": "lesson_plan",
+      "agentId": "TB-01",
+      "capsTopicId": "CAPS-GR12-ENG-DRAMA",
+      "outcomeSignals": [
+        {
+          "cohortRef": "cohort-1",
+          "gradeLabel": "5",
+          "baselineScore": 50,
+          "postScore": 58,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-2",
+          "gradeLabel": "5",
+          "baselineScore": 51,
+          "postScore": 59,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-3",
+          "gradeLabel": "5",
+          "baselineScore": 52,
+          "postScore": 60,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-4",
+          "gradeLabel": "5",
+          "baselineScore": 53,
+          "postScore": 61,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-5",
+          "gradeLabel": "5",
+          "baselineScore": 54,
+          "postScore": 62,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-6",
+          "gradeLabel": "5",
+          "baselineScore": 55,
+          "postScore": 63,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-7",
+          "gradeLabel": "5",
+          "baselineScore": 56,
+          "postScore": 64,
+          "outcomeDate": "2026-08-15"
+        },
+        {
+          "cohortRef": "cohort-8",
+          "gradeLabel": "5",
+          "baselineScore": 57,
+          "postScore": 65,
+          "outcomeDate": "2026-08-15"
+        }
+      ],
+      "deliveredAt": "2026-08-01T08:00:00.000Z",
+      "attributionWindowDays": 30
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "cohortSize",
+        "value": 8
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  }
+]

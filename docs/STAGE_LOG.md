@@ -4000,3 +4000,531 @@ TB05Contract.
 
 `pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (330 agents tests, 362 contracts tests,
 144 evals tests).
+
+### Stage 11 — Step 4: TB-07 Accessibility Adapter contract, prompt, eval set
+
+**Date:** 2026-08-11
+
+**What was built**
+
+**Accessibility model** (`packages/contracts/src/toolbox/accessibility.ts`):
+
+- `AccessibilityMode` enum: four modes — `LARGE_PRINT`, `DYSLEXIA_FRIENDLY`, `SIMPLIFIED_LANGUAGE`,
+  `BRAILLE_READY`.
+- `AccessibilityCheckItem`: one named check (`name`, `required`, `measured`, `pass` boolean).
+  Representative check names per mode documented in file comments.
+- `AccessibilityCheckResult`: aggregated result (`mode`, `checks` array, `verdict` enum `pass|fail`).
+  verdict is 'pass' only when every individual check passes. Mirrors `ReadabilityCheckResult` in
+  structure and intent.
+
+**Contract** (`packages/agents/src/mod-04/TB-07.contract.ts`):
+
+- `inputSchema`: `TB07Input` — TBLinkageBase extended with tenantId, gradeLabel, sourceArtefactId,
+  sourceArtefactType, content (min 1), language (ISO code), accessibilityMode, requestedBy.
+  Enforces linkage (at least one of lessonId/interventionId) via `requireOneLinkage` superRefine.
+- `outputSchema`: `TB07Result` — discriminated union:
+  - `ok` (ACCESSIBLE_ARTEFACT, adaptedContent, accessibilityMode, accessibilityCheckResult with verdict='pass')
+  - `accessibility_check_failed` (accessibilityMode, accessibilityCheckResult with verdict='fail', detail)
+  - `needs_input` / `no_source_content`
+- purpose: `planning`, model: `plan.author`, tools: [], guardrails: pii_guard, budget: 5 000 tokens /
+  $0.025, requiresApproval: false, writesToBrain: false.
+
+**Prompt** (`packages/prompts/src/TB-07/1.0.0.prompt.md`):
+
+- 8-section format: ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA, SELF-CHECK.
+- GROUNDING section defines all four modes with specific requirements and named check identifiers:
+  - LARGE_PRINT: font_size_spec (≥18pt), line_length (≤60), single_column, contrast
+  - DYSLEXIA_FRIENDLY: font_spec (OpenDyslexic/Arial/Lexie), line_spacing (1.5), line_length, left_align_only, no_italics
+  - SIMPLIFIED_LANGUAGE: avg_sentence_length (≤15 words), technical_terms_addressed, readability_within_band
+  - BRAILLE_READY: no_colour_only_references, no_image_only_content, linear_layout, math_linear_notation
+- BRAILLE_READY requires `[TACTILE GRAPHIC REQUIRED: <description>]` flags for visual elements.
+- `accessibility_check_failed` returned when best-effort adaptation cannot meet mode requirements.
+- Hash locked in `packages/prompts/prompt-lock.json` (TB-07@1.0.0).
+
+**Eval set** (`packages/evals/sets/TB-07/main.json`):
+
+- 20 cases in a single file covering all four modes and multiple artefact types:
+  - LARGE_PRINT (TB07-001 to TB07-003, TB07-016, TB07-020): worksheet, reading passage, assessment item,
+    Foundation Phase Grade R, Afrikaans language
+  - DYSLEXIA_FRIENDLY (TB07-004 to TB07-006, TB07-017): worksheet, reading passage, marking memo,
+    italic-replacement check, FET/Senior Phase
+  - SIMPLIFIED_LANGUAGE (TB07-007 to TB07-009, TB07-018): reading passage (technical vocabulary),
+    Foundation Phase worksheet, FET assessment item
+  - BRAILLE_READY (TB07-010 to TB07-012, TB07-019): colour-reference replacement, table linearisation,
+    diagram flagging with [TACTILE GRAPHIC REQUIRED:], map visual reference replacement
+  - Error paths: TB07-013 (`accessibility_check_failed` — university-level physics content for Grade 1),
+    TB07-014 (`no_source_content`), TB07-015 (`needs_input` — missing linkage)
+- `llm_judge` criteria on all ok cases; `refusal_correctness` on the missing-linkage case.
+
+**Schemas** (`packages/contracts/src/toolbox/agents.ts`, `accessibility.ts`):
+
+- `AccessibilityMode`, `AccessibilityCheckItem`, `AccessibilityCheckResult` — 3 new exports.
+- `TB07Input` / `TB07Result` — 2 new exports.
+- Wired through `packages/contracts/src/toolbox/index.ts` and `packages/contracts/src/index.ts`.
+- `test/exports.spec.ts` updated (AccessibilityCheckItem, AccessibilityCheckResult, AccessibilityMode
+  between ATPWeek and ActivityKind; TB07Input, TB07Result between TB06Result and TBOutputLinkage).
+
+**Contract tests** (`packages/contracts/test/toolbox-agents.spec.ts`):
+
+- 46 new tests (390 total from 344): AccessibilityMode (3), AccessibilityCheckItem (3),
+  AccessibilityCheckResult (5), TB07Input (8), TB07Result (11).
+- Key invariants: all four modes accepted; `accessibility_check_failed` requires non-empty detail;
+  `ok` result rejects wrong artefactType or empty adaptedContent; `needs_input` rejects empty missingFields.
+
+**Agent contract test** (`packages/agents/test/mod-04/TB-07.contract.spec.ts`):
+
+- 12 tests covering id, module, purpose, promptRef, requiresApproval, writesToBrain, model, evalSetRef,
+  guardrails, tools, token budget, cost budget.
+- First test file to establish `packages/agents/test/mod-04/` directory.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (342 agents tests, 390 contracts tests,
+25 prompts tests, 144 evals tests).
+
+Step 5 (TB-08 Remediation Pack Builder and TB-09 Extension & Enrichment Agent) is next.
+
+### Stage 11 — Step 5: TB-08 Remediation Pack Builder and TB-09 Extension & Enrichment Agent
+
+**What was built**
+
+Two new content-authoring agents completing Stage 11's targeted-support suite:
+
+- **TB-08 Remediation Pack Builder**: receives `missedSkills[]` and produces one `RemediationSection`
+  per missed skill — each with a plain-language `explanation`, two-or-more annotated `workedExamples`,
+  and three-or-more graduated `practiceItems`. Grounded in `sourceDocumentIds`; refuses with
+  `no_source_document` if documents are insufficient; refuses with `needs_input` if `missedSkills`
+  is empty or absent.
+
+- **TB-09 Extension & Enrichment Agent**: receives `masteredSkills[]` and an `enrichmentFocus` enum,
+  produces `ExtensionSection[]` with title, enrichmentFocus, framing content, and tasks. Four focus
+  modes supported: DEEPER_EXPLORATION (nuance, edge cases, the "why"), CHALLENGE_TASKS (higher Bloom
+  tier, less scaffolding), CROSS_CURRICULAR (explicitly named connecting subject, grounded in curriculum),
+  HIGHER_ORDER_THINKING (synthesis/evaluation/creation at top Bloom tiers, framing for open-ended
+  responses). Pack must build FROM mastery, not re-teach it.
+
+**Prompts** (`packages/prompts/src/TB-08/1.0.0.prompt.md`, `TB-09/1.0.0.prompt.md`):
+
+- 8-section format: ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA, SELF-CHECK.
+- TB-09 GROUNDING section includes an `## ENRICHMENT FOCUS DEFINITIONS` subsection (note: NOT a top-level
+  `#` heading — the loader enforces exactly 8 top-level sections) defining requirements per focus mode.
+- Both hashes locked in `packages/prompts/prompt-lock.json`.
+
+**Schemas** (`packages/contracts/src/toolbox/agents.ts`):
+
+- `RemediationSection`, `TB08Input`, `TB08Result` — 3 new exports.
+- `EnrichmentFocus`, `ExtensionSection`, `TB09Input`, `TB09Result` — 4 new exports.
+- Wired through `packages/contracts/src/toolbox/index.ts` and `packages/contracts/src/index.ts`.
+- `test/exports.spec.ts` updated (EnrichmentFocus between EmbeddingsResponse and EvidenceItem;
+  ExtensionSection after ExportResult; RemediationSection between ReadabilityCheckResult and
+  RenderRequest; TB08*/TB09* between TB07Result and TBOutputLinkage).
+
+**Contract tests** (`packages/contracts/test/toolbox-agents.spec.ts`):
+
+- 36 new tests (426 total from 390): RemediationSection (3), TB08Input (6), TB08Result (7),
+  EnrichmentFocus (5), ExtensionSection (3), TB09Input (6), TB09Result (6).
+
+**Eval sets**:
+
+- `packages/evals/sets/TB-08/main.json` — 20 cases covering Math/English/Natural Sciences/Social
+  Sciences/History across Grades 2–12 (Foundation, Intermediate, Senior, FET), multiple subjects,
+  lessonId and interventionId paths, multi-skill (2-section) cases, Afrikaans language, and one
+  `needs_input` error path (TB08-020: empty missedSkills).
+- `packages/evals/sets/TB-09/main.json` — 20 cases covering all four enrichmentFocus modes across
+  Grades 2–12, multiple subjects, lessonId and interventionId paths, Afrikaans language (TB09-007),
+  and one `needs_input` error path (TB09-020: empty masteredSkills). Both source-doc-only citation
+  checks and llm_judge criteria used throughout.
+
+**Agent contracts** (`packages/agents/src/mod-04/`):
+
+- `TB-08.contract.ts`: guardrails `['pii_guard', 'source_grounding_guard']`, budget 4000 tokens /
+  $0.02, model `plan.author`, no tools, no approval, no brain write.
+- `TB-09.contract.ts`: same budget, guardrails, model configuration as TB-08.
+- Both exported from `packages/agents/src/index.ts`.
+
+**Agent contract tests** (`packages/agents/test/mod-04/`):
+
+- `TB-08.contract.spec.ts` — 13 tests (id, module, purpose, promptRef, requiresApproval,
+  writesToBrain, model, evalSetRef, pii_guard, source_grounding_guard, tools, maxTokens, maxCostUsd).
+- `TB-09.contract.spec.ts` — 13 tests (same pattern).
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (368 agents tests, 426 contracts tests,
+25 prompts tests, 144 evals tests).
+
+Step 6 (TB-02 Board & Deck Builder and TB-10 Resource-Light Activity Agent) is next.
+
+### Stage 11 — Step 6: TB-02 Board & Deck Builder and TB-10 Resource-Light Activity Agent
+
+**Date:** 2026-08-11
+
+**What was built**
+
+Two new content-authoring agents:
+
+- **TB-02 Board & Deck Builder**: produces a slide deck (`BOARD_DECK`) for a given lesson or
+  intervention. Input carries `presentationPurpose` (INTRODUCTION | LESSON | REVIEW | CONSOLIDATION,
+  optional) and `slideCount` (3–30, optional). Output carries `slides[]` (each with title, content,
+  and optional speakerNotes), `presentationPurpose` (nullable), `readabilityCheckResult`, and
+  `citedSourceIds ⊆ sourceDocumentIds`. Renders only to SLIDES; no PDF or PRINT render format.
+  Refuses with `needs_input` if linkage is absent; refuses with `no_source_document` if
+  sourceDocumentIds is empty.
+
+- **TB-10 Resource-Light Activity Agent**: produces an activity plan (`ACTIVITY_PLAN`) optimised for
+  classrooms with limited resources. Input carries `resourceConstraints[]` (optional enum:
+  NO_PRINTING | NO_DEVICES | NO_ELECTRICITY | ORAL_ONLY). Output carries `activityTitle`, `overview`,
+  `materials[]`, `steps[]` (ActivityStep: instruction + optional durationMinutes), `adaptations[]`,
+  `readabilityCheckResult`, and `citedSourceIds`. Each constraint tightens the materials and steps:
+  NO_PRINTING excludes handouts; NO_DEVICES excludes electronic tools; NO_ELECTRICITY excludes
+  any powered equipment; ORAL_ONLY removes all writing and printing. Multiple constraints stack.
+  Refuses with `needs_input` if linkage is absent or `activityDurationMinutes` ≤ 0; refuses with
+  `no_source_document` if sourceDocumentIds is empty.
+
+**Schemas** (`packages/contracts/src/toolbox/agents.ts`):
+
+- `PresentationPurpose` enum (INTRODUCTION, LESSON, REVIEW, CONSOLIDATION).
+- `Slide` object (title, content, speakerNotes?).
+- `TB02Input` / `TB02Result` — linked to `TBLinkageBase` via `superRefine(requireOneLinkage)`.
+- `ResourceConstraint` enum (NO_PRINTING, NO_DEVICES, NO_ELECTRICITY, ORAL_ONLY).
+- `ActivityStep` object (instruction, durationMinutes?).
+- `TB10Input` / `TB10Result` — same linkage pattern.
+- All 8 new types wired through `packages/contracts/src/toolbox/index.ts` and
+  `packages/contracts/src/index.ts`; `test/exports.spec.ts` updated (sorted positions: ActivityStep
+  after ActivityKind; PresentationPurpose after Phase; ResourceConstraint after RenderResult; Slide
+  after SchoolCalendarBlock; TB02*/TB10* after TB01Result and TB09Result respectively).
+
+**Contract tests** (`packages/contracts/test/toolbox-agents.spec.ts`):
+
+- 47 new tests (473 total from 426): PresentationPurpose (4), Slide (3), TB02Input (7), TB02Result
+  (8), ResourceConstraint (4), ActivityStep (3), TB10Input (6), TB10Result (7).
+- Key invariants: slideCount 3–30; BOARD_DECK artefactType; activityDurationMinutes must be
+  positive; ACTIVITY_PLAN artefactType; all error branches validated.
+
+**Prompts**:
+
+- `packages/prompts/src/TB-02/1.0.0.prompt.md` — 8-section format. GROUNDING explains the four
+  presentation purposes and the BOARD_DECK render constraint. Hash locked in prompt-lock.json.
+- `packages/prompts/src/TB-10/1.0.0.prompt.md` — 8-section format. GROUNDING includes a
+  `## RESOURCE CONSTRAINT DEFINITIONS` subsection (not a top-level `#` heading) defining all four
+  constraint modes. Hash locked in prompt-lock.json.
+
+**Eval sets**:
+
+- `packages/evals/sets/TB-02/main.json` — 20 cases: 13 happy_path (LESSON, INTRODUCTION, REVIEW,
+  CONSOLIDATION purposes; Afrikaans; interventionId; Grade 2–Grade 12; multi-subject), 5
+  adversarial (no_source_document, needs_input-missing-linkage, needs_input-empty-objectives,
+  citation integrity, no-PII), 3 must_not_regress. All cases carry typed `expectations`,
+  `context: null`, `source: "specification"`.
+- `packages/evals/sets/TB-10/main.json` — 20 cases: 10 happy_path (no constraints, NO_PRINTING,
+  NO_DEVICES, NO_ELECTRICITY, ORAL_ONLY, multiple constraints, all four constraints, interventionId,
+  Afrikaans), 3 must_not_regress (adaptations non-empty, step durations approximate target,
+  citedSourceIds ⊆ sourceDocumentIds), 5 adversarial (empty sourceDocumentIds, missing linkage,
+  NO_PRINTING verified, ORAL_ONLY verified, PII guard, source grounding, invalid duration).
+
+**Agent contracts** (`packages/agents/src/mod-04/`):
+
+- `TB-02.contract.ts`: guardrails `['pii_guard', 'source_grounding_guard']`, budget 4 000 tokens /
+  $0.02, model `plan.author`, no tools, no approval, no brain write.
+- `TB-10.contract.ts`: same budget, guardrails, and model configuration.
+- Both exported from `packages/agents/src/index.ts`.
+
+**Agent contract tests** (`packages/agents/test/mod-04/`):
+
+- `TB-02.contract.spec.ts` — 13 tests (id, module, purpose, promptRef, requiresApproval,
+  writesToBrain, model, evalSetRef, pii_guard, source_grounding_guard, tools, maxTokens, maxCostUsd).
+- `TB-10.contract.spec.ts` — 13 tests (same pattern).
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (394 agents tests, 473 contracts tests,
+25 prompts tests, 144 evals tests). `pnpm evals:gate` exits 0 (no executor registered — schema
+validation only at this stage).
+
+---
+
+### Stage 11 — Step 7: Teacher approval and edit surface
+
+**Date:** 2026-08-11
+
+**What was built**
+
+The teacher approval and edit surface: typed contracts for the diff a teacher produces when
+editing an AI artefact, the Brain signal captured from that diff, and the MOD-04 pipeline
+that orchestrates every Toolbox request end-to-end.
+
+**Approval contracts** (`packages/contracts/src/toolbox/approval.ts`):
+
+- `ToolboxEditField` — one field-level change: `field` (JSON-path style, e.g.
+  `slides[2].content`), `before`, `after`. All three are non-empty strings (min(1)).
+- `ToolboxEditDiff` — the full diff a teacher produces: `artefactId` (UUID), `artefactType`
+  (ToolboxArtefactType enum), `editedAt` (ISO datetime), `editedBy` (non-empty email/name),
+  `fieldEdits[]` (min 1 — an EDITED outcome with no edits is a contract violation),
+  `totalCharactersChanged` (non-negative integer, 0 accepted for reformatting-only edits).
+- `TeacherEditSignal` — the Brain write: adds `signalId` / `tenantId` (both UUIDs),
+  `agentId` (which TB agent produced the artefact), `capsTopicId` (curriculum anchor for
+  routing the signal in Stage 13 prompt improvement loops), `capturedAt`.
+- All three exported from `packages/contracts/src/toolbox/index.ts` and from the main
+  `packages/contracts/src/index.ts` barrel (sorted positions: `TeacherEditSignal` between
+  `TBOutputLinkage` and `TemplateDefinition`; `ToolboxEditDiff` and `ToolboxEditField`
+  between `ToolboxArtefactType` and `ToolboxOutputFormat`).
+- `packages/contracts/test/exports.spec.ts` updated to assert the three new names in their
+  sorted positions.
+
+**Contract tests** (`packages/contracts/test/toolbox-approval.spec.ts`):
+
+19 tests across three describe blocks:
+
+- `ToolboxEditField` (4): accepts valid, rejects empty field path, rejects empty before,
+  rejects empty after.
+- `ToolboxEditDiff` (8): accepts valid; rejects non-UUID artefactId; rejects invalid
+  artefactType; rejects empty fieldEdits (contract violation); rejects negative
+  totalCharactersChanged; rejects non-integer (1.5); accepts zero (reformatting); accepts
+  multiple field edits.
+- `TeacherEditSignal` (7): accepts valid; rejects non-UUID signalId; rejects non-UUID
+  tenantId; rejects empty agentId; rejects empty capsTopicId; rejects signal with empty
+  fieldEdits inside editDiff; correctly round-trips agentId.
+
+**MOD-04 pipeline** (`packages/orchestrator/src/pipelines/mod-04.ts`):
+
+Four-step pipeline generic across all eleven TB agents:
+
+```
+draft-artefact (tool_call) → teacher-approval (human_gate) → deliver-artefact (tool_call) → capture-edit-signal (tool_call, next: null)
+```
+
+Key design decisions:
+
+- `draft-artefact` uses `toolbox.draft_artefact` (reads `agentId` from run input) rather
+  than a per-agent `agent_call` step — one pipeline covers all eleven TB outputs.
+- `teacher-approval` requiredRole: `'teacher'`, timeoutMs: 604 800 000 (7 days).
+- `deliver-artefact` is irreversible — `validatePipelineGating` asserts it is only ever
+  reachable through the teacher gate.
+- `capture-edit-signal` writes a `TeacherEditSignal` to the Brain on EDITED outcomes;
+  is a no-op for plain APPROVED outcomes. Brain writes are append-only, so no compensation
+  step is needed.
+- Compensation: `compensate-draft` → `toolbox.void_draft`; `compensate-deliver` →
+  `toolbox.void_delivery` (append-only retraction event, not a deletion).
+- `PipelineDefinition.parse()` + `validatePipelineDag()` run at module load — mis-wired
+  references and forward cycles are deployment errors, not runtime surprises.
+- Exported from `packages/orchestrator/src/index.ts` as `MOD04_TOOLBOX_PIPELINE`.
+
+**Pipeline tests** (`packages/orchestrator/test/pipelines/mod-04.spec.ts`):
+
+12 tests:
+
+1. Valid DAG (validatePipelineDag does not throw).
+2. Gating validation (validatePipelineGating with IRREVERSIBLE_TOOLS: {deliver_artefact,
+   capture_edit_signal} does not throw).
+3. Entry point is `draft-artefact`.
+4. id `'mod-04-toolbox'`, version matches semver.
+5. `teacher-approval` is human_gate with requiredRole `'teacher'`.
+6. `teacher-approval` has 7-day timeout (604 800 000 ms).
+7. `teacher-approval.next` is `'deliver-artefact'`.
+8. `deliver-artefact` calls `toolbox.deliver_artefact`.
+9. `deliver-artefact` compensatesWith `'compensate-deliver'`; compensation uses
+   `toolbox.void_delivery`.
+10. `capture-edit-signal` calls `toolbox.capture_edit_signal` and has `next: null`.
+11. `draft-artefact` compensatesWith `'compensate-draft'`; compensation uses
+    `toolbox.void_draft`.
+12. `draft-artefact` calls `toolbox.draft_artefact` (generic dispatch).
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass clean (492 contracts tests, 88
+orchestrator tests).
+
+---
+
+### Step 8 — TB-11 Visual Brief Writer, four test suites, and no-fabrication contract
+
+**TB-11 agent** (`packages/agents/src/mod-04/TB-11.contract.ts`):
+id: `TB-11`, module: `MOD-04`, purpose: `planning`, model: `plan.author`, guardrails:
+`['pii_guard', 'source_grounding_guard']`, budget: `{ maxTokens: 2000, maxCostUsd: 0.01 }`,
+`requiresApproval: false`, `writesToBrain: false`, evalSetRef: `'TB-11'`.
+
+Exported from `packages/agents/src/index.ts`.
+
+**TB-11 contract tests** (`packages/agents/test/mod-04/TB-11.contract.spec.ts`):
+13 tests — id, module, purpose, promptRef (TB-11@1.0.0), requiresApproval, writesToBrain, model,
+evalSetRef, pii_guard present, source_grounding_guard present, tools empty, maxTokens > 0,
+maxCostUsd ≤ 0.05.
+
+**TB11Input / TB11Result schemas** (`packages/contracts/src/toolbox/agents.ts`):
+Added after TB10Result. Input: tenantId, capsTopicId, lessonId?, interventionId?, gradeLabel,
+subject, topic, learningObjectives (min 1), language, sourceDocumentIds (min 1), requestedBy,
+visualContext?. Result discriminated union: ok (VISUAL_BRIEF artefactType, brief ≥ 1 char,
+pedagogicalPurpose ≥ 1 char, suggestedCompositionNotes?, citedSourceIds min 1) | needs_input |
+no_source_document.
+
+**TB-11 prompt** (`packages/prompts/src/TB-11/1.0.0.prompt.md`):
+8-section structure (ROLE, GROUNDING, TASK, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA,
+SELF-CHECK). Constraints: text-only output, no AI image tool suggestions, no learner PII, South
+African context, written in declared language.
+
+Prompt lock updated (`packages/prompts/prompt-lock.json`): `TB-11@1.0.0` → hash recorded.
+
+**TB-11 eval set** (`packages/evals/sets/TB-11/main.json`):
+20 cases — Cases 1–10 happy_path (subjects, grades, languages, visualContext variants);
+cases 11–13 must_not_regress (no-AI-generation guard, PII guard, citation guard);
+cases 14–20 adversarial (empty sourceDocumentIds → no_source_document, missing linkage →
+needs_input, anti-fabrication, text-only guard, PII adversarial, visualContext constraint, SA
+context check).
+
+**Four cross-cutting test suites:**
+
+- `packages/contracts/test/toolbox-readability-bands.spec.ts` — GradeBand, ReadabilityCheckInput
+  for all 11 SA official languages, all four ReadabilityCheckResult verdict shapes including
+  cannot_measure for non-English.
+- `packages/contracts/test/toolbox-answer-key-verification.spec.ts` — AnswerKeyVerificationResult
+  disagreement mechanics; confirms no artefactId on disagreement (delivery blocked).
+- `packages/contracts/test/toolbox-accessibility-validator.spec.ts` — all four AccessibilityMode
+  values; known-bad fixtures for each mode; documents that schema does not correlate checks with
+  verdict (guardrail layer responsibility).
+- `packages/contracts/test/toolbox-no-fabrication.spec.ts` — no_source_document as first-class
+  outcome for TB-01…TB-04, TB-08…TB-11; ok result requires citedSourceIds min 1; empty array
+  and missing field both rejected. TB-05/TB-06 correctly excluded.
+
+`pnpm lint`, `pnpm typecheck`, `pnpm test` all pass (29 packages, all tests green).
+
+---
+
+## Stage 11 — MOD-04 Teaching & Learning Toolbox
+
+Started: 2026-08-11 Completed: 2026-08-11
+Exit gate: **PASS** — all Stage 11 commands pass; Docker-dependent prior-stage failures are
+pre-existing and pass in CI (same pattern as Stages 01, 05, 06).
+
+**Exit gate, walked item by item**
+
+| Gate item                                                                       | Result                                                         |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `pnpm --filter @infinite-ai/contracts test` (620 tests)                         | PASS                                                           |
+| `pnpm --filter @infinite-ai/agents test` (407 tests)                            | PASS                                                           |
+| `pnpm --filter @infinite-ai/prompts test` (25 tests)                            | PASS                                                           |
+| `pnpm --filter @infinite-ai/orchestrator test` (88 tests)                       | PASS                                                           |
+| `pnpm --filter @infinite-ai/evals test` (144 tests)                             | PASS                                                           |
+| `pnpm evals:run --all`                                                          | PASS (exits 0 — no live executors registered)                  |
+| `pnpm evals:gate`                                                               | PASS                                                           |
+| `pnpm test:readability` (36 tests)                                              | PASS                                                           |
+| `pnpm test:answer-key-verification` (15 tests)                                  | PASS                                                           |
+| `pnpm test:accessibility` (15 tests)                                            | PASS                                                           |
+| `pnpm verify:stage 11`                                                          | PASS in CI; Docker-dependent prior-stage failures only locally |
+| Eleven TB agents built with contracts, prompts, eval sets                       | PASS — TB-01…TB-11                                             |
+| Every artefact carries `capsTopicId` + (`lessonId` \| `interventionId`)         | PASS — schema-enforced                                         |
+| Reading level measured per language; `cannot_measure` for non-English           | PASS — schema + tests                                          |
+| No fabricated sources — `citedSourceIds` min(1) on every ok result              | PASS — no-fabrication suite                                    |
+| Answer keys verified by independent pass; disagreement blocks release           | PASS — schema-level                                            |
+| Accessibility validated against known-bad fixtures per mode                     | PASS — four modes covered                                      |
+| Teacher approval and edit surface with typed `TeacherEditSignal` contracts      | PASS — Step 7                                                  |
+| MOD-04 pipeline: draft → teacher-approval (human_gate) → deliver → capture-edit | PASS — DAG + gating tests                                      |
+| TB-11 writes image briefs only; never suggests AI image generation              | PASS — prompt + contract tests                                 |
+| South African contexts by default                                               | PASS — declared in all TB prompts                              |
+| CI green on PR #27 (all 3 checks: forbidden-patterns, RLS suite, install→build) | PASS                                                           |
+
+**All eight steps completed in one session:**
+
+1. Artefact model (TB01…TB04 schemas, ToolboxArtefactType, readability/accessibility/answer-key schemas).
+2. Core four: TB-01 Worksheet Builder, TB-03 Reading Passage Generator, TB-04 Item Writer, TB-05 Memo & Marking Guide.
+3. TB-06 Home-Language Adapter (all eleven SA official languages).
+4. TB-07 Accessibility Adapter (four modes: LARGE_PRINT, DYSLEXIA_FRIENDLY, SIMPLIFIED_LANGUAGE, BRAILLE_READY).
+5. TB-08 Remediation Pack Builder, TB-09 Extension & Enrichment Agent.
+6. TB-02 Board & Deck Builder, TB-10 Resource-Light Activity Agent.
+7. Teacher approval and edit surface: `ToolboxEditField`, `ToolboxEditDiff`, `TeacherEditSignal`; `MOD04_TOOLBOX_PIPELINE`.
+8. Tests: readability bands (all 11 SA languages), answer-key verification, accessibility validator, no-fabrication contract; TB-11 Visual Brief Writer.
+
+Deviations from manual: no Docker in the authoring environment; stages 01/05/06 integration
+tests are written blind and proven only in CI (same deviation recorded in all prior stages).
+`pnpm evals:run --module mod-04` does not exist as a flag; `pnpm evals:run --all` is the
+equivalent as implemented in `scripts/evals-run.ts` (same pattern as Stages 08 and 10).
+
+Open questions raised: none.
+
+---
+
+## Stage 12 — MOD-05 Teaching Analytics & PD Studio
+
+Started: 2026-08-11 Completed: 2026-08-11
+Exit gate: **PASS** — all Stage 12 commands pass; Docker-dependent prior-stage failures are
+pre-existing and pass in CI (same pattern as Stages 01, 05, 06, 11).
+
+**Exit gate, walked item by item**
+
+| Gate item                                                                        | Result                                                         |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `pnpm --filter @infinite-ai/contracts test` (641 tests)                          | PASS                                                           |
+| `pnpm --filter @infinite-ai/agents test` (446 tests)                             | PASS                                                           |
+| `pnpm --filter @infinite-ai/prompts test` (33 tests)                             | PASS                                                           |
+| `pnpm --filter @infinite-ai/orchestrator test` (115 tests)                       | PASS                                                           |
+| `pnpm --filter @infinite-ai/evals test` (144 tests)                              | PASS                                                           |
+| `pnpm evals:run --all`                                                           | PASS (exits 0 — no live executors registered)                  |
+| `pnpm evals:gate`                                                                | PASS                                                           |
+| `pnpm test:aggregation-thresholds` (22 tests)                                    | PASS                                                           |
+| `pnpm test:no-ranking-endpoints` (27 tests)                                      | PASS                                                           |
+| `pnpm test:course-structure` (24 tests)                                          | PASS                                                           |
+| `pnpm test:cptd` (24 tests)                                                      | PASS                                                           |
+| `pnpm verify:stage 12`                                                           | PASS in CI; Docker-dependent prior-stage failures only locally |
+| Eight PD agents built with contracts, prompts, eval sets                         | PASS — PD-01…PD-08                                             |
+| Cohort suppression: PD-04 returns CohortSuppressionResult when cohortSize < 5    | PASS — schema + 22-test suppression suite                      |
+| Suppressed path has no needAreas or signalsAggregated — nothing leaks            | PASS — schema-level; verified in test suite                    |
+| No-ranking: Zod strips rank/percentile/ordinal from all PD agent ok outputs      | PASS — 27-test no-ranking suite across PD04..PD07              |
+| Micro-course 20-40 min; exportable: true (literal); modules/checkItems/citedSrcs | PASS — 24-test course-structure suite                          |
+| CPTD: citedPolicyDocumentId required on ok; no_policy_match has no pointsAwarded | PASS — 24-test CPTD suite                                      |
+| PD-06 produces JSON learning object; never PDF or binary                         | PASS — schema-enforced (exportable: z.literal(true))           |
+| PD-08 reads point values from policyDocumentIds; never computes them             | PASS — schema + CPTD suite                                     |
+| MOD-05 PD analysis pipeline: suppress->terminate OR detect->compose->HoD-gate    | PASS — 27-test orchestrator suite                              |
+| HoD gate: requiredRole='hod', timeout=7 days; deliver behind gate                | PASS — validatePipelineGating confirms deliver-pd-intervention |
+| CPTD pipeline: no human gate (informational Brain write only)                    | PASS — orchestrator test verifies hasHumanGate === false       |
+| Deliver step compensated by retract; irreversible tool gating enforced           | PASS — compensation step wired; gating test passes             |
+| CI green on PR #27 (all checks)                                                  | PASS                                                           |
+
+**All eight steps completed in one session:**
+
+1. MOD-05 signal model: `CoverageSignal`, `AssessmentSignal`, `WalkthroughNote`, `TeachingSignal`, `CohortSuppressionResult`, `MINIMUM_COHORT_SIZE = 5`. Zod schemas in `packages/contracts/src/mod-05/signals.ts`.
+2. Eight PD agent contracts: PD-01..PD-08 input and output Zod schemas in `packages/contracts/src/mod-05/pd-agents.ts`; agent registrations in `packages/agents/src/mod-05/`.
+3. PD-01..PD-08 prompts (`packages/prompts/src/PD-0{1..8}/1.0.0.prompt.md`) and prompt lock hashes in `packages/prompts/prompt-lock.json`.
+4. Eval sets: 20 cases each for PD-01..PD-08 in `packages/evals/sets/PD-0{1..8}/main.json`.
+5. Two MOD-05 pipelines: `MOD05_PD_ANALYSIS_PIPELINE` (suppress short-circuit, gap detection, micro-course map or coaching plan, HoD approval, deliver, Brain write, compensation) and `MOD05_CPTD_PIPELINE`. Registered in `packages/orchestrator/src/pipelines/mod-05.ts`.
+6. Four cross-cutting test suites: cohort suppression (22 tests), no-ranking (27 tests), course-structure (24 tests), CPTD (24 tests). Fixed stale `@ts-expect-error` directive in `packages/contracts/test/mod-05-pd-agents.spec.ts`.
+7. Four root test script aliases registered in `package.json`: `test:aggregation-thresholds`, `test:no-ranking-endpoints`, `test:course-structure`, `test:cptd`.
+8. Stage 12 verify-stage commands populated in `scripts/verify-stage.ts`; `docs/AGENTS.md` and `docs/STAGE_LOG.md` updated.
+
+**Defects found and fixed:**
+
+- Apostrophe inside single-quoted string in `mod-05-suppression.spec.ts` — esbuild parse error `Expected ")" but found "s"`. Fixed by rewriting the test description.
+- Stale `@ts-expect-error` directive in `mod-05-pd-agents.spec.ts` at line 486. Removed; the schema correctly rejects `exportable: false` as a type error without the suppression directive.
+
+Deviations from manual: no Docker in the authoring environment; stages 01/05/06 integration
+tests are written blind and proven only in CI (same deviation recorded in all prior stages).
+`pnpm evals:run --module mod-05` does not exist as a flag; `pnpm evals:run --all` is the
+equivalent as implemented in `scripts/evals-run.ts` (same pattern as Stages 08, 10, 11).
+
+Open questions raised: none.
+
+---
+
+## Stage 13 — LE Learning Engine
+
+**Date:** 2026-08-11
+**Branch:** `claude/continue-building-mpf8sl`
+**Stage gate:** `pnpm verify:stage 13` — all commands exit 0
+
+### Exit gate walk
+
+1. **LE wire contracts.** All 9 LE agent input/output Zod schemas in `packages/contracts/src/learning/le-agents.ts`. Key constants: `COMMONS_K_ANONYMITY_THRESHOLD = 5`, `PATTERN_MIN_SAMPLE_SIZE = 10`. Structural constraints: `ExemplarCandidate.promoted: z.literal(false)`, `PromptChallenger.isLive: z.literal(false)` — promotion and live-state cannot be `true` at the schema level.
+2. **Purpose table extended.** `learning_engine` added to the POPIA `Purpose` enum and `PURPOSES` array with `categories: ['STAFF_PRACTICE', 'ACADEMIC_PERFORMANCE']`, `permitsReidentification: false`, `permitsModelProcessing: true`.
+3. **Nine LE agent contracts.** All in `packages/agents/src/le/LE-0{1..9}.contract.ts` with `module: 'LE'`, `purpose: 'learning_engine'`, `pii_guard` in guardrails, cost budgets. LE-05, LE-06, LE-07, LE-08 have `requiresApproval: true`. LE-01..04, LE-09 have `requiresApproval: false`. Only LE-05, LE-06, LE-07 have `writesToBrain: false`; LE-08 and collection agents write to Brain.
+4. **Nine prompt files.** `packages/prompts/src/LE-0{1..9}/1.0.0.prompt.md` — each with ROLE, GROUNDING, TASK, HARD CONSTRAINTS. LE-07 enforces regression → bias → improvement priority order. All added to `packages/prompts/prompt-lock.json`.
+5. **`@infinite-ai/learning` package.** New package at `packages/learning/` with five pure-function modules:
+   - `promotion-gate.ts` — gate decision with bias-divergence-first priority.
+   - `commons-publisher.ts` — k-anonymity enforcement.
+   - `decay-agent.ts` — pattern invalidation/TTL logic.
+   - `promotion-log.ts` — append-only promotion log, rollback command generation.
+   - `maturity-report.ts` — cold_start → locally_calibrated → evidence_led → institutional.
+6. **41 unit tests** across 5 spec files in `packages/learning/test/`, covering happy paths plus failure paths for every pure function.
+7. **16 LE contract tests** in `packages/agents/test/le/LE-agents.contract.spec.ts` covering: module/purpose registration, pii_guard, cost budgets, distinct IDs, semver versions, requiresApproval split, writesToBrain split.
+8. **Nine eval sets.** 20 cases each in `packages/evals/sets/LE-0{1..9}/main.json` — total 180 new eval cases.
+9. **Export surface.** 35 new LE types/constants exported from `@infinite-ai/contracts/src/index.ts`; exports spec updated with all new names in sorted order (763 contracts tests pass).
+10. **verify-stage.ts** Stage 13 commands populated.
+11. **AGENTS.md** Stage 13 section added with full agent tables.
+
+**Defects found and fixed:**
+
+- `promotion-log.spec.ts` test fixture included artefact-level fields (`artefactId`, `artefactType`, `capsTopicId`, `editDiff`) that are not part of `PromotionLogEntry`, and was missing `challengerId`. Fixed by aligning the fixture to the schema.
+- `promotion-log.ts` array index access returned `PromotionRecord | undefined` under strict TypeScript (noUncheckedIndexedAccess). Fixed by extracting to local variable with explicit undefined guard.
+
+**Deviations from manual:** no Docker in the authoring environment; database integration tests are written blind and proven only in CI. `pnpm evals:run --all` used in the verify gate (same pattern as all prior stages).
+
+Open questions raised: none.

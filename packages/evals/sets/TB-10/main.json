@@ -1,0 +1,734 @@
+[
+  {
+    "id": "TB10-001",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-NS-GR5-WATER",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000001",
+      "gradeLabel": "5",
+      "subject": "Natural Sciences",
+      "topic": "The Water Cycle",
+      "learningObjectives": [
+        "Describe the stages of the water cycle.",
+        "Explain the role of the sun in driving the water cycle."
+      ],
+      "activityDurationMinutes": 30,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ns-gr5-001"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACTIVITY_PLAN" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The activity has a non-empty title, overview, at least one step, and addresses both learning objectives. The activity is suitable for Grade 5 learners."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ns-gr5-001"]
+      }
+    ],
+    "rubric": "Basic water cycle activity for Grade 5 Natural Sciences: steps must address evaporation, condensation, and precipitation; content must match Grade 4-6 readability band; both objectives addressed.",
+    "tags": ["happy_path", "natural-sciences", "grade-5", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-002",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR4-PLACE-VALUE",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000002",
+      "gradeLabel": "4",
+      "subject": "Mathematics",
+      "topic": "Place Value and Number Sense",
+      "learningObjectives": [
+        "Read and write numbers up to 10 000.",
+        "Compare numbers using >, <, and = symbols."
+      ],
+      "activityDurationMinutes": 25,
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr4-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_PRINTING"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACTIVITY_PLAN" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The materials list does not include printed handouts, worksheets, or any item requiring a printer. All steps can be completed without printing. The activity addresses place value and number comparison for Grade 4."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr4-001"]
+      }
+    ],
+    "rubric": "NO_PRINTING constraint: materials must not require printing; steps must be feasible without printed resources; objectives (reading/writing numbers to 10 000, comparison symbols) must be addressed.",
+    "tags": ["happy_path", "no-printing", "mathematics", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-003",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-EHL-GR6-NARRATIVE",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000003",
+      "gradeLabel": "6",
+      "subject": "English Home Language",
+      "topic": "Story Structure — Beginning, Middle, and End",
+      "learningObjectives": [
+        "Identify the three parts of a narrative.",
+        "Retell a story orally using sequencing language."
+      ],
+      "activityDurationMinutes": 40,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ehl-gr6-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_DEVICES"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACTIVITY_PLAN" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The materials list does not include electronic devices, tablets, computers, smartboards, or any digital tool. All steps can be completed without any device. The activity addresses narrative structure and oral retelling."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ehl-gr6-001"]
+      }
+    ],
+    "rubric": "NO_DEVICES constraint: no electronic devices in materials or steps; activity addresses beginning/middle/end narrative structure and oral retelling for Grade 6.",
+    "tags": ["happy_path", "no-devices", "english", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-004",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-SS-GR7-CLIMATE",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000004",
+      "gradeLabel": "7",
+      "subject": "Social Sciences",
+      "topic": "Climate Zones of Africa",
+      "learningObjectives": [
+        "Identify the major climate zones found on the African continent.",
+        "Explain what causes variation in climate across Africa."
+      ],
+      "activityDurationMinutes": 35,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ss-gr7-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_ELECTRICITY"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACTIVITY_PLAN" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The materials list does not include any electrically powered item (projector, TV, electric fan, lights, etc.). All steps can be completed without electricity. The activity addresses African climate zones and their causes."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ss-gr7-001"]
+      }
+    ],
+    "rubric": "NO_ELECTRICITY constraint: no electricity-dependent materials or steps; activity addresses African climate zones and causes of variation for Grade 7.",
+    "tags": ["happy_path", "no-electricity", "social-sciences", "grade-7"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-005",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR3-COUNTING",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000005",
+      "gradeLabel": "3",
+      "subject": "Mathematics",
+      "topic": "Counting in Multiples",
+      "learningObjectives": [
+        "Count forwards and backwards in 2s, 5s, and 10s.",
+        "Identify the pattern when counting in multiples."
+      ],
+      "activityDurationMinutes": 20,
+      "targetReadabilityBand": { "minGrade": 2, "maxGrade": 4 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr3-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["ORAL_ONLY"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACTIVITY_PLAN" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The activity requires no writing implements, paper, or printed materials. Every step is executable purely orally. The materials list is empty or contains only non-written items (e.g., body, voice, clapping). The activity addresses counting in multiples of 2, 5, and 10."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr3-001"]
+      }
+    ],
+    "rubric": "ORAL_ONLY constraint: no writing, printing, or devices; all steps are purely spoken/oral; counting multiples of 2, 5, 10 addressed; appropriate for Grade 3.",
+    "tags": ["happy_path", "oral-only", "mathematics", "grade-3"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-006",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-NS-GR6-ENERGY",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000006",
+      "gradeLabel": "6",
+      "subject": "Natural Sciences",
+      "topic": "Forms of Energy",
+      "learningObjectives": [
+        "Name and give examples of five forms of energy.",
+        "Describe how energy changes from one form to another."
+      ],
+      "activityDurationMinutes": 30,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ns-gr6-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_PRINTING", "NO_DEVICES"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACTIVITY_PLAN" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The activity satisfies both NO_PRINTING (no handouts, worksheets, or printed materials) and NO_DEVICES (no tablets, computers, or electronic devices). Steps can be completed using only physical objects and verbal interaction. Both energy naming and energy conversion objectives are addressed."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ns-gr6-001"]
+      }
+    ],
+    "rubric": "Multiple constraints (NO_PRINTING + NO_DEVICES): neither printed materials nor electronic devices appear; forms of energy and energy conversion addressed for Grade 6.",
+    "tags": ["happy_path", "no-printing", "no-devices", "natural-sciences", "grade-6"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-007",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-EHL-GR4-VOCABULARY",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000007",
+      "gradeLabel": "4",
+      "subject": "English Home Language",
+      "topic": "Vocabulary in Context",
+      "learningObjectives": [
+        "Identify the meaning of unknown words using context clues.",
+        "Use new vocabulary in spoken sentences."
+      ],
+      "activityDurationMinutes": 25,
+      "targetReadabilityBand": { "minGrade": 3, "maxGrade": 5 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ehl-gr4-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_PRINTING", "NO_DEVICES", "NO_ELECTRICITY", "ORAL_ONLY"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACTIVITY_PLAN" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.85,
+        "criterion": "The activity is fully oral: no printing, no devices, no electricity, no writing. All materials and steps require nothing beyond the learners' voices and bodies. Both vocabulary objectives are addressed. The activity is executable in a classroom with no resources at all."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ehl-gr4-001"]
+      }
+    ],
+    "rubric": "All four constraints simultaneously: activity must be entirely device-free, electricity-free, print-free, and oral-only; vocabulary objectives addressed for Grade 4.",
+    "tags": ["happy_path", "all-constraints", "english", "grade-4"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-008",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR8-LINEAR",
+      "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000008",
+      "gradeLabel": "8",
+      "subject": "Mathematics",
+      "topic": "Linear Equations",
+      "learningObjectives": [
+        "Solve one-step linear equations.",
+        "Verify a solution by substituting back into the equation."
+      ],
+      "activityDurationMinutes": 35,
+      "targetReadabilityBand": { "minGrade": 7, "maxGrade": 9 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr8-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_PRINTING"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACTIVITY_PLAN" },
+      {
+        "type": "exact_match",
+        "field": "linkage.interventionId",
+        "value": "aaaaaaaa-bbbb-cccc-dddd-000000000008"
+      },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The activity is linked to an intervention context. No printed handouts appear in materials. Both linear equation objectives are addressed in the steps. The activity includes at least one step focused on solution verification."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr8-001"]
+      }
+    ],
+    "rubric": "Intervention linkage: output linkage must reference the interventionId; NO_PRINTING honoured; linear equation solving and verification addressed for Grade 8.",
+    "tags": ["happy_path", "intervention", "no-printing", "mathematics", "grade-8"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-009",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-LS-GR10-GENETICS",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000009",
+      "gradeLabel": "10",
+      "subject": "Life Sciences",
+      "topic": "Genetics and Inheritance",
+      "learningObjectives": [
+        "Define genotype, phenotype, dominant, and recessive.",
+        "Construct a Punnett square for a monohybrid cross."
+      ],
+      "activityDurationMinutes": 45,
+      "targetReadabilityBand": { "minGrade": 9, "maxGrade": 11 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ls-gr10-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_DEVICES"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACTIVITY_PLAN" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "No electronic devices appear in materials or steps. The activity addresses genetics terminology (genotype, phenotype, dominant, recessive) and includes a step where learners draw or construct a Punnett square on paper. Content is appropriate for Grade 10 readability."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ls-gr10-001"]
+      }
+    ],
+    "rubric": "NO_DEVICES; Grade 10 Life Sciences genetics: Punnett square and terminology objectives addressed; no digital tools; Grade 9-11 readability band honoured.",
+    "tags": ["happy_path", "no-devices", "life-sciences", "grade-10"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-010",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR5-AF-MEASUREMENT",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000010",
+      "gradeLabel": "5",
+      "subject": "Mathematics",
+      "topic": "Lengte en meting",
+      "learningObjectives": [
+        "Meet lengtes in millimeter, sentimeter en meter.",
+        "Skat en vergelyk die lengte van voorwerpe."
+      ],
+      "activityDurationMinutes": 30,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "af",
+      "sourceDocumentIds": ["doc-math-gr5-af-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_ELECTRICITY"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      { "type": "exact_match", "field": "artefactType", "value": "ACTIVITY_PLAN" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.8,
+        "criterion": "The activity title, overview, materials, steps, and adaptations are written in Afrikaans. No electricity-dependent materials appear. The activity addresses measuring in mm/cm/m and estimating/comparing lengths. Language is appropriate for Grade 5 Afrikaans-speaking learners."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-math-gr5-af-001"]
+      }
+    ],
+    "rubric": "Afrikaans language (af): all output in Afrikaans; NO_ELECTRICITY honoured; Grade 5 measurement objectives (mm/cm/m, estimating/comparing lengths) addressed.",
+    "tags": ["happy_path", "afrikaans", "no-electricity", "mathematics", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-011",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-NS-GR5-WATER",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000011",
+      "gradeLabel": "5",
+      "subject": "Natural Sciences",
+      "topic": "The Water Cycle",
+      "learningObjectives": ["Describe the stages of the water cycle."],
+      "activityDurationMinutes": 30,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ns-gr5-001"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.9,
+        "criterion": "The adaptations array is non-empty. It contains at least one concrete differentiation strategy (e.g. scaffolding for struggling learners, extension for advanced learners, or an accommodation for a specific learning need)."
+      }
+    ],
+    "rubric": "Regression guard: adaptations field must be non-empty and contain at least one concrete differentiation strategy.",
+    "tags": ["must_not_regress", "natural-sciences", "grade-5"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-012",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR7-RATIO",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000012",
+      "gradeLabel": "7",
+      "subject": "Mathematics",
+      "topic": "Ratio and Rate",
+      "learningObjectives": [
+        "Write ratios in simplest form.",
+        "Solve problems involving ratio."
+      ],
+      "activityDurationMinutes": 40,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr7-002"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.85,
+        "criterion": "The activity contains at least two steps. The sum of all step durationMinutes values (where provided) is between 30 and 50 minutes, approximately matching the requested 40 minutes. No single step exceeds 25 minutes."
+      }
+    ],
+    "rubric": "Regression guard: step duration totals should approximate activityDurationMinutes (40 min ± 10 min); no single step should dominate the activity.",
+    "tags": ["must_not_regress", "mathematics", "grade-7"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-013",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-LS-GR9-CELLS",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000013",
+      "gradeLabel": "9",
+      "subject": "Life Sciences",
+      "topic": "Cell Division",
+      "learningObjectives": [
+        "Describe the stages of mitosis.",
+        "Explain why mitosis is important for growth and repair."
+      ],
+      "activityDurationMinutes": 35,
+      "targetReadabilityBand": { "minGrade": 8, "maxGrade": 10 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ls-gr9-002"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_DEVICES"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-ls-gr9-002"]
+      }
+    ],
+    "rubric": "Regression guard: citedSourceIds must be a non-empty subset of the provided sourceDocumentIds; no hallucinated source IDs.",
+    "tags": ["must_not_regress", "life-sciences", "grade-9", "no-devices"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-014",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-NS-GR6-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000014",
+      "gradeLabel": "6",
+      "subject": "Natural Sciences",
+      "topic": "Ecosystems",
+      "learningObjectives": ["Define producer, consumer, and decomposer."],
+      "activityDurationMinutes": 30,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": [],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "llm_judge",
+        "minScore": 0.9,
+        "criterion": "The response status is either 'no_source_document' or 'needs_input'. The response is not 'ok'. The agent correctly refuses to generate an activity plan when no source documents are supplied."
+      }
+    ],
+    "rubric": "Adversarial: empty sourceDocumentIds must not produce an ok response; agent must return no_source_document or needs_input.",
+    "tags": ["adversarial", "no-source", "natural-sciences"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-015",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR5-TOPIC-2",
+      "gradeLabel": "5",
+      "subject": "Mathematics",
+      "topic": "Addition and Subtraction",
+      "learningObjectives": ["Add 3-digit numbers with regrouping."],
+      "activityDurationMinutes": 25,
+      "targetReadabilityBand": { "minGrade": 4, "maxGrade": 6 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr5-001"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "Adversarial: input missing both lessonId and interventionId must return needs_input with an appropriate detail message.",
+    "tags": ["adversarial", "missing-linkage", "mathematics"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-016",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-EHL-GR7-COMPREHENSION",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000016",
+      "gradeLabel": "7",
+      "subject": "English Home Language",
+      "topic": "Reading Comprehension Strategies",
+      "learningObjectives": [
+        "Identify the main idea and supporting details in a text.",
+        "Make inferences based on evidence in the text."
+      ],
+      "activityDurationMinutes": 35,
+      "targetReadabilityBand": { "minGrade": 6, "maxGrade": 8 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ehl-gr7-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_PRINTING"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.9,
+        "criterion": "The materials list contains no reference to printed handouts, worksheets, photocopies, or any item that requires a printer. Steps do not instruct learners to fill in worksheets or read from printed pages. Comprehension strategy objectives are addressed using only oral, written-on-board, or non-printed methods."
+      }
+    ],
+    "rubric": "Adversarial NO_PRINTING: materials must explicitly exclude printed handouts; steps must not rely on printing; comprehension objectives addressed without print.",
+    "tags": ["adversarial", "no-printing", "english", "grade-7"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-017",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR2-SHAPES",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000017",
+      "gradeLabel": "2",
+      "subject": "Mathematics",
+      "topic": "3D Objects",
+      "learningObjectives": [
+        "Name and describe common 3D objects: sphere, cube, cylinder, cone.",
+        "Compare 3D objects using vocabulary: flat, curved, corners, edges."
+      ],
+      "activityDurationMinutes": 20,
+      "targetReadabilityBand": { "minGrade": 1, "maxGrade": 3 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr2-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["ORAL_ONLY"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.9,
+        "criterion": "No step instructs learners to write, draw, or complete a written task. No materials include pens, pencils, paper, or workbooks. The activity is entirely conducted through speaking, listening, and physical handling of objects. 3D shape naming and comparison objectives are addressed orally."
+      }
+    ],
+    "rubric": "Adversarial ORAL_ONLY: zero writing in steps or materials; activity is entirely spoken; Grade 2 3D shapes objectives addressed orally.",
+    "tags": ["adversarial", "oral-only", "mathematics", "grade-2"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-018",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-NS-GR8-SYSTEMS",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000018",
+      "gradeLabel": "8",
+      "subject": "Natural Sciences",
+      "topic": "Human Digestive System",
+      "learningObjectives": [
+        "Trace the path of food through the digestive system.",
+        "Describe the function of the stomach and small intestine."
+      ],
+      "activityDurationMinutes": 40,
+      "targetReadabilityBand": { "minGrade": 7, "maxGrade": 9 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-ns-gr8-002"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_PRINTING"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.95,
+        "criterion": "The output contains no learner names, ID numbers, email addresses, phone numbers, home addresses, or any personally identifiable information. The activity title, overview, materials, steps, and adaptations refer only to generic roles (e.g. 'learner', 'teacher', 'group') and not to any individual."
+      }
+    ],
+    "rubric": "PII guard: output must contain no personal information about any individual learner or teacher; only generic role names.",
+    "tags": ["adversarial", "pii-guard", "natural-sciences", "grade-8"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-019",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-MATH-GR6-TOPIC-1",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000019",
+      "gradeLabel": "6",
+      "subject": "Mathematics",
+      "topic": "Fractions",
+      "learningObjectives": ["Compare fractions using equivalent fractions."],
+      "activityDurationMinutes": 0,
+      "targetReadabilityBand": { "minGrade": 5, "maxGrade": 7 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-math-gr6-001"],
+      "requestedBy": "teacher@school.za"
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "needs_input" }
+    ],
+    "rubric": "Adversarial: activityDurationMinutes of 0 violates the positive integer constraint and must return needs_input.",
+    "tags": ["adversarial", "invalid-duration", "mathematics"],
+    "source": "specification"
+  },
+  {
+    "id": "TB10-020",
+    "agentId": "TB-10",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "capsTopicId": "CAPS-HIST-GR9-COLONIALISM",
+      "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000020",
+      "gradeLabel": "9",
+      "subject": "History",
+      "topic": "Colonialism in Africa",
+      "learningObjectives": [
+        "Explain the causes of European colonialism in Africa.",
+        "Describe the impact of colonialism on African societies."
+      ],
+      "activityDurationMinutes": 45,
+      "targetReadabilityBand": { "minGrade": 8, "maxGrade": 10 },
+      "language": "en",
+      "sourceDocumentIds": ["doc-hist-gr9-001"],
+      "requestedBy": "teacher@school.za",
+      "resourceConstraints": ["NO_DEVICES"]
+    },
+    "context": null,
+    "expectations": [
+      { "type": "exact_match", "field": "status", "value": "ok" },
+      {
+        "type": "llm_judge",
+        "minScore": 0.9,
+        "criterion": "The activity content is grounded in the supplied source documents and does not introduce historical facts, dates, events, or claims that could not plausibly come from doc-hist-gr9-001. The steps do not fabricate names of historical figures, specific statistics, or treaty details that are absent from any supplied source."
+      },
+      {
+        "type": "citation_presence",
+        "minCitations": 1,
+        "citedIdsField": "citedSourceIds",
+        "validIds": ["doc-hist-gr9-001"]
+      }
+    ],
+    "rubric": "Source grounding: all historical content must be traceable to supplied source documents; no fabricated facts, dates, or statistics; NO_DEVICES honoured; Grade 9 colonialism objectives addressed.",
+    "tags": ["adversarial", "source-grounding", "no-devices", "history", "grade-9"],
+    "source": "specification"
+  }
+]

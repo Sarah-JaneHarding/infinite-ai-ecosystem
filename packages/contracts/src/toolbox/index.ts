@@ -1,4 +1,4 @@
-// @infinite-ai/contracts — toolbox sub-module barrel (Stage 11 steps 1–3).
+// @infinite-ai/contracts — toolbox sub-module barrel (Stage 11 steps 1–4).
 
 export {
   ARTEFACT_TYPE_TO_AGENT,
@@ -7,6 +7,12 @@ export {
   ToolboxArtefactType,
   VisualBrief,
 } from './artefact.js';
+
+export {
+  AccessibilityCheckItem,
+  AccessibilityCheckResult,
+  AccessibilityMode,
+} from './accessibility.js';
 
 export {
   FORMAT_SUPPORT,
@@ -24,14 +30,25 @@ export {
 
 export { AnswerKeyItem, AnswerKeyVerificationResult } from './answer-key.js';
 
+export { TeacherEditSignal, ToolboxEditDiff, ToolboxEditField } from './approval.js';
+
 export {
+  ActivityStep,
   AnswerKeyEntry,
   AssessmentItem,
   AssessmentItemType,
+  EnrichmentFocus,
+  ExtensionSection,
   MCOption,
   OfficialLanguage,
+  PresentationPurpose,
+  RemediationSection,
+  ResourceConstraint,
+  Slide,
   TB01Input,
   TB01Result,
+  TB02Input,
+  TB02Result,
   TB03Input,
   TB03Result,
   TB04Input,
@@ -42,6 +59,16 @@ export {
   TB05VerificationItem,
   TB06Input,
   TB06Result,
+  TB07Input,
+  TB07Result,
+  TB08Input,
+  TB08Result,
+  TB09Input,
+  TB09Result,
+  TB10Input,
+  TB10Result,
+  TB11Input,
+  TB11Result,
   TBOutputLinkage,
   VerifierAnswers,
   WorksheetDifferentiationTier,

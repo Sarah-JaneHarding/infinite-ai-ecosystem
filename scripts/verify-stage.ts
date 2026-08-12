@@ -163,9 +163,80 @@ const STAGES: readonly Stage[] = [
       'pnpm test:bias-monitor',
     ],
   },
-  { id: '11', name: 'MOD-04 Teaching & Learning Toolbox', commands: [] },
-  { id: '12', name: 'MOD-05 Teaching Analytics & PD Studio', commands: [] },
-  { id: '13', name: 'LE Learning Engine', commands: [] },
+  {
+    id: '11',
+    name: 'MOD-04 Teaching & Learning Toolbox',
+    commands: [
+      // Contract tests for all eleven TB-xx Zod schemas — input/output, readability bands,
+      // answer-key verification, accessibility validator, no-fabrication guard. All pure
+      // unit-tier; no Docker required.
+      'pnpm --filter @infinite-ai/contracts test',
+      // All eleven TB agent contracts validated (id, module, purpose, guardrails, budget,
+      // prompt ref, eval set ref). 407 tests total.
+      'pnpm --filter @infinite-ai/agents test',
+      // Prompt lock integrity: every TB-01..TB-11 prompt hash matches the lockfile,
+      // confirming no prompt was silently edited after the last ratification run.
+      'pnpm --filter @infinite-ai/prompts test',
+      // MOD-04 pipeline DAG structural integrity (validatePipelineDag), gating proof
+      // (deliver-artefact behind teacher human_gate), export dispatcher routing.
+      'pnpm --filter @infinite-ai/orchestrator test',
+      // Eval harness unit tests.
+      'pnpm --filter @infinite-ai/evals test',
+      // Smoke-run all eval sets (exits 0 when no live executor is registered).
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+      // Stage 11-specific cross-cutting test suites named explicitly in the manual's
+      // verification block — run here as named suite commands so the failure diagnosis
+      // is targeted rather than buried in the full contracts run above.
+      'pnpm test:readability',
+      'pnpm test:answer-key-verification',
+      'pnpm test:accessibility',
+    ],
+  },
+  {
+    id: '12',
+    name: 'MOD-05 Teaching Analytics & PD Studio',
+    commands: [
+      // PD agent schemas (PD-01..PD-08), signal model, and all cross-cutting contracts.
+      'pnpm --filter @infinite-ai/contracts test',
+      // All 8 PD agent contracts validated (id, module, purpose, guardrails, budget,
+      // prompt ref, eval set ref). 39 contract tests total.
+      'pnpm --filter @infinite-ai/agents test',
+      // Prompt lock integrity: every PD-01..PD-08 prompt hash matches the lockfile.
+      'pnpm --filter @infinite-ai/prompts test',
+      // MOD-05 pipeline DAG structural integrity (validatePipelineDag), gating proof
+      // (deliver-pd-intervention behind HoD human_gate), CPTD pipeline.
+      'pnpm --filter @infinite-ai/orchestrator test',
+      // Eval harness unit tests.
+      'pnpm --filter @infinite-ai/evals test',
+      // Smoke-run all eval sets (exits 0 when no live executor is registered).
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+      // Stage 12 cross-cutting test suites — explicitly named so a failure is targeted.
+      // Cohort suppression: MINIMUM_COHORT_SIZE = 5, suppressed path leaks no data.
+      'pnpm test:aggregation-thresholds',
+      // No-ranking: Zod strips rank/percentile/ordinal from all PD agent ok outputs.
+      'pnpm test:no-ranking-endpoints',
+      // Micro-course: 20–40 min, exportable: true, modules/checkItems/citedSourceIds.
+      'pnpm test:course-structure',
+      // CPTD: citedPolicyDocumentId required on ok; no_policy_match has no pointsAwarded.
+      'pnpm test:cptd',
+    ],
+  },
+  {
+    id: '13',
+    name: 'LE Learning Engine',
+    commands: [
+      // Core learning logic — promotion gate, k-anonymity, decay, maturity, promotion log.
+      'pnpm --filter @infinite-ai/learning test',
+      // Agent contracts — all 9 LE agents, module/purpose/pii_guard/budget/requiresApproval/writesToBrain.
+      'pnpm --filter @infinite-ai/agents test le/LE-agents.contract',
+      // Wire contracts — LE01..LE09 input/output types, promotion log, maturity, constants.
+      'pnpm --filter @infinite-ai/contracts test',
+      // Eval harness — all LE eval sets (20 cases each, LE-01..LE-09) recognised.
+      'pnpm --filter @infinite-ai/evals test',
+    ],
+  },
   { id: '14', name: 'Experience surfaces', commands: [] },
   { id: '15', name: 'Observability, SLOs, DR', commands: [] },
   { id: '16', name: 'Security hardening', commands: [] },

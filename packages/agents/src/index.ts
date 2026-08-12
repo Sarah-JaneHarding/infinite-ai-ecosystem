@@ -54,9 +54,24 @@ export { DW07Contract } from './mod-03/DW-07.contract.js';
 export { DW08Contract } from './mod-03/DW-08.contract.js';
 
 export { TB01Contract } from './mod-04/TB-01.contract.js';
+export { TB02Contract } from './mod-04/TB-02.contract.js';
 export { TB03Contract } from './mod-04/TB-03.contract.js';
 export { TB04Contract } from './mod-04/TB-04.contract.js';
 export { TB05Contract } from './mod-04/TB-05.contract.js';
 export { TB06Contract } from './mod-04/TB-06.contract.js';
+export { TB07Contract } from './mod-04/TB-07.contract.js';
+export { TB08Contract } from './mod-04/TB-08.contract.js';
+export { TB09Contract } from './mod-04/TB-09.contract.js';
+export { TB10Contract } from './mod-04/TB-10.contract.js';
+export { TB11Contract } from './mod-04/TB-11.contract.js';
+
+export { PD01Contract } from './mod-05/PD-01.contract.js';
+export { PD02Contract } from './mod-05/PD-02.contract.js';
+export { PD03Contract } from './mod-05/PD-03.contract.js';
+export { PD04Contract } from './mod-05/PD-04.contract.js';
+export { PD05Contract } from './mod-05/PD-05.contract.js';
+export { PD06Contract } from './mod-05/PD-06.contract.js';
+export { PD07Contract } from './mod-05/PD-07.contract.js';
+export { PD08Contract } from './mod-05/PD-08.contract.js';
 
 export const PACKAGE_NAME = '@infinite-ai/agents' as const;

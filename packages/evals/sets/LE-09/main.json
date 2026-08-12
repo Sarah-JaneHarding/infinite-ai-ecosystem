@@ -1,0 +1,650 @@
+[
+  {
+    "id": "LE09-001",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000001",
+        "capsTopicId": "CAPS-GR5-NS-WATER",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "valid"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-002",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000002",
+        "capsTopicId": "CAPS-GR7-MATH-FRACTION",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-11-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "revalidation_required"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-003",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000003",
+        "capsTopicId": "CAPS-GR9-ENG-POETRY",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": "2026.2",
+      "patternCapsVersion": "2026.1",
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "invalidated"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-004",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000004",
+        "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01",
+      "revalidationResult": {
+        "passRate": 0.4,
+        "requiredPassRate": 0.75
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "invalidated"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-005",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000005",
+        "capsTopicId": "CAPS-GR8-MATH-ALGEBRA",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01",
+      "revalidationResult": {
+        "passRate": 0.9,
+        "requiredPassRate": 0.75
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "valid"
+      }
+    ],
+    "tags": ["happy_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-006",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000006",
+        "capsTopicId": "CAPS-GR6-SS-ENVIRONMENTS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "valid"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-007",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000007",
+        "capsTopicId": "CAPS-GR10-PHYS-ENERGY",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": "2026.2",
+      "patternCapsVersion": "2026.1",
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "invalidated"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-008",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000008",
+        "capsTopicId": "CAPS-GR11-CHEM-REACTIONS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "valid"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-009",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000009",
+        "capsTopicId": "CAPS-GR12-MATH-CALCULUS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-12-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "revalidation_required"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-010",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000010",
+        "capsTopicId": "CAPS-GR3-MATH-PATTERNS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": "2026.2",
+      "patternCapsVersion": "2026.1",
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "invalidated"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-011",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000011",
+        "capsTopicId": "CAPS-GR2-MATH-COUNTING",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "valid"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-012",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000012",
+        "capsTopicId": "CAPS-GR4-LO-RECYCLING",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "valid"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-013",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000013",
+        "capsTopicId": "CAPS-GR1-ENG-PHONICS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": "2026.2",
+      "patternCapsVersion": "2026.1",
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "invalidated"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-014",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000014",
+        "capsTopicId": "CAPS-GR5-NS-ECOSYSTEMS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "valid"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-015",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000015",
+        "capsTopicId": "CAPS-GR7-MATH-PROBABILITY",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "valid"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-016",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000016",
+        "capsTopicId": "CAPS-GR9-LO-CAREER",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": "2026.2",
+      "patternCapsVersion": "2026.1",
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "invalidated"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-017",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000017",
+        "capsTopicId": "CAPS-GR10-BIO-GENETICS",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-12-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "revalidation_required"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-018",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000018",
+        "capsTopicId": "CAPS-GR8-SS-DEMOCRACY",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "valid"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-019",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000019",
+        "capsTopicId": "CAPS-GR11-PHYS-WAVES",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": "2026.2",
+      "patternCapsVersion": "2026.1",
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "invalidated"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE09-020",
+    "agentId": "LE-09",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "pattern": {
+        "patternId": "jjjjjjjj-0009-0009-0009-000000000020",
+        "capsTopicId": "CAPS-GR12-ENG-DRAMA",
+        "agentId": "TB-01",
+        "sampleSize": 12,
+        "effectSize": 0.1,
+        "confidenceInterval": [-0.01, 0.21],
+        "biasChecked": true,
+        "minedAt": "2026-07-01T08:00:00.000Z"
+      },
+      "lastValidatedAt": "2026-07-01T00:00:00.000Z",
+      "ttlDays": 90,
+      "currentCapsVersion": null,
+      "patternCapsVersion": null,
+      "today": "2026-08-01"
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "valid"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  }
+]

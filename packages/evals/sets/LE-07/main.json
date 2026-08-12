@@ -1,0 +1,723 @@
+[
+  {
+    "id": "LE07-001",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000001",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.9,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "promote"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-002",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000002",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_no_improvement"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-003",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000003",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.95,
+        "mustNotRegressPassRate": 0.6,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_regression"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-004",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000004",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.95,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "biasCheckPassed": false
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_bias_divergence"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-005",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000005",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.75,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_no_improvement"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-006",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000006",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 0.8,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_regression"
+      }
+    ],
+    "tags": ["failure_path", "must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-007",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000007",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.9,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "promote"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-008",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000008",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_no_improvement"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-009",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000009",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_no_improvement"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-010",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000010",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.9,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "promote"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-011",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000011",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 0.8,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_regression"
+      }
+    ],
+    "tags": ["happy_path"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-012",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000012",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_no_improvement"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-013",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000013",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.9,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "promote"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-014",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000014",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_no_improvement"
+      }
+    ],
+    "tags": ["must_not_regress"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-015",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000015",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_no_improvement"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-016",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000016",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.9,
+        "mustNotRegressPassRate": 0.8,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_regression"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-017",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000017",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_no_improvement"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-018",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000018",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_no_improvement"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-019",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000019",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.9,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "promote"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  },
+  {
+    "id": "LE07-020",
+    "agentId": "LE-07",
+    "input": {
+      "tenantId": "11111111-2222-3333-4444-555555555555",
+      "agentId": "TB-01",
+      "challengerId": "hhhhhhhh-0007-0007-0007-000000000020",
+      "championEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      },
+      "challengerEvalResult": {
+        "overallPassRate": 0.8,
+        "mustNotRegressPassRate": 1,
+        "totalCases": 20,
+        "mustNotRegressCases": 5
+      }
+    },
+    "context": null,
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "ok"
+      },
+      {
+        "type": "exact_match",
+        "field": "verdict",
+        "value": "reject_no_improvement"
+      }
+    ],
+    "tags": ["adversarial"],
+    "source": "specification"
+  }
+]
