@@ -169,6 +169,19 @@ export default tseslint.config(
   },
 
   // ---------------------------------------------------------------------------
+  // k6 load-test scripts. k6 injects __ENV and other globals at runtime; they
+  // are not Node or browser globals, so they must be declared explicitly here.
+  // ---------------------------------------------------------------------------
+  {
+    files: ['scripts/load/**/*.js'],
+    languageOptions: {
+      globals: {
+        __ENV: 'readonly',
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------------------
   // Exemptions, each narrow and justified.
   // ---------------------------------------------------------------------------
   {
@@ -186,6 +199,13 @@ export default tseslint.config(
     // rule 7: provider credentials never enter the shared EnvSchema, precisely so no
     // other service's environment can leak them (see apps/gateway/.env.example).
     files: ['apps/gateway/src/config/**/*.ts'],
+    rules: { 'no-restricted-globals': 'off', 'no-restricted-syntax': 'off' },
+  },
+  {
+    // apps/web has its own web-specific env loader (Stage 14, same rationale as the
+    // gateway's config exemption). All other web source files consume values through
+    // getWebEnv() rather than reading process.env directly.
+    files: ['apps/web/src/lib/env.ts'],
     rules: { 'no-restricted-globals': 'off', 'no-restricted-syntax': 'off' },
   },
   {
@@ -258,6 +278,24 @@ export default tseslint.config(
       'no-restricted-globals': 'off',
       'no-restricted-syntax': 'off',
     },
+  },
+
+  {
+    // Playwright E2E tests access process.env (CI flag, base URL) and import
+    // test-only helpers — the same shape of exception the orchestrator integration
+    // suite has. Confined to apps/web's e2e and a11y test directories.
+    files: ['apps/web/tests/**/*.ts', 'apps/web/playwright.config.ts'],
+    rules: {
+      'no-restricted-globals': 'off',
+      'no-restricted-syntax': 'off',
+      'no-restricted-imports': 'off',
+    },
+  },
+  {
+    // Next.js config files and app-level server files (middleware, next.config)
+    // need access to process.env and Next.js APIs.
+    files: ['apps/web/next.config.ts', 'apps/web/src/middleware.ts'],
+    rules: { 'no-restricted-globals': 'off', 'no-restricted-syntax': 'off' },
   },
 
   prettier,

@@ -88,6 +88,12 @@ model Tenant {
   ingestQualityReports IngestQualityReport[]
   learner360s          Learner360[]
   screeningFeatures    ScreeningFeature[]
+  // Stage 17 — Tenant lifecycle, provisioning, billing
+  provisioning         ProvisioningRecord?
+  subscriptions        Subscription[]
+  meteringEvents       TenantMeteringEvent[]
+  meteringPeriods      MeteringPeriod[]
+  invoices             TenantInvoice[]
 
   @@map("tenant")
 }
@@ -1633,4 +1639,159 @@ model ScreeningFeature {
   @@index([tenantId, learnerId])
   @@index([tenantId, learnerId, featureName, asAt(sort: Desc)])
   @@map("screening_feature")
+}
+
+// ---------------------------------------------------------------------------
+// Stage 17 — Tenant lifecycle, provisioning, billing
+// ---------------------------------------------------------------------------
+
+/// Tracks the onboarding wizard's progress per tenant. One record per tenant;
+/// mutable workflow state (not append-only). The `steps` field is a JSON array
+/// of WizardStepRecord values from packages/provisioning.
+model ProvisioningRecord {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @unique @map("tenant_id") @db.Uuid
+  /// JSON array of WizardStepRecord — managed by packages/provisioning.
+  steps     Json     @default("[]")
+  /// Readiness score 0–100. Recomputed on each step transition.
+  readiness Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by") @db.Uuid
+  version   Int      @default(1)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("provisioning_record")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+
+  @@map("subscription_status")
+}
+
+/// One subscription record per tenant per period. A new subscription row is
+/// created on upgrade/downgrade rather than updating the old one (append-preferred).
+model Subscription {
+  id        String             @id @default(uuid()) @db.Uuid
+  tenantId  String             @map("tenant_id") @db.Uuid
+  /// Tier name from SUBSCRIPTION_TIERS (packages/billing).
+  tierName  String             @map("tier_name")
+  status    SubscriptionStatus @default(ACTIVE)
+  /// First day of the subscription period.
+  startsOn  DateTime           @map("starts_on") @db.Date
+  /// Last day (inclusive) or null for open-ended.
+  endsOn    DateTime?          @map("ends_on") @db.Date
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+  createdBy String?            @map("created_by") @db.Uuid
+  version   Int                @default(1)
+
+  tenant   Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  invoices TenantInvoice[]
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("subscription")
+}
+
+/// One metering event, mirroring the Model Gateway's completion/embedding records.
+/// Append-only — the source of truth for cost attribution.
+model TenantMeteringEvent {
+  id         String   @id @default(uuid()) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  agentId    String   @map("agent_id")
+  tokensUsed Int      @map("tokens_used")
+  /// Cost in ZAR cents as billed by the gateway adapter.
+  costCents  Int      @map("cost_cents")
+  at         DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, at])
+  @@map("tenant_metering_event")
+}
+
+enum MeteringPeriodStatus {
+  OPEN
+  CLOSED
+  RECONCILED
+  RECONCILIATION_FAILED
+
+  @@map("metering_period_status")
+}
+
+/// Aggregated usage summary for one billing period. Reconciliation sets the
+/// status after comparing these totals against gateway telemetry.
+model MeteringPeriod {
+  id                    String               @id @default(uuid()) @db.Uuid
+  tenantId              String               @map("tenant_id") @db.Uuid
+  periodStart           DateTime             @map("period_start")
+  periodEnd             DateTime             @map("period_end")
+  totalTokens           Int                  @map("total_tokens")
+  totalCostCents        Int                  @map("total_cost_cents")
+  learnerCount          Int                  @map("learner_count")
+  educatorCount         Int                  @map("educator_count")
+  eventCount            Int                  @map("event_count")
+  status                MeteringPeriodStatus @default(OPEN)
+  /// Percentage deviation from telemetry at reconciliation time.
+  tokenDeviationPct     Float?               @map("token_deviation_pct")
+  reconciliationNote    String?              @map("reconciliation_note")
+  reconciledAt          DateTime?            @map("reconciled_at")
+  createdAt             DateTime             @default(now()) @map("created_at")
+  updatedAt             DateTime             @updatedAt @map("updated_at")
+
+  tenant  Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  invoice TenantInvoice?
+
+  @@unique([tenantId, periodStart, periodEnd])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("metering_period")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  VOID
+
+  @@map("invoice_status")
+}
+
+/// One invoice per metering period per subscription. Line items are stored as
+/// JSON to avoid a separate line-item table while keeping the full breakdown.
+model TenantInvoice {
+  id              String        @id @default(uuid()) @db.Uuid
+  tenantId        String        @map("tenant_id") @db.Uuid
+  subscriptionId  String        @map("subscription_id") @db.Uuid
+  meteringPeriodId String?      @unique @map("metering_period_id") @db.Uuid
+  /// JSON array of InvoiceLineItem (packages/billing).
+  lineItems       Json          @map("line_items") @default("[]")
+  subtotalCents   Int           @map("subtotal_cents")
+  vatCents        Int           @map("vat_cents")
+  totalCents      Int           @map("total_cents")
+  status          InvoiceStatus @default(DRAFT)
+  issuedAt        DateTime?     @map("issued_at")
+  paidAt          DateTime?     @map("paid_at")
+  voidedAt        DateTime?     @map("voided_at")
+  /// JSON dunning state from packages/billing (DunningState shape).
+  dunningState    Json?         @map("dunning_state")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  createdBy       String?       @map("created_by") @db.Uuid
+  version         Int           @default(1)
+
+  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  subscription  Subscription    @relation(fields: [subscriptionId], references: [id])
+  meteringPeriod MeteringPeriod? @relation(fields: [meteringPeriodId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("tenant_invoice")
 }

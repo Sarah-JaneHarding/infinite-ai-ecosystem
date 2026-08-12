@@ -34,6 +34,22 @@
     "test:course-structure": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-course-structure.spec.ts",
     "test:cptd": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-cptd.spec.ts",
     "typecheck": "turbo run typecheck",
+    "test:e2e": "pnpm --filter @infinite-ai/web test:e2e",
+    "test:a11y": "pnpm --filter @infinite-ai/web test:a11y",
+    "test:lighthouse": "pnpm --filter @infinite-ai/web test:lighthouse",
+    "test:telemetry-coverage": "pnpm --filter @infinite-ai/telemetry test:trace-coverage",
+    "test:log-scrubbing": "pnpm --filter @infinite-ai/telemetry test:log-scrub",
+    "drill:restore": "tsx scripts/drill-restore.ts",
+    "test:security": "pnpm --filter @infinite-ai/security test",
+    "test:rls:exhaustive": "pnpm --filter @infinite-ai/db exec vitest run test/rls-exhaustive.integration.spec.ts",
+    "test:tenant-abuse": "pnpm --filter @infinite-ai/security test:tenant-abuse",
+    "audit:supply-chain": "tsx scripts/audit-supply-chain.ts",
+    "test:provisioning": "pnpm --filter @infinite-ai/provisioning test",
+    "test:billing:reconcile": "pnpm --filter @infinite-ai/billing test:reconcile",
+    "test:tenant-deletion": "pnpm --filter @infinite-ai/db exec vitest run test/tenant-deletion.integration.spec.ts",
+    "check:flags": "tsx scripts/check-feature-flags.ts",
+    "load:peak": "k6 run scripts/load/k6-peak.js",
+    "load:spike": "k6 run scripts/load/k6-spike.js",
     "verify:stage": "tsx scripts/verify-stage.ts"
   },
   "devDependencies": {
@@ -58,6 +74,9 @@
       "@prisma/engines",
       "prisma",
       "esbuild"
-    ]
+    ],
+    "overrides": {
+      "nanoid": "3.3.18"
+    }
   }
 }

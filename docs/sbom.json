@@ -1,0 +1,100 @@
+{
+  "bomFormat": "minimal-pnpm-list",
+  "specVersion": "1.0",
+  "metadata": {
+    "timestamp": "2026-08-12T14:45:06.253Z",
+    "component": "infinite-ai-ecosystem"
+  },
+  "components": [
+    {
+      "name": "infinite-ai",
+      "version": "0.1.0",
+      "path": "/home/user/infinite-ai-ecosystem",
+      "private": true,
+      "devDependencies": {
+        "@eslint/js": {
+          "from": "@eslint/js",
+          "version": "9.39.5",
+          "resolved": "https://registry.npmjs.org/@eslint/js/-/js-9.39.5.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/@eslint+js@9.39.5/node_modules/@eslint/js"
+        },
+        "@infinite-ai/contracts": {
+          "from": "@infinite-ai/contracts",
+          "version": "link:packages/contracts",
+          "path": "/home/user/infinite-ai-ecosystem/packages/contracts"
+        },
+        "@infinite-ai/evals": {
+          "from": "@infinite-ai/evals",
+          "version": "link:packages/evals",
+          "path": "/home/user/infinite-ai-ecosystem/packages/evals"
+        },
+        "@types/node": {
+          "from": "@types/node",
+          "version": "22.20.1",
+          "resolved": "https://registry.npmjs.org/@types/node/-/node-22.20.1.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/@types+node@22.20.1/node_modules/@types/node"
+        },
+        "eslint": {
+          "from": "eslint",
+          "version": "9.39.5",
+          "resolved": "https://registry.npmjs.org/eslint/-/eslint-9.39.5.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/eslint@9.39.5_jiti@2.7.0/node_modules/eslint"
+        },
+        "eslint-config-prettier": {
+          "from": "eslint-config-prettier",
+          "version": "10.1.8",
+          "resolved": "https://registry.npmjs.org/eslint-config-prettier/-/eslint-config-prettier-10.1.8.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/eslint-config-prettier@10.1.8_eslint@9.39.5_jiti@2.7.0_/node_modules/eslint-config-prettier"
+        },
+        "husky": {
+          "from": "husky",
+          "version": "9.1.7",
+          "resolved": "https://registry.npmjs.org/husky/-/husky-9.1.7.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/husky@9.1.7/node_modules/husky"
+        },
+        "lint-staged": {
+          "from": "lint-staged",
+          "version": "16.4.0",
+          "resolved": "https://registry.npmjs.org/lint-staged/-/lint-staged-16.4.0.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/lint-staged@16.4.0/node_modules/lint-staged"
+        },
+        "prettier": {
+          "from": "prettier",
+          "version": "3.9.6",
+          "resolved": "https://registry.npmjs.org/prettier/-/prettier-3.9.6.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/prettier@3.9.6/node_modules/prettier"
+        },
+        "tsx": {
+          "from": "tsx",
+          "version": "4.23.1",
+          "resolved": "https://registry.npmjs.org/tsx/-/tsx-4.23.1.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/tsx@4.23.1/node_modules/tsx"
+        },
+        "turbo": {
+          "from": "turbo",
+          "version": "2.10.7",
+          "resolved": "https://registry.npmjs.org/turbo/-/turbo-2.10.7.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/turbo@2.10.7/node_modules/turbo"
+        },
+        "typescript": {
+          "from": "typescript",
+          "version": "5.9.3",
+          "resolved": "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/typescript@5.9.3/node_modules/typescript"
+        },
+        "typescript-eslint": {
+          "from": "typescript-eslint",
+          "version": "8.65.0",
+          "resolved": "https://registry.npmjs.org/typescript-eslint/-/typescript-eslint-8.65.0.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/typescript-eslint@8.65.0_eslint@9.39.5_jiti@2.7.0__typescript@5.9.3/node_modules/typescript-eslint"
+        },
+        "vitest": {
+          "from": "vitest",
+          "version": "3.2.7",
+          "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.7.tgz",
+          "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/vitest@3.2.7_@types+node@22.20.1_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vitest"
+        }
+      }
+    }
+  ]
+}

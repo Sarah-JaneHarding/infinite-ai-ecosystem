@@ -1,0 +1,68 @@
+@import 'tailwindcss';
+@import '@infinite-ai/design-system/tokens.css';
+
+/* ── Tailwind theme bridge ─────────────────────────────────────────────────── */
+@theme {
+  --color-iai-red: var(--iai-red);
+  --color-iai-orange: var(--iai-orange);
+  --color-iai-amber: var(--iai-amber);
+  --color-iai-green: var(--iai-green);
+  --color-iai-teal: var(--iai-teal);
+  --color-iai-blue: var(--iai-blue);
+  --color-iai-indigo: var(--iai-indigo);
+  --color-iai-violet: var(--iai-violet);
+  --color-iai-bg: var(--iai-bg);
+  --color-iai-bg-subtle: var(--iai-bg-subtle);
+  --color-iai-border: var(--iai-border);
+  --color-iai-text: var(--iai-text);
+  --color-iai-text-subtle: var(--iai-text-subtle);
+
+  --font-title: var(--iai-font-title);
+  --font-body: var(--iai-font-body);
+  --font-mono: var(--iai-font-mono);
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+html {
+  font-family: var(--iai-font-body);
+  background-color: var(--iai-bg);
+  color: var(--iai-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--iai-bg);
+  color: var(--iai-text);
+  min-height: 100dvh;
+}
+
+/* ── Focus ring ──────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--iai-primary);
+  outline-offset: 2px;
+}
+
+/* ── Skip to main content ─────────────────────────────────────────────────── */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-to-content:focus {
+  position: fixed;
+  top: var(--iai-space-5);
+  left: var(--iai-space-5);
+  width: auto;
+  height: auto;
+  padding: var(--iai-space-5) var(--iai-space-9);
+  background: var(--iai-primary);
+  color: white;
+  border-radius: var(--iai-radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  z-index: 9999;
+}

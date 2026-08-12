@@ -357,6 +357,61 @@ as a runtime dependency (workspace package, `workspace:*`) so that the safeguard
 test can call `runOutputGuardrails`, `defaultEscalationNotifier`, and `GuardrailEscalationError`
 from the guardrail plane. The guardrails package itself is already in the tree since Stage 06.
 
+## Stage 14 — Experience surfaces
+
+### packages/design-system — React component library
+
+| Package        | Version | Licence | Why                                                                                                                                          | Replaces |
+| -------------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `react`        | 19.2.8  | MIT     | Peer dependency for the component library. Components are pure RSC-compatible functions where possible; interactive ones use `'use client'`. | —        |
+| `@types/react` | 19.2.18 | MIT     | TypeScript types for React. Pinned to the matching React 19 minor.                                                                           | —        |
+
+No new runtime dependencies in `packages/design-system` itself — all styling is CSS custom
+properties (zero-runtime). `react` is a peer dependency that the consuming app (`apps/web`)
+already brings. The dev dependency on `react` is solely so Vitest can import the JSX
+components in the test environment; no React runtime ships with the package.
+
+### apps/web — Next.js front-end
+
+| Package                | Version | Licence    | Why                                                                                                                                                                                                                                                                          | Replaces |
+| ---------------------- | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `next`                 | 16.3.0  | MIT        | The App Router framework. Server components by default; Turbopack for the dev server. Required by Stage 14 step 1.                                                                                                                                                           | —        |
+| `react`                | 19.2.8  | MIT        | React 19 — required by Next.js 16. Provides concurrent features, form actions and the compiler the framework depends on.                                                                                                                                                     | —        |
+| `react-dom`            | 19.2.8  | MIT        | The DOM renderer for React 19.                                                                                                                                                                                                                                               | —        |
+| `@types/react`         | 19.2.18 | MIT        | TypeScript types for React 19.                                                                                                                                                                                                                                               | —        |
+| `@types/react-dom`     | 19.2.4  | MIT        | TypeScript types for react-dom.                                                                                                                                                                                                                                              | —        |
+| `next-auth`            | 4.24.15 | ISC        | Auth.js v4 — Keycloak OIDC provider, JWT session strategy, role claim extraction. Chosen over v5 beta because v4 is stable and the ISC licence is approved.                                                                                                                  | —        |
+| `zod`                  | 3.25.76 | MIT        | Web-specific env schema validation in `apps/web/src/lib/env.ts`. Same version already recorded at Stage 00.                                                                                                                                                                  | —        |
+| `tailwindcss`          | 4.3.3   | MIT        | CSS utility classes. v4 CSS-first approach consumes the design token custom properties directly; no `tailwind.config.ts` required.                                                                                                                                           | —        |
+| `@tailwindcss/postcss` | 4.3.3   | MIT        | PostCSS plugin that integrates Tailwind v4 into the Next.js build pipeline.                                                                                                                                                                                                  | —        |
+| `postcss`              | 8.5.26  | MIT        | PostCSS itself. Required peer of `@tailwindcss/postcss`.                                                                                                                                                                                                                     | —        |
+| `autoprefixer`         | 10.5.4  | MIT        | Adds vendor prefixes; companion to PostCSS for broader browser coverage.                                                                                                                                                                                                     | —        |
+| `@playwright/test`     | 1.62.1  | Apache-2.0 | E2E and accessibility test runner. Pre-installed Chromium at `/opt/pw-browsers/chromium` is used in CI to avoid downloading a separate browser.                                                                                                                              | —        |
+| `@axe-core/playwright` | 4.13.0  | MPL-2.0    | Playwright integration for axe-core. Runs WCAG 2.2 AA scans from within Playwright tests. MPL-2.0 is a weak copyleft that applies only to the axe-core source itself — no proprietary source is combined with it; approved by the same rationale as similar MPL-2.0 tooling. | —        |
+
+### Why next-auth v4 rather than v5
+
+Auth.js v5 (`next-auth@5`) was in public beta at the time this stage was built. It ships
+a materially different session and callback API, and the JWT claim extraction for Keycloak
+realm roles (`realm_access.roles`) is not documented for v5's new route handler interface.
+v4 is supported, MIT-licenced (ISC is equivalent for our purposes), and the upgrade to v5
+should be its own change when v5 is fully stable — the same logic that drove the Prisma 6
+decision at Stage 01.
+
+### Why `@axe-core/playwright` (MPL-2.0)
+
+MPL-2.0 requires modifications to the axe-core source to be made available; it does not
+require the consuming application's source to be opened. This is standard copyleft limited
+to the library itself. No proprietary source is combined with axe-core; the package is a
+dev dependency only and ships no code to end users. The exception is recorded here
+explicitly as rule 9 requires.
+
+## Stage 17 — Tenant lifecycle, provisioning, billing
+
+No new external runtime dependencies were added. Both `packages/provisioning` and
+`packages/billing` use only `zod` (already in the tree, MIT) plus standard Node.js.
+Their `devDependencies` (`typescript`, `vitest`) are already present in the workspace.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.

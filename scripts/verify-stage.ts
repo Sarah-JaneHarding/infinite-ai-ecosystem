@@ -237,11 +237,87 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/evals test',
     ],
   },
-  { id: '14', name: 'Experience surfaces', commands: [] },
-  { id: '15', name: 'Observability, SLOs, DR', commands: [] },
-  { id: '16', name: 'Security hardening', commands: [] },
-  { id: '17', name: 'Tenant lifecycle, provisioning, billing', commands: [] },
-  { id: '18', name: 'Launch readiness and handover', commands: [] },
+  {
+    id: '14',
+    name: 'Experience surfaces',
+    commands: [
+      // Design system: token value assertions and barrel export completeness.
+      'pnpm --filter @infinite-ai/design-system test',
+      // Web app: unit tests for the role-routing model and env loader.
+      // E2E, a11y and Lighthouse tests require a running Next.js server and are
+      // run separately via pnpm test:e2e / test:a11y / test:lighthouse (mirrors the
+      // pattern Stage 01 uses for its Docker-dependent integration suite).
+      'pnpm --filter @infinite-ai/web test',
+    ],
+  },
+  {
+    id: '15',
+    name: 'Observability, SLOs, DR',
+    commands: [
+      // Trace-coverage contract: verifies span contracts for gateway and brain are wired.
+      'pnpm test:telemetry-coverage',
+      // PII log-scrubbing: SA ID, email, phone, payment card patterns scrubbed from logs.
+      'pnpm test:log-scrubbing',
+      // Paper restore-drill: all 8 runbooks exist and declare RTO/RPO.
+      'pnpm drill:restore',
+    ],
+  },
+  {
+    id: '16',
+    name: 'Security hardening and pen-test readiness',
+    commands: [
+      // Unit tier for the new packages/security package — 66 tests covering CSP nonce
+      // generation, CSRF token generation/validation, sliding-window rate limiting,
+      // per-tenant quota enforcement, agent tool allow-lists, and output safety patterns.
+      'pnpm test:security',
+      // Supply-chain audit: lockfile integrity, exact version pinning in all package.json
+      // files, pnpm audit --prod --audit-level=high, SBOM generation.
+      'pnpm audit:supply-chain',
+      // Tenant-abuse sub-suite: rate-limit and quota tests run in isolation so a CI
+      // failure on these guards is immediately visible without wading through all 66 tests.
+      'pnpm test:tenant-abuse',
+    ],
+    // NOTE: pnpm test:rls:exhaustive (Testcontainers) requires Docker. It follows the
+    // same pattern as Stages 01, 05, 06 — proven in CI, fails in the authoring sandbox.
+    // Run manually before GA: pnpm test:rls:exhaustive
+  },
+  {
+    id: '17',
+    name: 'Tenant lifecycle, provisioning, billing',
+    commands: [
+      // Onboarding wizard (7 steps, required-step tracking, readiness score), lifecycle
+      // state machine (ACTIVE/SUSPENDED/CLOSED), and readiness checks — 57 pure unit tests.
+      'pnpm test:provisioning',
+      // Billing reconciliation suite: tier definitions, metering aggregation, period
+      // reconciliation against gateway telemetry, invoice line-item generation (with 15%
+      // VAT), and dunning state machine — 65 pure unit tests.
+      'pnpm test:billing:reconcile',
+      // NOTE: pnpm test:tenant-deletion (Testcontainers) requires Docker. It follows the
+      // same pattern as Stages 01, 05, 06 — proven in CI, written blind in the sandbox.
+      // Run manually before GA: pnpm test:tenant-deletion
+    ],
+  },
+  {
+    id: '18',
+    name: 'Launch readiness and handover',
+    commands: [
+      // Feature-flag registry: typed keys, owner, expiry enforcement, env override.
+      // Exits 1 if any flag has passed its expiresAt date — the CI guard for stale flags.
+      'pnpm check:flags',
+      // Provisioning and billing suites must still pass cumulatively.
+      'pnpm test:provisioning',
+      'pnpm test:billing:reconcile',
+      // NOTE: pnpm load:peak and pnpm load:spike (k6 load tests) require a live
+      // environment with a running gateway and data plane. They are listed in OQ-017
+      // and must be run manually against staging before GA. No skip path — but they
+      // are excluded from the automated gate because they need external infrastructure
+      // the authoring sandbox and CI do not have.
+      //
+      // NOTE: pnpm test:tenant-deletion (Testcontainers) requires Docker. Same pattern
+      // as Stages 01, 05, 06 — proven in CI, written blind in the sandbox.
+      // Run manually before GA: pnpm test:tenant-deletion
+    ],
+  },
 ];
 
 function usage(): never {
