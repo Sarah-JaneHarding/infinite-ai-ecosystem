@@ -318,6 +318,15 @@ const STAGES: readonly Stage[] = [
       // Run manually before GA: pnpm test:tenant-deletion
     ],
   },
+  {
+    id: '19',
+    name: 'Visual Agent Builder',
+    commands: [
+      // Agent-builder: workflow DAG model, node catalogue, edge validation, templates,
+      // execution monitoring — 51 unit tests.
+      'pnpm --filter @infinite-ai/agent-builder test',
+    ],
+  },
 ];
 
 function usage(): never {

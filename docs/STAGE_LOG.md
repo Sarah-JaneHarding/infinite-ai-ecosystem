@@ -4953,3 +4953,31 @@ Calls `expiredFlags(new Date())` and exits 1 if any stale flag is found. Added t
 **Deviations from manual:** Three items blocked on external dependencies (OQ-017, OQ-019, OQ-020). All three are recorded in `docs/OPEN_QUESTIONS.md` and are pre-GA blockers, not code blockers.
 
 Open questions raised: OQ-017, OQ-018, OQ-019, OQ-020, OQ-021, OQ-022.
+
+---
+
+## Stage 19 — Visual Agent Builder
+
+**Date completed:** 2026-08-13
+**Branch:** `claude/continue-building-mpf8sl`
+**Package created:** `packages/agent-builder` (`@infinite-ai/agent-builder`)
+
+### Exit Gate
+
+| Criterion                                                                                                              | Result                                                                                                                                                                                   |
+| ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WorkflowGraph DAG model with PortType, NodeCategory, WorkflowNode, WorkflowEdge schemas                                | PASS — `packages/agent-builder/src/workflow.ts`; Zod schemas, `createWorkflow`, `addNode`, `removeNode`, `addEdge`, `removeEdge`, `validateWorkflow`, `exportWorkflow`, `importWorkflow` |
+| Node-definition catalogue — 54+ types across 11 categories (CE, AC, DW, TB, PD, LE, Branch, Gate, Tool, Input, Output) | PASS — `packages/agent-builder/src/node-definitions.ts`; 54+ entries in `NODE_DEFINITIONS`; `getNodeDefinition`, `getNodesByCategory`                                                    |
+| Edge validation — source/target existence, self-loop, port names, type compatibility, cycle detection                  | PASS — `packages/agent-builder/src/edge-validation.ts`; `validateEdge` (6 checks), `wouldCreateCycle` (DFS reachability), `findStaleEdges`                                               |
+| 6 pre-built education workflow templates                                                                               | PASS — `packages/agent-builder/src/templates.ts`; lesson-plan, assessment, sias-report, learning-engine-cycle, support-tier-routing, weekly-pd-brief; each passes `validateWorkflow`     |
+| Workflow execution monitoring (node-level state, status aggregation, cancel)                                           | PASS — `packages/agent-builder/src/monitoring.ts`; `createExecutionRecord`, `updateNodeState`, `cancelExecution`, `summariseExecution`, `getBlockingNodes`                               |
+| Public index exports                                                                                                   | PASS — `packages/agent-builder/src/index.ts`                                                                                                                                             |
+| Unit tests — happy path + 2 failure paths per area                                                                     | PASS — `packages/agent-builder/test/agent-builder.spec.ts` (51 tests, 0 failures)                                                                                                        |
+| `pnpm --filter @infinite-ai/agent-builder typecheck` exits 0                                                           | PASS                                                                                                                                                                                     |
+| `pnpm --filter @infinite-ai/agent-builder lint` exits 0                                                                | PASS                                                                                                                                                                                     |
+| `pnpm format:check` passes across all new files                                                                        | PASS — Prettier applied to 6 new files                                                                                                                                                   |
+| `pnpm verify:stage 19` passes all Stage 19 commands                                                                    | PASS — agent-builder 51 tests; pre-existing Docker-dependent failures (Stages 01, 05, 06, 16, 17, 18 integration tiers) remain CI-only as in all prior stages                            |
+
+**Deviations from manual:** None. The compile() step that translates a WorkflowGraph to an orchestrator pipeline is noted as a future integration point; no orchestrator changes were required for this stage.
+
+Open questions raised: None new (OQ-002 and OQ-013 partially addressed by uploaded CAPS PDFs for isiZulu FAL Gr1-3 and Life Skills Gr R-3).
