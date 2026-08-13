@@ -125,13 +125,15 @@ source text. Recorded as OQ-005.
 
 ## Status
 
-**Update 2026-08-13.** Three documents have been supplied:
+**Update 2026-08-13.** Five documents have been supplied:
 
-| Document                                                   | Phase      | Grades | Date       | Status   | Stored                                                                                          |
-| ---------------------------------------------------------- | ---------- | ------ | ---------- | -------- | ----------------------------------------------------------------------------------------------- |
-| Draft CAPS — Coding and Robotics, Grades R-3 (DBE)         | Foundation | R–3    | 2021-03-19 | DRAFT    | Derived structure only — `packages/contracts/src/curriculum/sources/caps-coding-robotics-r3.ts` |
-| CAPS — IsiZulu First Additional Language, Grades 1-3 (DBE) | Foundation | 1–3    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-isizulu-fal-gr1-3.ts`  |
-| CAPS — Life Skills, Grades R-3 (DBE)                       | Foundation | R–3    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-skills-r3.ts`     |
+| Document                                                   | Phase        | Grades | Date       | Status   | Stored                                                                                                |
+| ---------------------------------------------------------- | ------------ | ------ | ---------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| Draft CAPS — Coding and Robotics, Grades R-3 (DBE)         | Foundation   | R–3    | 2021-03-19 | DRAFT    | Derived structure only — `packages/contracts/src/curriculum/sources/caps-coding-robotics-r3.ts`       |
+| CAPS — IsiZulu First Additional Language, Grades 1-3 (DBE) | Foundation   | 1–3    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-isizulu-fal-gr1-3.ts`        |
+| CAPS — Life Skills, Grades R-3 (DBE)                       | Foundation   | R–3    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-skills-r3.ts`           |
+| CAPS — Life Skills, Grades 4-6 (DBE)                       | Intermediate | 4–6    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-skills-ip-gr46.ts`      |
+| CAPS — Life Orientation, Grades 7-9 (DBE)                  | Senior       | 7–9    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-orientation-sp-gr79.ts` |
 
 **Stage 08 remains blocked.** The documents supplied cover Foundation Phase only, and
 only three of the required subjects. Core subjects still missing — Mathematics (all
