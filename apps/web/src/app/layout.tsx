@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: { default: 'INFINITE-AI', template: '%s | INFINITE-AI' },
   description: 'AI-powered education platform for South African schools.',
   robots: 'noindex, nofollow',
+  manifest: '/manifest.json',
 };
 
 export const viewport: Viewport = {

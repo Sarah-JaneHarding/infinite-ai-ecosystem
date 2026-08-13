@@ -419,3 +419,14 @@ Their `devDependencies` (`typescript`, `vitest`) are already present in the work
 3. Pin the exact version. No ranges — Stage 16 requires reproducible builds and lockfile
    integrity.
 4. Add a row above, in the stage's section, in the same commit that adds the dependency.
+
+## Stage 26 — Learner Experience
+
+`apps/web` gains one new workspace dependency:
+
+| Package                       | Version       | Licence | Why                                                                                                                              | Replaces |
+| ----------------------------- | ------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `@infinite-ai/learner-client` | `workspace:*` | —       | Provides the `LearnerProfile`, `CourseGraph`, `GamificationSnapshot` schemas and navigation helpers used by the learner surface. | —        |
+
+No new external runtime dependencies. The workspace package itself depends only on `zod`
+(already in the tree, MIT, since Stage 00).

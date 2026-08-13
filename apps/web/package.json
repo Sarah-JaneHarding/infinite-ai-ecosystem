@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@infinite-ai/design-system": "workspace:*",
+    "@infinite-ai/learner-client": "workspace:*",
     "@infinite-ai/policy": "workspace:*",
     "@infinite-ai/security": "workspace:*",
     "next": "16.3.0",

@@ -5183,3 +5183,48 @@ this package.
 Open questions: OQ-010 (PWA vs integrated shell) remains open. The data model built here
 is compatible with either choice; the UI shell decision can be made when the learner-facing
 experience is scoped for the next development cycle.
+
+---
+
+## Stage 26 — Learner Experience (2026-08-13)
+
+Connects `packages/learner-client` (Stage 25) to the learner-facing web surface in
+`apps/web`. Replaces the hardcoded stub with typed demo data driven by the actual
+`LearnerProfile` and `CourseGraph` schemas. Adds gamification display and course progress.
+Adds the PWA manifest deferred from Stage 14. Resolves OQ-010 by integrating the learner
+experience into `apps/web` rather than a separate PWA.
+
+**Files**
+
+- `apps/web/src/lib/learner.ts` — `computeLearnerState`, `activityTypeEmoji`, `buildSampleGraph`, `buildSampleProfile`; pure logic, no DB, no model calls
+- `apps/web/src/components/learner/GamificationBar.tsx` — XP / level / streak / badge count display
+- `apps/web/src/components/learner/CourseProgress.tsx` — `<progress>` element with ARIA label and completion count
+- `apps/web/src/components/learner/LearnerSpace.tsx` — rebuilt to use the learner-client data model via `computeLearnerState`
+- `apps/web/public/manifest.json` — PWA web app manifest (name, icons, start URL, display, theme colour)
+- `apps/web/src/app/layout.tsx` — `manifest` field added to Next.js metadata
+- `apps/web/package.json` — `@infinite-ai/learner-client: workspace:*` added
+- `apps/web/tests/unit/learner.spec.ts` — 12 unit tests
+- `scripts/verify-stage.ts` — Stage 26 entry added
+
+### Exit Gate
+
+| Criterion                                                                                           | Result                                                                                                                                    |
+| --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `computeLearnerState` derives correct `availableActivities` from a partially-completed profile      | PASS — act-1 done → act-2 available; act-3 still blocked; total = 6                                                                       |
+| Empty profile → only root activities available, progress = 0                                        | PASS                                                                                                                                      |
+| All completed → empty available list, progress = 1, completed count = 6                             | PASS                                                                                                                                      |
+| `buildSampleGraph` returns 6-activity DAG with one root node and positive estimatedMinutes          | PASS                                                                                                                                      |
+| `buildSampleProfile` returns profile with correct learnerId, both completed and in-progress records | PASS                                                                                                                                      |
+| `activityTypeEmoji` returns distinct emojis for all 5 known types; fallback '✏️' for unknown        | PASS                                                                                                                                      |
+| `GamificationBar` and `CourseProgress` render via the updated `LearnerSpace` component              | PASS — components import cleanly; TypeScript and ESLint report no errors                                                                  |
+| PWA manifest at `apps/web/public/manifest.json` and wired into Next.js metadata                     | PASS — `manifest: '/manifest.json'` in root layout metadata                                                                               |
+| OQ-010 resolved — learner experience integrated into `apps/web`                                     | PASS — no separate PWA repo required; the integrated approach shares the design system, auth, and shell without additional infrastructure |
+| No learner PII — `learnerId` is an opaque token; no names or SA IDs in any fixture                  | PASS                                                                                                                                      |
+| No DB access, no model calls, no new external dependencies beyond workspace package                 | PASS — only new dependency is `@infinite-ai/learner-client` (workspace:*)                                                                 |
+| Unit tests — happy path + at least 2 failure paths per area                                         | PASS — `apps/web/tests/unit/learner.spec.ts` (12 tests, 0 failures); cumulative web suite 30 tests, 0 failures                            |
+| `pnpm lint` and `pnpm typecheck` clean                                                              | PASS                                                                                                                                      |
+
+Open questions resolved: OQ-010 (PWA vs integrated shell) — resolved by integrating the
+learner experience into `apps/web`. The `packages/learner-client` data model is already
+UI-shell-agnostic; a future native PWA shell could consume the same package without
+changes to the data model.
