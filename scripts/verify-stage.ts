@@ -327,6 +327,15 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/agent-builder test',
     ],
   },
+  {
+    id: '20',
+    name: 'Master Prompt Builder',
+    commands: [
+      // Prompt-builder: variable substitution, section splitting (system vs. user turn),
+      // token budget enforcement — 24 unit tests.
+      'pnpm --filter @infinite-ai/prompt-builder test',
+    ],
+  },
 ];
 
 function usage(): never {

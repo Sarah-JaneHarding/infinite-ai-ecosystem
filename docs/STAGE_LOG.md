@@ -4981,3 +4981,25 @@ Open questions raised: OQ-017, OQ-018, OQ-019, OQ-020, OQ-021, OQ-022.
 **Deviations from manual:** None. The compile() step that translates a WorkflowGraph to an orchestrator pipeline is noted as a future integration point; no orchestrator changes were required for this stage.
 
 Open questions raised: None new (OQ-002 and OQ-013 partially addressed by uploaded CAPS PDFs for isiZulu FAL Gr1-3 and Life Skills Gr R-3).
+
+---
+
+## Stage 20 — Master Prompt Builder
+
+**Date completed:** 2026-08-13
+**Branch:** `claude/continue-building-mpf8sl`
+**Package created:** `packages/prompt-builder` (`@infinite-ai/prompt-builder`)
+
+### Exit Gate
+
+| Criterion                                                                                                                      | Result                                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Variable extraction and substitution with strict missing/unknown checking                                                      | PASS — `src/variables.ts`; `extractVariables`, `substituteVariables`, `PromptVariableError`      |
+| Token budget enforcement with conservative 4-chars-per-token estimate                                                          | PASS — `src/budget.ts`; `estimateTokens`, `enforceBudget`, `PromptBudgetError`, `DEFAULT_BUDGET` |
+| Section splitting — system (ROLE, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA, SELF-CHECK) vs. user turn (GROUNDING, TASK) | PASS — `src/builder.ts`; `buildPrompt`, `parseSections`, `BuiltPrompt`                           |
+| `buildPrompt` integrates variable substitution, section parsing, and budget enforcement                                        | PASS — tested end-to-end with real prompt body fixture                                           |
+| Unit tests — happy path + 2 failure paths per module area                                                                      | PASS — `test/prompt-builder.spec.ts` (24 tests, 0 failures)                                      |
+| `pnpm --filter @infinite-ai/prompt-builder typecheck` exits 0                                                                  | PASS                                                                                             |
+| `pnpm --filter @infinite-ai/prompt-builder lint` exits 0                                                                       | PASS                                                                                             |
+
+Open questions raised: None.
