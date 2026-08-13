@@ -362,6 +362,14 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/low-tech-assessment test',
     ],
   },
+  {
+    id: '24',
+    name: 'Document Annotation',
+    commands: [
+      // Five annotation types, threaded comments, document operations, export — 34 unit tests.
+      'pnpm --filter @infinite-ai/document-annotation test',
+    ],
+  },
 ];
 
 function usage(): never {

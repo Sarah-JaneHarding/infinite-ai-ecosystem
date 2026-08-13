@@ -5103,3 +5103,42 @@ tallying. No DB access, no model calls, no learner PII.
 | No DB access, no model calls, no external dependencies beyond `zod`                     | PASS — pure logic package; only dependency is `zod`                                                                            |
 
 Open questions raised: None.
+
+---
+
+## Stage 24 — Document Annotation (2026-08-13)
+
+Kami-style collaborative document annotation engine. Pure-logic package: five annotation
+types (highlight, comment, text box, freehand, stamp), threaded replies for comment
+annotations, document-level operations (add, query by page, thread management), and a
+portable document export. No DB access, no model calls, no learner PII.
+`authorId` is an opaque de-identified token; linkage to a real user happens outside this
+package.
+
+**Files**
+
+- `src/annotation.ts` — `HexColor`, `Point`, five payload schemas, `AnnotationPayload` union, `Annotation` envelope
+- `src/thread.ts` — `AnnotationReply`, `AnnotationThread`, `createThread`, `addReply`, `resolveThread`
+- `src/document.ts` — `AnnotatedDocument`, `createDocument`, `addAnnotation`, `getAnnotationsForPage`, `addReplyToThread`, `resolveAnnotationThread`, `DocumentExport`, `exportDocument`
+- `src/index.ts` — public re-exports
+
+### Exit Gate
+
+| Criterion                                                                              | Result                                                                                              |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Five annotation types with Zod schemas — highlight, comment, text_box, freehand, stamp | PASS — `AnnotationPayload` union; each type parsed and validated independently                      |
+| `HighlightPayload` — startOffset < endOffset refinement                                | PASS — `safeParse` returns false when startOffset >= endOffset                                      |
+| `FreehandPayload` — ≥2 points, positive strokeWidth                                    | PASS — schema validates both constraints                                                            |
+| `HexColor` — six-digit #RRGGBB only                                                    | PASS — rejects shorthand and missing `#`                                                            |
+| `createDocument` — empty annotations and threads                                       | PASS                                                                                                |
+| `addAnnotation` — documentId match, page within pageCount                              | PASS — throws on mismatch or out-of-range page; accepts all five annotation types                   |
+| `getAnnotationsForPage` — filters by page                                              | PASS                                                                                                |
+| `createThread / addReply / resolveThread` — thread lifecycle                           | PASS — addReply throws on resolved thread and on annotationId mismatch; resolveThread is idempotent |
+| `addReplyToThread` — document-level: auto-create thread, append, reject non-comment    | PASS — throws for unknown annotation and for non-comment annotation type                            |
+| `resolveAnnotationThread` — marks thread resolved; throws if none exists               | PASS                                                                                                |
+| `exportDocument` — correct count, thread attached to comment, absent for others        | PASS — `DocumentExport` schema validates exportedAt as ISO datetime                                 |
+| Unit tests — happy path + 2 failure paths per area                                     | PASS — `test/document-annotation.spec.ts` (34 tests, 0 failures)                                    |
+| No learner PII — authorId is an opaque token                                           | PASS — no names, SA IDs, or real identifiers; linkage happens outside this package                  |
+| No DB access, no model calls, no external dependencies beyond `zod`                    | PASS — pure logic package; only dependency is `zod`                                                 |
+
+Open questions raised: None.
