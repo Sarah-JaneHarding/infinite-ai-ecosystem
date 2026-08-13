@@ -318,6 +318,67 @@ const STAGES: readonly Stage[] = [
       // Run manually before GA: pnpm test:tenant-deletion
     ],
   },
+  {
+    id: '19',
+    name: 'Visual Agent Builder',
+    commands: [
+      // Agent-builder: workflow DAG model, node catalogue, edge validation, templates,
+      // execution monitoring — 51 unit tests.
+      'pnpm --filter @infinite-ai/agent-builder test',
+    ],
+  },
+  {
+    id: '20',
+    name: 'Master Prompt Builder',
+    commands: [
+      // Prompt-builder: variable substitution, section splitting (system vs. user turn),
+      // token budget enforcement — 24 unit tests.
+      'pnpm --filter @infinite-ai/prompt-builder test',
+    ],
+  },
+  {
+    id: '21',
+    name: 'System Prompt Builder',
+    commands: [
+      // System-prompt-builder: tenant context, platform rails, full gateway request
+      // assembly — 28 unit tests.
+      'pnpm --filter @infinite-ai/system-prompt-builder test',
+    ],
+  },
+  {
+    id: '22',
+    name: 'Game-Based Learning',
+    commands: [
+      // Gamification: event schema, XP/level/streak logic, badge evaluation,
+      // processEvent engine — 41 unit tests.
+      'pnpm --filter @infinite-ai/gamification test',
+    ],
+  },
+  {
+    id: '23',
+    name: 'Low-Tech Assessment',
+    commands: [
+      // Card generation, session lifecycle, response tallying — 40 unit tests.
+      'pnpm --filter @infinite-ai/low-tech-assessment test',
+    ],
+  },
+  {
+    id: '24',
+    name: 'Document Annotation',
+    commands: [
+      // Five annotation types, threaded comments, document operations, export — 34 unit tests.
+      'pnpm --filter @infinite-ai/document-annotation test',
+    ],
+  },
+  {
+    id: '25',
+    name: 'Learner Client',
+    commands: [
+      // Learner profile, course navigation graph, offline queue — 38 unit tests.
+      // OQ-010 (PWA vs integrated shell) still open; this package is UI-shell-agnostic.
+      'pnpm --filter @infinite-ai/learner-client test',
+    ],
+  },
 ];
 
 function usage(): never {

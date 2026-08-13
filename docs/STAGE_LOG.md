@@ -4953,3 +4953,233 @@ Calls `expiredFlags(new Date())` and exits 1 if any stale flag is found. Added t
 **Deviations from manual:** Three items blocked on external dependencies (OQ-017, OQ-019, OQ-020). All three are recorded in `docs/OPEN_QUESTIONS.md` and are pre-GA blockers, not code blockers.
 
 Open questions raised: OQ-017, OQ-018, OQ-019, OQ-020, OQ-021, OQ-022.
+
+---
+
+## Stage 19 — Visual Agent Builder
+
+**Date completed:** 2026-08-13
+**Branch:** `claude/continue-building-mpf8sl`
+**Package created:** `packages/agent-builder` (`@infinite-ai/agent-builder`)
+
+### Exit Gate
+
+| Criterion                                                                                                              | Result                                                                                                                                                                                   |
+| ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WorkflowGraph DAG model with PortType, NodeCategory, WorkflowNode, WorkflowEdge schemas                                | PASS — `packages/agent-builder/src/workflow.ts`; Zod schemas, `createWorkflow`, `addNode`, `removeNode`, `addEdge`, `removeEdge`, `validateWorkflow`, `exportWorkflow`, `importWorkflow` |
+| Node-definition catalogue — 54+ types across 11 categories (CE, AC, DW, TB, PD, LE, Branch, Gate, Tool, Input, Output) | PASS — `packages/agent-builder/src/node-definitions.ts`; 54+ entries in `NODE_DEFINITIONS`; `getNodeDefinition`, `getNodesByCategory`                                                    |
+| Edge validation — source/target existence, self-loop, port names, type compatibility, cycle detection                  | PASS — `packages/agent-builder/src/edge-validation.ts`; `validateEdge` (6 checks), `wouldCreateCycle` (DFS reachability), `findStaleEdges`                                               |
+| 6 pre-built education workflow templates                                                                               | PASS — `packages/agent-builder/src/templates.ts`; lesson-plan, assessment, sias-report, learning-engine-cycle, support-tier-routing, weekly-pd-brief; each passes `validateWorkflow`     |
+| Workflow execution monitoring (node-level state, status aggregation, cancel)                                           | PASS — `packages/agent-builder/src/monitoring.ts`; `createExecutionRecord`, `updateNodeState`, `cancelExecution`, `summariseExecution`, `getBlockingNodes`                               |
+| Public index exports                                                                                                   | PASS — `packages/agent-builder/src/index.ts`                                                                                                                                             |
+| Unit tests — happy path + 2 failure paths per area                                                                     | PASS — `packages/agent-builder/test/agent-builder.spec.ts` (51 tests, 0 failures)                                                                                                        |
+| `pnpm --filter @infinite-ai/agent-builder typecheck` exits 0                                                           | PASS                                                                                                                                                                                     |
+| `pnpm --filter @infinite-ai/agent-builder lint` exits 0                                                                | PASS                                                                                                                                                                                     |
+| `pnpm format:check` passes across all new files                                                                        | PASS — Prettier applied to 6 new files                                                                                                                                                   |
+| `pnpm verify:stage 19` passes all Stage 19 commands                                                                    | PASS — agent-builder 51 tests; pre-existing Docker-dependent failures (Stages 01, 05, 06, 16, 17, 18 integration tiers) remain CI-only as in all prior stages                            |
+
+**Deviations from manual:** None. The compile() step that translates a WorkflowGraph to an orchestrator pipeline is noted as a future integration point; no orchestrator changes were required for this stage.
+
+Open questions raised: None new (OQ-002 and OQ-013 partially addressed by uploaded CAPS PDFs for isiZulu FAL Gr1-3 and Life Skills Gr R-3).
+
+---
+
+## Stage 20 — Master Prompt Builder
+
+**Date completed:** 2026-08-13
+**Branch:** `claude/continue-building-mpf8sl`
+**Package created:** `packages/prompt-builder` (`@infinite-ai/prompt-builder`)
+
+### Exit Gate
+
+| Criterion                                                                                                                      | Result                                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Variable extraction and substitution with strict missing/unknown checking                                                      | PASS — `src/variables.ts`; `extractVariables`, `substituteVariables`, `PromptVariableError`      |
+| Token budget enforcement with conservative 4-chars-per-token estimate                                                          | PASS — `src/budget.ts`; `estimateTokens`, `enforceBudget`, `PromptBudgetError`, `DEFAULT_BUDGET` |
+| Section splitting — system (ROLE, HARD CONSTRAINTS, STYLE, REFUSAL, OUTPUT SCHEMA, SELF-CHECK) vs. user turn (GROUNDING, TASK) | PASS — `src/builder.ts`; `buildPrompt`, `parseSections`, `BuiltPrompt`                           |
+| `buildPrompt` integrates variable substitution, section parsing, and budget enforcement                                        | PASS — tested end-to-end with real prompt body fixture                                           |
+| Unit tests — happy path + 2 failure paths per module area                                                                      | PASS — `test/prompt-builder.spec.ts` (24 tests, 0 failures)                                      |
+| `pnpm --filter @infinite-ai/prompt-builder typecheck` exits 0                                                                  | PASS                                                                                             |
+| `pnpm --filter @infinite-ai/prompt-builder lint` exits 0                                                                       | PASS                                                                                             |
+
+Open questions raised: None.
+
+---
+
+## Stage 21 — System Prompt Builder
+
+**Date completed:** 2026-08-13
+**Branch:** `claude/continue-building-mpf8sl`
+**Package created:** `packages/system-prompt-builder` (`@infinite-ai/system-prompt-builder`)
+
+### Exit Gate
+
+| Criterion                                                                          | Result                                                                                                                                                       |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| TenantContext schema (tenantId, schoolName, locale, phases, province, lowTechMode) | PASS — `src/tenant-context.ts`; Zod schema with `TenantPhase` enum                                                                                           |
+| Platform header with school identity, tenant context, universal safety rules       | PASS — `src/platform-rails.ts`; `buildPlatformHeader` includes school name, tenant id, province, phases, low-tech note                                       |
+| Platform footer with compliance assertion                                          | PASS — `src/platform-rails.ts`; `buildPlatformFooter` references REFUSAL section                                                                             |
+| `buildSystemMessage` — wraps agent sections with header and footer                 | PASS — header before agent sections, footer after; source carried through                                                                                    |
+| `buildChatRequest` — produces complete `ChatCompletionRequest` for the gateway     | PASS — system message + user message; agent-to-logical-model mapping (CE, AC, DW, TB, PD, LE, fallback); temperature 0; idempotencyKey, provenance forwarded |
+| Unit tests — happy path + 2 failure paths per module area                          | PASS — `test/system-prompt-builder.spec.ts` (28 tests, 0 failures)                                                                                           |
+| `pnpm --filter @infinite-ai/system-prompt-builder typecheck` exits 0               | PASS                                                                                                                                                         |
+| `pnpm --filter @infinite-ai/system-prompt-builder lint` exits 0                    | PASS                                                                                                                                                         |
+
+Open questions raised: None.
+
+---
+
+## Stage 22 — Game-Based Learning
+
+**Date completed:** 2026-08-13
+**Branch:** `claude/continue-building-mpf8sl`
+**Package created:** `packages/gamification` (`@infinite-ai/gamification`)
+
+### What was built
+
+Pure-logic, event-driven XP / badge / level / streak engine for the learner client. No DB
+access, no model calls, no learner PII. The engine is a single pure function:
+`processEvent(event, profile) → GamificationUpdate`.
+
+**Files**
+
+- `src/events.ts` — `GamificationEvent` discriminated union (6 types); `LearnerGamificationProfile` schema
+- `src/points.ts` — XP values per event type, high-score bonus, streak milestone bonuses, `LEVEL_THRESHOLDS`, `computeLevel`
+- `src/badges.ts` — 10-badge catalogue, `evaluateBadges` (level-gated, idempotent)
+- `src/engine.ts` — `processEvent` returning `GamificationUpdate` (Zod-parsed output)
+- `src/index.ts` — public re-exports
+
+### Exit Gate
+
+| Criterion                                                                  | Result                                                                                                                                           |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `GamificationEvent` schema — 6 event types as discriminated union          | PASS — `lesson_completed`, `assessment_completed`, `assessment_passed`, `learning_streak_day`, `module_completed`, `gate_approved`               |
+| `LearnerGamificationProfile` schema — profileId, xp, level, streak, badges | PASS — Zod schema with nonnegative constraints                                                                                                   |
+| XP point values per event type                                             | PASS — `XP_VALUES` record; high-score bonus (+15 XP at score ≥ 80) on `assessment_passed`; streak milestone bonuses at days 3/7/14/30            |
+| Level thresholds and `computeLevel`                                        | PASS — 10-level table; returns correct level for 0 XP (1), threshold XP (N), and overflow (10)                                                   |
+| Badge catalogue — 10 badges, unique IDs, non-empty name/description        | PASS — learning/assessment/streak/completion/milestone categories; `minLevel` gate enforced in `evaluateBadges`                                  |
+| `evaluateBadges` — idempotent (no re-award), level-gated                   | PASS — already-earned badges excluded via `Set`; level_5/level_10 require `newLevel >= minLevel`                                                 |
+| `processEvent` — XP, level-up, streak update, badge award in one call      | PASS — returns `GamificationUpdate` with xpEarned, newTotalXp, previousLevel, newLevel, leveledUp, streak fields, newBadgeIds, allEarnedBadgeIds |
+| Unit tests — happy path + 2 failure paths per area                         | PASS — `test/gamification.spec.ts` (41 tests, 0 failures)                                                                                        |
+| `pnpm --filter @infinite-ai/gamification typecheck` exits 0                | PASS                                                                                                                                             |
+| `pnpm --filter @infinite-ai/gamification lint` exits 0                     | PASS                                                                                                                                             |
+| No learner PII in any module — identifiers are de-identified profileIds    | PASS — `profileId` is an opaque string; no names, SA IDs, or real identifiers accepted                                                           |
+| No DB access, no model calls, no external dependencies beyond `zod`        | PASS — pure logic package; only dependency is `zod`                                                                                              |
+
+Open questions raised: None.
+
+---
+
+## Stage 23 — Low-Tech Assessment (2026-08-13)
+
+Plickers-style low-tech classroom assessment engine. Physical cards (1–40) with four
+orientations (A/B/C/D) encode learner answers; the teacher's camera layer is out of scope.
+This package covers the data model: card generation, session lifecycle, and response
+tallying. No DB access, no model calls, no learner PII.
+
+**Files**
+
+- `src/cards.ts` — `CardSide` enum, `Card` schema, `ScanResult` schema, `generateCardSet`, `findCard`
+- `src/session.ts` — `Question` schema (options 2–4, distinct sides, correctSide validated), `AssessmentSession`, `startSession`, `advanceQuestion`, `closeSession`, `currentQuestion`
+- `src/tally.ts` — `tallyQuestion` (dedup last-scan-wins, per-option counts, participation/correct rates), `tallySession` (mean overallCorrectRate), `unscannedCards`
+- `src/index.ts` — public re-exports
+
+### Exit Gate
+
+| Criterion                                                                               | Result                                                                                                                         |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `CardSide` schema — accepts A/B/C/D, rejects others                                     | PASS — `z.enum(['A','B','C','D'])`; `safeParse('E').success === false`                                                         |
+| `Card` schema — cardNumber 1..MAX_CARDS, slotLabel, code                                | PASS — rejects 0 and MAX_CARDS+1                                                                                               |
+| `generateCardSet` — 1-indexed sequential, LTA-{padded} codes, RangeError guards         | PASS — count 0, >40, non-integer all throw `RangeError`; codes and slotLabels zero-padded                                      |
+| `findCard` — returns card or undefined                                                  | PASS                                                                                                                           |
+| `Question` schema — 2–4 options, distinct sides, correctSide must be an option          | PASS — three refinements enforced; duplicate sides and wrong correctSide both rejected                                         |
+| `AssessmentSession` lifecycle — pending → active → closed                               | PASS — `startSession` sets index=0; `advanceQuestion` increments; `closeSession` nulls index; re-starting active/closed throws |
+| `tallyQuestion` — dedup by last scan, per-option counts, participationRate, correctRate | PASS — re-scan test: second scan wins; zero-response handled (correctRate=0)                                                   |
+| `tallySession` — tallies all questions, overallCorrectRate = mean                       | PASS — no-scans case yields all zeros; 50%+100% = 75% overall                                                                  |
+| `unscannedCards` — returns card numbers not yet scanned                                 | PASS — all unscanned, partial, fully scanned cases verified                                                                    |
+| Unit tests — happy path + 2 failure paths per area                                      | PASS — `test/low-tech-assessment.spec.ts` (40 tests, 0 failures)                                                               |
+| `pnpm --filter @infinite-ai/low-tech-assessment typecheck` exits 0                      | PASS                                                                                                                           |
+| No learner PII — card numbers are opaque slot identifiers                               | PASS — no names, SA IDs, or real learner identifiers; linkage to a learner happens outside this package                        |
+| No DB access, no model calls, no external dependencies beyond `zod`                     | PASS — pure logic package; only dependency is `zod`                                                                            |
+
+Open questions raised: None.
+
+---
+
+## Stage 24 — Document Annotation (2026-08-13)
+
+Kami-style collaborative document annotation engine. Pure-logic package: five annotation
+types (highlight, comment, text box, freehand, stamp), threaded replies for comment
+annotations, document-level operations (add, query by page, thread management), and a
+portable document export. No DB access, no model calls, no learner PII.
+`authorId` is an opaque de-identified token; linkage to a real user happens outside this
+package.
+
+**Files**
+
+- `src/annotation.ts` — `HexColor`, `Point`, five payload schemas, `AnnotationPayload` union, `Annotation` envelope
+- `src/thread.ts` — `AnnotationReply`, `AnnotationThread`, `createThread`, `addReply`, `resolveThread`
+- `src/document.ts` — `AnnotatedDocument`, `createDocument`, `addAnnotation`, `getAnnotationsForPage`, `addReplyToThread`, `resolveAnnotationThread`, `DocumentExport`, `exportDocument`
+- `src/index.ts` — public re-exports
+
+### Exit Gate
+
+| Criterion                                                                              | Result                                                                                              |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Five annotation types with Zod schemas — highlight, comment, text_box, freehand, stamp | PASS — `AnnotationPayload` union; each type parsed and validated independently                      |
+| `HighlightPayload` — startOffset < endOffset refinement                                | PASS — `safeParse` returns false when startOffset >= endOffset                                      |
+| `FreehandPayload` — ≥2 points, positive strokeWidth                                    | PASS — schema validates both constraints                                                            |
+| `HexColor` — six-digit #RRGGBB only                                                    | PASS — rejects shorthand and missing `#`                                                            |
+| `createDocument` — empty annotations and threads                                       | PASS                                                                                                |
+| `addAnnotation` — documentId match, page within pageCount                              | PASS — throws on mismatch or out-of-range page; accepts all five annotation types                   |
+| `getAnnotationsForPage` — filters by page                                              | PASS                                                                                                |
+| `createThread / addReply / resolveThread` — thread lifecycle                           | PASS — addReply throws on resolved thread and on annotationId mismatch; resolveThread is idempotent |
+| `addReplyToThread` — document-level: auto-create thread, append, reject non-comment    | PASS — throws for unknown annotation and for non-comment annotation type                            |
+| `resolveAnnotationThread` — marks thread resolved; throws if none exists               | PASS                                                                                                |
+| `exportDocument` — correct count, thread attached to comment, absent for others        | PASS — `DocumentExport` schema validates exportedAt as ISO datetime                                 |
+| Unit tests — happy path + 2 failure paths per area                                     | PASS — `test/document-annotation.spec.ts` (34 tests, 0 failures)                                    |
+| No learner PII — authorId is an opaque token                                           | PASS — no names, SA IDs, or real identifiers; linkage happens outside this package                  |
+| No DB access, no model calls, no external dependencies beyond `zod`                    | PASS — pure logic package; only dependency is `zod`                                                 |
+
+Open questions raised: None.
+
+---
+
+## Stage 25 — Learner Client (2026-08-13)
+
+Pure-logic data model for the learner-facing client. OQ-010 (separate PWA vs integrated
+into `apps/web`) is still open; this package provides the core data model that is shared
+regardless of which UI shell is chosen. No DB access, no model calls, no learner PII.
+`learnerId` is an opaque de-identified token; linkage to a real learner happens outside
+this package.
+
+**Files**
+
+- `src/profile.ts` — `ActivityStatus`, `ActivityRecord`, `GamificationSnapshot`, `LearnerProfile`; `getRecord`, `upsertRecord`, `allCompleted`, `countByStatus`
+- `src/navigation.ts` — `ActivityType`, `ActivityNode`, `CourseGraph`; `isUnlocked`, `nextActivities`, `unlockedActivities`, `courseProgress`
+- `src/offline.ts` — three offline event payload types (`quiz_answered`, `activity_completed`, `assessment_submitted`), `OfflineEvent`, `OfflineQueue`; `createQueue`, `enqueue`, `dequeue`, `pendingCount`, `peek`
+- `src/index.ts` — public re-exports
+
+### Exit Gate
+
+| Criterion                                                                         | Result                                                                                                                  |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `ActivityStatus` — four values, rejects unknown                                   | PASS — `not_started`, `in_progress`, `completed`, `blocked`                                                             |
+| `ActivityRecord` — score 0–100, nullable timestamps                               | PASS — rejects score >100 and <0                                                                                        |
+| `GamificationSnapshot` — xp ≥0, level ≥1, streak ≥0, badgeCount ≥0                | PASS — schema validated; rejects negative xp and level 0                                                                |
+| `getRecord` — returns record or undefined                                         | PASS                                                                                                                    |
+| `upsertRecord` — append new, replace existing                                     | PASS — idempotent replace by activityId                                                                                 |
+| `allCompleted` / `countByStatus`                                                  | PASS — allCompleted returns false for missing record; countByStatus counts all four statuses                            |
+| `isUnlocked` — prerequisite checking                                              | PASS — true for no-prereq activities; true when all prereqs completed; false for unknown activityId                     |
+| `nextActivities` — unlocked and uncompleted, in graph order                       | PASS — returns a1 with empty set; returns a2+a3 after a1 completed; returns [] when all complete                        |
+| `courseProgress` — 0–1 ratio                                                      | PASS — 0 with no completions, 0.5 for half, 1.0 for all                                                                 |
+| `CourseGraph` — rejects empty activities array; `ActivityNode` rejects ≤0 minutes | PASS                                                                                                                    |
+| Offline queue — `createQueue`, `enqueue`, `dequeue`, `peek`, `pendingCount`       | PASS — enqueue throws on learnerId mismatch; dequeue is idempotent on unknown eventId; all three payload types accepted |
+| Unit tests — happy path + 2 failure paths per area                                | PASS — `test/learner-client.spec.ts` (38 tests, 0 failures)                                                             |
+| OQ-010 still open — package is UI-shell-agnostic                                  | PASS — no dependency on `apps/web` or any PWA infrastructure; works equally as a shared lib for either UI choice        |
+| No learner PII — learnerId is an opaque token                                     | PASS — no names, SA IDs, or real identifiers; linkage happens outside this package                                      |
+| No DB access, no model calls, no external dependencies beyond `zod`               | PASS — pure logic package; only dependency is `zod`                                                                     |
+
+Open questions: OQ-010 (PWA vs integrated shell) remains open. The data model built here
+is compatible with either choice; the UI shell decision can be made when the learner-facing
+experience is scoped for the next development cycle.

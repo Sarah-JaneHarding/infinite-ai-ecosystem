@@ -1,0 +1,27 @@
+{
+  "name": "@infinite-ai/low-tech-assessment",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Low-tech card-scanning assessment engine (Plickers-style). Pure logic: card generation, session management, response tallying. No camera, no DB, no model calls.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "3.2.7",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}
