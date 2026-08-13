@@ -336,6 +336,15 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/prompt-builder test',
     ],
   },
+  {
+    id: '21',
+    name: 'System Prompt Builder',
+    commands: [
+      // System-prompt-builder: tenant context, platform rails, full gateway request
+      // assembly — 28 unit tests.
+      'pnpm --filter @infinite-ai/system-prompt-builder test',
+    ],
+  },
 ];
 
 function usage(): never {

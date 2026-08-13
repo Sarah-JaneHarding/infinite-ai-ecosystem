@@ -5003,3 +5003,26 @@ Open questions raised: None new (OQ-002 and OQ-013 partially addressed by upload
 | `pnpm --filter @infinite-ai/prompt-builder lint` exits 0                                                                       | PASS                                                                                             |
 
 Open questions raised: None.
+
+---
+
+## Stage 21 — System Prompt Builder
+
+**Date completed:** 2026-08-13
+**Branch:** `claude/continue-building-mpf8sl`
+**Package created:** `packages/system-prompt-builder` (`@infinite-ai/system-prompt-builder`)
+
+### Exit Gate
+
+| Criterion                                                                          | Result                                                                                                                                                       |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| TenantContext schema (tenantId, schoolName, locale, phases, province, lowTechMode) | PASS — `src/tenant-context.ts`; Zod schema with `TenantPhase` enum                                                                                           |
+| Platform header with school identity, tenant context, universal safety rules       | PASS — `src/platform-rails.ts`; `buildPlatformHeader` includes school name, tenant id, province, phases, low-tech note                                       |
+| Platform footer with compliance assertion                                          | PASS — `src/platform-rails.ts`; `buildPlatformFooter` references REFUSAL section                                                                             |
+| `buildSystemMessage` — wraps agent sections with header and footer                 | PASS — header before agent sections, footer after; source carried through                                                                                    |
+| `buildChatRequest` — produces complete `ChatCompletionRequest` for the gateway     | PASS — system message + user message; agent-to-logical-model mapping (CE, AC, DW, TB, PD, LE, fallback); temperature 0; idempotencyKey, provenance forwarded |
+| Unit tests — happy path + 2 failure paths per module area                          | PASS — `test/system-prompt-builder.spec.ts` (28 tests, 0 failures)                                                                                           |
+| `pnpm --filter @infinite-ai/system-prompt-builder typecheck` exits 0               | PASS                                                                                                                                                         |
+| `pnpm --filter @infinite-ai/system-prompt-builder lint` exits 0                    | PASS                                                                                                                                                         |
+
+Open questions raised: None.

@@ -1,0 +1,29 @@
+{
+  "name": "@infinite-ai/system-prompt-builder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "System Prompt Builder — wraps an agent's prompt-builder output with platform-level identity, tenant context, and universal safety rails to produce a gateway-ready ChatCompletionRequest.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/prompt-builder": "workspace:*",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "3.2.7",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}
