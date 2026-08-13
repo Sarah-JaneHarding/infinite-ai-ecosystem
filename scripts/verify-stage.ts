@@ -375,8 +375,17 @@ const STAGES: readonly Stage[] = [
     name: 'Learner Client',
     commands: [
       // Learner profile, course navigation graph, offline queue — 38 unit tests.
-      // OQ-010 (PWA vs integrated shell) still open; this package is UI-shell-agnostic.
       'pnpm --filter @infinite-ai/learner-client test',
+    ],
+  },
+  {
+    id: '26',
+    name: 'Learner Experience',
+    commands: [
+      // computeLearnerState, buildSampleGraph, buildSampleProfile, activityTypeEmoji
+      // — 12 unit tests covering happy path + 2 failure paths per helper.
+      // PWA manifest added; OQ-010 resolved (integrated into apps/web).
+      'pnpm --filter @infinite-ai/web test',
     ],
   },
 ];
