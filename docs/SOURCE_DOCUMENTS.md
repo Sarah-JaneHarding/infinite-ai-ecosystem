@@ -125,5 +125,15 @@ source text. Recorded as OQ-005.
 
 ## Status
 
-Nothing has been obtained. Stage 08 remains blocked. Stage 12 is blocked on §4 for the
-same reason, though it is far enough out that it is not yet on the critical path.
+**Update 2026-08-13.** One document has been supplied:
+
+| Document                                           | Phase      | Grades | Date       | Status | Stored                                                                                          |
+| -------------------------------------------------- | ---------- | ------ | ---------- | ------ | ----------------------------------------------------------------------------------------------- |
+| Draft CAPS — Coding and Robotics, Grades R-3 (DBE) | Foundation | R–3    | 2021-03-19 | DRAFT  | Derived structure only — `packages/contracts/src/curriculum/sources/caps-coding-robotics-r3.ts` |
+
+**Stage 08 remains blocked.** The supplied document is a draft and covers Coding and
+Robotics only. The core subjects Stage 08 requires — Mathematics, Languages (Home and
+First Additional) and Life Skills across Foundation, Intermediate and Senior phases — have
+not been supplied. ATPs for Coding and Robotics are also absent from this document.
+
+Stage 12 is blocked on §4 (CPTD) for the same supply reason; not yet on the critical path.

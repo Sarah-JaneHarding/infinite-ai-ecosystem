@@ -303,4 +303,15 @@ export {
   PublishedPattern,
 } from './learning/index.js';
 
+export {
+  CAPS_CODING_ROBOTICS_R3_DOC_ID,
+  CAPS_CODING_ROBOTICS_R3_VERSION,
+  CAPS_CR_R3_METADATA,
+  CAPS_CR_R3_STRANDS,
+  CodingRoboticsStrandId,
+  EXPECTED_TERM_HOURS,
+  StrandTermAllocation,
+  type CapsCodingRoboticsR3Metadata,
+} from './curriculum/sources/caps-coding-robotics-r3.js';
+
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;
