@@ -314,4 +314,26 @@ export {
   type CapsCodingRoboticsR3Metadata,
 } from './curriculum/sources/caps-coding-robotics-r3.js';
 
+export {
+  CAPS_ISIZULU_FAL_GR13_DOC_ID,
+  CAPS_ISIZULU_FAL_GR13_METADATA,
+  CAPS_ISIZULU_FAL_GR13_SKILLS,
+  CAPS_ISIZULU_FAL_GR13_VERSION,
+  EXPECTED_FAL_WEEKLY_HOURS,
+  FALSkillWeeklyAllocation,
+  IsiZuluFALSkillId,
+  type CapsIsiZuluFALGr13Metadata,
+} from './curriculum/sources/caps-isizulu-fal-gr1-3.js';
+
+export {
+  CAPS_LIFE_SKILLS_R3_DOC_ID,
+  CAPS_LIFE_SKILLS_R3_METADATA,
+  CAPS_LIFE_SKILLS_R3_STUDY_AREAS,
+  CAPS_LIFE_SKILLS_R3_VERSION,
+  EXPECTED_LIFE_SKILLS_TERM_HOURS,
+  LifeSkillsStudyAreaId,
+  StudyAreaTermAllocation,
+  type CapsLifeSkillsR3Metadata,
+} from './curriculum/sources/caps-life-skills-r3.js';
+
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;

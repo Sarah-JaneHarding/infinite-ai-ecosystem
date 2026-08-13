@@ -125,15 +125,18 @@ source text. Recorded as OQ-005.
 
 ## Status
 
-**Update 2026-08-13.** One document has been supplied:
+**Update 2026-08-13.** Three documents have been supplied:
 
-| Document                                           | Phase      | Grades | Date       | Status | Stored                                                                                          |
-| -------------------------------------------------- | ---------- | ------ | ---------- | ------ | ----------------------------------------------------------------------------------------------- |
-| Draft CAPS — Coding and Robotics, Grades R-3 (DBE) | Foundation | R–3    | 2021-03-19 | DRAFT  | Derived structure only — `packages/contracts/src/curriculum/sources/caps-coding-robotics-r3.ts` |
+| Document                                                   | Phase      | Grades | Date       | Status   | Stored                                                                                          |
+| ---------------------------------------------------------- | ---------- | ------ | ---------- | -------- | ----------------------------------------------------------------------------------------------- |
+| Draft CAPS — Coding and Robotics, Grades R-3 (DBE)         | Foundation | R–3    | 2021-03-19 | DRAFT    | Derived structure only — `packages/contracts/src/curriculum/sources/caps-coding-robotics-r3.ts` |
+| CAPS — IsiZulu First Additional Language, Grades 1-3 (DBE) | Foundation | 1–3    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-isizulu-fal-gr1-3.ts`  |
+| CAPS — Life Skills, Grades R-3 (DBE)                       | Foundation | R–3    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-skills-r3.ts`     |
 
-**Stage 08 remains blocked.** The supplied document is a draft and covers Coding and
-Robotics only. The core subjects Stage 08 requires — Mathematics, Languages (Home and
-First Additional) and Life Skills across Foundation, Intermediate and Senior phases — have
-not been supplied. ATPs for Coding and Robotics are also absent from this document.
+**Stage 08 remains blocked.** The documents supplied cover Foundation Phase only, and
+only three of the required subjects. Core subjects still missing — Mathematics (all
+phases), Home Languages (Foundation, Intermediate, Senior), additional First Additional
+Languages (Intermediate, Senior), Natural Sciences and Technology, Social Sciences — and
+all per-term ATPs. The authoring environment cannot download them; a human must supply them.
 
 Stage 12 is blocked on §4 (CPTD) for the same supply reason; not yet on the critical path.
