@@ -370,6 +370,15 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/document-annotation test',
     ],
   },
+  {
+    id: '25',
+    name: 'Learner Client',
+    commands: [
+      // Learner profile, course navigation graph, offline queue — 38 unit tests.
+      // OQ-010 (PWA vs integrated shell) still open; this package is UI-shell-agnostic.
+      'pnpm --filter @infinite-ai/learner-client test',
+    ],
+  },
 ];
 
 function usage(): never {

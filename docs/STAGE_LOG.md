@@ -5142,3 +5142,44 @@ package.
 | No DB access, no model calls, no external dependencies beyond `zod`                    | PASS — pure logic package; only dependency is `zod`                                                 |
 
 Open questions raised: None.
+
+---
+
+## Stage 25 — Learner Client (2026-08-13)
+
+Pure-logic data model for the learner-facing client. OQ-010 (separate PWA vs integrated
+into `apps/web`) is still open; this package provides the core data model that is shared
+regardless of which UI shell is chosen. No DB access, no model calls, no learner PII.
+`learnerId` is an opaque de-identified token; linkage to a real learner happens outside
+this package.
+
+**Files**
+
+- `src/profile.ts` — `ActivityStatus`, `ActivityRecord`, `GamificationSnapshot`, `LearnerProfile`; `getRecord`, `upsertRecord`, `allCompleted`, `countByStatus`
+- `src/navigation.ts` — `ActivityType`, `ActivityNode`, `CourseGraph`; `isUnlocked`, `nextActivities`, `unlockedActivities`, `courseProgress`
+- `src/offline.ts` — three offline event payload types (`quiz_answered`, `activity_completed`, `assessment_submitted`), `OfflineEvent`, `OfflineQueue`; `createQueue`, `enqueue`, `dequeue`, `pendingCount`, `peek`
+- `src/index.ts` — public re-exports
+
+### Exit Gate
+
+| Criterion                                                                         | Result                                                                                                                  |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `ActivityStatus` — four values, rejects unknown                                   | PASS — `not_started`, `in_progress`, `completed`, `blocked`                                                             |
+| `ActivityRecord` — score 0–100, nullable timestamps                               | PASS — rejects score >100 and <0                                                                                        |
+| `GamificationSnapshot` — xp ≥0, level ≥1, streak ≥0, badgeCount ≥0                | PASS — schema validated; rejects negative xp and level 0                                                                |
+| `getRecord` — returns record or undefined                                         | PASS                                                                                                                    |
+| `upsertRecord` — append new, replace existing                                     | PASS — idempotent replace by activityId                                                                                 |
+| `allCompleted` / `countByStatus`                                                  | PASS — allCompleted returns false for missing record; countByStatus counts all four statuses                            |
+| `isUnlocked` — prerequisite checking                                              | PASS — true for no-prereq activities; true when all prereqs completed; false for unknown activityId                     |
+| `nextActivities` — unlocked and uncompleted, in graph order                       | PASS — returns a1 with empty set; returns a2+a3 after a1 completed; returns [] when all complete                        |
+| `courseProgress` — 0–1 ratio                                                      | PASS — 0 with no completions, 0.5 for half, 1.0 for all                                                                 |
+| `CourseGraph` — rejects empty activities array; `ActivityNode` rejects ≤0 minutes | PASS                                                                                                                    |
+| Offline queue — `createQueue`, `enqueue`, `dequeue`, `peek`, `pendingCount`       | PASS — enqueue throws on learnerId mismatch; dequeue is idempotent on unknown eventId; all three payload types accepted |
+| Unit tests — happy path + 2 failure paths per area                                | PASS — `test/learner-client.spec.ts` (38 tests, 0 failures)                                                             |
+| OQ-010 still open — package is UI-shell-agnostic                                  | PASS — no dependency on `apps/web` or any PWA infrastructure; works equally as a shared lib for either UI choice        |
+| No learner PII — learnerId is an opaque token                                     | PASS — no names, SA IDs, or real identifiers; linkage happens outside this package                                      |
+| No DB access, no model calls, no external dependencies beyond `zod`               | PASS — pure logic package; only dependency is `zod`                                                                     |
+
+Open questions: OQ-010 (PWA vs integrated shell) remains open. The data model built here
+is compatible with either choice; the UI shell decision can be made when the learner-facing
+experience is scoped for the next development cycle.
