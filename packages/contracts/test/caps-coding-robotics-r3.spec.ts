@@ -7,7 +7,7 @@ import {
   CodingRoboticsStrandId,
   EXPECTED_TERM_HOURS,
   StrandTermAllocation,
-} from '../caps-coding-robotics-r3.js';
+} from '../src/curriculum/sources/caps-coding-robotics-r3.js';
 
 describe('CAPS Coding and Robotics Grades R-3 source registration', () => {
   describe('document metadata', () => {

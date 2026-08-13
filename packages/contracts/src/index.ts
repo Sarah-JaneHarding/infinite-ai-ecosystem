@@ -314,4 +314,48 @@ export {
   type CapsCodingRoboticsR3Metadata,
 } from './curriculum/sources/caps-coding-robotics-r3.js';
 
+export {
+  CAPS_IP_LIFE_SKILLS_GR46_DOC_ID,
+  CAPS_IP_LIFE_SKILLS_GR46_METADATA,
+  CAPS_IP_LIFE_SKILLS_GR46_STUDY_AREAS,
+  CAPS_IP_LIFE_SKILLS_GR46_VERSION,
+  EXPECTED_IP_LIFE_SKILLS_ANNUAL_HOURS,
+  IPLifeSkillsStudyAreaId,
+  StudyAreaAnnualAllocation,
+  type CapsIPLifeSkillsGr46Metadata,
+} from './curriculum/sources/caps-life-skills-ip-gr46.js';
+
+export {
+  CAPS_ISIZULU_FAL_GR13_DOC_ID,
+  CAPS_ISIZULU_FAL_GR13_METADATA,
+  CAPS_ISIZULU_FAL_GR13_SKILLS,
+  CAPS_ISIZULU_FAL_GR13_VERSION,
+  EXPECTED_FAL_WEEKLY_HOURS,
+  FALSkillWeeklyAllocation,
+  IsiZuluFALSkillId,
+  type CapsIsiZuluFALGr13Metadata,
+} from './curriculum/sources/caps-isizulu-fal-gr1-3.js';
+
+export {
+  CAPS_LIFE_SKILLS_R3_DOC_ID,
+  CAPS_LIFE_SKILLS_R3_METADATA,
+  CAPS_LIFE_SKILLS_R3_STUDY_AREAS,
+  CAPS_LIFE_SKILLS_R3_VERSION,
+  EXPECTED_LIFE_SKILLS_TERM_HOURS,
+  LifeSkillsStudyAreaId,
+  StudyAreaTermAllocation,
+  type CapsLifeSkillsR3Metadata,
+} from './curriculum/sources/caps-life-skills-r3.js';
+
+export {
+  CAPS_LO_SP_GR79_DOC_ID,
+  CAPS_LO_SP_GR79_METADATA,
+  CAPS_LO_SP_GR79_TOPICS,
+  CAPS_LO_SP_GR79_VERSION,
+  EXPECTED_LO_CONTACT_HOURS,
+  LifeOrientationTopicId,
+  TopicAnnualAllocation,
+  type CapsLOSpGr79Metadata,
+} from './curriculum/sources/caps-life-orientation-sp-gr79.js';
+
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;
