@@ -345,6 +345,15 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/system-prompt-builder test',
     ],
   },
+  {
+    id: '22',
+    name: 'Game-Based Learning',
+    commands: [
+      // Gamification: event schema, XP/level/streak logic, badge evaluation,
+      // processEvent engine — 41 unit tests.
+      'pnpm --filter @infinite-ai/gamification test',
+    ],
+  },
 ];
 
 function usage(): never {

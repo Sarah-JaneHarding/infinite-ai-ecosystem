@@ -5026,3 +5026,44 @@ Open questions raised: None.
 | `pnpm --filter @infinite-ai/system-prompt-builder lint` exits 0                    | PASS                                                                                                                                                         |
 
 Open questions raised: None.
+
+---
+
+## Stage 22 — Game-Based Learning
+
+**Date completed:** 2026-08-13
+**Branch:** `claude/continue-building-mpf8sl`
+**Package created:** `packages/gamification` (`@infinite-ai/gamification`)
+
+### What was built
+
+Pure-logic, event-driven XP / badge / level / streak engine for the learner client. No DB
+access, no model calls, no learner PII. The engine is a single pure function:
+`processEvent(event, profile) → GamificationUpdate`.
+
+**Files**
+
+- `src/events.ts` — `GamificationEvent` discriminated union (6 types); `LearnerGamificationProfile` schema
+- `src/points.ts` — XP values per event type, high-score bonus, streak milestone bonuses, `LEVEL_THRESHOLDS`, `computeLevel`
+- `src/badges.ts` — 10-badge catalogue, `evaluateBadges` (level-gated, idempotent)
+- `src/engine.ts` — `processEvent` returning `GamificationUpdate` (Zod-parsed output)
+- `src/index.ts` — public re-exports
+
+### Exit Gate
+
+| Criterion                                                                  | Result                                                                                                                                           |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `GamificationEvent` schema — 6 event types as discriminated union          | PASS — `lesson_completed`, `assessment_completed`, `assessment_passed`, `learning_streak_day`, `module_completed`, `gate_approved`               |
+| `LearnerGamificationProfile` schema — profileId, xp, level, streak, badges | PASS — Zod schema with nonnegative constraints                                                                                                   |
+| XP point values per event type                                             | PASS — `XP_VALUES` record; high-score bonus (+15 XP at score ≥ 80) on `assessment_passed`; streak milestone bonuses at days 3/7/14/30            |
+| Level thresholds and `computeLevel`                                        | PASS — 10-level table; returns correct level for 0 XP (1), threshold XP (N), and overflow (10)                                                   |
+| Badge catalogue — 10 badges, unique IDs, non-empty name/description        | PASS — learning/assessment/streak/completion/milestone categories; `minLevel` gate enforced in `evaluateBadges`                                  |
+| `evaluateBadges` — idempotent (no re-award), level-gated                   | PASS — already-earned badges excluded via `Set`; level_5/level_10 require `newLevel >= minLevel`                                                 |
+| `processEvent` — XP, level-up, streak update, badge award in one call      | PASS — returns `GamificationUpdate` with xpEarned, newTotalXp, previousLevel, newLevel, leveledUp, streak fields, newBadgeIds, allEarnedBadgeIds |
+| Unit tests — happy path + 2 failure paths per area                         | PASS — `test/gamification.spec.ts` (41 tests, 0 failures)                                                                                        |
+| `pnpm --filter @infinite-ai/gamification typecheck` exits 0                | PASS                                                                                                                                             |
+| `pnpm --filter @infinite-ai/gamification lint` exits 0                     | PASS                                                                                                                                             |
+| No learner PII in any module — identifiers are de-identified profileIds    | PASS — `profileId` is an opaque string; no names, SA IDs, or real identifiers accepted                                                           |
+| No DB access, no model calls, no external dependencies beyond `zod`        | PASS — pure logic package; only dependency is `zod`                                                                                              |
+
+Open questions raised: None.
