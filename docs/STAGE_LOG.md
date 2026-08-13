@@ -5067,3 +5067,39 @@ access, no model calls, no learner PII. The engine is a single pure function:
 | No DB access, no model calls, no external dependencies beyond `zod`        | PASS — pure logic package; only dependency is `zod`                                                                                              |
 
 Open questions raised: None.
+
+---
+
+## Stage 23 — Low-Tech Assessment (2026-08-13)
+
+Plickers-style low-tech classroom assessment engine. Physical cards (1–40) with four
+orientations (A/B/C/D) encode learner answers; the teacher's camera layer is out of scope.
+This package covers the data model: card generation, session lifecycle, and response
+tallying. No DB access, no model calls, no learner PII.
+
+**Files**
+
+- `src/cards.ts` — `CardSide` enum, `Card` schema, `ScanResult` schema, `generateCardSet`, `findCard`
+- `src/session.ts` — `Question` schema (options 2–4, distinct sides, correctSide validated), `AssessmentSession`, `startSession`, `advanceQuestion`, `closeSession`, `currentQuestion`
+- `src/tally.ts` — `tallyQuestion` (dedup last-scan-wins, per-option counts, participation/correct rates), `tallySession` (mean overallCorrectRate), `unscannedCards`
+- `src/index.ts` — public re-exports
+
+### Exit Gate
+
+| Criterion                                                                               | Result                                                                                                                         |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `CardSide` schema — accepts A/B/C/D, rejects others                                     | PASS — `z.enum(['A','B','C','D'])`; `safeParse('E').success === false`                                                         |
+| `Card` schema — cardNumber 1..MAX_CARDS, slotLabel, code                                | PASS — rejects 0 and MAX_CARDS+1                                                                                               |
+| `generateCardSet` — 1-indexed sequential, LTA-{padded} codes, RangeError guards         | PASS — count 0, >40, non-integer all throw `RangeError`; codes and slotLabels zero-padded                                      |
+| `findCard` — returns card or undefined                                                  | PASS                                                                                                                           |
+| `Question` schema — 2–4 options, distinct sides, correctSide must be an option          | PASS — three refinements enforced; duplicate sides and wrong correctSide both rejected                                         |
+| `AssessmentSession` lifecycle — pending → active → closed                               | PASS — `startSession` sets index=0; `advanceQuestion` increments; `closeSession` nulls index; re-starting active/closed throws |
+| `tallyQuestion` — dedup by last scan, per-option counts, participationRate, correctRate | PASS — re-scan test: second scan wins; zero-response handled (correctRate=0)                                                   |
+| `tallySession` — tallies all questions, overallCorrectRate = mean                       | PASS — no-scans case yields all zeros; 50%+100% = 75% overall                                                                  |
+| `unscannedCards` — returns card numbers not yet scanned                                 | PASS — all unscanned, partial, fully scanned cases verified                                                                    |
+| Unit tests — happy path + 2 failure paths per area                                      | PASS — `test/low-tech-assessment.spec.ts` (40 tests, 0 failures)                                                               |
+| `pnpm --filter @infinite-ai/low-tech-assessment typecheck` exits 0                      | PASS                                                                                                                           |
+| No learner PII — card numbers are opaque slot identifiers                               | PASS — no names, SA IDs, or real learner identifiers; linkage to a learner happens outside this package                        |
+| No DB access, no model calls, no external dependencies beyond `zod`                     | PASS — pure logic package; only dependency is `zod`                                                                            |
+
+Open questions raised: None.

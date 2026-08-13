@@ -354,6 +354,14 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/gamification test',
     ],
   },
+  {
+    id: '23',
+    name: 'Low-Tech Assessment',
+    commands: [
+      // Card generation, session lifecycle, response tallying — 40 unit tests.
+      'pnpm --filter @infinite-ai/low-tech-assessment test',
+    ],
+  },
 ];
 
 function usage(): never {
