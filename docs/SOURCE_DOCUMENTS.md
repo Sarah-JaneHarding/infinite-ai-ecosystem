@@ -142,3 +142,31 @@ Languages (Intermediate, Senior), Natural Sciences and Technology, Social Scienc
 all per-term ATPs. The authoring environment cannot download them; a human must supply them.
 
 Stage 12 is blocked on §4 (CPTD) for the same supply reason; not yet on the critical path.
+
+## Policy and legislation documents
+
+**Update 2026-08-13.** Fourteen policy and legislation documents have been supplied and
+ingested as part of Stage 26 preparatory work. Derived structure (clause identifiers,
+section references, typed constants, Zod schemas where relevant) is stored in
+`packages/contracts/src/policy/sources/`. No document text is stored in the repository
+(OQ-005 resolved).
+
+| Document                                                                                          | Kind          | Version / Date | Gazette / ISBN        | Status   | Stored at                                                                  |
+| ------------------------------------------------------------------------------------------------- | ------------- | -------------- | --------------------- | -------- | -------------------------------------------------------------------------- |
+| South African Schools Act, No. 84 of 1996 (as amended by BELA Act 32/2024)                        | ACT           | 2024-12-24     | GG 51836, 24 Dec 2024 | RATIFIED | `packages/contracts/src/policy/sources/sasa-84-of-1996.ts`                 |
+| National Education Policy Act, No. 27 of 1996                                                     | ACT           | 2011-09-19     | GG 34620, 19 Sep 2011 | RATIFIED | `packages/contracts/src/policy/sources/nepa-27-of-1996.ts`                 |
+| Employment of Educators Act, No. 76 of 1998                                                       | ACT           | 2011-09-19     | GG 34620, 19 Sep 2011 | RATIFIED | `packages/contracts/src/policy/sources/eea-76-of-1998.ts`                  |
+| General and Further Education and Training Quality Assurance Act, No. 58 of 2001                  | ACT           | 2011-09-19     | GG 34620, 19 Sep 2011 | RATIFIED | `packages/contracts/src/policy/sources/genfetqa-58-of-2001.ts`             |
+| South African Council for Educators Act, No. 31 of 2000                                           | ACT           | 2011-09-19     | GG 34620, 19 Sep 2011 | RATIFIED | `packages/contracts/src/policy/sources/sace-act-31-of-2000.ts`             |
+| Basic Education Laws Amendment Act, No. 32 of 2024                                                | AMENDMENT_ACT | 2024-09-13     | GG Vol 711 No 51258   | RATIFIED | `packages/contracts/src/policy/sources/bela-act-32-of-2024.ts`             |
+| The National Policy on Whole-School Evaluation                                                    | POLICY        | 2001-07        | GG Vol 433 No 22512   | RATIFIED | `packages/contracts/src/policy/sources/doe-wse-policy-2001.ts`             |
+| Policy on Screening, Identification, Assessment and Support (SIAS)                                | POLICY        | 2014-12-19     | —                     | RATIFIED | `packages/contracts/src/policy/sources/dbe-sias-2014.ts`                   |
+| Department of Basic Education Privacy Policy                                                      | POLICY        | 2023-01-17     | —                     | RATIFIED | `packages/contracts/src/policy/sources/dbe-privacy-policy-2023.ts`         |
+| The National Policy Framework for Teacher Education and Development in South Africa (NPFTED)      | FRAMEWORK     | 2007-04-26     | GG No 29832 Vol 502   | RATIFIED | `packages/contracts/src/policy/sources/dbe-npfted-2007.ts`                 |
+| Plan of Action: Improving access to free and quality basic education for all (2003)               | PLAN          | 2003-06-14     | —                     | RATIFIED | `packages/contracts/src/policy/sources/doe-free-quality-education-2003.ts` |
+| Guidelines for Responding to Learner Diversity in the Classroom Through CAPS (2011)               | GUIDELINE     | 2011           | —                     | RATIFIED | `packages/contracts/src/policy/sources/dbe-learner-diversity-caps-2011.ts` |
+| Rights and Responsibilities of Parents, Learners and Public Schools: A Public School Policy Guide | GUIDELINE     | undated        | —                     | DRAFT    | `packages/contracts/src/policy/sources/doe-public-school-policy-guide.ts`  |
+| SACE Professional Development Points Schedule                                                     | SCHEDULE      | undated        | —                     | DRAFT    | `packages/contracts/src/policy/sources/sace-pd-points-schedule.ts`         |
+
+Provenance (title, publisher, date of document, date retrieved) for all fourteen documents
+is at `docs/sources/policy/SOURCES.md`.
