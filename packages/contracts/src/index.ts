@@ -358,4 +358,111 @@ export {
   type CapsLOSpGr79Metadata,
 } from './curriculum/sources/caps-life-orientation-sp-gr79.js';
 
+export type { PolicyDocKind, PolicyDocMetadata } from './policy/types.js';
+
+export {
+  BELA_ACT_2024_DOC_ID,
+  BELA_ACT_2024_METADATA,
+  BELA_ACT_2024_SECTIONS,
+  BELA_ACT_2024_VERSION,
+} from './policy/sources/bela-act-32-of-2024.js';
+
+export {
+  DBE_LEARNER_DIVERSITY_CAPS_2011_DOC_ID,
+  DBE_LEARNER_DIVERSITY_CAPS_2011_METADATA,
+  DBE_LEARNER_DIVERSITY_CAPS_2011_SECTIONS,
+  DBE_LEARNER_DIVERSITY_CAPS_2011_VERSION,
+} from './policy/sources/dbe-learner-diversity-caps-2011.js';
+
+export {
+  DBE_NPFTED_2007_DOC_ID,
+  DBE_NPFTED_2007_METADATA,
+  DBE_NPFTED_2007_SECTIONS,
+  DBE_NPFTED_2007_VERSION,
+} from './policy/sources/dbe-npfted-2007.js';
+
+export {
+  DBE_PRIVACY_POLICY_2023_DOC_ID,
+  DBE_PRIVACY_POLICY_2023_METADATA,
+  DBE_PRIVACY_POLICY_2023_SECTIONS,
+  DBE_PRIVACY_POLICY_2023_VERSION,
+} from './policy/sources/dbe-privacy-policy-2023.js';
+
+export {
+  DBE_SIAS_2014_DOC_ID,
+  DBE_SIAS_2014_METADATA,
+  DBE_SIAS_2014_SECTIONS,
+  DBE_SIAS_2014_VERSION,
+  SiasSupportLevel,
+} from './policy/sources/dbe-sias-2014.js';
+
+export {
+  DOE_FREE_QUALITY_EDUCATION_2003_DOC_ID,
+  DOE_FREE_QUALITY_EDUCATION_2003_METADATA,
+  DOE_FREE_QUALITY_EDUCATION_2003_SECTIONS,
+  DOE_FREE_QUALITY_EDUCATION_2003_VERSION,
+} from './policy/sources/doe-free-quality-education-2003.js';
+
+export {
+  DOE_PUBLIC_SCHOOL_POLICY_GUIDE_DOC_ID,
+  DOE_PUBLIC_SCHOOL_POLICY_GUIDE_METADATA,
+  DOE_PUBLIC_SCHOOL_POLICY_GUIDE_SECTIONS,
+  DOE_PUBLIC_SCHOOL_POLICY_GUIDE_VERSION,
+} from './policy/sources/doe-public-school-policy-guide.js';
+
+export {
+  DOE_WSE_POLICY_2001_DOC_ID,
+  DOE_WSE_POLICY_2001_METADATA,
+  DOE_WSE_POLICY_2001_SECTIONS,
+  DOE_WSE_POLICY_2001_VERSION,
+  WSE_EVALUATION_AREAS,
+  WsePerformanceRating,
+  type WseEvaluationArea,
+} from './policy/sources/doe-wse-policy-2001.js';
+
+export {
+  EEA_1998_DOC_ID,
+  EEA_1998_METADATA,
+  EEA_1998_SECTIONS,
+  EEA_1998_VERSION,
+} from './policy/sources/eea-76-of-1998.js';
+
+export {
+  GENFETQA_2001_DOC_ID,
+  GENFETQA_2001_METADATA,
+  GENFETQA_2001_SECTIONS,
+  GENFETQA_2001_VERSION,
+} from './policy/sources/genfetqa-58-of-2001.js';
+
+export {
+  NEPA_1996_DOC_ID,
+  NEPA_1996_METADATA,
+  NEPA_1996_SECTIONS,
+  NEPA_1996_VERSION,
+} from './policy/sources/nepa-27-of-1996.js';
+
+export {
+  SACE_ACT_2000_DOC_ID,
+  SACE_ACT_2000_METADATA,
+  SACE_ACT_2000_SECTIONS,
+  SACE_ACT_2000_VERSION,
+} from './policy/sources/sace-act-31-of-2000.js';
+
+export {
+  SACE_CPTD_CYCLE_YEARS,
+  SACE_CPTD_TOTAL_PD_POINTS,
+  SACE_PD_POINTS_SCHEDULE_DOC_ID,
+  SACE_PD_POINTS_SCHEDULE_METADATA,
+  SACE_PD_POINTS_SCHEDULE_SECTIONS,
+  SACE_PD_POINTS_SCHEDULE_VERSION,
+  SacePdActivityType,
+} from './policy/sources/sace-pd-points-schedule.js';
+
+export {
+  SASA_1996_DOC_ID,
+  SASA_1996_METADATA,
+  SASA_1996_SECTIONS,
+  SASA_1996_VERSION,
+} from './policy/sources/sasa-84-of-1996.js';
+
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;

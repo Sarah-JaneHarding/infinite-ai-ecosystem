@@ -5228,3 +5228,48 @@ Open questions resolved: OQ-010 (PWA vs integrated shell) — resolved by integr
 learner experience into `apps/web`. The `packages/learner-client` data model is already
 UI-shell-agnostic; a future native PWA shell could consume the same package without
 changes to the data model.
+
+---
+
+## Stage 27 — Policy Compliance Engine (2026-08-13)
+
+Pure-logic compliance checking package that applies the 14 ingested South African
+education policy documents, returning typed findings with clause-level `SourceRef`
+citations. No database access, no model calls; every rule cites a specific `basis` from
+an ingested document — invented rules do not belong here.
+
+**Files**
+
+- `packages/compliance/package.json` — `@infinite-ai/compliance`, depends on `@infinite-ai/contracts` and `zod`
+- `packages/compliance/tsconfig.json` — extends root base
+- `src/types.ts` — `ComplianceArea`, `ComplianceSeverity`, `ComplianceFinding`, `ComplianceReport`; Zod input schemas: `AttendanceInput`, `FeesInput`, `ConductInput`, `SiasInput`, `PdPointsInput`, `WseInput`, `ComplianceInput`
+- `src/checks/attendance.ts` — Grade R attendance from 2025 (BELA Act §5), low-attendance warning threshold 80% (SASA §3)
+- `src/checks/fees.ts` — no-fee quintile 1-3 charging violation (DoE 2003), quintile 4-5 exemption procedure (SASA §39), no-fee school missing procedure info
+- `src/checks/conduct.ts` — corporal punishment violation (SASA §10), disciplinary charge-sheet and response-opportunity violations (EEA §17)
+- `src/checks/sias.ts` — referral without started stage warning, documentation incomplete violation, all six stages complete info (DBE SIAS 2014 §Ch.6)
+- `src/checks/pd-points.ts` — year-3 cycle shortfall violation, mid-cycle advisory info (SACE PD Points Schedule, 150 pts/3-year cycle)
+- `src/checks/wse.ts` — missing evaluation area violation (WSE Policy §5), invalid rating violation (WSE Policy §6)
+- `src/engine.ts` — `runComplianceChecks`: aggregates all checks, each is optional; returns `ComplianceReport` with summary counts
+- `src/index.ts` — public re-exports (Zod schemas as values; type aliases as `export type`)
+- `test/compliance.spec.ts` — 35 tests across 7 describe blocks
+- `scripts/verify-stage.ts` — Stage 27 entry added
+
+### Exit Gate
+
+| Criterion                                                                                               | Result                                                                                                                                   |
+| ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `checkAttendance` — Grade R 0% in 2025+ → VIOLATION (BELA); <80% any learner → WARNING (SASA §3)        | PASS — six tests; pre-2025 Grade R does not flag; multiple findings accumulate correctly                                                 |
+| `checkFees` — Q1-3 charging → VIOLATION; Q4-5 no exemption → VIOLATION; no-fee missing procedure → INFO | PASS — five tests; Q3 (quintile=3) correctly treated as no-fee                                                                           |
+| `checkConduct` — corporal punishment → VIOLATION; no charge sheet → VIOLATION; no response → VIOLATION  | PASS — five tests; two violations raised per record when both flags absent                                                               |
+| `checkSias` — not started → WARNING; incomplete docs → VIOLATION; all 6 stages + complete → INFO        | PASS — five tests; resolved referral is clean; active + stageCompleted ≥ 6 → INFO                                                        |
+| `checkPdPoints` — year 3 shortfall → VIOLATION; year 2 below advisory → INFO; year 1 always clean       | PASS — five tests; exact 150 points in year 3 is clean; year-1 shortfall is not flagged                                                  |
+| `checkWse` — missing area → VIOLATION (×n missing); invalid rating → VIOLATION (×n invalid)             | PASS — five tests; empty input produces 7 VIOLATION findings (one per required area); ratings 0 and 5 each produce one VIOLATION         |
+| `runComplianceChecks` — aggregates all checks; optional per-area; correct summary counts                | PASS — four tests; omitted areas are not checked; summary counts match filtered findings                                                 |
+| Every finding has a `basis: SourceRef` citing an ingested document and clause                           | PASS — all `basis` fields use named constants from `@infinite-ai/contracts` (`DOE_WSE_POLICY_2001_SECTIONS`, `SASA_1996_SECTIONS`, etc.) |
+| No invented rules — every check traces to a named policy source constant                                | PASS — all rule logic is anchored to a constant from `packages/contracts`; no freestanding numeric or text rules                         |
+| `pnpm lint` and `pnpm typecheck` clean                                                                  | PASS                                                                                                                                     |
+| Unit tests — happy path + at least 2 failure paths per area                                             | PASS — `test/compliance.spec.ts` (35 tests, 0 failures)                                                                                  |
+| No learner PII — inputs use opaque IDs; no names or SA IDs in fixtures                                  | PASS — `tenantId` and teacher/learner identifiers are opaque strings                                                                     |
+| No DB access, no model calls, no external dependencies beyond `zod` and `@infinite-ai/contracts`        | PASS — pure logic package                                                                                                                |
+
+Open questions raised: None.

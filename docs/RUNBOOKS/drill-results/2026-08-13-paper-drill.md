@@ -14,4 +14,4 @@ A live drill against a staging environment is required before GA.
 | suspected-breach.md | ≤ 240min | 0 | PASS |
 | region-loss.md | ≤ 240min | ≤ 60min | PASS |
 
-Drill completed at 2026-08-13T12:04:06.773Z.
+Drill completed at 2026-08-13T19:15:59.832Z.

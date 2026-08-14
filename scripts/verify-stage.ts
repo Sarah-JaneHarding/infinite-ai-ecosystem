@@ -388,6 +388,16 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/web test',
     ],
   },
+  {
+    id: '27',
+    name: 'Policy Compliance Engine',
+    commands: [
+      // 35 unit tests across 6 check areas (attendance, fees, conduct, SIAS, PD points,
+      // WSE ratings) plus the aggregating engine. Every finding cites a SourceRef from
+      // one of the 14 policy source documents ingested in Stage 26.
+      'pnpm --filter @infinite-ai/compliance test',
+    ],
+  },
 ];
 
 function usage(): never {
