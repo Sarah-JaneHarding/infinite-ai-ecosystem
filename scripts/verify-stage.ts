@@ -398,6 +398,17 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/compliance test',
     ],
   },
+  {
+    id: '28',
+    name: 'PD Journal',
+    commands: [
+      // 35 unit tests: PdJournalEntry schema validation (6), computeCycleProgress —
+      // empty journal (3), point accumulation (7), type breakdown (5) — plus
+      // buildPdCycleSummary (8) and integration tests wiring the journal to the
+      // compliance engine's checkPdPoints (6).
+      'pnpm --filter @infinite-ai/pd-journal test',
+    ],
+  },
 ];
 
 function usage(): never {

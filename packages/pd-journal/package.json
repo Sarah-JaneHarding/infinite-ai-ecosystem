@@ -1,0 +1,23 @@
+{
+  "name": "@infinite-ai/pd-journal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PD Journal — records individual educator PD activities, computes CPTD cycle progress, and produces the PdCycleSummary shape consumed by the Policy Compliance Engine.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@infinite-ai/contracts": "workspace:*",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@infinite-ai/compliance": "workspace:*",
+    "vitest": "^3.2.0"
+  }
+}
