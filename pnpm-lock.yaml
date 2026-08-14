@@ -550,6 +550,22 @@ importers:
         specifier: 3.2.7
         version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0)
 
+  packages/pd-journal:
+    dependencies:
+      '@infinite-ai/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@infinite-ai/compliance':
+        specifier: workspace:*
+        version: link:../compliance
+      vitest:
+        specifier: ^3.2.0
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0)
+
   packages/policy:
     dependencies:
       '@infinite-ai/contracts':

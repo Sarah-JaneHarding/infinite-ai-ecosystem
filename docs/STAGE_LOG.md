@@ -5273,3 +5273,52 @@ an ingested document — invented rules do not belong here.
 | No DB access, no model calls, no external dependencies beyond `zod` and `@infinite-ai/contracts`        | PASS — pure logic package                                                                                                                |
 
 Open questions raised: None.
+
+---
+
+## Stage 28 — PD Journal (2026-08-14)
+
+Pure-logic package that records individual educator professional-development activities,
+computes CPTD cycle progress per educator, and produces a `PdCycleSummary` structurally
+compatible with `PdPointsInput` in `@infinite-ai/compliance`. Bridges the journal
+(individual activity records) to the compliance engine (aggregate cycle check).
+
+Key design decisions:
+
+- Only `VERIFIED` points count toward `pdPointsAccumulated` in the compliance summary;
+  `PENDING_VERIFICATION` and `REJECTED` entries are tracked but excluded from the
+  regulatory total.
+- Cycle year is computed from the educator's own `cycleStartDate`, so educators who
+  started their three-year cycle at different times are handled independently.
+- Activity-level Type 1 point-table lookup (OQ-006 gap) is deferred: Type 1 entries
+  carry `PENDING_VERIFICATION` until the table is ingested and applied.
+- No import from `@infinite-ai/compliance` in the production source — `PdCycleSummary`
+  mirrors the `PdPointsInput` shape without creating a circular dependency; only the
+  test file imports `checkPdPoints` for integration assertions.
+
+**Files**
+
+- `packages/pd-journal/package.json` — `@infinite-ai/pd-journal`; runtime dep on `@infinite-ai/contracts` and `zod`; dev dep on `@infinite-ai/compliance` (test-only)
+- `packages/pd-journal/tsconfig.json` — extends root base, `noEmit: true`
+- `src/types.ts` — `PdPointsStatus`, `PdJournalEntry` (Zod), `TypeBreakdown`, `CycleProgress`, `PdCycleSummary`
+- `src/journal.ts` — `resolveCycleYear`, `computeCycleProgress`, `buildPdCycleSummary`
+- `src/index.ts` — public re-exports
+- `test/pd-journal.spec.ts` — 35 tests across 6 describe blocks
+- `scripts/verify-stage.ts` — Stage 28 entry added
+
+### Exit Gate
+
+| Criterion                                                                                                   | Result                                                                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PdJournalEntry` schema — valid entries accepted; missing token, bad date, negative points rejected         | PASS — 6 schema tests                                                                                                                                            |
+| `computeCycleProgress` — cycleYear 1/2/3 reported correctly from `asOf` and `cycleStartDate`                | PASS — 3 empty-journal tests; cycleYear = 1 at start, 2 in year 2, 3 in year 3                                                                                   |
+| `computeCycleProgress` — VERIFIED → verifiedPoints; PENDING → pendingPoints; REJECTED excluded              | PASS — 7 accumulation tests; entries before cycleStart and after asOf excluded; boundary dates included                                                          |
+| `computeCycleProgress` — type breakdown correct per SACE activity type, all statuses                        | PASS — 5 breakdown tests; verified and pending tracked independently per type; rejected excluded from breakdown                                                  |
+| `buildPdCycleSummary` — multi-educator, independent cycle start dates, only verified in pdPointsAccumulated | PASS — 8 tests; cycleYear per-educator; empty map; pending not included; different cycle starts isolated                                                         |
+| Integration: summary → `checkPdPoints` → correct findings                                                   | PASS — 6 tests: year-1 no findings; year-2 advisory INFO; year-3 150 pts clean; year-3 shortfall VIOLATION; exact 150 pts boundary clean; pending-only VIOLATION |
+| Strictly typed, no `any` or `@ts-ignore`; `pnpm typecheck` clean                                            | PASS                                                                                                                                                             |
+| `pnpm lint` clean                                                                                           | PASS                                                                                                                                                             |
+| No DB access, no model calls, no PII in fixtures                                                            | PASS — educator identifiers are opaque tokens                                                                                                                    |
+| `pnpm --filter @infinite-ai/pd-journal test` — 35 tests, 0 failures                                         | PASS                                                                                                                                                             |
+
+Open questions raised: None. OQ-006 gap (Type 1 point table) is already recorded.
