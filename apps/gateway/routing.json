@@ -1,0 +1,38 @@
+{
+  "curriculum.map": [
+    { "provider": "anthropic", "concreteModel": "claude-opus-4-5" },
+    { "provider": "openai", "concreteModel": "gpt-4o" }
+  ],
+  "embedding.encode": [
+    { "provider": "openai", "concreteModel": "text-embedding-3-large" },
+    { "provider": "local", "concreteModel": "nomic-embed-text" }
+  ],
+  "analytics.screen": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" },
+    { "provider": "openai", "concreteModel": "gpt-4o-mini" }
+  ],
+  "analytics.report": [
+    { "provider": "anthropic", "concreteModel": "claude-sonnet-5" },
+    { "provider": "openai", "concreteModel": "gpt-4o" }
+  ],
+  "warehouse.synthesise": [
+    { "provider": "anthropic", "concreteModel": "claude-sonnet-5" },
+    { "provider": "openai", "concreteModel": "gpt-4o" }
+  ],
+  "toolbox.generate": [
+    { "provider": "anthropic", "concreteModel": "claude-sonnet-5" },
+    { "provider": "openai", "concreteModel": "gpt-4o" }
+  ],
+  "toolbox.adapt": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" },
+    { "provider": "openai", "concreteModel": "gpt-4o-mini" }
+  ],
+  "pd.analyse": [
+    { "provider": "anthropic", "concreteModel": "claude-sonnet-5" },
+    { "provider": "openai", "concreteModel": "gpt-4o" }
+  ],
+  "pd.plan": [
+    { "provider": "anthropic", "concreteModel": "claude-sonnet-5" },
+    { "provider": "openai", "concreteModel": "gpt-4o" }
+  ]
+}

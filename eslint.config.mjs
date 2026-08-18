@@ -297,6 +297,13 @@ export default tseslint.config(
     files: ['apps/web/next.config.ts', 'apps/web/src/middleware.ts'],
     rules: { 'no-restricted-globals': 'off', 'no-restricted-syntax': 'off' },
   },
+  {
+    // The worker entry point uses process.once('SIGTERM'/'SIGINT') for graceful
+    // shutdown — signal handling, not environment reading. Config is still read
+    // via loadEnv() from @infinite-ai/config (rule 7 holds).
+    files: ['apps/worker/src/index.ts'],
+    rules: { 'no-restricted-globals': 'off' },
+  },
 
   prettier,
 );
