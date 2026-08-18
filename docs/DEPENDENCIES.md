@@ -430,3 +430,15 @@ Their `devDependencies` (`typescript`, `vitest`) are already present in the work
 
 No new external runtime dependencies. The workspace package itself depends only on `zod`
 (already in the tree, MIT, since Stage 00).
+
+## P0 — Worker host and CE-01 end-to-end wiring
+
+`apps/worker` is promoted from a stub to a full BullMQ consumer host. One new external
+runtime dependency:
+
+| Package  | Version | Licence | Why                                                                                                                                                | Replaces |
+| -------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `bullmq` | `6.1.2` | MIT     | Redis-backed job queue. Provides `Worker` and `Queue` classes used by the worker host to consume MOD-01, MOD-04, and MOD-05 pipeline job payloads. | —        |
+
+No other new external dependencies. `apps/worker` consumes `@infinite-ai/*` workspace
+packages already in the tree, plus `zod` (MIT, Stage 00) for job-payload validation.

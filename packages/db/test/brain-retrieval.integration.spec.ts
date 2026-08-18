@@ -48,6 +48,19 @@ afterAll(async () => {
   await db?.stop();
 });
 
+/**
+ * Pads sparse values with zeros to 1536 dimensions — matching the vector(1536) constraint
+ * the 20260818120000_embedding_hnsw_index migration added (P0.3). Tests use short sparse
+ * representations for readability; only the first few components carry meaning.
+ */
+function vec1536(sparse: number[]): number[] {
+  const out = new Array<number>(1536).fill(0);
+  sparse.forEach((v, i) => {
+    out[i] = v;
+  });
+  return out;
+}
+
 /** Inserts an embedding directly — there is no write-path function for this yet. */
 async function insertEmbedding(
   tx: TenantClient,
@@ -93,14 +106,14 @@ describe('vectorTopK', () => {
       const closeId = await makeNode(tx, 'Close');
       const midId = await makeNode(tx, 'Mid');
       const farId = await makeNode(tx, 'Far');
-      await insertEmbedding(tx, closeId, [1, 0, 0]);
-      await insertEmbedding(tx, midId, [0.7, 0.7, 0]);
-      await insertEmbedding(tx, farId, [-1, 0, 0]);
+      await insertEmbedding(tx, closeId, vec1536([1]));
+      await insertEmbedding(tx, midId, vec1536([0.7, 0.7]));
+      await insertEmbedding(tx, farId, vec1536([-1]));
       return { closeId, midId, farId };
     });
 
     const matches = await asTenant(appRw, TENANT, ACTOR, (tx) =>
-      vectorTopK(tx, { queryEmbedding: [1, 0, 0], entityTypes: null, k: 2 }),
+      vectorTopK(tx, { queryEmbedding: vec1536([1]), entityTypes: null, k: 2 }),
     );
 
     expect(matches).toHaveLength(2);
@@ -126,13 +139,13 @@ describe('vectorTopK', () => {
         supersedes: null,
         createdBy: null,
       });
-      await insertEmbedding(tx, topicId, [1, 0, 0]);
-      await insertEmbedding(tx, learnerCreated.id, [1, 0, 0]);
+      await insertEmbedding(tx, topicId, vec1536([1]));
+      await insertEmbedding(tx, learnerCreated.id, vec1536([1]));
       return { topicId, learnerId: learnerCreated.id };
     });
 
     const matches = await asTenant(appRw, TENANT, ACTOR, (tx) =>
-      vectorTopK(tx, { queryEmbedding: [1, 0, 0], entityTypes: ['LEARNER'], k: 10 }),
+      vectorTopK(tx, { queryEmbedding: vec1536([1]), entityTypes: ['LEARNER'], k: 10 }),
     );
 
     expect(matches.map((m) => m.node.id)).toContain(learnerId);
@@ -146,7 +159,7 @@ describe('vectorTopK', () => {
       ACTOR,
       async (tx) => {
         const supersededId = await makeNode(tx, 'Superseded original');
-        await insertEmbedding(tx, supersededId, [1, 0, 0]);
+        await insertEmbedding(tx, supersededId, vec1536([1]));
         const replacement = await commitBrainFact(tx, {
           targetTier: 'L1_NODE',
           entityType: 'TOPIC',
@@ -160,13 +173,13 @@ describe('vectorTopK', () => {
           supersedes: supersededId,
           createdBy: null,
         });
-        await insertEmbedding(tx, replacement.id, [1, 0, 0]);
+        await insertEmbedding(tx, replacement.id, vec1536([1]));
         return { supersededId, replacementId: replacement.id };
       },
     );
 
     const matches = await asTenant(appRw, TENANT, ACTOR, (tx) =>
-      vectorTopK(tx, { queryEmbedding: [1, 0, 0], entityTypes: null, k: 10 }),
+      vectorTopK(tx, { queryEmbedding: vec1536([1]), entityTypes: null, k: 10 }),
     );
 
     expect(matches.map((m) => m.node.id)).toContain(replacementId);

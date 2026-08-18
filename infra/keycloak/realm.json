@@ -1,0 +1,133 @@
+{
+  "realm": "infinite-ai",
+  "enabled": true,
+  "displayName": "Infinite AI",
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "refreshTokenMaxReuse": 0,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionMaxLifespan": 5184000,
+  "roles": {
+    "realm": [
+      {
+        "name": "teacher",
+        "description": "Classroom teacher — lesson delivery and learner interaction"
+      },
+      {
+        "name": "hod",
+        "description": "Head of Department — curriculum approval and teacher oversight"
+      },
+      {
+        "name": "smt",
+        "description": "School Management Team — whole-school oversight and reporting"
+      },
+      {
+        "name": "sbst",
+        "description": "School-Based Support Team — learner support and SIAS coordination"
+      },
+      {
+        "name": "admin",
+        "description": "School administrator — operational, non-instructional access"
+      },
+      {
+        "name": "guardian",
+        "description": "Parent or legal guardian — consent management and learner reports"
+      },
+      {
+        "name": "learner",
+        "description": "Enrolled learner — own data and personalised content only"
+      },
+      {
+        "name": "platform_support",
+        "description": "Infinite AI support staff — read-only, no learner PII"
+      },
+      {
+        "name": "platform_admin",
+        "description": "Infinite AI platform administrators — provisioning and billing only"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "infinite-ai-web",
+      "name": "Infinite AI Web",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": ["http://localhost:3000/*", "https://*.infinite-ai.co.za/*"],
+      "webOrigins": ["http://localhost:3000", "https://*.infinite-ai.co.za"],
+      "protocol": "openid-connect",
+      "attributes": {
+        "access.token.lifespan": "300"
+      },
+      "protocolMappers": [
+        {
+          "name": "tenant_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "tenant_id",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "tenant_id",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "realm_roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "realm_access.roles",
+            "multivalued": "true",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "infinite-ai-worker",
+      "name": "Infinite AI Worker (service account)",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "secret": "${KEYCLOAK_WORKER_CLIENT_SECRET}",
+      "protocol": "openid-connect",
+      "attributes": {
+        "access.token.lifespan": "300"
+      }
+    }
+  ],
+  "defaultRoles": [],
+  "requiredCredentials": ["password"],
+  "passwordPolicy": "length(12) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1)",
+  "browserSecurityHeaders": {
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';"
+  },
+  "eventsEnabled": true,
+  "eventsExpiration": 604800,
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": true,
+  "internationalizationEnabled": false,
+  "defaultLocale": "en"
+}

@@ -15,6 +15,18 @@
     "test": "vitest run --passWithNoTests",
     "lint": "eslint src"
   },
+  "dependencies": {
+    "@infinite-ai/agents": "workspace:*",
+    "@infinite-ai/brain": "workspace:*",
+    "@infinite-ai/config": "workspace:*",
+    "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/db": "workspace:*",
+    "@infinite-ai/orchestrator": "workspace:*",
+    "@infinite-ai/prompts": "workspace:*",
+    "@infinite-ai/telemetry": "workspace:*",
+    "bullmq": "6.1.2",
+    "zod": "3.25.76"
+  },
   "devDependencies": {
     "typescript": "5.9.3",
     "vitest": "3.2.7"
