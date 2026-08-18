@@ -465,4 +465,185 @@ export {
   SASA_1996_VERSION,
 } from './policy/sources/sasa-84-of-1996.js';
 
+export {
+  CAPS_ENG_HL_FP_CONTENT_AREAS,
+  CAPS_ENG_HL_FP_DOC_ID,
+  CAPS_ENG_HL_FP_ISBN,
+  CAPS_ENG_HL_FP_METADATA,
+  CAPS_ENG_HL_FP_TOPIC_PROGRESSIONS,
+  CAPS_ENG_HL_FP_VERSION,
+  type CapsenghlfpContentArea,
+  type CapsenghlfpTopicProgression,
+} from './curriculum/sources/caps-english-hl-fp-gr-r3.js';
+
+export {
+  CAPS_FAL_FP_CONTENT_AREAS,
+  CAPS_FAL_FP_DOC_ID,
+  CAPS_FAL_FP_METADATA,
+  CAPS_FAL_FP_TOPIC_PROGRESSIONS,
+  CAPS_FAL_FP_VERSION,
+  type CapsfalfpContentArea,
+  type CapsfalfpTopicProgression,
+} from './curriculum/sources/caps-fal-fp-gr-r3.js';
+
+export {
+  CAPS_MATHS_FP_CONTENT_AREAS,
+  CAPS_MATHS_FP_DOC_ID,
+  CAPS_MATHS_FP_ISBN,
+  CAPS_MATHS_FP_METADATA,
+  CAPS_MATHS_FP_SKILLS,
+  CAPS_MATHS_FP_TOPIC_PROGRESSIONS,
+  CAPS_MATHS_FP_VERSION,
+  CAPS_MATHS_FP_WEIGHTINGS,
+  type CapsmathsfpContentArea,
+  type CapsmathsfpSkill,
+  type CapsmathsfpTopicProgression,
+  type CapsmathsfpWeighting,
+} from './curriculum/sources/caps-mathematics-fp-gr-r3.js';
+
+export {
+  CAPS_ENG_HL_IP_CONTENT_AREAS,
+  CAPS_ENG_HL_IP_DOC_ID,
+  CAPS_ENG_HL_IP_ISBN,
+  CAPS_ENG_HL_IP_METADATA,
+  CAPS_ENG_HL_IP_TOPIC_PROGRESSIONS,
+  CAPS_ENG_HL_IP_VERSION,
+  type CapsenghlipContentArea,
+  type CapsenghlipTopicProgression,
+} from './curriculum/sources/caps-english-hl-ip-gr46.js';
+
+export {
+  CAPS_ENG_FAL_IP_CONTENT_AREAS,
+  CAPS_ENG_FAL_IP_DOC_ID,
+  CAPS_ENG_FAL_IP_ISBN,
+  CAPS_ENG_FAL_IP_METADATA,
+  CAPS_ENG_FAL_IP_TOPIC_PROGRESSIONS,
+  CAPS_ENG_FAL_IP_VERSION,
+  type CapsengfalipContentArea,
+  type CapsengfalipTopicProgression,
+} from './curriculum/sources/caps-english-fal-ip-gr46.js';
+
+export {
+  CAPS_MATHS_IP_CONTENT_AREAS,
+  CAPS_MATHS_IP_DOC_ID,
+  CAPS_MATHS_IP_ISBN,
+  CAPS_MATHS_IP_METADATA,
+  CAPS_MATHS_IP_TOPIC_PROGRESSIONS,
+  CAPS_MATHS_IP_VERSION,
+  CAPS_MATHS_IP_WEIGHTINGS,
+  type CapsmathsipContentArea,
+  type CapsmathsipTopicProgression,
+  type CapsmathsipWeighting,
+} from './curriculum/sources/caps-mathematics-ip-gr46.js';
+
+export {
+  CAPS_NST_IP_CONTENT_AREAS,
+  CAPS_NST_IP_DOC_ID,
+  CAPS_NST_IP_METADATA,
+  CAPS_NST_IP_TOPIC_PROGRESSIONS,
+  CAPS_NST_IP_VERSION,
+  type CapsnstipContentArea,
+  type CapsnstipTopicProgression,
+} from './curriculum/sources/caps-nst-ip-gr46.js';
+
+export {
+  CAPS_SS_IP_CONTENT_AREAS,
+  CAPS_SS_IP_DOC_ID,
+  CAPS_SS_IP_ISBN,
+  CAPS_SS_IP_METADATA,
+  CAPS_SS_IP_TOPIC_PROGRESSIONS,
+  CAPS_SS_IP_VERSION,
+  type CapsssipContentArea,
+  type CapsssipTopicProgression,
+} from './curriculum/sources/caps-social-sciences-ip-gr46.js';
+
+export {
+  CAPS_HL_SP_CONTENT_AREAS,
+  CAPS_HL_SP_DOC_ID,
+  CAPS_HL_SP_METADATA,
+  CAPS_HL_SP_TOPIC_PROGRESSIONS,
+  CAPS_HL_SP_VERSION,
+  type CapshlspContentArea,
+  type CapshlspTopicProgression,
+} from './curriculum/sources/caps-hl-sp-gr7.js';
+
+export {
+  CAPS_FAL_SP_CONTENT_AREAS,
+  CAPS_FAL_SP_DOC_ID,
+  CAPS_FAL_SP_METADATA,
+  CAPS_FAL_SP_TOPIC_PROGRESSIONS,
+  CAPS_FAL_SP_VERSION,
+  type CapsfalspContentArea,
+  type CapsfalspTopicProgression,
+} from './curriculum/sources/caps-fal-sp-gr7.js';
+
+export {
+  CAPS_MATHS_SP_CONTENT_AREAS,
+  CAPS_MATHS_SP_DOC_ID,
+  CAPS_MATHS_SP_ISBN,
+  CAPS_MATHS_SP_METADATA,
+  CAPS_MATHS_SP_TOPIC_PROGRESSIONS,
+  CAPS_MATHS_SP_VERSION,
+  CAPS_MATHS_SP_WEIGHTINGS,
+  type CapsmathsspContentArea,
+  type CapsmathsspTopicProgression,
+  type CapsmathsspWeighting,
+} from './curriculum/sources/caps-mathematics-sp-gr7.js';
+
+export {
+  CAPS_NS_SP_CONTENT_AREAS,
+  CAPS_NS_SP_DOC_ID,
+  CAPS_NS_SP_METADATA,
+  CAPS_NS_SP_TOPIC_PROGRESSIONS,
+  CAPS_NS_SP_VERSION,
+  type CapsnsspContentArea,
+  type CapsnsspTopicProgression,
+} from './curriculum/sources/caps-natural-sciences-sp-gr7.js';
+
+export {
+  CAPS_SS_SP_CONTENT_AREAS,
+  CAPS_SS_SP_DOC_ID,
+  CAPS_SS_SP_METADATA,
+  CAPS_SS_SP_SKILLS,
+  CAPS_SS_SP_TOPIC_PROGRESSIONS,
+  CAPS_SS_SP_VERSION,
+  type CapsssspContentArea,
+  type CapsssspSkill,
+  type CapsssspTopicProgression,
+} from './curriculum/sources/caps-social-sciences-sp-gr7.js';
+
+export {
+  CAPS_TECH_SP_CONTENT_AREAS,
+  CAPS_TECH_SP_DOC_ID,
+  CAPS_TECH_SP_METADATA,
+  CAPS_TECH_SP_TOPIC_PROGRESSIONS,
+  CAPS_TECH_SP_VERSION,
+  type CapstechspContentArea,
+  type CapstechspTopicProgression,
+} from './curriculum/sources/caps-technology-sp-gr7.js';
+
+export {
+  CAPS_EMS_SP_CONTENT_AREAS,
+  CAPS_EMS_SP_DOC_ID,
+  CAPS_EMS_SP_METADATA,
+  CAPS_EMS_SP_TOPIC_PROGRESSIONS,
+  CAPS_EMS_SP_VERSION,
+  CAPS_EMS_SP_WEIGHTINGS,
+  type CapsemsspContentArea,
+  type CapsemsspTopicProgression,
+  type CapsemsspWeighting,
+} from './curriculum/sources/caps-ems-sp-gr7.js';
+
+export {
+  CAPS_CA_SP_CONTENT_AREAS,
+  CAPS_CA_SP_DOC_ID,
+  CAPS_CA_SP_METADATA,
+  CAPS_CA_SP_SKILLS,
+  CAPS_CA_SP_TOPIC_PROGRESSIONS,
+  CAPS_CA_SP_VERSION,
+  type CapscaspContentArea,
+  type CapscaspSkill,
+  type CapscaspTopicProgression,
+} from './curriculum/sources/caps-creative-arts-sp-gr7.js';
+
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;

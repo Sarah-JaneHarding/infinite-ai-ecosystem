@@ -125,23 +125,35 @@ source text. Recorded as OQ-005.
 
 ## Status
 
-**Update 2026-08-13.** Five documents have been supplied:
+**Update 2026-08-18.** Twenty-one documents have been supplied across Foundation, Intermediate and Senior phases (Gr R–7 scope):
 
-| Document                                                   | Phase        | Grades | Date       | Status   | Stored                                                                                                |
-| ---------------------------------------------------------- | ------------ | ------ | ---------- | -------- | ----------------------------------------------------------------------------------------------------- |
-| Draft CAPS — Coding and Robotics, Grades R-3 (DBE)         | Foundation   | R–3    | 2021-03-19 | DRAFT    | Derived structure only — `packages/contracts/src/curriculum/sources/caps-coding-robotics-r3.ts`       |
-| CAPS — IsiZulu First Additional Language, Grades 1-3 (DBE) | Foundation   | 1–3    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-isizulu-fal-gr1-3.ts`        |
-| CAPS — Life Skills, Grades R-3 (DBE)                       | Foundation   | R–3    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-skills-r3.ts`           |
-| CAPS — Life Skills, Grades 4-6 (DBE)                       | Intermediate | 4–6    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-skills-ip-gr46.ts`      |
-| CAPS — Life Orientation, Grades 7-9 (DBE)                  | Senior       | 7–9    | © 2011     | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-orientation-sp-gr79.ts` |
+| Document                                                                              | Phase        | Grades    | Date   | Status   | Stored                                                                                                |
+| ------------------------------------------------------------------------------------- | ------------ | --------- | ------ | -------- | ----------------------------------------------------------------------------------------------------- |
+| Draft CAPS — Coding and Robotics, Grades R-3 (DBE)                                    | Foundation   | R–3       | 2021   | DRAFT    | Derived structure only — `packages/contracts/src/curriculum/sources/caps-coding-robotics-r3.ts`       |
+| CAPS — IsiZulu First Additional Language, Grades 1-3 (DBE)                            | Foundation   | 1–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-isizulu-fal-gr1-3.ts`        |
+| CAPS — Life Skills, Grades R-3 (DBE, ISBN 978-1-4315-0422-0)                          | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-skills-r3.ts`           |
+| CAPS — English Home Language, Grades R-3 (DBE, ISBN 978-1-4315-0400-8)                | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-english-hl-fp-gr-r3.ts`      |
+| CAPS — First Additional Language, Grades R-3 (DBE, 2011 Final Draft)                  | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-fal-fp-gr-r3.ts`             |
+| CAPS — Mathematics, Grades R-3 (DBE, ISBN 978-1-4315-0433-6)                          | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-mathematics-fp-gr-r3.ts`     |
+| CAPS — Life Skills, Grades 4-6 (DBE, ISBN 978-1-4315-0491-6)                          | Intermediate | 4–6       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-skills-ip-gr46.ts`      |
+| CAPS — English Home Language, Grades 4-6 (DBE, ISBN 978-1-4315-0455-8)                | Intermediate | 4–6       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-english-hl-ip-gr46.ts`       |
+| CAPS — English First Additional Language, Grades 4-6 (DBE, ISBN 978-1-4315-0466-4)    | Intermediate | 4–6       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-english-fal-ip-gr46.ts`      |
+| CAPS — Mathematics, Grades 4-6 (DBE, ISBN 978-1-4315-0491-6)                          | Intermediate | 4–6       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-mathematics-ip-gr46.ts`      |
+| CAPS — Natural Sciences and Technology, Grades 4-6 (DBE, 2011 Final Draft)            | Intermediate | 4–6       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-nst-ip-gr46.ts`              |
+| CAPS — Social Sciences, Grades 4-6 (DBE, ISBN 978-1-4315-0489-3)                      | Intermediate | 4–6       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-social-sciences-ip-gr46.ts`  |
+| CAPS — Life Orientation, Grades 7-9 (DBE, © 2011)                                     | Senior       | 7–9       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-orientation-sp-gr79.ts` |
+| CAPS — Home Language, Grades 7-9 (DBE, generic across official languages)             | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-hl-sp-gr7.ts`                |
+| CAPS — First Additional Language, Grades 7-9 (DBE, generic across official languages) | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-fal-sp-gr7.ts`               |
+| CAPS — Mathematics, Grades 7-9 (DBE, ISBN 978-1-4315-0525-8)                          | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-mathematics-sp-gr7.ts`       |
+| CAPS — Natural Sciences, Grades 7-9 (DBE, © 2011)                                     | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-natural-sciences-sp-gr7.ts`  |
+| CAPS — Social Sciences, Grades 7-9 (DBE, © 2011)                                      | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-social-sciences-sp-gr7.ts`   |
+| CAPS — Technology, Grades 7-9 (DBE, © 2011)                                           | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-technology-sp-gr7.ts`        |
+| CAPS — Economic and Management Sciences, Grades 7-9 (DBE, © 2011)                     | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-ems-sp-gr7.ts`               |
+| CAPS — Creative Arts, Grades 7-9 (DBE, © 2011)                                        | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-creative-arts-sp-gr7.ts`     |
 
-**Stage 08 remains blocked.** The documents supplied cover Foundation Phase only, and
-only three of the required subjects. Core subjects still missing — Mathematics (all
-phases), Home Languages (Foundation, Intermediate, Senior), additional First Additional
-Languages (Intermediate, Senior), Natural Sciences and Technology, Social Sciences — and
-all per-term ATPs. The authoring environment cannot download them; a human must supply them.
+All 21 CAPS ingestions store derived topic/content identifiers, content-area slugs, weighting_percent values, and SourceRef citations only — no source text (OQ-005). `ratifiedBy` is `null` on every SourceRef until a human countersigns (per OQ-002). ATPs for IP Mathematics (Gr 5–6) and NST (Gr 6) were also ingested as supplementary sources in `caps-mathematics-ip-gr46.ts` and `caps-nst-ip-gr46.ts` respectively.
 
-Stage 12 is blocked on §4 (CPTD) for the same supply reason; not yet on the critical path.
+**Stage 08 is now unblocked for Gr R–7.** All core CAPS subjects for Grades R–7 are ingested. Per-term ATPs are still needed for Foundation Phase and Senior Phase subjects to enable full ATP sequencing. See OQ-002 for remaining items.
 
 ## Policy and legislation documents
 

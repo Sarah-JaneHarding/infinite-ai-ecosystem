@@ -5322,3 +5322,35 @@ Key design decisions:
 | `pnpm --filter @infinite-ai/pd-journal test` — 35 tests, 0 failures                                         | PASS                                                                                                                                                             |
 
 Open questions raised: None. OQ-006 gap (Type 1 point table) is already recorded.
+
+---
+
+## CAPS Export Ingestion (cross-stage: L0 prep for Stage 08) · 2026-08-18
+
+**Purpose.** Unblock Stage 08 by supplying and ingesting all core CAPS subjects for
+Grades R–7. Partially closes OQ-002 (16 of 21 ingested documents are new in this batch).
+
+**What was ingested.** A structured JSON export (`f55433a1-infinite_ai_caps_export.json`)
+containing 818 curriculum items across 19 subjects (3 phases), plus a normalised SQLite
+database (`6760aad9-infinite_ai_caps.db`) with the same data plus subjects, phases,
+specific aims, and NCS values. Neither file is stored in the repository.
+
+**What is stored.** Derived structure only — content-area slugs, topic codes, weighting
+percentages, and SourceRef citations per CAPS clause and section. No source text (OQ-005).
+`ratifiedBy: null` on every SourceRef until a human countersigns.
+
+**Files generated.** 16 new TypeScript source files in
+`packages/contracts/src/curriculum/sources/`:
+`caps-english-hl-fp-gr-r3.ts`, `caps-fal-fp-gr-r3.ts`, `caps-mathematics-fp-gr-r3.ts`,
+`caps-english-hl-ip-gr46.ts`, `caps-english-fal-ip-gr46.ts`, `caps-mathematics-ip-gr46.ts`,
+`caps-nst-ip-gr46.ts`, `caps-social-sciences-ip-gr46.ts`, `caps-hl-sp-gr7.ts`,
+`caps-fal-sp-gr7.ts`, `caps-mathematics-sp-gr7.ts`, `caps-natural-sciences-sp-gr7.ts`,
+`caps-social-sciences-sp-gr7.ts`, `caps-technology-sp-gr7.ts`, `caps-ems-sp-gr7.ts`,
+`caps-creative-arts-sp-gr7.ts`.
+
+**Quality gate.** `pnpm --filter @infinite-ai/contracts typecheck` — PASS. `pnpm lint` — PASS.
+All 16 files use `import type { SourceRef }` and the spread-fix pattern for
+`exactOptionalPropertyTypes` compatibility.
+
+**Docs updated.** `docs/SOURCE_DOCUMENTS.md` (21-document status table); `docs/OPEN_QUESTIONS.md`
+OQ-002 advanced to "Stage 08 unblocked for Gr R–7".
