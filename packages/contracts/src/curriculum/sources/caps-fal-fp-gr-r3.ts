@@ -9,12 +9,11 @@ import type { SourceRef } from '../framework.js';
 export const CAPS_FAL_FP_DOC_ID = 'caps-fal-fp-gr-r3-2011' as const;
 export const CAPS_FAL_FP_VERSION = '2011-final-draft' as const;
 
-function ref(clause: string, page?: number): SourceRef {
+function ref(clause: string): SourceRef {
   return {
     documentId: CAPS_FAL_FP_DOC_ID,
     documentVersion: CAPS_FAL_FP_VERSION,
     clause,
-    ...(page !== undefined ? { page } : {}),
     ratifiedBy: null,
   };
 }

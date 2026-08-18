@@ -9,12 +9,11 @@ import type { SourceRef } from '../framework.js';
 export const CAPS_NST_IP_DOC_ID = 'caps-nst-ip-gr46-2011' as const;
 export const CAPS_NST_IP_VERSION = '2011-final-draft' as const;
 
-function ref(clause: string, page?: number): SourceRef {
+function ref(clause: string): SourceRef {
   return {
     documentId: CAPS_NST_IP_DOC_ID,
     documentVersion: CAPS_NST_IP_VERSION,
     clause,
-    ...(page !== undefined ? { page } : {}),
     ratifiedBy: null,
   };
 }

@@ -10,12 +10,11 @@ export const CAPS_MATHS_IP_DOC_ID = 'caps-mathematics-ip-gr46-2011' as const;
 export const CAPS_MATHS_IP_VERSION = '2011-ratified' as const;
 export const CAPS_MATHS_IP_ISBN = '978-1-4315-0491-6' as const;
 
-function ref(clause: string, page?: number): SourceRef {
+function ref(clause: string): SourceRef {
   return {
     documentId: CAPS_MATHS_IP_DOC_ID,
     documentVersion: CAPS_MATHS_IP_VERSION,
     clause,
-    ...(page !== undefined ? { page } : {}),
     ratifiedBy: null,
   };
 }

@@ -10,12 +10,11 @@ export const CAPS_ENG_HL_IP_DOC_ID = 'caps-english-hl-ip-gr46-2011' as const;
 export const CAPS_ENG_HL_IP_VERSION = '2011-ratified' as const;
 export const CAPS_ENG_HL_IP_ISBN = '978-1-4315-0455-8' as const;
 
-function ref(clause: string, page?: number): SourceRef {
+function ref(clause: string): SourceRef {
   return {
     documentId: CAPS_ENG_HL_IP_DOC_ID,
     documentVersion: CAPS_ENG_HL_IP_VERSION,
     clause,
-    ...(page !== undefined ? { page } : {}),
     ratifiedBy: null,
   };
 }

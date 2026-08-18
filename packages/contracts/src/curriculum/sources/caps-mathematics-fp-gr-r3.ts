@@ -10,12 +10,11 @@ export const CAPS_MATHS_FP_DOC_ID = 'caps-mathematics-fp-gr-r3-2011' as const;
 export const CAPS_MATHS_FP_VERSION = '2011-ratified' as const;
 export const CAPS_MATHS_FP_ISBN = '978-1-4315-0433-6' as const;
 
-function ref(clause: string, page?: number): SourceRef {
+function ref(clause: string): SourceRef {
   return {
     documentId: CAPS_MATHS_FP_DOC_ID,
     documentVersion: CAPS_MATHS_FP_VERSION,
     clause,
-    ...(page !== undefined ? { page } : {}),
     ratifiedBy: null,
   };
 }

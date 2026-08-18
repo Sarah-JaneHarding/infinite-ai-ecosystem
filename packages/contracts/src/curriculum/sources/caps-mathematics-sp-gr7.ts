@@ -10,12 +10,11 @@ export const CAPS_MATHS_SP_DOC_ID = 'caps-mathematics-sp-gr79-2011' as const;
 export const CAPS_MATHS_SP_VERSION = '2011-ratified' as const;
 export const CAPS_MATHS_SP_ISBN = '978-1-4315-0525-8' as const;
 
-function ref(clause: string, page?: number): SourceRef {
+function ref(clause: string): SourceRef {
   return {
     documentId: CAPS_MATHS_SP_DOC_ID,
     documentVersion: CAPS_MATHS_SP_VERSION,
     clause,
-    ...(page !== undefined ? { page } : {}),
     ratifiedBy: null,
   };
 }
