@@ -44,6 +44,18 @@ afterAll(async () => {
   await db?.stop();
 });
 
+/**
+ * Pads sparse values with zeros to 1536 dimensions — matching the vector(1536) constraint
+ * the 20260818120000_embedding_hnsw_index migration added (P0.3).
+ */
+function vec1536(sparse: number[]): number[] {
+  const out = new Array<number>(1536).fill(0);
+  sparse.forEach((v, i) => {
+    out[i] = v;
+  });
+  return out;
+}
+
 async function insertEmbedding(
   tx: TenantClient,
   nodeId: string,
@@ -100,12 +112,12 @@ describe('tombstoneBrainFact', () => {
   it('tombstones an L1_NODE: original untouched, new row supersedes it, node drops out of retrieval', async () => {
     const { originalId } = await asTenant(appRw, TENANT, ACTOR, async (tx) => {
       const originalId = await makeNode(tx, 'Tombstone target');
-      await insertEmbedding(tx, originalId, [1, 0, 0]);
+      await insertEmbedding(tx, originalId, vec1536([1]));
       return { originalId };
     });
 
     const beforeMatches = await asTenant(appRw, TENANT, ACTOR, (tx) =>
-      vectorTopK(tx, { queryEmbedding: [1, 0, 0], entityTypes: null, k: 10 }),
+      vectorTopK(tx, { queryEmbedding: vec1536([1]), entityTypes: null, k: 10 }),
     );
     expect(beforeMatches.map((m) => m.node.id)).toContain(originalId);
 
@@ -134,7 +146,7 @@ describe('tombstoneBrainFact', () => {
     expect(replacement.source).toBe('retention_expired');
 
     const afterMatches = await asTenant(appRw, TENANT, ACTOR, (tx) =>
-      vectorTopK(tx, { queryEmbedding: [1, 0, 0], entityTypes: null, k: 10 }),
+      vectorTopK(tx, { queryEmbedding: vec1536([1]), entityTypes: null, k: 10 }),
     );
     expect(afterMatches.map((m) => m.node.id)).not.toContain(originalId);
     expect(afterMatches.map((m) => m.node.id)).not.toContain(tombstoned.id);
