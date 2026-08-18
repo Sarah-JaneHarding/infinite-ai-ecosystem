@@ -102,6 +102,14 @@ async function insertEmbedding(
   );
 }
 
+function vec1536(sparse: number[]): number[] {
+  const out = new Array<number>(1536).fill(0);
+  sparse.forEach((v, i) => {
+    out[i] = v;
+  });
+  return out;
+}
+
 /** Commits an L1_NODE fact via the real write path, end to end, and returns its id. */
 async function makeNode(tx: TenantClient, label: string): Promise<string> {
   const opened = await openWrite(tx, {
@@ -207,7 +215,7 @@ describe('the retrieval path, end to end', () => {
           source: 'test',
         });
         await run(tx, opened.id);
-        await insertEmbedding(tx, seedId, [1, 0, 0]);
+        await insertEmbedding(tx, seedId, vec1536([1]));
         return { seedId, neighbourId };
       },
     );
@@ -219,7 +227,7 @@ describe('the retrieval path, end to end', () => {
           ...BASE_QUERY,
           actor: smtActor,
           resource: { ...learnerResource, classGroupId: null },
-          queryEmbedding: [1, 0, 0],
+          queryEmbedding: vec1536([1]),
           graphHops: 1,
           now: NOW,
         },
@@ -319,7 +327,7 @@ describe('the retrieval path, end to end', () => {
       async (tx) => {
         const constitutionId = await makeConstitution(tx, key);
         const nodeId = await makeNode(tx, 'Prioritized node');
-        await insertEmbedding(tx, nodeId, [1, 0, 0]);
+        await insertEmbedding(tx, nodeId, vec1536([1]));
         return { constitutionId, nodeId };
       },
     );
@@ -334,7 +342,7 @@ describe('the retrieval path, end to end', () => {
         ...BASE_QUERY,
         actor: smtActor,
         resource: { ...learnerResource, classGroupId: null },
-        queryEmbedding: [1, 0, 0],
+        queryEmbedding: vec1536([1]),
         tokenBudget: budget,
         now: NOW,
       }),
