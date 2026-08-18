@@ -7,4 +7,4 @@ DROP INDEX IF EXISTS brain_embedding_hnsw_idx;
 
 -- Revert to a dimensionless vector column. Existing data is preserved.
 ALTER TABLE brain_embedding
-  ALTER COLUMN vector TYPE vector;
+  ALTER COLUMN embedding TYPE vector;
