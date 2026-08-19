@@ -155,6 +155,62 @@ All 21 CAPS ingestions store derived topic/content identifiers, content-area slu
 
 **Stage 08 is now unblocked for Gr R–7.** All core CAPS subjects for Grades R–7 are ingested. Per-term ATPs are still needed for Foundation Phase and Senior Phase subjects to enable full ATP sequencing. See OQ-002 for remaining items.
 
+## DBE Annual Teaching Plans (ATPs) — 2026-08-19
+
+32 ATP source documents ingested from the `infinite_ai_atp_brain.db` SQLite database (supplied 2026-08-19). 425 topic blocks and 208 FAT schedule rows. Derived structure only — topic names, content areas, week ranges, assessment types, and SourceRef citations. No source text (OQ-005). `ratifiedBy: null` on all SourceRefs until a human countersigns. DBE Circular S19 of 2025 confirms 2023/24 ATPs remain in force until further notice.
+
+| Source ID      | Grade | Subject                           | ATP Year | Status   | Stored in                                      |
+| -------------- | ----- | --------------------------------- | -------- | -------- | ---------------------------------------------- |
+| GR-FAL-EN-2023 | R     | First Additional Language         | 2023     | INGESTED | `atp-fp-gr-r3.ts` → `ATP_FOUNDATION_SOURCES`   |
+| GR-LS-EN-2023  | R     | Life Skills                       | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| GR-MATHS-2023  | R     | Mathematics                       | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| G1-FAL-EN-2023 | 1     | English First Additional Language | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| G1-HL-EN-2023  | 1     | English Home Language             | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| G1-MATHS-2023  | 1     | Mathematics                       | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| G2-FAL-EN-2023 | 2     | English First Additional Language | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| G2-HL-EN-2023  | 2     | English Home Language             | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| G2-MATHS-2023  | 2     | Mathematics                       | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| G3-FAL-EN-2023 | 3     | English First Additional Language | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| G3-HL-EN-2023  | 3     | English Home Language             | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| G3-MATHS-2023  | 3     | Mathematics                       | 2023     | INGESTED | `atp-fp-gr-r3.ts`                              |
+| G4-LS-2023     | 4     | Life Skills                       | 2023     | INGESTED | `atp-ip-gr-46.ts` → `ATP_INTERMEDIATE_SOURCES` |
+| G4-MATHS-2026  | 4     | Mathematics                       | 2026     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G4-NST-2026    | 4     | Natural Sciences and Technology   | 2026     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G4-SS-2023     | 4     | Social Sciences                   | 2023     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G5-LS-2023     | 5     | Life Skills                       | 2023     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G5-MATHS-2026  | 5     | Mathematics                       | 2026     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G5-NST-2026    | 5     | Natural Sciences and Technology   | 2026     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G5-SS-2023     | 5     | Social Sciences                   | 2023     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G6-LS-2023     | 6     | Life Skills                       | 2023     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G6-MATHS-2023  | 6     | Mathematics                       | 2023     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G6-NST-2026    | 6     | Natural Sciences and Technology   | 2026     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G6-SS-2023     | 6     | Social Sciences                   | 2023     | INGESTED | `atp-ip-gr-46.ts`                              |
+| G7-EMS-2023    | 7     | Economic and Management Sciences  | 2023     | INGESTED | `atp-sp-gr-7.ts` → `ATP_SENIOR_SOURCES`        |
+| G7-FAL-EN-2023 | 7     | English First Additional Language | 2023     | INGESTED | `atp-sp-gr-7.ts`                               |
+| G7-HL-EN-2023  | 7     | English Home Language             | 2023     | INGESTED | `atp-sp-gr-7.ts`                               |
+| G7-LO-2023     | 7     | Life Orientation                  | 2023     | INGESTED | `atp-sp-gr-7.ts`                               |
+| G7-MATHS-2023  | 7     | Mathematics                       | 2023     | INGESTED | `atp-sp-gr-7.ts`                               |
+| G7-NS-2026     | 7     | Natural Sciences                  | 2026     | INGESTED | `atp-sp-gr-7.ts`                               |
+| G7-SS-2023     | 7     | Social Sciences                   | 2023     | INGESTED | `atp-sp-gr-7.ts`                               |
+| G7-TECH-2023   | 7     | Technology                        | 2023     | INGESTED | `atp-sp-gr-7.ts`                               |
+
+Still pending (126 of 152 DBE catalogue entries): FP Home Language / FAL per-term-per-language (Gr 1–3, 11 languages each); Grade R ATPs not yet on FP listing page; IP Life Skills (Gr 4–6); FP Life Skills (Gr 1–3).
+
+## School artefact templates — 2026-08-19
+
+| Document                         | School                       | Kind        | Year | Status               | Stored at                                                                         |
+| -------------------------------- | ---------------------------- | ----------- | ---- | -------------------- | --------------------------------------------------------------------------------- |
+| Lesson Plan Preparation Template | Benjamin Pine Primary School | LESSON_PLAN | 2026 | PENDING RATIFICATION | `packages/contracts/src/curriculum/sources/template-lesson-plan-benjamin-pine.ts` |
+
+`ratifiedAt: null` — awaiting principal or designate countersignature. Partially closes OQ-003. Remaining: unit blueprint, assessment task, rubric/marking memo, parent progress report.
+
+## SIAS implementation documents — 2026-08-19 (Stage 10 source documents)
+
+| Document                                                                | Publisher | Date  | Status   | Notes                                                                                                                                                                                                                                                            |
+| ----------------------------------------------------------------------- | --------- | ----- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Guideline document in respect of SIAS Implementation (Foundation Phase) | DBE / GDE | ~2023 | SUPPLIED | Describes SIAS process flow: Learner Profile → SNA 1 → SNA 2 → SNA 3 → DBE 123b referral. Defines SBST, DBST, ISP roles. Relevant to Stage 10 DW-03/DW-06 agents and MOD-02 SIAS state machine. Not yet ingested as structured source — pending Stage 10 review. |
+| Individual Support Plan (ISP) — Foundation Phase                        | DBE / GDE | ~2023 | SUPPLIED | Rating-scale (1–5) per learning area: English, Mathematics, Life Skills, Afrikaans FAL. Structured for capture by DW-04/DW-06. Not yet ingested as structured source — pending Stage 10 review.                                                                  |
+
 ## Policy and legislation documents
 
 **Update 2026-08-13.** Fourteen policy and legislation documents have been supplied and

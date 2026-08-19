@@ -646,4 +646,15 @@ export {
   type CapscaspTopicProgression,
 } from './curriculum/sources/caps-creative-arts-sp-gr7.js';
 
+export type {
+  ATPTopicBlock,
+  ATPFatRow,
+  ATPSourceDocument,
+} from './curriculum/atp-source.js';
+
+export { ATP_FOUNDATION_SOURCES } from './curriculum/sources/atp-fp-gr-r3.js';
+export { ATP_INTERMEDIATE_SOURCES } from './curriculum/sources/atp-ip-gr-46.js';
+export { ATP_SENIOR_SOURCES } from './curriculum/sources/atp-sp-gr-7.js';
+export { LESSON_PLAN_TEMPLATE_BENJAMIN_PINE } from './curriculum/sources/template-lesson-plan-benjamin-pine.js';
+
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;

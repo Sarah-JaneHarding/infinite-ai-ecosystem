@@ -5354,3 +5354,47 @@ All 16 files use `import type { SourceRef }` and the spread-fix pattern for
 
 **Docs updated.** `docs/SOURCE_DOCUMENTS.md` (21-document status table); `docs/OPEN_QUESTIONS.md`
 OQ-002 advanced to "Stage 08 unblocked for Gr R–7".
+
+---
+
+## ATP & Lesson Plan Template Ingestion (cross-stage: L0 prep for Stage 08 + partial OQ-003) · 2026-08-19
+
+**Purpose.** Ingest the DBE Annual Teaching Plan (ATP) database and Benjamin Pine Primary
+School's 2026 lesson plan template, substantially closing the ATP side of OQ-002 and
+partially closing OQ-003.
+
+**What was ingested.**
+
+- `c329fb42-infinite_ai_atp_brain.db` — SQLite database, 32 source documents, 425 topic
+  blocks, 208 FAT (Formal Assessment Task) rows; DBE Circular S19 of 2025 keeps 2023/24
+  ATPs in force. Neither the SQLite file nor any source text is stored in the repository.
+- Benjamin Pine Primary School 2026 Lesson Plan Preparation Template — `.docx` file
+  ingested as a `TemplateDefinition`; `ratifiedAt: null` until the principal or designate
+  countersigns.
+
+**What is stored.** Derived structure only: topic names, content areas, week ranges,
+assessment types, FAT type/number/description, and SourceRef citations. No source text
+(OQ-005). `ratifiedBy: null` on every SourceRef until a human countersigns.
+
+**Coverage.** Grades R–7 across Mathematics, English HL/FAL, Life Skills, NST, Social
+Sciences, Life Orientation, EMS, Natural Sciences, and Technology (Foundation, Intermediate,
+and Senior phases). Gaps remain: FP Home Language / FAL per-language ATPs (Gr 1–3, 11
+languages), Gr R ATPs, IP/FP Life Skills, and Gr 7 English HL/FAL — see OQ-002.
+
+**New types.** `ATPSourceDocument`, `ATPTopicBlock`, `ATPFatRow` in
+`packages/contracts/src/curriculum/atp-source.ts`.
+
+**Files generated.**
+
+- `packages/contracts/src/curriculum/atp-source.ts` — raw source types
+- `packages/contracts/src/curriculum/sources/atp-fp-gr-r3.ts` — Foundation Phase (Gr R–3): 12 source IDs, 83 topics, 39 FATs; exports `ATP_FOUNDATION_SOURCES`
+- `packages/contracts/src/curriculum/sources/atp-ip-gr-46.ts` — Intermediate Phase (Gr 4–6): 12 source IDs, 208 topics, 81 FATs; exports `ATP_INTERMEDIATE_SOURCES`
+- `packages/contracts/src/curriculum/sources/atp-sp-gr-7.ts` — Senior Phase (Gr 7): 8 source IDs, 134 topics, 88 FATs; exports `ATP_SENIOR_SOURCES`
+- `packages/contracts/src/curriculum/sources/template-lesson-plan-benjamin-pine.ts` — exports `LESSON_PLAN_TEMPLATE_BENJAMIN_PINE`
+
+**Quality gate.** `pnpm --filter @infinite-ai/contracts test` — 1004 tests, 44 files, all
+PASS. `pnpm typecheck` — PASS. `pnpm lint` — PASS.
+
+**Docs updated.** `docs/SOURCE_DOCUMENTS.md` (ATP 32-document table; school template row;
+SIAS docs recorded); `docs/OPEN_QUESTIONS.md` (OQ-002 advanced, OQ-003 updated to
+PARTIALLY ANSWERED).
