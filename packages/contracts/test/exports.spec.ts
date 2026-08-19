@@ -20,6 +20,7 @@ describe('package export surface', () => {
       'ATPWeek',
       'ATP_FOUNDATION_SOURCES',
       'ATP_INTERMEDIATE_SOURCES',
+      'ATP_PENDING_REGISTRY',
       'ATP_SENIOR_SOURCES',
       'AccessibilityCheckItem',
       'AccessibilityCheckResult',
