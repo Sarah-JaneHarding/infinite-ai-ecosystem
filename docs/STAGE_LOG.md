@@ -5453,3 +5453,267 @@ retrieve real curriculum data from L0 rather than falling back to `NEEDS_INPUT`.
 | No DB access in unit tests (remember mocked); integration tests blind (no Docker in sandbox)                         | PASS                       |
 
 Open questions raised: OQ-023 (hoursPerWeek and assessmentWeighting data missing from CAPS source files — needed for complete GradeFramework; CE-01 falls back to NEEDS_INPUT without them).
+
+---
+
+## Stage 30 — Curriculum Ratification CLI
+
+Started: 2026-08-20 Completed: 2026-08-20
+Exit gate: PASS
+Tests: 36 passing, 0 skipped (4 suites in @infinite-ai/curriculum-seed).
+Coverage: unit tier only — integration tests (Testcontainers) run separately.
+Deviations from manual: none.
+
+**What was built**
+
+Stage 29's seeder left 157 L0_CONSTITUTION candidates per tenant at
+`AWAITING_RATIFICATION` in `brain_write_candidate`. `listEffectiveConstitution()` (and thus
+CE-01) reads only from `brain_constitution`, which holds committed records — nothing Stage
+29 produced was visible to CE-01 yet. Stage 30 closes that gap by providing:
+
+- **`packages/curriculum-seed/src/ratify.ts`** — `ratifyCurriculumForTenant(tx, ratifiedBy, now?)`:
+  calls `listOpenBrainWrites(tx)` from `@infinite-ai/db`, filters to
+  `AWAITING_RATIFICATION` + `L0_CONSTITUTION`, and calls the Brain API's `ratify()` for
+  each, which records ratification and drives the candidate through COMMITTED → INDEXED →
+  RETENTION_SCHEDULED. After this function returns, every candidate it processed is
+  committed to `brain_constitution` and visible to CE-01.
+
+- **`scripts/seed-curriculum.ts`** — standalone runner (`pnpm curriculum:seed`): calls
+  `seedCurriculumFromContracts` for each of the three dev seed tenants
+  (Kleinbos Primary, Thabo Mbeki Primary, Umoya Schools Trust). Creates
+  AWAITING_RATIFICATION candidates.
+
+- **`scripts/ratify-curriculum.ts`** — standalone runner (`pnpm curriculum:ratify`): calls
+  `ratifyCurriculumForTenant` for each of the three dev seed tenants. Commits all pending
+  L0_CONSTITUTION candidates to `brain_constitution`. Run after `pnpm curriculum:seed`.
+
+- **Root `package.json`** `curriculum:seed` and `curriculum:ratify` scripts, backed by
+  `tsx` for direct TypeScript execution.
+
+**Why `ratifyCurriculumForTenant` is in `@infinite-ai/curriculum-seed` rather than a standalone
+script.** The logic (filter + ratify loop) is testable at the unit tier only if it is a
+function with injectable mocks — a standalone script with top-level `await` cannot be
+imported cleanly for unit testing without side effects. Putting the logic in the package
+and the execution in the script is the same pattern as `seedCurriculumFromContracts` /
+`seed-curriculum.ts`.
+
+**Human-in-the-loop gate honesty.** The ratification actor is `system-ratifier` — a
+human-named actor string, consistent with the project's convention for scripted seed-time
+ratification of development fixture data. Production ratification of real curriculum
+changes must come from a real human account via the governance UI (rule 6 unchanged; this
+script only runs against dev seed tenants that `packages/db/prisma/seed.ts` already
+populates with fixture data).
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ratify.ts` — new
+- `packages/curriculum-seed/src/index.ts` — exports `ratifyCurriculumForTenant`, `RatifyResult`
+- `packages/curriculum-seed/test/ratify.spec.ts` — 6 unit tests (mocked listOpenBrainWrites, mocked brain ratify)
+- `scripts/seed-curriculum.ts` — new
+- `scripts/ratify-curriculum.ts` — new
+- `package.json` — `curriculum:seed`, `curriculum:ratify` scripts
+- `scripts/verify-stage.ts` — Stage 30 entry
+
+### Exit Gate
+
+| Criterion                                                                            | Result                     |
+| ------------------------------------------------------------------------------------ | -------------------------- |
+| `ratifyCurriculumForTenant` — ratifies all pending L0_CONSTITUTION candidates        | PASS — happy path test     |
+| Returns `{ ratified: 0, ids: [] }` when nothing is pending                           | PASS                       |
+| Skips AWAITING_RATIFICATION candidates on other tiers (L1_NODE, L3_PROCEDURE)        | PASS                       |
+| Skips L0_CONSTITUTION candidates not at AWAITING_RATIFICATION (CANDIDATE, COMMITTED) | PASS                       |
+| Passes `ratifiedBy` and `now` through to brain `ratify` verbatim                     | PASS                       |
+| Propagates an error from brain `ratify` without swallowing or partial results        | PASS                       |
+| All 36 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)           | PASS — 36 tests, 0 skipped |
+| Strictly typed; `pnpm typecheck` clean                                               | PASS                       |
+| `pnpm lint` clean                                                                    | PASS                       |
+| `pnpm format:check` clean                                                            | PASS                       |
+
+Open questions raised: none.
+
+---
+
+## Stage 31 — l0.ingest_ratified_source — MOD-01 pipeline readiness gate
+
+Started: 2026-08-20 Completed: 2026-08-20
+Exit gate: PASS
+Tests: 45 passing, 0 skipped (5 suites in @infinite-ai/curriculum-seed).
+Coverage: unit tier only — integration tests (Testcontainers) run separately.
+Deviations from manual: none.
+
+**What was built**
+
+The MOD-01 curriculum pipeline (`packages/orchestrator/src/pipelines/mod-01.ts`) declares
+its first step as a `tool_call` to `l0.ingest_ratified_source`. Before Stage 31 this tool
+name was a bare string with no ToolDeclaration and no StepExecutor — the pipeline would
+have passed DAG validation but crashed immediately when the runner tried to execute the step.
+Stage 31 closes that gap:
+
+- **`packages/agents/src/mod-01/l0-ingest-ratified-source.ts`** — a `ToolDeclaration` for
+  `l0.ingest_ratified_source`, created via `ToolDeclaration.parse()`. Classified as
+  `sideEffect: 'read'`, `idempotent: true`, with `CE01Input` as its input schema. This is
+  the declaration a boot-time `ToolRegistry` registers; `validatePipelineGating` uses the
+  registry to confirm no `irreversible` tool step is reachable without a preceding
+  `human_gate`.
+
+- **`packages/curriculum-seed/src/l0-gate-executor.ts`** — `makeL0GateExecutor(withTenant, listConstitution)`
+  returns a `StepExecutor` (same function signature as `RunnerOptions.executeStep`). The
+  executor:
+  1. Parses `CE01Input` from `context.input`; throws `CurriculumSeedError` on a bad shape.
+  2. Opens a tenant-scoped read transaction for `context.input.tenantId`.
+  3. Calls `listConstitution(tx)` (injected, defaults to `listEffectiveConstitution` from
+     `@infinite-ai/db` at the call site).
+  4. Counts `CAPS_CANON` and `ATP_CALENDAR` rows. Ignores `TEMPLATE` rows.
+  5. Throws `L0NotReadyError` if both counts are zero — fail early, clear error, before CE-01
+     runs against an empty L0 and returns `FrameworkNeedsInput` for every subject.
+  6. Returns `{ capsCount, atpCount }` for the runner to persist as the step output.
+
+- **`L0NotReadyError`** — extends `Error` (not `CurriculumSeedError`, because TypeScript
+  does not permit a subclass to narrow a readonly `name` literal to a different value).
+  Message includes the `tenantId` and the remediation command.
+
+**Why the executor lives in `@infinite-ai/curriculum-seed`**
+
+The executor's only external dependency is `listEffectiveConstitution` from `@infinite-ai/db`,
+which `curriculum-seed` already imports. Placing it here avoids a new cross-package
+dependency and keeps all L0-related seeding, ratification and readiness logic in one package.
+
+**Files changed**
+
+- `packages/agents/src/mod-01/l0-ingest-ratified-source.ts` — new
+- `packages/agents/src/index.ts` — exports `L0IngestRatifiedSourceDeclaration`
+- `packages/curriculum-seed/src/l0-gate-executor.ts` — new
+- `packages/curriculum-seed/src/index.ts` — exports `L0NotReadyError`, `makeL0GateExecutor`,
+  `L0GateResult`, `ListConstitutionFn`, `StepExecutionContext`, `WithTenantFn`
+- `packages/curriculum-seed/test/l0-gate-executor.spec.ts` — 9 unit tests
+- `scripts/verify-stage.ts` — Stage 31 entry
+
+### Exit Gate
+
+| Criterion                                                                                  | Result                     |
+| ------------------------------------------------------------------------------------------ | -------------------------- |
+| `ToolDeclaration` for `l0.ingest_ratified_source` registered via `ToolDeclaration.parse()` | PASS                       |
+| Tool classified `read`, `idempotent: true`, `inputSchema: CE01Input`                       | PASS                       |
+| Executor returns `{ capsCount, atpCount }` when CAPS_CANON + ATP_CALENDAR rows exist       | PASS                       |
+| Counts CAPS-only and ATP-only scenarios independently                                      | PASS                       |
+| Throws `L0NotReadyError` when constitution is empty (both counts zero)                     | PASS                       |
+| Error message includes `tenantId` and remediation hint                                     | PASS                       |
+| Throws `CurriculumSeedError` on invalid `CE01Input` shape                                  | PASS                       |
+| `TEMPLATE` kind rows are ignored (not counted, do not prevent error)                       | PASS                       |
+| `listConstitution` errors propagate without swallowing                                     | PASS                       |
+| `tenantId` from input is forwarded to `withTenant` verbatim                                | PASS                       |
+| All 45 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                 | PASS — 45 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/agents typecheck` clean                                        | PASS                       |
+| `pnpm lint` clean                                                                          | PASS                       |
+
+Open questions raised: none.
+
+---
+
+## Stage 32 — brain.publish_curriculum_version and brain.tombstone_curriculum_version tools
+
+**Date:** 2026-08-20
+
+**Summary:** Added two ToolDeclarations and two executor factories for the MOD-01 curriculum
+pipeline publish/compensate pair. `brain.publish_curriculum_version` is an irreversible
+sideEffect tool that writes the HoD-approved curriculum artefact bundle to Brain L1_NODE via
+`remember()`. `brain.tombstone_curriculum_version` is the compensation step that calls
+`forget()` with `reason: 'pipeline_compensation'` when a later pipeline step fails after
+publish has committed. Both use the injected-dependency pattern (`withTenant` + fn) for
+unit-testability. Extended `TombstoneReason` union in `packages/db/src/brain-forgetting.ts`
+with `'pipeline_compensation'` (TypeScript-only; no DB migration needed — stored as plain
+string). Content field uses `z.unknown()` as an "empty vessel" pending CE-08 output schema
+stabilisation. Fixed two gate failures during verification: `StepExecutionContext` import
+in tests corrected to use `l0-gate-executor.js` (not re-exported from executor files), and
+four new export names added to `packages/contracts/test/exports.spec.ts`.
+
+**Files changed**
+
+- `packages/db/src/brain-forgetting.ts` — `TombstoneReason` extended with `'pipeline_compensation'`
+- `packages/contracts/src/curriculum/brain-tools.ts` — new: `CurriculumPublishInput`,
+  `CurriculumPublishResult`, `CurriculumTombstoneInput`, `CurriculumTombstoneResult` Zod schemas
+- `packages/contracts/src/index.ts` — exports four new curriculum brain-tool schemas
+- `packages/contracts/test/exports.spec.ts` — four new export names added to sorted list
+- `packages/agents/src/mod-01/brain-publish-curriculum-version.ts` — new ToolDeclaration
+- `packages/agents/src/mod-01/brain-tombstone-curriculum-version.ts` — new ToolDeclaration
+- `packages/agents/src/index.ts` — exports both new ToolDeclarations
+- `packages/curriculum-seed/src/brain-publish-executor.ts` — new executor factory
+- `packages/curriculum-seed/src/brain-tombstone-executor.ts` — new executor factory
+- `packages/curriculum-seed/src/index.ts` — exports both executor factories and their fn types
+- `packages/curriculum-seed/test/brain-publish-executor.spec.ts` — 8 unit tests
+- `packages/curriculum-seed/test/brain-tombstone-executor.spec.ts` — 6 unit tests (59 total)
+- `scripts/verify-stage.ts` — Stage 32 entry
+
+### Exit Gate
+
+| Criterion                                                                                                     | Result                     |
+| ------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `ToolDeclaration` for `brain.publish_curriculum_version` registered via `ToolDeclaration.parse()`             | PASS                       |
+| Publish tool classified `irreversible`, `idempotent: false`, `inputSchema: CurriculumPublishInput`            | PASS                       |
+| `ToolDeclaration` for `brain.tombstone_curriculum_version` registered via `ToolDeclaration.parse()`           | PASS                       |
+| Tombstone tool classified `sideEffect: 'write'`, `idempotent: false`, `inputSchema: CurriculumTombstoneInput` | PASS                       |
+| Executor returns `{ brainFactId }` from `BrainWriteCandidateRow.committedRowId`                               | PASS                       |
+| Throws `CurriculumSeedError` when `CurriculumPublishInput` is invalid                                         | PASS                       |
+| Throws `CurriculumSeedError` when `committedRowId` is null, message includes candidate status                 | PASS                       |
+| `rememberFn` errors propagate without swallowing                                                              | PASS                       |
+| `tenantId` from input forwarded to `withTenant` verbatim (publish)                                            | PASS                       |
+| `hodApprovalId` included in `source` field passed to `rememberFn`                                             | PASS                       |
+| `runId` passed as `derivationRunId` to `rememberFn`                                                           | PASS                       |
+| Tombstone executor returns `{ tombstoneId, supersedes }` from `TombstonedBrainFact`                           | PASS                       |
+| Throws `CurriculumSeedError` when `CurriculumTombstoneInput` is invalid                                       | PASS                       |
+| Throws `CurriculumSeedError` when `reason` is not `'pipeline_compensation'`                                   | PASS                       |
+| `forgetFn` errors propagate without swallowing                                                                | PASS                       |
+| `tenantId` from input forwarded to `withTenant` verbatim (tombstone)                                          | PASS                       |
+| `brainFactId` from input forwarded to `forgetFn`                                                              | PASS                       |
+| All 59 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                                    | PASS — 59 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/agents typecheck` clean                                                           | PASS                       |
+| `pnpm format:check` clean                                                                                     | PASS                       |
+
+Open questions raised: none.
+
+---
+
+## Stage 33 — CE-01 CAPS Mapper executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE01Executor` factory for the `build-topic-graph` pipeline
+step (CE-01). The executor (1) parses `CE01Input` from the step context, (2) opens a
+tenant-scoped read transaction and loads constitution rows from the Brain, (3) filters to
+`CAPS_CANON` rows only (excluding `ATP_CALENDAR` and other kinds), (4) calls the Model
+Gateway with the CE-01 prompt body and L0 documents as user-message context, (5) parses and
+validates the response as `FrameworkResult`. All model calls go through the gateway — no
+provider SDK is imported. CAPS documents are government curriculum policy; the null
+de-identification provenance stamp (`deidentified: true, saltVersion: 0, dropped: []`)
+records that the content was checked and contains no PII to scrub. Fixed a lint error during
+the stage gate: `ChatCompletionResponse` was imported as a value and needed `type` import.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce01-executor.ts` — new: `makeCE01Executor`, `WithCE01TenantFn`,
+  `ListCapsFn`, `GatewayCallFn` types
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE01Executor` and its fn types
+- `packages/curriculum-seed/test/ce01-executor.spec.ts` — 10 unit tests (69 total in package)
+- `scripts/verify-stage.ts` — Stage 33 entry
+
+### Exit Gate
+
+| Criterion                                                                               | Result                     |
+| --------------------------------------------------------------------------------------- | -------------------------- |
+| `makeCE01Executor` returns a `StepExecutor` typed `(ctx) => Promise<FrameworkResult>`   | PASS                       |
+| Returns `FrameworkResult` with `status: 'needs_input'` when gateway returns needs_input | PASS                       |
+| Throws `CurriculumSeedError` when `CE01Input` is invalid (missing grade/subjects)       | PASS                       |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                    | PASS                       |
+| Throws `CurriculumSeedError` when gateway response doesn't match `FrameworkResult`      | PASS                       |
+| `listCaps` errors propagate without swallowing                                          | PASS                       |
+| `gatewayCall` errors propagate without swallowing                                       | PASS                       |
+| `tenantId` from input forwarded to `withTenant` verbatim                                | PASS                       |
+| Only `CAPS_CANON` rows passed to gateway — `ATP_CALENDAR` rows filtered out             | PASS                       |
+| `grade` and `subjects` from input included in gateway user message                      | PASS                       |
+| `promptBody` used as system message in gateway request                                  | PASS                       |
+| All 69 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)              | PASS — 69 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                            | PASS                       |
+| `pnpm lint` clean (type-import fix applied for `ChatCompletionResponse`)                | PASS                       |
+| `pnpm format:check` clean                                                               | PASS                       |
+
+Open questions raised: none.

@@ -48,6 +48,8 @@
     "test:billing:reconcile": "pnpm --filter @infinite-ai/billing test:reconcile",
     "test:tenant-deletion": "pnpm --filter @infinite-ai/db exec vitest run test/tenant-deletion.integration.spec.ts",
     "check:flags": "tsx scripts/check-feature-flags.ts",
+    "curriculum:seed": "tsx scripts/seed-curriculum.ts",
+    "curriculum:ratify": "tsx scripts/ratify-curriculum.ts",
     "load:peak": "k6 run scripts/load/k6-peak.js",
     "load:spike": "k6 run scripts/load/k6-spike.js",
     "verify:stage": "tsx scripts/verify-stage.ts"

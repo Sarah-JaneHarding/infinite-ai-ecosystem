@@ -422,6 +422,87 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/curriculum-seed test',
     ],
   },
+  {
+    id: '30',
+    name: 'Curriculum Ratification CLI',
+    commands: [
+      // 36 unit tests across 4 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts     — Stage 29 (11 tests)
+      //   atp.spec.ts      — Stage 29 (13 tests)
+      //   seed.spec.ts     — Stage 29 (6 tests)
+      //   ratify.spec.ts   — Stage 30: ratifyCurriculumForTenant (6 tests)
+      //     happy path, empty set, wrong-tier filter, wrong-status filter,
+      //     argument pass-through, error propagation
+      // Scripts: scripts/seed-curriculum.ts and scripts/ratify-curriculum.ts
+      // Integration: pnpm --filter @infinite-ai/curriculum-seed test:integration
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+    ],
+  },
+  {
+    id: '31',
+    name: 'l0.ingest_ratified_source tool — MOD-01 pipeline readiness gate',
+    commands: [
+      // 45 unit tests across 5 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts             — Stage 29 (11 tests)
+      //   atp.spec.ts              — Stage 29 (13 tests)
+      //   seed.spec.ts             — Stage 29 (6 tests)
+      //   ratify.spec.ts           — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts — Stage 31: makeL0GateExecutor (9 tests)
+      //     happy path (both kinds, CAPS-only, ATP-only), L0NotReadyError,
+      //     error message content, invalid input, TEMPLATE rows ignored,
+      //     db error propagation, tenantId forwarding
+      // ToolDeclaration: packages/agents/src/mod-01/l0-ingest-ratified-source.ts
+      //   validated at declaration time via ToolDeclaration.parse()
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/agents typecheck',
+    ],
+  },
+  {
+    id: '32',
+    name: 'brain.publish_curriculum_version and brain.tombstone_curriculum_version tools',
+    commands: [
+      // 58 unit tests across 7 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32: makePublishCurriculumVersionExecutor (7 tests)
+      //     happy path, invalid input, null committedRowId + error message, error propagation,
+      //     tenantId forwarding, hodApprovalId in source, runId as derivationRunId
+      //   brain-tombstone-executor.spec.ts — Stage 32: makeTombstoneCurriculumVersionExecutor (6 tests)
+      //     happy path, invalid input, wrong reason rejected, error propagation,
+      //     tenantId forwarding, brainFactId forwarded to forgetFn
+      // ToolDeclarations: packages/agents/src/mod-01/brain-publish-curriculum-version.ts
+      //                   packages/agents/src/mod-01/brain-tombstone-curriculum-version.ts
+      // TombstoneReason extended: packages/db/src/brain-forgetting.ts
+      //   'pipeline_compensation' added (TypeScript-only, no DB migration needed)
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/agents typecheck',
+    ],
+  },
+  {
+    id: '33',
+    name: 'CE-01 CAPS Mapper executor factory',
+    commands: [
+      // 69 unit tests across 8 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts           — Stage 33: makeCE01Executor (10 tests)
+      //     needs_input passthrough, invalid input, non-JSON response, invalid FrameworkResult,
+      //     listCaps error propagation, gatewayCall error propagation, tenantId forwarding,
+      //     CAPS_CANON filtering (not ATP_CALENDAR), grade/subjects in user message,
+      //     promptBody as system message
+      // makeCE01Executor: packages/curriculum-seed/src/ce01-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
 ];
 
 function usage(): never {
