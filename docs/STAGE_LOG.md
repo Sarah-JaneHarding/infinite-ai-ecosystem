@@ -5398,3 +5398,58 @@ PASS. `pnpm typecheck` — PASS. `pnpm lint` — PASS.
 **Docs updated.** `docs/SOURCE_DOCUMENTS.md` (ATP 32-document table; school template row;
 SIAS docs recorded); `docs/OPEN_QUESTIONS.md` (OQ-002 advanced, OQ-003 updated to
 PARTIALLY ANSWERED).
+
+---
+
+## Stage 29 — L0 Curriculum Seeder (2026-08-20)
+
+New package `@infinite-ai/curriculum-seed` that loads the 21 CAPS source documents
+and 136 ATP source documents from `@infinite-ai/contracts` into Brain L0 as
+`AWAITING_RATIFICATION` candidates. This is the bridge that lets CE-01 and CE-02
+retrieve real curriculum data from L0 rather than falling back to `NEEDS_INPUT`.
+
+**Design decisions.**
+
+- Mirrors the `buildXPayload` (pure) / `submitX` (DB) / `selectX` (pure) split
+  from `packages/brain/src/curriculum-templates.ts`.
+- All 21 CAPS source files in `@infinite-ai/contracts` are normalised to `CapsSourceInfo`
+  in `all-caps-sources.ts`. That file absorbs the naming divergence between files
+  (CONTENT_AREAS vs STUDY_AREAS vs STRANDS vs SKILLS vs TOPICS) in one place.
+- Pending ATP stubs (5 IP-MULTI entries in `ATP_PENDING_REGISTRY`) have no topic blocks
+  and are excluded from seeding until their source data arrives (OQ-002).
+- `GradeFramework` still requires `hoursPerWeek` and `assessmentWeighting` data not
+  present in the CAPS source files — CE-01 can populate `contentAreas` but still returns
+  `NEEDS_INPUT` for a complete `GradeFramework` (OQ-023).
+
+**Files.**
+
+- `packages/curriculum-seed/package.json` — `@infinite-ai/curriculum-seed`; deps on brain, contracts, db, zod
+- `packages/curriculum-seed/tsconfig.json`
+- `packages/curriculum-seed/vitest.config.ts`
+- `packages/curriculum-seed/vitest.integration.config.ts`
+- `src/types.ts` — `CurriculumSeedError`, `CapsSourceInfo`, `CapsWeightingEntry`, `CapsCanonContent` (Zod), `AtpCalendarContent` (Zod), `SeedResult`
+- `src/caps.ts` — `buildCapsL0Payload` (pure), `submitCapsSource` (DB), `selectCapsDocuments` (pure)
+- `src/atp.ts` — `buildAtpL0Payload` (pure), `submitAtpSource` (DB), `selectAtpDocuments` (pure)
+- `src/all-caps-sources.ts` — `ALL_CAPS_SOURCES: readonly CapsSourceInfo[]` (21 documents)
+- `src/seed.ts` — `seedCurriculumFromContracts(tx, submittedBy, now?)`
+- `src/index.ts` — public barrel
+- `test/caps.spec.ts` — 11 unit tests (pure functions)
+- `test/atp.spec.ts` — 13 unit tests (pure functions)
+- `test/seed.spec.ts` — 6 unit tests (mocked remember)
+- `test/seed.integration.spec.ts` — 4 integration tests (Testcontainers, blind)
+
+### Exit Gate
+
+| Criterion                                                                                                            | Result                     |
+| -------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `buildCapsL0Payload` — valid info → L0_CONSTITUTION / CAPS_CANON; empty documentId throws; empty contentAreas throws | PASS — 5 tests             |
+| `selectCapsDocuments` — filters by subject, by phase; invalid content throws; non-CAPS candidates skipped            | PASS — 6 tests             |
+| `buildAtpL0Payload` — valid doc → L0_CONSTITUTION / ATP_CALENDAR; empty sourceId throws; empty topics throws         | PASS — 6 tests             |
+| `selectAtpDocuments` — filters by grade, subject, year; invalid content throws; non-ATP skipped                      | PASS — 7 tests             |
+| `seedCurriculumFromContracts` — calls remember for each CAPS and ATP doc; correct counts; error propagates           | PASS — 6 tests             |
+| All 30 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                                           | PASS — 30 tests, 0 skipped |
+| Strictly typed; `pnpm typecheck` clean                                                                               | PASS                       |
+| `pnpm lint` clean                                                                                                    | PASS                       |
+| No DB access in unit tests (remember mocked); integration tests blind (no Docker in sandbox)                         | PASS                       |
+
+Open questions raised: OQ-023 (hoursPerWeek and assessmentWeighting data missing from CAPS source files — needed for complete GradeFramework; CE-01 falls back to NEEDS_INPUT without them).

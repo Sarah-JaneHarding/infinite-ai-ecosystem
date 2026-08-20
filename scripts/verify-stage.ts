@@ -409,6 +409,19 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/pd-journal test',
     ],
   },
+  {
+    id: '29',
+    name: 'L0 Curriculum Seeder',
+    commands: [
+      // 30 unit tests across 3 suites:
+      //   caps.spec.ts     — buildCapsL0Payload (5) and selectCapsDocuments (6)
+      //   atp.spec.ts      — buildAtpL0Payload (6) and selectAtpDocuments (7)
+      //   seed.spec.ts     — seedCurriculumFromContracts (6) with mocked brain
+      // Integration tests (seed.integration.spec.ts) need Docker/Testcontainers
+      // and run separately via pnpm --filter @infinite-ai/curriculum-seed test:integration.
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+    ],
+  },
 ];
 
 function usage(): never {
