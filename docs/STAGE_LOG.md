@@ -5717,3 +5717,54 @@ the stage gate: `ChatCompletionResponse` was imported as a value and needed `typ
 | `pnpm format:check` clean                                                               | PASS                       |
 
 Open questions raised: none.
+
+---
+
+## Stage 34 — CE-02 ATP Sequencer executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE02Executor` factory for the `sequence-atp` pipeline step
+(CE-02). The executor (1) parses `CE02Input` from the step context, (2) opens a tenant-scoped
+read transaction and loads ALL constitution rows, (3) filters to both `CAPS_CANON` rows (the
+GradeFramework source) AND `ATP_CALENDAR` rows (the DBE pacing documents), (4) calls the
+Model Gateway via `curriculum.sequence` with the combined L0 documents and input parameters
+(including the optional `schoolCalendar` overrides), (5) parses and validates the response as
+`ATPResult`. Both CAPS and ATP documents are ratified government materials; the null
+de-identification provenance stamp records that no PII scrubbing is needed. `ListConstitutionFn`
+was already defined in `l0-gate-executor.ts` — the executor imports it from there rather than
+re-declaring it; the test imports it from the same location.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce02-executor.ts` — new: `makeCE02Executor`, `WithCE02TenantFn`,
+  `CE02GatewayCallFn` types (imports `ListConstitutionFn` from l0-gate-executor)
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE02Executor`, `CE02GatewayCallFn`,
+  `WithCE02TenantFn`
+- `packages/curriculum-seed/test/ce02-executor.spec.ts` — 13 unit tests (82 total in package)
+- `scripts/verify-stage.ts` — Stage 34 entry
+
+### Exit Gate
+
+| Criterion                                                                            | Result                     |
+| ------------------------------------------------------------------------------------ | -------------------------- |
+| `makeCE02Executor` returns a `StepExecutor` typed `(ctx) => Promise<ATPResult>`      | PASS                       |
+| Returns `ATPResult` with `status: 'needs_input'` when gateway returns needs_input    | PASS                       |
+| Throws `CurriculumSeedError` when `CE02Input` is invalid (missing academicYear)      | PASS                       |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                 | PASS                       |
+| Throws `CurriculumSeedError` when gateway response doesn't match `ATPResult`         | PASS                       |
+| `listConstitution` errors propagate without swallowing                               | PASS                       |
+| `gatewayCall` errors propagate without swallowing                                    | PASS                       |
+| `tenantId` from input forwarded to `withTenant` verbatim                             | PASS                       |
+| Both `CAPS_CANON` and `ATP_CALENDAR` rows passed — `TEMPLATE` rows filtered out      | PASS                       |
+| `grade`, `subjects`, `academicYear`, and `tenantId` included in gateway user message | PASS                       |
+| `schoolCalendar` included in user message when provided                              | PASS                       |
+| `schoolCalendar` omitted from user message when not provided                         | PASS                       |
+| `promptBody` used as system message                                                  | PASS                       |
+| `curriculum.sequence` used as the model name                                         | PASS                       |
+| All 82 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)           | PASS — 82 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                         | PASS                       |
+| `pnpm lint` clean                                                                    | PASS                       |
+| `pnpm format:check` clean                                                            | PASS                       |
+
+Open questions raised: none.

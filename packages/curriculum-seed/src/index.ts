@@ -19,6 +19,11 @@ export {
   type WithCE01TenantFn,
 } from './ce01-executor.js';
 export {
+  makeCE02Executor,
+  type CE02GatewayCallFn,
+  type WithCE02TenantFn,
+} from './ce02-executor.js';
+export {
   makePublishCurriculumVersionExecutor,
   type RememberFn,
   type WithPublishTenantFn,

@@ -503,6 +503,30 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/curriculum-seed typecheck',
     ],
   },
+  {
+    id: '34',
+    name: 'CE-02 ATP Sequencer executor factory',
+    commands: [
+      // 82 unit tests across 9 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts           — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts           — Stage 34: makeCE02Executor (13 tests)
+      //     needs_input passthrough, invalid input, non-JSON response, invalid ATPResult,
+      //     listConstitution error propagation, gatewayCall error propagation,
+      //     tenantId forwarding, CAPS_CANON+ATP_CALENDAR included (TEMPLATE excluded),
+      //     grade/subjects/academicYear in user message, schoolCalendar included/omitted,
+      //     promptBody as system message, curriculum.sequence model
+      // makeCE02Executor: packages/curriculum-seed/src/ce02-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
 ];
 
 function usage(): never {
