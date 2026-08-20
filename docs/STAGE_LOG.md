@@ -5670,3 +5670,50 @@ four new export names added to `packages/contracts/test/exports.spec.ts`.
 | `pnpm format:check` clean                                                                                     | PASS                       |
 
 Open questions raised: none.
+
+---
+
+## Stage 33 — CE-01 CAPS Mapper executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE01Executor` factory for the `build-topic-graph` pipeline
+step (CE-01). The executor (1) parses `CE01Input` from the step context, (2) opens a
+tenant-scoped read transaction and loads constitution rows from the Brain, (3) filters to
+`CAPS_CANON` rows only (excluding `ATP_CALENDAR` and other kinds), (4) calls the Model
+Gateway with the CE-01 prompt body and L0 documents as user-message context, (5) parses and
+validates the response as `FrameworkResult`. All model calls go through the gateway — no
+provider SDK is imported. CAPS documents are government curriculum policy; the null
+de-identification provenance stamp (`deidentified: true, saltVersion: 0, dropped: []`)
+records that the content was checked and contains no PII to scrub. Fixed a lint error during
+the stage gate: `ChatCompletionResponse` was imported as a value and needed `type` import.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce01-executor.ts` — new: `makeCE01Executor`, `WithCE01TenantFn`,
+  `ListCapsFn`, `GatewayCallFn` types
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE01Executor` and its fn types
+- `packages/curriculum-seed/test/ce01-executor.spec.ts` — 10 unit tests (69 total in package)
+- `scripts/verify-stage.ts` — Stage 33 entry
+
+### Exit Gate
+
+| Criterion                                                                               | Result                     |
+| --------------------------------------------------------------------------------------- | -------------------------- |
+| `makeCE01Executor` returns a `StepExecutor` typed `(ctx) => Promise<FrameworkResult>`   | PASS                       |
+| Returns `FrameworkResult` with `status: 'needs_input'` when gateway returns needs_input | PASS                       |
+| Throws `CurriculumSeedError` when `CE01Input` is invalid (missing grade/subjects)       | PASS                       |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                    | PASS                       |
+| Throws `CurriculumSeedError` when gateway response doesn't match `FrameworkResult`      | PASS                       |
+| `listCaps` errors propagate without swallowing                                          | PASS                       |
+| `gatewayCall` errors propagate without swallowing                                       | PASS                       |
+| `tenantId` from input forwarded to `withTenant` verbatim                                | PASS                       |
+| Only `CAPS_CANON` rows passed to gateway — `ATP_CALENDAR` rows filtered out             | PASS                       |
+| `grade` and `subjects` from input included in gateway user message                      | PASS                       |
+| `promptBody` used as system message in gateway request                                  | PASS                       |
+| All 69 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)              | PASS — 69 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                            | PASS                       |
+| `pnpm lint` clean (type-import fix applied for `ChatCompletionResponse`)                | PASS                       |
+| `pnpm format:check` clean                                                               | PASS                       |
+
+Open questions raised: none.

@@ -13,6 +13,12 @@ export {
   type WithTenantFn,
 } from './l0-gate-executor.js';
 export {
+  makeCE01Executor,
+  type GatewayCallFn,
+  type ListCapsFn,
+  type WithCE01TenantFn,
+} from './ce01-executor.js';
+export {
   makePublishCurriculumVersionExecutor,
   type RememberFn,
   type WithPublishTenantFn,

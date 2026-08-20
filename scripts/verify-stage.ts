@@ -481,6 +481,28 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/agents typecheck',
     ],
   },
+  {
+    id: '33',
+    name: 'CE-01 CAPS Mapper executor factory',
+    commands: [
+      // 69 unit tests across 8 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts           — Stage 33: makeCE01Executor (10 tests)
+      //     needs_input passthrough, invalid input, non-JSON response, invalid FrameworkResult,
+      //     listCaps error propagation, gatewayCall error propagation, tenantId forwarding,
+      //     CAPS_CANON filtering (not ATP_CALENDAR), grade/subjects in user message,
+      //     promptBody as system message
+      // makeCE01Executor: packages/curriculum-seed/src/ce01-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
 ];
 
 function usage(): never {
