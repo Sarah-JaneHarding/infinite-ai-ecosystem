@@ -610,6 +610,37 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/curriculum-seed typecheck',
     ],
   },
+  {
+    id: '38',
+    name: 'CE-06 Assessment Designer executor factory',
+    commands: [
+      // 141 unit tests across 13 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts           — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts           — Stage 34 (13 tests)
+      //   ce03-executor.spec.ts           — Stage 35 (11 tests)
+      //   ce04-executor.spec.ts           — Stage 36 (15 tests)
+      //   ce05-executor.spec.ts           — Stage 37 (15 tests)
+      //   ce06-executor.spec.ts           — Stage 38: makeCE06Executor (18 tests)
+      //     needs_input passthrough, ok result passthrough, invalid input (missing taskKind),
+      //     non-JSON response, invalid AssessmentTaskDesignResult, listConstitution error
+      //     propagation, getGradeFramework error propagation, getTermPlan error propagation,
+      //     gatewayCall error propagation, tenantId+actorId forwarding, only ASSESSMENT_POLICY
+      //     rows passed (CAPS_CANON+ATP_CALENDAR excluded), framework+termPlan from Brain in
+      //     context, null framework+termPlan when Brain returns null, getGradeFramework correct
+      //     params, getTermPlan correct params, all input fields in user message, promptBody as
+      //     system message, curriculum.assess model
+      // makeCE06Executor: packages/curriculum-seed/src/ce06-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
 ];
 
 function usage(): never {

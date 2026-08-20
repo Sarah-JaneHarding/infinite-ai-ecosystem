@@ -5931,3 +5931,62 @@ scrubbing is needed.
 | `pnpm format:check` clean                                                                      | PASS                        |
 
 Open questions raised: none.
+
+---
+
+## Stage 38 — CE-06 Assessment Designer executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE06Executor` factory for the `design-assessment-task` pipeline
+step (CE-06 Assessment Designer). The executor (1) parses `CE06Input` (grade, subject, termNumber,
+taskKind, academicYear, tenantId) from the step context, (2) opens a tenant-scoped read transaction,
+(3) filters constitution rows to `ASSESSMENT_POLICY` only, (4) concurrently retrieves the ratified
+GradeFramework via `GetGradeFrameworkFn` and the ratified TermPlan via `GetTermPlanFn` from the
+Brain artefact store, (5) calls the Model Gateway via `curriculum.assess` with the three named
+context fields (`assessmentPolicy`, `framework`, `termPlan`) as required by the CE-06 prompt
+grounding spec, (6) parses and validates the response as `AssessmentTaskDesignResult` (discriminated
+union: `{ status: 'ok', task: AssessmentTaskDesign }` or `AssessmentDesignNeedsInput`). CE-06 is the
+first executor that retrieves two Brain artefacts concurrently (`Promise.all`). `GetTermPlanFn` is
+re-exported from ce06-executor to save callers importing from two modules. All context documents are
+government/school curriculum policy materials; the null de-identification provenance stamp records
+that no PII scrubbing is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce06-executor.ts` — new: `makeCE06Executor`, `WithCE06TenantFn`,
+  `CE06GatewayCallFn`, `GetGradeFrameworkFn` types; re-exports `GetTermPlanFn` from ce04-executor
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE06Executor`, `CE06GatewayCallFn`,
+  `GetGradeFrameworkFn`, `WithCE06TenantFn`
+- `packages/curriculum-seed/test/ce06-executor.spec.ts` — 18 unit tests (141 total in package)
+- `scripts/verify-stage.ts` — Stage 38 entry
+
+### Exit Gate
+
+| Criterion                                                                                        | Result                      |
+| ------------------------------------------------------------------------------------------------ | --------------------------- |
+| `makeCE06Executor` returns a `StepExecutor` typed `(ctx) => Promise<AssessmentTaskDesignResult>` | PASS                        |
+| Returns `needs_input` result when gateway returns it                                             | PASS                        |
+| Returns `ok` result with valid `AssessmentTaskDesign` when gateway returns it                    | PASS                        |
+| Throws `CurriculumSeedError` when `CE06Input` is invalid (missing taskKind)                      | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                             | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `AssessmentTaskDesignResult`    | PASS                        |
+| `listConstitution` errors propagate without swallowing                                           | PASS                        |
+| `getGradeFramework` errors propagate without swallowing                                          | PASS                        |
+| `getTermPlan` errors propagate without swallowing                                                | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                                | PASS                        |
+| `tenantId` and `actorId: 'ce06-executor'` forwarded to `withTenant` verbatim                     | PASS                        |
+| Only `ASSESSMENT_POLICY` rows passed — `CAPS_CANON` and `ATP_CALENDAR` excluded                  | PASS                        |
+| `framework` and `termPlan` from Brain passed in context                                          | PASS                        |
+| `null` framework and termPlan passed when Brain getters return null                              | PASS                        |
+| `getGradeFramework` called with correct `grade/academicYear` params                              | PASS                        |
+| `getTermPlan` called with correct `grade/termNumber/academicYear` params                         | PASS                        |
+| All input fields (grade, subject, termNumber, taskKind, academicYear) in user message            | PASS                        |
+| `promptBody` used as system message                                                              | PASS                        |
+| `curriculum.assess` used as the model name                                                       | PASS                        |
+| All 141 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                      | PASS — 141 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                                     | PASS                        |
+| `pnpm lint` clean                                                                                | PASS (checked)              |
+| `pnpm format:check` clean                                                                        | PASS (checked)              |
+
+Open questions raised: none.

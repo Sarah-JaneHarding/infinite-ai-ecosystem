@@ -41,6 +41,12 @@ export {
   type WithCE05TenantFn,
 } from './ce05-executor.js';
 export {
+  makeCE06Executor,
+  type CE06GatewayCallFn,
+  type GetGradeFrameworkFn,
+  type WithCE06TenantFn,
+} from './ce06-executor.js';
+export {
   makePublishCurriculumVersionExecutor,
   type RememberFn,
   type WithPublishTenantFn,
