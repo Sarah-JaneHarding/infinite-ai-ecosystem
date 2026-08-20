@@ -47,6 +47,13 @@ export {
   type WithCE06TenantFn,
 } from './ce06-executor.js';
 export {
+  makeCE07Executor,
+  type CE07GatewayCallFn,
+  type GetAssessmentTaskFn,
+  type GetRubricFrameworkFn,
+  type WithCE07TenantFn,
+} from './ce07-executor.js';
+export {
   makePublishCurriculumVersionExecutor,
   type RememberFn,
   type WithPublishTenantFn,

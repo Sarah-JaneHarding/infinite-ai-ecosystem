@@ -5990,3 +5990,60 @@ that no PII scrubbing is needed.
 | `pnpm format:check` clean                                                                        | PASS (checked)              |
 
 Open questions raised: none.
+
+---
+
+## Stage 39 — CE-07 Rubric Builder executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE07Executor` factory for the `build-rubric` pipeline step
+(CE-07 Rubric Builder). The executor (1) parses `CE07Input` (grade, subject, taskKind, tenantId,
+totalMarks) from the step context, (2) opens a tenant-scoped read transaction, (3) concurrently
+retrieves the ratified GradeFramework via `GetRubricFrameworkFn` and the ratified
+AssessmentTaskDesign via `GetAssessmentTaskFn` from the Brain artefact store, (4) calls the
+Model Gateway via `curriculum.rubric` with `framework` and `assessmentTask` as named context
+fields, (5) parses and validates the response as `RubricResult` (discriminated union:
+`{ status: 'ok', rubric: Rubric }` or `RubricNeedsInput`). CE-07 is the only executor that needs
+no constitution rows at all — it works entirely from two Brain artefacts. Introduced
+`GetRubricFrameworkFn` (takes `{ grade }` without `academicYear`, since `CE07Input` does not
+carry that field; the implementation resolves it internally) and `GetAssessmentTaskFn`
+(takes `{ grade, subject, taskKind, totalMarks }`). All context documents are school curriculum
+materials; the null de-identification provenance stamp records no PII scrubbing is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce07-executor.ts` — new: `makeCE07Executor`, `WithCE07TenantFn`,
+  `CE07GatewayCallFn`, `GetRubricFrameworkFn`, `GetAssessmentTaskFn` types
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE07Executor`, `CE07GatewayCallFn`,
+  `GetAssessmentTaskFn`, `GetRubricFrameworkFn`, `WithCE07TenantFn`
+- `packages/curriculum-seed/test/ce07-executor.spec.ts` — 16 unit tests (157 total in package)
+- `scripts/verify-stage.ts` — Stage 39 entry
+
+### Exit Gate
+
+| Criterion                                                                          | Result                      |
+| ---------------------------------------------------------------------------------- | --------------------------- |
+| `makeCE07Executor` returns a `StepExecutor` typed `(ctx) => Promise<RubricResult>` | PASS                        |
+| Returns `needs_input` result when gateway returns it                               | PASS                        |
+| Returns `ok` result with valid `Rubric` when gateway returns it                    | PASS                        |
+| Throws `CurriculumSeedError` when `CE07Input` is invalid (missing totalMarks)      | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON               | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `RubricResult`    | PASS                        |
+| `getGradeFramework` errors propagate without swallowing                            | PASS                        |
+| `getAssessmentTask` errors propagate without swallowing                            | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                  | PASS                        |
+| `tenantId` and `actorId: 'ce07-executor'` forwarded to `withTenant` verbatim       | PASS                        |
+| `framework` and `assessmentTask` from Brain passed in context                      | PASS                        |
+| `null` framework and assessmentTask passed when Brain getters return null          | PASS                        |
+| `getGradeFramework` called with `{ grade }` only (no academicYear)                 | PASS                        |
+| `getAssessmentTask` called with correct `grade/subject/taskKind/totalMarks` params | PASS                        |
+| All input fields (grade, subject, taskKind, totalMarks) in user message            | PASS                        |
+| `promptBody` used as system message                                                | PASS                        |
+| `curriculum.rubric` used as the model name                                         | PASS                        |
+| All 157 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)        | PASS — 157 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                       | PASS                        |
+| `pnpm lint` clean                                                                  | PASS (checked)              |
+| `pnpm format:check` clean                                                          | PASS (checked)              |
+
+Open questions raised: none.
