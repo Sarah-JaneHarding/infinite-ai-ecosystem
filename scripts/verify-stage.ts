@@ -438,6 +438,25 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/curriculum-seed test',
     ],
   },
+  {
+    id: '31',
+    name: 'l0.ingest_ratified_source tool — MOD-01 pipeline readiness gate',
+    commands: [
+      // 45 unit tests across 5 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts             — Stage 29 (11 tests)
+      //   atp.spec.ts              — Stage 29 (13 tests)
+      //   seed.spec.ts             — Stage 29 (6 tests)
+      //   ratify.spec.ts           — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts — Stage 31: makeL0GateExecutor (9 tests)
+      //     happy path (both kinds, CAPS-only, ATP-only), L0NotReadyError,
+      //     error message content, invalid input, TEMPLATE rows ignored,
+      //     db error propagation, tenantId forwarding
+      // ToolDeclaration: packages/agents/src/mod-01/l0-ingest-ratified-source.ts
+      //   validated at declaration time via ToolDeclaration.parse()
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/agents typecheck',
+    ],
+  },
 ];
 
 function usage(): never {

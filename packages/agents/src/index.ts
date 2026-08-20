@@ -31,6 +31,8 @@ export {
 
 export { ToolRegistry, ToolRegistryError, bootToolRegistry } from './tool-registry.js';
 
+export { L0IngestRatifiedSourceDeclaration } from './mod-01/l0-ingest-ratified-source.js';
+
 export { CE01Contract } from './mod-01/CE-01.contract.js';
 export { CE02Contract } from './mod-01/CE-02.contract.js';
 export { CE03Contract } from './mod-01/CE-03.contract.js';

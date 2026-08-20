@@ -5530,3 +5530,80 @@ populates with fixture data).
 | `pnpm format:check` clean                                                            | PASS                       |
 
 Open questions raised: none.
+
+---
+
+## Stage 31 — l0.ingest_ratified_source — MOD-01 pipeline readiness gate
+
+Started: 2026-08-20 Completed: 2026-08-20
+Exit gate: PASS
+Tests: 45 passing, 0 skipped (5 suites in @infinite-ai/curriculum-seed).
+Coverage: unit tier only — integration tests (Testcontainers) run separately.
+Deviations from manual: none.
+
+**What was built**
+
+The MOD-01 curriculum pipeline (`packages/orchestrator/src/pipelines/mod-01.ts`) declares
+its first step as a `tool_call` to `l0.ingest_ratified_source`. Before Stage 31 this tool
+name was a bare string with no ToolDeclaration and no StepExecutor — the pipeline would
+have passed DAG validation but crashed immediately when the runner tried to execute the step.
+Stage 31 closes that gap:
+
+- **`packages/agents/src/mod-01/l0-ingest-ratified-source.ts`** — a `ToolDeclaration` for
+  `l0.ingest_ratified_source`, created via `ToolDeclaration.parse()`. Classified as
+  `sideEffect: 'read'`, `idempotent: true`, with `CE01Input` as its input schema. This is
+  the declaration a boot-time `ToolRegistry` registers; `validatePipelineGating` uses the
+  registry to confirm no `irreversible` tool step is reachable without a preceding
+  `human_gate`.
+
+- **`packages/curriculum-seed/src/l0-gate-executor.ts`** — `makeL0GateExecutor(withTenant, listConstitution)`
+  returns a `StepExecutor` (same function signature as `RunnerOptions.executeStep`). The
+  executor:
+  1. Parses `CE01Input` from `context.input`; throws `CurriculumSeedError` on a bad shape.
+  2. Opens a tenant-scoped read transaction for `context.input.tenantId`.
+  3. Calls `listConstitution(tx)` (injected, defaults to `listEffectiveConstitution` from
+     `@infinite-ai/db` at the call site).
+  4. Counts `CAPS_CANON` and `ATP_CALENDAR` rows. Ignores `TEMPLATE` rows.
+  5. Throws `L0NotReadyError` if both counts are zero — fail early, clear error, before CE-01
+     runs against an empty L0 and returns `FrameworkNeedsInput` for every subject.
+  6. Returns `{ capsCount, atpCount }` for the runner to persist as the step output.
+
+- **`L0NotReadyError`** — extends `Error` (not `CurriculumSeedError`, because TypeScript
+  does not permit a subclass to narrow a readonly `name` literal to a different value).
+  Message includes the `tenantId` and the remediation command.
+
+**Why the executor lives in `@infinite-ai/curriculum-seed`**
+
+The executor's only external dependency is `listEffectiveConstitution` from `@infinite-ai/db`,
+which `curriculum-seed` already imports. Placing it here avoids a new cross-package
+dependency and keeps all L0-related seeding, ratification and readiness logic in one package.
+
+**Files changed**
+
+- `packages/agents/src/mod-01/l0-ingest-ratified-source.ts` — new
+- `packages/agents/src/index.ts` — exports `L0IngestRatifiedSourceDeclaration`
+- `packages/curriculum-seed/src/l0-gate-executor.ts` — new
+- `packages/curriculum-seed/src/index.ts` — exports `L0NotReadyError`, `makeL0GateExecutor`,
+  `L0GateResult`, `ListConstitutionFn`, `StepExecutionContext`, `WithTenantFn`
+- `packages/curriculum-seed/test/l0-gate-executor.spec.ts` — 9 unit tests
+- `scripts/verify-stage.ts` — Stage 31 entry
+
+### Exit Gate
+
+| Criterion                                                                                  | Result                     |
+| ------------------------------------------------------------------------------------------ | -------------------------- |
+| `ToolDeclaration` for `l0.ingest_ratified_source` registered via `ToolDeclaration.parse()` | PASS                       |
+| Tool classified `read`, `idempotent: true`, `inputSchema: CE01Input`                       | PASS                       |
+| Executor returns `{ capsCount, atpCount }` when CAPS_CANON + ATP_CALENDAR rows exist       | PASS                       |
+| Counts CAPS-only and ATP-only scenarios independently                                      | PASS                       |
+| Throws `L0NotReadyError` when constitution is empty (both counts zero)                     | PASS                       |
+| Error message includes `tenantId` and remediation hint                                     | PASS                       |
+| Throws `CurriculumSeedError` on invalid `CE01Input` shape                                  | PASS                       |
+| `TEMPLATE` kind rows are ignored (not counted, do not prevent error)                       | PASS                       |
+| `listConstitution` errors propagate without swallowing                                     | PASS                       |
+| `tenantId` from input is forwarded to `withTenant` verbatim                                | PASS                       |
+| All 45 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                 | PASS — 45 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/agents typecheck` clean                                        | PASS                       |
+| `pnpm lint` clean                                                                          | PASS                       |
+
+Open questions raised: none.
