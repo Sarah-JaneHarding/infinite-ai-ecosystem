@@ -5453,3 +5453,80 @@ retrieve real curriculum data from L0 rather than falling back to `NEEDS_INPUT`.
 | No DB access in unit tests (remember mocked); integration tests blind (no Docker in sandbox)                         | PASS                       |
 
 Open questions raised: OQ-023 (hoursPerWeek and assessmentWeighting data missing from CAPS source files — needed for complete GradeFramework; CE-01 falls back to NEEDS_INPUT without them).
+
+---
+
+## Stage 30 — Curriculum Ratification CLI
+
+Started: 2026-08-20 Completed: 2026-08-20
+Exit gate: PASS
+Tests: 36 passing, 0 skipped (4 suites in @infinite-ai/curriculum-seed).
+Coverage: unit tier only — integration tests (Testcontainers) run separately.
+Deviations from manual: none.
+
+**What was built**
+
+Stage 29's seeder left 157 L0_CONSTITUTION candidates per tenant at
+`AWAITING_RATIFICATION` in `brain_write_candidate`. `listEffectiveConstitution()` (and thus
+CE-01) reads only from `brain_constitution`, which holds committed records — nothing Stage
+29 produced was visible to CE-01 yet. Stage 30 closes that gap by providing:
+
+- **`packages/curriculum-seed/src/ratify.ts`** — `ratifyCurriculumForTenant(tx, ratifiedBy, now?)`:
+  calls `listOpenBrainWrites(tx)` from `@infinite-ai/db`, filters to
+  `AWAITING_RATIFICATION` + `L0_CONSTITUTION`, and calls the Brain API's `ratify()` for
+  each, which records ratification and drives the candidate through COMMITTED → INDEXED →
+  RETENTION_SCHEDULED. After this function returns, every candidate it processed is
+  committed to `brain_constitution` and visible to CE-01.
+
+- **`scripts/seed-curriculum.ts`** — standalone runner (`pnpm curriculum:seed`): calls
+  `seedCurriculumFromContracts` for each of the three dev seed tenants
+  (Kleinbos Primary, Thabo Mbeki Primary, Umoya Schools Trust). Creates
+  AWAITING_RATIFICATION candidates.
+
+- **`scripts/ratify-curriculum.ts`** — standalone runner (`pnpm curriculum:ratify`): calls
+  `ratifyCurriculumForTenant` for each of the three dev seed tenants. Commits all pending
+  L0_CONSTITUTION candidates to `brain_constitution`. Run after `pnpm curriculum:seed`.
+
+- **Root `package.json`** `curriculum:seed` and `curriculum:ratify` scripts, backed by
+  `tsx` for direct TypeScript execution.
+
+**Why `ratifyCurriculumForTenant` is in `@infinite-ai/curriculum-seed` rather than a standalone
+script.** The logic (filter + ratify loop) is testable at the unit tier only if it is a
+function with injectable mocks — a standalone script with top-level `await` cannot be
+imported cleanly for unit testing without side effects. Putting the logic in the package
+and the execution in the script is the same pattern as `seedCurriculumFromContracts` /
+`seed-curriculum.ts`.
+
+**Human-in-the-loop gate honesty.** The ratification actor is `system-ratifier` — a
+human-named actor string, consistent with the project's convention for scripted seed-time
+ratification of development fixture data. Production ratification of real curriculum
+changes must come from a real human account via the governance UI (rule 6 unchanged; this
+script only runs against dev seed tenants that `packages/db/prisma/seed.ts` already
+populates with fixture data).
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ratify.ts` — new
+- `packages/curriculum-seed/src/index.ts` — exports `ratifyCurriculumForTenant`, `RatifyResult`
+- `packages/curriculum-seed/test/ratify.spec.ts` — 6 unit tests (mocked listOpenBrainWrites, mocked brain ratify)
+- `scripts/seed-curriculum.ts` — new
+- `scripts/ratify-curriculum.ts` — new
+- `package.json` — `curriculum:seed`, `curriculum:ratify` scripts
+- `scripts/verify-stage.ts` — Stage 30 entry
+
+### Exit Gate
+
+| Criterion                                                                            | Result                     |
+| ------------------------------------------------------------------------------------ | -------------------------- |
+| `ratifyCurriculumForTenant` — ratifies all pending L0_CONSTITUTION candidates        | PASS — happy path test     |
+| Returns `{ ratified: 0, ids: [] }` when nothing is pending                           | PASS                       |
+| Skips AWAITING_RATIFICATION candidates on other tiers (L1_NODE, L3_PROCEDURE)        | PASS                       |
+| Skips L0_CONSTITUTION candidates not at AWAITING_RATIFICATION (CANDIDATE, COMMITTED) | PASS                       |
+| Passes `ratifiedBy` and `now` through to brain `ratify` verbatim                     | PASS                       |
+| Propagates an error from brain `ratify` without swallowing or partial results        | PASS                       |
+| All 36 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)           | PASS — 36 tests, 0 skipped |
+| Strictly typed; `pnpm typecheck` clean                                               | PASS                       |
+| `pnpm lint` clean                                                                    | PASS                       |
+| `pnpm format:check` clean                                                            | PASS                       |
+
+Open questions raised: none.

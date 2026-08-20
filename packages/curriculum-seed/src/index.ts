@@ -3,6 +3,7 @@
 export { buildCapsL0Payload, selectCapsDocuments, submitCapsSource } from './caps.js';
 export { buildAtpL0Payload, selectAtpDocuments, submitAtpSource } from './atp.js';
 export { ALL_CAPS_SOURCES } from './all-caps-sources.js';
+export { ratifyCurriculumForTenant, type RatifyResult } from './ratify.js';
 export { seedCurriculumFromContracts } from './seed.js';
 export {
   AtpCalendarContent,

@@ -422,6 +422,22 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/curriculum-seed test',
     ],
   },
+  {
+    id: '30',
+    name: 'Curriculum Ratification CLI',
+    commands: [
+      // 36 unit tests across 4 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts     — Stage 29 (11 tests)
+      //   atp.spec.ts      — Stage 29 (13 tests)
+      //   seed.spec.ts     — Stage 29 (6 tests)
+      //   ratify.spec.ts   — Stage 30: ratifyCurriculumForTenant (6 tests)
+      //     happy path, empty set, wrong-tier filter, wrong-status filter,
+      //     argument pass-through, error propagation
+      // Scripts: scripts/seed-curriculum.ts and scripts/ratify-curriculum.ts
+      // Integration: pnpm --filter @infinite-ai/curriculum-seed test:integration
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+    ],
+  },
 ];
 
 function usage(): never {
