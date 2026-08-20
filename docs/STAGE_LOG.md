@@ -5768,3 +5768,53 @@ re-declaring it; the test imports it from the same location.
 | `pnpm format:check` clean                                                            | PASS                       |
 
 Open questions raised: none.
+
+---
+
+## Stage 35 — CE-03 Term Planner executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE03Executor` factory for the `plan-term` pipeline step
+(CE-03). The executor (1) parses `CE03Input` from the step context, (2) opens a tenant-scoped
+read transaction and loads ALL constitution rows, (3) filters to `CAPS_CANON` rows (the
+GradeFramework source, CE-01 output), `ATP_CALENDAR` rows (the ATP schedule, CE-02 output, used
+for term-level pacing), and `ASSESSMENT_POLICY` rows (assessment task kinds and scheduling rules),
+(4) calls the Model Gateway via `curriculum.plan` with the combined L0 documents and input
+parameters, (5) parses and validates the response as `TermPlanResult`. CE-03 extends the
+document set from CE-02 by adding `ASSESSMENT_POLICY` rows, which the Term Planner needs to
+place assessment tasks on the calendar. CAPS, ATP, and assessment policy documents are ratified
+government materials; the null de-identification provenance stamp records that no PII scrubbing
+is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce03-executor.ts` — new: `makeCE03Executor`, `WithCE03TenantFn`,
+  `CE03GatewayCallFn` types (imports `ListConstitutionFn` from l0-gate-executor)
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE03Executor`, `CE03GatewayCallFn`,
+  `WithCE03TenantFn`
+- `packages/curriculum-seed/test/ce03-executor.spec.ts` — 11 unit tests (93 total in package)
+- `scripts/verify-stage.ts` — Stage 35 entry
+
+### Exit Gate
+
+| Criterion                                                                              | Result                     |
+| -------------------------------------------------------------------------------------- | -------------------------- |
+| `makeCE03Executor` returns a `StepExecutor` typed `(ctx) => Promise<TermPlanResult>`   | PASS                       |
+| Returns `TermPlanResult` with `status: 'needs_input'` when gateway returns needs_input | PASS                       |
+| Throws `CurriculumSeedError` when `CE03Input` is invalid (missing termNumber)          | PASS                       |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                   | PASS                       |
+| Throws `CurriculumSeedError` when gateway response doesn't match `TermPlanResult`      | PASS                       |
+| `listConstitution` errors propagate without swallowing                                 | PASS                       |
+| `gatewayCall` errors propagate without swallowing                                      | PASS                       |
+| `tenantId` from input forwarded to `withTenant` verbatim                               | PASS                       |
+| `CAPS_CANON`, `ATP_CALENDAR`, `ASSESSMENT_POLICY` rows passed — `TEMPLATE` excluded    | PASS                       |
+| `grade`, `subjects`, `termNumber`, `academicYear` included in gateway user message     | PASS                       |
+| `promptBody` used as system message                                                    | PASS                       |
+| `curriculum.plan` used as the model name                                               | PASS                       |
+| All 93 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)             | PASS — 93 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                           | PASS                       |
+| `pnpm lint` clean                                                                      | PASS                       |
+| `pnpm format:check` clean                                                              | PASS                       |
+
+Open questions raised: none.
