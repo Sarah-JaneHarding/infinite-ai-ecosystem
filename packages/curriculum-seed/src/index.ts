@@ -35,6 +35,12 @@ export {
   type WithCE04TenantFn,
 } from './ce04-executor.js';
 export {
+  makeCE05Executor,
+  type CE05GatewayCallFn,
+  type GetUnitBlueprintFn,
+  type WithCE05TenantFn,
+} from './ce05-executor.js';
+export {
   makePublishCurriculumVersionExecutor,
   type RememberFn,
   type WithPublishTenantFn,

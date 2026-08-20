@@ -5874,3 +5874,60 @@ no PII scrubbing is needed.
 | `pnpm format:check` clean                                                                 | PASS                        |
 
 Open questions raised: none.
+
+---
+
+## Stage 37 — CE-05 Lesson Plan Generator executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE05Executor` factory for the `generate-lesson-plan` pipeline
+step (CE-05 Lesson Plan Generator). The executor (1) parses `CE05Input` (grade, subject,
+weekNumber, termNumber, academicYear, tenantId, templateId) from the step context, (2) opens a
+tenant-scoped read transaction, (3) filters constitution rows to `CAPS_CANON` (GradeFramework —
+learning objectives must trace to success criteria here) and `TEMPLATE` (school's lesson plan
+template definitions — agent picks the one matching `input.templateId`), (4) retrieves the
+ratified UnitBlueprint for the week via the injected `GetUnitBlueprintFn`, (5) calls the Model
+Gateway via `curriculum.lessons` with l0Documents and unitBlueprint as separate context fields,
+(6) parses and validates the response as `LessonPlanResult`. CE-05 is the first executor that
+needs both a TEMPLATE constitution row (for lesson plan structure) and a Brain artefact
+(UnitBlueprint from CE-04); ATP_CALENDAR and ASSESSMENT_POLICY rows are excluded as they are
+already embedded in the UnitBlueprint's evidence entries. CAPS and template documents are
+school curriculum materials; the null de-identification provenance stamp records that no PII
+scrubbing is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce05-executor.ts` — new: `makeCE05Executor`, `WithCE05TenantFn`,
+  `CE05GatewayCallFn`, `GetUnitBlueprintFn` types (imports `ListConstitutionFn` from l0-gate-executor)
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE05Executor`, `CE05GatewayCallFn`,
+  `GetUnitBlueprintFn`, `WithCE05TenantFn`
+- `packages/curriculum-seed/test/ce05-executor.spec.ts` — 15 unit tests (123 total in package)
+- `scripts/verify-stage.ts` — Stage 37 entry
+
+### Exit Gate
+
+| Criterion                                                                                      | Result                      |
+| ---------------------------------------------------------------------------------------------- | --------------------------- |
+| `makeCE05Executor` returns a `StepExecutor` typed `(ctx) => Promise<LessonPlanResult>`         | PASS                        |
+| Returns `LessonPlanResult` with `status: 'needs_input'` when gateway returns it                | PASS                        |
+| Throws `CurriculumSeedError` when `CE05Input` is invalid (missing templateId)                  | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                           | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `LessonPlanResult`            | PASS                        |
+| `listConstitution` errors propagate without swallowing                                         | PASS                        |
+| `getUnitBlueprint` errors propagate without swallowing                                         | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                              | PASS                        |
+| `tenantId` from input forwarded to `withTenant` verbatim                                       | PASS                        |
+| `CAPS_CANON` and `TEMPLATE` rows passed — `ATP_CALENDAR` and `ASSESSMENT_POLICY` excluded      | PASS                        |
+| `unitBlueprint` from `getUnitBlueprint` passed in context                                      | PASS                        |
+| `null` unitBlueprint passed in context when `getUnitBlueprint` returns null                    | PASS                        |
+| `getUnitBlueprint` called with correct `grade/subject/termNumber/weekNumber/academicYear`      | PASS                        |
+| All input fields (grade, subject, weekNumber, termNumber, academicYear, templateId) in message | PASS                        |
+| `promptBody` used as system message                                                            | PASS                        |
+| `curriculum.lessons` used as the model name                                                    | PASS                        |
+| All 123 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                    | PASS — 123 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                                   | PASS                        |
+| `pnpm lint` clean                                                                              | PASS                        |
+| `pnpm format:check` clean                                                                      | PASS                        |
+
+Open questions raised: none.
