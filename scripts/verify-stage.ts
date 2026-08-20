@@ -552,6 +552,35 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/curriculum-seed typecheck',
     ],
   },
+  {
+    id: '36',
+    name: 'CE-04 Unit Architect executor factory',
+    commands: [
+      // 108 unit tests across 11 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts           — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts           — Stage 34 (13 tests)
+      //   ce03-executor.spec.ts           — Stage 35 (11 tests)
+      //   ce04-executor.spec.ts           — Stage 36: makeCE04Executor (15 tests)
+      //     needs_input passthrough, invalid input (missing contentArea), non-JSON response,
+      //     invalid UnitBlueprintResult, listConstitution error propagation, getTermPlan
+      //     error propagation, gatewayCall error propagation, tenantId forwarding,
+      //     only CAPS_CANON rows passed (ATP_CALENDAR+ASSESSMENT_POLICY excluded),
+      //     termPlan passed from getTermPlan, null termPlan passed when absent,
+      //     grade/subject/termNumber/contentArea/academicYear in user message,
+      //     getTermPlan called with correct grade/termNumber/academicYear,
+      //     promptBody as system message, curriculum.design model
+      // makeCE04Executor: packages/curriculum-seed/src/ce04-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
 ];
 
 function usage(): never {

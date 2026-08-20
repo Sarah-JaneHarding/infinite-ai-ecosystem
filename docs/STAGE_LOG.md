@@ -5818,3 +5818,59 @@ is needed.
 | `pnpm format:check` clean                                                              | PASS                       |
 
 Open questions raised: none.
+
+---
+
+## Stage 36 — CE-04 Unit Architect executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE04Executor` factory for the `design-unit` pipeline step
+(CE-04 Unit Architect). The executor (1) parses `CE04Input` (grade, subject, termNumber,
+contentArea, academicYear, tenantId) from the step context, (2) opens a tenant-scoped read
+transaction, (3) filters constitution rows to `CAPS_CANON` only (the GradeFramework source —
+CE-04 does not need ATP_CALENDAR or ASSESSMENT_POLICY directly because those scheduling rules
+are already embedded in the TermPlan's assessmentCalendar entries), (4) retrieves the ratified
+TermPlan via the injected `GetTermPlanFn`, (5) calls the Model Gateway via `curriculum.design`
+with both the CAPS_CANON rows and the TermPlan (or null) as context, (6) parses and validates
+the response as `UnitBlueprintResult`. CE-04 introduces a new injected dependency
+(`GetTermPlanFn`) beyond the `ListConstitutionFn` pattern used by CE-01 through CE-03, because
+the TermPlan is a Brain artefact produced by CE-03, not a constitution row. CAPS documents
+are ratified government materials; the null de-identification provenance stamp records that
+no PII scrubbing is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce04-executor.ts` — new: `makeCE04Executor`, `WithCE04TenantFn`,
+  `CE04GatewayCallFn`, `GetTermPlanFn` types (imports `ListConstitutionFn` from l0-gate-executor)
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE04Executor`, `CE04GatewayCallFn`,
+  `GetTermPlanFn`, `WithCE04TenantFn`
+- `packages/curriculum-seed/test/ce04-executor.spec.ts` — 15 unit tests (108 total in package)
+- `scripts/verify-stage.ts` — Stage 36 entry
+
+### Exit Gate
+
+| Criterion                                                                                 | Result                      |
+| ----------------------------------------------------------------------------------------- | --------------------------- |
+| `makeCE04Executor` returns a `StepExecutor` typed `(ctx) => Promise<UnitBlueprintResult>` | PASS                        |
+| Returns `UnitBlueprintResult` with `status: 'needs_input'` when gateway returns it        | PASS                        |
+| Throws `CurriculumSeedError` when `CE04Input` is invalid (missing contentArea)            | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                      | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `UnitBlueprintResult`    | PASS                        |
+| `listConstitution` errors propagate without swallowing                                    | PASS                        |
+| `getTermPlan` errors propagate without swallowing                                         | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                         | PASS                        |
+| `tenantId` from input forwarded to `withTenant` verbatim                                  | PASS                        |
+| Only `CAPS_CANON` rows passed as `l0Documents` — `ATP_CALENDAR` and others excluded       | PASS                        |
+| `termPlan` from `getTermPlan` passed in context                                           | PASS                        |
+| `null` termPlan passed in context when `getTermPlan` returns null                         | PASS                        |
+| `grade`, `subject`, `termNumber`, `contentArea`, `academicYear` in gateway user message   | PASS                        |
+| `getTermPlan` called with correct `grade`, `termNumber`, `academicYear`                   | PASS                        |
+| `promptBody` used as system message                                                       | PASS                        |
+| `curriculum.design` used as the model name                                                | PASS                        |
+| All 108 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)               | PASS — 108 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                              | PASS                        |
+| `pnpm lint` clean                                                                         | PASS                        |
+| `pnpm format:check` clean                                                                 | PASS                        |
+
+Open questions raised: none.
