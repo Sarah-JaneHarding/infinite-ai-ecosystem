@@ -249,6 +249,8 @@ describe('package export surface', () => {
       'EmbeddingsRequest',
       'EmbeddingsResponse',
       'EnrichmentFocus',
+      'EpisodeLog',
+      'EpisodeLogEntry',
       'EvidenceItem',
       'ExemplarCandidate',
       'ExportFormat',
