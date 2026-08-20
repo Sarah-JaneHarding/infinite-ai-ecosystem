@@ -1,0 +1,25 @@
+{
+  "name": "@infinite-ai/curriculum-seed",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Loads ingested CAPS and ATP source data from @infinite-ai/contracts into Brain L0 (CAPS_CANON and ATP_CALENDAR constitution records), enabling CE-01 and CE-02 to retrieve real curriculum content.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
+  },
+  "dependencies": {
+    "@infinite-ai/brain": "workspace:*",
+    "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/db": "workspace:*",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.0"
+  }
+}
