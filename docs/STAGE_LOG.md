@@ -6047,3 +6047,59 @@ materials; the null de-identification provenance stamp records no PII scrubbing 
 | `pnpm format:check` clean                                                          | PASS (checked)              |
 
 Open questions raised: none.
+
+## Stage 40 — CE-08 Differentiation Agent executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE08Executor` factory for the `differentiate-lessons`
+pipeline step (CE-08 Differentiation Agent). The executor (1) parses `CE08Input` (grade,
+subject, weekNumber, termNumber, academicYear, tenantId, tiers) from the step context,
+(2) opens a tenant-scoped read transaction, (3) concurrently retrieves the ratified
+GradeFramework via `GetGradeFrameworkFn` (re-used from CE-06, takes `{ grade, academicYear }`)
+and the ratified LessonPlan via `GetLessonPlanFn` (takes `{ grade, subject, weekNumber,
+termNumber, academicYear }`) from the Brain artefact store, (4) calls the Model Gateway
+via `curriculum.differentiate` with `framework` and `lessonPlan` as named context fields,
+(5) parses and validates the response as `DifferentiationResult` (discriminated union:
+`{ status: 'ok', set: DifferentiatedSet }` or `DifferentiationNeedsInput`). Like CE-07,
+CE-08 needs no constitution rows — it works entirely from two Brain artefacts. Unlike CE-07,
+CE-08 has `academicYear` in its input so it reuses `GetGradeFrameworkFn` from CE-06 directly.
+All context documents are school curriculum planning materials; the null de-identification
+provenance stamp records no PII scrubbing is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce08-executor.ts` — new: `makeCE08Executor`, `WithCE08TenantFn`,
+  `CE08GatewayCallFn`, `GetLessonPlanFn` types; re-exports `GetGradeFrameworkFn` from CE-06
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE08Executor`, `CE08GatewayCallFn`,
+  `GetLessonPlanFn`, `WithCE08TenantFn`
+- `packages/curriculum-seed/test/ce08-executor.spec.ts` — 16 unit tests (173 total in package)
+- `scripts/verify-stage.ts` — Stage 40 entry
+
+### Exit Gate
+
+| Criterion                                                                                      | Result                      |
+| ---------------------------------------------------------------------------------------------- | --------------------------- |
+| `makeCE08Executor` returns a `StepExecutor` typed `(ctx) => Promise<DifferentiationResult>`    | PASS                        |
+| Returns `needs_input` result when gateway returns it                                           | PASS                        |
+| Returns `ok` result with valid `DifferentiatedSet` when gateway returns it                     | PASS                        |
+| Throws `CurriculumSeedError` when `CE08Input` is invalid (missing tiers)                       | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                           | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `DifferentiationResult`       | PASS                        |
+| `getGradeFramework` errors propagate without swallowing                                        | PASS                        |
+| `getLessonPlan` errors propagate without swallowing                                            | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                              | PASS                        |
+| `tenantId` and `actorId: 'ce08-executor'` forwarded to `withTenant` verbatim                   | PASS                        |
+| `framework` and `lessonPlan` from Brain passed in context                                      | PASS                        |
+| `null` framework and lessonPlan passed when Brain getters return null                          | PASS                        |
+| `getGradeFramework` called with `{ grade, academicYear }` params                               | PASS                        |
+| `getLessonPlan` called with correct `grade/subject/weekNumber/termNumber/academicYear` params  | PASS                        |
+| All input fields (grade, subject, weekNumber, termNumber, academicYear, tiers) in user message | PASS                        |
+| `promptBody` used as system message                                                            | PASS                        |
+| `curriculum.differentiate` used as the model name                                              | PASS                        |
+| All 173 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                    | PASS — 173 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                                   | PASS                        |
+| `pnpm lint` clean                                                                              | PASS (checked)              |
+| `pnpm format:check` clean                                                                      | PASS (checked)              |
+
+Open questions raised: none.
