@@ -6103,3 +6103,61 @@ provenance stamp records no PII scrubbing is needed.
 | `pnpm format:check` clean                                                                      | PASS (checked)              |
 
 Open questions raised: none.
+
+## Stage 41 — CE-09 Coverage Auditor executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE09Executor` factory for the `audit-coverage` pipeline
+step (CE-09 Coverage Auditor). The executor (1) parses `CE09Input` (grade, subject, termNumber,
+academicYear, tenantId) from the step context, (2) opens a tenant-scoped read transaction,
+(3) concurrently retrieves the ratified TermPlan via `GetTermPlanFn` (re-used from CE-04,
+takes `{ grade, termNumber, academicYear }`) and the L2 EpisodeLog via `GetEpisodeLogFn`
+(new, takes `{ grade, subject, termNumber, academicYear }`) from the Brain artefact store,
+(4) calls the Model Gateway via `curriculum.audit` with `termPlan` and `episodeLog` as named
+context fields, (5) parses and validates the response as `CoverageAuditResult` (discriminated
+union: `{ status: 'ok', audit: CoverageAudit }` or `CoverageAuditNeedsInput`). Like CE-07
+and CE-08, CE-09 needs no constitution rows. Introduced `EpisodeLog` and `EpisodeLogEntry`
+types in `@infinite-ai/contracts` (curriculum/coverage.ts), exported from the contracts index.
+All context documents are school curriculum and delivery records; the null de-identification
+provenance stamp records no PII scrubbing is needed.
+
+**Files changed**
+
+- `packages/contracts/src/curriculum/coverage.ts` — new: `EpisodeLogEntry`, `EpisodeLog` types
+- `packages/contracts/src/index.ts` — exports `EpisodeLog`, `EpisodeLogEntry`
+- `packages/curriculum-seed/src/ce09-executor.ts` — new: `makeCE09Executor`, `WithCE09TenantFn`,
+  `CE09GatewayCallFn`, `GetEpisodeLogFn` types; re-exports `GetTermPlanFn` from CE-04
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE09Executor`, `CE09GatewayCallFn`,
+  `GetEpisodeLogFn`, `WithCE09TenantFn`
+- `packages/curriculum-seed/test/ce09-executor.spec.ts` — 16 unit tests (189 total in package)
+- `scripts/verify-stage.ts` — Stage 41 entry
+
+### Exit Gate
+
+| Criterion                                                                                 | Result                      |
+| ----------------------------------------------------------------------------------------- | --------------------------- |
+| `makeCE09Executor` returns a `StepExecutor` typed `(ctx) => Promise<CoverageAuditResult>` | PASS                        |
+| Returns `needs_input` result when gateway returns it                                      | PASS                        |
+| Returns `ok` result with valid `CoverageAudit` when gateway returns it                    | PASS                        |
+| Throws `CurriculumSeedError` when `CE09Input` is invalid (missing subject)                | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                      | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `CoverageAuditResult`    | PASS                        |
+| `getTermPlan` errors propagate without swallowing                                         | PASS                        |
+| `getEpisodeLog` errors propagate without swallowing                                       | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                         | PASS                        |
+| `tenantId` and `actorId: 'ce09-executor'` forwarded to `withTenant` verbatim              | PASS                        |
+| `termPlan` and `episodeLog` from Brain passed in context                                  | PASS                        |
+| `null` termPlan and episodeLog passed when Brain getters return null                      | PASS                        |
+| `getTermPlan` called with `{ grade, termNumber, academicYear }` params                    | PASS                        |
+| `getEpisodeLog` called with correct `grade/subject/termNumber/academicYear` params        | PASS                        |
+| All input fields (grade, subject, termNumber, academicYear) in user message               | PASS                        |
+| `promptBody` used as system message                                                       | PASS                        |
+| `curriculum.audit` used as the model name                                                 | PASS                        |
+| All 189 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)               | PASS — 189 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                              | PASS                        |
+| `pnpm --filter @infinite-ai/contracts typecheck` clean                                    | PASS                        |
+| `pnpm lint` clean                                                                         | PASS (checked)              |
+| `pnpm format:check` clean                                                                 | PASS (checked)              |
+
+Open questions raised: none.

@@ -135,6 +135,8 @@ export {
   CoverageAuditResult,
   DriftItem,
   DriftKind,
+  EpisodeLog,
+  EpisodeLogEntry,
 } from './curriculum/coverage.js';
 
 export {

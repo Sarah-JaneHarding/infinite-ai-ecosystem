@@ -60,6 +60,12 @@ export {
   type WithCE08TenantFn,
 } from './ce08-executor.js';
 export {
+  makeCE09Executor,
+  type CE09GatewayCallFn,
+  type GetEpisodeLogFn,
+  type WithCE09TenantFn,
+} from './ce09-executor.js';
+export {
   makePublishCurriculumVersionExecutor,
   type RememberFn,
   type WithPublishTenantFn,
