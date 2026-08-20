@@ -457,6 +457,30 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/agents typecheck',
     ],
   },
+  {
+    id: '32',
+    name: 'brain.publish_curriculum_version and brain.tombstone_curriculum_version tools',
+    commands: [
+      // 58 unit tests across 7 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32: makePublishCurriculumVersionExecutor (7 tests)
+      //     happy path, invalid input, null committedRowId + error message, error propagation,
+      //     tenantId forwarding, hodApprovalId in source, runId as derivationRunId
+      //   brain-tombstone-executor.spec.ts — Stage 32: makeTombstoneCurriculumVersionExecutor (6 tests)
+      //     happy path, invalid input, wrong reason rejected, error propagation,
+      //     tenantId forwarding, brainFactId forwarded to forgetFn
+      // ToolDeclarations: packages/agents/src/mod-01/brain-publish-curriculum-version.ts
+      //                   packages/agents/src/mod-01/brain-tombstone-curriculum-version.ts
+      // TombstoneReason extended: packages/db/src/brain-forgetting.ts
+      //   'pipeline_compensation' added (TypeScript-only, no DB migration needed)
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/agents typecheck',
+    ],
+  },
 ];
 
 function usage(): never {

@@ -5607,3 +5607,66 @@ dependency and keeps all L0-related seeding, ratification and readiness logic in
 | `pnpm lint` clean                                                                          | PASS                       |
 
 Open questions raised: none.
+
+---
+
+## Stage 32 — brain.publish_curriculum_version and brain.tombstone_curriculum_version tools
+
+**Date:** 2026-08-20
+
+**Summary:** Added two ToolDeclarations and two executor factories for the MOD-01 curriculum
+pipeline publish/compensate pair. `brain.publish_curriculum_version` is an irreversible
+sideEffect tool that writes the HoD-approved curriculum artefact bundle to Brain L1_NODE via
+`remember()`. `brain.tombstone_curriculum_version` is the compensation step that calls
+`forget()` with `reason: 'pipeline_compensation'` when a later pipeline step fails after
+publish has committed. Both use the injected-dependency pattern (`withTenant` + fn) for
+unit-testability. Extended `TombstoneReason` union in `packages/db/src/brain-forgetting.ts`
+with `'pipeline_compensation'` (TypeScript-only; no DB migration needed — stored as plain
+string). Content field uses `z.unknown()` as an "empty vessel" pending CE-08 output schema
+stabilisation. Fixed two gate failures during verification: `StepExecutionContext` import
+in tests corrected to use `l0-gate-executor.js` (not re-exported from executor files), and
+four new export names added to `packages/contracts/test/exports.spec.ts`.
+
+**Files changed**
+
+- `packages/db/src/brain-forgetting.ts` — `TombstoneReason` extended with `'pipeline_compensation'`
+- `packages/contracts/src/curriculum/brain-tools.ts` — new: `CurriculumPublishInput`,
+  `CurriculumPublishResult`, `CurriculumTombstoneInput`, `CurriculumTombstoneResult` Zod schemas
+- `packages/contracts/src/index.ts` — exports four new curriculum brain-tool schemas
+- `packages/contracts/test/exports.spec.ts` — four new export names added to sorted list
+- `packages/agents/src/mod-01/brain-publish-curriculum-version.ts` — new ToolDeclaration
+- `packages/agents/src/mod-01/brain-tombstone-curriculum-version.ts` — new ToolDeclaration
+- `packages/agents/src/index.ts` — exports both new ToolDeclarations
+- `packages/curriculum-seed/src/brain-publish-executor.ts` — new executor factory
+- `packages/curriculum-seed/src/brain-tombstone-executor.ts` — new executor factory
+- `packages/curriculum-seed/src/index.ts` — exports both executor factories and their fn types
+- `packages/curriculum-seed/test/brain-publish-executor.spec.ts` — 8 unit tests
+- `packages/curriculum-seed/test/brain-tombstone-executor.spec.ts` — 6 unit tests (59 total)
+- `scripts/verify-stage.ts` — Stage 32 entry
+
+### Exit Gate
+
+| Criterion                                                                                                     | Result                     |
+| ------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `ToolDeclaration` for `brain.publish_curriculum_version` registered via `ToolDeclaration.parse()`             | PASS                       |
+| Publish tool classified `irreversible`, `idempotent: false`, `inputSchema: CurriculumPublishInput`            | PASS                       |
+| `ToolDeclaration` for `brain.tombstone_curriculum_version` registered via `ToolDeclaration.parse()`           | PASS                       |
+| Tombstone tool classified `sideEffect: 'write'`, `idempotent: false`, `inputSchema: CurriculumTombstoneInput` | PASS                       |
+| Executor returns `{ brainFactId }` from `BrainWriteCandidateRow.committedRowId`                               | PASS                       |
+| Throws `CurriculumSeedError` when `CurriculumPublishInput` is invalid                                         | PASS                       |
+| Throws `CurriculumSeedError` when `committedRowId` is null, message includes candidate status                 | PASS                       |
+| `rememberFn` errors propagate without swallowing                                                              | PASS                       |
+| `tenantId` from input forwarded to `withTenant` verbatim (publish)                                            | PASS                       |
+| `hodApprovalId` included in `source` field passed to `rememberFn`                                             | PASS                       |
+| `runId` passed as `derivationRunId` to `rememberFn`                                                           | PASS                       |
+| Tombstone executor returns `{ tombstoneId, supersedes }` from `TombstonedBrainFact`                           | PASS                       |
+| Throws `CurriculumSeedError` when `CurriculumTombstoneInput` is invalid                                       | PASS                       |
+| Throws `CurriculumSeedError` when `reason` is not `'pipeline_compensation'`                                   | PASS                       |
+| `forgetFn` errors propagate without swallowing                                                                | PASS                       |
+| `tenantId` from input forwarded to `withTenant` verbatim (tombstone)                                          | PASS                       |
+| `brainFactId` from input forwarded to `forgetFn`                                                              | PASS                       |
+| All 59 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                                    | PASS — 59 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/agents typecheck` clean                                                           | PASS                       |
+| `pnpm format:check` clean                                                                                     | PASS                       |
+
+Open questions raised: none.

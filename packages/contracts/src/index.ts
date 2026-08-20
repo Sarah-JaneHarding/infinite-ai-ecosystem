@@ -658,4 +658,11 @@ export { ATP_PENDING_REGISTRY } from './curriculum/sources/atp-pending-registry.
 export { ATP_SENIOR_SOURCES } from './curriculum/sources/atp-sp-gr-7.js';
 export { LESSON_PLAN_TEMPLATE_BENJAMIN_PINE } from './curriculum/sources/template-lesson-plan-benjamin-pine.js';
 
+export {
+  CurriculumPublishInput,
+  CurriculumPublishResult,
+  CurriculumTombstoneInput,
+  CurriculumTombstoneResult,
+} from './curriculum/brain-tools.js';
+
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;

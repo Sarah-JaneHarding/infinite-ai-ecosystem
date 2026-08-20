@@ -12,6 +12,16 @@ export {
   type StepExecutionContext,
   type WithTenantFn,
 } from './l0-gate-executor.js';
+export {
+  makePublishCurriculumVersionExecutor,
+  type RememberFn,
+  type WithPublishTenantFn,
+} from './brain-publish-executor.js';
+export {
+  makeTombstoneCurriculumVersionExecutor,
+  type ForgetFn,
+  type WithTombstoneTenantFn,
+} from './brain-tombstone-executor.js';
 export { seedCurriculumFromContracts } from './seed.js';
 export {
   AtpCalendarContent,
