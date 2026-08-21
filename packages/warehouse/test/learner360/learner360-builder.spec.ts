@@ -227,7 +227,7 @@ describe('buildLearner360 — academic summary', () => {
     }
   });
 
-  it('uses the latest score when a subject appears more than once', async () => {
+  it('averages the score when a subject appears more than once', async () => {
     const result = await buildLearner360(
       baseInput(),
       makeStore([
@@ -249,8 +249,8 @@ describe('buildLearner360 — academic summary', () => {
 
     expect(result.status).toBe('ok');
     if (result.status === 'ok') {
-      expect(result.profile.academic?.subjectAverages?.['MATH']).toBe(80);
-      expect(result.profile.academic?.overallAverage).toBe(80);
+      expect(result.profile.academic?.subjectAverages?.['MATH']).toBe(70);
+      expect(result.profile.academic?.overallAverage).toBe(70);
     }
   });
 

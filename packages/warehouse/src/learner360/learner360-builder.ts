@@ -103,21 +103,24 @@ function buildAcademicSummary(
   if (relevant.length === 0) return null;
 
   // Latest score wins when a subject appears more than once.
-  const bySubject = new Map<string, number>();
-  for (const e of [...relevant].sort((a, b) =>
-    a.occurredAt.localeCompare(b.occurredAt),
-  )) {
+  const subjectBuckets = new Map<string, number[]>();
+  for (const e of relevant) {
     const code = String(e.payload?.['subjectCode'] ?? 'UNKNOWN');
     const score = Number(e.payload?.['scorePercent'] ?? 0);
-    bySubject.set(code, score);
+    const bucket = subjectBuckets.get(code);
+    if (bucket === undefined) {
+      subjectBuckets.set(code, [score]);
+    } else {
+      bucket.push(score);
+    }
   }
 
   const subjectAverages: Record<string, number> = {};
-  for (const [code, score] of bySubject) {
-    subjectAverages[code] = score;
+  for (const [code, bucket] of subjectBuckets) {
+    subjectAverages[code] = Math.round(bucket.reduce((s, v) => s + v, 0) / bucket.length);
   }
 
-  const scores = [...bySubject.values()];
+  const scores = Object.values(subjectAverages);
   const overallAverage =
     scores.length > 0 ? Math.round(scores.reduce((s, v) => s + v, 0) / scores.length) : 0;
 
@@ -167,7 +170,7 @@ function buildWellbeingSummary(
     const score = Number(e.payload?.['screenerScore'] ?? 0);
     const threshold = Number(e.payload?.['threshold'] ?? 0);
     screenerScores[kind] = score;
-    if (score > threshold) flagged = true;
+    if (score >= threshold) flagged = true;
   }
 
   return { termNumber, academicYear, screenerScores, flagged };

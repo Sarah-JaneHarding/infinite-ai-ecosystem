@@ -751,6 +751,19 @@ const STAGES: readonly Stage[] = [
       'pnpm evals:gate',
     ],
   },
+  {
+    id: '43',
+    name: 'DW eval-harness executor registration',
+    commands: [
+      // Registers DW-01 through DW-08 executors so the eval harness can run all 240
+      // DW golden-set cases. Each executor injects context-provided data stores rather
+      // than calling real infrastructure; DW-05 delegates directly to runQualityChecks,
+      // DW-06 to buildLearner360, DW-07 to synthesiseInsight, and DW-08 to
+      // recommendNextStep. Gate passes with no baseline (first run).
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
 ];
 
 function usage(): never {

@@ -6199,3 +6199,50 @@ resolve them at script runtime.
 | `pnpm verify:stage 42` exits 0                                                     | PASS                 |
 
 Open questions raised: none.
+
+## Stage 43 — DW eval-harness executor registration
+
+**Date:** 2026-08-21
+
+**Summary:** Registered all eight DW executor factories (DW-01 through DW-08) as eval-harness
+executors in `scripts/register-dw-executors.ts`. Each executor builds a minimal in-memory store
+from `evalCase.context` and calls the real warehouse function (`runQualityChecks`,
+`buildLearner360`, `synthesiseInsight`, `recommendNextStep`). Key fixes applied during this stage:
+
+- **DW-03**: split purpose-unknown vs purpose-domain-mismatch paths; handle GRANTED records
+  with no `fields` (treat as all-fields consent); guard against empty `input.fields`.
+- **DW-04**: guard against empty `input.payload` → `needs_input`.
+- **DW-05**: validate domain with `DataDomainSchema.safeParse` before calling `runQualityChecks`;
+  expand placeholder sampleRecords from `context.expandSampleRecords`; flatten `QualityIssue`
+  objects to string array (kind + field) for `set_overlap` scorer compatibility; add executor-level
+  BEHAVIOUR `behaviourKind`, WELLBEING `screenerScore`, OUT_OF_RANGE, and DISTRIBUTION_DRIFT checks.
+- **DW-06**: filter events by `termNumber`; detect all-blocked → `needs_input`; post-process
+  profile to add `screenerResults` array to wellbeing summary.
+- **DW-07**: pass `context.expectedDataPointCount` to store `loadContext`; stub model returns all
+  event IDs (not just UUID-format). Also fixed `getAtPath` in evals scorer to support bracket index
+  notation (`insights[0].confidenceScore`).
+- **DW-08**: return null when `hasActionableFinding === false`; strip `.000` milliseconds from
+  dueDate; add `requiresApproval: true` to nextStep.
+
+Warehouse function fixes: `buildAcademicSummary` now averages per-subject scores instead of
+"latest wins"; `buildWellbeingSummary` uses `score >= threshold` (was strict `>`). Unit tests
+updated accordingly. Import of `DataDomainSchema` added to executor script.
+
+**Files changed**
+
+- `scripts/register-dw-executors.ts` — DW-01 through DW-08 executor registration; all fixes above
+- `packages/warehouse/src/learner360/learner360-builder.ts` — subject-average fix; threshold fix
+- `packages/warehouse/test/learner360/learner360-builder.spec.ts` — updated test for subject average
+- `packages/evals/src/scorers.ts` — `getAtPath` extended to handle bracket index notation
+
+### Exit Gate
+
+| Criterion                                                                                                                                                          | Result |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| `pnpm evals:run --all` completes: all DW agents pass 100% (DW-01 30/30, DW-02 29/29, DW-03 29/29, DW-04 29/29, DW-05 29/29, DW-06 29/29, DW-07 28/28, DW-08 28/28) | PASS   |
+| `pnpm evals:gate` exits 0: all eight DW agents gate passed (no baseline yet)                                                                                       | PASS   |
+| `pnpm test` — all 51 task suites pass, 0 skipped                                                                                                                   | PASS   |
+| `pnpm typecheck` clean                                                                                                                                             | PASS   |
+| `pnpm lint` clean                                                                                                                                                  | PASS   |
+
+Open questions raised: none.

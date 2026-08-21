@@ -58,6 +58,7 @@
     "@eslint/js": "9.39.5",
     "@infinite-ai/contracts": "workspace:*",
     "@infinite-ai/curriculum-seed": "workspace:*",
+    "@infinite-ai/warehouse": "workspace:*",
     "@infinite-ai/db": "workspace:*",
     "@infinite-ai/evals": "workspace:*",
     "@types/node": "22.20.1",

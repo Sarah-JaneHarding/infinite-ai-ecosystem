@@ -26,6 +26,9 @@ importers:
       '@infinite-ai/evals':
         specifier: workspace:*
         version: link:packages/evals
+      '@infinite-ai/warehouse':
+        specifier: workspace:*
+        version: link:packages/warehouse
       '@types/node':
         specifier: 22.20.1
         version: 22.20.1

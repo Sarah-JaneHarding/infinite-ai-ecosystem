@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { getAgentExecutor, loadAllEvalSets, runEvalSet } from '@infinite-ai/evals';
 
 import './register-ce-executors.js';
+import './register-dw-executors.js';
 
 const RED = '[31m';
 const GREEN = '[32m';
