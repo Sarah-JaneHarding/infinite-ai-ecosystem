@@ -792,6 +792,21 @@ const STAGES: readonly Stage[] = [
       'pnpm evals:gate',
     ],
   },
+  {
+    id: '46',
+    name: 'LE eval-harness executor registration',
+    commands: [
+      // Registers LE-01 through LE-09 executors so the eval harness can run all 180
+      // LE golden-set cases (20 per agent). Unlike TB, every LE agent implements
+      // deterministic decision logic rather than content generation, so all cases use
+      // exact_match scorers — 100% pass rate expected with no llm_judge cases.
+      // LE-07 Challenger Verdict applies numeric promote/reject thresholds directly;
+      // LE-08 Pattern Publisher enforces the five-tenant anonymisation minimum;
+      // LE-09 Pattern Validator checks CAPS version drift and TTL expiry.
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
 ];
 
 function usage(): never {
