@@ -42,6 +42,8 @@ export const RefusalReasonCode = z.enum([
   'invalid_refusal',
   'cost_budget_exceeded',
   'diagnostic_language_detected',
+  'needs_input',
+  'state_machine_blocked',
 ]);
 export type RefusalReasonCode = z.infer<typeof RefusalReasonCode>;
 

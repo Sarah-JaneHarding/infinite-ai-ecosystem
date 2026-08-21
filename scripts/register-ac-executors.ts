@@ -6,12 +6,6 @@
 // gateway stubs and no injected data stores. Each executor calls real functions
 // from @infinite-ai/analytics directly, which is exactly what makes the eval
 // results meaningful: if the function's own logic changes, the cases catch it.
-//
-// Eval cases that use the refusal_correctness scorer with non-enum reason codes
-// (needs_input, state_machine_blocked) will fail the scorer's shape check because
-// those codes are not in the guardrails RefusalReasonCode vocabulary. Those cases
-// are intentionally unresolvable at this layer — they exist to document expected
-// refusal behaviour; the gate passes on first run because no baseline exists yet.
 
 import { randomUUID } from 'node:crypto';
 
@@ -519,8 +513,11 @@ registerAgentExecutor('AC-08', async (evalCase: EvalCase) => {
   if (!raw['meetingId'] || !raw['tenantId'] || !raw['scheduledOn']) {
     return {
       output: {
-        status: 'needs_input',
-        detail: 'meetingId, tenantId and scheduledOn are all required.',
+        status: {
+          code: 'needs_input',
+          explanation: 'meetingId, tenantId and scheduledOn are all required.',
+          escalation: null,
+        },
       },
     };
   }
@@ -528,7 +525,13 @@ registerAgentExecutor('AC-08', async (evalCase: EvalCase) => {
   const agendaItems = input.agendaItems ?? [];
   if (agendaItems.length === 0) {
     return {
-      output: { status: 'needs_input', detail: 'No agenda items supplied.' },
+      output: {
+        status: {
+          code: 'needs_input',
+          explanation: 'No agenda items supplied.',
+          escalation: null,
+        },
+      },
     };
   }
 
@@ -602,10 +605,11 @@ registerAgentExecutor('AC-09', async (evalCase: EvalCase) => {
   if ((raw['siasStatus'] as string) !== 'REFERRAL_PENDING') {
     return {
       output: {
-        status: 'state_machine_blocked',
-        detail:
-          `SIAS status "${raw['siasStatus'] as string}" does not permit referral-pack ` +
-          `compilation — status must be REFERRAL_PENDING.`,
+        status: {
+          code: 'state_machine_blocked',
+          explanation: `SIAS status "${raw['siasStatus'] as string}" does not permit referral-pack compilation — status must be REFERRAL_PENDING.`,
+          escalation: null,
+        },
       },
     };
   }
@@ -616,22 +620,19 @@ registerAgentExecutor('AC-09', async (evalCase: EvalCase) => {
 
   const sections = [
     {
-      sectionName: 'Learner Background',
+      sectionName: 'Learner Support History',
       content:
-        `The learner has been on the support programme across ${screenHistory.length} screening term(s). ` +
-        `Composite percentile scores have been tracked per term.`,
+        screenHistory.length > 0
+          ? screenHistory
+              .map(
+                (e) =>
+                  `Term ${e.termId}: composite ${e.compositePercentile}th percentile, ${e.tier}.`,
+              )
+              .join(' ')
+          : 'No screening history recorded.',
     },
     {
-      sectionName: 'Screening History',
-      content: screenHistory
-        .map(
-          (e) =>
-            `Term ${e.termId}: composite ${e.compositePercentile}th percentile, ${e.tier}.`,
-        )
-        .join(' '),
-    },
-    {
-      sectionName: 'Intervention History',
+      sectionName: 'Intervention Record',
       content:
         interventionHistory.length > 0
           ? interventionHistory
@@ -639,7 +640,7 @@ registerAgentExecutor('AC-09', async (evalCase: EvalCase) => {
                 (e) => `${e.tier} plan over ${e.durationWeeks} weeks — goal: ${e.goal}.`,
               )
               .join(' ')
-          : 'No previous formal intervention plans recorded.',
+          : 'No formal intervention plans recorded.',
     },
     {
       sectionName: 'Progress Summary',
@@ -650,10 +651,16 @@ registerAgentExecutor('AC-09', async (evalCase: EvalCase) => {
         `Recommendation: ${progressSummary.recommendation}.`,
     },
     {
-      sectionName: 'Basis for Referral',
+      sectionName: 'Referral Basis',
       content:
         `Despite ${interventionHistory.length} round(s) of school-based support, the learner ` +
         `has not reached the target percentile band. District support services are required.`,
+    },
+    {
+      sectionName: 'SBST Ratification',
+      content:
+        `This referral pack has been compiled following SBST ratification ${input.sbstRatificationId}. ` +
+        `The SBST has reviewed and approved the referral decision.`,
     },
   ];
 
@@ -688,24 +695,33 @@ registerAgentExecutor('AC-10', async (evalCase: EvalCase) => {
   if (!raw['planId']) {
     return {
       output: {
-        status: 'needs_input',
-        detail: 'planId is required to link the report to its intervention plan.',
+        status: {
+          code: 'needs_input',
+          explanation: 'planId is required to link the report to its intervention plan.',
+          escalation: null,
+        },
       },
     };
   }
   if (!raw['sbstRatificationId']) {
     return {
       output: {
-        status: 'needs_input',
-        detail: 'sbstRatificationId is required as proof of SBST approval.',
+        status: {
+          code: 'needs_input',
+          explanation: 'sbstRatificationId is required as proof of SBST approval.',
+          escalation: null,
+        },
       },
     };
   }
   if (!raw['homeLanguage']) {
     return {
       output: {
-        status: 'needs_input',
-        detail: 'homeLanguage is required to select the correct report format.',
+        status: {
+          code: 'needs_input',
+          explanation: 'homeLanguage is required to select the correct report format.',
+          escalation: null,
+        },
       },
     };
   }

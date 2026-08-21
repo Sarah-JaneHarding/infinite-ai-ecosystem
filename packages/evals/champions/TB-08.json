@@ -1,0 +1,1113 @@
+{
+  "agentId": "TB-08",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "TB08-001",
+      "agentId": "TB-08",
+      "tags": ["remediation", "mathematics", "fractions", "grade-5", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Each RemediationSection includes a plain-language explanation, at least two worked examples, and at least two practice items targeting adding fractions with unlike denominators.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "2a9dd9d6-86d4-41c6-af90-4ebaa7c8cec6",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR5-FRACTIONS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000001"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-MATH-GR5-FRAC-1",
+            "skillDescription": "Add fractions with unlike denominators.",
+            "explanation": "This section re-teaches the concept: Add fractions with unlike denominators.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Add fractions with unlike denominators..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Add fractions with unlike denominators. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-math-gr5-fractions"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "TB08-002",
+      "agentId": "TB-08",
+      "tags": ["remediation", "english", "phonics", "foundation-phase", "grade-3"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The explanation uses Foundation Phase appropriate language — short sentences and familiar words. The worked examples demonstrate decoding step by step. Practice items ask the learner to read and write 'tion' words.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "fd9c79c6-0735-44f7-a44e-48feecf6dc44",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-ENG-GR3-PHONICS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000002"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-ENG-GR3-PHON-1",
+            "skillDescription": "Decode words with the 'tion' spelling pattern.",
+            "explanation": "This section re-teaches the concept: Decode words with the 'tion' spelling pattern.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Decode words with the 'tion' spelling pattern..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Decode words with the 'tion' spelling pattern. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 3,
+          "targetBand": {
+            "minGrade": 2,
+            "maxGrade": 4
+          }
+        },
+        "citedSourceIds": ["doc-eng-gr3-phonics"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-003",
+      "agentId": "TB-08",
+      "tags": ["remediation", "natural-sciences", "energy", "grade-6"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The remediation section distinguishes clearly between renewable and non-renewable energy sources, gives real-world examples, and asks the learner to classify further examples in the practice items.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "4976e521-cfb6-4bf9-b058-58c8ae06f27c",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR6-ENERGY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000003"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-NS-GR6-ENERGY-1",
+            "skillDescription": "Identify and describe renewable and non-renewable energy sources.",
+            "explanation": "This section re-teaches the concept: Identify and describe renewable and non-renewable energy sources.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Identify and describe renewable and non-renewable energy sources..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Identify and describe renewable and non-renewable energy sources. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr6-energy"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-004",
+      "agentId": "TB-08",
+      "tags": ["remediation", "mathematics", "algebra", "grade-9", "multi-skill"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Two RemediationSections are produced — one for factorisation and one for solving by factorisation. Each section's worked examples show every algebraic step. Practice items cover both skills with varying coefficients.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "6d41169d-b4f5-4a18-bfee-b3c337c85d11",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR9-ALGEBRA",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000004"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-MATH-GR9-ALG-1",
+            "skillDescription": "Factorise quadratic expressions of the form ax² + bx + c.",
+            "explanation": "This section re-teaches the concept: Factorise quadratic expressions of the form ax² + bx + c.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Factorise quadratic expressions of the form ax² + bx + c..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Factorise quadratic expressions of the form ax² + bx + c. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          },
+          {
+            "skillId": "CAPS-MATH-GR9-ALG-2",
+            "skillDescription": "Solve quadratic equations by factorisation.",
+            "explanation": "This section re-teaches the concept: Solve quadratic equations by factorisation.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Solve quadratic equations by factorisation..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Solve quadratic equations by factorisation. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 9,
+          "targetBand": {
+            "minGrade": 8,
+            "maxGrade": 10
+          }
+        },
+        "citedSourceIds": ["doc-math-gr9-algebra"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-005",
+      "agentId": "TB-08",
+      "tags": ["remediation", "social-sciences", "mapwork", "grade-7", "intervention"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The explanation covers what contour lines represent and how to read them. Worked examples walk through reading a contour map step by step. Practice items ask the learner to interpret contour intervals and identify terrain features.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "16917f87-d7ea-4130-a1bd-1b163fcc8873",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR7-GEOGRAPHY",
+          "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000005"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-SS-GR7-GEO-1",
+            "skillDescription": "Read and interpret a topographic map using contour lines.",
+            "explanation": "This section re-teaches the concept: Read and interpret a topographic map using contour lines.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Read and interpret a topographic map using contour lines..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Read and interpret a topographic map using contour lines. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-ss-gr7-mapwork"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-006",
+      "agentId": "TB-08",
+      "tags": ["remediation", "english", "comprehension", "grade-10", "fet"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The explanation distinguishes main ideas from supporting details using the correct terminology. Worked examples annotate a short passage to show which sentence is the main idea and which are supporting details. Practice items ask the learner to do the same with fresh short passages.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "09340fe0-cdf7-4000-8f0d-0f8bc0db4fad",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-ENG-GR10-COMPREHENSION",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000006"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-ENG-GR10-COMP-1",
+            "skillDescription": "Identify the main idea and supporting details in an expository text.",
+            "explanation": "This section re-teaches the concept: Identify the main idea and supporting details in an expository text.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Identify the main idea and supporting details in an expository text..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Identify the main idea and supporting details in an expository text. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 10,
+          "targetBand": {
+            "minGrade": 9,
+            "maxGrade": 11
+          }
+        },
+        "citedSourceIds": ["doc-eng-gr10-comprehension"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-007",
+      "agentId": "TB-08",
+      "tags": ["remediation", "mathematics", "measurement", "grade-4", "afrikaans"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The pack is written entirely in Afrikaans. The explanation covers the relationship between mm, cm, and m using familiar examples (a ruler, a door). Worked examples show step-by-step conversion. Practice items are clearly stated in Afrikaans.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "0001a869-91ee-48e7-9d1b-d6ca94c0892f",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR4-MEASUREMENT",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000007"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-MATH-GR4-MEAS-1",
+            "skillDescription": "Convert between millimetres, centimetres, and metres.",
+            "explanation": "This section re-teaches the concept: Convert between millimetres, centimetres, and metres.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Convert between millimetres, centimetres, and metres..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Convert between millimetres, centimetres, and metres. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-math-gr4-measurement-af"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-008",
+      "agentId": "TB-08",
+      "tags": ["remediation", "natural-sciences", "life-processes", "grade-4"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All seven life processes are named and briefly explained. A memory strategy (e.g. acronym MRS GREN or equivalent) is offered if present in the source. Practice items test recall and application of each process.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "1a91c12d-3463-4794-9052-cb0ce3544da4",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR4-LIFE-PROCESSES",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000008"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-NS-GR4-LP-1",
+            "skillDescription": "Name the seven life processes of living things.",
+            "explanation": "This section re-teaches the concept: Name the seven life processes of living things.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Name the seven life processes of living things..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Name the seven life processes of living things. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr4-life-processes"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-009",
+      "agentId": "TB-08",
+      "tags": ["remediation", "mathematics", "trigonometry", "grade-11", "fet"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The explanation states the sine rule correctly and explains when it applies (given two sides and an opposite angle, or two angles and a side). Worked examples show the full algebraic substitution and solution steps. Practice items include both finding a side and finding an angle.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "646f4ceb-16e9-4b40-acec-2f966c4979cb",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR11-TRIGONOMETRY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000009"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-MATH-GR11-TRIG-1",
+            "skillDescription": "Apply the sine rule to solve non-right-angled triangles.",
+            "explanation": "This section re-teaches the concept: Apply the sine rule to solve non-right-angled triangles.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Apply the sine rule to solve non-right-angled triangles..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Apply the sine rule to solve non-right-angled triangles. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 11,
+          "targetBand": {
+            "minGrade": 10,
+            "maxGrade": 12
+          }
+        },
+        "citedSourceIds": ["doc-math-gr11-trigonometry"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-010",
+      "agentId": "TB-08",
+      "tags": ["remediation", "english", "writing", "foundation-phase", "grade-2"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The explanation clearly names what a topic sentence is and what two supporting sentences do. The worked example shows an annotated three-sentence paragraph. Practice items give a topic sentence and ask the learner to add two supporting sentences.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "350018f8-20ea-42c3-b949-b758798e1a7d",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-ENG-GR2-WRITING",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000010"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-ENG-GR2-WRITE-1",
+            "skillDescription": "Write a simple three-sentence paragraph with a topic sentence.",
+            "explanation": "This section re-teaches the concept: Write a simple three-sentence paragraph with a topic sentence.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Write a simple three-sentence paragraph with a topic sentence..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Write a simple three-sentence paragraph with a topic sentence. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 2,
+          "targetBand": {
+            "minGrade": 1,
+            "maxGrade": 3
+          }
+        },
+        "citedSourceIds": ["doc-eng-gr2-writing"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-011",
+      "agentId": "TB-08",
+      "tags": ["remediation", "mathematics", "geometry", "grade-8", "intervention"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All relevant angle relationships (corresponding, alternate, co-interior) are named and defined. Worked examples label the angle pairs in a diagram described in words. Practice items ask the learner to calculate missing angles with reasons.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "ab6cea52-11e4-42ea-bf23-aacba2465498",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR8-GEOMETRY",
+          "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000011"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-MATH-GR8-GEOM-1",
+            "skillDescription": "Identify and apply the properties of parallel lines cut by a transversal.",
+            "explanation": "This section re-teaches the concept: Identify and apply the properties of parallel lines cut by a transversal.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Identify and apply the properties of parallel lines cut by a transversal..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Identify and apply the properties of parallel lines cut by a transversal. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 8,
+          "targetBand": {
+            "minGrade": 7,
+            "maxGrade": 9
+          }
+        },
+        "citedSourceIds": ["doc-math-gr8-geometry"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-012",
+      "agentId": "TB-08",
+      "tags": ["remediation", "history", "cold-war", "grade-9"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"At least three causes of the Cold War are clearly stated and explained with evidence from the source document. Worked examples model how to structure a cause-and-effect response. Practice items ask the learner to explain causes in their own structured paragraphs.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "9882c495-0577-4d41-85aa-0f00fecc4483",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-HIST-GR9-COLD-WAR",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000012"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-HIST-GR9-CW-1",
+            "skillDescription": "Explain the causes of the Cold War between the USA and the USSR.",
+            "explanation": "This section re-teaches the concept: Explain the causes of the Cold War between the USA and the USSR.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Explain the causes of the Cold War between the USA and the USSR..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Explain the causes of the Cold War between the USA and the USSR. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 9,
+          "targetBand": {
+            "minGrade": 8,
+            "maxGrade": 10
+          }
+        },
+        "citedSourceIds": ["doc-hist-gr9-cold-war"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-013",
+      "agentId": "TB-08",
+      "tags": ["remediation", "mathematics", "statistics", "grade-12", "fet"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The formula for standard deviation is stated correctly. Worked examples compute standard deviation step by step for a small data set and interpret the result in terms of spread. Practice items require both calculation and interpretation.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "b89bd071-77fd-4668-8a0b-ee7b27b545e5",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR12-STATISTICS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000013"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-MATH-GR12-STAT-1",
+            "skillDescription": "Calculate the standard deviation and interpret it in context.",
+            "explanation": "This section re-teaches the concept: Calculate the standard deviation and interpret it in context.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Calculate the standard deviation and interpret it in context..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Calculate the standard deviation and interpret it in context. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 11.5,
+          "targetBand": {
+            "minGrade": 11,
+            "maxGrade": 12
+          }
+        },
+        "citedSourceIds": ["doc-math-gr12-statistics"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-014",
+      "agentId": "TB-08",
+      "tags": ["remediation", "english", "grammar", "grade-5"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The explanation states the rule clearly (singular subject → singular verb; plural subject → plural verb). Worked examples show at least four sentences corrected from error to correct form. Practice items include error-correction and sentence-completion exercises.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "cafeeb7f-2992-4f5e-ad98-39dbc4faad27",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-ENG-GR5-GRAMMAR",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000014"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-ENG-GR5-GRAM-1",
+            "skillDescription": "Identify and use subject-verb agreement in sentences.",
+            "explanation": "This section re-teaches the concept: Identify and use subject-verb agreement in sentences.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Identify and use subject-verb agreement in sentences..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Identify and use subject-verb agreement in sentences. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-eng-gr5-grammar"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-015",
+      "agentId": "TB-08",
+      "tags": ["remediation", "mathematics", "decimals", "grade-6", "multi-skill"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Two sections are produced — one for multiplication and one for division of decimals. Each section addresses place value alignment explicitly. Worked examples show the full written method. Practice items use familiar monetary and measurement contexts.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "7a72d497-f5da-405a-8b20-9939f26faa51",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR6-DECIMALS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000015"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-MATH-GR6-DEC-1",
+            "skillDescription": "Multiply a decimal number by a whole number.",
+            "explanation": "This section re-teaches the concept: Multiply a decimal number by a whole number.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Multiply a decimal number by a whole number..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Multiply a decimal number by a whole number. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          },
+          {
+            "skillId": "CAPS-MATH-GR6-DEC-2",
+            "skillDescription": "Divide a decimal number by a whole number.",
+            "explanation": "This section re-teaches the concept: Divide a decimal number by a whole number.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Divide a decimal number by a whole number..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Divide a decimal number by a whole number. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-math-gr6-decimals"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-016",
+      "agentId": "TB-08",
+      "tags": ["remediation", "natural-sciences", "matter", "grade-8", "intervention"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The explanation clearly distinguishes physical changes (reversible, no new substance) from chemical changes (irreversible, new substance formed) with multiple examples of each. Practice items ask the learner to classify given changes and justify their answer.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "676df536-fb0d-4a93-886a-9533046c5b2c",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR8-MATTER",
+          "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000016"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-NS-GR8-MAT-1",
+            "skillDescription": "Distinguish between physical and chemical changes to matter.",
+            "explanation": "This section re-teaches the concept: Distinguish between physical and chemical changes to matter.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Distinguish between physical and chemical changes to matter..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Distinguish between physical and chemical changes to matter. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 8,
+          "targetBand": {
+            "minGrade": 7,
+            "maxGrade": 9
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr8-matter"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-017",
+      "agentId": "TB-08",
+      "tags": ["remediation", "mathematics", "functions", "grade-10", "fet"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The explanation covers the effect of 'a' (direction and shape) and 'q' (vertical shift) on the parabola. Worked examples show how to find and label the turning point, axis of symmetry, and intercepts for specific values. Practice items require both sketching and feature identification.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "561ad063-b6a7-466f-b4ee-3b1bbf0f366d",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR10-FUNCTIONS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000017"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-MATH-GR10-FUNC-1",
+            "skillDescription": "Sketch the graph of y = ax² + q and identify the turning point, axis of symmetry, and intercepts.",
+            "explanation": "This section re-teaches the concept: Sketch the graph of y = ax² + q and identify the turning point, axis of symmetry, and intercepts.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Sketch the graph of y = ax² + q and identify the turning point, axis of symmetry, and intercepts..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Sketch the graph of y = ax² + q and identify the turning point, axis of symmetry, and intercepts. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 10,
+          "targetBand": {
+            "minGrade": 9,
+            "maxGrade": 11
+          }
+        },
+        "citedSourceIds": ["doc-math-gr10-functions"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-018",
+      "agentId": "TB-08",
+      "tags": ["remediation", "english", "poetry", "grade-8"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The explanation defines imagery and gives examples of simile, metaphor, and personification. Worked examples analyse a line or two from a poem in the source, identifying the image type and explaining its effect. Practice items give short lines and ask for identification and effect.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "6852dd12-4d9d-42ed-a05c-887958950ff6",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-ENG-GR8-POETRY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000018"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-ENG-GR8-POET-1",
+            "skillDescription": "Identify and explain the effect of imagery in a poem.",
+            "explanation": "This section re-teaches the concept: Identify and explain the effect of imagery in a poem.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Identify and explain the effect of imagery in a poem..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Identify and explain the effect of imagery in a poem. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 8,
+          "targetBand": {
+            "minGrade": 7,
+            "maxGrade": 9
+          }
+        },
+        "citedSourceIds": ["doc-eng-gr8-poetry"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-019",
+      "agentId": "TB-08",
+      "tags": ["remediation", "natural-sciences", "food-chains", "grade-5"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The explanation defines producer, consumer (primary and secondary), and predator using familiar organisms. Worked examples show two complete food chains described in words with arrows indicating energy flow. Practice items ask the learner to draw and label their own food chains.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "0a3e68b2-827b-4d45-9edd-08342442939e",
+        "artefactType": "REMEDIATION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-FOOD-CHAINS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000019"
+        },
+        "sections": [
+          {
+            "skillId": "CAPS-NS-GR5-FC-1",
+            "skillDescription": "Draw and label a food chain with at least three organisms.",
+            "explanation": "This section re-teaches the concept: Draw and label a food chain with at least three organisms.. Use concrete examples and step-by-step explanations.",
+            "workedExamples": [
+              "Example 1: Here is a solved example demonstrating Draw and label a food chain with at least three organisms..",
+              "Example 2: Another worked example with different numbers or context."
+            ],
+            "practiceItems": [
+              "Practice 1: Now try this on your own — apply Draw and label a food chain with at least three organisms. to the following.",
+              "Practice 2: Complete this exercise independently."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr5-food-chains"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB08-020",
+      "agentId": "TB-08",
+      "tags": ["needs-input", "empty-skills", "error-path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one missedSkill is required — cannot build a remediation pack without a starting point.",
+        "missingFields": ["missedSkills"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

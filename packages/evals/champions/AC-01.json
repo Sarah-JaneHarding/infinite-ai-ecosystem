@@ -1,0 +1,668 @@
+{
+  "agentId": "AC-01",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "ac01-tier1-all-sufficient-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "tier_1", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"overallSufficiency\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"compositePercentile\" = 73, within tolerance of 73."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "6e87ea85-dfb9-4d51-a6fa-54fef11fa7a1",
+        "learnerId": "00000000-0000-0000-0000-000000000101",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 73,
+        "tier": "TIER_1",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "ac01-tier2-all-sufficient-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "tier_2", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"compositePercentile\" = 46.2, within tolerance of 46.2."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "deef6959-d607-4fed-8f36-048b40a9e0e8",
+        "learnerId": "00000000-0000-0000-0000-000000000102",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 46.2,
+        "tier": "TIER_2",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-tier3-all-sufficient-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "tier_3", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"compositePercentile\" = 22.6, within tolerance of 22.6."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "beacd287-9d40-4700-83cd-fde8d87573ff",
+        "learnerId": "00000000-0000-0000-0000-000000000103",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 22.6,
+        "tier": "TIER_3",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-referral-all-sufficient-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "referral", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"compositePercentile\" = 7.2, within tolerance of 7.2."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "34f2c7ec-e180-485b-ba62-d5e58fb7e5b6",
+        "learnerId": "00000000-0000-0000-0000-000000000104",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 7.2,
+        "tier": "REFERRAL",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-boundary-tier1-at-55-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "tier_1", "boundary"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "687b32e1-11e2-4a36-90ce-1aedc103f31e",
+        "learnerId": "00000000-0000-0000-0000-000000000105",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 55,
+        "tier": "TIER_1",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-boundary-tier2-at-35-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "tier_2", "boundary"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "7a16ed26-d0f2-4613-b71f-ae1ba3200406",
+        "learnerId": "00000000-0000-0000-0000-000000000106",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 35,
+        "tier": "TIER_2",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-boundary-tier3-at-15-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "tier_3", "boundary"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "9af4fe4c-bfe1-472f-9e65-9e93054f4821",
+        "learnerId": "00000000-0000-0000-0000-000000000107",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 15,
+        "tier": "TIER_3",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-boundary-referral-at-14.9-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "referral", "boundary"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "2a5cd1b1-9f90-49af-bd1b-4003a9afe7e2",
+        "learnerId": "00000000-0000-0000-0000-000000000108",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 14.9,
+        "tier": "REFERRAL",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-score-zero-referral-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "referral", "boundary"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"compositePercentile\" = 0, within tolerance of 0."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "a13dee16-03d4-4f06-87cc-36c48d4c3b75",
+        "learnerId": "00000000-0000-0000-0000-000000000109",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 0,
+        "tier": "REFERRAL",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-score-100-tier1-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "tier_1", "boundary"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"compositePercentile\" = 100, within tolerance of 100."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "ef1d3594-5135-498c-a89a-c74b92bd9a79",
+        "learnerId": "00000000-0000-0000-0000-000000000110",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 100,
+        "tier": "TIER_1",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "ac01-literacy-insufficient-count-001",
+      "agentId": "AC-01",
+      "tags": ["needs_input", "insufficiency", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Insufficient data for domain(s): LITERACY.",
+        "insufficientDomains": ["LITERACY"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-attendance-insufficient-stale-001",
+      "agentId": "AC-01",
+      "tags": ["needs_input", "insufficiency", "stale_data"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Insufficient data for domain(s): ATTENDANCE.",
+        "insufficientDomains": ["ATTENDANCE"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-numeracy-insufficient-count-001",
+      "agentId": "AC-01",
+      "tags": ["needs_input", "insufficiency"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Insufficient data for domain(s): NUMERACY.",
+        "insufficientDomains": ["NUMERACY"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-behaviour-insufficient-count-001",
+      "agentId": "AC-01",
+      "tags": ["needs_input", "insufficiency"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Insufficient data for domain(s): BEHAVIOUR.",
+        "insufficientDomains": ["BEHAVIOUR"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-wellbeing-stale-001",
+      "agentId": "AC-01",
+      "tags": ["needs_input", "insufficiency", "stale_data"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Insufficient data for domain(s): WELLBEING.",
+        "insufficientDomains": ["WELLBEING"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-multiple-domains-insufficient-001",
+      "agentId": "AC-01",
+      "tags": ["needs_input", "insufficiency", "multiple_domains"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Insufficient data for domain(s): LITERACY, NUMERACY.",
+        "insufficientDomains": ["LITERACY", "NUMERACY"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-attendance-exactly-at-recency-boundary-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "boundary", "recency"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"overallSufficiency\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "1bba26f3-3232-4e9a-bfac-65ee49f1288e",
+        "learnerId": "00000000-0000-0000-0000-000000000117",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 65,
+        "tier": "TIER_1",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-safeguarding-escalation-001",
+      "agentId": "AC-01",
+      "tags": ["safeguarding_escalation", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "safeguarding",
+        "detail": "Safeguarding signal present — escalating immediately, not queuing.",
+        "escalatedAt": "2026-08-21T17:54:17.230Z"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-literacy-stale-91-days-001",
+      "agentId": "AC-01",
+      "tags": ["needs_input", "stale_data", "literacy"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Insufficient data for domain(s): LITERACY.",
+        "insufficientDomains": ["LITERACY"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-mixed-tiers-composite-in-tier2-001",
+      "agentId": "AC-01",
+      "tags": ["ok", "tier_2", "mixed_scores"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"compositePercentile\" = 45, within tolerance of 45."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "screenId": "dc2ea762-2054-4a8b-bb80-0d4d49653e32",
+        "learnerId": "00000000-0000-0000-0000-000000000120",
+        "termId": "00000000-0000-0000-0000-000000000201",
+        "compositePercentile": 45,
+        "tier": "TIER_2",
+        "domainSufficiency": {
+          "LITERACY": "sufficient",
+          "NUMERACY": "sufficient",
+          "ATTENDANCE": "sufficient",
+          "BEHAVIOUR": "sufficient",
+          "WELLBEING": "sufficient"
+        },
+        "overallSufficiency": "sufficient"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac01-behaviour-stale-61-days-001",
+      "agentId": "AC-01",
+      "tags": ["needs_input", "stale_data", "behaviour"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Insufficient data for domain(s): BEHAVIOUR.",
+        "insufficientDomains": ["BEHAVIOUR"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 21,
+    "passedCases": 21,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 2
+  }
+}

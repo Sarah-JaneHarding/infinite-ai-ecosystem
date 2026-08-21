@@ -1,0 +1,707 @@
+{
+  "agentId": "AC-06",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "ac06-improving-reached-goal-exit-001",
+      "agentId": "AC-06",
+      "tags": ["exit", "improving", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recommendation\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"trendDirection\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "b9c0a083-beff-44e1-8384-5a40d35a8c33",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000001",
+        "trendDirection": "improving",
+        "currentPercentile": 55,
+        "goalPercentile": 50,
+        "progressRatePerWeek": 6.25,
+        "recommendation": "exit",
+        "evidenceIds": ["ev-001a", "ev-001b", "ev-001c"],
+        "detail": "Trend is improving at 6.25 percentile points per week (4 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-declining-week-4-intensify-001",
+      "agentId": "AC-06",
+      "tags": ["intensify", "declining", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recommendation\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"trendDirection\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "56d9e287-0095-430b-a07d-259bcc5fdae7",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000002",
+        "trendDirection": "declining",
+        "currentPercentile": 38,
+        "goalPercentile": 55,
+        "progressRatePerWeek": -1.75,
+        "recommendation": "intensify",
+        "evidenceIds": ["ev-002a", "ev-002b", "ev-002c"],
+        "detail": "Trend is declining at -1.75 percentile points per week (4 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-stable-week-8-below-goal-intensify-001",
+      "agentId": "AC-06",
+      "tags": ["intensify", "stable", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recommendation\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"trendDirection\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "1fe5426e-f2c6-4fa2-b3aa-f9834fe2dffb",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000003",
+        "trendDirection": "stable",
+        "currentPercentile": 40.2,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 0.025,
+        "recommendation": "intensify",
+        "evidenceIds": ["ev-003a", "ev-003b", "ev-003c"],
+        "detail": "Trend is stable at 0.03 percentile points per week (8 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-improving-not-reached-goal-continue-001",
+      "agentId": "AC-06",
+      "tags": ["continue", "improving", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recommendation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "1bd47c7f-dd0f-47eb-b343-cfc423fd68b4",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000004",
+        "trendDirection": "improving",
+        "currentPercentile": 40,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 2.5,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-004a", "ev-004b"],
+        "detail": "Trend is improving at 2.50 percentile points per week (2 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-only-one-measurement-needs-input-001",
+      "agentId": "AC-06",
+      "tags": ["needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least two measurements are required."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-evidence-ids-from-all-measurements-001",
+      "agentId": "AC-06",
+      "tags": ["evidence_linkage", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "2/2 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "6d3f691f-85aa-4e9d-ae4e-4f145466b499",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000006",
+        "trendDirection": "improving",
+        "currentPercentile": 38,
+        "goalPercentile": 50,
+        "progressRatePerWeek": 4,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-006-first", "ev-006-second"],
+        "detail": "Trend is improving at 4.00 percentile points per week (2 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-monitor-id-is-uuid-001",
+      "agentId": "AC-06",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "b221fa92-0416-4c82-9a7b-6d80502719e8",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000007",
+        "trendDirection": "improving",
+        "currentPercentile": 45,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 1.5,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-007a", "ev-007b"],
+        "detail": "Trend is improving at 1.50 percentile points per week (2 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "ac06-detail-non-empty-001",
+      "agentId": "AC-06",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "c1ec4e7c-a347-4f5e-8821-78002146834d",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000008",
+        "trendDirection": "improving",
+        "currentPercentile": 38,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 1.5,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-008a", "ev-008b"],
+        "detail": "Trend is improving at 1.50 percentile points per week (2 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-no-diagnostic-language-in-detail-001",
+      "agentId": "AC-06",
+      "tags": ["diagnosis_guard", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No diagnostic language detected.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "5c2bd449-c2fb-4cbb-b33c-f2998117a47c",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000009",
+        "trendDirection": "improving",
+        "currentPercentile": 22,
+        "goalPercentile": 35,
+        "progressRatePerWeek": 1,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-009a", "ev-009b"],
+        "detail": "Trend is improving at 1.00 percentile points per week (2 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-learnerId-echoed-001",
+      "agentId": "AC-06",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "b2c3a579-7f5a-4377-863a-38ae5a5fb6f7",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000010",
+        "trendDirection": "improving",
+        "currentPercentile": 45,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 2.5,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-010a", "ev-010b"],
+        "detail": "Trend is improving at 2.50 percentile points per week (2 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-declining-week-3-continue-001",
+      "agentId": "AC-06",
+      "tags": ["continue", "declining", "pre_threshold"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recommendation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "7bb7b466-5a6e-4edc-b612-3aa34c9b425c",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000011",
+        "trendDirection": "declining",
+        "currentPercentile": 40,
+        "goalPercentile": 55,
+        "progressRatePerWeek": -0.667,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-011a", "ev-011b"],
+        "detail": "Trend is declining at -0.67 percentile points per week (3 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-stable-week-7-continue-001",
+      "agentId": "AC-06",
+      "tags": ["continue", "stable"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recommendation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "809c604e-f200-4ccc-a817-f79a92876b41",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000012",
+        "trendDirection": "stable",
+        "currentPercentile": 40.3,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 0.043,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-012a", "ev-012b"],
+        "detail": "Trend is stable at 0.04 percentile points per week (7 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-goalPercentile-echoed-001",
+      "agentId": "AC-06",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"goalPercentile\" = 60, within tolerance of 60."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "012883c7-b6e5-4c35-8e5f-9b51dacaae04",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000013",
+        "trendDirection": "improving",
+        "currentPercentile": 42,
+        "goalPercentile": 60,
+        "progressRatePerWeek": 2,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-013a", "ev-013b"],
+        "detail": "Trend is improving at 2.00 percentile points per week (2 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-progress-rate-negative-on-decline-001",
+      "agentId": "AC-06",
+      "tags": ["intensify", "declining", "progress_rate"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"trendDirection\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "147320e4-58a3-4c6e-aa9a-3d3259160bd0",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000014",
+        "trendDirection": "declining",
+        "currentPercentile": 40,
+        "goalPercentile": 55,
+        "progressRatePerWeek": -2,
+        "recommendation": "intensify",
+        "evidenceIds": ["ev-014a", "ev-014b"],
+        "detail": "Trend is declining at -2.00 percentile points per week (5 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-planId-echoed-001",
+      "agentId": "AC-06",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"planId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "20612355-d48e-4475-9d52-8bb1c7e306db",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000015",
+        "trendDirection": "improving",
+        "currentPercentile": 42,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 2,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-015a", "ev-015b"],
+        "detail": "Trend is improving at 2.00 percentile points per week (2 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-multi-domain-measurements-001",
+      "agentId": "AC-06",
+      "tags": ["monitored", "multi_domain"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"trendDirection\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "ac134a8f-4c83-49b1-8ceb-1d6101392bfc",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000016",
+        "trendDirection": "improving",
+        "currentPercentile": 47.5,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 3.75,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-016a", "ev-016b", "ev-016c", "ev-016d"],
+        "detail": "Trend is improving at 3.75 percentile points per week (4 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-second-tenant-001",
+      "agentId": "AC-06",
+      "tags": ["monitored", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "c900380d-859e-4999-8570-51c8ba0c5722",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+        "termId": "00000000-0000-0000-0000-000000000022",
+        "planId": "eeeeeeee-0000-0000-0000-000000000017",
+        "trendDirection": "improving",
+        "currentPercentile": 42,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 3.5,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-017a", "ev-017b"],
+        "detail": "Trend is improving at 3.50 percentile points per week (2 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-improving-not-at-goal-week4-continue-001",
+      "agentId": "AC-06",
+      "tags": ["continue", "improving"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recommendation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "e8028247-b38d-419f-b6df-511ada9f8324",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000018",
+        "trendDirection": "improving",
+        "currentPercentile": 38,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 2,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-018a", "ev-018b"],
+        "detail": "Trend is improving at 2.00 percentile points per week (4 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-zero-measurements-needs-input-001",
+      "agentId": "AC-06",
+      "tags": ["needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least two measurements are required."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-current-percentile-from-latest-001",
+      "agentId": "AC-06",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"currentPercentile\" = 45, within tolerance of 45."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "6d309bb6-27b5-4fb5-9c99-923f8fc5b55d",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000020",
+        "trendDirection": "improving",
+        "currentPercentile": 45,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 3.75,
+        "recommendation": "continue",
+        "evidenceIds": ["ev-020a", "ev-020b"],
+        "detail": "Trend is improving at 3.75 percentile points per week (4 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac06-improving-at-goal-exactly-exit-001",
+      "agentId": "AC-06",
+      "tags": ["exit", "boundary", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recommendation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "monitored",
+        "monitorId": "1cd02bc0-5137-47df-bf87-4ae91c37bd7d",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000021",
+        "trendDirection": "improving",
+        "currentPercentile": 55,
+        "goalPercentile": 55,
+        "progressRatePerWeek": 3.75,
+        "recommendation": "exit",
+        "evidenceIds": ["ev-021a", "ev-021b"],
+        "detail": "Trend is improving at 3.75 percentile points per week (4 weeks since intervention)."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 21,
+    "passedCases": 21,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

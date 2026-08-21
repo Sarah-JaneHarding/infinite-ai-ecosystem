@@ -1,0 +1,1238 @@
+{
+  "agentId": "TB-09",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "TB09-001",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "mathematics",
+        "fractions",
+        "grade-5",
+        "deeper-exploration",
+        "must_not_regress"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The extension pack explores fraction concepts beyond adding and subtracting with unlike denominators — it must introduce mixed numbers, improper fractions, or related deeper concepts not re-taught from the mastered skills. Each section must have at least one task.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "619bffaa-fc16-4d11-8a74-0c5874fae69b",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR5-FRACTIONS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000001"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Fractions",
+            "enrichmentFocus": "DEEPER_EXPLORATION",
+            "content": "Building on what you already know about Fractions, let us explore further. Add fractions with unlike denominators.; Subtract fractions with unlike denominators..",
+            "tasks": [
+              "Investigate an advanced aspect of Fractions and present your findings.",
+              "Create a model or diagram that explains a concept from Fractions in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-math-gr5-fractions"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-002",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "english",
+        "phonics",
+        "grade-3",
+        "challenge-tasks",
+        "foundation-phase"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The tasks are more cognitively demanding than basic 'tion' pattern recognition — they require applying the pattern in new or more complex word contexts, sorting, constructing sentences, or analysing unfamiliar words. Tasks do not re-teach the 'tion' pattern from scratch. Reading level is appropriate for Grade 3.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "54851b51-3f93-438f-8110-e8d9c582ae79",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-ENG-GR3-PHONICS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000002"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Phonics and spelling patterns",
+            "enrichmentFocus": "CHALLENGE_TASKS",
+            "content": "Building on what you already know about Phonics and spelling patterns, let us explore further. Read and spell words with the 'tion' suffix pattern..",
+            "tasks": [
+              "Investigate an advanced aspect of Phonics and spelling patterns and present your findings.",
+              "Create a model or diagram that explains a concept from Phonics and spelling patterns in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 3,
+          "targetBand": {
+            "minGrade": 2,
+            "maxGrade": 4
+          }
+        },
+        "citedSourceIds": ["doc-eng-gr3-phonics"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "TB09-003",
+      "agentId": "TB-09",
+      "tags": ["extension", "natural-sciences", "energy", "grade-6", "cross-curricular"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The extension pack explicitly names a connecting subject (e.g. Social Sciences, Geography) and grounds the connection in curriculum content. Tasks require the learner to apply their energy knowledge in that subject context, not just recognise the connection.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "8f604070-557c-4dc0-9597-b22dadd806f1",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR6-ENERGY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000003"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Renewable and non-renewable energy sources",
+            "enrichmentFocus": "CROSS_CURRICULAR",
+            "content": "Building on what you already know about Renewable and non-renewable energy sources, let us explore further. Distinguish between renewable and non-renewable energy sources with examples.; Describe the environmental impact of burning fossil fuels..",
+            "tasks": [
+              "Investigate an advanced aspect of Renewable and non-renewable energy sources and present your findings.",
+              "Create a model or diagram that explains a concept from Renewable and non-renewable energy sources in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr6-energy"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-004",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "mathematics",
+        "quadratics",
+        "grade-9",
+        "higher-order-thinking"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Tasks are explicitly at synthesis, evaluation, or creation level — e.g. designing a quadratic problem with a specific solution set, evaluating a peer's factorisation approach, or arguing which method is most efficient. The pack provides framing for what 'good' looks like and tasks have more than one defensible answer.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "bc05c52d-db86-46fb-a4c9-4d70a4f48b5d",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR9-ALGEBRA",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000004"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Quadratic equations",
+            "enrichmentFocus": "HIGHER_ORDER_THINKING",
+            "content": "Building on what you already know about Quadratic equations, let us explore further. Factorise quadratic expressions of the form ax² + bx + c.; Solve quadratic equations by factorisation..",
+            "tasks": [
+              "Investigate an advanced aspect of Quadratic equations and present your findings.",
+              "Create a model or diagram that explains a concept from Quadratic equations in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 9,
+          "targetBand": {
+            "minGrade": 8,
+            "maxGrade": 10
+          }
+        },
+        "citedSourceIds": ["doc-math-gr9-algebra"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-005",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "social-sciences",
+        "mapwork",
+        "grade-7",
+        "deeper-exploration",
+        "intervention"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The pack goes beyond reading contour heights and identifying basic landforms — it introduces at least one deeper concept such as gradient/slope calculation, cross-section drawing, or interpreting drainage patterns. Tasks require analysis, not just recall.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "e35c1ff9-6cfd-4c06-92f8-07c88d5263e8",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR7-MAPWORK",
+          "interventionId": "bbbbbbbb-cccc-dddd-eeee-000000000005"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Mapwork — contour lines and relief",
+            "enrichmentFocus": "DEEPER_EXPLORATION",
+            "content": "Building on what you already know about Mapwork — contour lines and relief, let us explore further. Read contour lines to determine the height of a point on a map.; Identify landforms (valley, ridge, cliff) from contour patterns..",
+            "tasks": [
+              "Investigate an advanced aspect of Mapwork — contour lines and relief and present your findings.",
+              "Create a model or diagram that explains a concept from Mapwork — contour lines and relief in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-ss-gr7-mapwork"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-006",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "english",
+        "comprehension",
+        "grade-10",
+        "challenge-tasks",
+        "fet"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The tasks are cognitively harder than identifying the main idea in straightforward paragraphs — they involve inferring implied main ideas, synthesising across multiple paragraphs, or evaluating how well a text's structure supports its main idea. Tasks are well-defined despite being more demanding.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "b0725992-723a-4a48-9c68-9712aafd0f7a",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-ENG-GR10-COMPREHENSION",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000006"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Reading comprehension — identifying the main idea",
+            "enrichmentFocus": "CHALLENGE_TASKS",
+            "content": "Building on what you already know about Reading comprehension — identifying the main idea, let us explore further. Identify the main idea of a paragraph.; Distinguish main idea from supporting details..",
+            "tasks": [
+              "Investigate an advanced aspect of Reading comprehension — identifying the main idea and present your findings.",
+              "Create a model or diagram that explains a concept from Reading comprehension — identifying the main idea in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 10,
+          "targetBand": {
+            "minGrade": 9,
+            "maxGrade": 11
+          }
+        },
+        "citedSourceIds": ["doc-eng-gr10-comprehension"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-007",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "mathematics",
+        "measurement",
+        "grade-4",
+        "cross-curricular",
+        "afrikaans"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Die uitbreiding is in Afrikaans geskryf en koppel meting (cm/m omskakeling) uitdruklik aan 'n ander vakgebied. Die vakverbinding word eksplisiet genoem. Take vereis dat die leerder die vaardigheid toepas, nie net die verbinding herken nie.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "c5bb919e-8c7a-47c8-a397-9affdf68e09f",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR4-MEASUREMENT",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000007"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Meting — omskakeling van eenhede",
+            "enrichmentFocus": "CROSS_CURRICULAR",
+            "content": "Building on what you already know about Meting — omskakeling van eenhede, let us explore further. Skakel sentimeter na meter om en andersom..",
+            "tasks": [
+              "Investigate an advanced aspect of Meting — omskakeling van eenhede and present your findings.",
+              "Create a model or diagram that explains a concept from Meting — omskakeling van eenhede in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-math-gr4-meting"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-008",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "natural-sciences",
+        "life-processes",
+        "grade-4",
+        "higher-order-thinking"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Tasks require synthesis, evaluation, or creation — e.g. designing a classification activity, evaluating whether an unusual organism is living, or creating a short argument. The framing explains what a good response looks like. Tasks have more than one defensible answer. Language is appropriate for Grade 4.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "9eef9130-51ca-41a8-acb1-5e4d5a518b6b",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR4-LIFE-PROCESSES",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000008"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: The seven life processes of living things",
+            "enrichmentFocus": "HIGHER_ORDER_THINKING",
+            "content": "Building on what you already know about The seven life processes of living things, let us explore further. Name and briefly describe the seven life processes: movement, respiration, sensitivity, growth, reproduction, excretion, nutrition..",
+            "tasks": [
+              "Investigate an advanced aspect of The seven life processes of living things and present your findings.",
+              "Create a model or diagram that explains a concept from The seven life processes of living things in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr4-life-processes"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-009",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "mathematics",
+        "trigonometry",
+        "grade-11",
+        "deeper-exploration",
+        "fet"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The pack goes deeper within the CAPS trigonometry topic — introducing edge cases (ambiguous case), the cosine rule relationship, or the derivation reasoning behind the sine rule. At least one concept not in the standard lesson is introduced with a brief in-text definition. Tasks require analysis, not just routine application.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "e311e9ab-e498-40a3-8e6b-3a6cf6fc2707",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR11-TRIG",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000009"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Trigonometry — sine rule",
+            "enrichmentFocus": "DEEPER_EXPLORATION",
+            "content": "Building on what you already know about Trigonometry — sine rule, let us explore further. Apply the sine rule to find unknown sides and angles in non-right-angled triangles..",
+            "tasks": [
+              "Investigate an advanced aspect of Trigonometry — sine rule and present your findings.",
+              "Create a model or diagram that explains a concept from Trigonometry — sine rule in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 11,
+          "targetBand": {
+            "minGrade": 10,
+            "maxGrade": 12
+          }
+        },
+        "citedSourceIds": ["doc-math-gr11-trig"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-010",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "english",
+        "writing",
+        "grade-2",
+        "higher-order-thinking",
+        "foundation-phase"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Tasks are open-ended creative or evaluative writing activities appropriate for Grade 2 — e.g. composing a short story with a beginning/middle/end, or choosing between two sentence versions and explaining which is better. Language is very simple (Foundation Phase). Framing explains what good looks like in accessible terms.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "6d27ce22-a03c-4376-ba17-4f1c701f59f2",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-ENG-GR2-WRITING",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000010"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Writing simple sentences and short paragraphs",
+            "enrichmentFocus": "HIGHER_ORDER_THINKING",
+            "content": "Building on what you already know about Writing simple sentences and short paragraphs, let us explore further. Write a simple sentence with a capital letter and full stop.; Write two or three related sentences about a topic..",
+            "tasks": [
+              "Investigate an advanced aspect of Writing simple sentences and short paragraphs and present your findings.",
+              "Create a model or diagram that explains a concept from Writing simple sentences and short paragraphs in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 2,
+          "targetBand": {
+            "minGrade": 1,
+            "maxGrade": 3
+          }
+        },
+        "citedSourceIds": ["doc-eng-gr2-writing"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-011",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "mathematics",
+        "geometry",
+        "grade-8",
+        "challenge-tasks",
+        "intervention"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Tasks are more cognitively demanding than standard parallel-lines problems: they may involve multiple transversals, proofs, or finding angles where the parallel-line property is embedded in a more complex figure. No new content is introduced that has not been taught; tasks are solvable with mastered skills plus effort.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "adde900b-6a22-430d-a4e2-d106bd3ad9af",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR8-GEOMETRY",
+          "interventionId": "bbbbbbbb-cccc-dddd-eeee-000000000011"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Geometry — parallel lines cut by a transversal",
+            "enrichmentFocus": "CHALLENGE_TASKS",
+            "content": "Building on what you already know about Geometry — parallel lines cut by a transversal, let us explore further. Name and identify corresponding, alternate, and co-interior angles formed by parallel lines cut by a transversal.; Calculate unknown angles using properties of parallel lines..",
+            "tasks": [
+              "Investigate an advanced aspect of Geometry — parallel lines cut by a transversal and present your findings.",
+              "Create a model or diagram that explains a concept from Geometry — parallel lines cut by a transversal in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 8,
+          "targetBand": {
+            "minGrade": 7,
+            "maxGrade": 9
+          }
+        },
+        "citedSourceIds": ["doc-math-gr8-geometry"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-012",
+      "agentId": "TB-09",
+      "tags": ["extension", "history", "cold-war", "grade-9", "cross-curricular"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The pack explicitly names a connecting subject (e.g. Geography) and links Cold War geopolitics to spatial or geographic curriculum content. Tasks require the learner to apply historical knowledge in the named subject's context — not just recognise the connection.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "296f1f51-37d8-4d6e-a379-283efdbc6cea",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-HIST-GR9-COLD-WAR",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000012"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: The Cold War — causes and superpowers",
+            "enrichmentFocus": "CROSS_CURRICULAR",
+            "content": "Building on what you already know about The Cold War — causes and superpowers, let us explore further. Explain the main causes of the Cold War.; Describe the role of the USA and USSR as superpowers in the Cold War..",
+            "tasks": [
+              "Investigate an advanced aspect of The Cold War — causes and superpowers and present your findings.",
+              "Create a model or diagram that explains a concept from The Cold War — causes and superpowers in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 9,
+          "targetBand": {
+            "minGrade": 8,
+            "maxGrade": 10
+          }
+        },
+        "citedSourceIds": ["doc-hist-gr9-cold-war"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-013",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "mathematics",
+        "statistics",
+        "grade-12",
+        "higher-order-thinking",
+        "fet"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Tasks are at synthesis or evaluation level — e.g. designing a data collection task where standard deviation matters, evaluating competing claims about data spread, or comparing two data sets and arguing which is more consistent. The pack provides framing about what a complete response looks like, and tasks have more than one defensible answer.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "5cb27dcf-3e52-4eb2-8a2d-ca4d9a128531",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR12-STATS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000013"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Statistics — standard deviation and variance",
+            "enrichmentFocus": "HIGHER_ORDER_THINKING",
+            "content": "Building on what you already know about Statistics — standard deviation and variance, let us explore further. Calculate the standard deviation of a data set.; Interpret standard deviation in context..",
+            "tasks": [
+              "Investigate an advanced aspect of Statistics — standard deviation and variance and present your findings.",
+              "Create a model or diagram that explains a concept from Statistics — standard deviation and variance in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 11.5,
+          "targetBand": {
+            "minGrade": 11,
+            "maxGrade": 12
+          }
+        },
+        "citedSourceIds": ["doc-math-gr12-statistics"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-014",
+      "agentId": "TB-09",
+      "tags": ["extension", "english", "grammar", "grade-5", "deeper-exploration"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The pack introduces at least one grammatical concept or context not covered in the standard lesson — e.g. compound subjects, collective nouns, or indefinite pronoun agreement. Specialist terms are introduced with brief in-text definitions. Tasks require analysis, not just recall. Does not re-teach basic singular/plural agreement.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "f1dc788c-6d8c-43f9-b61c-5e55bd4d8e49",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-ENG-GR5-GRAMMAR",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000014"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Subject-verb agreement",
+            "enrichmentFocus": "DEEPER_EXPLORATION",
+            "content": "Building on what you already know about Subject-verb agreement, let us explore further. Apply subject-verb agreement rules for singular and plural subjects in simple sentences..",
+            "tasks": [
+              "Investigate an advanced aspect of Subject-verb agreement and present your findings.",
+              "Create a model or diagram that explains a concept from Subject-verb agreement in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-eng-gr5-grammar"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-015",
+      "agentId": "TB-09",
+      "tags": ["extension", "mathematics", "decimals", "grade-6", "challenge-tasks"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The tasks are harder applications of decimal multiplication and division — multi-step word problems, real-world contexts with more complexity, or problems embedded in unfamiliar scenarios. No new decimal rules are introduced. Tasks are solvable with mastered skills plus effort.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "06a23c57-dcfd-4bdc-9248-22973d6430f7",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR6-DECIMALS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000015"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Decimal fractions — multiplication and division",
+            "enrichmentFocus": "CHALLENGE_TASKS",
+            "content": "Building on what you already know about Decimal fractions — multiplication and division, let us explore further. Multiply a decimal fraction by a whole number.; Divide a decimal fraction by a whole number..",
+            "tasks": [
+              "Investigate an advanced aspect of Decimal fractions — multiplication and division and present your findings.",
+              "Create a model or diagram that explains a concept from Decimal fractions — multiplication and division in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-math-gr6-decimals"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-016",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "natural-sciences",
+        "matter",
+        "grade-8",
+        "cross-curricular",
+        "intervention"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The pack names a connecting subject explicitly (e.g. Technology) and grounds the connection in actual curriculum content from the source documents. Tasks require applying the skill of distinguishing physical/chemical changes in that subject's context — not just naming the connection.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "c08afe94-90e3-415e-98c6-266a43516726",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR8-MATTER",
+          "interventionId": "bbbbbbbb-cccc-dddd-eeee-000000000016"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Physical and chemical changes",
+            "enrichmentFocus": "CROSS_CURRICULAR",
+            "content": "Building on what you already know about Physical and chemical changes, let us explore further. Distinguish between physical and chemical changes using observable evidence..",
+            "tasks": [
+              "Investigate an advanced aspect of Physical and chemical changes and present your findings.",
+              "Create a model or diagram that explains a concept from Physical and chemical changes in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 8,
+          "targetBand": {
+            "minGrade": 7,
+            "maxGrade": 9
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr8-matter"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-017",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "mathematics",
+        "functions",
+        "grade-10",
+        "deeper-exploration",
+        "fet"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The pack introduces at least one concept beyond the standard y = ax² + q content — e.g. the vertex form, finding the equation from given points, or the relationship to real-world projectile motion. Specialist terms are introduced with brief in-text definitions. Tasks require analysis or reasoning beyond routine sketching.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "7e5faf53-ce10-4a0a-ac54-c555cab140ad",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR10-FUNCTIONS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000017"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Functions — parabola y = ax² + q",
+            "enrichmentFocus": "DEEPER_EXPLORATION",
+            "content": "Building on what you already know about Functions — parabola y = ax² + q, let us explore further. Sketch the parabola y = ax² + q and identify the axis of symmetry, turning point, and y-intercept.; Describe the effect of a and q on the shape and position of the parabola..",
+            "tasks": [
+              "Investigate an advanced aspect of Functions — parabola y = ax² + q and present your findings.",
+              "Create a model or diagram that explains a concept from Functions — parabola y = ax² + q in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 10,
+          "targetBand": {
+            "minGrade": 9,
+            "maxGrade": 11
+          }
+        },
+        "citedSourceIds": ["doc-math-gr10-functions"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-018",
+      "agentId": "TB-09",
+      "tags": ["extension", "english", "poetry", "grade-8", "higher-order-thinking"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Tasks are at synthesis or creation level — e.g. writing an original verse using imagery, evaluating competing interpretations of a poem's central image, or arguing whether a particular image is effective. Framing explains what a strong response looks like. Tasks have more than one defensible answer.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "2a7a72f4-476c-4008-bf37-18d70cfdbd45",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-ENG-GR8-POETRY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000018"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Poetry — imagery and figurative language",
+            "enrichmentFocus": "HIGHER_ORDER_THINKING",
+            "content": "Building on what you already know about Poetry — imagery and figurative language, let us explore further. Identify and explain the effect of simile, metaphor, and personification in a poem..",
+            "tasks": [
+              "Investigate an advanced aspect of Poetry — imagery and figurative language and present your findings.",
+              "Create a model or diagram that explains a concept from Poetry — imagery and figurative language in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 8,
+          "targetBand": {
+            "minGrade": 7,
+            "maxGrade": 9
+          }
+        },
+        "citedSourceIds": ["doc-eng-gr8-poetry"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-019",
+      "agentId": "TB-09",
+      "tags": [
+        "extension",
+        "natural-sciences",
+        "ecosystems",
+        "grade-5",
+        "cross-curricular"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The pack names a connecting subject explicitly (e.g. Mathematics) and grounds the connection in curriculum content from the source documents. Tasks require the learner to apply food-chain knowledge in a mathematical context — e.g. using fractions or ratios to reason about energy transfer — not just recognise the connection.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "5f90e024-7118-48fd-a6e5-6306df88f73c",
+        "artefactType": "EXTENSION_PACK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-ECOSYSTEMS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000019"
+        },
+        "sections": [
+          {
+            "title": "Going Deeper: Food chains and food webs",
+            "enrichmentFocus": "CROSS_CURRICULAR",
+            "content": "Building on what you already know about Food chains and food webs, let us explore further. Construct and interpret a simple food chain.; Explain the roles of producers, consumers, and decomposers..",
+            "tasks": [
+              "Investigate an advanced aspect of Food chains and food webs and present your findings.",
+              "Create a model or diagram that explains a concept from Food chains and food webs in a new way."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr5-ecosystems"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB09-020",
+      "agentId": "TB-09",
+      "tags": ["error-path", "needs-input", "mathematics", "grade-7", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one masteredSkill is required — cannot build an extension pack without a starting point.",
+        "missingFields": ["masteredSkills"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

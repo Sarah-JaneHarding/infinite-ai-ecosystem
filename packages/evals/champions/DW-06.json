@@ -1,0 +1,1148 @@
+{
+  "agentId": "DW-06",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "dw-06-no-events-needs-input-001",
+      "agentId": "DW-06",
+      "tags": ["needs_input", "no_events"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "learnerId": "00000000-0000-0000-0000-000000000100",
+        "detail": "No conformed events found for learner 00000000-0000-0000-0000-000000000100 in term 3/2026."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-attendance-only-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "attendance_only"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.presentDays\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.absentDays\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.lateDays\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.attendanceRatePct\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000101",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 2,
+            "absentDays": 1,
+            "lateDays": 1,
+            "attendanceRatePct": 50
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.273Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-assessment-only-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "assessment_only"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.academic.overallAverage\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000102",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "subjectAverages": {
+              "MATH": 80,
+              "ENGLISH": 70
+            },
+            "overallAverage": 75
+          },
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.273Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-attendance-rate-formula-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "attendance_rate_formula"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.presentDays\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.absentDays\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.attendanceRatePct\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000103",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 3,
+            "absentDays": 1,
+            "lateDays": 0,
+            "attendanceRatePct": 75
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.273Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-zero-events-domain-null-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "null_for_missing_domain"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.academic\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.behaviour\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000104",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 1,
+            "absentDays": 0,
+            "lateDays": 0,
+            "attendanceRatePct": 100
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.273Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-behaviour-events-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "behaviour"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.behaviour.incidentCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.behaviour.mostRecentKind\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000105",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": null,
+          "behaviour": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "incidentCount": 2,
+            "mostRecentKind": "TRUANCY"
+          },
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.273Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 7,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-wellbeing-screener-flag-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "wellbeing", "flagged"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.wellbeing.flagged\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000106",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "screenerScores": {
+              "SDQ": 35
+            },
+            "flagged": true,
+            "screenerResults": ["SDQ"]
+          },
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.280Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-wellbeing-not-flagged-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "wellbeing", "not_flagged"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.wellbeing.flagged\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000107",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "screenerScores": {
+              "SDQ": 10
+            },
+            "flagged": false,
+            "screenerResults": ["SDQ"]
+          },
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.280Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-multi-subject-overall-average-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "multi_subject_average"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.academic.overallAverage\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000108",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "subjectAverages": {
+              "MATH": 90,
+              "SCIENCE": 80,
+              "ENGLISH": 70
+            },
+            "overallAverage": 80
+          },
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.280Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-multi-domain-all-present-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "all_domains"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000109",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 1,
+            "absentDays": 0,
+            "lateDays": 0,
+            "attendanceRatePct": 100
+          },
+          "academic": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "subjectAverages": {
+              "MATH": 75
+            },
+            "overallAverage": 75
+          },
+          "behaviour": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "incidentCount": 1,
+            "mostRecentKind": "DISRUPTION"
+          },
+          "wellbeing": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "screenerScores": {
+              "UNKNOWN": 12
+            },
+            "flagged": false,
+            "screenerResults": ["UNKNOWN"]
+          },
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-last-materialised-at-is-run-time-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "last_materialised_at"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000110",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 1,
+            "absentDays": 0,
+            "lateDays": 0,
+            "attendanceRatePct": 100
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-data-quality-note-when-blocked-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "data_quality_note", "partial_block"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000111",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 1,
+            "absentDays": 0,
+            "lateDays": 0,
+            "attendanceRatePct": 100
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": "One or more source domains had data quality issues that prevented full materialisation. Summaries reflect only unblocked events.",
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-deterministic-same-events-same-output-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "deterministic"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.presentDays\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.absentDays\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000112",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 1,
+            "absentDays": 1,
+            "lateDays": 0,
+            "attendanceRatePct": 50
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-multi-tenant-isolation-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000200",
+          "tenantId": "00000000-0000-0000-0000-000000000002",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 1,
+            "absentDays": 0,
+            "lateDays": 0,
+            "attendanceRatePct": 100
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-no-assessment-events-null-summary-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "null_not_zero", "no_attendance"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.academic\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000113",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": null,
+          "behaviour": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "incidentCount": 1,
+            "mostRecentKind": "DISRUPTION"
+          },
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-overall-average-rounded-two-decimals-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "rounding"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.academic.overallAverage\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000114",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "subjectAverages": {
+              "MATH": 100,
+              "ENGLISH": 67,
+              "SCIENCE": 58
+            },
+            "overallAverage": 75
+          },
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-wrong-term-no-events-001",
+      "agentId": "DW-06",
+      "tags": ["needs_input", "wrong_term"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "learnerId": "00000000-0000-0000-0000-000000000115",
+        "detail": "No conformed events found for learner 00000000-0000-0000-0000-000000000115 in term 2/2026."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-screener-results-in-profile-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "screener_results"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000116",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "screenerScores": {
+              "SDQ": 22
+            },
+            "flagged": false,
+            "screenerResults": ["SDQ"]
+          },
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-100-percent-attendance-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "perfect_attendance"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.attendanceRatePct\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000117",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 4,
+            "absentDays": 0,
+            "lateDays": 0,
+            "attendanceRatePct": 100
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-0-percent-attendance-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "zero_attendance"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.attendanceRatePct\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000118",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 0,
+            "absentDays": 2,
+            "lateDays": 0,
+            "attendanceRatePct": 0
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-all-domains-blocked-quality-note-001",
+      "agentId": "DW-06",
+      "tags": ["needs_input", "all_blocked"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "learnerId": "00000000-0000-0000-0000-000000000119",
+        "detail": "All events for learner 00000000-0000-0000-0000-000000000119 in term 3/2026 are blocked downstream."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-most-recent-behaviour-kind-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "most_recent_kind"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.behaviour.mostRecentKind\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.behaviour.incidentCount\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000120",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": null,
+          "behaviour": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "incidentCount": 3,
+            "mostRecentKind": "TRUANCY"
+          },
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-assessment-per-subject-averages-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "per_subject_average"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.academic.subjectAverages.MATH\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000121",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "subjectAverages": {
+              "MATH": 70
+            },
+            "overallAverage": 70
+          },
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-no-fabrication-zero-filled-summary-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "no_zero_fabrication"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.behaviour\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000122",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 1,
+            "absentDays": 0,
+            "lateDays": 0,
+            "attendanceRatePct": 100
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-term-window-respected-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "term_window_respected"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.attendance.presentDays\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000123",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 1,
+            "absentDays": 0,
+            "lateDays": 0,
+            "attendanceRatePct": 100
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-learnerId-not-in-profile-output-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "pii_safety", "no_uuid_in_profile"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000124",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "presentDays": 1,
+            "absentDays": 0,
+            "lateDays": 0,
+            "attendanceRatePct": 100
+          },
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": null,
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-needs-input-detail-has-term-001",
+      "agentId": "DW-06",
+      "tags": ["needs_input", "detail_has_term"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "learnerId": "00000000-0000-0000-0000-000000000125",
+        "detail": "No conformed events found for learner 00000000-0000-0000-0000-000000000125 in term 1/2026."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-well-being-threshold-boundary-001",
+      "agentId": "DW-06",
+      "tags": ["ok", "wellbeing", "threshold_boundary"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"profile.wellbeing.flagged\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "profile": {
+          "learnerId": "00000000-0000-0000-0000-000000000126",
+          "tenantId": "00000000-0000-0000-0000-000000000001",
+          "attendance": null,
+          "academic": null,
+          "behaviour": null,
+          "wellbeing": {
+            "termNumber": 3,
+            "academicYear": 2026,
+            "screenerScores": {
+              "SDQ": 30
+            },
+            "flagged": true,
+            "screenerResults": ["SDQ"]
+          },
+          "screenerResults": null,
+          "dataQualityNote": null,
+          "lastMaterialisedAt": "2026-08-21T17:54:17.281Z"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-06-all-events-out-of-term-001",
+      "agentId": "DW-06",
+      "tags": ["needs_input", "out_of_term"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "learnerId": "00000000-0000-0000-0000-000000000127",
+        "detail": "No conformed events found for learner 00000000-0000-0000-0000-000000000127 in term 4/2026."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 29,
+    "passedCases": 29,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 8
+  }
+}

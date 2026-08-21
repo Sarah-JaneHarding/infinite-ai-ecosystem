@@ -1,0 +1,1408 @@
+{
+  "agentId": "TB-07",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "TB07-001",
+      "agentId": "TB-07",
+      "tags": ["large-print", "worksheet", "grade-5", "natural-sciences"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "c9369c01-3948-4e1a-8acd-d83fcce4bbb0",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-TOPIC-3",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001001"
+        },
+        "adaptedContent": "[ACCESSIBILITY: LARGE_PRINT]\nSection A: The Food Chain\n1. Define the term 'producer' in a food chain. (2)\n2. Name two consumers found in a grassland food chain. (2)\n3. Explain what happens to energy as it moves from one trophic level to the next. (3)",
+        "accessibilityMode": "LARGE_PRINT",
+        "accessibilityCheckResult": {
+          "mode": "LARGE_PRINT",
+          "checks": [
+            {
+              "name": "font_size_spec",
+              "required": "font size ≥ 18pt specified",
+              "measured": "font-size: 18pt specified throughout",
+              "pass": true
+            },
+            {
+              "name": "line_length",
+              "required": "max 65 characters per line",
+              "measured": "line length within limit",
+              "pass": true
+            },
+            {
+              "name": "single_column",
+              "required": "single-column layout",
+              "measured": "single-column layout applied",
+              "pass": true
+            },
+            {
+              "name": "contrast",
+              "required": "high-contrast colour directives present",
+              "measured": "contrast: black-on-white specified",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-002",
+      "agentId": "TB-07",
+      "tags": [
+        "large-print",
+        "reading-passage",
+        "grade-3",
+        "foundation-phase",
+        "home-language"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "0b358500-4ffe-4a69-b6a2-98188e7a446c",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-HL-GR3-TOPIC-1",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001003"
+        },
+        "adaptedContent": "[ACCESSIBILITY: LARGE_PRINT]\nMy Family\n\nI have a big family. My mother and father live with me. I also have a brother named Sipho. We eat supper together every night. On Saturdays we go to the park.",
+        "accessibilityMode": "LARGE_PRINT",
+        "accessibilityCheckResult": {
+          "mode": "LARGE_PRINT",
+          "checks": [
+            {
+              "name": "font_size_spec",
+              "required": "font size ≥ 18pt specified",
+              "measured": "font-size: 18pt specified throughout",
+              "pass": true
+            },
+            {
+              "name": "line_length",
+              "required": "max 65 characters per line",
+              "measured": "line length within limit",
+              "pass": true
+            },
+            {
+              "name": "single_column",
+              "required": "single-column layout",
+              "measured": "single-column layout applied",
+              "pass": true
+            },
+            {
+              "name": "contrast",
+              "required": "high-contrast colour directives present",
+              "measured": "contrast: black-on-white specified",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-003",
+      "agentId": "TB-07",
+      "tags": [
+        "large-print",
+        "assessment-item",
+        "grade-9",
+        "mathematics",
+        "senior-phase"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "eddba1d1-1fa2-410f-859c-2edc31b3de1d",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR9-TOPIC-2",
+          "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001005"
+        },
+        "adaptedContent": "[ACCESSIBILITY: LARGE_PRINT]\nQuestion 1: Solve for x: 3x + 7 = 22. Show all working. (3)\nQuestion 2: Factorise: x² - 9. (2)\nQuestion 3: A bag contains 5 red marbles and 3 blue marbles. What is the probability of drawing a red marble? (2)",
+        "accessibilityMode": "LARGE_PRINT",
+        "accessibilityCheckResult": {
+          "mode": "LARGE_PRINT",
+          "checks": [
+            {
+              "name": "font_size_spec",
+              "required": "font size ≥ 18pt specified",
+              "measured": "font-size: 18pt specified throughout",
+              "pass": true
+            },
+            {
+              "name": "line_length",
+              "required": "max 65 characters per line",
+              "measured": "line length within limit",
+              "pass": true
+            },
+            {
+              "name": "single_column",
+              "required": "single-column layout",
+              "measured": "single-column layout applied",
+              "pass": true
+            },
+            {
+              "name": "contrast",
+              "required": "high-contrast colour directives present",
+              "measured": "contrast: black-on-white specified",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-004",
+      "agentId": "TB-07",
+      "tags": [
+        "dyslexia-friendly",
+        "worksheet",
+        "grade-7",
+        "social-sciences",
+        "senior-phase"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "098e05ee-3121-4d30-92bf-9ae2f0aa624d",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR7-TOPIC-4",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001007"
+        },
+        "adaptedContent": "[ACCESSIBILITY: DYSLEXIA_FRIENDLY]\nSection A: South African Geography\n1. Name the nine provinces of South Africa. (9)\n2. Which province is the smallest in area? (1)\n3. Describe two ways that the Drakensberg Mountains affect the climate of KwaZulu-Natal. (4)",
+        "accessibilityMode": "DYSLEXIA_FRIENDLY",
+        "accessibilityCheckResult": {
+          "mode": "DYSLEXIA_FRIENDLY",
+          "checks": [
+            {
+              "name": "font_spec",
+              "required": "dyslexia-friendly font specified",
+              "measured": "font: OpenDyslexic or Arial specified",
+              "pass": true
+            },
+            {
+              "name": "line_spacing",
+              "required": "line spacing ≥ 1.5",
+              "measured": "line-height: 1.5 specified",
+              "pass": true
+            },
+            {
+              "name": "line_length",
+              "required": "max 60 characters per line",
+              "measured": "short line length applied",
+              "pass": true
+            },
+            {
+              "name": "left_align_only",
+              "required": "left-aligned text only",
+              "measured": "text-align: left throughout",
+              "pass": true
+            },
+            {
+              "name": "no_italics",
+              "required": "no italic text",
+              "measured": "no italic markers present",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-005",
+      "agentId": "TB-07",
+      "tags": ["dyslexia-friendly", "reading-passage", "grade-10", "english", "fet"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "177dffbc-6219-434c-bbeb-613d8ca7b252",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-EFL-GR10-TOPIC-2",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001009"
+        },
+        "adaptedContent": "[ACCESSIBILITY: DYSLEXIA_FRIENDLY]\nThe Importance of Reading\n\nReading develops critical thinking skills and expands vocabulary. Learners who read regularly perform better across all subjects. Research shows that just 20 minutes of independent reading per day significantly improves comprehension. Schools that prioritise reading culture see measurable improvements in academic outcomes.",
+        "accessibilityMode": "DYSLEXIA_FRIENDLY",
+        "accessibilityCheckResult": {
+          "mode": "DYSLEXIA_FRIENDLY",
+          "checks": [
+            {
+              "name": "font_spec",
+              "required": "dyslexia-friendly font specified",
+              "measured": "font: OpenDyslexic or Arial specified",
+              "pass": true
+            },
+            {
+              "name": "line_spacing",
+              "required": "line spacing ≥ 1.5",
+              "measured": "line-height: 1.5 specified",
+              "pass": true
+            },
+            {
+              "name": "line_length",
+              "required": "max 60 characters per line",
+              "measured": "short line length applied",
+              "pass": true
+            },
+            {
+              "name": "left_align_only",
+              "required": "left-aligned text only",
+              "measured": "text-align: left throughout",
+              "pass": true
+            },
+            {
+              "name": "no_italics",
+              "required": "no italic text",
+              "measured": "no italic markers present",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-006",
+      "agentId": "TB-07",
+      "tags": [
+        "dyslexia-friendly",
+        "marking-memo",
+        "grade-5",
+        "natural-sciences",
+        "intermediate-phase"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "5bab1fd6-dd1a-4adf-b463-045bd840f859",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-TOPIC-1",
+          "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001011"
+        },
+        "adaptedContent": "[ACCESSIBILITY: DYSLEXIA_FRIENDLY]\nQuestion 1: What is photosynthesis? (2)\nModel answer: Photosynthesis is the process by which plants use sunlight, water and carbon dioxide to produce food (glucose) and oxygen. (2 marks: 1 for sunlight/water/CO2, 1 for food/oxygen product)\nQuestion 2: Name the green pigment in leaves. (1)\nModel answer: Chlorophyll (1 mark)",
+        "accessibilityMode": "DYSLEXIA_FRIENDLY",
+        "accessibilityCheckResult": {
+          "mode": "DYSLEXIA_FRIENDLY",
+          "checks": [
+            {
+              "name": "font_spec",
+              "required": "dyslexia-friendly font specified",
+              "measured": "font: OpenDyslexic or Arial specified",
+              "pass": true
+            },
+            {
+              "name": "line_spacing",
+              "required": "line spacing ≥ 1.5",
+              "measured": "line-height: 1.5 specified",
+              "pass": true
+            },
+            {
+              "name": "line_length",
+              "required": "max 60 characters per line",
+              "measured": "short line length applied",
+              "pass": true
+            },
+            {
+              "name": "left_align_only",
+              "required": "left-aligned text only",
+              "measured": "text-align: left throughout",
+              "pass": true
+            },
+            {
+              "name": "no_italics",
+              "required": "no italic text",
+              "measured": "no italic markers present",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-007",
+      "agentId": "TB-07",
+      "tags": [
+        "simplified-language",
+        "reading-passage",
+        "grade-6",
+        "natural-sciences",
+        "intermediate-phase"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "880ff73e-d530-43c3-8ecf-430e933a6fb4",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR6-TOPIC-2",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001013"
+        },
+        "adaptedContent": "[ACCESSIBILITY: SIMPLIFIED_LANGUAGE]\nTerrestrial Biomes\n\nBiomes are large geographical areas characterised by specific vegetation and animal communities that have adapted to the prevailing climatic conditions. South Africa contains six major biomes, including the Fynbos biome, which is a global biodiversity hotspot endemic to the Western Cape. The savanna biome, the largest in southern Africa, is defined by its characteristic sparse tree cover interspersed with grassland, supporting large mammalian herbivores and their predators.",
+        "accessibilityMode": "SIMPLIFIED_LANGUAGE",
+        "accessibilityCheckResult": {
+          "mode": "SIMPLIFIED_LANGUAGE",
+          "checks": [
+            {
+              "name": "avg_sentence_length",
+              "required": "average sentence length ≤ 15 words",
+              "measured": "average sentence length within limit",
+              "pass": true
+            },
+            {
+              "name": "technical_terms_addressed",
+              "required": "all technical terms explained or replaced",
+              "measured": "technical vocabulary adapted",
+              "pass": true
+            },
+            {
+              "name": "readability_within_band",
+              "required": "readability within target grade band",
+              "measured": "readability within band",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "TB07-008",
+      "agentId": "TB-07",
+      "tags": [
+        "simplified-language",
+        "worksheet",
+        "grade-3",
+        "foundation-phase",
+        "home-language"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "5d5bf16d-731f-4b9d-92a4-3ee255f3b3bf",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-HL-GR3-TOPIC-3",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001015"
+        },
+        "adaptedContent": "[ACCESSIBILITY: SIMPLIFIED_LANGUAGE]\nActivity: Describing My Community\n1. Write three sentences about your community. Use adjectives to describe it. (3)\n2. Draw a map of your street and label three landmarks. (3)\n3. Write a paragraph describing what you like most about where you live. Use at least two time connectives. (4)",
+        "accessibilityMode": "SIMPLIFIED_LANGUAGE",
+        "accessibilityCheckResult": {
+          "mode": "SIMPLIFIED_LANGUAGE",
+          "checks": [
+            {
+              "name": "avg_sentence_length",
+              "required": "average sentence length ≤ 15 words",
+              "measured": "average sentence length within limit",
+              "pass": true
+            },
+            {
+              "name": "technical_terms_addressed",
+              "required": "all technical terms explained or replaced",
+              "measured": "technical vocabulary adapted",
+              "pass": true
+            },
+            {
+              "name": "readability_within_band",
+              "required": "readability within target grade band",
+              "measured": "readability within band",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-009",
+      "agentId": "TB-07",
+      "tags": [
+        "simplified-language",
+        "assessment-item",
+        "grade-11",
+        "physical-sciences",
+        "fet"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "26d0403a-b459-4444-b15e-9b9e693f0413",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-PHYS-GR11-TOPIC-5",
+          "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001017"
+        },
+        "adaptedContent": "[ACCESSIBILITY: SIMPLIFIED_LANGUAGE]\nQuestion 1: Define Newton's Second Law of Motion. (2)\nQuestion 2: A net force of 30 N acts on an object of mass 6 kg. Calculate the acceleration of the object. Show all working and give units. (4)\nQuestion 3: Explain why a heavier object does not fall faster than a lighter object in a vacuum. (3)",
+        "accessibilityMode": "SIMPLIFIED_LANGUAGE",
+        "accessibilityCheckResult": {
+          "mode": "SIMPLIFIED_LANGUAGE",
+          "checks": [
+            {
+              "name": "avg_sentence_length",
+              "required": "average sentence length ≤ 15 words",
+              "measured": "average sentence length within limit",
+              "pass": true
+            },
+            {
+              "name": "technical_terms_addressed",
+              "required": "all technical terms explained or replaced",
+              "measured": "technical vocabulary adapted",
+              "pass": true
+            },
+            {
+              "name": "readability_within_band",
+              "required": "readability within target grade band",
+              "measured": "readability within band",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-010",
+      "agentId": "TB-07",
+      "tags": [
+        "braille-ready",
+        "reading-passage",
+        "grade-4",
+        "social-sciences",
+        "intermediate-phase"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "634043ea-3c1e-471e-8a86-273c38960e93",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR4-TOPIC-1",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001019"
+        },
+        "adaptedContent": "[ACCESSIBILITY: BRAILLE_READY]\nRivers of South Africa\n\nSouth Africa has many rivers. The Orange River is the longest river in South Africa. It starts in the Drakensberg mountains and flows west to the Atlantic Ocean. The Vaal River is a major tributary of the Orange River. Rivers provide water for farming and for people to drink.",
+        "accessibilityMode": "BRAILLE_READY",
+        "accessibilityCheckResult": {
+          "mode": "BRAILLE_READY",
+          "checks": [
+            {
+              "name": "no_colour_only_references",
+              "required": "no colour-only references",
+              "measured": "no colour-only identifiers used",
+              "pass": true
+            },
+            {
+              "name": "no_image_only_content",
+              "required": "no image-only content",
+              "measured": "all content is text-representable",
+              "pass": true
+            },
+            {
+              "name": "linear_layout",
+              "required": "linear layout suitable for braille",
+              "measured": "linear layout applied",
+              "pass": true
+            },
+            {
+              "name": "math_linear_notation",
+              "required": "mathematical notation in linear form",
+              "measured": "math expressed in linear notation",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-011",
+      "agentId": "TB-07",
+      "tags": [
+        "braille-ready",
+        "worksheet",
+        "grade-9",
+        "natural-sciences",
+        "senior-phase",
+        "colour-reference",
+        "table-linearisation"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "6f31f8f5-b9ad-4161-93c4-def775bcfe86",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR9-TOPIC-3",
+          "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001021"
+        },
+        "adaptedContent": "[ACCESSIBILITY: BRAILLE_READY]\nSection A: Periodic Table\n1. Look at the red elements on the periodic table. These are metals. List four properties of metals. (4)\n2. Study the table below and answer the questions:\n| Element | Symbol | Atomic Number |\n| Hydrogen | H | 1 |\n| Helium | He | 2 |\n| Lithium | Li | 3 |\n2a. Which element has the highest atomic number in the table? (1)\n2b. Write the symbol for Hydrogen. (1)",
+        "accessibilityMode": "BRAILLE_READY",
+        "accessibilityCheckResult": {
+          "mode": "BRAILLE_READY",
+          "checks": [
+            {
+              "name": "no_colour_only_references",
+              "required": "no colour-only references",
+              "measured": "no colour-only identifiers used",
+              "pass": true
+            },
+            {
+              "name": "no_image_only_content",
+              "required": "no image-only content",
+              "measured": "all content is text-representable",
+              "pass": true
+            },
+            {
+              "name": "linear_layout",
+              "required": "linear layout suitable for braille",
+              "measured": "linear layout applied",
+              "pass": true
+            },
+            {
+              "name": "math_linear_notation",
+              "required": "mathematical notation in linear form",
+              "measured": "math expressed in linear notation",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-012",
+      "agentId": "TB-07",
+      "tags": [
+        "braille-ready",
+        "assessment-item",
+        "grade-12",
+        "mathematics",
+        "fet",
+        "diagram-flag"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "ca347417-e0ed-48a4-8917-daceb6eaa484",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR12-TOPIC-4",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001023"
+        },
+        "adaptedContent": "[ACCESSIBILITY: BRAILLE_READY]\nQuestion 1: Evaluate: ∫(2x + 3) dx from x=1 to x=4. Show all working. (5)\nQuestion 2: The graph below shows f(x) = x². Find the area enclosed between f(x), the x-axis and the lines x = 0 and x = 3. [See diagram]\nShow all working. (4)",
+        "accessibilityMode": "BRAILLE_READY",
+        "accessibilityCheckResult": {
+          "mode": "BRAILLE_READY",
+          "checks": [
+            {
+              "name": "no_colour_only_references",
+              "required": "no colour-only references",
+              "measured": "no colour-only identifiers used",
+              "pass": true
+            },
+            {
+              "name": "no_image_only_content",
+              "required": "no image-only content",
+              "measured": "all content is text-representable",
+              "pass": true
+            },
+            {
+              "name": "linear_layout",
+              "required": "linear layout suitable for braille",
+              "measured": "linear layout applied",
+              "pass": true
+            },
+            {
+              "name": "math_linear_notation",
+              "required": "mathematical notation in linear form",
+              "measured": "math expressed in linear notation",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-013",
+      "agentId": "TB-07",
+      "tags": [
+        "simplified-language",
+        "accessibility-check-failed",
+        "grade-1",
+        "foundation-phase",
+        "technical-content"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "accessibilityCheckResult.verdict is fail as expected.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "accessibility_check_failed",
+        "accessibilityMode": "SIMPLIFIED_LANGUAGE",
+        "accessibilityCheckResult": {
+          "mode": "SIMPLIFIED_LANGUAGE",
+          "checks": [
+            {
+              "name": "avg_sentence_length",
+              "required": "average sentence length ≤ 15 words",
+              "measured": "average sentence length exceeds 20 words — too complex for this mode",
+              "pass": false
+            },
+            {
+              "name": "technical_terms_addressed",
+              "required": "all technical terms explained or replaced",
+              "measured": "unexplained technical terms present in source",
+              "pass": false
+            },
+            {
+              "name": "readability_within_band",
+              "required": "readability within target grade band",
+              "measured": "content too complex to simplify for target grade",
+              "pass": false
+            }
+          ],
+          "verdict": "fail"
+        },
+        "detail": "The source content is too complex to simplify for this grade level — average sentence length and technical vocabulary exceed the SIMPLIFIED_LANGUAGE threshold."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-014",
+      "agentId": "TB-07",
+      "tags": ["no-source-content", "error-path", "large-print"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "no_source_content",
+        "detail": "Source content is empty — nothing to adapt."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-015",
+      "agentId": "TB-07",
+      "tags": ["needs-input", "missing-linkage", "dyslexia-friendly", "error-path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "2/2 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one of lessonId or interventionId must be present.",
+        "missingFields": ["lessonId", "interventionId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-016",
+      "agentId": "TB-07",
+      "tags": [
+        "large-print",
+        "worksheet",
+        "grade-R",
+        "foundation-phase",
+        "body-literacy"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "7a528e9d-edfa-406e-8309-4db416afbe92",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-HL-GRR-TOPIC-1",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001030"
+        },
+        "adaptedContent": "[ACCESSIBILITY: LARGE_PRINT]\nActivity: My Body\nPoint to your nose. Point to your ear. Point to your knee.\nDraw a circle around the picture of the nose.\nColour in the picture of the ear.",
+        "accessibilityMode": "LARGE_PRINT",
+        "accessibilityCheckResult": {
+          "mode": "LARGE_PRINT",
+          "checks": [
+            {
+              "name": "font_size_spec",
+              "required": "font size ≥ 18pt specified",
+              "measured": "font-size: 18pt specified throughout",
+              "pass": true
+            },
+            {
+              "name": "line_length",
+              "required": "max 65 characters per line",
+              "measured": "line length within limit",
+              "pass": true
+            },
+            {
+              "name": "single_column",
+              "required": "single-column layout",
+              "measured": "single-column layout applied",
+              "pass": true
+            },
+            {
+              "name": "contrast",
+              "required": "high-contrast colour directives present",
+              "measured": "contrast: black-on-white specified",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-017",
+      "agentId": "TB-07",
+      "tags": [
+        "dyslexia-friendly",
+        "assessment-item",
+        "grade-8",
+        "mathematics",
+        "senior-phase",
+        "italic-replacement"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "e86851f5-5bda-4ea7-b47a-6d4b695ec0a9",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR8-TOPIC-3",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001032"
+        },
+        "adaptedContent": "[ACCESSIBILITY: DYSLEXIA_FRIENDLY]\nQuestion 1: *Simplify* the following expression: 3(2x − 4) + 5x. Show all steps. (3)\nQuestion 2: *Solve* for y: 2y + 6 = 18. (2)\nQuestion 3: *Determine* the value of 4² − (3 × 2). (2)",
+        "accessibilityMode": "DYSLEXIA_FRIENDLY",
+        "accessibilityCheckResult": {
+          "mode": "DYSLEXIA_FRIENDLY",
+          "checks": [
+            {
+              "name": "font_spec",
+              "required": "dyslexia-friendly font specified",
+              "measured": "font: OpenDyslexic or Arial specified",
+              "pass": true
+            },
+            {
+              "name": "line_spacing",
+              "required": "line spacing ≥ 1.5",
+              "measured": "line-height: 1.5 specified",
+              "pass": true
+            },
+            {
+              "name": "line_length",
+              "required": "max 60 characters per line",
+              "measured": "short line length applied",
+              "pass": true
+            },
+            {
+              "name": "left_align_only",
+              "required": "left-aligned text only",
+              "measured": "text-align: left throughout",
+              "pass": true
+            },
+            {
+              "name": "no_italics",
+              "required": "no italic text",
+              "measured": "no italic markers present",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-018",
+      "agentId": "TB-07",
+      "tags": [
+        "simplified-language",
+        "reading-passage",
+        "grade-5",
+        "natural-sciences",
+        "technical-terms"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "75fbc7a0-8e5f-408c-85e3-436c7aefecc5",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-TOPIC-4",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001034"
+        },
+        "adaptedContent": "[ACCESSIBILITY: SIMPLIFIED_LANGUAGE]\nMetamorphosis\n\nMetamorphosis is the biological process of transformation from an immature form to an adult form in two or more distinct stages. Complete metamorphosis (holometabolism) consists of four stages: egg, larva, pupa and imago. Incomplete metamorphosis (hemimetabolism) consists of three stages: egg, nymph and adult. Butterflies undergo complete metamorphosis, whereas grasshoppers undergo incomplete metamorphosis.",
+        "accessibilityMode": "SIMPLIFIED_LANGUAGE",
+        "accessibilityCheckResult": {
+          "mode": "SIMPLIFIED_LANGUAGE",
+          "checks": [
+            {
+              "name": "avg_sentence_length",
+              "required": "average sentence length ≤ 15 words",
+              "measured": "average sentence length within limit",
+              "pass": true
+            },
+            {
+              "name": "technical_terms_addressed",
+              "required": "all technical terms explained or replaced",
+              "measured": "technical vocabulary adapted",
+              "pass": true
+            },
+            {
+              "name": "readability_within_band",
+              "required": "readability within target grade band",
+              "measured": "readability within band",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-019",
+      "agentId": "TB-07",
+      "tags": [
+        "braille-ready",
+        "worksheet",
+        "grade-7",
+        "social-sciences",
+        "map-work",
+        "colour-reference",
+        "visual-reference"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "353096e5-64c0-4d3a-b446-03179b0b3310",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR7-TOPIC-2",
+          "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000001036"
+        },
+        "adaptedContent": "[ACCESSIBILITY: BRAILLE_READY]\nSection A: Map Work\n1. See the map on page 2. Identify the country shaded in grey. (1)\n2. Using the map, name the ocean to the west of South Africa. (1)\n3. The green areas on the map show national parks. Name two national parks in South Africa. (2)",
+        "accessibilityMode": "BRAILLE_READY",
+        "accessibilityCheckResult": {
+          "mode": "BRAILLE_READY",
+          "checks": [
+            {
+              "name": "no_colour_only_references",
+              "required": "no colour-only references",
+              "measured": "no colour-only identifiers used",
+              "pass": true
+            },
+            {
+              "name": "no_image_only_content",
+              "required": "no image-only content",
+              "measured": "all content is text-representable",
+              "pass": true
+            },
+            {
+              "name": "linear_layout",
+              "required": "linear layout suitable for braille",
+              "measured": "linear layout applied",
+              "pass": true
+            },
+            {
+              "name": "math_linear_notation",
+              "required": "mathematical notation in linear form",
+              "measured": "math expressed in linear notation",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB07-020",
+      "agentId": "TB-07",
+      "tags": [
+        "large-print",
+        "worksheet",
+        "grade-9",
+        "mathematics",
+        "afrikaans",
+        "senior-phase"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"accessibilityMode\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "adaptedContent includes the accessibility mode directive.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "3d45c99a-1153-4236-bd13-f8b642109f24",
+        "artefactType": "ACCESSIBLE_ARTEFACT",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR9-TOPIC-1",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000001038"
+        },
+        "adaptedContent": "[ACCESSIBILITY: LARGE_PRINT]\nAfdeling A: Heelgetalle\n1. Bereken: 48 ÷ 6 + 3 × 2. Toon alle berekeninge. (3)\n2. Skryf 2 340 000 in wetenskaplike notasie. (2)\n3. Die temperatuur daal van −3°C na −11°C. Hoeveel grade het dit gedaal? (2)",
+        "accessibilityMode": "LARGE_PRINT",
+        "accessibilityCheckResult": {
+          "mode": "LARGE_PRINT",
+          "checks": [
+            {
+              "name": "font_size_spec",
+              "required": "font size ≥ 18pt specified",
+              "measured": "font-size: 18pt specified throughout",
+              "pass": true
+            },
+            {
+              "name": "line_length",
+              "required": "max 65 characters per line",
+              "measured": "line length within limit",
+              "pass": true
+            },
+            {
+              "name": "single_column",
+              "required": "single-column layout",
+              "measured": "single-column layout applied",
+              "pass": true
+            },
+            {
+              "name": "contrast",
+              "required": "high-contrast colour directives present",
+              "measured": "contrast: black-on-white specified",
+              "pass": true
+            }
+          ],
+          "verdict": "pass"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

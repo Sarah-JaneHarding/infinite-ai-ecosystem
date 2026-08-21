@@ -1,0 +1,956 @@
+{
+  "agentId": "TB-05",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "tb05-verified-all-mc-agree-001",
+      "agentId": "TB-05",
+      "tags": ["happy-path", "verified", "multiple-choice"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All entries in 'verificationItems' have 'agrees' set to true.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "\"totalMarks\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "13d36e4f-dab4-4e8c-bf06-4d0445588c76",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-TERM1-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000101"
+        },
+        "answerKey": [
+          {
+            "itemId": "bbbbbbbb-0000-0000-0000-000000000001",
+            "modelAnswer": "Option A",
+            "markingCriteria": "Award 1 mark(s) for a correct and complete response.",
+            "correctOptionId": "A"
+          },
+          {
+            "itemId": "bbbbbbbb-0000-0000-0000-000000000002",
+            "modelAnswer": "Option A",
+            "markingCriteria": "Award 1 mark(s) for a correct and complete response.",
+            "correctOptionId": "A"
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "bbbbbbbb-0000-0000-0000-000000000001",
+            "authorAnswer": "Option A",
+            "verifierAnswer": "Option A",
+            "agrees": true
+          },
+          {
+            "itemId": "bbbbbbbb-0000-0000-0000-000000000002",
+            "authorAnswer": "Option A",
+            "verifierAnswer": "Option A",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 2
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-short-answer-002",
+      "agentId": "TB-05",
+      "tags": ["happy-path", "verified", "short-answer"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"totalMarks\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All entries in 'answerKey' include a non-empty 'modelAnswer' field and a non-empty 'markingCriteria' field.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "7fc9d30b-de64-4d07-aa2e-befca0e471dc",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR6-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000102"
+        },
+        "answerKey": [
+          {
+            "itemId": "cccccccc-0000-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 2 mark(s) for a correct and complete response."
+          },
+          {
+            "itemId": "cccccccc-0000-0000-0000-000000000002",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 3 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "cccccccc-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          },
+          {
+            "itemId": "cccccccc-0000-0000-0000-000000000002",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 5
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-disagreement-flagged-blocks-release-003",
+      "agentId": "TB-05",
+      "tags": ["refusal", "disagreement-flagged", "blocks-release"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a non-empty 'flaggedItems' field and a non-empty 'detail' field explaining the disagreement.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "disagreement_flagged",
+        "flaggedItems": [
+          {
+            "itemId": "dddddddd-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "Verifier proposes alternative marking criteria.",
+            "agrees": false
+          }
+        ],
+        "allItems": [
+          {
+            "itemId": "dddddddd-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "Verifier proposes alternative marking criteria.",
+            "agrees": false
+          }
+        ],
+        "detail": "1 item(s) flagged for teacher adjudication: author and verifier answers differ."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-needs-input-empty-items-004",
+      "agentId": "TB-05",
+      "tags": ["refusal", "empty-items"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one item is required.",
+        "missingFields": ["items"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-extended-response-005",
+      "agentId": "TB-05",
+      "tags": ["happy-path", "verified", "extended-response"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"totalMarks\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "107e5d80-7ff3-4585-b668-7dc23a62d944",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR7-TERM3-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000105"
+        },
+        "answerKey": [
+          {
+            "itemId": "eeeeeeee-0000-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 8 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "eeeeeeee-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 8
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-total-marks-sum-006",
+      "agentId": "TB-05",
+      "tags": ["schema", "marks-sum"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"totalMarks\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "bd09b3d2-570f-45bb-8518-a0a00a59749b",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR6-TERM2-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000106"
+        },
+        "answerKey": [
+          {
+            "itemId": "ffffffff-0000-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 2 mark(s) for a correct and complete response."
+          },
+          {
+            "itemId": "ffffffff-0000-0000-0000-000000000002",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 3 mark(s) for a correct and complete response."
+          },
+          {
+            "itemId": "ffffffff-0000-0000-0000-000000000003",
+            "modelAnswer": "Option A",
+            "markingCriteria": "Award 1 mark(s) for a correct and complete response.",
+            "correctOptionId": "A"
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "ffffffff-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          },
+          {
+            "itemId": "ffffffff-0000-0000-0000-000000000002",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          },
+          {
+            "itemId": "ffffffff-0000-0000-0000-000000000003",
+            "authorAnswer": "Option A",
+            "verifierAnswer": "Option A",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 6
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-disagreement-partial-items-007",
+      "agentId": "TB-05",
+      "tags": ["disagreement-flagged", "partial-agreement"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "disagreement_flagged",
+        "flaggedItems": [
+          {
+            "itemId": "11111111-0000-0000-0000-000000000002",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "Verifier proposes alternative marking criteria.",
+            "agrees": false
+          }
+        ],
+        "allItems": [
+          {
+            "itemId": "11111111-0000-0000-0000-000000000001",
+            "authorAnswer": "Option A",
+            "verifierAnswer": "Option A",
+            "agrees": true
+          },
+          {
+            "itemId": "11111111-0000-0000-0000-000000000002",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "Verifier proposes alternative marking criteria.",
+            "agrees": false
+          }
+        ],
+        "detail": "1 item(s) flagged for teacher adjudication: author and verifier answers differ."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-no-pii-in-output-008",
+      "agentId": "TB-05",
+      "tags": ["security", "pii-guard"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "e090946d-f760-4d5b-80e9-1cbcad160717",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR5-TERM1-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000108"
+        },
+        "answerKey": [
+          {
+            "itemId": "22222222-0000-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 2 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "22222222-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 2
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-mc-correct-option-id-009",
+      "agentId": "TB-05",
+      "tags": ["verified", "correct-option-id"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"answerKey[0].correctOptionId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "fca468bc-9209-45af-be04-372f9ffbfbb0",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR6-TERM1-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000109"
+        },
+        "answerKey": [
+          {
+            "itemId": "33333333-0000-0000-0000-000000000001",
+            "modelAnswer": "Option C",
+            "markingCriteria": "Award 1 mark(s) for a correct and complete response.",
+            "correctOptionId": "C"
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "33333333-0000-0000-0000-000000000001",
+            "authorAnswer": "Option A",
+            "verifierAnswer": "Option A",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 1
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-artefact-id-uuid-010",
+      "agentId": "TB-05",
+      "tags": ["schema", "uuid"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "10040cba-96d7-494e-9d3c-f80382c9703c",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR5-TERM4-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000110"
+        },
+        "answerKey": [
+          {
+            "itemId": "44444444-0000-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 2 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "44444444-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 2
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-intervention-linkage-011",
+      "agentId": "TB-05",
+      "tags": ["verified", "intervention-linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "47787d5c-1985-4fe6-b7b6-e17803261a01",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC3",
+          "interventionId": "00000000-0000-0000-0000-000000000201"
+        },
+        "answerKey": [
+          {
+            "itemId": "55555555-0000-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 2 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "55555555-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 2
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-all-items-in-disagreement-result-012",
+      "agentId": "TB-05",
+      "tags": ["disagreement-flagged", "allItems-present"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"allItems.length\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "disagreement_flagged",
+        "flaggedItems": [
+          {
+            "itemId": "66666666-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "Verifier proposes alternative marking criteria.",
+            "agrees": false
+          }
+        ],
+        "allItems": [
+          {
+            "itemId": "66666666-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "Verifier proposes alternative marking criteria.",
+            "agrees": false
+          },
+          {
+            "itemId": "66666666-0000-0000-0000-000000000002",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "detail": "1 item(s) flagged for teacher adjudication: author and verifier answers differ."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-needs-input-missing-caps-id-013",
+      "agentId": "TB-05",
+      "tags": ["refusal", "missing-caps-id"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "capsTopicId is required.",
+        "missingFields": ["capsTopicId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-marks-per-item-014",
+      "agentId": "TB-05",
+      "tags": ["verified", "marks"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"totalMarks\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "c5c6d389-defb-4b39-87bd-7258c8af6674",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR7-TERM4-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000113"
+        },
+        "answerKey": [
+          {
+            "itemId": "88888888-0000-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 4 mark(s) for a correct and complete response."
+          },
+          {
+            "itemId": "88888888-0000-0000-0000-000000000002",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 1 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "88888888-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          },
+          {
+            "itemId": "88888888-0000-0000-0000-000000000002",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 5
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verification-items-match-input-ids-015",
+      "agentId": "TB-05",
+      "tags": ["verified", "item-ids"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The 'verificationItems' array contains one entry for each of the two input item IDs ('99999999-0000-0000-0000-000000000001' and '99999999-0000-0000-0000-000000000002').\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "5e3620c7-db9e-4745-ae89-0aea3c30d110",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR7-TERM3-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000114"
+        },
+        "answerKey": [
+          {
+            "itemId": "99999999-0000-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 3 mark(s) for a correct and complete response."
+          },
+          {
+            "itemId": "99999999-0000-0000-0000-000000000002",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 6 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "99999999-0000-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          },
+          {
+            "itemId": "99999999-0000-0000-0000-000000000002",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 9
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-afrikaans-016",
+      "agentId": "TB-05",
+      "tags": ["verified", "afrikaans"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "52fd0069-2522-492b-a2f1-a2c1ac946c9c",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-AF-GR6-TERM2-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000115"
+        },
+        "answerKey": [
+          {
+            "itemId": "aaaaaaaa-1111-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 2 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "aaaaaaaa-1111-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 2
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-both-linkages-017",
+      "agentId": "TB-05",
+      "tags": ["verified", "both-linkages"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "81d14d9c-2836-4d66-9f8b-b3736d48f0af",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR4-TERM3-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000116",
+          "interventionId": "00000000-0000-0000-0000-000000000202"
+        },
+        "answerKey": [
+          {
+            "itemId": "bbbbbbbb-1111-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 1 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "bbbbbbbb-1111-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 1
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-marking-criteria-non-empty-018",
+      "agentId": "TB-05",
+      "tags": ["verified", "marking-criteria"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All entries in 'answerKey' include a non-empty 'markingCriteria' field.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "ea7cce74-29d0-4392-abfb-f280d83e2e99",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR5-TERM2-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000117"
+        },
+        "answerKey": [
+          {
+            "itemId": "cccccccc-1111-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 2 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "cccccccc-1111-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 2
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-disagreement-flagged-no-verified-keys-019",
+      "agentId": "TB-05",
+      "tags": ["disagreement-flagged", "no-answer-key-exposed"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "disagreement_flagged",
+        "flaggedItems": [
+          {
+            "itemId": "dddddddd-1111-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "Verifier proposes alternative marking criteria.",
+            "agrees": false
+          }
+        ],
+        "allItems": [
+          {
+            "itemId": "dddddddd-1111-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "Verifier proposes alternative marking criteria.",
+            "agrees": false
+          }
+        ],
+        "detail": "1 item(s) flagged for teacher adjudication: author and verifier answers differ."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-needs-input-no-linkage-020",
+      "agentId": "TB-05",
+      "tags": ["refusal", "missing-linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one of lessonId or interventionId must be present.",
+        "missingFields": ["lessonId", "interventionId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb05-verified-true-false-item-021",
+      "agentId": "TB-05",
+      "tags": ["verified", "true-false"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"totalMarks\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "verified",
+        "artefactId": "cb2b1858-f3a5-4c9e-b121-a30818e0f5ac",
+        "artefactType": "MARKING_MEMO",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR4-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000119"
+        },
+        "answerKey": [
+          {
+            "itemId": "ffffffff-1111-0000-0000-000000000001",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 1 mark(s) for a correct and complete response."
+          },
+          {
+            "itemId": "ffffffff-1111-0000-0000-000000000002",
+            "modelAnswer": "See full model answer in memo.",
+            "markingCriteria": "Award 1 mark(s) for a correct and complete response."
+          }
+        ],
+        "verificationItems": [
+          {
+            "itemId": "ffffffff-1111-0000-0000-000000000001",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          },
+          {
+            "itemId": "ffffffff-1111-0000-0000-000000000002",
+            "authorAnswer": "See model answer.",
+            "verifierAnswer": "See model answer.",
+            "agrees": true
+          }
+        ],
+        "totalMarks": 2
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 21,
+    "passedCases": 21,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

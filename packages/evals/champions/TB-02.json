@@ -1,0 +1,1192 @@
+{
+  "agentId": "TB-02",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "TB02-001",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "natural-sciences", "grade-4", "lesson", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"presentationPurpose\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The deck has at least one slide. Every slide has a non-empty title and content. Both learning objectives are addressed somewhere in the slides.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "090580ac-4375-4e28-a14f-55eac3854840",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR4-WATER",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000001"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on The Water Cycle.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Describe the stages of the water cycle.\n2. Explain how energy from the sun drives the water cycle."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr4-water"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-002",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "mathematics", "grade-7", "introduction"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"presentationPurpose\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The deck has at least one slide. The slides are structured for an INTRODUCTION purpose — they activate prior knowledge or establish context before presenting new content. Both learning objectives are addressed.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "0c42736d-cc83-4cbe-a727-75c54f3fb60c",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR7-FRACTIONS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000002"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Introduction to Fractions.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Identify the numerator and denominator of a fraction.\n2. Represent fractions on a number line."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "INTRODUCTION",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-math-gr7-fractions"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-003",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "physical-sciences", "grade-10", "review"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The REVIEW deck includes recall prompts or worked examples for all three of Newton's laws. At least one slide engages with applying the laws to calculate force.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "7826b278-9c86-43ed-b0b5-f5623b0aacca",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-PS-GR10-NEWTONS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000003"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Newton's Laws of Motion.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. State Newton's three laws of motion.\n2. Apply the laws to calculate net force."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "REVIEW",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 10,
+          "targetBand": {
+            "minGrade": 9,
+            "maxGrade": 11
+          }
+        },
+        "citedSourceIds": ["doc-ps-gr10-newton"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-004",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "english", "grade-6", "consolidation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The CONSOLIDATION deck summarises story structure and prompts learners to apply or check their understanding. Descriptive language is mentioned in at least one slide.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "e58bb71f-3903-48b3-98fc-0cfa2045a042",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-EHL-GR6-NARRATIVE",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000004"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Narrative Writing — Story Structure.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Identify the beginning, middle, and end of a narrative.\n2. Use descriptive language to develop a character."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "CONSOLIDATION",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-ehl-gr6-narrative"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-005",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "social-sciences", "grade-5", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"presentationPurpose\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The deck addresses both learning objectives: names at least two South African biomes and describes their climates. No presentationPurpose was supplied so the output field should be null.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "3184abef-7f2f-4640-9795-26b6543c4a31",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR5-CLIMATE",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000005"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Climate and Biomes of South Africa.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Name the major biomes found in South Africa.\n2. Describe the climate of each biome."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": null,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-ss-gr5-climate"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-006",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "mathematics", "afrikaans", "grade-3", "lesson"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The deck is written in Afrikaans. Slides cover circles, triangles, and squares; at least one slide addresses sorting shapes by properties. Language level is appropriate for Grade 3.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "524ed8c1-9aec-49d9-aa5a-9a40c05e6ad7",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR3-SHAPES",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000006"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Twee-dimensionele vorms.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Identifiseer en beskryf sirkels, driehoeke en vierkante.\n2. Sorteer vorms volgens hul eienskappe."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 3,
+          "targetBand": {
+            "minGrade": 2,
+            "maxGrade": 4
+          }
+        },
+        "citedSourceIds": ["doc-math-gr3-shapes-af"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-007",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "history", "grade-12", "lesson"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The deck covers causes of the Civil Rights Movement and mentions key legislation between 1954 and 1968. Content is appropriate for Grade 12 academic vocabulary. At least one slide addresses evaluation of the legislation's impact.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "dc353882-945a-4080-8124-ce52c1f84cd0",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-HIST-GR12-CIVIL-RIGHTS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000007"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on The Civil Rights Movement in the United States.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Explain the causes of the Civil Rights Movement.\n2. Evaluate the impact of key legislation passed between 1954 and 1968."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 11.5,
+          "targetBand": {
+            "minGrade": 11,
+            "maxGrade": 12
+          }
+        },
+        "citedSourceIds": ["doc-hist-gr12-civil-rights-1"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-008",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "natural-sciences", "grade-6", "lesson", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All four learning objectives appear in the slides: energy definition, five forms with examples, energy transfer, and conservation of energy. Each objective is addressed in at least one slide.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "41ac9987-75e7-468c-954d-6a045c189da2",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR6-ENERGY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000008"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Energy and Change.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Define energy and state its unit of measurement.\n2. List five forms of energy with examples.\n3. Describe how energy is transferred from one form to another.\n4. Explain the principle of conservation of energy."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr6-energy"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-009",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "mathematics", "grade-8", "intervention", "review"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The REVIEW deck addresses solving linear equations and verifying solutions by substitution. Input uses interventionId — the output linkage should reflect that. Slides include at least one example.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "85faed82-2be7-481d-a55e-4a2eaf8af7e7",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR8-LINEAR",
+          "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000009"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Linear Equations.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Solve linear equations with one variable.\n2. Verify the solution by substitution."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "REVIEW",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 8,
+          "targetBand": {
+            "minGrade": 7,
+            "maxGrade": 9
+          }
+        },
+        "citedSourceIds": ["doc-math-gr8-linear"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-010",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "life-sciences", "grade-9", "lesson"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The deck covers plant/animal cell comparison and functions of the nucleus, cell membrane, and mitochondria. Both objectives are addressed across the slides.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "eb9b851a-d4d4-4394-84db-313da1435734",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-LS-GR9-CELLS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000010"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Cell Structure and Function.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Compare the structure of plant and animal cells.\n2. Describe the function of the nucleus, cell membrane, and mitochondria."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 9,
+          "targetBand": {
+            "minGrade": 8,
+            "maxGrade": 10
+          }
+        },
+        "citedSourceIds": ["doc-ls-gr9-cells"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-011",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "english", "grade-2", "lesson", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Reading level in slides is appropriate for Grade 2 (simple, short sentences). All five short vowel sounds are mentioned. Slide content is concise and suitable for classroom display.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "a9395d43-7efb-437b-8808-1da0938b7ffa",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-EHL-GR2-PHONICS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000011"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Short vowel sounds.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Identify and produce short vowel sounds: a, e, i, o, u."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 2,
+          "targetBand": {
+            "minGrade": 1,
+            "maxGrade": 3
+          }
+        },
+        "citedSourceIds": ["doc-ehl-gr2-phonics"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-012",
+      "agentId": "TB-02",
+      "tags": [
+        "happy_path",
+        "physical-sciences",
+        "grade-11",
+        "lesson",
+        "must_not_regress"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The deck covers Ohm's Law (V = IR) and distinguishes series from parallel circuits. At least one slide includes a formula or numerical example. No fabricated content: all cited sources appear in the input sourceDocumentIds.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "9626672b-4cd4-40a2-888a-4d7d6dbe953a",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-PS-GR11-ELECTRICITY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000012"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Electric Circuits.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Calculate resistance using Ohm's Law.\n2. Distinguish between series and parallel circuits."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 11,
+          "targetBand": {
+            "minGrade": 10,
+            "maxGrade": 12
+          }
+        },
+        "citedSourceIds": ["doc-ps-gr11-circuits"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-013",
+      "agentId": "TB-02",
+      "tags": ["happy_path", "history", "grade-11", "lesson", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The deck contains no learner personal information. All facts about apartheid legislation and the Group Areas Act are grounded in the source document — no fabricated historical claims.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "13408440-479e-4a7b-83a2-552e4038311e",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-HIST-GR11-APARTHEID",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000013"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on The Apartheid Era.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Explain the origins of apartheid legislation.\n2. Analyse the impact of the Group Areas Act."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 11,
+          "targetBand": {
+            "minGrade": 10,
+            "maxGrade": 12
+          }
+        },
+        "citedSourceIds": ["doc-hist-gr11-apartheid"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-014",
+      "agentId": "TB-02",
+      "tags": ["adversarial", "error-path", "no-source-document", "natural-sciences"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "no_source_document",
+        "detail": "No source documents available — deck generation requires at least one cited source."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-015",
+      "agentId": "TB-02",
+      "tags": ["adversarial", "error-path", "needs-input", "mathematics"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "2/2 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one of lessonId or interventionId must be present.",
+        "missingFields": ["lessonId", "interventionId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-016",
+      "agentId": "TB-02",
+      "tags": ["adversarial", "error-path", "needs-input", "social-sciences"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one learningObjective is required.",
+        "missingFields": ["learningObjectives"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-017",
+      "agentId": "TB-02",
+      "tags": ["adversarial", "natural-sciences", "grade-8", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All values in citedSourceIds must appear in the input sourceDocumentIds — no invented sources. The deck contains no learner personal information.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "4ec1d68d-7101-4b52-b9c3-876bfd27eb79",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR8-REPRODUCTION",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000017"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Reproduction in Vertebrates.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Compare sexual and asexual reproduction.\n2. Describe the reproductive cycle of a mammal."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": null,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 8,
+          "targetBand": {
+            "minGrade": 7,
+            "maxGrade": 9
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr8-repro"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-018",
+      "agentId": "TB-02",
+      "tags": ["adversarial", "english", "grade-9", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The deck output contains no learner personal information (names, IDs, demographic data). All slide content is generic and curriculum-focused.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "836348f6-3ce8-4eec-9ab4-857b378cfc9d",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-EHL-GR9-POETRY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000018"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Analysing Poetry.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Identify poetic devices: metaphor, simile, alliteration.\n2. Explain the effect of each device on the poem's meaning."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 9,
+          "targetBand": {
+            "minGrade": 8,
+            "maxGrade": 10
+          }
+        },
+        "citedSourceIds": ["doc-ehl-gr9-poetry"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-019",
+      "agentId": "TB-02",
+      "tags": ["adversarial", "mathematics", "grade-9", "lesson"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Speaker notes, if present, do not contradict the slide content — they expand on it. The slides themselves are concise (not extended prose). Both congruence conditions and isosceles triangle properties are addressed.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "666d6b7a-8203-41e9-a475-31f75f75951a",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR9-GEOMETRY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000019"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Euclidean Geometry — Triangles.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. State and apply the conditions for congruent triangles.\n2. Prove properties of isosceles triangles."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 9,
+          "targetBand": {
+            "minGrade": 8,
+            "maxGrade": 10
+          }
+        },
+        "citedSourceIds": ["doc-math-gr9-geometry"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB02-020",
+      "agentId": "TB-02",
+      "tags": ["adversarial", "life-sciences", "grade-11", "lesson", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The deck addresses natural selection mechanism and how it leads to adaptation. No fabricated biological claims — all content must trace to the supplied source document.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "1f6b809b-1d73-47c3-8ae8-16ce03151c65",
+        "artefactType": "BOARD_DECK",
+        "linkage": {
+          "capsTopicId": "CAPS-LS-GR11-EVOLUTION",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000020"
+        },
+        "slides": [
+          {
+            "title": "Introduction",
+            "content": "Welcome to this lesson on Evolution — Natural Selection.",
+            "speakerNotes": "Welcome learners and set the context."
+          },
+          {
+            "title": "Learning Objectives",
+            "content": "1. Explain the mechanism of natural selection.\n2. Describe how natural selection leads to adaptation over generations."
+          },
+          {
+            "title": "Key Concepts",
+            "content": "Today we will explore the main ideas of this topic."
+          },
+          {
+            "title": "Summary",
+            "content": "Review what we have covered and next steps."
+          }
+        ],
+        "presentationPurpose": "LESSON",
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 11,
+          "targetBand": {
+            "minGrade": 10,
+            "maxGrade": 12
+          }
+        },
+        "citedSourceIds": ["doc-ls-gr11-evolution"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

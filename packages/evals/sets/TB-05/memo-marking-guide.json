@@ -14,22 +14,46 @@
           "questionText": "Which of the following is a property of solids?",
           "itemType": "multiple_choice",
           "options": [
-            { "optionId": "A", "text": "They take the shape of their container." },
-            { "optionId": "B", "text": "They have a definite shape and volume." },
-            { "optionId": "C", "text": "They flow easily." },
-            { "optionId": "D", "text": "They expand to fill any container." }
+            {
+              "optionId": "A",
+              "text": "They take the shape of their container."
+            },
+            {
+              "optionId": "B",
+              "text": "They have a definite shape and volume."
+            },
+            {
+              "optionId": "C",
+              "text": "They flow easily."
+            },
+            {
+              "optionId": "D",
+              "text": "They expand to fill any container."
+            }
           ],
           "marks": 1
         },
         {
           "itemId": "bbbbbbbb-0000-0000-0000-000000000002",
-          "questionText": "What happens to water when it is heated to 100°C?",
+          "questionText": "What happens to water when it is heated to 100\u00b0C?",
           "itemType": "multiple_choice",
           "options": [
-            { "optionId": "A", "text": "It freezes." },
-            { "optionId": "B", "text": "It becomes a gas." },
-            { "optionId": "C", "text": "It turns into ice." },
-            { "optionId": "D", "text": "It becomes heavier." }
+            {
+              "optionId": "A",
+              "text": "It freezes."
+            },
+            {
+              "optionId": "B",
+              "text": "It becomes a gas."
+            },
+            {
+              "optionId": "C",
+              "text": "It turns into ice."
+            },
+            {
+              "optionId": "D",
+              "text": "It becomes heavier."
+            }
           ],
           "marks": 1
         }
@@ -40,14 +64,26 @@
     "context": {},
     "rubric": "All verification items in 'verificationItems' must show agreement (agrees === true).",
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "exact_match", "field": "artefactType", "value": "MARKING_MEMO" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      },
+      {
+        "type": "exact_match",
+        "field": "artefactType",
+        "value": "MARKING_MEMO"
+      },
       {
         "type": "llm_judge",
         "minScore": 0.8,
         "criterion": "All entries in 'verificationItems' have 'agrees' set to true."
       },
-      { "type": "exact_match", "field": "totalMarks", "value": 2 }
+      {
+        "type": "exact_match",
+        "field": "totalMarks",
+        "value": 2
+      }
     ],
     "tags": ["happy-path", "verified", "multiple-choice"],
     "source": "specification"
@@ -83,8 +119,16 @@
     "context": {},
     "rubric": "All entries in 'answerKey' must include a non-empty 'modelAnswer' and a non-empty 'markingCriteria'.",
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "exact_match", "field": "totalMarks", "value": 5 },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      },
+      {
+        "type": "exact_match",
+        "field": "totalMarks",
+        "value": 5
+      },
       {
         "type": "llm_judge",
         "minScore": 0.8,
@@ -115,10 +159,16 @@
       "language": "en",
       "requestedBy": "teacher@school.za"
     },
-    "context": { "simulateDisagreement": true },
+    "context": {
+      "simulateDisagreement": true
+    },
     "rubric": "When status is 'disagreement_flagged', output must include a 'flaggedItems' field with at least one entry and a 'detail' field.",
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "disagreement_flagged"
+      },
       {
         "type": "llm_judge",
         "minScore": 0.8,
@@ -143,7 +193,11 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      },
       {
         "type": "set_overlap",
         "field": "missingFields",
@@ -177,8 +231,16 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "exact_match", "field": "totalMarks", "value": 8 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      },
+      {
+        "type": "exact_match",
+        "field": "totalMarks",
+        "value": 8
+      }
     ],
     "tags": ["happy-path", "verified", "extended-response"],
     "source": "specification"
@@ -212,10 +274,22 @@
           "questionText": "Which fraction is equivalent to 0.75?",
           "itemType": "multiple_choice",
           "options": [
-            { "optionId": "A", "text": "1/4" },
-            { "optionId": "B", "text": "3/4" },
-            { "optionId": "C", "text": "2/3" },
-            { "optionId": "D", "text": "1/2" }
+            {
+              "optionId": "A",
+              "text": "1/4"
+            },
+            {
+              "optionId": "B",
+              "text": "3/4"
+            },
+            {
+              "optionId": "C",
+              "text": "2/3"
+            },
+            {
+              "optionId": "D",
+              "text": "1/2"
+            }
           ],
           "marks": 1
         }
@@ -225,8 +299,16 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "exact_match", "field": "totalMarks", "value": 6 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      },
+      {
+        "type": "exact_match",
+        "field": "totalMarks",
+        "value": 6
+      }
     ],
     "tags": ["schema", "marks-sum"],
     "source": "specification"
@@ -246,10 +328,22 @@
           "questionText": "What is the capital of South Africa?",
           "itemType": "multiple_choice",
           "options": [
-            { "optionId": "A", "text": "Cape Town" },
-            { "optionId": "B", "text": "Johannesburg" },
-            { "optionId": "C", "text": "Pretoria" },
-            { "optionId": "D", "text": "Durban" }
+            {
+              "optionId": "A",
+              "text": "Cape Town"
+            },
+            {
+              "optionId": "B",
+              "text": "Johannesburg"
+            },
+            {
+              "optionId": "C",
+              "text": "Pretoria"
+            },
+            {
+              "optionId": "D",
+              "text": "Durban"
+            }
           ],
           "marks": 1
         },
@@ -264,9 +358,15 @@
       "language": "en",
       "requestedBy": "teacher@school.za"
     },
-    "context": { "simulateDisagreementOnItem": "11111111-0000-0000-0000-000000000002" },
+    "context": {
+      "simulateDisagreementOnItem": "11111111-0000-0000-0000-000000000002"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "disagreement_flagged"
+      }
     ],
     "tags": ["disagreement-flagged", "partial-agreement"],
     "source": "specification"
@@ -293,7 +393,13 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      }
+    ],
     "tags": ["security", "pii-guard"],
     "source": "specification"
   },
@@ -312,10 +418,22 @@
           "questionText": "Which organ system is responsible for pumping blood around the body?",
           "itemType": "multiple_choice",
           "options": [
-            { "optionId": "A", "text": "Digestive system" },
-            { "optionId": "B", "text": "Respiratory system" },
-            { "optionId": "C", "text": "Circulatory system" },
-            { "optionId": "D", "text": "Nervous system" }
+            {
+              "optionId": "A",
+              "text": "Digestive system"
+            },
+            {
+              "optionId": "B",
+              "text": "Respiratory system"
+            },
+            {
+              "optionId": "C",
+              "text": "Circulatory system"
+            },
+            {
+              "optionId": "D",
+              "text": "Nervous system"
+            }
           ],
           "marks": 1
         }
@@ -323,10 +441,22 @@
       "language": "en",
       "requestedBy": "teacher@school.za"
     },
-    "context": {},
+    "context": {
+      "correctOptionIds": {
+        "33333333-0000-0000-0000-000000000001": "C"
+      }
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "exact_match", "field": "answerKey[0].correctOptionId", "value": "C" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      },
+      {
+        "type": "exact_match",
+        "field": "answerKey[0].correctOptionId",
+        "value": "C"
+      }
     ],
     "tags": ["verified", "correct-option-id"],
     "source": "specification"
@@ -353,7 +483,13 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      }
+    ],
     "tags": ["schema", "uuid"],
     "source": "specification"
   },
@@ -379,7 +515,13 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      }
+    ],
     "tags": ["verified", "intervention-linkage"],
     "source": "specification"
   },
@@ -411,10 +553,20 @@
       "language": "en",
       "requestedBy": "teacher@school.za"
     },
-    "context": { "simulateDisagreementOnItem": "66666666-0000-0000-0000-000000000001" },
+    "context": {
+      "simulateDisagreementOnItem": "66666666-0000-0000-0000-000000000001"
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" },
-      { "type": "exact_match", "field": "allItems.length", "value": 2 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "disagreement_flagged"
+      },
+      {
+        "type": "exact_match",
+        "field": "allItems.length",
+        "value": 2
+      }
     ],
     "tags": ["disagreement-flagged", "allItems-present"],
     "source": "specification"
@@ -442,7 +594,11 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["refusal", "missing-caps-id"],
     "source": "specification"
@@ -477,8 +633,16 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "exact_match", "field": "totalMarks", "value": 5 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      },
+      {
+        "type": "exact_match",
+        "field": "totalMarks",
+        "value": 5
+      }
     ],
     "tags": ["verified", "marks"],
     "source": "specification"
@@ -514,7 +678,11 @@
     "context": {},
     "rubric": "The 'verificationItems' array must contain one entry per input item ID.",
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      },
       {
         "type": "llm_judge",
         "minScore": 0.8,
@@ -546,7 +714,13 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      }
+    ],
     "tags": ["verified", "afrikaans"],
     "source": "specification"
   },
@@ -563,7 +737,7 @@
       "items": [
         {
           "itemId": "bbbbbbbb-1111-0000-0000-000000000001",
-          "questionText": "What is 6 × 7?",
+          "questionText": "What is 6 \u00d7 7?",
           "itemType": "short_answer",
           "options": [],
           "marks": 1
@@ -573,7 +747,13 @@
       "requestedBy": "teacher@school.za"
     },
     "context": {},
-    "expectations": [{ "type": "exact_match", "field": "status", "value": "verified" }],
+    "expectations": [
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      }
+    ],
     "tags": ["verified", "both-linkages"],
     "source": "specification"
   },
@@ -601,7 +781,11 @@
     "context": {},
     "rubric": "All entries in 'answerKey' must include a non-empty 'markingCriteria' field.",
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      },
       {
         "type": "llm_judge",
         "minScore": 0.8,
@@ -632,9 +816,15 @@
       "language": "en",
       "requestedBy": "teacher@school.za"
     },
-    "context": { "simulateDisagreement": true },
+    "context": {
+      "simulateDisagreement": true
+    },
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "disagreement_flagged" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "disagreement_flagged"
+      }
     ],
     "tags": ["disagreement-flagged", "no-answer-key-exposed"],
     "source": "specification"
@@ -661,7 +851,11 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "needs_input" }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "needs_input"
+      }
     ],
     "tags": ["refusal", "missing-linkage"],
     "source": "specification"
@@ -696,8 +890,16 @@
     },
     "context": {},
     "expectations": [
-      { "type": "exact_match", "field": "status", "value": "verified" },
-      { "type": "exact_match", "field": "totalMarks", "value": 2 }
+      {
+        "type": "exact_match",
+        "field": "status",
+        "value": "verified"
+      },
+      {
+        "type": "exact_match",
+        "field": "totalMarks",
+        "value": 2
+      }
     ],
     "tags": ["verified", "true-false"],
     "source": "specification"

@@ -1,0 +1,787 @@
+{
+  "agentId": "DW-01",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "dw-01-no-connector-001",
+      "agentId": "DW-01",
+      "tags": ["needs_input", "no_connector"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No connector registered for this source."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-empty-configref-001",
+      "agentId": "DW-01",
+      "tags": ["needs_input", "invalid_config"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "configRef is missing or empty."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-paused-source-001",
+      "agentId": "DW-01",
+      "tags": ["needs_input", "paused_source"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Ingest source is PAUSED."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-error-source-001",
+      "agentId": "DW-01",
+      "tags": ["needs_input", "error_source"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Ingest source is ERROR."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-file-csv-empty-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "empty_result", "file_csv"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "ea2546c5-fe67-4567-8393-dbf073d3a3fc",
+        "recordsReceived": 0,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-file-csv-records-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "file_csv"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "fc9c118b-dfcc-492c-b2f3-a5a3acc68ed0",
+        "recordsReceived": 2,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-file-xlsx-records-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "file_xlsx"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "8aee382b-2534-4668-bfc7-d16e9ef44d49",
+        "recordsReceived": 1,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-sis-api-empty-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "empty_result", "sis_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "77bb55f4-df8e-4339-b480-37506035435e",
+        "recordsReceived": 0,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-sis-api-records-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "sis_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "1b57f910-2071-4fc0-a10e-2216c9569ace",
+        "recordsReceived": 3,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-pagination-first-page-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "pagination", "attendance_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "e730f98e-8fa0-41a5-8a2c-e8ea353999f1",
+        "recordsReceived": 1,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-attendance-api-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "attendance_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "d525f695-e7d9-443d-87cd-53825302a558",
+        "recordsReceived": 3,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-behaviour-api-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "behaviour_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "9b66da1b-cb36-41cb-912b-30fb2d03d0ca",
+        "recordsReceived": 1,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-screener-api-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "screener_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "1f2fc0be-45d7-4296-9d49-093a7c6c6df9",
+        "recordsReceived": 1,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-manual-upload-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "manual_upload"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "b5350660-7f96-45b7-86b4-5975cc88e2b9",
+        "recordsReceived": 2,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-runid-is-uuid-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "runid_format"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "9b7bf554-3994-4275-bef3-214bf23fd4f4",
+        "recordsReceived": 0,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-records-conformed-zero-on-first-run-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "conformed_count"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsConformed\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsRejected\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "d11aa514-a4f9-4c9b-b1ed-bf2996e1fc11",
+        "recordsReceived": 1,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-large-batch-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "large_batch"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "99587092-ddee-4d50-a5aa-f2b76ce11b9b",
+        "recordsReceived": 100,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-cursor-provided-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "pagination", "cursor_provided"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "bbd5f390-b7b6-4437-bfad-5e95209eac53",
+        "recordsReceived": 1,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-different-tenant-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "e8c2210e-64f9-4f64-ab89-dab633fb40f9",
+        "recordsReceived": 0,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-schema-version-in-payload-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "schema_version"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "339da855-70f2-44a8-b417-3f85cce441d6",
+        "recordsReceived": 1,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-partial-batch-hasmore-true-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "pagination", "has_more"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "e3c14d21-5b61-40dc-80dd-b26d0039b8ca",
+        "recordsReceived": 2,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-no-source-id-001",
+      "agentId": "DW-01",
+      "tags": ["needs_input", "source_not_found"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Ingest source not found."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-file-csv-single-record-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "single_record"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsRejected\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "bb30b2d6-82fb-4da0-b66e-4f02ad76b205",
+        "recordsReceived": 1,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-screener-api-empty-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "empty_result", "screener_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "15a15d30-a687-479d-ae82-bbe9af9d4bf0",
+        "recordsReceived": 0,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-behaviour-api-empty-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "empty_result", "behaviour_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "2c5f9e52-dfe8-4cbf-9ec2-5d37cded6827",
+        "recordsReceived": 0,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-multi-page-total-count-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "pagination", "multi_page"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "44f336c7-ccfa-48ca-9414-1ca7216de9c9",
+        "recordsReceived": 3,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-file-xlsx-empty-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "empty_result", "file_xlsx"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "083e84f6-2bb3-4858-98c0-fe88ed4b10ff",
+        "recordsReceived": 0,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-attendance-api-empty-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "empty_result", "attendance_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "fc32ee3c-1e88-46cf-9b9b-069acb2715e8",
+        "recordsReceived": 0,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-manual-upload-empty-001",
+      "agentId": "DW-01",
+      "tags": ["ok", "empty_result", "manual_upload"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recordsReceived\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "runId": "10d41ca5-1d25-467b-8906-eef63ec00281",
+        "recordsReceived": 0,
+        "recordsConformed": 0,
+        "recordsRejected": 0
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-01-source-field-missing-sourceref-001",
+      "agentId": "DW-01",
+      "tags": ["needs_input", "invalid_record"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "All connector records had an empty sourceRef and were rejected."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 30,
+    "passedCases": 30,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

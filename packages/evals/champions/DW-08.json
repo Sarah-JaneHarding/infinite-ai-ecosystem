@@ -1,0 +1,797 @@
+{
+  "agentId": "DW-08",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "dw-08-no-insight-needs-input-001",
+      "agentId": "DW-08",
+      "tags": ["needs_input", "no_insight"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No insight found for id ffffffff-ffff-ffff-ffff-ffffffffffff."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-learner-attendance-owner-class-teacher-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "learner_attendance", "class_teacher"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"nextStep.owner\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"nextStep.insightId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000501",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-class-assessment-owner-hod-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "class_assessment", "hod"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "HOD",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000502",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-grade-behaviour-owner-deputy-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "grade_behaviour", "deputy_principal"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "deputy principal",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000503",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-school-wellbeing-owner-psychologist-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "school_wellbeing", "psychologist"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "school psychologist",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000504",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-due-date-seven-days-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "due_date_seven_days"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"nextStep.dueDate\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000505",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-description-fifteen-words-max-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "description_max_words"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000506",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-description-is-action-not-observation-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "description_imperative_verb"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000507",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-no-learner-name-in-description-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "pii_safety", "no_name_in_description"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000508",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-rationale-cites-narrative-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "rationale_cites_narrative"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000509",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-insight-id-equals-input-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "insight_id_equals_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"nextStep.insightId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000510",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-requires-approval-true-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "requires_approval"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"nextStep.requiresApproval\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000511",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-no-learner-in-rationale-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "pii_safety", "no_learner_in_rationale"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000512",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-multi-tenant-isolation-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000520",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-due-date-from-generated-at-not-now-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "due_date_from_generated_at"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"nextStep.dueDate\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-08T08:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000513",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-class-assessment-description-hod-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "class_assessment_hod_description"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "HOD",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000514",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-rationale-one-to-two-sentences-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "rationale_sentence_count"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000515",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-description-no-period-except-end-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "description_punctuation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000516",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-no-insight-for-domain-needs-input-001",
+      "agentId": "DW-08",
+      "tags": ["needs_input", "no_actionable_finding"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No insight found for id 00000000-0000-0000-0000-000000000517."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-attendance-contact-guardian-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "attendance_guardian_contact"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000518",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-wellbeing-refer-to-psychologist-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "wellbeing_psychologist"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "school psychologist",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000519",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-description-not-observation-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "description_not_observation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000521",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-grade-behaviour-review-incidents-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "grade_behaviour_review"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "deputy principal",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000522",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-insight-id-not-substituted-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "insight_id_not_substituted"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"nextStep.insightId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "aaaaaaaa-0000-0000-0000-000000000523",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-assessment-hod-refer-curriculum-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "assessment_hod"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "HOD",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000524",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-attendance-duedate-boundary-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "due_date_boundary"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"nextStep.dueDate\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-07T00:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000525",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-class-teacher-for-learner-scope-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "learner_scope_class_teacher"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"nextStep.owner\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000526",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-08-full-next-step-fields-present-001",
+      "agentId": "DW-08",
+      "tags": ["ok", "full_next_step"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"nextStep.insightId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "nextStep": {
+          "description": "Follow up with the learner to address the identified pattern.",
+          "owner": "class teacher",
+          "dueDate": "2026-08-14T10:00:00Z",
+          "insightId": "00000000-0000-0000-0000-000000000527",
+          "rationale": "Derived from synthesised insight evidence.",
+          "requiresApproval": true
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 28,
+    "passedCases": 28,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

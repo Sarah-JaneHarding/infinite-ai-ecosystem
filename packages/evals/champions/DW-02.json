@@ -1,0 +1,1038 @@
+{
+  "agentId": "DW-02",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "dw-02-all-fields-mapped-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "file_csv", "attendance"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"eventType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "L001",
+        "eventType": "attendance.present",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "L001",
+          "occurredAt": "2026-08-07",
+          "attendanceStatus": "P"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "learnerNo",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "date",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "status",
+            "canonicalField": "attendanceStatus"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-unmapped-field-001",
+      "agentId": "DW-02",
+      "tags": ["needs_input", "unmapped_field"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "unmappedFields": ["unknownField"],
+        "detail": "1 source field(s) have no confirmed mapping: unknownField"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-missing-learnerid-mapping-001",
+      "agentId": "DW-02",
+      "tags": ["needs_input", "missing_learner_id"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "unmappedFields": ["learnerId"],
+        "detail": "Canonical learnerId is absent after mapping."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-unconfirmed-mapping-not-applied-001",
+      "agentId": "DW-02",
+      "tags": ["needs_input", "unconfirmed_mapping"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "unmappedFields": ["date"],
+        "detail": "1 source field(s) have no confirmed mapping: date"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-raw-record-not-found-001",
+      "agentId": "DW-02",
+      "tags": ["rejected", "record_not_found"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "rejected",
+        "reason": "Raw record not found in the landing zone."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-domain-mismatch-001",
+      "agentId": "DW-02",
+      "tags": ["rejected", "domain_mismatch"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "rejected",
+        "reason": "Source maps to domain ATTENDANCE but request specifies BEHAVIOUR."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-transform-fn-applied-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "sis_api", "assessment", "transform_fn"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"eventType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "P999",
+        "eventType": "assessment.score",
+        "occurredAt": "07/08/2026",
+        "canonicalPayload": {
+          "learnerId": "P999",
+          "occurredAt": "07/08/2026",
+          "scorePercent": "78"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "pupilId",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "testDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "markPct",
+            "canonicalField": "scorePercent"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-mappings-applied-audit-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "file_xlsx", "audit_trail"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "S100",
+        "eventType": "attendance.absent",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "S100",
+          "occurredAt": "2026-08-07",
+          "attendanceStatus": "A"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "id",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "dt",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "att",
+            "canonicalField": "attendanceStatus"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-raw-payload-not-in-result-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "pii_safety", "no_raw_payload"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "SECRET_ID_007",
+        "eventType": "attendance.present",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "SECRET_ID_007",
+          "occurredAt": "2026-08-07",
+          "attendanceStatus": "P"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "learnerNo",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "date",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "status",
+            "canonicalField": "attendanceStatus"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-multi-tenant-isolation-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "L002",
+        "eventType": "attendance.late",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "L002",
+          "occurredAt": "2026-08-07",
+          "attendanceStatus": "L"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "learnerNo",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "date",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "status",
+            "canonicalField": "attendanceStatus"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-attendance-api-connector-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "attendance_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"eventType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "A100",
+        "eventType": "attendance.present",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "A100",
+          "occurredAt": "2026-08-07",
+          "attendanceStatus": "PRESENT"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "studentRef",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "eventDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "type",
+            "canonicalField": "attendanceStatus"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-behaviour-api-connector-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "behaviour_api"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"eventType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "B200",
+        "eventType": "behaviour.incident",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "B200",
+          "occurredAt": "2026-08-07",
+          "behaviourKind": "DISRUPTION"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "pupilRef",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "incidentDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "category",
+            "canonicalField": "behaviourKind"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-screener-api-connector-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "screener_api", "wellbeing"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"eventType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "W300",
+        "eventType": "wellbeing.screener",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "W300",
+          "occurredAt": "2026-08-07",
+          "screenerScore": "42"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "id",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "screenDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "score",
+            "canonicalField": "screenerScore"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-manual-upload-connector-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "manual_upload", "assessment"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "M400",
+        "eventType": "assessment.score",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "M400",
+          "occurredAt": "2026-08-07",
+          "scorePercent": "65"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "learner",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "assessDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "markPct",
+            "canonicalField": "scorePercent"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-multiple-unmapped-fields-001",
+      "agentId": "DW-02",
+      "tags": ["needs_input", "multiple_unmapped"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "unmappedFields": ["fieldA", "fieldB", "fieldC"],
+        "detail": "3 source field(s) have no confirmed mapping: fieldA, fieldB, fieldC"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-empty-source-fields-001",
+      "agentId": "DW-02",
+      "tags": ["needs_input", "empty_source_fields"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "unmappedFields": ["learnerId"],
+        "detail": "Canonical learnerId is absent after mapping."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-no-mappings-configured-001",
+      "agentId": "DW-02",
+      "tags": ["needs_input", "no_mappings"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "unmappedFields": ["col1", "col2"],
+        "detail": "2 source field(s) have no confirmed mapping: col1, col2"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-occurrence-at-in-result-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "occurred_at"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "A101",
+        "eventType": "attendance.late",
+        "occurredAt": "2026-07-15",
+        "canonicalPayload": {
+          "learnerId": "A101",
+          "occurredAt": "2026-07-15",
+          "attendanceStatus": "LATE"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "studentRef",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "eventDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "type",
+            "canonicalField": "attendanceStatus"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-assessment-subject-mapping-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "sis_api", "assessment", "subject_mapping"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "P100",
+        "eventType": "assessment.score",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "P100",
+          "subjectCode": "MATH",
+          "occurredAt": "2026-08-07",
+          "scorePercent": "88"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "pupilId",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "subject",
+            "canonicalField": "subjectCode"
+          },
+          {
+            "sourceField": "testDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "score",
+            "canonicalField": "scorePercent"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-partially-confirmed-mappings-001",
+      "agentId": "DW-02",
+      "tags": ["needs_input", "partially_confirmed"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "unmappedFields": ["date", "status"],
+        "detail": "2 source field(s) have no confirmed mapping: date, status"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-wellbeing-domain-mapping-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "screener_api", "wellbeing"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"eventType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "W100",
+        "eventType": "wellbeing.screener",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "W100",
+          "occurredAt": "2026-08-07",
+          "screenerScore": "18"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "studentId",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "screenerDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "sdq_total",
+            "canonicalField": "screenerScore"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-file-xlsx-connector-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "file_xlsx"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "X200",
+        "eventType": "assessment.score",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "X200",
+          "occurredAt": "2026-08-07",
+          "scorePercent": "72"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "uid",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "examDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "pct",
+            "canonicalField": "scorePercent"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-canonical-payload-no-raw-001",
+      "agentId": "DW-02",
+      "tags": ["needs_input", "unmapped_sensitive_field"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "unmappedFields": ["teacherNotes"],
+        "detail": "1 source field(s) have no confirmed mapping: teacherNotes"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-numeric-transform-integer-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "numeric_transform", "boundary"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "N100",
+        "eventType": "assessment.score",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "N100",
+          "occurredAt": "2026-08-07",
+          "scorePercent": "100"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "id",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "date",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "mark",
+            "canonicalField": "scorePercent"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-zero-mark-transform-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "numeric_transform", "zero_value"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "N101",
+        "eventType": "assessment.score",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "N101",
+          "occurredAt": "2026-08-07",
+          "scorePercent": "0"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "id",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "date",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "mark",
+            "canonicalField": "scorePercent"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-learnerId-null-value-001",
+      "agentId": "DW-02",
+      "tags": ["needs_input", "null_learner_id"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "unmappedFields": ["learnerId"],
+        "detail": "Canonical learnerId is absent after mapping."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-absent-status-event-type-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "attendance_api", "absent"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"eventType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "A200",
+        "eventType": "attendance.absent",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "A200",
+          "occurredAt": "2026-08-07",
+          "attendanceStatus": "ABSENT"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "studentRef",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "eventDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "type",
+            "canonicalField": "attendanceStatus"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-late-attendance-event-type-001",
+      "agentId": "DW-02",
+      "tags": ["ok", "attendance_api", "late"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"eventType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "learnerId": "A201",
+        "eventType": "attendance.late",
+        "occurredAt": "2026-08-07",
+        "canonicalPayload": {
+          "learnerId": "A201",
+          "occurredAt": "2026-08-07",
+          "attendanceStatus": "LATE"
+        },
+        "mappingsApplied": [
+          {
+            "sourceField": "studentRef",
+            "canonicalField": "learnerId"
+          },
+          {
+            "sourceField": "eventDate",
+            "canonicalField": "occurredAt"
+          },
+          {
+            "sourceField": "type",
+            "canonicalField": "attendanceStatus"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-02-source-id-not-found-001",
+      "agentId": "DW-02",
+      "tags": ["rejected", "source_not_found"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "rejected",
+        "reason": "Raw record not found in the landing zone."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 29,
+    "passedCases": 29,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

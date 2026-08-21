@@ -1,0 +1,706 @@
+{
+  "agentId": "AC-07",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "ac07-100pct-fidelity-adequate-001",
+      "agentId": "AC-07",
+      "tags": ["adequate", "100pct", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"fidelityRate\" = 100, within tolerance of 100."
+        },
+        {
+          "passed": true,
+          "detail": "\"plannedSessionCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"deliveredSessionCount\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "fa304371-5fb6-4d43-b990-0db09ad2c45e",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000001",
+        "plannedSessionCount": 5,
+        "deliveredSessionCount": 5,
+        "fidelityRate": 100,
+        "evidenceIds": [
+          "plan-ev-001",
+          "ev-001a",
+          "ev-001b",
+          "ev-001c",
+          "ev-001d",
+          "ev-001e"
+        ],
+        "detail": "5/5 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-80pct-exactly-adequate-001",
+      "agentId": "AC-07",
+      "tags": ["adequate", "80pct", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"fidelityRate\" = 80, within tolerance of 80."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "b62ee995-f8e0-4d67-897c-a1c23d611c1c",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000002",
+        "plannedSessionCount": 5,
+        "deliveredSessionCount": 4,
+        "fidelityRate": 80,
+        "evidenceIds": ["plan-ev-002", "ev-002a", "ev-002b", "ev-002c", "ev-002d"],
+        "detail": "4/5 sessions delivered (80%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-below-80pct-inadequate-001",
+      "agentId": "AC-07",
+      "tags": ["inadequate", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"fidelityRate\" = 60, within tolerance of 60."
+        }
+      ],
+      "output": {
+        "status": "inadequate",
+        "fidelityId": "81a0dd24-292a-4e9c-8364-a68956aa53e4",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000003",
+        "plannedSessionCount": 5,
+        "deliveredSessionCount": 3,
+        "fidelityRate": 60,
+        "evidenceIds": ["plan-ev-003", "ev-003a", "ev-003b", "ev-003c"],
+        "detail": "3/5 sessions delivered (60%) — below the 80% adequacy threshold."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-zero-sessions-delivered-inadequate-001",
+      "agentId": "AC-07",
+      "tags": ["inadequate", "zero_delivery", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"fidelityRate\" = 0, within tolerance of 0."
+        },
+        {
+          "passed": true,
+          "detail": "\"deliveredSessionCount\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "inadequate",
+        "fidelityId": "d4aacf22-8878-458e-82a9-87ddb58b4ab1",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000004",
+        "plannedSessionCount": 2,
+        "deliveredSessionCount": 0,
+        "fidelityRate": 0,
+        "evidenceIds": ["plan-ev-004"],
+        "detail": "0/2 sessions delivered (0%) — below the 80% adequacy threshold."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-empty-planned-needs-input-001",
+      "agentId": "AC-07",
+      "tags": ["needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No planned sessions supplied."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-fidelity-id-is-uuid-001",
+      "agentId": "AC-07",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "c1ffadc1-5da7-4c51-b343-d18fdc26a574",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000006",
+        "plannedSessionCount": 2,
+        "deliveredSessionCount": 2,
+        "fidelityRate": 100,
+        "evidenceIds": ["plan-ev-006", "ev-006a", "ev-006b"],
+        "detail": "2/2 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-evidence-includes-plan-evidence-001",
+      "agentId": "AC-07",
+      "tags": ["evidence_linkage", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "702499f9-5a98-4638-bc22-4c18b4834b52",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000007",
+        "plannedSessionCount": 1,
+        "deliveredSessionCount": 1,
+        "fidelityRate": 100,
+        "evidenceIds": ["plan-ev-unique-007", "ev-007a"],
+        "detail": "1/1 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-evidence-includes-delivered-evidence-001",
+      "agentId": "AC-07",
+      "tags": ["evidence_linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "cc582d9c-f1c6-42cf-9e59-d99f5c35addd",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000008",
+        "plannedSessionCount": 1,
+        "deliveredSessionCount": 1,
+        "fidelityRate": 100,
+        "evidenceIds": ["plan-ev-008", "ev-unique-008"],
+        "detail": "1/1 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-detail-non-empty-001",
+      "agentId": "AC-07",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "inadequate",
+        "fidelityId": "5f1c8ae8-382f-47c2-b96b-ab72d3e73df5",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000009",
+        "plannedSessionCount": 2,
+        "deliveredSessionCount": 1,
+        "fidelityRate": 50,
+        "evidenceIds": ["plan-ev-009", "ev-009a"],
+        "detail": "1/2 sessions delivered (50%) — below the 80% adequacy threshold."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-short-minutes-not-counted-001",
+      "agentId": "AC-07",
+      "tags": ["inadequate", "minutes_threshold", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"deliveredSessionCount\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "inadequate",
+        "fidelityId": "c74f9a4a-8d77-4625-8aa2-d16be62b18c5",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000010",
+        "plannedSessionCount": 5,
+        "deliveredSessionCount": 3,
+        "fidelityRate": 60,
+        "evidenceIds": [
+          "plan-ev-010",
+          "ev-010a",
+          "ev-010b",
+          "ev-010c",
+          "ev-010d",
+          "ev-010e"
+        ],
+        "detail": "3/5 sessions delivered (60%) — below the 80% adequacy threshold."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-learnerId-echoed-001",
+      "agentId": "AC-07",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "c6334d09-8edb-4f1e-abd8-b9ab1216ee33",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000011",
+        "plannedSessionCount": 1,
+        "deliveredSessionCount": 1,
+        "fidelityRate": 100,
+        "evidenceIds": ["plan-ev-011", "ev-011a"],
+        "detail": "1/1 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "ac07-planId-echoed-001",
+      "agentId": "AC-07",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"planId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "879fb2f1-1473-4957-9bac-17c5334131ef",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000012",
+        "plannedSessionCount": 2,
+        "deliveredSessionCount": 2,
+        "fidelityRate": 100,
+        "evidenceIds": ["plan-ev-012", "ev-012a", "ev-012b"],
+        "detail": "2/2 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-planned-count-correct-001",
+      "agentId": "AC-07",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"plannedSessionCount\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "047256d0-7313-4627-ab85-0601f599e8e0",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000013",
+        "plannedSessionCount": 3,
+        "deliveredSessionCount": 3,
+        "fidelityRate": 100,
+        "evidenceIds": ["plan-ev-013", "ev-013a", "ev-013b", "ev-013c"],
+        "detail": "3/3 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-no-diagnostic-language-in-detail-001",
+      "agentId": "AC-07",
+      "tags": ["diagnosis_guard"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No diagnostic language detected.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "inadequate",
+        "fidelityId": "673dd448-76a5-4c2f-bbff-7066350eb733",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000014",
+        "plannedSessionCount": 2,
+        "deliveredSessionCount": 1,
+        "fidelityRate": 50,
+        "evidenceIds": ["plan-ev-014", "ev-014a"],
+        "detail": "1/2 sessions delivered (50%) — below the 80% adequacy threshold."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-multi-domain-sessions-adequate-001",
+      "agentId": "AC-07",
+      "tags": ["adequate", "multi_domain"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"fidelityRate\" = 100, within tolerance of 100."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "7b84f570-37a1-450d-9c5b-3343d3b9989c",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000015",
+        "plannedSessionCount": 5,
+        "deliveredSessionCount": 5,
+        "fidelityRate": 100,
+        "evidenceIds": [
+          "plan-ev-015",
+          "ev-015a",
+          "ev-015b",
+          "ev-015c",
+          "ev-015d",
+          "ev-015e"
+        ],
+        "detail": "5/5 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-79pct-fidelity-inadequate-001",
+      "agentId": "AC-07",
+      "tags": ["inadequate", "79pct", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "inadequate",
+        "fidelityId": "7f48a4ad-3660-430d-817c-a395abb14612",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000016",
+        "plannedSessionCount": 7,
+        "deliveredSessionCount": 5,
+        "fidelityRate": 71.43,
+        "evidenceIds": [
+          "plan-ev-016",
+          "ev-016a",
+          "ev-016b",
+          "ev-016c",
+          "ev-016d",
+          "ev-016e"
+        ],
+        "detail": "5/7 sessions delivered (71.43%) — below the 80% adequacy threshold."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-second-tenant-adequate-001",
+      "agentId": "AC-07",
+      "tags": ["adequate", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "aa080db5-6e49-4829-96f1-652ec6a8cfbb",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+        "termId": "00000000-0000-0000-0000-000000000022",
+        "planId": "eeeeeeee-0000-0000-0000-000000000017",
+        "plannedSessionCount": 2,
+        "deliveredSessionCount": 2,
+        "fidelityRate": 100,
+        "evidenceIds": ["plan-ev-017", "ev-017a", "ev-017b"],
+        "detail": "2/2 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-termId-echoed-001",
+      "agentId": "AC-07",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"termId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "b24a8f86-2e7c-40db-8848-b6b64567693c",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+        "termId": "00000000-0000-0000-0000-000000000021",
+        "planId": "eeeeeeee-0000-0000-0000-000000000018",
+        "plannedSessionCount": 1,
+        "deliveredSessionCount": 1,
+        "fidelityRate": 100,
+        "evidenceIds": ["plan-ev-018", "ev-018a"],
+        "detail": "1/1 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-next-day-delivery-counts-001",
+      "agentId": "AC-07",
+      "tags": ["adequate", "next_day_matching"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"deliveredSessionCount\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "11010933-0f71-4b2d-8d02-43138163e102",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000019",
+        "plannedSessionCount": 2,
+        "deliveredSessionCount": 2,
+        "fidelityRate": 100,
+        "evidenceIds": ["plan-ev-019", "ev-019a", "ev-019b"],
+        "detail": "2/2 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-single-session-100pct-adequate-001",
+      "agentId": "AC-07",
+      "tags": ["adequate", "single_session"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"fidelityRate\" = 100, within tolerance of 100."
+        }
+      ],
+      "output": {
+        "status": "adequate",
+        "fidelityId": "84913ab3-a401-4408-92d8-e3e65ba639cc",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000020",
+        "plannedSessionCount": 1,
+        "deliveredSessionCount": 1,
+        "fidelityRate": 100,
+        "evidenceIds": ["plan-ev-020", "ev-020a"],
+        "detail": "1/1 sessions delivered (100%) — adequate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac07-fidelity-rate-two-decimal-places-001",
+      "agentId": "AC-07",
+      "tags": ["inadequate", "fidelity_rate"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"fidelityRate\" = 66.67, within tolerance of 66.67."
+        }
+      ],
+      "output": {
+        "status": "inadequate",
+        "fidelityId": "ebcc4ec7-4ea9-4072-a3a7-870f1c1ef791",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "planId": "eeeeeeee-0000-0000-0000-000000000021",
+        "plannedSessionCount": 3,
+        "deliveredSessionCount": 2,
+        "fidelityRate": 66.67,
+        "evidenceIds": ["plan-ev-021", "ev-021a", "ev-021b"],
+        "detail": "2/3 sessions delivered (66.67%) — below the 80% adequacy threshold."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 21,
+    "passedCases": 21,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

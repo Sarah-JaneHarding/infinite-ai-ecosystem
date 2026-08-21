@@ -1,0 +1,616 @@
+{
+  "agentId": "LE-05",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "LE05-001",
+      "agentId": "LE-05",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-1-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-002",
+      "agentId": "LE-05",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-2-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-003",
+      "agentId": "LE-05",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-3-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-004",
+      "agentId": "LE-05",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "no_candidates"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-005",
+      "agentId": "LE-05",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "no_candidates"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-006",
+      "agentId": "LE-05",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-007",
+      "agentId": "LE-05",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-7-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-008",
+      "agentId": "LE-05",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-8-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-009",
+      "agentId": "LE-05",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-9-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-010",
+      "agentId": "LE-05",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-10-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-011",
+      "agentId": "LE-05",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-11-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-012",
+      "agentId": "LE-05",
+      "tags": ["must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-12-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-013",
+      "agentId": "LE-05",
+      "tags": ["must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-13-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-014",
+      "agentId": "LE-05",
+      "tags": ["must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-14-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-015",
+      "agentId": "LE-05",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-15-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-016",
+      "agentId": "LE-05",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-16-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-017",
+      "agentId": "LE-05",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-17-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-018",
+      "agentId": "LE-05",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-18-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-019",
+      "agentId": "LE-05",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-19-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE05-020",
+      "agentId": "LE-05",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"candidates[0].promoted\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "candidates": [
+          {
+            "artefactId": "gggggggg-20-0005-0005-000000000005",
+            "evalScore": 0.85,
+            "firstPassAcceptanceRate": 0.78,
+            "attributionConfidence": 0.6,
+            "promoted": false
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

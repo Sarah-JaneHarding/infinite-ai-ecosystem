@@ -1,0 +1,867 @@
+{
+  "agentId": "CE-03",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "CE-03-001",
+      "agentId": "CE-03",
+      "tags": ["intermediate_phase", "grade_4", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "4",
+        "termNumber": 1,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-002",
+      "agentId": "CE-03",
+      "tags": ["foundation_phase", "grade_R", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "R",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-003",
+      "agentId": "CE-03",
+      "tags": ["foundation_phase", "grade_1", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "1",
+        "termNumber": 1,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-004",
+      "agentId": "CE-03",
+      "tags": ["foundation_phase", "grade_2", "needs_input", "term_3"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "2",
+        "termNumber": 3,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-005",
+      "agentId": "CE-03",
+      "tags": ["foundation_phase", "grade_3", "needs_input", "multi_subject", "term_4"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "3",
+        "termNumber": 4,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-006",
+      "agentId": "CE-03",
+      "tags": ["intermediate_phase", "grade_5", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "5",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-007",
+      "agentId": "CE-03",
+      "tags": ["intermediate_phase", "grade_6", "needs_input", "multi_subject"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "6",
+        "termNumber": 1,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-008",
+      "agentId": "CE-03",
+      "tags": ["senior_phase", "grade_7", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "7",
+        "termNumber": 3,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-009",
+      "agentId": "CE-03",
+      "tags": ["senior_phase", "grade_8", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "8",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-010",
+      "agentId": "CE-03",
+      "tags": ["senior_phase", "grade_9", "needs_input", "multi_subject"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "9",
+        "termNumber": 1,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-011",
+      "agentId": "CE-03",
+      "tags": ["fet_phase", "grade_10", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "10",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-012",
+      "agentId": "CE-03",
+      "tags": ["fet_phase", "grade_11", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "11",
+        "termNumber": 3,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-013",
+      "agentId": "CE-03",
+      "tags": ["fet_phase", "grade_12", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "termNumber": 1,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-014",
+      "agentId": "CE-03",
+      "tags": ["fet_phase", "grade_12", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-015",
+      "agentId": "CE-03",
+      "tags": [
+        "intermediate_phase",
+        "grade_4",
+        "needs_input",
+        "multi_subject",
+        "must_not_regress"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "4",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-016",
+      "agentId": "CE-03",
+      "tags": ["senior_phase", "grade_8", "needs_input", "term_4"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "8",
+        "termNumber": 4,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-017",
+      "agentId": "CE-03",
+      "tags": ["fet_phase", "grade_10", "needs_input", "term_4"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "10",
+        "termNumber": 4,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-018",
+      "agentId": "CE-03",
+      "tags": ["intermediate_phase", "grade_6", "needs_input", "future_year"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "6",
+        "termNumber": 1,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-019",
+      "agentId": "CE-03",
+      "tags": ["senior_phase", "grade_9", "needs_input", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "9",
+        "termNumber": 3,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-020",
+      "agentId": "CE-03",
+      "tags": ["fet_phase", "grade_11", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "11",
+        "termNumber": 1,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-021",
+      "agentId": "CE-03",
+      "tags": ["intermediate_phase", "grade_5", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "5",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-022",
+      "agentId": "CE-03",
+      "tags": ["senior_phase", "grade_7", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "7",
+        "termNumber": 4,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-023",
+      "agentId": "CE-03",
+      "tags": ["fet_phase", "grade_12", "needs_input", "multi_subject"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "termNumber": 3,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-024",
+      "agentId": "CE-03",
+      "tags": ["fet_phase", "grade_10", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "10",
+        "termNumber": 1,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-025",
+      "agentId": "CE-03",
+      "tags": [
+        "senior_phase",
+        "grade_8",
+        "needs_input",
+        "adversarial",
+        "draft_framework"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "8",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-026",
+      "agentId": "CE-03",
+      "tags": ["senior_phase", "grade_9", "needs_input", "adversarial", "draft_atp"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "9",
+        "termNumber": 1,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-027",
+      "agentId": "CE-03",
+      "tags": ["fet_phase", "grade_10", "needs_input", "adversarial", "unknown_subject"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "10",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-028",
+      "agentId": "CE-03",
+      "tags": ["fet_phase", "grade_11", "needs_input", "adversarial", "all_drafts"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "11",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-029",
+      "agentId": "CE-03",
+      "tags": ["senior_phase", "grade_7", "needs_input", "adversarial", "pii_egress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "7",
+        "termNumber": 1,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-03-030",
+      "agentId": "CE-03",
+      "tags": ["foundation_phase", "grade_3", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "3",
+        "termNumber": 2,
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "subjectName": null,
+            "why": "No grade framework in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 30,
+    "passedCases": 30,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 2
+  }
+}

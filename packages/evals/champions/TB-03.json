@@ -1,0 +1,793 @@
+{
+  "agentId": "TB-03",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "tb03-ok-english-gr5-001",
+      "agentId": "TB-03",
+      "tags": ["happy-path", "non-decodable", "natural-sciences"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"isDecodable\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"wordCount\" = 250, within tolerance of 250."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes non-empty 'title' and 'body' fields.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "07bf57a5-6a68-4d07-b3a2-7d7def81a3c9",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000101"
+        },
+        "title": "The water cycle",
+        "body": "The water cycle is an important concept in Natural Sciences. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 250,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-ok-decodable-gr2-002",
+      "agentId": "TB-03",
+      "tags": ["happy-path", "decodable", "foundation-phase"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"isDecodable\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"wordCount\" = 100, within tolerance of 100."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "8a662a97-1810-44f7-9f54-2cc6488ad0d2",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR2-TERM1-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000102"
+        },
+        "title": "Animals on the farm",
+        "body": "Animals on the farm is an important concept in English Home Language. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 100,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 2,
+          "targetBand": {
+            "minGrade": 1,
+            "maxGrade": 3
+          }
+        },
+        "isDecodable": true,
+        "citedSourceIds": ["doc-010"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-ok-afrikaans-gr4-003",
+      "agentId": "TB-03",
+      "tags": ["happy-path", "afrikaans"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"wordCount\" = 200, within tolerance of 200."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "ad36c2af-e728-4f1e-88a6-380f00777410",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-AF-GR4-TERM3-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000103"
+        },
+        "title": "Die see en sy lewe",
+        "body": "Die see en sy lewe is an important concept in Afrikaans Home Language. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 200,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-020"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-ok-intervention-linkage-004",
+      "agentId": "TB-03",
+      "tags": ["happy-path", "intervention-linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "c705eebb-25e8-45ac-bba4-de311f14df1a",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR3-TERM2-TOPIC1",
+          "interventionId": "00000000-0000-0000-0000-000000000201"
+        },
+        "title": "Helping at home",
+        "body": "Helping at home is an important concept in English Home Language. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 150,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 3,
+          "targetBand": {
+            "minGrade": 2,
+            "maxGrade": 4
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-030"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-ok-word-count-large-005",
+      "agentId": "TB-03",
+      "tags": ["happy-path", "large-word-count", "social-sciences"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"wordCount\" = 400, within tolerance of 400."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "f24b8e93-d20d-4f2b-bf5e-475e8e029231",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR7-TERM1-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000104"
+        },
+        "title": "The effects of apartheid on South African society",
+        "body": "The effects of apartheid on South African society is an important concept in Social Sciences. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 400,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-040"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-no-source-document-006",
+      "agentId": "TB-03",
+      "tags": ["refusal", "no-source"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a non-empty 'detail' field explaining why the source document is unavailable.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "no_source_document",
+        "detail": "No source documents available — reading passage generation requires at least one cited source."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-readability-out-of-band-007",
+      "agentId": "TB-03",
+      "tags": ["refusal", "readability-out-of-band"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes 'measuredGrade', 'targetBand', and 'detail' fields explaining the readability issue.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "readability_out_of_band",
+        "measuredGrade": 7.2,
+        "targetBand": {
+          "minGrade": 2,
+          "maxGrade": 4
+        },
+        "detail": "Measured grade 7.2 is above the target band — the generated passage is too complex for the requested reading level."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-needs-input-missing-caps-id-008",
+      "agentId": "TB-03",
+      "tags": ["refusal", "missing-caps-id"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a 'missingFields' field identifying which required input field is absent.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "capsTopicId is required.",
+        "missingFields": ["capsTopicId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-no-pii-in-output-009",
+      "agentId": "TB-03",
+      "tags": ["security", "pii-guard"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "9994ee27-74f0-4126-98e9-29e646c6f3b9",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR5-TERM2-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000108"
+        },
+        "title": "Community helpers",
+        "body": "Community helpers is an important concept in English Home Language. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 200,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-070"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-artefact-id-uuid-010",
+      "agentId": "TB-03",
+      "tags": ["schema"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "f5f761ea-3b93-498b-864d-82cfa4e76f9b",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR6-TERM1-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000109"
+        },
+        "title": "Fractions in everyday life",
+        "body": "Fractions in everyday life is an important concept in Mathematics. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 180,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-080"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-cited-sources-subset-011",
+      "agentId": "TB-03",
+      "tags": ["grounding"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "3a7b651e-46e8-4228-b8e1-bc1cf8057114",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR7-TERM3-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000110"
+        },
+        "title": "Photosynthesis",
+        "body": "Photosynthesis is an important concept in Natural Sciences. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 300,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-090"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-ok-zulu-gr3-012",
+      "agentId": "TB-03",
+      "tags": ["happy-path", "zulu"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a non-empty 'body' field containing the generated passage.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "6a0125bb-0c02-4b6d-9574-e3b5bf995e6d",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-ZU-GR3-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000111"
+        },
+        "title": "Izilwane zasendle",
+        "body": "Izilwane zasendle is an important concept in isiZulu Home Language. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 150,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 3,
+          "targetBand": {
+            "minGrade": 2,
+            "maxGrade": 4
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-100"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-readability-result-present-013",
+      "agentId": "TB-03",
+      "tags": ["readability"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a 'readabilityCheckResult' object with a non-null 'verdict' field.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "f35994cd-8234-4312-a4f1-9a5618980270",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR6-TERM1-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000112"
+        },
+        "title": "The life of Nelson Mandela",
+        "body": "The life of Nelson Mandela is an important concept in English Home Language. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 300,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-110"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-ok-decodable-false-default-014",
+      "agentId": "TB-03",
+      "tags": ["schema", "decodable-flag"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"isDecodable\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "da7392df-392f-4735-9865-47c197d9953e",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR4-TERM2-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000113"
+        },
+        "title": "Rainwater harvesting",
+        "body": "Rainwater harvesting is an important concept in English Home Language. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 200,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-120"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-ok-both-linkages-015",
+      "agentId": "TB-03",
+      "tags": ["happy-path", "both-linkages"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "3ca8a50c-7d0f-470f-b854-fb99e927adcf",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR5-TERM3-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000114",
+          "interventionId": "00000000-0000-0000-0000-000000000202"
+        },
+        "title": "South African government structures",
+        "body": "South African government structures is an important concept in Social Sciences. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 220,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-130"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-needs-input-no-linkage-016",
+      "agentId": "TB-03",
+      "tags": ["refusal", "missing-linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one of lessonId or interventionId must be present.",
+        "missingFields": ["lessonId", "interventionId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-ok-title-non-empty-017",
+      "agentId": "TB-03",
+      "tags": ["schema", "title-present"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "d00b70dd-94ee-4bdc-8ac9-5a4ade03740a",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-TK-GR5-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000115"
+        },
+        "title": "Levers and pulleys",
+        "body": "Levers and pulleys is an important concept in Technology. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 250,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-150"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-ok-caps-linkage-in-output-018",
+      "agentId": "TB-03",
+      "tags": ["linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"linkage.capsTopicId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "66374f6d-9ff0-41b6-bb4d-c74df0151edd",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR7-TERM2-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000116"
+        },
+        "title": "Probability in real life",
+        "body": "Probability in real life is an important concept in Mathematics. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 280,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-160"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-ok-word-count-small-019",
+      "agentId": "TB-03",
+      "tags": ["happy-path", "decodable", "grade1"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"wordCount\" = 60, within tolerance of 60."
+        },
+        {
+          "passed": true,
+          "detail": "\"isDecodable\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "a5069e3d-1e4a-4f12-9114-5a7a79267d55",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR1-TERM1-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000117"
+        },
+        "title": "My family",
+        "body": "My family is an important concept in English Home Language. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 60,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 1.5,
+          "targetBand": {
+            "minGrade": 1,
+            "maxGrade": 2
+          }
+        },
+        "isDecodable": true,
+        "citedSourceIds": ["doc-170"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb03-artefact-type-reading-passage-020",
+      "agentId": "TB-03",
+      "tags": ["schema", "artefact-type"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "743fb823-d17a-4945-82ef-abdebc113daf",
+        "artefactType": "READING_PASSAGE",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR6-TERM4-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000118"
+        },
+        "title": "The ocean ecosystem",
+        "body": "The ocean ecosystem is an important concept in English Home Language. Learning about this topic helps us understand the world around us. There are several key ideas to consider. First, we look at the basic definitions. Then we explore how these ideas connect to everyday life. Finally, we examine why this knowledge matters for our future learning. By understanding these concepts, learners build a strong foundation for further study.",
+        "wordCount": 320,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "isDecodable": false,
+        "citedSourceIds": ["doc-180"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

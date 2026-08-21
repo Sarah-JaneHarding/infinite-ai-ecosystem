@@ -1,0 +1,757 @@
+{
+  "agentId": "PD-01",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "PD01-001",
+      "agentId": "PD-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsAnalysed\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsOnTrack\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsBehind\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 1,
+        "topicsBehind": 0,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 0,
+        "gapTopics": [],
+        "subject": "Natural Sciences",
+        "gradeLabel": "5"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "PD01-002",
+      "agentId": "PD-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsBehind\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 0,
+        "topicsBehind": 1,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 3,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR6-MATH-FRACTIONS",
+            "weeksBehind": 3,
+            "deliveryStatus": "not_delivered"
+          }
+        ],
+        "subject": "Mathematics",
+        "gradeLabel": "6"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-003",
+      "agentId": "PD-01",
+      "tags": ["needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-004",
+      "agentId": "PD-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsAhead\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsBehind\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 0,
+        "topicsBehind": 0,
+        "topicsAhead": 1,
+        "meanWeeksDrift": -1,
+        "gapTopics": [],
+        "subject": "Natural Sciences",
+        "gradeLabel": "5"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-005",
+      "agentId": "PD-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsAnalysed\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsBehind\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 2,
+        "topicsOnTrack": 0,
+        "topicsBehind": 2,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 3,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR3-LS-MOVEMENT",
+            "weeksBehind": 4,
+            "deliveryStatus": "not_delivered"
+          },
+          {
+            "capsTopicId": "CAPS-GR3-LS-HEALTH",
+            "weeksBehind": 2,
+            "deliveryStatus": "partially_delivered"
+          }
+        ],
+        "subject": "Life Skills",
+        "gradeLabel": "3"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-006",
+      "agentId": "PD-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 0,
+        "topicsBehind": 1,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 5,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR7-MATH-INTEGERS",
+            "weeksBehind": 5,
+            "deliveryStatus": "not_delivered"
+          }
+        ],
+        "subject": "Mathematics",
+        "gradeLabel": "7"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-007",
+      "agentId": "PD-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsAnalysed\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsOnTrack\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"meanWeeksDrift\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 2,
+        "topicsOnTrack": 2,
+        "topicsBehind": 0,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 0,
+        "gapTopics": [],
+        "subject": "English Home Language",
+        "gradeLabel": "R"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-008",
+      "agentId": "PD-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gapTopics[0].capsTopicId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 2,
+        "topicsOnTrack": 0,
+        "topicsBehind": 2,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 2,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR9-SS-MAPWORK",
+            "weeksBehind": 3,
+            "deliveryStatus": "not_delivered"
+          },
+          {
+            "capsTopicId": "CAPS-GR9-SS-DEMOCRACY",
+            "weeksBehind": 1,
+            "deliveryStatus": "not_delivered"
+          }
+        ],
+        "subject": "Social Sciences",
+        "gradeLabel": "9"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-009",
+      "agentId": "PD-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 0,
+        "topicsBehind": 1,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 1,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR8-TECH-STRUCTURES",
+            "weeksBehind": 1,
+            "deliveryStatus": "partially_delivered"
+          }
+        ],
+        "subject": "Technology",
+        "gradeLabel": "8"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-010",
+      "agentId": "PD-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsAnalysed\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsBehind\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsAhead\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 3,
+        "topicsOnTrack": 1,
+        "topicsBehind": 1,
+        "topicsAhead": 1,
+        "meanWeeksDrift": 0.3333333333333333,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR5-NS-ENERGY",
+            "weeksBehind": 2,
+            "deliveryStatus": "not_delivered"
+          }
+        ],
+        "subject": "Natural Sciences",
+        "gradeLabel": "5"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-011",
+      "agentId": "PD-01",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 0,
+        "topicsBehind": 1,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 6,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR12-MATH-CALCULUS",
+            "weeksBehind": 6,
+            "deliveryStatus": "not_delivered"
+          }
+        ],
+        "subject": "Mathematics",
+        "gradeLabel": "12"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-012",
+      "agentId": "PD-01",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gapTopics\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 1,
+        "topicsBehind": 0,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 0,
+        "gapTopics": [],
+        "subject": "Afrikaans Home Language",
+        "gradeLabel": "2"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-013",
+      "agentId": "PD-01",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsBehind\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gapTopics[0].weeksBehind\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 3,
+        "topicsOnTrack": 0,
+        "topicsBehind": 3,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 2.3333333333333335,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR11-PS-ELECTRICITY",
+            "weeksBehind": 4,
+            "deliveryStatus": "not_delivered"
+          },
+          {
+            "capsTopicId": "CAPS-GR11-PS-MECHANICS",
+            "weeksBehind": 2,
+            "deliveryStatus": "not_delivered"
+          },
+          {
+            "capsTopicId": "CAPS-GR11-PS-WAVES",
+            "weeksBehind": 1,
+            "deliveryStatus": "partially_delivered"
+          }
+        ],
+        "subject": "Physical Sciences",
+        "gradeLabel": "11"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-014",
+      "agentId": "PD-01",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsAhead\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsBehind\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gapTopics\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 0,
+        "topicsBehind": 0,
+        "topicsAhead": 1,
+        "meanWeeksDrift": -2,
+        "gapTopics": [],
+        "subject": "Mathematics",
+        "gradeLabel": "1"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-015",
+      "agentId": "PD-01",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 0,
+        "topicsBehind": 1,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 3,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR5-NS-WATER",
+            "weeksBehind": 3,
+            "deliveryStatus": "not_delivered"
+          }
+        ],
+        "subject": "Natural Sciences",
+        "gradeLabel": "5"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-016",
+      "agentId": "PD-01",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsOnTrack\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"topicsBehind\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 3,
+        "topicsOnTrack": 3,
+        "topicsBehind": 0,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 0,
+        "gapTopics": [],
+        "subject": "History",
+        "gradeLabel": "10"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-017",
+      "agentId": "PD-01",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gapTopics[0].deliveryStatus\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 0,
+        "topicsBehind": 1,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 2,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR5-MATH-FRACTIONS",
+            "weeksBehind": 2,
+            "deliveryStatus": "partially_delivered"
+          }
+        ],
+        "subject": "Mathematics",
+        "gradeLabel": "5"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-018",
+      "agentId": "PD-01",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 0,
+        "topicsBehind": 1,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 2,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR8-EMS-ENTREPRENEURSHIP",
+            "weeksBehind": 2,
+            "deliveryStatus": "not_delivered"
+          }
+        ],
+        "subject": "Economic and Management Sciences",
+        "gradeLabel": "8"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-019",
+      "agentId": "PD-01",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gapTopics[0].capsTopicId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 3,
+        "topicsOnTrack": 0,
+        "topicsBehind": 3,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 3,
+        "gapTopics": [
+          {
+            "capsTopicId": "CAPS-GR6-NS-FOOD-WEBS",
+            "weeksBehind": 5,
+            "deliveryStatus": "not_delivered"
+          },
+          {
+            "capsTopicId": "CAPS-GR6-NS-ECOSYSTEMS",
+            "weeksBehind": 3,
+            "deliveryStatus": "not_delivered"
+          },
+          {
+            "capsTopicId": "CAPS-GR6-NS-EARTH",
+            "weeksBehind": 1,
+            "deliveryStatus": "not_delivered"
+          }
+        ],
+        "subject": "Natural Sciences",
+        "gradeLabel": "6"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD01-020",
+      "agentId": "PD-01",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"subject\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gradeLabel\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "topicsAnalysed": 1,
+        "topicsOnTrack": 1,
+        "topicsBehind": 0,
+        "topicsAhead": 0,
+        "meanWeeksDrift": 0,
+        "gapTopics": [],
+        "subject": "Mathematics",
+        "gradeLabel": "5"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

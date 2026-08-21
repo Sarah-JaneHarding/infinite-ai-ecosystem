@@ -821,6 +821,18 @@ const STAGES: readonly Stage[] = [
       'pnpm evals:gate',
     ],
   },
+  {
+    id: '48',
+    name: 'Champion baseline promotion',
+    commands: [
+      // Runs every registered agent (51 total: TB-01–TB-07, AC-08–AC-10, LE-01–LE-09,
+      // PD-01–PD-08, and all earlier module agents) against their golden sets, then
+      // seeds the champion baselines so pnpm evals:gate can enforce regression gates
+      // on every subsequent PR.  All 51 agents must hit 100% pass rate; pnpm
+      // evals:promote exits 1 if any agent has a failing case.
+      'pnpm evals:gate',
+    ],
+  },
 ];
 
 function usage(): never {

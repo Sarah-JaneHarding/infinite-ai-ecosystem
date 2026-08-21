@@ -1,0 +1,2002 @@
+{
+  "agentId": "TB-04",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "tb04-ok-mc-knowledge-gr5-001",
+      "agentId": "TB-04",
+      "tags": ["happy-path", "multiple-choice", "knowledge"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"items.length\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All items in 'items' are multiple-choice with exactly 4 options each, and each item has cognitiveLevel 'knowledge'.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "d75a0e4d-85d0-4192-97de-67c8c2fcd774",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-TERM1-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000101"
+        },
+        "items": [
+          {
+            "itemId": "aa98cb74-7d5a-4a12-b553-750057e56738",
+            "questionText": "Question 1: Describe an aspect of Properties of matter at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "7bbb27c1-a46c-4ec7-8e2f-e7d7680ab99b",
+            "questionText": "Question 2: Describe an aspect of Properties of matter at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "4a7a3132-3925-4cda-8b85-2045983ff002",
+            "questionText": "Question 3: Describe an aspect of Properties of matter at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "a16e4fa3-9707-4fc0-8315-e57e4d2dd7b0",
+            "questionText": "Question 4: Describe an aspect of Properties of matter at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 4,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "tb04-ok-short-answer-comprehension-gr6-002",
+      "agentId": "TB-04",
+      "tags": ["happy-path", "short-answer", "comprehension"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"items.length\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All items in 'items' are short-answer type with an empty options array, and each has cognitiveLevel 'comprehension'.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "8b32b663-2ea3-4fb8-bf59-d74e79ceb956",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR6-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000102"
+        },
+        "items": [
+          {
+            "itemId": "c991da4b-d5cf-4e3a-a4e5-5f5e0a4b06d5",
+            "questionText": "Question 1: Describe an aspect of Comprehension strategies at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "d348af70-64eb-4e88-acf6-c844c7a5edd7",
+            "questionText": "Question 2: Describe an aspect of Comprehension strategies at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "26511336-0ea6-41dc-92dc-6278d0620d99",
+            "questionText": "Question 3: Describe an aspect of Comprehension strategies at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "b972a1f8-dc57-4e14-910a-55bb77c13de0",
+            "questionText": "Question 4: Describe an aspect of Comprehension strategies at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "3f14495a-4435-43de-905f-e7ea29be0a06",
+            "questionText": "Question 5: Describe an aspect of Comprehension strategies at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 5,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-010"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-ok-extended-response-analysis-gr7-003",
+      "agentId": "TB-04",
+      "tags": ["happy-path", "extended-response", "analysis"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"items.length\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All items in 'items' are extended-response type with an empty options array, and each has cognitiveLevel 'analysis'.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "bf0c22ce-6d03-4a24-88c5-fe3a64ec4376",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR7-TERM3-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000103"
+        },
+        "items": [
+          {
+            "itemId": "324070fc-d0f3-4f26-bce7-50fef6efb7c5",
+            "questionText": "Question 1: Describe an aspect of Human rights in the Constitution at the analysis level.",
+            "itemType": "extended_response",
+            "cognitiveLevel": "analysis",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "e67965e4-29ef-4469-a5ec-4831471249af",
+            "questionText": "Question 2: Describe an aspect of Human rights in the Constitution at the analysis level.",
+            "itemType": "extended_response",
+            "cognitiveLevel": "analysis",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 2,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-020"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-ok-true-false-gr4-004",
+      "agentId": "TB-04",
+      "tags": ["happy-path", "true-false"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"items.length\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All items in 'items' are true-false type with an empty options array.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "83770d9b-6a5d-4d2d-a9e2-1cfb3d09fd1a",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR4-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000104"
+        },
+        "items": [
+          {
+            "itemId": "d4181c61-bbfa-409b-8018-e0c0ac1c10c8",
+            "questionText": "Question 1: Describe an aspect of Properties of 2D shapes at the knowledge level.",
+            "itemType": "true_false",
+            "cognitiveLevel": "knowledge",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "c14e8733-56ea-46d0-b3f6-648d93ebf797",
+            "questionText": "Question 2: Describe an aspect of Properties of 2D shapes at the knowledge level.",
+            "itemType": "true_false",
+            "cognitiveLevel": "knowledge",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "1f8e8954-a32f-4dce-96d7-0b3d9809d114",
+            "questionText": "Question 3: Describe an aspect of Properties of 2D shapes at the knowledge level.",
+            "itemType": "true_false",
+            "cognitiveLevel": "knowledge",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "02c4f5d7-2a29-482c-b755-a745c9761cbe",
+            "questionText": "Question 4: Describe an aspect of Properties of 2D shapes at the knowledge level.",
+            "itemType": "true_false",
+            "cognitiveLevel": "knowledge",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "60961a6c-45c5-4e99-8ed7-e95d155f5340",
+            "questionText": "Question 5: Describe an aspect of Properties of 2D shapes at the knowledge level.",
+            "itemType": "true_false",
+            "cognitiveLevel": "knowledge",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "432bfeff-55c8-46fc-9581-0bf86b4c4d13",
+            "questionText": "Question 6: Describe an aspect of Properties of 2D shapes at the knowledge level.",
+            "itemType": "true_false",
+            "cognitiveLevel": "knowledge",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 6,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-030"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-ok-count-20-max-005",
+      "agentId": "TB-04",
+      "tags": ["happy-path", "max-count"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"items.length\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All items in 'items' are multiple-choice with exactly 4 options each.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "05ccd5e7-163e-4bc6-87a8-8bd3a1108b41",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR7-TERM4-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000105"
+        },
+        "items": [
+          {
+            "itemId": "876c9b64-afd5-4b38-a1e6-f2f7552fbcd8",
+            "questionText": "Question 1: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "6ef3a10b-5254-4793-b354-6104e7656e6a",
+            "questionText": "Question 2: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "fe57d128-1338-4d12-becf-63ac40022e2a",
+            "questionText": "Question 3: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "aa7060ed-0059-4368-9796-fe75951a2a19",
+            "questionText": "Question 4: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "6df41f5b-5213-4baf-83f6-e2540c8cbed6",
+            "questionText": "Question 5: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "eef12949-622a-4be3-baf0-3558c07574a2",
+            "questionText": "Question 6: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "1b796e4f-d046-446b-be18-8f4998b6f210",
+            "questionText": "Question 7: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "04d0ff45-c648-4319-82e0-5b796dc70661",
+            "questionText": "Question 8: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "67dbb32a-8f46-4302-a5d3-352c00e2152f",
+            "questionText": "Question 9: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "29e7a589-749c-4798-a051-dac47ffe6f18",
+            "questionText": "Question 10: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "63b73bbe-b3ea-4832-8e62-208d5ebd684c",
+            "questionText": "Question 11: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "ee963efe-ce54-4d47-8694-0a412f582966",
+            "questionText": "Question 12: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "426c1bf7-db1c-4895-b436-99d5d97ed3c9",
+            "questionText": "Question 13: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "f6f7703d-6f8c-4547-8861-7a5a231d3dc7",
+            "questionText": "Question 14: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "f55fe53d-5e39-46eb-be13-3ba2d19b864d",
+            "questionText": "Question 15: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "c59024a3-0c3e-42bb-8439-b4b16c1d0e6a",
+            "questionText": "Question 16: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "bf524452-a009-4c1b-9112-b610088368ab",
+            "questionText": "Question 17: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "16ac10e0-3c56-4ada-a96c-a009b275fcb9",
+            "questionText": "Question 18: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "bf67f3a0-e745-4ee6-92b7-711826de4d35",
+            "questionText": "Question 19: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "67d58f46-3a36-4aa1-baf0-0d8a0b61ae91",
+            "questionText": "Question 20: Describe an aspect of Persuasive writing techniques at the application level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "application",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 20,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-040"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-ok-count-1-min-006",
+      "agentId": "TB-04",
+      "tags": ["happy-path", "min-count"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"items.length\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "448238d7-0691-4d6d-8f2a-45e62e485123",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR6-TERM2-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000106"
+        },
+        "items": [
+          {
+            "itemId": "2c5f40aa-82b7-474a-9aec-31966c50f7f8",
+            "questionText": "Question 1: Describe an aspect of Energy and change at the synthesis level.",
+            "itemType": "extended_response",
+            "cognitiveLevel": "synthesis",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 1,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-050"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-no-source-document-007",
+      "agentId": "TB-04",
+      "tags": ["refusal", "no-source"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a non-empty 'detail' field explaining why the source document is unavailable.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "no_source_document",
+        "detail": "No source documents available — item generation requires at least one cited source."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-no-answer-key-in-output-008",
+      "agentId": "TB-04",
+      "tags": ["security", "no-answer-key"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output items do not contain any answer key fields such as 'modelAnswer', 'markingCriteria', or 'correctOptionId'.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "3353bc61-a23d-4f27-937a-a179b6a7d006",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR5-TERM1-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000108"
+        },
+        "items": [
+          {
+            "itemId": "ce68117f-a9b7-4ff5-8b49-d3f51cdeac4d",
+            "questionText": "Question 1: Describe an aspect of Figurative language at the comprehension level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "comprehension",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "4a95860d-e089-4ce5-9e32-a0232b6d46f8",
+            "questionText": "Question 2: Describe an aspect of Figurative language at the comprehension level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "comprehension",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "b89cccf3-1960-434e-9a07-49918e557502",
+            "questionText": "Question 3: Describe an aspect of Figurative language at the comprehension level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "comprehension",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 3,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-060"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-total-marks-sum-correct-009",
+      "agentId": "TB-04",
+      "tags": ["schema", "marks-sum"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The 'totalMarks' field in the output equals the sum of all individual item 'marks' values.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "ae2b64fa-dc15-4dc9-906e-5f506533e54e",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR7-TERM1-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000109"
+        },
+        "items": [
+          {
+            "itemId": "d66ae0ca-efd0-4fd5-b7b8-18e38ee8fe35",
+            "questionText": "Question 1: Describe an aspect of Algebra: expressions at the application level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "application",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "38f3e8bd-9d1e-48d4-bf8a-8205165e3e72",
+            "questionText": "Question 2: Describe an aspect of Algebra: expressions at the application level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "application",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "e6e2314e-9fc9-4ae6-b13e-b503af96a138",
+            "questionText": "Question 3: Describe an aspect of Algebra: expressions at the application level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "application",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "9766a921-7cb1-4d74-840f-ee8ac3bb3fbb",
+            "questionText": "Question 4: Describe an aspect of Algebra: expressions at the application level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "application",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "39f72cff-4a31-4801-844f-8ef00f867163",
+            "questionText": "Question 5: Describe an aspect of Algebra: expressions at the application level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "application",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 5,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-070"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-no-pii-in-output-010",
+      "agentId": "TB-04",
+      "tags": ["security", "pii-guard"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "4c61b0c9-03f2-47a0-85b8-79e0182e6f3b",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR6-TERM2-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000110"
+        },
+        "items": [
+          {
+            "itemId": "e2fb44cd-f7db-4990-9146-534d05daa38e",
+            "questionText": "Question 1: Describe an aspect of Democracy in South Africa at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "c643839d-05b5-464c-80b3-cc667ec576a6",
+            "questionText": "Question 2: Describe an aspect of Democracy in South Africa at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "53e51a79-0681-4bd2-b3ca-4601e1c2544d",
+            "questionText": "Question 3: Describe an aspect of Democracy in South Africa at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "27e1ef69-679f-4605-ac8d-5ce6bfd4a20c",
+            "questionText": "Question 4: Describe an aspect of Democracy in South Africa at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 4,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-080"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-item-ids-are-uuids-011",
+      "agentId": "TB-04",
+      "tags": ["schema", "uuid-ids"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All items in 'items' have an 'itemId' field that is a valid UUID (format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "fdb016f1-6945-4ade-ba03-cddc1ee87bd9",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-TERM3-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000111"
+        },
+        "items": [
+          {
+            "itemId": "59391439-09ff-4dce-8815-08feb7a71f36",
+            "questionText": "Question 1: Describe an aspect of Food chains at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "6fe0fabf-bdcf-431f-89df-8cacdd1b6c26",
+            "questionText": "Question 2: Describe an aspect of Food chains at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "934bf75a-53a3-49d8-b076-f2fd80947952",
+            "questionText": "Question 3: Describe an aspect of Food chains at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 3,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-090"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-needs-input-missing-caps-id-012",
+      "agentId": "TB-04",
+      "tags": ["refusal", "missing-caps-id"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a 'missingFields' field identifying which required fields are absent.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "capsTopicId is required.",
+        "missingFields": ["capsTopicId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-mc-option-ids-distinct-013",
+      "agentId": "TB-04",
+      "tags": ["schema", "distinct-options"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All multiple-choice items have distinct option IDs — no duplicate 'optionId' values appear within a single item.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "13299a50-1dc7-4e8b-af86-d58a50156d32",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR7-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000113"
+        },
+        "items": [
+          {
+            "itemId": "81ad7fc5-305b-4fbe-ae4b-261c24b612ae",
+            "questionText": "Question 1: Describe an aspect of Cells at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "8221ca62-6345-474b-b86f-c9f11f730058",
+            "questionText": "Question 2: Describe an aspect of Cells at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          },
+          {
+            "itemId": "b676b24e-1090-414e-89c5-35141a048104",
+            "questionText": "Question 3: Describe an aspect of Cells at the knowledge level.",
+            "itemType": "multiple_choice",
+            "cognitiveLevel": "knowledge",
+            "options": [
+              {
+                "optionId": "A",
+                "text": "Option A — the correct answer."
+              },
+              {
+                "optionId": "B",
+                "text": "Option B — a plausible distractor."
+              },
+              {
+                "optionId": "C",
+                "text": "Option C — a plausible distractor."
+              },
+              {
+                "optionId": "D",
+                "text": "Option D — a plausible distractor."
+              }
+            ],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 3,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-110"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-ok-afrikaans-items-014",
+      "agentId": "TB-04",
+      "tags": ["happy-path", "afrikaans"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"items.length\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "0801482c-294a-4dff-86ba-fbea4b15cd49",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-AF-GR5-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000114"
+        },
+        "items": [
+          {
+            "itemId": "ef20b642-8e94-442a-9f8d-ef8bffa7f40a",
+            "questionText": "Question 1: Describe an aspect of Woordsoorte at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "333af3c1-b182-4757-a6e6-bf9ecd14f533",
+            "questionText": "Question 2: Describe an aspect of Woordsoorte at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "32e1cb90-95cd-44fd-9051-57450ffe0d9a",
+            "questionText": "Question 3: Describe an aspect of Woordsoorte at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "aab263ec-c7e2-4066-b0bf-52a5fa96d20c",
+            "questionText": "Question 4: Describe an aspect of Woordsoorte at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 4,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-120"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-cited-sources-subset-015",
+      "agentId": "TB-04",
+      "tags": ["grounding"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "5037ebd7-f489-4b47-94fb-517973bc8c32",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR7-TERM4-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000115"
+        },
+        "items": [
+          {
+            "itemId": "e6057f3f-f332-4e18-a210-96eb0b4b45ec",
+            "questionText": "Question 1: Describe an aspect of Globalisation at the analysis level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "analysis",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "90adcded-9aef-40d2-a132-a84b4e9a6bf7",
+            "questionText": "Question 2: Describe an aspect of Globalisation at the analysis level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "analysis",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "f03025af-78db-4f0a-8347-c8c7382a15b8",
+            "questionText": "Question 3: Describe an aspect of Globalisation at the analysis level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "analysis",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "31b1ea51-985a-45d5-b301-ec8eab94e878",
+            "questionText": "Question 4: Describe an aspect of Globalisation at the analysis level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "analysis",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 4,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-130"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-readability-check-present-016",
+      "agentId": "TB-04",
+      "tags": ["readability"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a 'readabilityCheckResult' field with a verdict on whether item language is within the target readability band.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "b658919e-e337-4871-bb0c-b2a42ae24210",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR6-TERM3-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000116"
+        },
+        "items": [
+          {
+            "itemId": "b7fba6f5-1595-4bf4-9acc-899f2068a59d",
+            "questionText": "Question 1: Describe an aspect of Geometry: angles at the application level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "application",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "91f8a493-5783-4473-ad6c-74fb1885d77e",
+            "questionText": "Question 2: Describe an aspect of Geometry: angles at the application level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "application",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "39bc2971-8fb3-46aa-afb7-9cabaa1d4de2",
+            "questionText": "Question 3: Describe an aspect of Geometry: angles at the application level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "application",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "d2e74530-2018-4da1-8a30-7e9f1cc5a549",
+            "questionText": "Question 4: Describe an aspect of Geometry: angles at the application level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "application",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "d10a13cc-32d9-4b8c-83dd-e5e3376a8417",
+            "questionText": "Question 5: Describe an aspect of Geometry: angles at the application level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "application",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 5,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-140"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-ok-evaluation-level-017",
+      "agentId": "TB-04",
+      "tags": ["happy-path", "evaluation-level"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All items in 'items' have cognitiveLevel set to 'evaluation'.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "672f3733-4aeb-4e9e-96a1-e7a416f6031a",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR7-TERM2-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000117"
+        },
+        "items": [
+          {
+            "itemId": "3eb05584-e307-4703-b4e8-aff86c575a08",
+            "questionText": "Question 1: Describe an aspect of Evaluating media texts at the evaluation level.",
+            "itemType": "extended_response",
+            "cognitiveLevel": "evaluation",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "4c0134d6-1a58-4568-afab-abf00b204be9",
+            "questionText": "Question 2: Describe an aspect of Evaluating media texts at the evaluation level.",
+            "itemType": "extended_response",
+            "cognitiveLevel": "evaluation",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 2,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-150"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-needs-input-no-linkage-018",
+      "agentId": "TB-04",
+      "tags": ["refusal", "missing-linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one of lessonId or interventionId must be present.",
+        "missingFields": ["lessonId", "interventionId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-ok-intervention-linkage-019",
+      "agentId": "TB-04",
+      "tags": ["happy-path", "intervention-linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "8f03a4a8-3ce0-45fa-b8e7-5d3d227ae777",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR4-TERM3-TOPIC2",
+          "interventionId": "00000000-0000-0000-0000-000000000201"
+        },
+        "items": [
+          {
+            "itemId": "2f006e2a-2b4d-4b14-92b1-822a2ad4860f",
+            "questionText": "Question 1: Describe an aspect of Comprehension: main idea at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "92ad5ef0-a519-4d61-9995-413e3efb621d",
+            "questionText": "Question 2: Describe an aspect of Comprehension: main idea at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "7b15ffad-2a0d-4f88-81ec-c96f7db58ae1",
+            "questionText": "Question 3: Describe an aspect of Comprehension: main idea at the comprehension level.",
+            "itemType": "short_answer",
+            "cognitiveLevel": "comprehension",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 3,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-170"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb04-ok-synthesis-level-020",
+      "agentId": "TB-04",
+      "tags": ["happy-path", "synthesis-level"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"All items in 'items' have cognitiveLevel set to 'synthesis'.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "00829dd6-c46c-4f29-ac19-6301d725caf5",
+        "artefactType": "ASSESSMENT_ITEM",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR6-TERM4-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000118"
+        },
+        "items": [
+          {
+            "itemId": "4e00d207-7dd1-4dc1-8a0a-850dd0070055",
+            "questionText": "Question 1: Describe an aspect of Climate change and communities at the synthesis level.",
+            "itemType": "extended_response",
+            "cognitiveLevel": "synthesis",
+            "options": [],
+            "marks": 1
+          },
+          {
+            "itemId": "54c9e45b-db18-4098-a5d5-be6bc628d4e3",
+            "questionText": "Question 2: Describe an aspect of Climate change and communities at the synthesis level.",
+            "itemType": "extended_response",
+            "cognitiveLevel": "synthesis",
+            "options": [],
+            "marks": 1
+          }
+        ],
+        "totalMarks": 2,
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-180"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}
