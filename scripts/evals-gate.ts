@@ -37,6 +37,7 @@ import './register-dw-executors.js';
 import './register-ac-executors.js';
 import './register-tb-executors.js';
 import './register-le-executors.js';
+import './register-pd-executors.js';
 
 const RED = '[31m';
 const GREEN = '[32m';

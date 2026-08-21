@@ -6438,3 +6438,43 @@ Implementation summary:
 | `pnpm verify:stage 46` exits 0                                         | PASS   |
 
 Open questions raised: none.
+
+---
+
+## Stage 47 — PD eval-harness executor registration
+
+**Date:** 2026-08-21
+
+**Summary:** Registered deterministic executors for PD-01 through PD-08, covering all 160
+PD golden-set cases (20 per agent). Like the LE agents, every PD agent implements
+deterministic routing and aggregation logic, so all cases use exact_match scorers and the
+full set achieves 100% pass rate with no model gateway calls.
+
+| Agent | Pass / Total | Scorer types | Result |
+| ----- | ------------ | ------------ | ------ |
+| PD-01 | 20/20        | exact_match  | ✓      |
+| PD-02 | 20/20        | exact_match  | ✓      |
+| PD-03 | 20/20        | exact_match  | ✓      |
+| PD-04 | 20/20        | exact_match  | ✓      |
+| PD-05 | 20/20        | exact_match  | ✓      |
+| PD-06 | 20/20        | exact_match  | ✓      |
+| PD-07 | 20/20        | exact_match  | ✓      |
+| PD-08 | 20/20        | exact_match  | ✓      |
+
+**Files changed**
+
+- `scripts/register-pd-executors.ts` — new: PD-01 through PD-08 executor registration
+- `scripts/evals-run.ts` — added `import './register-pd-executors.js'` side-effect import
+- `scripts/evals-gate.ts` — added `import './register-pd-executors.js'` side-effect import
+- `scripts/verify-stage.ts` — Stage 47 entry (`pnpm evals:run --all`, `pnpm evals:gate`)
+
+### Exit Gate
+
+| Criterion                                                              | Result |
+| ---------------------------------------------------------------------- | ------ |
+| `pnpm evals:run --all` completes: all 8 PD agents pass 20/20 (100%)    | PASS   |
+| `pnpm evals:gate` exits 0: all PD agents gate passed (no baseline yet) | PASS   |
+| `pnpm typecheck` clean                                                 | PASS   |
+| `pnpm lint` clean                                                      | PASS   |
+
+Open questions raised: none.

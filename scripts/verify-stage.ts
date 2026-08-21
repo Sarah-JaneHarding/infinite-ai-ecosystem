@@ -807,6 +807,20 @@ const STAGES: readonly Stage[] = [
       'pnpm evals:gate',
     ],
   },
+  {
+    id: '47',
+    name: 'PD eval-harness executor registration',
+    commands: [
+      // Registers PD-01 through PD-08 executors so the eval harness can run all 160
+      // PD golden-set cases (20 per agent). Like LE, every PD agent implements
+      // deterministic routing and aggregation logic — all cases use exact_match scorers,
+      // 100% pass rate expected with no llm_judge cases.
+      // PD-04 Need Aggregator enforces cohortSize ≥ 5 suppression;
+      // PD-08 CPTD Classifier detects unclassifiable activities by phrase matching.
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
 ];
 
 function usage(): never {
