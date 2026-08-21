@@ -34,6 +34,7 @@ import {
 
 import './register-ce-executors.js';
 import './register-dw-executors.js';
+import './register-ac-executors.js';
 
 const RED = '[31m';
 const GREEN = '[32m';

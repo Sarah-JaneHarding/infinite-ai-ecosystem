@@ -14,6 +14,9 @@ importers:
       '@eslint/js':
         specifier: 9.39.5
         version: 9.39.5
+      '@infinite-ai/analytics':
+        specifier: workspace:*
+        version: link:packages/analytics
       '@infinite-ai/contracts':
         specifier: workspace:*
         version: link:packages/contracts
