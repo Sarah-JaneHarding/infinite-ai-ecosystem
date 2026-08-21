@@ -2,7 +2,7 @@
   "bomFormat": "minimal-pnpm-list",
   "specVersion": "1.0",
   "metadata": {
-    "timestamp": "2026-08-20T14:15:06.295Z",
+    "timestamp": "2026-08-21T12:22:40.794Z",
     "component": "infinite-ai-ecosystem"
   },
   "components": [
@@ -18,15 +18,35 @@
           "resolved": "https://registry.npmjs.org/@eslint/js/-/js-9.39.5.tgz",
           "path": "/home/user/infinite-ai-ecosystem/node_modules/.pnpm/@eslint+js@9.39.5/node_modules/@eslint/js"
         },
+        "@infinite-ai/analytics": {
+          "from": "@infinite-ai/analytics",
+          "version": "link:packages/analytics",
+          "path": "/home/user/infinite-ai-ecosystem/packages/analytics"
+        },
         "@infinite-ai/contracts": {
           "from": "@infinite-ai/contracts",
           "version": "link:packages/contracts",
           "path": "/home/user/infinite-ai-ecosystem/packages/contracts"
         },
+        "@infinite-ai/curriculum-seed": {
+          "from": "@infinite-ai/curriculum-seed",
+          "version": "link:packages/curriculum-seed",
+          "path": "/home/user/infinite-ai-ecosystem/packages/curriculum-seed"
+        },
+        "@infinite-ai/db": {
+          "from": "@infinite-ai/db",
+          "version": "link:packages/db",
+          "path": "/home/user/infinite-ai-ecosystem/packages/db"
+        },
         "@infinite-ai/evals": {
           "from": "@infinite-ai/evals",
           "version": "link:packages/evals",
           "path": "/home/user/infinite-ai-ecosystem/packages/evals"
+        },
+        "@infinite-ai/warehouse": {
+          "from": "@infinite-ai/warehouse",
+          "version": "link:packages/warehouse",
+          "path": "/home/user/infinite-ai-ecosystem/packages/warehouse"
         },
         "@types/node": {
           "from": "@types/node",
