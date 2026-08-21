@@ -19,6 +19,53 @@ export {
   type WithCE01TenantFn,
 } from './ce01-executor.js';
 export {
+  makeCE02Executor,
+  type CE02GatewayCallFn,
+  type WithCE02TenantFn,
+} from './ce02-executor.js';
+export {
+  makeCE03Executor,
+  type CE03GatewayCallFn,
+  type WithCE03TenantFn,
+} from './ce03-executor.js';
+export {
+  makeCE04Executor,
+  type CE04GatewayCallFn,
+  type GetTermPlanFn,
+  type WithCE04TenantFn,
+} from './ce04-executor.js';
+export {
+  makeCE05Executor,
+  type CE05GatewayCallFn,
+  type GetUnitBlueprintFn,
+  type WithCE05TenantFn,
+} from './ce05-executor.js';
+export {
+  makeCE06Executor,
+  type CE06GatewayCallFn,
+  type GetGradeFrameworkFn,
+  type WithCE06TenantFn,
+} from './ce06-executor.js';
+export {
+  makeCE07Executor,
+  type CE07GatewayCallFn,
+  type GetAssessmentTaskFn,
+  type GetRubricFrameworkFn,
+  type WithCE07TenantFn,
+} from './ce07-executor.js';
+export {
+  makeCE08Executor,
+  type CE08GatewayCallFn,
+  type GetLessonPlanFn,
+  type WithCE08TenantFn,
+} from './ce08-executor.js';
+export {
+  makeCE09Executor,
+  type CE09GatewayCallFn,
+  type GetEpisodeLogFn,
+  type WithCE09TenantFn,
+} from './ce09-executor.js';
+export {
   makePublishCurriculumVersionExecutor,
   type RememberFn,
   type WithPublishTenantFn,

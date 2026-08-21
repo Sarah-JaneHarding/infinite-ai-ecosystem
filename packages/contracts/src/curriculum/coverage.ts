@@ -28,6 +28,22 @@ export const CE09Input = z.object({
 });
 export type CE09Input = z.infer<typeof CE09Input>;
 
+// ---------------------------------------------------------------------------
+// L2 Episode Log — actual lessons delivered (read by CE-09)
+// ---------------------------------------------------------------------------
+
+export const EpisodeLogEntry = z.object({
+  topicId: z.string().min(1),
+  weekNumber: z.number().int().positive(),
+});
+export type EpisodeLogEntry = z.infer<typeof EpisodeLogEntry>;
+
+export const EpisodeLog = z.object({
+  termNumber: z.number().int().min(1).max(4),
+  entries: z.array(EpisodeLogEntry),
+});
+export type EpisodeLog = z.infer<typeof EpisodeLog>;
+
 export const DriftKind = z.enum([
   'planned_not_taught',
   'taught_not_planned',

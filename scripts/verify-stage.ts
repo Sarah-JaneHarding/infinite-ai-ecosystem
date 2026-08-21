@@ -503,6 +503,267 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/curriculum-seed typecheck',
     ],
   },
+  {
+    id: '34',
+    name: 'CE-02 ATP Sequencer executor factory',
+    commands: [
+      // 82 unit tests across 9 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts           — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts           — Stage 34: makeCE02Executor (13 tests)
+      //     needs_input passthrough, invalid input, non-JSON response, invalid ATPResult,
+      //     listConstitution error propagation, gatewayCall error propagation,
+      //     tenantId forwarding, CAPS_CANON+ATP_CALENDAR included (TEMPLATE excluded),
+      //     grade/subjects/academicYear in user message, schoolCalendar included/omitted,
+      //     promptBody as system message, curriculum.sequence model
+      // makeCE02Executor: packages/curriculum-seed/src/ce02-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
+  {
+    id: '35',
+    name: 'CE-03 Term Planner executor factory',
+    commands: [
+      // 93 unit tests across 10 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts           — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts           — Stage 34 (13 tests)
+      //   ce03-executor.spec.ts           — Stage 35: makeCE03Executor (11 tests)
+      //     needs_input passthrough, invalid input (missing termNumber), non-JSON response,
+      //     invalid TermPlanResult, listConstitution error propagation, gatewayCall error
+      //     propagation, tenantId forwarding, CAPS_CANON+ATP_CALENDAR+ASSESSMENT_POLICY
+      //     included (TEMPLATE excluded), grade/subjects/termNumber/academicYear in user
+      //     message, promptBody as system message, curriculum.plan model
+      // makeCE03Executor: packages/curriculum-seed/src/ce03-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
+  {
+    id: '36',
+    name: 'CE-04 Unit Architect executor factory',
+    commands: [
+      // 108 unit tests across 11 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts           — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts           — Stage 34 (13 tests)
+      //   ce03-executor.spec.ts           — Stage 35 (11 tests)
+      //   ce04-executor.spec.ts           — Stage 36: makeCE04Executor (15 tests)
+      //     needs_input passthrough, invalid input (missing contentArea), non-JSON response,
+      //     invalid UnitBlueprintResult, listConstitution error propagation, getTermPlan
+      //     error propagation, gatewayCall error propagation, tenantId forwarding,
+      //     only CAPS_CANON rows passed (ATP_CALENDAR+ASSESSMENT_POLICY excluded),
+      //     termPlan passed from getTermPlan, null termPlan passed when absent,
+      //     grade/subject/termNumber/contentArea/academicYear in user message,
+      //     getTermPlan called with correct grade/termNumber/academicYear,
+      //     promptBody as system message, curriculum.design model
+      // makeCE04Executor: packages/curriculum-seed/src/ce04-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
+  {
+    id: '37',
+    name: 'CE-05 Lesson Plan Generator executor factory',
+    commands: [
+      // 123 unit tests across 12 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts           — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts           — Stage 34 (13 tests)
+      //   ce03-executor.spec.ts           — Stage 35 (11 tests)
+      //   ce04-executor.spec.ts           — Stage 36 (15 tests)
+      //   ce05-executor.spec.ts           — Stage 37: makeCE05Executor (15 tests)
+      //     needs_input passthrough, invalid input (missing templateId), non-JSON response,
+      //     invalid LessonPlanResult, listConstitution error propagation, getUnitBlueprint
+      //     error propagation, gatewayCall error propagation, tenantId forwarding,
+      //     CAPS_CANON+TEMPLATE rows passed (ATP_CALENDAR+ASSESSMENT_POLICY excluded),
+      //     unitBlueprint passed from getUnitBlueprint, null unitBlueprint passed when absent,
+      //     getUnitBlueprint called with correct params, all input fields in user message,
+      //     promptBody as system message, curriculum.lessons model
+      // makeCE05Executor: packages/curriculum-seed/src/ce05-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
+  {
+    id: '38',
+    name: 'CE-06 Assessment Designer executor factory',
+    commands: [
+      // 141 unit tests across 13 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                    — Stage 29 (11 tests)
+      //   atp.spec.ts                     — Stage 29 (13 tests)
+      //   seed.spec.ts                    — Stage 29 (6 tests)
+      //   ratify.spec.ts                  — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts        — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts  — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts           — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts           — Stage 34 (13 tests)
+      //   ce03-executor.spec.ts           — Stage 35 (11 tests)
+      //   ce04-executor.spec.ts           — Stage 36 (15 tests)
+      //   ce05-executor.spec.ts           — Stage 37 (15 tests)
+      //   ce06-executor.spec.ts           — Stage 38: makeCE06Executor (18 tests)
+      //     needs_input passthrough, ok result passthrough, invalid input (missing taskKind),
+      //     non-JSON response, invalid AssessmentTaskDesignResult, listConstitution error
+      //     propagation, getGradeFramework error propagation, getTermPlan error propagation,
+      //     gatewayCall error propagation, tenantId+actorId forwarding, only ASSESSMENT_POLICY
+      //     rows passed (CAPS_CANON+ATP_CALENDAR excluded), framework+termPlan from Brain in
+      //     context, null framework+termPlan when Brain returns null, getGradeFramework correct
+      //     params, getTermPlan correct params, all input fields in user message, promptBody as
+      //     system message, curriculum.assess model
+      // makeCE06Executor: packages/curriculum-seed/src/ce06-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
+  {
+    id: '39',
+    name: 'CE-07 Rubric Builder executor factory',
+    commands: [
+      // 157 unit tests across 14 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                     — Stage 29 (11 tests)
+      //   atp.spec.ts                      — Stage 29 (13 tests)
+      //   seed.spec.ts                     — Stage 29 (6 tests)
+      //   ratify.spec.ts                   — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts         — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts   — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts            — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts            — Stage 34 (13 tests)
+      //   ce03-executor.spec.ts            — Stage 35 (11 tests)
+      //   ce04-executor.spec.ts            — Stage 36 (15 tests)
+      //   ce05-executor.spec.ts            — Stage 37 (15 tests)
+      //   ce06-executor.spec.ts            — Stage 38 (18 tests)
+      //   ce07-executor.spec.ts            — Stage 39: makeCE07Executor (16 tests)
+      //     needs_input passthrough, ok result passthrough, invalid input (missing totalMarks),
+      //     non-JSON response, invalid RubricResult, getGradeFramework error propagation,
+      //     getAssessmentTask error propagation, gatewayCall error propagation,
+      //     tenantId+actorId forwarding, framework+assessmentTask from Brain in context,
+      //     null framework+assessmentTask when Brain returns null, getGradeFramework called
+      //     with grade only, getAssessmentTask called with correct params, all input fields
+      //     in user message, promptBody as system message, curriculum.rubric model
+      // makeCE07Executor: packages/curriculum-seed/src/ce07-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
+  {
+    id: '40',
+    name: 'CE-08 Differentiation Agent executor factory',
+    commands: [
+      // 173 unit tests across 15 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                     — Stage 29 (11 tests)
+      //   atp.spec.ts                      — Stage 29 (13 tests)
+      //   seed.spec.ts                     — Stage 29 (6 tests)
+      //   ratify.spec.ts                   — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts         — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts   — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts            — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts            — Stage 34 (13 tests)
+      //   ce03-executor.spec.ts            — Stage 35 (11 tests)
+      //   ce04-executor.spec.ts            — Stage 36 (15 tests)
+      //   ce05-executor.spec.ts            — Stage 37 (15 tests)
+      //   ce06-executor.spec.ts            — Stage 38 (18 tests)
+      //   ce07-executor.spec.ts            — Stage 39 (16 tests)
+      //   ce08-executor.spec.ts            — Stage 40: makeCE08Executor (16 tests)
+      //     needs_input passthrough, ok result passthrough, invalid input (missing tiers),
+      //     non-JSON response, invalid DifferentiationResult, getGradeFramework error propagation,
+      //     getLessonPlan error propagation, gatewayCall error propagation,
+      //     tenantId+actorId forwarding, framework+lessonPlan from Brain in context,
+      //     null framework+lessonPlan when Brain returns null, getGradeFramework called
+      //     with grade+academicYear, getLessonPlan called with correct params, all input fields
+      //     including tiers in user message, promptBody as system message, curriculum.differentiate model
+      // makeCE08Executor: packages/curriculum-seed/src/ce08-executor.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+    ],
+  },
+  {
+    id: '41',
+    name: 'CE-09 Coverage Auditor executor factory',
+    commands: [
+      // 189 unit tests across 16 suites in @infinite-ai/curriculum-seed:
+      //   caps.spec.ts                     — Stage 29 (11 tests)
+      //   atp.spec.ts                      — Stage 29 (13 tests)
+      //   seed.spec.ts                     — Stage 29 (6 tests)
+      //   ratify.spec.ts                   — Stage 30 (6 tests)
+      //   l0-gate-executor.spec.ts         — Stage 31 (9 tests)
+      //   brain-publish-executor.spec.ts   — Stage 32 (8 tests)
+      //   brain-tombstone-executor.spec.ts — Stage 32 (6 tests)
+      //   ce01-executor.spec.ts            — Stage 33 (10 tests)
+      //   ce02-executor.spec.ts            — Stage 34 (13 tests)
+      //   ce03-executor.spec.ts            — Stage 35 (11 tests)
+      //   ce04-executor.spec.ts            — Stage 36 (15 tests)
+      //   ce05-executor.spec.ts            — Stage 37 (15 tests)
+      //   ce06-executor.spec.ts            — Stage 38 (18 tests)
+      //   ce07-executor.spec.ts            — Stage 39 (16 tests)
+      //   ce08-executor.spec.ts            — Stage 40 (16 tests)
+      //   ce09-executor.spec.ts            — Stage 41: makeCE09Executor (16 tests)
+      //     needs_input passthrough, ok result passthrough, invalid input (missing subject),
+      //     non-JSON response, invalid CoverageAuditResult, getTermPlan error propagation,
+      //     getEpisodeLog error propagation, gatewayCall error propagation,
+      //     tenantId+actorId forwarding, termPlan+episodeLog from Brain in context,
+      //     null termPlan+episodeLog when Brain returns null, getTermPlan called
+      //     with grade+termNumber+academicYear, getEpisodeLog called with correct params,
+      //     all input fields in user message, promptBody as system message, curriculum.audit model
+      // makeCE09Executor: packages/curriculum-seed/src/ce09-executor.ts
+      // EpisodeLog + EpisodeLogEntry added to packages/contracts/src/curriculum/coverage.ts
+      'pnpm --filter @infinite-ai/curriculum-seed test',
+      'pnpm --filter @infinite-ai/curriculum-seed typecheck',
+      'pnpm --filter @infinite-ai/contracts typecheck',
+    ],
+  },
+  {
+    id: '42',
+    name: 'CE eval-harness executor registration',
+    commands: [
+      // Registers CE-01 through CE-09 executors so the eval harness can actually
+      // run the 270 golden-set cases rather than skipping them for a missing executor.
+      // All 270 cases expect status: 'needs_input' — the empty-vessel state when L0
+      // has no CAPS/ATP documents. Gate passes with no baseline (first run).
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
+  {
+    id: '43',
+    name: 'DW eval-harness executor registration',
+    commands: [
+      // Registers DW-01 through DW-08 executors so the eval harness can run all 240
+      // DW golden-set cases. Each executor injects context-provided data stores rather
+      // than calling real infrastructure; DW-05 delegates directly to runQualityChecks,
+      // DW-06 to buildLearner360, DW-07 to synthesiseInsight, and DW-08 to
+      // recommendNextStep. Gate passes with no baseline (first run).
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
 ];
 
 function usage(): never {

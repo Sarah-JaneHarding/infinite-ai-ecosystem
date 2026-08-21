@@ -5717,3 +5717,532 @@ the stage gate: `ChatCompletionResponse` was imported as a value and needed `typ
 | `pnpm format:check` clean                                                               | PASS                       |
 
 Open questions raised: none.
+
+---
+
+## Stage 34 — CE-02 ATP Sequencer executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE02Executor` factory for the `sequence-atp` pipeline step
+(CE-02). The executor (1) parses `CE02Input` from the step context, (2) opens a tenant-scoped
+read transaction and loads ALL constitution rows, (3) filters to both `CAPS_CANON` rows (the
+GradeFramework source) AND `ATP_CALENDAR` rows (the DBE pacing documents), (4) calls the
+Model Gateway via `curriculum.sequence` with the combined L0 documents and input parameters
+(including the optional `schoolCalendar` overrides), (5) parses and validates the response as
+`ATPResult`. Both CAPS and ATP documents are ratified government materials; the null
+de-identification provenance stamp records that no PII scrubbing is needed. `ListConstitutionFn`
+was already defined in `l0-gate-executor.ts` — the executor imports it from there rather than
+re-declaring it; the test imports it from the same location.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce02-executor.ts` — new: `makeCE02Executor`, `WithCE02TenantFn`,
+  `CE02GatewayCallFn` types (imports `ListConstitutionFn` from l0-gate-executor)
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE02Executor`, `CE02GatewayCallFn`,
+  `WithCE02TenantFn`
+- `packages/curriculum-seed/test/ce02-executor.spec.ts` — 13 unit tests (82 total in package)
+- `scripts/verify-stage.ts` — Stage 34 entry
+
+### Exit Gate
+
+| Criterion                                                                            | Result                     |
+| ------------------------------------------------------------------------------------ | -------------------------- |
+| `makeCE02Executor` returns a `StepExecutor` typed `(ctx) => Promise<ATPResult>`      | PASS                       |
+| Returns `ATPResult` with `status: 'needs_input'` when gateway returns needs_input    | PASS                       |
+| Throws `CurriculumSeedError` when `CE02Input` is invalid (missing academicYear)      | PASS                       |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                 | PASS                       |
+| Throws `CurriculumSeedError` when gateway response doesn't match `ATPResult`         | PASS                       |
+| `listConstitution` errors propagate without swallowing                               | PASS                       |
+| `gatewayCall` errors propagate without swallowing                                    | PASS                       |
+| `tenantId` from input forwarded to `withTenant` verbatim                             | PASS                       |
+| Both `CAPS_CANON` and `ATP_CALENDAR` rows passed — `TEMPLATE` rows filtered out      | PASS                       |
+| `grade`, `subjects`, `academicYear`, and `tenantId` included in gateway user message | PASS                       |
+| `schoolCalendar` included in user message when provided                              | PASS                       |
+| `schoolCalendar` omitted from user message when not provided                         | PASS                       |
+| `promptBody` used as system message                                                  | PASS                       |
+| `curriculum.sequence` used as the model name                                         | PASS                       |
+| All 82 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)           | PASS — 82 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                         | PASS                       |
+| `pnpm lint` clean                                                                    | PASS                       |
+| `pnpm format:check` clean                                                            | PASS                       |
+
+Open questions raised: none.
+
+---
+
+## Stage 35 — CE-03 Term Planner executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE03Executor` factory for the `plan-term` pipeline step
+(CE-03). The executor (1) parses `CE03Input` from the step context, (2) opens a tenant-scoped
+read transaction and loads ALL constitution rows, (3) filters to `CAPS_CANON` rows (the
+GradeFramework source, CE-01 output), `ATP_CALENDAR` rows (the ATP schedule, CE-02 output, used
+for term-level pacing), and `ASSESSMENT_POLICY` rows (assessment task kinds and scheduling rules),
+(4) calls the Model Gateway via `curriculum.plan` with the combined L0 documents and input
+parameters, (5) parses and validates the response as `TermPlanResult`. CE-03 extends the
+document set from CE-02 by adding `ASSESSMENT_POLICY` rows, which the Term Planner needs to
+place assessment tasks on the calendar. CAPS, ATP, and assessment policy documents are ratified
+government materials; the null de-identification provenance stamp records that no PII scrubbing
+is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce03-executor.ts` — new: `makeCE03Executor`, `WithCE03TenantFn`,
+  `CE03GatewayCallFn` types (imports `ListConstitutionFn` from l0-gate-executor)
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE03Executor`, `CE03GatewayCallFn`,
+  `WithCE03TenantFn`
+- `packages/curriculum-seed/test/ce03-executor.spec.ts` — 11 unit tests (93 total in package)
+- `scripts/verify-stage.ts` — Stage 35 entry
+
+### Exit Gate
+
+| Criterion                                                                              | Result                     |
+| -------------------------------------------------------------------------------------- | -------------------------- |
+| `makeCE03Executor` returns a `StepExecutor` typed `(ctx) => Promise<TermPlanResult>`   | PASS                       |
+| Returns `TermPlanResult` with `status: 'needs_input'` when gateway returns needs_input | PASS                       |
+| Throws `CurriculumSeedError` when `CE03Input` is invalid (missing termNumber)          | PASS                       |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                   | PASS                       |
+| Throws `CurriculumSeedError` when gateway response doesn't match `TermPlanResult`      | PASS                       |
+| `listConstitution` errors propagate without swallowing                                 | PASS                       |
+| `gatewayCall` errors propagate without swallowing                                      | PASS                       |
+| `tenantId` from input forwarded to `withTenant` verbatim                               | PASS                       |
+| `CAPS_CANON`, `ATP_CALENDAR`, `ASSESSMENT_POLICY` rows passed — `TEMPLATE` excluded    | PASS                       |
+| `grade`, `subjects`, `termNumber`, `academicYear` included in gateway user message     | PASS                       |
+| `promptBody` used as system message                                                    | PASS                       |
+| `curriculum.plan` used as the model name                                               | PASS                       |
+| All 93 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)             | PASS — 93 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                           | PASS                       |
+| `pnpm lint` clean                                                                      | PASS                       |
+| `pnpm format:check` clean                                                              | PASS                       |
+
+Open questions raised: none.
+
+---
+
+## Stage 36 — CE-04 Unit Architect executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE04Executor` factory for the `design-unit` pipeline step
+(CE-04 Unit Architect). The executor (1) parses `CE04Input` (grade, subject, termNumber,
+contentArea, academicYear, tenantId) from the step context, (2) opens a tenant-scoped read
+transaction, (3) filters constitution rows to `CAPS_CANON` only (the GradeFramework source —
+CE-04 does not need ATP_CALENDAR or ASSESSMENT_POLICY directly because those scheduling rules
+are already embedded in the TermPlan's assessmentCalendar entries), (4) retrieves the ratified
+TermPlan via the injected `GetTermPlanFn`, (5) calls the Model Gateway via `curriculum.design`
+with both the CAPS_CANON rows and the TermPlan (or null) as context, (6) parses and validates
+the response as `UnitBlueprintResult`. CE-04 introduces a new injected dependency
+(`GetTermPlanFn`) beyond the `ListConstitutionFn` pattern used by CE-01 through CE-03, because
+the TermPlan is a Brain artefact produced by CE-03, not a constitution row. CAPS documents
+are ratified government materials; the null de-identification provenance stamp records that
+no PII scrubbing is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce04-executor.ts` — new: `makeCE04Executor`, `WithCE04TenantFn`,
+  `CE04GatewayCallFn`, `GetTermPlanFn` types (imports `ListConstitutionFn` from l0-gate-executor)
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE04Executor`, `CE04GatewayCallFn`,
+  `GetTermPlanFn`, `WithCE04TenantFn`
+- `packages/curriculum-seed/test/ce04-executor.spec.ts` — 15 unit tests (108 total in package)
+- `scripts/verify-stage.ts` — Stage 36 entry
+
+### Exit Gate
+
+| Criterion                                                                                 | Result                      |
+| ----------------------------------------------------------------------------------------- | --------------------------- |
+| `makeCE04Executor` returns a `StepExecutor` typed `(ctx) => Promise<UnitBlueprintResult>` | PASS                        |
+| Returns `UnitBlueprintResult` with `status: 'needs_input'` when gateway returns it        | PASS                        |
+| Throws `CurriculumSeedError` when `CE04Input` is invalid (missing contentArea)            | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                      | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `UnitBlueprintResult`    | PASS                        |
+| `listConstitution` errors propagate without swallowing                                    | PASS                        |
+| `getTermPlan` errors propagate without swallowing                                         | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                         | PASS                        |
+| `tenantId` from input forwarded to `withTenant` verbatim                                  | PASS                        |
+| Only `CAPS_CANON` rows passed as `l0Documents` — `ATP_CALENDAR` and others excluded       | PASS                        |
+| `termPlan` from `getTermPlan` passed in context                                           | PASS                        |
+| `null` termPlan passed in context when `getTermPlan` returns null                         | PASS                        |
+| `grade`, `subject`, `termNumber`, `contentArea`, `academicYear` in gateway user message   | PASS                        |
+| `getTermPlan` called with correct `grade`, `termNumber`, `academicYear`                   | PASS                        |
+| `promptBody` used as system message                                                       | PASS                        |
+| `curriculum.design` used as the model name                                                | PASS                        |
+| All 108 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)               | PASS — 108 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                              | PASS                        |
+| `pnpm lint` clean                                                                         | PASS                        |
+| `pnpm format:check` clean                                                                 | PASS                        |
+
+Open questions raised: none.
+
+---
+
+## Stage 37 — CE-05 Lesson Plan Generator executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE05Executor` factory for the `generate-lesson-plan` pipeline
+step (CE-05 Lesson Plan Generator). The executor (1) parses `CE05Input` (grade, subject,
+weekNumber, termNumber, academicYear, tenantId, templateId) from the step context, (2) opens a
+tenant-scoped read transaction, (3) filters constitution rows to `CAPS_CANON` (GradeFramework —
+learning objectives must trace to success criteria here) and `TEMPLATE` (school's lesson plan
+template definitions — agent picks the one matching `input.templateId`), (4) retrieves the
+ratified UnitBlueprint for the week via the injected `GetUnitBlueprintFn`, (5) calls the Model
+Gateway via `curriculum.lessons` with l0Documents and unitBlueprint as separate context fields,
+(6) parses and validates the response as `LessonPlanResult`. CE-05 is the first executor that
+needs both a TEMPLATE constitution row (for lesson plan structure) and a Brain artefact
+(UnitBlueprint from CE-04); ATP_CALENDAR and ASSESSMENT_POLICY rows are excluded as they are
+already embedded in the UnitBlueprint's evidence entries. CAPS and template documents are
+school curriculum materials; the null de-identification provenance stamp records that no PII
+scrubbing is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce05-executor.ts` — new: `makeCE05Executor`, `WithCE05TenantFn`,
+  `CE05GatewayCallFn`, `GetUnitBlueprintFn` types (imports `ListConstitutionFn` from l0-gate-executor)
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE05Executor`, `CE05GatewayCallFn`,
+  `GetUnitBlueprintFn`, `WithCE05TenantFn`
+- `packages/curriculum-seed/test/ce05-executor.spec.ts` — 15 unit tests (123 total in package)
+- `scripts/verify-stage.ts` — Stage 37 entry
+
+### Exit Gate
+
+| Criterion                                                                                      | Result                      |
+| ---------------------------------------------------------------------------------------------- | --------------------------- |
+| `makeCE05Executor` returns a `StepExecutor` typed `(ctx) => Promise<LessonPlanResult>`         | PASS                        |
+| Returns `LessonPlanResult` with `status: 'needs_input'` when gateway returns it                | PASS                        |
+| Throws `CurriculumSeedError` when `CE05Input` is invalid (missing templateId)                  | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                           | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `LessonPlanResult`            | PASS                        |
+| `listConstitution` errors propagate without swallowing                                         | PASS                        |
+| `getUnitBlueprint` errors propagate without swallowing                                         | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                              | PASS                        |
+| `tenantId` from input forwarded to `withTenant` verbatim                                       | PASS                        |
+| `CAPS_CANON` and `TEMPLATE` rows passed — `ATP_CALENDAR` and `ASSESSMENT_POLICY` excluded      | PASS                        |
+| `unitBlueprint` from `getUnitBlueprint` passed in context                                      | PASS                        |
+| `null` unitBlueprint passed in context when `getUnitBlueprint` returns null                    | PASS                        |
+| `getUnitBlueprint` called with correct `grade/subject/termNumber/weekNumber/academicYear`      | PASS                        |
+| All input fields (grade, subject, weekNumber, termNumber, academicYear, templateId) in message | PASS                        |
+| `promptBody` used as system message                                                            | PASS                        |
+| `curriculum.lessons` used as the model name                                                    | PASS                        |
+| All 123 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                    | PASS — 123 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                                   | PASS                        |
+| `pnpm lint` clean                                                                              | PASS                        |
+| `pnpm format:check` clean                                                                      | PASS                        |
+
+Open questions raised: none.
+
+---
+
+## Stage 38 — CE-06 Assessment Designer executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE06Executor` factory for the `design-assessment-task` pipeline
+step (CE-06 Assessment Designer). The executor (1) parses `CE06Input` (grade, subject, termNumber,
+taskKind, academicYear, tenantId) from the step context, (2) opens a tenant-scoped read transaction,
+(3) filters constitution rows to `ASSESSMENT_POLICY` only, (4) concurrently retrieves the ratified
+GradeFramework via `GetGradeFrameworkFn` and the ratified TermPlan via `GetTermPlanFn` from the
+Brain artefact store, (5) calls the Model Gateway via `curriculum.assess` with the three named
+context fields (`assessmentPolicy`, `framework`, `termPlan`) as required by the CE-06 prompt
+grounding spec, (6) parses and validates the response as `AssessmentTaskDesignResult` (discriminated
+union: `{ status: 'ok', task: AssessmentTaskDesign }` or `AssessmentDesignNeedsInput`). CE-06 is the
+first executor that retrieves two Brain artefacts concurrently (`Promise.all`). `GetTermPlanFn` is
+re-exported from ce06-executor to save callers importing from two modules. All context documents are
+government/school curriculum policy materials; the null de-identification provenance stamp records
+that no PII scrubbing is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce06-executor.ts` — new: `makeCE06Executor`, `WithCE06TenantFn`,
+  `CE06GatewayCallFn`, `GetGradeFrameworkFn` types; re-exports `GetTermPlanFn` from ce04-executor
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE06Executor`, `CE06GatewayCallFn`,
+  `GetGradeFrameworkFn`, `WithCE06TenantFn`
+- `packages/curriculum-seed/test/ce06-executor.spec.ts` — 18 unit tests (141 total in package)
+- `scripts/verify-stage.ts` — Stage 38 entry
+
+### Exit Gate
+
+| Criterion                                                                                        | Result                      |
+| ------------------------------------------------------------------------------------------------ | --------------------------- |
+| `makeCE06Executor` returns a `StepExecutor` typed `(ctx) => Promise<AssessmentTaskDesignResult>` | PASS                        |
+| Returns `needs_input` result when gateway returns it                                             | PASS                        |
+| Returns `ok` result with valid `AssessmentTaskDesign` when gateway returns it                    | PASS                        |
+| Throws `CurriculumSeedError` when `CE06Input` is invalid (missing taskKind)                      | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                             | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `AssessmentTaskDesignResult`    | PASS                        |
+| `listConstitution` errors propagate without swallowing                                           | PASS                        |
+| `getGradeFramework` errors propagate without swallowing                                          | PASS                        |
+| `getTermPlan` errors propagate without swallowing                                                | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                                | PASS                        |
+| `tenantId` and `actorId: 'ce06-executor'` forwarded to `withTenant` verbatim                     | PASS                        |
+| Only `ASSESSMENT_POLICY` rows passed — `CAPS_CANON` and `ATP_CALENDAR` excluded                  | PASS                        |
+| `framework` and `termPlan` from Brain passed in context                                          | PASS                        |
+| `null` framework and termPlan passed when Brain getters return null                              | PASS                        |
+| `getGradeFramework` called with correct `grade/academicYear` params                              | PASS                        |
+| `getTermPlan` called with correct `grade/termNumber/academicYear` params                         | PASS                        |
+| All input fields (grade, subject, termNumber, taskKind, academicYear) in user message            | PASS                        |
+| `promptBody` used as system message                                                              | PASS                        |
+| `curriculum.assess` used as the model name                                                       | PASS                        |
+| All 141 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                      | PASS — 141 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                                     | PASS                        |
+| `pnpm lint` clean                                                                                | PASS (checked)              |
+| `pnpm format:check` clean                                                                        | PASS (checked)              |
+
+Open questions raised: none.
+
+---
+
+## Stage 39 — CE-07 Rubric Builder executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE07Executor` factory for the `build-rubric` pipeline step
+(CE-07 Rubric Builder). The executor (1) parses `CE07Input` (grade, subject, taskKind, tenantId,
+totalMarks) from the step context, (2) opens a tenant-scoped read transaction, (3) concurrently
+retrieves the ratified GradeFramework via `GetRubricFrameworkFn` and the ratified
+AssessmentTaskDesign via `GetAssessmentTaskFn` from the Brain artefact store, (4) calls the
+Model Gateway via `curriculum.rubric` with `framework` and `assessmentTask` as named context
+fields, (5) parses and validates the response as `RubricResult` (discriminated union:
+`{ status: 'ok', rubric: Rubric }` or `RubricNeedsInput`). CE-07 is the only executor that needs
+no constitution rows at all — it works entirely from two Brain artefacts. Introduced
+`GetRubricFrameworkFn` (takes `{ grade }` without `academicYear`, since `CE07Input` does not
+carry that field; the implementation resolves it internally) and `GetAssessmentTaskFn`
+(takes `{ grade, subject, taskKind, totalMarks }`). All context documents are school curriculum
+materials; the null de-identification provenance stamp records no PII scrubbing is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce07-executor.ts` — new: `makeCE07Executor`, `WithCE07TenantFn`,
+  `CE07GatewayCallFn`, `GetRubricFrameworkFn`, `GetAssessmentTaskFn` types
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE07Executor`, `CE07GatewayCallFn`,
+  `GetAssessmentTaskFn`, `GetRubricFrameworkFn`, `WithCE07TenantFn`
+- `packages/curriculum-seed/test/ce07-executor.spec.ts` — 16 unit tests (157 total in package)
+- `scripts/verify-stage.ts` — Stage 39 entry
+
+### Exit Gate
+
+| Criterion                                                                          | Result                      |
+| ---------------------------------------------------------------------------------- | --------------------------- |
+| `makeCE07Executor` returns a `StepExecutor` typed `(ctx) => Promise<RubricResult>` | PASS                        |
+| Returns `needs_input` result when gateway returns it                               | PASS                        |
+| Returns `ok` result with valid `Rubric` when gateway returns it                    | PASS                        |
+| Throws `CurriculumSeedError` when `CE07Input` is invalid (missing totalMarks)      | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON               | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `RubricResult`    | PASS                        |
+| `getGradeFramework` errors propagate without swallowing                            | PASS                        |
+| `getAssessmentTask` errors propagate without swallowing                            | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                  | PASS                        |
+| `tenantId` and `actorId: 'ce07-executor'` forwarded to `withTenant` verbatim       | PASS                        |
+| `framework` and `assessmentTask` from Brain passed in context                      | PASS                        |
+| `null` framework and assessmentTask passed when Brain getters return null          | PASS                        |
+| `getGradeFramework` called with `{ grade }` only (no academicYear)                 | PASS                        |
+| `getAssessmentTask` called with correct `grade/subject/taskKind/totalMarks` params | PASS                        |
+| All input fields (grade, subject, taskKind, totalMarks) in user message            | PASS                        |
+| `promptBody` used as system message                                                | PASS                        |
+| `curriculum.rubric` used as the model name                                         | PASS                        |
+| All 157 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)        | PASS — 157 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                       | PASS                        |
+| `pnpm lint` clean                                                                  | PASS (checked)              |
+| `pnpm format:check` clean                                                          | PASS (checked)              |
+
+Open questions raised: none.
+
+## Stage 40 — CE-08 Differentiation Agent executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE08Executor` factory for the `differentiate-lessons`
+pipeline step (CE-08 Differentiation Agent). The executor (1) parses `CE08Input` (grade,
+subject, weekNumber, termNumber, academicYear, tenantId, tiers) from the step context,
+(2) opens a tenant-scoped read transaction, (3) concurrently retrieves the ratified
+GradeFramework via `GetGradeFrameworkFn` (re-used from CE-06, takes `{ grade, academicYear }`)
+and the ratified LessonPlan via `GetLessonPlanFn` (takes `{ grade, subject, weekNumber,
+termNumber, academicYear }`) from the Brain artefact store, (4) calls the Model Gateway
+via `curriculum.differentiate` with `framework` and `lessonPlan` as named context fields,
+(5) parses and validates the response as `DifferentiationResult` (discriminated union:
+`{ status: 'ok', set: DifferentiatedSet }` or `DifferentiationNeedsInput`). Like CE-07,
+CE-08 needs no constitution rows — it works entirely from two Brain artefacts. Unlike CE-07,
+CE-08 has `academicYear` in its input so it reuses `GetGradeFrameworkFn` from CE-06 directly.
+All context documents are school curriculum planning materials; the null de-identification
+provenance stamp records no PII scrubbing is needed.
+
+**Files changed**
+
+- `packages/curriculum-seed/src/ce08-executor.ts` — new: `makeCE08Executor`, `WithCE08TenantFn`,
+  `CE08GatewayCallFn`, `GetLessonPlanFn` types; re-exports `GetGradeFrameworkFn` from CE-06
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE08Executor`, `CE08GatewayCallFn`,
+  `GetLessonPlanFn`, `WithCE08TenantFn`
+- `packages/curriculum-seed/test/ce08-executor.spec.ts` — 16 unit tests (173 total in package)
+- `scripts/verify-stage.ts` — Stage 40 entry
+
+### Exit Gate
+
+| Criterion                                                                                      | Result                      |
+| ---------------------------------------------------------------------------------------------- | --------------------------- |
+| `makeCE08Executor` returns a `StepExecutor` typed `(ctx) => Promise<DifferentiationResult>`    | PASS                        |
+| Returns `needs_input` result when gateway returns it                                           | PASS                        |
+| Returns `ok` result with valid `DifferentiatedSet` when gateway returns it                     | PASS                        |
+| Throws `CurriculumSeedError` when `CE08Input` is invalid (missing tiers)                       | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                           | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `DifferentiationResult`       | PASS                        |
+| `getGradeFramework` errors propagate without swallowing                                        | PASS                        |
+| `getLessonPlan` errors propagate without swallowing                                            | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                              | PASS                        |
+| `tenantId` and `actorId: 'ce08-executor'` forwarded to `withTenant` verbatim                   | PASS                        |
+| `framework` and `lessonPlan` from Brain passed in context                                      | PASS                        |
+| `null` framework and lessonPlan passed when Brain getters return null                          | PASS                        |
+| `getGradeFramework` called with `{ grade, academicYear }` params                               | PASS                        |
+| `getLessonPlan` called with correct `grade/subject/weekNumber/termNumber/academicYear` params  | PASS                        |
+| All input fields (grade, subject, weekNumber, termNumber, academicYear, tiers) in user message | PASS                        |
+| `promptBody` used as system message                                                            | PASS                        |
+| `curriculum.differentiate` used as the model name                                              | PASS                        |
+| All 173 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)                    | PASS — 173 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                                   | PASS                        |
+| `pnpm lint` clean                                                                              | PASS (checked)              |
+| `pnpm format:check` clean                                                                      | PASS (checked)              |
+
+Open questions raised: none.
+
+## Stage 41 — CE-09 Coverage Auditor executor factory
+
+**Date:** 2026-08-20
+
+**Summary:** Implemented the `makeCE09Executor` factory for the `audit-coverage` pipeline
+step (CE-09 Coverage Auditor). The executor (1) parses `CE09Input` (grade, subject, termNumber,
+academicYear, tenantId) from the step context, (2) opens a tenant-scoped read transaction,
+(3) concurrently retrieves the ratified TermPlan via `GetTermPlanFn` (re-used from CE-04,
+takes `{ grade, termNumber, academicYear }`) and the L2 EpisodeLog via `GetEpisodeLogFn`
+(new, takes `{ grade, subject, termNumber, academicYear }`) from the Brain artefact store,
+(4) calls the Model Gateway via `curriculum.audit` with `termPlan` and `episodeLog` as named
+context fields, (5) parses and validates the response as `CoverageAuditResult` (discriminated
+union: `{ status: 'ok', audit: CoverageAudit }` or `CoverageAuditNeedsInput`). Like CE-07
+and CE-08, CE-09 needs no constitution rows. Introduced `EpisodeLog` and `EpisodeLogEntry`
+types in `@infinite-ai/contracts` (curriculum/coverage.ts), exported from the contracts index.
+All context documents are school curriculum and delivery records; the null de-identification
+provenance stamp records no PII scrubbing is needed.
+
+**Files changed**
+
+- `packages/contracts/src/curriculum/coverage.ts` — new: `EpisodeLogEntry`, `EpisodeLog` types
+- `packages/contracts/src/index.ts` — exports `EpisodeLog`, `EpisodeLogEntry`
+- `packages/curriculum-seed/src/ce09-executor.ts` — new: `makeCE09Executor`, `WithCE09TenantFn`,
+  `CE09GatewayCallFn`, `GetEpisodeLogFn` types; re-exports `GetTermPlanFn` from CE-04
+- `packages/curriculum-seed/src/index.ts` — exports `makeCE09Executor`, `CE09GatewayCallFn`,
+  `GetEpisodeLogFn`, `WithCE09TenantFn`
+- `packages/curriculum-seed/test/ce09-executor.spec.ts` — 16 unit tests (189 total in package)
+- `scripts/verify-stage.ts` — Stage 41 entry
+
+### Exit Gate
+
+| Criterion                                                                                 | Result                      |
+| ----------------------------------------------------------------------------------------- | --------------------------- |
+| `makeCE09Executor` returns a `StepExecutor` typed `(ctx) => Promise<CoverageAuditResult>` | PASS                        |
+| Returns `needs_input` result when gateway returns it                                      | PASS                        |
+| Returns `ok` result with valid `CoverageAudit` when gateway returns it                    | PASS                        |
+| Throws `CurriculumSeedError` when `CE09Input` is invalid (missing subject)                | PASS                        |
+| Throws `CurriculumSeedError` when gateway response is not valid JSON                      | PASS                        |
+| Throws `CurriculumSeedError` when gateway response doesn't match `CoverageAuditResult`    | PASS                        |
+| `getTermPlan` errors propagate without swallowing                                         | PASS                        |
+| `getEpisodeLog` errors propagate without swallowing                                       | PASS                        |
+| `gatewayCall` errors propagate without swallowing                                         | PASS                        |
+| `tenantId` and `actorId: 'ce09-executor'` forwarded to `withTenant` verbatim              | PASS                        |
+| `termPlan` and `episodeLog` from Brain passed in context                                  | PASS                        |
+| `null` termPlan and episodeLog passed when Brain getters return null                      | PASS                        |
+| `getTermPlan` called with `{ grade, termNumber, academicYear }` params                    | PASS                        |
+| `getEpisodeLog` called with correct `grade/subject/termNumber/academicYear` params        | PASS                        |
+| All input fields (grade, subject, termNumber, academicYear) in user message               | PASS                        |
+| `promptBody` used as system message                                                       | PASS                        |
+| `curriculum.audit` used as the model name                                                 | PASS                        |
+| All 189 unit tests pass (`pnpm --filter @infinite-ai/curriculum-seed test`)               | PASS — 189 tests, 0 skipped |
+| `pnpm --filter @infinite-ai/curriculum-seed typecheck` clean                              | PASS                        |
+| `pnpm --filter @infinite-ai/contracts typecheck` clean                                    | PASS                        |
+| `pnpm lint` clean                                                                         | PASS (checked)              |
+| `pnpm format:check` clean                                                                 | PASS (checked)              |
+
+Open questions raised: none.
+
+## Stage 42 — CE eval-harness executor registration
+
+**Date:** 2026-08-21
+
+**Summary:** Registered all nine CE executor factories (CE-01 through CE-09) as eval-harness
+executors in `scripts/register-ce-executors.ts`, enabling the 270-case golden set to run and
+gate in CI without a real database or Model Gateway. Each executor is built from its production
+factory with four stub dependencies: `stubWithTenant` (calls fn with a null TenantClient),
+`stubListConstitution` (returns []), `stubGetNull` (returns null for any Brain artefact getter),
+and a per-agent gateway stub that parses the request and returns a correctly-shaped `needs_input`
+JSON body. The stub gateways exercise the full executor pipeline — input validation, L0 query,
+request construction, response parse — while staying deterministic in CI. All 270 cases expect
+`status: 'needs_input'` because the empty-vessel stubs replicate a school that has not yet
+ratified any CAPS/ATP documents. Side-effect imports added to `scripts/evals-run.ts` and
+`scripts/evals-gate.ts`; Stage 42 entry added to `scripts/verify-stage.ts`; root `package.json`
+gained `@infinite-ai/curriculum-seed` and `@infinite-ai/db` as devDependencies so `tsx` can
+resolve them at script runtime.
+
+**Files changed**
+
+- `scripts/register-ce-executors.ts` — new: CE-01 through CE-09 executor registration with stubs
+- `scripts/evals-run.ts` — added `import './register-ce-executors.js'` side-effect import
+- `scripts/evals-gate.ts` — added `import './register-ce-executors.js'` side-effect import
+- `scripts/verify-stage.ts` — Stage 42 entry (`pnpm evals:run --all`, `pnpm evals:gate`)
+- `package.json` — added `@infinite-ai/curriculum-seed` and `@infinite-ai/db` as root devDependencies
+
+### Exit Gate
+
+| Criterion                                                                          | Result               |
+| ---------------------------------------------------------------------------------- | -------------------- |
+| `pnpm evals:run --all` completes: 30/30 cases pass for each of CE-01 through CE-09 | PASS — 270/270 total |
+| `pnpm evals:gate` exits 0: all nine agents gate passed (no baseline yet)           | PASS                 |
+| `pnpm typecheck` clean                                                             | PASS                 |
+| `pnpm lint` clean                                                                  | PASS                 |
+| `pnpm verify:stage 42` exits 0                                                     | PASS                 |
+
+Open questions raised: none.
+
+## Stage 43 — DW eval-harness executor registration
+
+**Date:** 2026-08-21
+
+**Summary:** Registered all eight DW executor factories (DW-01 through DW-08) as eval-harness
+executors in `scripts/register-dw-executors.ts`. Each executor builds a minimal in-memory store
+from `evalCase.context` and calls the real warehouse function (`runQualityChecks`,
+`buildLearner360`, `synthesiseInsight`, `recommendNextStep`). Key fixes applied during this stage:
+
+- **DW-03**: split purpose-unknown vs purpose-domain-mismatch paths; handle GRANTED records
+  with no `fields` (treat as all-fields consent); guard against empty `input.fields`.
+- **DW-04**: guard against empty `input.payload` → `needs_input`.
+- **DW-05**: validate domain with `DataDomainSchema.safeParse` before calling `runQualityChecks`;
+  expand placeholder sampleRecords from `context.expandSampleRecords`; flatten `QualityIssue`
+  objects to string array (kind + field) for `set_overlap` scorer compatibility; add executor-level
+  BEHAVIOUR `behaviourKind`, WELLBEING `screenerScore`, OUT_OF_RANGE, and DISTRIBUTION_DRIFT checks.
+- **DW-06**: filter events by `termNumber`; detect all-blocked → `needs_input`; post-process
+  profile to add `screenerResults` array to wellbeing summary.
+- **DW-07**: pass `context.expectedDataPointCount` to store `loadContext`; stub model returns all
+  event IDs (not just UUID-format). Also fixed `getAtPath` in evals scorer to support bracket index
+  notation (`insights[0].confidenceScore`).
+- **DW-08**: return null when `hasActionableFinding === false`; strip `.000` milliseconds from
+  dueDate; add `requiresApproval: true` to nextStep.
+
+Warehouse function fixes: `buildAcademicSummary` now averages per-subject scores instead of
+"latest wins"; `buildWellbeingSummary` uses `score >= threshold` (was strict `>`). Unit tests
+updated accordingly. Import of `DataDomainSchema` added to executor script.
+
+**Files changed**
+
+- `scripts/register-dw-executors.ts` — DW-01 through DW-08 executor registration; all fixes above
+- `packages/warehouse/src/learner360/learner360-builder.ts` — subject-average fix; threshold fix
+- `packages/warehouse/test/learner360/learner360-builder.spec.ts` — updated test for subject average
+- `packages/evals/src/scorers.ts` — `getAtPath` extended to handle bracket index notation
+
+### Exit Gate
+
+| Criterion                                                                                                                                                          | Result |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| `pnpm evals:run --all` completes: all DW agents pass 100% (DW-01 30/30, DW-02 29/29, DW-03 29/29, DW-04 29/29, DW-05 29/29, DW-06 29/29, DW-07 28/28, DW-08 28/28) | PASS   |
+| `pnpm evals:gate` exits 0: all eight DW agents gate passed (no baseline yet)                                                                                       | PASS   |
+| `pnpm test` — all 51 task suites pass, 0 skipped                                                                                                                   | PASS   |
+| `pnpm typecheck` clean                                                                                                                                             | PASS   |
+| `pnpm lint` clean                                                                                                                                                  | PASS   |
+
+Open questions raised: none.

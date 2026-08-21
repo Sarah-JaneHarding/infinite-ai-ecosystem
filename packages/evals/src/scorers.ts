@@ -51,15 +51,24 @@ function fail(detail: string, score?: number): ScoreResult {
     : { passed: false, detail, score };
 }
 
-/** Reads a dot-path (`"a.b.c"`) out of `value`. Returns `undefined` for any segment that
- * does not resolve — a missing field is "nothing there," not a thrown error, the same way
- * every scorer below treats a structurally-wrong output as a failed score rather than a
- * crash. */
+/** Reads a dot-path (`"a.b.c"` or `"a[0].b"`) out of `value`. Returns `undefined` for any
+ * segment that does not resolve — a missing field is "nothing there," not a thrown error,
+ * the same way every scorer below treats a structurally-wrong output as a failed score
+ * rather than a crash. Supports bracket index notation: `"items[2]"` resolves as the key
+ * `"items"` followed by numeric index `2`. */
 function getAtPath(value: unknown, path: string): unknown {
   let current = value;
   for (const segment of path.split('.')) {
     if (current === null || typeof current !== 'object') return undefined;
-    current = (current as Record<string, unknown>)[segment];
+    const bracketMatch = /^([^[]+)\[(\d+)\]$/.exec(segment);
+    if (bracketMatch !== null) {
+      const [, key, idxStr] = bracketMatch;
+      current = (current as Record<string, unknown>)[key!];
+      if (!Array.isArray(current)) return undefined;
+      current = current[Number(idxStr)];
+    } else {
+      current = (current as Record<string, unknown>)[segment];
+    }
   }
   return current;
 }

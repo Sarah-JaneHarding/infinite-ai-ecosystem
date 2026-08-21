@@ -17,9 +17,18 @@ importers:
       '@infinite-ai/contracts':
         specifier: workspace:*
         version: link:packages/contracts
+      '@infinite-ai/curriculum-seed':
+        specifier: workspace:*
+        version: link:packages/curriculum-seed
+      '@infinite-ai/db':
+        specifier: workspace:*
+        version: link:packages/db
       '@infinite-ai/evals':
         specifier: workspace:*
         version: link:packages/evals
+      '@infinite-ai/warehouse':
+        specifier: workspace:*
+        version: link:packages/warehouse
       '@types/node':
         specifier: 22.20.1
         version: 22.20.1
