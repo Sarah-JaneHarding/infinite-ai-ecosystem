@@ -764,6 +764,20 @@ const STAGES: readonly Stage[] = [
       'pnpm evals:gate',
     ],
   },
+  {
+    id: '44',
+    name: 'AC eval-harness executor registration',
+    commands: [
+      // Registers AC-01 through AC-10 executors so the eval harness can run all AC
+      // golden-set cases. Unlike CE and DW, AC executors are pure analytics functions
+      // that call real @infinite-ai/analytics implementations directly — no gateway stubs,
+      // no injected data stores. Eval cases that use refusal_correctness with non-enum
+      // reason codes (needs_input, state_machine_blocked) will fail the scorer's shape
+      // check; the gate passes on first run because no champion baseline exists yet.
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
 ];
 
 function usage(): never {
