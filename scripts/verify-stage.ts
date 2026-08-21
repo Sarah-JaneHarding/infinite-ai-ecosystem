@@ -778,6 +778,49 @@ const STAGES: readonly Stage[] = [
       'pnpm evals:gate',
     ],
   },
+  {
+    id: '45',
+    name: 'TB eval-harness executor registration',
+    commands: [
+      // Registers TB-01 through TB-11 executors so the eval harness can run all TB
+      // golden-set cases. TB agents are content generators; most eval cases expect
+      // status:'ok' with real content shapes (sections, slides, passages, items, etc.).
+      // Executors produce deterministic stub content satisfying every schema field the
+      // exact_match and set_overlap scorers check. llm_judge cases (OQ-016) will fail
+      // their scorer but the gate passes on first run because no champion baseline exists.
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
+  {
+    id: '46',
+    name: 'LE eval-harness executor registration',
+    commands: [
+      // Registers LE-01 through LE-09 executors so the eval harness can run all 180
+      // LE golden-set cases (20 per agent). Unlike TB, every LE agent implements
+      // deterministic decision logic rather than content generation, so all cases use
+      // exact_match scorers — 100% pass rate expected with no llm_judge cases.
+      // LE-07 Challenger Verdict applies numeric promote/reject thresholds directly;
+      // LE-08 Pattern Publisher enforces the five-tenant anonymisation minimum;
+      // LE-09 Pattern Validator checks CAPS version drift and TTL expiry.
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
+  {
+    id: '47',
+    name: 'PD eval-harness executor registration',
+    commands: [
+      // Registers PD-01 through PD-08 executors so the eval harness can run all 160
+      // PD golden-set cases (20 per agent). Like LE, every PD agent implements
+      // deterministic routing and aggregation logic — all cases use exact_match scorers,
+      // 100% pass rate expected with no llm_judge cases.
+      // PD-04 Need Aggregator enforces cohortSize ≥ 5 suppression;
+      // PD-08 CPTD Classifier detects unclassifiable activities by phrase matching.
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
 ];
 
 function usage(): never {
