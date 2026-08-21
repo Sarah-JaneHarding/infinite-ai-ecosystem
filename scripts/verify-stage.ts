@@ -739,6 +739,18 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/contracts typecheck',
     ],
   },
+  {
+    id: '42',
+    name: 'CE eval-harness executor registration',
+    commands: [
+      // Registers CE-01 through CE-09 executors so the eval harness can actually
+      // run the 270 golden-set cases rather than skipping them for a missing executor.
+      // All 270 cases expect status: 'needs_input' — the empty-vessel state when L0
+      // has no CAPS/ATP documents. Gate passes with no baseline (first run).
+      'pnpm evals:run --all',
+      'pnpm evals:gate',
+    ],
+  },
 ];
 
 function usage(): never {

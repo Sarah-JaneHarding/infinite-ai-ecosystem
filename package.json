@@ -2,7 +2,7 @@
   "name": "infinite-ai",
   "version": "0.1.0",
   "private": true,
-  "description": "INFINITE-AI Education Ecosystem \u2014 multi-tenant, POPIA-safe SaaS for South African schools.",
+  "description": "INFINITE-AI Education Ecosystem — multi-tenant, POPIA-safe SaaS for South African schools.",
   "license": "UNLICENSED",
   "packageManager": "pnpm@10.33.0",
   "engines": {
@@ -57,6 +57,8 @@
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/curriculum-seed": "workspace:*",
+    "@infinite-ai/db": "workspace:*",
     "@infinite-ai/evals": "workspace:*",
     "@types/node": "22.20.1",
     "eslint": "9.39.5",

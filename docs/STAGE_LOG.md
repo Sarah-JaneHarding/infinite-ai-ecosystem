@@ -6161,3 +6161,41 @@ provenance stamp records no PII scrubbing is needed.
 | `pnpm format:check` clean                                                                 | PASS (checked)              |
 
 Open questions raised: none.
+
+## Stage 42 — CE eval-harness executor registration
+
+**Date:** 2026-08-21
+
+**Summary:** Registered all nine CE executor factories (CE-01 through CE-09) as eval-harness
+executors in `scripts/register-ce-executors.ts`, enabling the 270-case golden set to run and
+gate in CI without a real database or Model Gateway. Each executor is built from its production
+factory with four stub dependencies: `stubWithTenant` (calls fn with a null TenantClient),
+`stubListConstitution` (returns []), `stubGetNull` (returns null for any Brain artefact getter),
+and a per-agent gateway stub that parses the request and returns a correctly-shaped `needs_input`
+JSON body. The stub gateways exercise the full executor pipeline — input validation, L0 query,
+request construction, response parse — while staying deterministic in CI. All 270 cases expect
+`status: 'needs_input'` because the empty-vessel stubs replicate a school that has not yet
+ratified any CAPS/ATP documents. Side-effect imports added to `scripts/evals-run.ts` and
+`scripts/evals-gate.ts`; Stage 42 entry added to `scripts/verify-stage.ts`; root `package.json`
+gained `@infinite-ai/curriculum-seed` and `@infinite-ai/db` as devDependencies so `tsx` can
+resolve them at script runtime.
+
+**Files changed**
+
+- `scripts/register-ce-executors.ts` — new: CE-01 through CE-09 executor registration with stubs
+- `scripts/evals-run.ts` — added `import './register-ce-executors.js'` side-effect import
+- `scripts/evals-gate.ts` — added `import './register-ce-executors.js'` side-effect import
+- `scripts/verify-stage.ts` — Stage 42 entry (`pnpm evals:run --all`, `pnpm evals:gate`)
+- `package.json` — added `@infinite-ai/curriculum-seed` and `@infinite-ai/db` as root devDependencies
+
+### Exit Gate
+
+| Criterion                                                                          | Result               |
+| ---------------------------------------------------------------------------------- | -------------------- |
+| `pnpm evals:run --all` completes: 30/30 cases pass for each of CE-01 through CE-09 | PASS — 270/270 total |
+| `pnpm evals:gate` exits 0: all nine agents gate passed (no baseline yet)           | PASS                 |
+| `pnpm typecheck` clean                                                             | PASS                 |
+| `pnpm lint` clean                                                                  | PASS                 |
+| `pnpm verify:stage 42` exits 0                                                     | PASS                 |
+
+Open questions raised: none.
