@@ -8,13 +8,13 @@
 // it to. Nothing here decides retry timing or the next step itself — those come from the
 // pure functions this module calls.
 //
-// Scope, stated plainly: `agent_call`, `tool_call`, `human_gate` and `compensation` are
-// fully executed here — the four kinds the manual's own reference pipeline exit gate names
-// ("three agents, one human gate, one compensation path"). `branch` and `map` are declared
-// and DAG-validated (`dag.ts`) and their pure next-step decisions already exist
-// (`nextStepAfterSuccess`), but the runner does not yet evaluate a branch condition or fan
-// a map out into per-item runs — a stated follow-up, not silently dropped (see
-// `docs/STAGE_LOG.md`).
+// Scope, stated plainly: `agent_call`, `tool_call`, `human_gate`, `branch`, `map` and
+// `compensation` are all executed here. `branch` evaluates `step.condition` through the
+// caller-supplied `evaluateCondition` and routes to `onTrue`/`onFalse`. `map` fans
+// `itemStepId` out once per item of the collection at `run.input[step.collectionField]` —
+// see `advanceMapStep`'s own header for why that fan-out is one internal loop inside a
+// single `advanceRun` call rather than one call per item, and why each item still gets its
+// own durable, resumable step-run row.
 //
 // `concurrencyLimiter` (Stage 06 step 8) is optional too, and checked only for
 // `agent_call` steps — see `concurrency.ts`'s own header for why a refusal is "no
@@ -94,6 +94,13 @@ export interface StepExecutionContext {
   readonly stepId: string;
   readonly attempt: number;
   readonly input: unknown;
+  /** Set only when this attempt is one item of a `map` step — the item's index in the
+   * collection. `stepId` is always the declared `itemStepId` (so a `StepExecutor` can
+   * resolve the agent/tool the normal way); this field exists so a caller building an
+   * idempotency key can still tell two items of the same map apart, since `stepId` and
+   * `attempt` alone collide across items (every item's first attempt is `attempt: 0`
+   * against the same declared `itemStepId`). */
+  readonly mapItemIndex?: number;
 }
 
 /** Runs one `agent_call`/`tool_call`/compensation step's actual work and returns its
@@ -445,11 +452,7 @@ export async function advanceRun(
   }
 
   if (step.kind === 'map') {
-    // Declared and DAG-validated (dag.ts); fanning out per-item runs is a stated
-    // follow-up (see this file's own header), not silently dropped.
-    throw new OrchestratorRunnerError(
-      `Run ${runId}: map step "${step.id}" execution is not yet built.`,
-    );
+    return advanceMapStep(tx, pipeline, run, step, options, now);
   }
 
   return executeForwardStep(
@@ -682,4 +685,272 @@ async function runCompensation(
   }
 
   return updateRunStatus(tx, run.id, { status: 'COMPENSATED' }, now);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// map step execution
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** The step-run `stepId` column value one item of `mapStepId` is persisted under —
+ * distinct from `itemStep.id` (the *declared* step every item shares), so each item gets
+ * its own durable, independently-resumable row via the existing `startStepRun`/
+ * `finishStepRun`/`listStepRuns` primitives with no schema change. */
+function mapItemStepId(mapStepId: string, index: number): string {
+  return `${mapStepId}[${index}]`;
+}
+
+/** Reads and validates the collection a `map` step fans out over. A missing or
+ * non-array field is the caller's own malformed input, not a retryable condition — it
+ * fails loud before any step-run row is written, the same "validate before anything is
+ * read" shape `decideHumanGate`'s Zod parse already follows. */
+function readMapCollection(
+  input: unknown,
+  collectionField: string,
+  mapStepId: string,
+): readonly unknown[] {
+  const record = input as Record<string, unknown> | null | undefined;
+  const value = record?.[collectionField];
+  if (!Array.isArray(value)) {
+    throw new OrchestratorRunnerError(
+      `Map step "${mapStepId}": run input field "${collectionField}" is not an array.`,
+    );
+  }
+  return value;
+}
+
+/**
+ * Fans `step.itemStepId` out once per item of the collection at
+ * `run.input[step.collectionField]`. Each item is its own durable attempt sequence —
+ * same retry/timeout/concurrency/telemetry machinery `executeForwardStep` gives a normal
+ * step, just keyed by `mapItemStepId` instead of the declared step id — so a crash mid-map
+ * resumes at the first item that has not yet succeeded, never re-running one that has.
+ *
+ * Deliberately one internal loop across all not-yet-succeeded items in a single call,
+ * rather than one call per item: `runToCompletion`'s own "no progress" check compares the
+ * run's `(status, currentStepId)` before and after a call, and both stay fixed at this map
+ * step's id for the map's entire duration (advancing only once every item has succeeded).
+ * A design that returned after each single item's success would leave both unchanged too,
+ * so `runToCompletion` would stop after the very first item — the loop here is what keeps
+ * that contract honest. The loop still stops and returns as soon as an item is not
+ * currently actionable (still within its timeout, or a retry not yet due), which is the
+ * same "no progress possible this call" case a normal step already has.
+ */
+async function advanceMapStep(
+  tx: TenantClient,
+  pipeline: PipelineDefinition,
+  run: OrchestratorRunRow,
+  step: Extract<PipelineStep, { kind: 'map' }>,
+  options: RunnerOptions,
+  now: Date,
+): Promise<OrchestratorRunRow> {
+  const itemStep = stepFor(pipeline, step.itemStepId);
+  const collection = readMapCollection(run.input, step.collectionField, step.id);
+
+  if (collection.length === 0) {
+    return advanceToNextStep(tx, run.id, step.id, nextStepAfterSuccess(step), now);
+  }
+
+  for (let index = 0; index < collection.length; index += 1) {
+    const itemStepId = mapItemStepId(step.id, index);
+    const stepRuns = await listStepRuns(tx, run.id);
+    const latest = latestAttempt(stepRuns, itemStepId);
+    if (latest?.status === 'SUCCEEDED') continue;
+
+    const result = await advanceMapItem(
+      tx,
+      pipeline,
+      run,
+      itemStep,
+      itemStepId,
+      collection[index],
+      latest,
+      options,
+      now,
+    );
+    if (!result.succeeded) return result.run;
+    // Succeeded — fall through to the next index within this same call.
+  }
+
+  return advanceToNextStep(tx, run.id, step.id, nextStepAfterSuccess(step), now);
+}
+
+interface MapItemAttemptResult {
+  readonly succeeded: boolean;
+  readonly run: OrchestratorRunRow;
+}
+
+/** Decides what to do for one map item given its most recent attempt — the same
+ * RUNNING-timeout / RETRY_SCHEDULED-due checks `advanceRun` makes for a normal step,
+ * scoped to `itemStep`'s own `timeoutMs`/`maxRetries` rather than the outer map step's. */
+async function advanceMapItem(
+  tx: TenantClient,
+  pipeline: PipelineDefinition,
+  run: OrchestratorRunRow,
+  itemStep: PipelineStep,
+  itemStepId: string,
+  itemInput: unknown,
+  latest: OrchestratorStepRunRow | undefined,
+  options: RunnerOptions,
+  now: Date,
+): Promise<MapItemAttemptResult> {
+  if (latest?.status === 'RUNNING') {
+    if (!hasTimedOut(latest.startedAt ?? latest.createdAt, itemStep.timeoutMs, now)) {
+      return { succeeded: false, run };
+    }
+    await finishStepRun(tx, latest.id, { status: 'TIMED_OUT' }, now);
+    const outcome = await handleMapItemFailure(
+      tx,
+      pipeline,
+      run,
+      itemStep,
+      itemStepId,
+      latest.attempt,
+      'Step timed out.',
+      options,
+      now,
+    );
+    return { succeeded: false, run: outcome };
+  }
+
+  if (latest?.status === 'RETRY_SCHEDULED') {
+    if (latest.nextAttemptAt !== null && latest.nextAttemptAt.getTime() > now.getTime()) {
+      return { succeeded: false, run };
+    }
+    return executeMapItemAttempt(
+      tx,
+      pipeline,
+      run,
+      itemStep,
+      itemStepId,
+      itemInput,
+      latest.attempt + 1,
+      options,
+      now,
+    );
+  }
+
+  return executeMapItemAttempt(
+    tx,
+    pipeline,
+    run,
+    itemStep,
+    itemStepId,
+    itemInput,
+    latest === undefined ? 0 : latest.attempt + 1,
+    options,
+    now,
+  );
+}
+
+/** Runs exactly one attempt of one map item — `executeForwardStep`'s own body, scoped to
+ * one collection item instead of the whole run. `context.stepId` is `itemStep.id` (the
+ * *declared* step every item shares), so a `StepExecutor` resolves the agent/tool the same
+ * way it would outside a map; `context.mapItemIndex` is what lets a caller building an
+ * idempotency key still tell items apart, since `stepId` and `attempt` alone collide
+ * across items (see `StepExecutionContext`'s own field comment). */
+async function executeMapItemAttempt(
+  tx: TenantClient,
+  pipeline: PipelineDefinition,
+  run: OrchestratorRunRow,
+  itemStep: PipelineStep,
+  itemStepId: string,
+  itemInput: unknown,
+  attempt: number,
+  options: RunnerOptions,
+  now: Date,
+): Promise<MapItemAttemptResult> {
+  let concurrencySlot: ConcurrencySlot | null = null;
+  if (itemStep.kind === 'agent_call' && options.concurrencyLimiter !== undefined) {
+    concurrencySlot = options.concurrencyLimiter.tryAcquire(
+      run.tenantId,
+      itemStep.agentId,
+    );
+    if (concurrencySlot === null) return { succeeded: false, run };
+  }
+
+  const index = Number(itemStepId.slice(itemStepId.lastIndexOf('[') + 1, -1));
+  const tracer = options.tracer ?? NOOP_TRACER;
+  const stepRun = await startStepRun(tx, run.id, itemStepId, attempt, itemInput, now);
+  const span = tracer.startSpan(`orchestrator.step.${itemStep.kind}`, {
+    trace_id: run.traceId,
+    run_id: run.id,
+    step_id: itemStepId,
+    attempt,
+  });
+  try {
+    const context: StepExecutionContext = {
+      runId: run.id,
+      stepId: itemStep.id,
+      attempt,
+      input: itemInput,
+      mapItemIndex: index,
+    };
+    const output = await options.executeStep(context);
+    await finishStepRun(tx, stepRun.id, succeededOutcome(options, context, output), now);
+    return { succeeded: true, run };
+  } catch (error) {
+    span.recordException(error);
+    const message = error instanceof Error ? error.message : String(error);
+    const outcome = await handleMapItemFailure(
+      tx,
+      pipeline,
+      run,
+      itemStep,
+      itemStepId,
+      attempt,
+      message,
+      options,
+      now,
+    );
+    return { succeeded: false, run: outcome };
+  } finally {
+    span.end();
+    concurrencySlot?.release();
+  }
+}
+
+/** `handleFailure`'s own retry-vs-compensate decision, scoped to one map item: retrying
+ * schedules that item's own next attempt and leaves the run itself untouched (still
+ * `RUNNING` at the map step, exactly like a normal step's `RETRY_SCHEDULED`); exhausting
+ * an item's retries fails the whole map the same way an exhausted normal step would —
+ * there is no per-item compensation concept, only the outer map step's own
+ * `compensatesWith`, which `runCompensation` already resolves from `run.succeededStepIds`
+ * (an item's synthetic id is never appended there — see `advanceMapStep`'s own header). */
+async function handleMapItemFailure(
+  tx: TenantClient,
+  pipeline: PipelineDefinition,
+  run: OrchestratorRunRow,
+  itemStep: PipelineStep,
+  itemStepId: string,
+  attempt: number,
+  errorMessage: string,
+  options: RunnerOptions,
+  now: Date,
+): Promise<OrchestratorRunRow> {
+  if (shouldRetry(attempt, itemStep.maxRetries)) {
+    const delayMs = computeRetryDelayMs(
+      attempt,
+      options.retryBaseMs ?? 1_000,
+      options.retryMaxMs ?? 30_000,
+      options.random,
+    );
+    const stepRuns = await listStepRuns(tx, run.id);
+    const current = latestAttempt(stepRuns, itemStepId);
+    if (current !== undefined) {
+      await finishStepRun(
+        tx,
+        current.id,
+        {
+          status: 'RETRY_SCHEDULED',
+          nextAttemptAt: new Date(now.getTime() + delayMs),
+          error: errorMessage,
+        },
+        now,
+      );
+    }
+    const refreshed = await getRun(tx, run.id);
+    return refreshed ?? run;
+  }
+
+  return runCompensation(tx, pipeline, run, options, now);
 }

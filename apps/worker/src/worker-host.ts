@@ -23,6 +23,7 @@ import { createLogger, type Logger } from '@infinite-ai/telemetry';
 import { Worker } from 'bullmq';
 import { z } from 'zod';
 
+import { prepareApproval } from './approval.js';
 import type { PipelineJobData } from './queue-names.js';
 import { createStepExecutor } from './step-executor.js';
 import { createToolHandlers } from './tool-handlers.js';
@@ -76,7 +77,7 @@ export class WorkerHost {
             toolHandlers,
           });
 
-          const runnerOptions: RunnerOptions = { executeStep };
+          const runnerOptions: RunnerOptions = { executeStep, prepareApproval };
 
           await runToCompletion(tx, pipeline, runId, runnerOptions);
         });

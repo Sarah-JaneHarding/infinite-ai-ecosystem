@@ -6660,3 +6660,46 @@ reach every step.
 | `pnpm format:check` clean                                                                                      | PASS   |
 
 Open questions raised: none.
+
+---
+
+## Stage 52 — `map` step fan-out, `prepareApproval` wiring, and a branch-condition design gap
+
+Started: 2026-08-24 Completed: 2026-08-24
+Exit gate: PASS
+Tests: unit tier all green (workspace-wide); 7 new integration tests added for `map` fan-out (written blind — this environment has a Docker client but no reachable daemon socket, and the daemon started manually cannot pull images past the organisation's egress policy, so these are proven in CI per the established Stage 01 pattern, not locally).
+
+**Audit finding**
+
+`packages/orchestrator/src/runner.ts`'s own header stated plainly that `map` steps were "declared and DAG-validated, but the runner does not yet evaluate... fan a map out into per-item runs" — and its `advanceRun` unconditionally threw `"map step execution is not yet built"` the moment any run reached one. Since `map` is the _entry step_ of MOD-01's curriculum pipeline and MOD-02's RTI/Monitoring pipelines, and appears in MOD-05's PD Analysis pipeline, this meant those pipelines could not progress past their first or second step in a real run — a more severe, unconditional failure than the tool-handler gap Stage 51 fixed (branch at least didn't crash if `evaluateCondition` was supplied). Separately, `apps/worker/src/worker-host.ts`'s `RunnerOptions` only ever set `executeStep`, never `prepareApproval` — meaning `human_gate` steps (in every pipeline with an approval gate) also threw unconditionally.
+
+**What was built**
+
+- `packages/orchestrator/src/runner.ts` — `map` step execution: `advanceMapStep` fans `itemStepId` out once per item of `run.input[step.collectionField]`, giving each item its own durable, independently-resumable step-run row (keyed `${mapStepId}[${index}]`, no schema change) with the _item step's own_ `timeoutMs`/`maxRetries`/concurrency — not the outer map step's. One item's exhausted retries fails the whole map through the same `runCompensation` path an ordinary step's exhausted failure already uses. Deliberately one internal loop across all not-yet-succeeded items per `advanceRun` call rather than one call per item — documented in `advanceMapStep`'s own header for why `runToCompletion`'s "no progress" check requires it. `StepExecutionContext` gained an optional `mapItemIndex` field so a caller building an idempotency key (`apps/worker/src/step-executor.ts`'s `runAgentCall`) can still tell two items of the same map apart — `stepId` and `attempt` alone collide across items, since every item's first attempt is `attempt: 0` against the same declared `itemStepId`.
+- `apps/worker/src/step-executor.ts` — `runAgentCall`'s idempotency key now includes `mapItemIndex` when present.
+- `apps/worker/src/approval.ts` — new file: `prepareApproval`, wired into `worker-host.ts`'s `RunnerOptions`. Uses the run's own input as the approval artefact (the only thing genuinely available — see the design gap below) and records `stepId`/`requiredRole` as evidence. `diffAgainstPrevious` stays omitted, the same honest gap `ApprovalMaterial`'s own field comment already documents.
+- `packages/orchestrator/test/runner.integration.spec.ts` — 7 new tests: ordered fan-out, empty collection, malformed collection field, durable resumption (an item's SUCCEEDED row is never re-run), per-item retry without disturbing other items, per-item timeout-then-retry, and an exhausted item failing the whole map through compensation.
+- `apps/worker/test/approval.spec.ts` — 2 new tests for `prepareApproval`.
+- `docs/OPEN_QUESTIONS.md` — **OQ-024**: `evaluateCondition` was deliberately left unwired in the worker. Every `branch` condition built so far (MOD-02, MOD-05, LE-commons) is narrated in its own pipeline file as evaluating a _prior step's output_, but the runner only ever gives a condition evaluator the run's static original `input` — the same accepted Stage 06 step 5 simplification ("every step today reads the run's original input, not a previous step's output"), now blocking something structural rather than an edit diff. Wiring a real per-condition evaluator today would silently misrepresent what each condition claims to check, so a run hitting `branch` now fails loudly with `OrchestratorRunnerError` instead. Needs a human design decision (mutable run context, explicit output-threading, or similar) before real branching can go to production in MOD-02/MOD-05/LE.
+
+**Verification**
+
+Docker's client binary is present in this environment but its daemon socket is not (`/var/run/docker.sock` missing) — matching CLAUDE.md's documented sandbox constraint. `dockerd` was started manually to check further, and did fully initialize, but `docker pull testcontainers/ryuk:0.14.0` then failed with `403 Forbidden` from the proxy — an organisation egress-policy denial, not a transient failure, so per the proxy's own guidance it was not retried or routed around. The manually-started daemon was stopped afterward, restoring the environment to its original state. The 7 new integration tests were therefore reviewed by hand against the exact persistence primitives (`startStepRun`/`finishStepRun`/`listStepRuns`) the rest of the file's already-established tests use, including tracing through `startStepRun`'s own `PENDING→RUNNING` side effect to get the "per-step timeouts"-style stale-row test's timing right; two bugs found during that review (a stray `String(ctx.input ?? ctx.stepId)` producing `"[object Object]"` for a tool_call step, and a flaky "simulated crash via throw" test that actually schedules a real, timing-dependent retry) were fixed before commit.
+
+### Exit Gate
+
+| Criterion                                                                                                                                                        | Result                                                             |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `packages/orchestrator`: `pnpm typecheck` passes                                                                                                                 | PASS                                                               |
+| `packages/orchestrator`: `pnpm test` (unit tier) — 185 tests pass, 0 skipped                                                                                     | PASS                                                               |
+| `packages/orchestrator`: `pnpm lint` clean                                                                                                                       | PASS                                                               |
+| `apps/worker`: `pnpm typecheck` passes                                                                                                                           | PASS                                                               |
+| `apps/worker`: `pnpm test` — 21 tests pass (up from 17), 0 skipped                                                                                               | PASS                                                               |
+| `apps/worker`: `pnpm lint` clean                                                                                                                                 | PASS                                                               |
+| Every existing pipeline using `map` (MOD-01, MOD-02 RTI/Monitoring, MOD-05 PD Analysis) can now progress past a map step in the runner                           | PASS                                                               |
+| Every existing pipeline using `human_gate` can now progress past a gate in the worker                                                                            | PASS                                                               |
+| `docs/OPEN_QUESTIONS.md` has OQ-024 for the branch-condition design gap                                                                                          | PASS                                                               |
+| `pnpm typecheck` / `pnpm lint` / `pnpm format:check` (full workspace) clean                                                                                      | PASS                                                               |
+| `pnpm test:integration` for `map` — written and reviewed; not locally executable (Docker daemon unreachable, image pulls blocked by egress policy); proven in CI | DEFERRED TO CI, per the established Stage 01/`packages/db` pattern |
+
+Open questions raised: OQ-024.

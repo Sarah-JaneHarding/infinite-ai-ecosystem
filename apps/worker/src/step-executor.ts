@@ -92,7 +92,7 @@ async function runAgentCall(
   context: StepExecutionContext,
   deps: StepExecutorDeps,
 ): Promise<unknown> {
-  const { runId, stepId, attempt, input } = context;
+  const { runId, stepId, attempt, input, mapItemIndex } = context;
 
   const contract = deps.agentContracts.get(agentId);
   if (contract === undefined) {
@@ -119,7 +119,15 @@ async function runAgentCall(
     ],
     maxOutputTokens: contract.budget.maxTokens,
     provenance: { deidentified: true, saltVersion: 0, dropped: [] },
-    idempotencyKey: `${runId}-${stepId}-${attempt}`,
+    // A map item's stepId is the declared itemStepId, shared by every item in the
+    // collection, and its attempt count independently resets to 0 per item — stepId and
+    // attempt alone would collide across items (e.g. two learners' first attempts both
+    // keying "run-1-screen-learner-item-0"). mapItemIndex disambiguates them; it is unset
+    // for a normal, non-map step, leaving that key unchanged.
+    idempotencyKey:
+      mapItemIndex === undefined
+        ? `${runId}-${stepId}-${attempt}`
+        : `${runId}-${stepId}-${mapItemIndex}-${attempt}`,
   });
 
   const response = await fetch(`${deps.gatewayBaseUrl}/v1/chat/completions`, {

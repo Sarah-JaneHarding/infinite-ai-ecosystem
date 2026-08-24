@@ -89,6 +89,63 @@ describe('createStepExecutor', () => {
 
       expect(result).toEqual({ status: 'ok', framework: {} });
     });
+
+    it('includes mapItemIndex in the idempotency key so two map items do not collide', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => FAKE_RESPONSE,
+        text: async () => JSON.stringify(FAKE_RESPONSE),
+      });
+      vi.stubGlobal('fetch', fetchMock);
+
+      const executor = createStepExecutor(makeDeps());
+      await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'build-topic-graph',
+        attempt: 0,
+        input: 'item-a',
+        mapItemIndex: 0,
+      });
+      await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'build-topic-graph',
+        attempt: 0,
+        input: 'item-b',
+        mapItemIndex: 1,
+      });
+
+      const keys = fetchMock.mock.calls.map((call) => {
+        const [, init] = call as [string, RequestInit];
+        const body = JSON.parse(init.body as string) as Record<string, unknown>;
+        return body['idempotencyKey'];
+      });
+      expect(keys[0]).not.toBe(keys[1]);
+      expect(keys).toEqual([
+        `${MOCK_RUN_ID}-build-topic-graph-0-0`,
+        `${MOCK_RUN_ID}-build-topic-graph-1-0`,
+      ]);
+    });
+
+    it('omits the map disambiguator for a normal (non-map) step, leaving the key unchanged', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => FAKE_RESPONSE,
+        text: async () => JSON.stringify(FAKE_RESPONSE),
+      });
+      vi.stubGlobal('fetch', fetchMock);
+
+      const executor = createStepExecutor(makeDeps());
+      await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'build-topic-graph',
+        attempt: 2,
+        input: {},
+      });
+
+      const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+      const body = JSON.parse(init.body as string) as Record<string, unknown>;
+      expect(body['idempotencyKey']).toBe(`${MOCK_RUN_ID}-build-topic-graph-2`);
+    });
   });
 
   describe('agent_call failure paths', () => {

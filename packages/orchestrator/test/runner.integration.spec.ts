@@ -11,6 +11,7 @@ import { randomUUID } from 'node:crypto';
 
 import {
   disconnect,
+  finishStepRun,
   getApprovalTaskForStep,
   startStepRun,
   withTenant,
@@ -1117,5 +1118,321 @@ describe('run inspection and step telemetry (Stage 06 step 9)', () => {
     expect(inspection?.steps[0]?.tokensUsed).toBeNull();
     expect(inspection?.totalTokens).toBe(0);
     expect(inspection?.totalCostUsd).toBe(0);
+  });
+});
+
+describe('map step fan-out (Stage 52)', () => {
+  function mapPipeline(collectionField = 'learners'): PipelineDefinition {
+    return {
+      id: 'map-pipeline',
+      version: '1.0.0',
+      entryStepId: 'screen-all',
+      steps: {
+        'screen-all': {
+          ...STEP_COMMON,
+          id: 'screen-all',
+          kind: 'map',
+          itemStepId: 'screen-one',
+          collectionField,
+          next: 'record-summary',
+        },
+        'screen-one': {
+          ...STEP_COMMON,
+          id: 'screen-one',
+          kind: 'agent_call',
+          agentId: 'AC-01',
+          next: null,
+        },
+        'record-summary': {
+          ...STEP_COMMON,
+          id: 'record-summary',
+          kind: 'tool_call',
+          toolName: 'record_summary',
+          next: null,
+        },
+      },
+    };
+  }
+
+  it('runs itemStepId once per collection item, in order, then advances past the map', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline = mapPipeline();
+    const calls: StepExecutionContext[] = [];
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(
+        tx,
+        pipeline,
+        { learners: ['L1', 'L2', 'L3'] },
+        randomUUID(),
+        actorId,
+      );
+      return runToCompletion(tx, pipeline, run.id, {
+        executeStep: async (ctx) => {
+          calls.push(ctx);
+          return { screened: ctx.input };
+        },
+      });
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(finished.succeededStepIds).toEqual(['screen-all', 'record-summary']);
+
+    const itemCalls = calls.filter((c) => c.stepId === 'screen-one');
+    expect(itemCalls).toHaveLength(3);
+    expect(itemCalls.map((c) => c.input)).toEqual(['L1', 'L2', 'L3']);
+    expect(itemCalls.map((c) => c.mapItemIndex)).toEqual([0, 1, 2]);
+    expect(itemCalls.map((c) => c.attempt)).toEqual([0, 0, 0]);
+    expect(calls[calls.length - 1]?.stepId).toBe('record-summary');
+  });
+
+  it('an empty collection advances straight past the map with no item calls', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline = mapPipeline();
+    const calls: StepExecutionContext[] = [];
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, { learners: [] }, randomUUID(), actorId);
+      return runToCompletion(tx, pipeline, run.id, {
+        executeStep: async (ctx) => {
+          calls.push(ctx);
+          return {};
+        },
+      });
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(finished.succeededStepIds).toEqual(['screen-all', 'record-summary']);
+    expect(calls).toHaveLength(1); // only record-summary ran
+  });
+
+  it('throws when the collection field on the run input is missing or not an array', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline = mapPipeline();
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(
+        tx,
+        pipeline,
+        { learners: 'not-an-array' },
+        randomUUID(),
+        actorId,
+      );
+      await expect(
+        runToCompletion(tx, pipeline, run.id, { executeStep: async () => ({}) }),
+      ).rejects.toThrow(OrchestratorRunnerError);
+    });
+  });
+
+  it('does not re-run an item whose step-run row already recorded SUCCEEDED (Stage 06 step 10 durability)', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline = mapPipeline();
+
+    const { finished, calls } = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(
+        tx,
+        pipeline,
+        { learners: ['L1', 'L2', 'L3'] },
+        randomUUID(),
+        actorId,
+      );
+
+      // Simulate a previous process having already completed item 0 before crashing: a
+      // real SUCCEEDED row for it, written directly rather than through executeStep.
+      const seeded = await startStepRun(tx, run.id, 'screen-all[0]', 0, 'L1', new Date());
+      await finishStepRun(tx, seeded.id, { status: 'SUCCEEDED', output: {} }, new Date());
+
+      // "Restart": a fresh call sequence, as a resumed worker would issue. Item 0's row
+      // already says SUCCEEDED, so it must not be re-run.
+      const calls: string[] = [];
+      const result = await runToCompletion(tx, pipeline, run.id, {
+        executeStep: async (ctx) => {
+          calls.push(String(ctx.input));
+          return {};
+        },
+      });
+      return { finished: result, calls };
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(finished.succeededStepIds).toEqual(['screen-all', 'record-summary']);
+    // L1 is never re-run; only L2 and L3 go through executeStep, then record-summary
+    // (whose input is the whole run input object, not a learner id).
+    expect(calls).toEqual(['L2', 'L3', '[object Object]']);
+  });
+
+  it('retries one item on a transient failure without disturbing the others', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline = mapPipeline();
+    let l2Attempts = 0;
+    const succeeded: string[] = [];
+    const t0 = new Date('2026-08-24T00:00:00.000Z');
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(
+        tx,
+        pipeline,
+        { learners: ['L1', 'L2', 'L3'] },
+        randomUUID(),
+        actorId,
+      );
+      const executeStep = async (ctx: StepExecutionContext): Promise<unknown> => {
+        if (ctx.stepId === 'screen-one' && ctx.input === 'L2') {
+          l2Attempts += 1;
+          if (l2Attempts === 1) throw new Error('transient failure on L2');
+        }
+        succeeded.push(ctx.stepId === 'screen-one' ? String(ctx.input) : ctx.stepId);
+        return {};
+      };
+
+      // Runs L1 (succeeds), then L2 (fails, schedules a retry) — stops there since L2's
+      // retry is not due yet.
+      const afterFirstPass = await runToCompletion(
+        tx,
+        pipeline,
+        run.id,
+        { executeStep, retryBaseMs: 1_000, retryMaxMs: 10_000, random: () => 1 },
+        t0,
+      );
+      expect(afterFirstPass.status).toBe('RUNNING');
+      expect(l2Attempts).toBe(1);
+
+      // Past the scheduled delay: L2 retries and succeeds, then L3 and record-summary run.
+      return runToCompletion(
+        tx,
+        pipeline,
+        run.id,
+        { executeStep },
+        new Date(t0.getTime() + 1_500),
+      );
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(l2Attempts).toBe(2);
+    expect(succeeded).toEqual(['L1', 'L2', 'L2', 'L3', 'record-summary']);
+  });
+
+  it('marks a stale RUNNING item TIMED_OUT and retries it on the next call', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline = mapPipeline();
+    pipeline.steps['screen-one'] = {
+      ...(pipeline.steps['screen-one'] as Extract<
+        PipelineDefinition['steps'][string],
+        { kind: 'agent_call' }
+      >),
+      timeoutMs: 1_000,
+      maxRetries: 1,
+    };
+
+    const staleStart = new Date('2026-08-24T00:00:00.000Z');
+    const muchLater = new Date(staleStart.getTime() + 60_000);
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(
+        tx,
+        pipeline,
+        { learners: ['L1'] },
+        randomUUID(),
+        actorId,
+      );
+      // Simulate a previous process crashing mid-item: a real RUNNING row for item 0,
+      // started long enough ago that it has already exceeded screen-one's own timeout.
+      await startStepRun(tx, run.id, 'screen-all[0]', 0, 'L1', staleStart);
+
+      // First call: notices the stale RUNNING row timed out and schedules a retry with a
+      // fixed, known delay (same controlled-timing shape as "retries with jitter" above).
+      const afterTimeout = await advanceRun(
+        tx,
+        pipeline,
+        run.id,
+        {
+          executeStep: async () => ({ recovered: true }),
+          retryBaseMs: 1_000,
+          retryMaxMs: 10_000,
+          random: () => 1,
+        },
+        muchLater,
+      );
+      expect(afterTimeout.status).toBe('RUNNING');
+
+      // Past the scheduled delay: the retry runs, then item 0 and the rest of the
+      // pipeline complete.
+      return runToCompletion(
+        tx,
+        pipeline,
+        run.id,
+        { executeStep: async () => ({ recovered: true }) },
+        new Date(muchLater.getTime() + 1_500),
+      );
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(finished.succeededStepIds).toEqual(['screen-all', 'record-summary']);
+  });
+
+  it('exhausting one item’s retries fails the whole map and runs compensation for earlier steps', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'map-compensating-pipeline',
+      version: '1.0.0',
+      entryStepId: 'book-resource',
+      steps: {
+        'book-resource': {
+          ...STEP_COMMON,
+          id: 'book-resource',
+          compensatesWith: 'release-resource',
+          kind: 'tool_call',
+          toolName: 'book_resource',
+          next: 'screen-all',
+        },
+        'release-resource': {
+          ...STEP_COMMON,
+          id: 'release-resource',
+          kind: 'compensation',
+          compensatesStepId: 'book-resource',
+          agentId: null,
+          toolName: 'release_resource',
+        },
+        'screen-all': {
+          ...STEP_COMMON,
+          id: 'screen-all',
+          kind: 'map',
+          itemStepId: 'screen-one',
+          collectionField: 'learners',
+          next: null,
+        },
+        'screen-one': {
+          ...STEP_COMMON,
+          id: 'screen-one',
+          kind: 'agent_call',
+          agentId: 'AC-01',
+          next: null,
+          maxRetries: 0,
+        },
+      },
+    };
+
+    const callOrder: string[] = [];
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(
+        tx,
+        pipeline,
+        { learners: ['L1'] },
+        randomUUID(),
+        actorId,
+      );
+      return runToCompletion(tx, pipeline, run.id, {
+        executeStep: async (ctx) => {
+          callOrder.push(ctx.stepId);
+          if (ctx.stepId === 'screen-one') throw new Error('permanent failure on L1');
+          return {};
+        },
+      });
+    });
+
+    expect(finished.status).toBe('COMPENSATED');
+    expect(finished.succeededStepIds).toEqual(['book-resource']);
+    expect(callOrder).toEqual(['book-resource', 'screen-one', 'release-resource']);
   });
 });
