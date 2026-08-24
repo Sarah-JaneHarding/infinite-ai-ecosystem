@@ -6559,3 +6559,42 @@ Tests: 159 passing (orchestrator package), 0 skipped. Includes 44 new pipeline s
 | `pnpm lint` (full workspace) clean                                                               | PASS   |
 
 Open questions raised: none.
+
+---
+
+## Stage 50 — LE Learning Engine pipeline definitions
+
+Started: 2026-08-24 Completed: 2026-08-24
+Exit gate: PASS
+Tests: 185 passing (orchestrator package), 0 skipped. Includes 26 new pipeline structural tests.
+
+**What was built**
+
+- `packages/orchestrator/src/pipelines/le.ts` — five pipelines covering the LE feedback loop described in Stage 13 of the build manual, split by independent trigger the same way MOD-02 splits into RTI / Monitoring / SBST-Scribe rather than one DAG with dead-end branches:
+  - `LE_SIGNAL_PIPELINE` (`le-signal`): LE-01 correction ingest → LE-02 HITL event processing. Both agents self-persist to Brain; no gates needed.
+  - `LE_PATTERN_PIPELINE` (`le-pattern-mining`): LE-03 pattern mining → LE-04 attribution scoring. Both self-persist including the below-threshold outcome; whether to attempt evolution from a scored pattern is a decision made outside this DAG, from the recorded LE-04 output.
+  - `LE_EVOLUTION_PIPELINE` (`le-evolution`): LE-06 prompt evolution (candidate only) → LE-07 eval gatekeeper (verdict only) → smt ratification gate → promote-challenger (Brain write).
+  - `LE_EXEMPLAR_PIPELINE` (`le-exemplar`): LE-05 exemplar curation (candidate only) → hod ratification gate → promote-exemplar (Brain write).
+  - `LE_COMMONS_PIPELINE` (`le-commons`): LE-08 commons-eligibility evaluation → branch (blocked: record block reason; eligible: smt ratification gate → publish-to-commons). Modeled as a gated tool_call even though LE-08's own contract says `writesToBrain: true`, since publishing de-identified patterns across tenant boundaries is exactly what `validatePipelineGating` exists to catch, and that check only inspects `tool_call` steps.
+- `packages/orchestrator/src/index.ts` — exported all five LE pipelines
+- `packages/orchestrator/test/pipelines/le.spec.ts` — 26 structural tests: DAG validity, gating validation, branch wiring, human gate roles (`smt` for promotion/commons ratification, `hod` for exemplar ratification), and cross-pipeline coverage of LE-01–LE-08 (LE-09 Decay Watchdog is excluded by design — it runs as a standalone TTL/CAPS-version-change trigger, the same way AC-04 Early Warning is excluded from MOD-02's pipelines)
+
+**Design notes**
+
+- Reversibility for a bad prompt promotion is provided by `packages/learning/src/promotion-log.ts`'s rollback-command generation (already built in Stage 13), not DAG-level compensation — compensation steps only run when a _later step in the same run_ fails, and `promote-challenger`/`promote-exemplar`/`publish-to-commons` are each the terminal step in their pipeline, so there is no later failure for a compensation step to react to.
+- Role choice: `smt` (already in the core `Role` enum) fits the manual's "HoD, SMT or a curriculum board" language for the two most consequential decisions (live prompt promotion; cross-tenant commons publication). `hod` fits exemplar promotion, consistent with `hod-approval`'s use for curriculum-adjacent decisions elsewhere in the codebase.
+
+### Exit Gate
+
+| Criterion                                                                                                                                  | Result |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| `packages/orchestrator`: `pnpm typecheck` and `pnpm lint` pass                                                                             | PASS   |
+| `packages/orchestrator`: 185 tests pass, 0 skipped (includes 26 new LE pipeline tests)                                                     | PASS   |
+| `validatePipelineDag` passes for all five LE pipelines                                                                                     | PASS   |
+| `validatePipelineGating` passes: `brain.promote_challenger_prompt`, `brain.promote_exemplar`, `learning.publish_to_commons` are each gated | PASS   |
+| LE-01 through LE-08 present across the five pipelines; LE-09 correctly excluded                                                            | PASS   |
+| `pnpm typecheck` (full workspace) clean                                                                                                    | PASS   |
+| `pnpm lint` (full workspace) clean                                                                                                         | PASS   |
+| `pnpm format:check` clean                                                                                                                  | PASS   |
+
+Open questions raised: none.
