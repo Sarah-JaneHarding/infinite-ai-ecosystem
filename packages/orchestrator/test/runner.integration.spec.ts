@@ -618,12 +618,31 @@ describe('per-step timeouts', () => {
       // enough ago that it has already exceeded its own timeout.
       await startStepRun(tx, run.id, 'slow', 0, {}, staleStart);
 
+      // First call: notices the stale attempt timed out and schedules a retry with a
+      // fixed, known delay (same controlled-timing shape as "retries with jitter" above —
+      // a freshly-scheduled retry's own `nextAttemptAt` is always strictly after `now`, so
+      // one call can never both schedule and immediately service a retry).
+      const afterTimeout = await advanceRun(
+        tx,
+        pipeline,
+        run.id,
+        {
+          executeStep: async () => ({ recovered: true }),
+          retryBaseMs: 1_000,
+          retryMaxMs: 10_000,
+          random: () => 1,
+        },
+        muchLater,
+      );
+      expect(afterTimeout.status).toBe('RUNNING');
+
+      // Past the scheduled delay: the retry runs and succeeds.
       return runToCompletion(
         tx,
         pipeline,
         run.id,
         { executeStep: async () => ({ recovered: true }) },
-        muchLater,
+        new Date(muchLater.getTime() + 1_500),
       );
     });
 
@@ -688,10 +707,29 @@ describe('durability: killing the worker mid-run (Stage 06 step 10)', () => {
       // block above does, rather than actually killing a process this test doesn't have.
       await startStepRun(tx, run.id, 'step-2', 0, run.input, t0);
 
-      // "On restart": a fresh runToCompletion call, long enough after t0 for step-2's own
-      // timeout to have elapsed, with no memory of anything the crashed process held.
+      // "On restart": long enough after t0 for step-2's own timeout to have elapsed, with
+      // no memory of anything the crashed process held. First call notices the timeout and
+      // schedules a retry with a fixed, known delay (a freshly-scheduled retry's own
+      // `nextAttemptAt` is always strictly after `now`, so one call can never both
+      // schedule and immediately service a retry — the same controlled-timing shape
+      // "retries with jitter" above uses).
       const muchLater = new Date(t0.getTime() + 60_000);
-      return runToCompletion(tx, pipeline, run.id, { executeStep }, muchLater);
+      const afterTimeout = await advanceRun(
+        tx,
+        pipeline,
+        run.id,
+        { executeStep, retryBaseMs: 1_000, retryMaxMs: 10_000, random: () => 1 },
+        muchLater,
+      );
+      expect(afterTimeout.status).toBe('RUNNING');
+
+      return runToCompletion(
+        tx,
+        pipeline,
+        run.id,
+        { executeStep },
+        new Date(muchLater.getTime() + 1_500),
+      );
     });
 
     expect(finished.status).toBe('SUCCEEDED');

@@ -324,6 +324,41 @@ function stepFor(pipeline: PipelineDefinition, stepId: string): PipelineStep {
   return step;
 }
 
+const MAP_ITEM_STEP_ID_PATTERN = /^(.+)\[\d+\]$/;
+
+/**
+ * Resolves `run.currentStepId` (or the entry step, if none yet) to the declared step that
+ * should actually drive this call's decision. Ordinarily that is a direct lookup — but
+ * `@infinite-ai/db`'s `startStepRun` (shared by every step kind, not something this file
+ * can opt out of per call) always writes back whatever `stepId` it was given as the run's
+ * new `currentStepId`, and a map item's own attempts are persisted under its synthetic
+ * `mapItemStepId` (`advanceMapStep`'s own header), never the map step's declared id. So
+ * `run.currentStepId` legitimately ends up holding a map item's synthetic id — not only
+ * from a crash at an unlucky moment, but as the *ordinary*, expected outcome of starting
+ * any map item's attempt at all. When that happens, the *map step* is what is actually
+ * driving the run: `advanceMapStep` re-derives every item's own state independently from
+ * `listStepRuns`, never from `currentStepId`, so routing back to it here is correct and
+ * loses nothing.
+ */
+function resolveCurrentStep(
+  pipeline: PipelineDefinition,
+  currentStepId: string,
+): PipelineStep {
+  const direct = pipeline.steps[currentStepId];
+  if (direct !== undefined) return direct;
+
+  const match = MAP_ITEM_STEP_ID_PATTERN.exec(currentStepId);
+  const mapStepId = match?.[1];
+  const owningMapStep = mapStepId === undefined ? undefined : pipeline.steps[mapStepId];
+  if (owningMapStep !== undefined && owningMapStep.kind === 'map') {
+    return owningMapStep;
+  }
+
+  throw new OrchestratorRunnerError(
+    `Pipeline "${pipeline.id}": no such step "${currentStepId}".`,
+  );
+}
+
 function succeededOutcome(
   options: RunnerOptions,
   context: StepExecutionContext,
@@ -376,9 +411,19 @@ export async function advanceRun(
   }
 
   const currentStepId = run.currentStepId ?? pipeline.entryStepId;
-  const step = stepFor(pipeline, currentStepId);
+  const step = resolveCurrentStep(pipeline, currentStepId);
+
+  // Dispatched before the generic per-attempt pre-checks below, which assume
+  // `currentStepId` names the one step whose latest attempt they should inspect. A map
+  // step's `run.currentStepId` in the database is frequently a *map item's* synthetic id
+  // instead (see `resolveCurrentStep`'s own header) — `advanceMapStep` re-derives each
+  // item's own state independently via `listStepRuns`, never through this generic path.
+  if (step.kind === 'map') {
+    return advanceMapStep(tx, pipeline, run, step, options, now);
+  }
+
   const stepRuns = await listStepRuns(tx, runId);
-  const latest = latestAttempt(stepRuns, currentStepId);
+  const latest = latestAttempt(stepRuns, step.id);
 
   if (latest?.status === 'RUNNING') {
     if (!hasTimedOut(latest.startedAt ?? latest.createdAt, step.timeoutMs, now)) {
@@ -449,10 +494,6 @@ export async function advanceRun(
     const result = options.evaluateCondition(step.condition, run.input);
     const nextId = nextStepAfterSuccess(step, result);
     return advanceToNextStep(tx, runId, step.id, nextId, now);
-  }
-
-  if (step.kind === 'map') {
-    return advanceMapStep(tx, pipeline, run, step, options, now);
   }
 
   return executeForwardStep(
