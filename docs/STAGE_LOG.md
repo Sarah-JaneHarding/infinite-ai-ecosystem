@@ -6598,3 +6598,65 @@ Tests: 185 passing (orchestrator package), 0 skipped. Includes 26 new pipeline s
 | `pnpm format:check` clean                                                                                                                  | PASS   |
 
 Open questions raised: none.
+
+---
+
+## Stage 51 — Wire MOD-02/MOD-03/LE pipelines and all remaining tool handlers into the worker
+
+Started: 2026-08-24 Completed: 2026-08-24
+Exit gate: PASS
+Tests: 17 passing (worker package, up from 6), 0 skipped. Full workspace: 51/51 turbo tasks pass.
+
+**Audit finding**
+
+`apps/worker/src/index.ts` — the actual BullMQ runtime that executes pipeline runs — only
+registered 4 of the (by Stage 50) 13 defined pipelines (MOD-01, MOD-04, and both MOD-05
+pipelines), only 38 of ~55 agent contracts (missing AC-03–AC-10 and all of LE), and
+`apps/worker/src/tool-handlers.ts` only implemented 3 of 26 tool names referenced by
+`toolName:` across every pipeline in `packages/orchestrator/src/pipelines/`. Since
+`step-executor.ts`'s `runToolCall` throws `StepExecutorError` for any unregistered tool
+name, every pipeline built in Stage 49 and 50 (MOD-02, MOD-03, all five LE pipelines) —
+and MOD-04/MOD-05, which were already registered — would fail at the first `tool_call`
+step in a real run. Defining a pipeline and proving it structurally sound
+(`validatePipelineDag`/`validatePipelineGating`) is necessary but not sufficient; nothing
+before this stage had checked whether the runtime that actually executes a run could
+reach every step.
+
+**What was built**
+
+- `apps/worker/src/tool-handlers.ts` — 23 new handlers (26 total), each parsing a small
+  Zod input schema and calling `remember()`. Two shapes cover every remaining tool:
+  - `L2_EPISODE` for "this happened" facts (deliveries, dispatches, suppressions,
+    retractions) — a shared `recordEpisode()` helper keeps the 19 episode-shaped handlers
+    (MOD-02 ×7, MOD-03 ×2, MOD-04 ×5, MOD-05 ×5) consistent.
+  - `L3_PROCEDURE` for versioned procedural artefacts — `brain.promote_challenger_prompt`
+    (kind `PROMPT_VERSION`), `brain.promote_exemplar` (kind `EXEMPLAR`), and
+    `learning.publish_to_commons` (kind `SOP`).
+- `apps/worker/src/queue-names.ts` — 9 new queue name constants (`QUEUE_MOD02_RTI`,
+  `QUEUE_MOD02_MONITORING`, `QUEUE_MOD02_SBST_SCRIBE`, `QUEUE_MOD03_WAREHOUSE`,
+  `QUEUE_LE_SIGNAL`, `QUEUE_LE_PATTERN_MINING`, `QUEUE_LE_EVOLUTION`, `QUEUE_LE_EXEMPLAR`,
+  `QUEUE_LE_COMMONS`).
+- `apps/worker/src/index.ts` — imports and registers AC-03–AC-10 and LE-01–LE-09 contracts
+  in `ALL_CONTRACTS`; imports and registers all 9 newly-missing pipelines in
+  `buildPipelineMap()` and `start()`'s `host.register(...)` chain.
+- `apps/worker/test/tool-handlers.spec.ts` — new file (none existed before this stage):
+  11 tests — a full coverage check that every one of the 26 tool names has exactly one
+  registered handler, plus happy-path and failure-path tests for a representative handler
+  from each shape (episode, procedure, enum-validated, empty-array-rejected).
+
+### Exit Gate
+
+| Criterion                                                                                                      | Result |
+| -------------------------------------------------------------------------------------------------------------- | ------ |
+| `apps/worker`: `pnpm typecheck` passes (including `exactOptionalPropertyTypes`)                                | PASS   |
+| `apps/worker`: `pnpm test` — 17 tests pass, 0 skipped                                                          | PASS   |
+| `apps/worker`: `pnpm lint` clean                                                                               | PASS   |
+| Every `toolName` referenced by any pipeline in `packages/orchestrator/src/pipelines/` has a registered handler | PASS   |
+| Every pipeline exported by `@infinite-ai/orchestrator` is registered in `buildPipelineMap()` and has a queue   | PASS   |
+| Every agent contract referenced by an `agent_call` step across all pipelines is in `ALL_CONTRACTS`             | PASS   |
+| `pnpm typecheck` (full workspace, 51 tasks) clean                                                              | PASS   |
+| `pnpm lint` (full workspace) clean                                                                             | PASS   |
+| `pnpm test` (full workspace, 51 tasks) clean                                                                   | PASS   |
+| `pnpm format:check` clean                                                                                      | PASS   |
+
+Open questions raised: none.
