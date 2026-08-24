@@ -1346,8 +1346,10 @@ describe('map step fan-out (Stage 52)', () => {
     });
 
     expect(finished.status).toBe('SUCCEEDED');
+    // Attempted twice (the failed first attempt, then the successful retry), but only
+    // pushed to `succeeded` once — the throw on the first attempt happens before the push.
     expect(l2Attempts).toBe(2);
-    expect(succeeded).toEqual(['L1', 'L2', 'L2', 'L3', 'record-summary']);
+    expect(succeeded).toEqual(['L1', 'L2', 'L3', 'record-summary']);
   });
 
   it('marks a stale RUNNING item TIMED_OUT and retries it on the next call', async () => {
