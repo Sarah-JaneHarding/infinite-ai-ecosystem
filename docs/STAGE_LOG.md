@@ -6667,11 +6667,13 @@ Open questions raised: none.
 
 Started: 2026-08-24 Completed: 2026-08-24
 Exit gate: PASS
-Tests: unit tier all green (workspace-wide); 7 new integration tests added for `map` fan-out (written blind — this environment has a Docker client but no reachable daemon socket, and the daemon started manually cannot pull images past the organisation's egress policy, so these are proven in CI per the established Stage 01 pattern, not locally).
+Tests: unit tier all green (workspace-wide); 7 new integration tests added for `map` fan-out. This environment has a Docker client but no reachable daemon socket, and a manually-started daemon cannot pull images past the organisation's egress policy, so these — and the pre-existing 32 in the same file — are hand-reviewed here and will run for the first time in CI (see the `ci.yml` fix below), not proven locally.
 
 **Audit finding**
 
 `packages/orchestrator/src/runner.ts`'s own header stated plainly that `map` steps were "declared and DAG-validated, but the runner does not yet evaluate... fan a map out into per-item runs" — and its `advanceRun` unconditionally threw `"map step execution is not yet built"` the moment any run reached one. Since `map` is the _entry step_ of MOD-01's curriculum pipeline and MOD-02's RTI/Monitoring pipelines, and appears in MOD-05's PD Analysis pipeline, this meant those pipelines could not progress past their first or second step in a real run — a more severe, unconditional failure than the tool-handler gap Stage 51 fixed (branch at least didn't crash if `evaluateCondition` was supplied). Separately, `apps/worker/src/worker-host.ts`'s `RunnerOptions` only ever set `executeStep`, never `prepareApproval` — meaning `human_gate` steps (in every pipeline with an approval gate) also threw unconditionally.
+
+A third finding, while trying to verify the above: `.github/workflows/ci.yml`'s `database` job runs `@infinite-ai/db`'s and `@infinite-ai/brain`'s integration suites but never `@infinite-ai/orchestrator`'s — `packages/orchestrator/test/runner.integration.spec.ts` (39 tests covering durability, resumability, retries, timeouts, compensation, human gates and now `map`) has never actually been executed by CI, despite `docs/STAGE_LOG.md`'s own Stage 06 entry describing it as "proven." Fixed in the same commit.
 
 **What was built**
 
@@ -6681,6 +6683,7 @@ Tests: unit tier all green (workspace-wide); 7 new integration tests added for `
 - `packages/orchestrator/test/runner.integration.spec.ts` — 7 new tests: ordered fan-out, empty collection, malformed collection field, durable resumption (an item's SUCCEEDED row is never re-run), per-item retry without disturbing other items, per-item timeout-then-retry, and an exhausted item failing the whole map through compensation.
 - `apps/worker/test/approval.spec.ts` — 2 new tests for `prepareApproval`.
 - `docs/OPEN_QUESTIONS.md` — **OQ-024**: `evaluateCondition` was deliberately left unwired in the worker. Every `branch` condition built so far (MOD-02, MOD-05, LE-commons) is narrated in its own pipeline file as evaluating a _prior step's output_, but the runner only ever gives a condition evaluator the run's static original `input` — the same accepted Stage 06 step 5 simplification ("every step today reads the run's original input, not a previous step's output"), now blocking something structural rather than an edit diff. Wiring a real per-condition evaluator today would silently misrepresent what each condition claims to check, so a run hitting `branch` now fails loudly with `OrchestratorRunnerError` instead. Needs a human design decision (mutable run context, explicit output-threading, or similar) before real branching can go to production in MOD-02/MOD-05/LE.
+- `.github/workflows/ci.yml` — the `database` job now also runs `pnpm --filter @infinite-ai/orchestrator test:integration`, alongside the existing `@infinite-ai/db` and `@infinite-ai/brain` steps. This is the first time `runner.integration.spec.ts` — pre-existing tests and this stage's 7 new ones alike — will actually run anywhere; if CI surfaces a defect in a pre-existing test, that is this fix doing its job, not a regression introduced here, and will be triaged the same as any other CI failure on this PR.
 
 **Verification**
 
@@ -6688,18 +6691,18 @@ Docker's client binary is present in this environment but its daemon socket is n
 
 ### Exit Gate
 
-| Criterion                                                                                                                                                        | Result                                                             |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `packages/orchestrator`: `pnpm typecheck` passes                                                                                                                 | PASS                                                               |
-| `packages/orchestrator`: `pnpm test` (unit tier) — 185 tests pass, 0 skipped                                                                                     | PASS                                                               |
-| `packages/orchestrator`: `pnpm lint` clean                                                                                                                       | PASS                                                               |
-| `apps/worker`: `pnpm typecheck` passes                                                                                                                           | PASS                                                               |
-| `apps/worker`: `pnpm test` — 21 tests pass (up from 17), 0 skipped                                                                                               | PASS                                                               |
-| `apps/worker`: `pnpm lint` clean                                                                                                                                 | PASS                                                               |
-| Every existing pipeline using `map` (MOD-01, MOD-02 RTI/Monitoring, MOD-05 PD Analysis) can now progress past a map step in the runner                           | PASS                                                               |
-| Every existing pipeline using `human_gate` can now progress past a gate in the worker                                                                            | PASS                                                               |
-| `docs/OPEN_QUESTIONS.md` has OQ-024 for the branch-condition design gap                                                                                          | PASS                                                               |
-| `pnpm typecheck` / `pnpm lint` / `pnpm format:check` (full workspace) clean                                                                                      | PASS                                                               |
-| `pnpm test:integration` for `map` — written and reviewed; not locally executable (Docker daemon unreachable, image pulls blocked by egress policy); proven in CI | DEFERRED TO CI, per the established Stage 01/`packages/db` pattern |
+| Criterion                                                                                                                                                                                                        | Result                                  |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `packages/orchestrator`: `pnpm typecheck` passes                                                                                                                                                                 | PASS                                    |
+| `packages/orchestrator`: `pnpm test` (unit tier) — 185 tests pass, 0 skipped                                                                                                                                     | PASS                                    |
+| `packages/orchestrator`: `pnpm lint` clean                                                                                                                                                                       | PASS                                    |
+| `apps/worker`: `pnpm typecheck` passes                                                                                                                                                                           | PASS                                    |
+| `apps/worker`: `pnpm test` — 21 tests pass (up from 17), 0 skipped                                                                                                                                               | PASS                                    |
+| `apps/worker`: `pnpm lint` clean                                                                                                                                                                                 | PASS                                    |
+| Every existing pipeline using `map` (MOD-01, MOD-02 RTI/Monitoring, MOD-05 PD Analysis) can now progress past a map step in the runner                                                                           | PASS                                    |
+| Every existing pipeline using `human_gate` can now progress past a gate in the worker                                                                                                                            | PASS                                    |
+| `docs/OPEN_QUESTIONS.md` has OQ-024 for the branch-condition design gap                                                                                                                                          | PASS                                    |
+| `pnpm typecheck` / `pnpm lint` / `pnpm format:check` (full workspace) clean                                                                                                                                      | PASS                                    |
+| `packages/orchestrator`'s `test:integration` — written and reviewed; not locally executable (Docker daemon unreachable, image pulls blocked by egress policy); wired into `ci.yml` for the first time this stage | DEFERRED TO CI — first real run pending |
 
 Open questions raised: OQ-024.
