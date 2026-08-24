@@ -47,6 +47,14 @@ export { CE09Contract } from './mod-01/CE-09.contract.js';
 
 export { AC01Contract } from './mod-02/AC-01.contract.js';
 export { AC02Contract } from './mod-02/AC-02.contract.js';
+export { AC03Contract } from './mod-02/AC-03.contract.js';
+export { AC04Contract } from './mod-02/AC-04.contract.js';
+export { AC05Contract } from './mod-02/AC-05.contract.js';
+export { AC06Contract } from './mod-02/AC-06.contract.js';
+export { AC07Contract } from './mod-02/AC-07.contract.js';
+export { AC08Contract } from './mod-02/AC-08.contract.js';
+export { AC09Contract } from './mod-02/AC-09.contract.js';
+export { AC10Contract } from './mod-02/AC-10.contract.js';
 
 export { DW01Contract } from './mod-03/DW-01.contract.js';
 export { DW02Contract } from './mod-03/DW-02.contract.js';
@@ -77,5 +85,15 @@ export { PD05Contract } from './mod-05/PD-05.contract.js';
 export { PD06Contract } from './mod-05/PD-06.contract.js';
 export { PD07Contract } from './mod-05/PD-07.contract.js';
 export { PD08Contract } from './mod-05/PD-08.contract.js';
+
+export { LE01Contract } from './le/LE-01.contract.js';
+export { LE02Contract } from './le/LE-02.contract.js';
+export { LE03Contract } from './le/LE-03.contract.js';
+export { LE04Contract } from './le/LE-04.contract.js';
+export { LE05Contract } from './le/LE-05.contract.js';
+export { LE06Contract } from './le/LE-06.contract.js';
+export { LE07Contract } from './le/LE-07.contract.js';
+export { LE08Contract } from './le/LE-08.contract.js';
+export { LE09Contract } from './le/LE-09.contract.js';
 
 export const PACKAGE_NAME = '@infinite-ai/agents' as const;

@@ -60,6 +60,12 @@ export {
 export { inspectRun, type RunInspection, type StepInspection } from './inspector.js';
 
 export { MOD01_CURRICULUM_PIPELINE } from './pipelines/mod-01.js';
+export {
+  MOD02_MONITORING_PIPELINE,
+  MOD02_RTI_PIPELINE,
+  MOD02_SBST_SCRIBE_PIPELINE,
+} from './pipelines/mod-02.js';
+export { MOD03_WAREHOUSE_PIPELINE } from './pipelines/mod-03.js';
 export { MOD04_TOOLBOX_PIPELINE } from './pipelines/mod-04.js';
 export { MOD05_CPTD_PIPELINE, MOD05_PD_ANALYSIS_PIPELINE } from './pipelines/mod-05.js';
 
