@@ -1,0 +1,983 @@
+{
+  "agentId": "AC-08",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "ac08-single-ratify-intervention-001",
+      "agentId": "AC-08",
+      "tags": ["ratify_intervention", "single-case", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "2/2 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "4a391e69-1750-45d5-9cb1-f0d9c45beaae",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-03-12",
+        "participantRoles": [
+          "SBST Coordinator",
+          "Class Teacher",
+          "Learning Support Educator"
+        ],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "ef3633c5-b267-4808-a802-28c217d6ff42",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-screen-001", "ev-screen-002"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-single-defer-case-001",
+      "agentId": "AC-08",
+      "tags": ["defer", "single-case", "null-ratification"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "197fadae-eb9b-4dcd-8813-64633cb9db24",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-03-12",
+        "participantRoles": ["SBST Coordinator", "Principal"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+            "decision": "defer",
+            "sbstRatificationId": null,
+            "nextSteps": ["Gather additional data before next SBST meeting."]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-screen-003"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-ratify-exit-single-001",
+      "agentId": "AC-08",
+      "tags": ["ratify_exit", "single-case", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "2/2 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "6c9e01d1-350f-480b-b5cc-e15fc1c17273",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-04-09",
+        "participantRoles": ["SBST Coordinator", "Class Teacher"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+            "decision": "ratify_exit",
+            "sbstRatificationId": "c7588b56-40d2-42df-b30b-9cc6e06762d5",
+            "nextSteps": [
+              "Record exit from support programme.",
+              "Monitor learner in class for one term."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-monitor-010", "ev-monitor-011"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-ratify-referral-single-001",
+      "agentId": "AC-08",
+      "tags": ["ratify_referral", "single-case", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "2/2 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "d5159542-f934-484a-b191-466adb28b6d7",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-05-07",
+        "participantRoles": [
+          "SBST Coordinator",
+          "Principal",
+          "Learning Support Educator"
+        ],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+            "decision": "ratify_referral",
+            "sbstRatificationId": "b4ceca3f-3077-4db9-a9c8-2d7970f98cd5",
+            "nextSteps": [
+              "Compile SIAS referral documentation.",
+              "Submit to district support services."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-monitor-020", "ev-plan-020"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-multi-case-mixed-decisions-001",
+      "agentId": "AC-08",
+      "tags": ["multi-case", "mixed-decisions", "evidence-union"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "5/5 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "c50f0e55-4e05-494c-be50-b1e3c98b7836",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-03-19",
+        "participantRoles": [
+          "SBST Coordinator",
+          "Class Teacher",
+          "Principal",
+          "Learning Support Educator"
+        ],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "9895a7ad-1511-494d-99e9-c8849e27467b",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+            "decision": "defer",
+            "sbstRatificationId": null,
+            "nextSteps": ["Gather additional data before next SBST meeting."]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+            "decision": "ratify_exit",
+            "sbstRatificationId": "483aff30-3f72-442c-8ce9-b21453a79a26",
+            "nextSteps": [
+              "Record exit from support programme.",
+              "Monitor learner in class for one term."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-a-001", "ev-a-002", "ev-b-001", "ev-c-001", "ev-c-002"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-evidence-ids-union-all-items-001",
+      "agentId": "AC-08",
+      "tags": ["evidence-union", "two-cases"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "5/5 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "75c33f4b-dbd3-4e6a-975e-af96af53427a",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-03-26",
+        "participantRoles": ["SBST Coordinator"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "c1c44762-1908-4793-84f6-ce88aacb1874",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "fe72d58d-c668-4659-96e2-33cf81c07dad",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-x-001", "ev-x-002", "ev-x-003", "ev-y-001", "ev-y-002"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-five-cases-all-ratify-001",
+      "agentId": "AC-08",
+      "tags": ["five-cases", "all-ratify"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "18e56de2-eec9-4eee-b51c-02dda98ea0f7",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-04-02",
+        "participantRoles": ["SBST Coordinator", "Principal", "Class Teacher"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "1ad31aa9-cc7c-470e-b09a-5a5c6575d7ed",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "b4c277b4-f944-4bc0-b6a3-8fd76a22a6f9",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "8a625303-8af5-4c54-97b5-98b135c871a0",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "faed6dd0-a583-45e7-92bc-38f02db12af0",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "ad734a2a-a8f5-4054-b541-db80ecbce3a3",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-p1-001", "ev-p2-001", "ev-p3-001", "ev-p4-001", "ev-p5-001"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-needs-input-empty-agenda-001",
+      "agentId": "AC-08",
+      "tags": ["needs_input", "empty-agenda", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "needs_input",
+          "explanation": "No agenda items supplied.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-needs-input-missing-meeting-id-001",
+      "agentId": "AC-08",
+      "tags": ["needs_input", "missing-meeting-id"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "needs_input",
+          "explanation": "meetingId, tenantId and scheduledOn are all required.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-no-diagnostic-language-ratify-001",
+      "agentId": "AC-08",
+      "tags": ["diagnosis_guard", "red-team-lite"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No diagnostic language detected.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "6456d4bb-cf33-4b5f-9d6a-e282188139c3",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-04-16",
+        "participantRoles": ["SBST Coordinator", "Class Teacher"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "1c6274b1-5933-454d-a97e-a8d581d72ef8",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-diag-001"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "ac08-next-steps-populated-001",
+      "agentId": "AC-08",
+      "tags": ["next-steps", "role-framing"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "All decisions have populated nextSteps.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "49e8e9e5-be66-40d1-ab29-343979c083eb",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-04-23",
+        "participantRoles": ["SBST Coordinator", "Learning Support Educator"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "0002e7ce-e8d0-44d6-8c9e-0dcf07982923",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-n-001"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-defer-no-ratification-id-001",
+      "agentId": "AC-08",
+      "tags": ["defer", "null-ratification-id", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "All defer decisions have null sbstRatificationId.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "88af6f1b-5dc5-43d5-8b91-8a68fb1cf857",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-04-30",
+        "participantRoles": ["SBST Coordinator"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+            "decision": "defer",
+            "sbstRatificationId": null,
+            "nextSteps": ["Gather additional data before next SBST meeting."]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-d-001"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-single-participant-role-001",
+      "agentId": "AC-08",
+      "tags": ["single-participant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "beb5d88c-4ee8-43d0-b3db-b89464b99ec5",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-05-07",
+        "participantRoles": ["SBST Coordinator"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "83043206-136b-4296-8785-9519686d934e",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-sp-001"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-three-different-decisions-001",
+      "agentId": "AC-08",
+      "tags": ["three-decisions", "all-types"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "3/3 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "7f60d546-8a63-460e-8e3b-28f3205a43cd",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-05-14",
+        "participantRoles": [
+          "SBST Coordinator",
+          "Class Teacher",
+          "Learning Support Educator"
+        ],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "a85283d6-823d-4bc2-97e1-557b1f8cf168",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+            "decision": "ratify_referral",
+            "sbstRatificationId": "2bd5c69a-fb5a-4dad-9ddc-a0ddb92c08e7",
+            "nextSteps": [
+              "Compile SIAS referral documentation.",
+              "Submit to district support services."
+            ]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000022",
+            "decision": "ratify_exit",
+            "sbstRatificationId": "ebec3be6-bf2f-4d08-9364-cdbc61a23e97",
+            "nextSteps": [
+              "Record exit from support programme.",
+              "Monitor learner in class for one term."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-t3-001", "ev-t3-002", "ev-t3-003"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-action-items-populated-001",
+      "agentId": "AC-08",
+      "tags": ["action-items", "next-steps-not-empty"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Every decision has at least one nextStep.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "d24a3b71-cf2a-41a3-9e30-ffe0e6aa8a9e",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-05-21",
+        "participantRoles": ["SBST Coordinator", "Principal"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000023",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "dd712a7a-de74-4eb6-97ec-60a2f2942cfd",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-ai-001"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-no-person-name-in-output-001",
+      "agentId": "AC-08",
+      "tags": ["pii_guard", "no-person-names"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No person names found in output (only UUIDs used for learner identifiers).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "ef69570f-2e11-4045-a05e-ceb30fc0348a",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-05-28",
+        "participantRoles": ["SBST Coordinator", "Class Teacher"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000024",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "d357ff24-42b5-419f-88f2-1deeafdd328b",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-pn-001"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-multiple-evidence-ids-per-item-001",
+      "agentId": "AC-08",
+      "tags": ["evidence-linkage", "four-evidence-ids"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "4/4 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "2dd6a28f-f8f1-4b30-a6b1-a7e70c787b75",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-06-04",
+        "participantRoles": ["SBST Coordinator", "Learning Support Educator"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000025",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "7acada41-b722-4dbd-b8bb-bf30e0a94cd9",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-m-001", "ev-m-002", "ev-m-003", "ev-m-004"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-term-end-meeting-001",
+      "agentId": "AC-08",
+      "tags": ["term-end", "two-decisions"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "59f6c52b-852f-43eb-a9db-cc8afea77cc9",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-06-25",
+        "participantRoles": [
+          "SBST Coordinator",
+          "Principal",
+          "Class Teacher",
+          "Learning Support Educator"
+        ],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000026",
+            "decision": "ratify_exit",
+            "sbstRatificationId": "01f44822-5a4c-4425-a12b-c42abfc6b144",
+            "nextSteps": [
+              "Record exit from support programme.",
+              "Monitor learner in class for one term."
+            ]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000027",
+            "decision": "ratify_referral",
+            "sbstRatificationId": "fb25ac1a-89a2-4b65-801e-bea8738b7e1b",
+            "nextSteps": [
+              "Compile SIAS referral documentation.",
+              "Submit to district support services."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-te-001", "ev-te-002"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-wellbeing-domain-context-001",
+      "agentId": "AC-08",
+      "tags": ["wellbeing", "multi-domain"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "d2022e78-d280-4e68-98bf-e287115bd74b",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-04-09",
+        "participantRoles": ["SBST Coordinator", "School Counsellor Role"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000028",
+            "decision": "ratify_intervention",
+            "sbstRatificationId": "b39d7053-5977-460d-a714-f2523dfbb85e",
+            "nextSteps": [
+              "Implement the ratified intervention plan.",
+              "Schedule first progress review."
+            ]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-wb-001", "ev-wb-002"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-missing-tenant-id-needs-input-001",
+      "agentId": "AC-08",
+      "tags": ["needs_input", "missing-tenant-id"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "needs_input",
+          "explanation": "meetingId, tenantId and scheduledOn are all required.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-all-deferred-meeting-001",
+      "agentId": "AC-08",
+      "tags": ["all-deferred", "two-cases"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresChairConfirmation\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "scribed",
+        "minutesId": "e93f8913-9e6b-43fa-ba98-115ad5399fe6",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "scheduledOn": "2026-03-05",
+        "participantRoles": ["SBST Coordinator", "Class Teacher"],
+        "decisions": [
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000030",
+            "decision": "defer",
+            "sbstRatificationId": null,
+            "nextSteps": ["Gather additional data before next SBST meeting."]
+          },
+          {
+            "learnerId": "aaaaaaaa-0000-0000-0000-000000000031",
+            "decision": "defer",
+            "sbstRatificationId": null,
+            "nextSteps": ["Gather additional data before next SBST meeting."]
+          }
+        ],
+        "actionItems": ["Chair to confirm and sign meeting minutes before filing."],
+        "evidenceIds": ["ev-ad-001", "ev-ad-002"],
+        "requiresChairConfirmation": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac08-missing-scheduled-on-001",
+      "agentId": "AC-08",
+      "tags": ["needs_input", "missing-scheduled-on"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "needs_input",
+          "explanation": "meetingId, tenantId and scheduledOn are all required.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 22,
+    "passedCases": 22,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

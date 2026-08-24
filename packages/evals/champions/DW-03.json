@@ -1,0 +1,692 @@
+{
+  "agentId": "DW-03",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "dw-03-all-fields-permitted-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "all_permitted"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"consentBasis\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "PARENTAL_CONSENT",
+        "permittedFields": ["attendanceStatus", "occurredAt"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-no-consent-record-001",
+      "agentId": "DW-03",
+      "tags": ["needs_input", "no_consent_record"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No consent record found for domain 'ATTENDANCE'."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-withdrawn-consent-001",
+      "agentId": "DW-03",
+      "tags": ["blocked", "withdrawn_consent"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "blockedFields": ["attendanceStatus"],
+        "detail": "Consent for domain 'ATTENDANCE' has been withdrawn."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-purpose-not-in-allow-list-001",
+      "agentId": "DW-03",
+      "tags": ["needs_input", "unknown_purpose"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Purpose 'marketing' is not registered in the allow-list."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-partial-block-some-fields-001",
+      "agentId": "DW-03",
+      "tags": ["blocked", "partial_block"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "blockedFields": ["financialData"],
+        "detail": "Consent does not cover the following fields: financialData."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-purpose-not-permitted-for-domain-001",
+      "agentId": "DW-03",
+      "tags": ["blocked", "purpose_domain_mismatch"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "blockedFields": ["screenerScore"],
+        "detail": "Purpose 'curriculum' is not permitted for domain 'WELLBEING'."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-learner-id-not-in-detail-001",
+      "agentId": "DW-03",
+      "tags": ["blocked", "pii_safety", "no_learner_id_in_detail"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "blockedFields": ["attendanceStatus"],
+        "detail": "Consent for domain 'ATTENDANCE' has been withdrawn."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-most-recent-decision-wins-001",
+      "agentId": "DW-03",
+      "tags": ["blocked", "most_recent_wins"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "blockedFields": ["attendanceStatus"],
+        "detail": "Consent for domain 'ATTENDANCE' has been withdrawn."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-regrant-after-withdrawal-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "regrant_after_withdrawal"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "PARENTAL_CONSENT",
+        "permittedFields": ["attendanceStatus"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-different-domain-no-record-001",
+      "agentId": "DW-03",
+      "tags": ["needs_input", "wrong_domain"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No consent record found for domain 'BEHAVIOUR'."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-multi-tenant-isolation-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "PARENTAL_CONSENT",
+        "permittedFields": ["scorePercent"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-wellbeing-granted-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "wellbeing"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"consentBasis\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "PARENTAL_CONSENT",
+        "permittedFields": ["screenerScore"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-blocked-fields-sorted-001",
+      "agentId": "DW-03",
+      "tags": ["blocked", "sorted_blocked_fields"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "blockedFields": ["teacherComment"],
+        "detail": "Consent does not cover the following fields: teacherComment."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-permitted-fields-sorted-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "sorted_permitted_fields"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "PARENTAL_CONSENT",
+        "permittedFields": ["occurredAt", "attendanceStatus"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-empty-fields-list-001",
+      "agentId": "DW-03",
+      "tags": ["needs_input", "empty_fields_list"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No fields requested — at least one field must be specified."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-behaviour-granted-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "behaviour"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "PARENTAL_CONSENT",
+        "permittedFields": ["behaviourKind", "occurredAt"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-detail-names-rule-001",
+      "agentId": "DW-03",
+      "tags": ["blocked", "detail_names_rule"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "blockedFields": ["attendanceStatus"],
+        "detail": "Consent for domain 'ATTENDANCE' has been withdrawn."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-multiple-domains-one-blocked-001",
+      "agentId": "DW-03",
+      "tags": ["blocked", "one_field_blocked"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "blockedFields": ["financialBalance"],
+        "detail": "Consent does not cover the following fields: financialBalance."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-consent-basis-from-record-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "legitimate_interest"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"consentBasis\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "LEGITIMATE_INTEREST",
+        "permittedFields": ["scorePercent"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-unknown-purpose-002",
+      "agentId": "DW-03",
+      "tags": ["needs_input", "unknown_purpose"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Purpose 'unknown_purpose_xyz' is not registered in the allow-list."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-screener-domain-granted-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "wellbeing", "screener"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "PARENTAL_CONSENT",
+        "permittedFields": ["screenerScore", "screenerDate"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-all-blocked-fields-returned-001",
+      "agentId": "DW-03",
+      "tags": ["blocked", "all_fields_blocked"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "blockedFields": ["fieldA", "fieldB", "fieldC"],
+        "detail": "Consent does not cover the following fields: fieldA, fieldB, fieldC."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-pending-consent-state-001",
+      "agentId": "DW-03",
+      "tags": ["needs_input", "pending_consent"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Consent for domain 'ATTENDANCE' is still pending."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-curriculum-purpose-assessment-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "curriculum_purpose"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "PARENTAL_CONSENT",
+        "permittedFields": ["scorePercent", "subjectCode"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-wellbeing-blocked-for-curriculum-001",
+      "agentId": "DW-03",
+      "tags": ["blocked", "wellbeing_not_in_curriculum"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "blockedFields": ["screenerScore"],
+        "detail": "Purpose 'curriculum' is not permitted for domain 'WELLBEING'."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-consent-basis-is-most-recent-granted-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "most_recent_basis"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"consentBasis\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "PARENTAL_CONSENT",
+        "permittedFields": ["attendanceStatus"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-intervention-purpose-behaviour-001",
+      "agentId": "DW-03",
+      "tags": ["ok", "behaviour", "intervention"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "consentBasis": "PARENTAL_CONSENT",
+        "permittedFields": ["behaviourKind", "occurredAt", "severity"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-opaque-token-not-uuid-in-detail-001",
+      "agentId": "DW-03",
+      "tags": ["needs_input", "pii_safety"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No consent record found for domain 'ASSESSMENT'."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-03-single-field-no-consent-record-001",
+      "agentId": "DW-03",
+      "tags": ["needs_input", "single_field"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No consent record found for domain 'BEHAVIOUR'."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 29,
+    "passedCases": 29,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

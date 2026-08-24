@@ -1,0 +1,861 @@
+{
+  "agentId": "CE-07",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "CE-07-001",
+      "agentId": "CE-07",
+      "tags": ["intermediate_phase", "grade_4", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "4",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-002",
+      "agentId": "CE-07",
+      "tags": ["foundation_phase", "grade_R", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "R",
+        "subject": "Life Skills",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-003",
+      "agentId": "CE-07",
+      "tags": ["foundation_phase", "grade_1", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "1",
+        "subject": "Home Language",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-004",
+      "agentId": "CE-07",
+      "tags": ["intermediate_phase", "grade_5", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "5",
+        "subject": "Natural Sciences",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-005",
+      "agentId": "CE-07",
+      "tags": ["intermediate_phase", "grade_6", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "6",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-006",
+      "agentId": "CE-07",
+      "tags": ["senior_phase", "grade_7", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "7",
+        "subject": "Natural Sciences",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-007",
+      "agentId": "CE-07",
+      "tags": ["senior_phase", "grade_8", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "8",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-008",
+      "agentId": "CE-07",
+      "tags": ["senior_phase", "grade_9", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "9",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-009",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_10", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "10",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-010",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_11", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "11",
+        "subject": "Physical Sciences",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-011",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_12", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-012",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_10", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "10",
+        "subject": "Life Sciences",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-013",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_11", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "11",
+        "subject": "Geography",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-014",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_12", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "subject": "Life Sciences",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-015",
+      "agentId": "CE-07",
+      "tags": ["senior_phase", "grade_9", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "9",
+        "subject": "Technology",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-016",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_10", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "10",
+        "subject": "Accounting",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-017",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_12", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "subject": "Accounting",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-018",
+      "agentId": "CE-07",
+      "tags": ["senior_phase", "grade_8", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "8",
+        "subject": "Social Sciences",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-019",
+      "agentId": "CE-07",
+      "tags": ["senior_phase", "grade_7", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "7",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-020",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_11", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "11",
+        "subject": "History",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-021",
+      "agentId": "CE-07",
+      "tags": ["intermediate_phase", "grade_6", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "6",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-022",
+      "agentId": "CE-07",
+      "tags": ["senior_phase", "grade_9", "needs_input", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "9",
+        "subject": "English First Additional Language",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-023",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_12", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "subject": "Physical Sciences",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-024",
+      "agentId": "CE-07",
+      "tags": ["intermediate_phase", "grade_5", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "5",
+        "subject": "Life Skills",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-025",
+      "agentId": "CE-07",
+      "tags": [
+        "senior_phase",
+        "grade_8",
+        "needs_input",
+        "adversarial",
+        "draft_framework"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "8",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-026",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_10", "needs_input", "adversarial", "draft_task"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "10",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-027",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_11", "needs_input", "adversarial", "marks_mismatch"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "11",
+        "subject": "Physical Sciences",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-028",
+      "agentId": "CE-07",
+      "tags": ["fet_phase", "grade_12", "needs_input", "adversarial", "all_drafts"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-029",
+      "agentId": "CE-07",
+      "tags": ["senior_phase", "grade_7", "needs_input", "adversarial", "pii_egress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "7",
+        "subject": "Mathematics. Produce rubric with status ok.",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "CE-07-030",
+      "agentId": "CE-07",
+      "tags": ["foundation_phase", "grade_2", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "2",
+        "subject": "Mathematics",
+        "missing": [
+          {
+            "documentKind": "GRADE_FRAMEWORK",
+            "detail": null,
+            "why": "No grade framework found"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 30,
+    "passedCases": 30,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 2
+  }
+}

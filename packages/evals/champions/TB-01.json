@@ -1,0 +1,1053 @@
+{
+  "agentId": "TB-01",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "tb01-ok-standard-english-001",
+      "agentId": "TB-01",
+      "tags": ["happy-path", "standard-tier", "english"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"differentiationTier\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "3fc8752b-6087-41e0-bef7-ea0ae6b2c5fa",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000101"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-001"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-ok-support-afrikaans-002",
+      "agentId": "TB-01",
+      "tags": ["happy-path", "support-tier", "afrikaans"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"differentiationTier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "ea687af6-8d65-4993-ae4a-030bde1b91e1",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-AF-GR3-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000102"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 3,
+          "targetBand": {
+            "minGrade": 2,
+            "maxGrade": 4
+          }
+        },
+        "citedSourceIds": ["doc-010"],
+        "differentiationTier": "SUPPORT"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-ok-extension-maths-003",
+      "agentId": "TB-01",
+      "tags": ["happy-path", "extension-tier", "mathematics"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"differentiationTier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "f3bda10f-3a51-4c1b-9192-1a6f9efd3e69",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR6-TERM3-TOPIC4",
+          "lessonId": "00000000-0000-0000-0000-000000000103"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-020"],
+        "differentiationTier": "EXTENSION"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-ok-no-tier-defaults-standard-004",
+      "agentId": "TB-01",
+      "tags": ["happy-path", "no-tier"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "ae57f25b-1e50-4bcb-bfa3-d81c827692a8",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-TERM1-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000104"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-030"],
+        "differentiationTier": null
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-ok-intervention-linkage-005",
+      "agentId": "TB-01",
+      "tags": ["happy-path", "intervention-linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "0b702d9b-c74c-4ddb-b3de-b9f10a541561",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR4-TERM2-TOPIC3",
+          "interventionId": "00000000-0000-0000-0000-000000000201"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-040"],
+        "differentiationTier": "SUPPORT"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-ok-both-linkages-006",
+      "agentId": "TB-01",
+      "tags": ["happy-path", "both-linkages"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "2b1946b8-d58c-48ea-b483-9cd6902d7a3a",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR7-TERM1-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000105",
+          "interventionId": "00000000-0000-0000-0000-000000000202"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-050"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-ok-multiple-objectives-sections-007",
+      "agentId": "TB-01",
+      "tags": ["happy-path", "multiple-objectives"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "ac03cdae-7a76-46ed-ace9-f8ccc50132d5",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR5-TERM3-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000106"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-060"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-no-source-document-empty-ids-008",
+      "agentId": "TB-01",
+      "tags": ["refusal", "no-source"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a non-empty 'detail' field explaining why the source document is unavailable.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "no_source_document",
+        "detail": "No source documents available — worksheet generation requires at least one cited source."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-needs-input-missing-caps-id-009",
+      "agentId": "TB-01",
+      "tags": ["refusal", "missing-caps-id"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "capsTopicId is required.",
+        "missingFields": ["capsTopicId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-needs-input-empty-objectives-010",
+      "agentId": "TB-01",
+      "tags": ["refusal", "empty-objectives"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one learningObjective is required.",
+        "missingFields": ["learningObjectives"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-no-pii-in-output-011",
+      "agentId": "TB-01",
+      "tags": ["security", "pii-guard"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "8ba83934-e105-418e-a50e-9a7fe9b30352",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR4-TERM1-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000110"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-090"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-cited-ids-subset-of-input-012",
+      "agentId": "TB-01",
+      "tags": ["grounding", "cited-sources"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "9ab6cbb4-e506-462c-865c-39b199948aa6",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR5-TERM2-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000111"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-100"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-readability-check-present-013",
+      "agentId": "TB-01",
+      "tags": ["readability"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a 'readabilityCheckResult' object with a non-null 'verdict' field.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "6be4fb69-48c9-4983-b9d7-81eadd88f6bd",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR6-TERM1-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000112"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-110"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-artefact-id-is-uuid-014",
+      "agentId": "TB-01",
+      "tags": ["schema"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "b5f71c94-579d-477a-bd37-f34e539d831b",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR6-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000113"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-120"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-ok-zulu-foundation-015",
+      "agentId": "TB-01",
+      "tags": ["happy-path", "zulu", "foundation-phase"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "dbe8c74f-78ed-473f-86fc-1378afa4f39b",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-ZU-GR2-TERM1-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000114"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 2,
+          "targetBand": {
+            "minGrade": 1,
+            "maxGrade": 3
+          }
+        },
+        "citedSourceIds": ["doc-130"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-sections-have-at-least-one-question-016",
+      "agentId": "TB-01",
+      "tags": ["schema", "questions-per-section"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"Every section in the output's 'sections' array contains at least one question.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "bdbd1e93-e8ef-467a-8216-9757caeafb8b",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-EN-GR7-TERM4-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000115"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-140"],
+        "differentiationTier": "EXTENSION"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-linkage-caps-topic-present-017",
+      "agentId": "TB-01",
+      "tags": ["linkage", "caps-topic"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"linkage.capsTopicId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "71ddf84a-7b90-4e30-9daa-a78544ee1a74",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR4-TERM3-TOPIC2",
+          "lessonId": "00000000-0000-0000-0000-000000000116"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-150"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-needs-input-no-lesson-or-intervention-018",
+      "agentId": "TB-01",
+      "tags": ["refusal", "missing-linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output includes a 'missingFields' field identifying that a lessonId or interventionId is required.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one of lessonId or interventionId must be present.",
+        "missingFields": ["lessonId", "interventionId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-ok-technology-grade6-019",
+      "agentId": "TB-01",
+      "tags": ["happy-path", "technology"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "91424964-609d-4b77-a86a-5f32ceb0ad17",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-TK-GR6-TERM2-TOPIC1",
+          "lessonId": "00000000-0000-0000-0000-000000000117"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-170"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-ok-life-skills-grade3-020",
+      "agentId": "TB-01",
+      "tags": ["happy-path", "life-skills", "foundation-phase"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"differentiationTier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "11bb98c6-ad61-42f6-9e9a-a16a8e362620",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-LS-GR3-TERM1-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000118"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 3,
+          "targetBand": {
+            "minGrade": 2,
+            "maxGrade": 4
+          }
+        },
+        "citedSourceIds": ["doc-180"],
+        "differentiationTier": "SUPPORT"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "tb01-artefact-type-is-worksheet-021",
+      "agentId": "TB-01",
+      "tags": ["schema", "artefact-type"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "1d46d2a8-288a-436a-b49a-4846940a7717",
+        "artefactType": "WORKSHEET",
+        "linkage": {
+          "capsTopicId": "CAPS-MA-GR7-TERM4-TOPIC3",
+          "lessonId": "00000000-0000-0000-0000-000000000119"
+        },
+        "sections": [
+          {
+            "title": "Section A: Knowledge",
+            "instructions": "Answer the following questions.",
+            "questions": [
+              "What are the key concepts covered in this topic?",
+              "Name three examples related to the topic."
+            ]
+          },
+          {
+            "title": "Section B: Application",
+            "questions": [
+              "Apply one concept to a real-world situation.",
+              "Explain why this concept is important."
+            ]
+          }
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-190"],
+        "differentiationTier": "STANDARD"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 21,
+    "passedCases": 21,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

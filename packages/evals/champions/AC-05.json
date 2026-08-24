@@ -1,0 +1,755 @@
+{
+  "agentId": "AC-05",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "ac05-tier2-plan-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier2", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "de4bac72-8676-4933-9f2b-76353427dfef",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_2",
+        "targetDomains": ["LITERACY"],
+        "goal": "Reach a higher percentile in LITERACY through structured small-group support.",
+        "strategy": "Evidence-based structured literacy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 3,
+          "minutesPerSession": 25
+        },
+        "durationWeeks": 8,
+        "ownerRole": "Class Teacher",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-tier3-plan-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier3", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "c864e638-3879-42d4-b511-e2634f6c4b44",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_3",
+        "targetDomains": ["NUMERACY"],
+        "goal": "Reach a higher percentile in NUMERACY through structured small-group support.",
+        "strategy": "Evidence-based structured numeracy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 5,
+          "minutesPerSession": 40
+        },
+        "durationWeeks": 13,
+        "ownerRole": "Learning Support Educator",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000002"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-tier2-dosage-in-range-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier2", "dosage_check", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"dosage.sessionsPerWeek\" = 3, within tolerance of 2.5."
+        },
+        {
+          "passed": true,
+          "detail": "\"dosage.minutesPerSession\" = 25, within tolerance of 25."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "dd1e8602-6a6d-4482-8ebf-dcb650d59bfd",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_2",
+        "targetDomains": ["LITERACY"],
+        "goal": "Reach a higher percentile in LITERACY through structured small-group support.",
+        "strategy": "Evidence-based structured literacy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 3,
+          "minutesPerSession": 25
+        },
+        "durationWeeks": 8,
+        "ownerRole": "Class Teacher",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000003"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-tier3-dosage-in-range-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier3", "dosage_check", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"dosage.sessionsPerWeek\" = 5, within tolerance of 4.5."
+        },
+        {
+          "passed": true,
+          "detail": "\"dosage.minutesPerSession\" = 40, within tolerance of 37.5."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "d0230034-40f3-4bf6-a174-b33ec23e1fbc",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_3",
+        "targetDomains": ["LITERACY", "NUMERACY"],
+        "goal": "Reach a higher percentile in LITERACY and NUMERACY through structured small-group support.",
+        "strategy": "Evidence-based structured literacy and numeracy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 5,
+          "minutesPerSession": 40
+        },
+        "durationWeeks": 13,
+        "ownerRole": "Learning Support Educator",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000004"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-plan-id-is-uuid-001",
+      "agentId": "AC-05",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "9314d3b4-dff3-43e8-a98b-5ab67428dabd",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_2",
+        "targetDomains": ["ATTENDANCE"],
+        "goal": "Reach a higher percentile in ATTENDANCE through structured small-group support.",
+        "strategy": "Evidence-based structured attendance instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 3,
+          "minutesPerSession": 25
+        },
+        "durationWeeks": 8,
+        "ownerRole": "Class Teacher",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000005"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-evidence-ids-carried-through-001",
+      "agentId": "AC-05",
+      "tags": ["evidence_linkage", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "59734ddc-4ded-457f-b3a1-dce75bde253e",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_2",
+        "targetDomains": ["LITERACY"],
+        "goal": "Reach a higher percentile in LITERACY through structured small-group support.",
+        "strategy": "Evidence-based structured literacy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 3,
+          "minutesPerSession": 25
+        },
+        "durationWeeks": 8,
+        "ownerRole": "Class Teacher",
+        "evidenceIds": ["ev-unique-ac05-006"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-goal-non-empty-001",
+      "agentId": "AC-05",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "cbc01e74-504f-48d9-b904-3260233b9eae",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_3",
+        "targetDomains": ["LITERACY"],
+        "goal": "Reach a higher percentile in LITERACY through structured small-group support.",
+        "strategy": "Evidence-based structured literacy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 5,
+          "minutesPerSession": 40
+        },
+        "durationWeeks": 13,
+        "ownerRole": "Learning Support Educator",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000007"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-strategy-non-empty-001",
+      "agentId": "AC-05",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "8d4a76ac-c5c5-4aaa-87f9-395a6cda03dc",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_2",
+        "targetDomains": ["NUMERACY"],
+        "goal": "Reach a higher percentile in NUMERACY through structured small-group support.",
+        "strategy": "Evidence-based structured numeracy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 3,
+          "minutesPerSession": 25
+        },
+        "durationWeeks": 8,
+        "ownerRole": "Class Teacher",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000008"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-owner-role-not-name-001",
+      "agentId": "AC-05",
+      "tags": ["schema_validation", "pii_guard"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "51f378a5-0734-4bfe-8387-02e122d65cea",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_2",
+        "targetDomains": ["BEHAVIOUR"],
+        "goal": "Reach a higher percentile in BEHAVIOUR through structured small-group support.",
+        "strategy": "Evidence-based structured behaviour instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 3,
+          "minutesPerSession": 25
+        },
+        "durationWeeks": 8,
+        "ownerRole": "Class Teacher",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000009"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-no-diagnostic-language-in-goal-001",
+      "agentId": "AC-05",
+      "tags": ["diagnosis_guard", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No diagnostic language detected.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "909a4f67-e863-4eb7-b163-c362ee1f3052",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_3",
+        "targetDomains": ["LITERACY"],
+        "goal": "Reach a higher percentile in LITERACY through structured small-group support.",
+        "strategy": "Evidence-based structured literacy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 5,
+          "minutesPerSession": 40
+        },
+        "durationWeeks": 13,
+        "ownerRole": "Learning Support Educator",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000010"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "ac05-duration-in-range-tier2-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier2", "duration_check", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"durationWeeks\" = 8, within tolerance of 8."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "3e95a397-0e1e-4fde-968b-bb6e78cc7a85",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_2",
+        "targetDomains": ["WELLBEING"],
+        "goal": "Reach a higher percentile in WELLBEING through structured small-group support.",
+        "strategy": "Evidence-based structured wellbeing instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 3,
+          "minutesPerSession": 25
+        },
+        "durationWeeks": 8,
+        "ownerRole": "Class Teacher",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000011"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-duration-in-range-tier3-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier3", "duration_check", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"durationWeeks\" = 13, within tolerance of 13."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "8d37736d-6a52-4539-a586-368ae7735120",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_3",
+        "targetDomains": ["NUMERACY"],
+        "goal": "Reach a higher percentile in NUMERACY through structured small-group support.",
+        "strategy": "Evidence-based structured numeracy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 5,
+          "minutesPerSession": 40
+        },
+        "durationWeeks": 13,
+        "ownerRole": "Learning Support Educator",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000012"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-multi-domain-plan-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier3", "multi_domain"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "eaad99dd-5d47-4fd8-98d5-a4843dccc265",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_3",
+        "targetDomains": ["LITERACY", "NUMERACY", "ATTENDANCE"],
+        "goal": "Reach a higher percentile in LITERACY and NUMERACY and ATTENDANCE through structured small-group support.",
+        "strategy": "Evidence-based structured literacy and numeracy and attendance instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 5,
+          "minutesPerSession": 40
+        },
+        "durationWeeks": 13,
+        "ownerRole": "Learning Support Educator",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000013"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-term-id-carried-through-001",
+      "agentId": "AC-05",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"termId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "b7491926-36ab-46d8-a350-d9fa35c1f0b1",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+        "termId": "00000000-0000-0000-0000-000000000021",
+        "tier": "TIER_2",
+        "targetDomains": ["LITERACY"],
+        "goal": "Reach a higher percentile in LITERACY through structured small-group support.",
+        "strategy": "Evidence-based structured literacy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 3,
+          "minutesPerSession": 25
+        },
+        "durationWeeks": 8,
+        "ownerRole": "Class Teacher",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000014"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-missing-sbst-ratification-needs-input-001",
+      "agentId": "AC-05",
+      "tags": ["needs_input", "sbst_gate", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "sbstRatificationId is required before an intervention plan can be created.",
+        "missingFields": ["sbstRatificationId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-empty-evidence-ids-needs-input-001",
+      "agentId": "AC-05",
+      "tags": ["needs_input", "missing_evidence"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one evidence ID is required.",
+        "missingFields": ["evidenceIds"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-low-composite-high-dosage-tier3-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier3"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "40f580bd-ef88-4e4f-a344-22d03578aecb",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_3",
+        "targetDomains": ["LITERACY"],
+        "goal": "Reach a higher percentile in LITERACY through structured small-group support.",
+        "strategy": "Evidence-based structured literacy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 5,
+          "minutesPerSession": 40
+        },
+        "durationWeeks": 13,
+        "ownerRole": "Learning Support Educator",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000017"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-no-diagnostic-language-in-strategy-001",
+      "agentId": "AC-05",
+      "tags": ["diagnosis_guard"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No diagnostic language detected.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "1ba9d068-9fc8-4d62-adc6-ce32ea42be16",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_3",
+        "targetDomains": ["NUMERACY"],
+        "goal": "Reach a higher percentile in NUMERACY through structured small-group support.",
+        "strategy": "Evidence-based structured numeracy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 5,
+          "minutesPerSession": 40
+        },
+        "durationWeeks": 13,
+        "ownerRole": "Learning Support Educator",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000018"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-attendance-intervention-plan-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier2", "attendance"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "351d5d49-0789-4f02-862a-7a05c7d2c1af",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_2",
+        "targetDomains": ["ATTENDANCE"],
+        "goal": "Reach a higher percentile in ATTENDANCE through structured small-group support.",
+        "strategy": "Evidence-based structured attendance instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 3,
+          "minutesPerSession": 25
+        },
+        "durationWeeks": 8,
+        "ownerRole": "Class Teacher",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000019"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-second-tenant-plan-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier2", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "164b8aa4-dff3-401e-b547-fc940476ad3b",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+        "termId": "00000000-0000-0000-0000-000000000022",
+        "tier": "TIER_2",
+        "targetDomains": ["NUMERACY"],
+        "goal": "Reach a higher percentile in NUMERACY through structured small-group support.",
+        "strategy": "Evidence-based structured numeracy instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 3,
+          "minutesPerSession": 25
+        },
+        "durationWeeks": 8,
+        "ownerRole": "Class Teacher",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000020"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac05-wellbeing-tier3-plan-001",
+      "agentId": "AC-05",
+      "tags": ["planned", "tier3"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "planned",
+        "planId": "7e7d92ca-6e37-4d76-b1ac-9f66b3b36440",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "tier": "TIER_3",
+        "targetDomains": ["WELLBEING"],
+        "goal": "Reach a higher percentile in WELLBEING through structured small-group support.",
+        "strategy": "Evidence-based structured wellbeing instruction delivered in small groups, with frequent formative checks and adjusted pacing.",
+        "dosage": {
+          "sessionsPerWeek": 5,
+          "minutesPerSession": 40
+        },
+        "durationWeeks": 13,
+        "ownerRole": "Learning Support Educator",
+        "evidenceIds": ["bbbbbbbb-0000-0000-0000-000000000021"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 21,
+    "passedCases": 21,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

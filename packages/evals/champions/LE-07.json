@@ -1,0 +1,495 @@
+{
+  "agentId": "LE-07",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "LE07-001",
+      "agentId": "LE-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "promote"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "LE07-002",
+      "agentId": "LE-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_no_improvement"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-003",
+      "agentId": "LE-07",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_regression"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-004",
+      "agentId": "LE-07",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_bias_divergence"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-005",
+      "agentId": "LE-07",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_no_improvement"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-006",
+      "agentId": "LE-07",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_regression"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-007",
+      "agentId": "LE-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "promote"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-008",
+      "agentId": "LE-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_no_improvement"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-009",
+      "agentId": "LE-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_no_improvement"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-010",
+      "agentId": "LE-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "promote"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-011",
+      "agentId": "LE-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_regression"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-012",
+      "agentId": "LE-07",
+      "tags": ["must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_no_improvement"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-013",
+      "agentId": "LE-07",
+      "tags": ["must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "promote"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-014",
+      "agentId": "LE-07",
+      "tags": ["must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_no_improvement"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-015",
+      "agentId": "LE-07",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_no_improvement"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-016",
+      "agentId": "LE-07",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_regression"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-017",
+      "agentId": "LE-07",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_no_improvement"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-018",
+      "agentId": "LE-07",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_no_improvement"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-019",
+      "agentId": "LE-07",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "promote"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE07-020",
+      "agentId": "LE-07",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"verdict\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "verdict": "reject_no_improvement"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

@@ -1,0 +1,835 @@
+{
+  "agentId": "CE-02",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "ce-02-gr-r-life-skills-2026-001",
+      "agentId": "CE-02",
+      "tags": ["foundation_phase", "grade_R", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"missing.0.documentKind\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "R",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-1-math-2026-001",
+      "agentId": "CE-02",
+      "tags": ["foundation_phase", "grade_1", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "1",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-2-home-lang-2026-001",
+      "agentId": "CE-02",
+      "tags": ["foundation_phase", "grade_2", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "2",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-3-math-2027-001",
+      "agentId": "CE-02",
+      "tags": ["foundation_phase", "grade_3", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "3",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-3-multi-2026-001",
+      "agentId": "CE-02",
+      "tags": ["foundation_phase", "grade_3", "needs_input", "multi_subject"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "3",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-r-math-with-calendar-001",
+      "agentId": "CE-02",
+      "tags": ["foundation_phase", "grade_R", "needs_input", "with_calendar"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "R",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-4-math-2026-001",
+      "agentId": "CE-02",
+      "tags": ["intermediate_phase", "grade_4", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "4",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-4-nst-2026-001",
+      "agentId": "CE-02",
+      "tags": ["intermediate_phase", "grade_4", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "4",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-5-social-2026-001",
+      "agentId": "CE-02",
+      "tags": ["intermediate_phase", "grade_5", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "5",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-6-multi-2026-001",
+      "agentId": "CE-02",
+      "tags": ["intermediate_phase", "grade_6", "needs_input", "multi_subject"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "6",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-6-life-skills-2026-001",
+      "agentId": "CE-02",
+      "tags": ["intermediate_phase", "grade_6", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "6",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-7-math-2026-001",
+      "agentId": "CE-02",
+      "tags": ["senior_phase", "grade_7", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "7",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-7-ns-2026-001",
+      "agentId": "CE-02",
+      "tags": ["senior_phase", "grade_7", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "7",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-8-ems-2026-001",
+      "agentId": "CE-02",
+      "tags": ["senior_phase", "grade_8", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "8",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-8-tech-2026-001",
+      "agentId": "CE-02",
+      "tags": ["senior_phase", "grade_8", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "8",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-9-lo-2026-001",
+      "agentId": "CE-02",
+      "tags": ["senior_phase", "grade_9", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "9",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-9-ss-2026-001",
+      "agentId": "CE-02",
+      "tags": ["senior_phase", "grade_9", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "9",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-10-math-2026-001",
+      "agentId": "CE-02",
+      "tags": ["fet_phase", "grade_10", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "10",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-10-physci-2026-001",
+      "agentId": "CE-02",
+      "tags": ["fet_phase", "grade_10", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "10",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-11-lifesci-2026-001",
+      "agentId": "CE-02",
+      "tags": ["fet_phase", "grade_11", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "11",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-11-geo-2026-001",
+      "agentId": "CE-02",
+      "tags": ["fet_phase", "grade_11", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "11",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-12-math-2026-001",
+      "agentId": "CE-02",
+      "tags": ["fet_phase", "grade_12", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-12-hist-2026-001",
+      "agentId": "CE-02",
+      "tags": ["fet_phase", "grade_12", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-12-accounting-2026-001",
+      "agentId": "CE-02",
+      "tags": ["fet_phase", "grade_12", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "12",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-missing-framework-001",
+      "agentId": "CE-02",
+      "tags": ["intermediate_phase", "grade_5", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "5",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-no-pii-001",
+      "agentId": "CE-02",
+      "tags": ["pii_egress", "needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "7",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-must-not-invent-schedule-001",
+      "agentId": "CE-02",
+      "tags": ["needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "6",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-calendar-override-no-docs-001",
+      "agentId": "CE-02",
+      "tags": ["intermediate_phase", "grade_4", "needs_input", "with_calendar"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "4",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-gr-9-all-core-2026-001",
+      "agentId": "CE-02",
+      "tags": [
+        "senior_phase",
+        "grade_9",
+        "needs_input",
+        "multi_subject",
+        "must_not_regress"
+      ],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "9",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ce-02-different-tenant-2026-001",
+      "agentId": "CE-02",
+      "tags": ["intermediate_phase", "grade_5", "needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "grade": "5",
+        "missing": [
+          {
+            "documentKind": "ATP",
+            "subjectName": null,
+            "why": "No ATP found in L0"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 30,
+    "passedCases": 30,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 2
+  }
+}

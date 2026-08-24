@@ -1,0 +1,768 @@
+{
+  "agentId": "AC-02",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "ac02-all-tier1-healthy-001",
+      "agentId": "AC-02",
+      "tags": ["healthy", "tier1_100pct", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 100, within tolerance of 100."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "healthy",
+        "tier1Percentage": 100,
+        "learnerCount": 5,
+        "tier1Count": 5,
+        "gatesAc03": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-exactly-80pct-healthy-001",
+      "agentId": "AC-02",
+      "tags": ["healthy", "boundary", "tier1_80pct", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 80, within tolerance of 80."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "healthy",
+        "tier1Percentage": 80,
+        "learnerCount": 5,
+        "tier1Count": 4,
+        "gatesAc03": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-just-below-80pct-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "boundary", "tier1_75pct", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 75, within tolerance of 75."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 75,
+        "learnerCount": 4,
+        "tier1Count": 3,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (75%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-0pct-tier1-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "tier1_0pct", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 0, within tolerance of 0."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 0,
+        "learnerCount": 4,
+        "tier1Count": 0,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (0%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-empty-screen-results-needs-input-001",
+      "agentId": "AC-02",
+      "tags": ["needs_input", "empty_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No screen results supplied."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-single-tier1-healthy-001",
+      "agentId": "AC-02",
+      "tags": ["healthy", "single_learner", "tier1_100pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 100, within tolerance of 100."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "healthy",
+        "tier1Percentage": 100,
+        "learnerCount": 1,
+        "tier1Count": 1,
+        "gatesAc03": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-single-tier2-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "single_learner", "tier1_0pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 0, within tolerance of 0."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 0,
+        "learnerCount": 1,
+        "tier1Count": 0,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (0%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-single-referral-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "single_learner", "referral"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 0, within tolerance of 0."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 0,
+        "learnerCount": 1,
+        "tier1Count": 0,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (0%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-all-tier2-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "tier1_0pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 0, within tolerance of 0."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 0,
+        "learnerCount": 3,
+        "tier1Count": 0,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (0%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-all-tier3-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "tier1_0pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 0, within tolerance of 0."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 0,
+        "learnerCount": 3,
+        "tier1Count": 0,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (0%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-all-referral-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "tier1_0pct", "referral"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 0,
+        "learnerCount": 2,
+        "tier1Count": 0,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (0%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-85pct-tier1-healthy-001",
+      "agentId": "AC-02",
+      "tags": ["healthy", "tier1_85pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 85, within tolerance of 85."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "healthy",
+        "tier1Percentage": 85,
+        "learnerCount": 20,
+        "tier1Count": 17,
+        "gatesAc03": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-60pct-tier1-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "tier1_60pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 60, within tolerance of 60."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 60,
+        "learnerCount": 5,
+        "tier1Count": 3,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (60%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-70pct-tier1-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "tier1_70pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 70, within tolerance of 70."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 70,
+        "learnerCount": 10,
+        "tier1Count": 7,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (70%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-large-class-exactly-80pct-healthy-001",
+      "agentId": "AC-02",
+      "tags": ["healthy", "boundary", "large_class", "tier1_80pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 80, within tolerance of 80."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "healthy",
+        "tier1Percentage": 80,
+        "learnerCount": 30,
+        "tier1Count": 24,
+        "gatesAc03": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-large-class-one-below-threshold-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "large_class", "tier1_76pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 76.67, within tolerance of 76.67."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 76.67,
+        "learnerCount": 30,
+        "tier1Count": 23,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (76.67%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-blocked-includes-detail-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "tier1_33pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 33.33,
+        "learnerCount": 3,
+        "tier1Count": 1,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (33.33%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-two-learners-one-tier1-blocked-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "tier1_50pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 50, within tolerance of 50."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 50,
+        "learnerCount": 2,
+        "tier1Count": 1,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (50%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-two-learners-both-tier1-healthy-001",
+      "agentId": "AC-02",
+      "tags": ["healthy", "tier1_100pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 100, within tolerance of 100."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "healthy",
+        "tier1Percentage": 100,
+        "learnerCount": 2,
+        "tier1Count": 2,
+        "gatesAc03": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-tier1pct-rounded-to-2dp-001",
+      "agentId": "AC-02",
+      "tags": ["blocked", "rounding", "tier1_33pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 33.33, within tolerance of 33.33."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "blocked",
+        "tier1Percentage": 33.33,
+        "learnerCount": 3,
+        "tier1Count": 1,
+        "gatesAc03": false,
+        "detail": "Tier 1 percentage (33.33%) is below the 80 % class-health threshold. AC-03 must not run until core health recovers."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac02-90pct-tier1-healthy-001",
+      "agentId": "AC-02",
+      "tags": ["healthy", "tier1_90pct"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Percentage\" = 90, within tolerance of 90."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerCount\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"tier1Count\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"gatesAc03\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "healthy",
+        "tier1Percentage": 90,
+        "learnerCount": 10,
+        "tier1Count": 9,
+        "gatesAc03": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 21,
+    "passedCases": 21,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

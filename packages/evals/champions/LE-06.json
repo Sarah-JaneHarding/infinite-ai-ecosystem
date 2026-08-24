@@ -1,0 +1,548 @@
+{
+  "agentId": "LE-06",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "LE06-001",
+      "agentId": "LE-06",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: factual, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-002",
+      "agentId": "LE-06",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: curriculum_alignment, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-003",
+      "agentId": "LE-06",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: tone, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-004",
+      "agentId": "LE-06",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "no_improvement_found"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-005",
+      "agentId": "LE-06",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "no_improvement_found"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-006",
+      "agentId": "LE-06",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-007",
+      "agentId": "LE-06",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: factual, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-008",
+      "agentId": "LE-06",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: curriculum_alignment, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-009",
+      "agentId": "LE-06",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: tone, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-010",
+      "agentId": "LE-06",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: readability, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-011",
+      "agentId": "LE-06",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: template_structure, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-012",
+      "agentId": "LE-06",
+      "tags": ["must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: completeness, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-013",
+      "agentId": "LE-06",
+      "tags": ["must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: factual, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-014",
+      "agentId": "LE-06",
+      "tags": ["must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: curriculum_alignment, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-015",
+      "agentId": "LE-06",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: tone, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-016",
+      "agentId": "LE-06",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: readability, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-017",
+      "agentId": "LE-06",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: template_structure, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-018",
+      "agentId": "LE-06",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: completeness, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-019",
+      "agentId": "LE-06",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: factual, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE06-020",
+      "agentId": "LE-06",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"challenger.isLive\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "challenger": {
+          "isLive": false,
+          "version": "1.0.0",
+          "content": "Revised prompt addressing: curriculum_alignment, completeness."
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

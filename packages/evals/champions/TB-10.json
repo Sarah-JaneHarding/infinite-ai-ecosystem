@@ -1,0 +1,1185 @@
+{
+  "agentId": "TB-10",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "TB10-001",
+      "agentId": "TB-10",
+      "tags": ["happy_path", "natural-sciences", "grade-5", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The activity has a non-empty title, overview, at least one step, and addresses both learning objectives. The activity is suitable for Grade 5 learners.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "2ca62b2a-3e19-498c-bea2-e86e67ea87d5",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-WATER",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000001"
+        },
+        "activityTitle": "Resource-Light Activity: The Water Cycle",
+        "overview": "A 30-minute activity on The Water Cycle requiring no special materials. Objectives: Describe the stages of the water cycle.; Explain the role of the sun in driving the water cycle..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of The Water Cycle with a brief verbal explanation.",
+            "durationMinutes": 6
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 15
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 9
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr5-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-002",
+      "agentId": "TB-10",
+      "tags": ["happy_path", "no-printing", "mathematics", "grade-4"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The materials list does not include printed handouts, worksheets, or any item requiring a printer. All steps can be completed without printing. The activity addresses place value and number comparison for Grade 4.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "76b26d37-c011-4aa0-8acc-495e759a0ab3",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR4-PLACE-VALUE",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000002"
+        },
+        "activityTitle": "Resource-Light Activity: Place Value and Number Sense",
+        "overview": "A 25-minute activity on Place Value and Number Sense requiring no special materials. Objectives: Read and write numbers up to 10 000.; Compare numbers using >, <, and = symbols..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Place Value and Number Sense with a brief verbal explanation.",
+            "durationMinutes": 5
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 13
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 8
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-math-gr4-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-003",
+      "agentId": "TB-10",
+      "tags": ["happy_path", "no-devices", "english", "grade-6"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The materials list does not include electronic devices, tablets, computers, smartboards, or any digital tool. All steps can be completed without any device. The activity addresses narrative structure and oral retelling.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "1d36ddbf-459c-42a2-874b-ae5022328f26",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-EHL-GR6-NARRATIVE",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000003"
+        },
+        "activityTitle": "Resource-Light Activity: Story Structure — Beginning, Middle, and End",
+        "overview": "A 40-minute activity on Story Structure — Beginning, Middle, and End requiring no special materials. Objectives: Identify the three parts of a narrative.; Retell a story orally using sequencing language..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Story Structure — Beginning, Middle, and End with a brief verbal explanation.",
+            "durationMinutes": 8
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 20
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 12
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-ehl-gr6-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-004",
+      "agentId": "TB-10",
+      "tags": ["happy_path", "no-electricity", "social-sciences", "grade-7"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The materials list does not include any electrically powered item (projector, TV, electric fan, lights, etc.). All steps can be completed without electricity. The activity addresses African climate zones and their causes.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "6708a784-a130-4ca6-b0e6-a1e73ba0d89e",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-SS-GR7-CLIMATE",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000004"
+        },
+        "activityTitle": "Resource-Light Activity: Climate Zones of Africa",
+        "overview": "A 35-minute activity on Climate Zones of Africa requiring no special materials. Objectives: Identify the major climate zones found on the African continent.; Explain what causes variation in climate across Africa..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Climate Zones of Africa with a brief verbal explanation.",
+            "durationMinutes": 7
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 18
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 11
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-ss-gr7-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-005",
+      "agentId": "TB-10",
+      "tags": ["happy_path", "oral-only", "mathematics", "grade-3"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The activity requires no writing implements, paper, or printed materials. Every step is executable purely orally. The materials list is empty or contains only non-written items (e.g., body, voice, clapping). The activity addresses counting in multiples of 2, 5, and 10.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "04e9c53f-961a-41c6-96db-70b504e8839d",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR3-COUNTING",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000005"
+        },
+        "activityTitle": "Resource-Light Activity: Counting in Multiples",
+        "overview": "A 20-minute activity on Counting in Multiples requiring no special materials. Objectives: Count forwards and backwards in 2s, 5s, and 10s.; Identify the pattern when counting in multiples..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Counting in Multiples with a brief verbal explanation.",
+            "durationMinutes": 4
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 10
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 6
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 3,
+          "targetBand": {
+            "minGrade": 2,
+            "maxGrade": 4
+          }
+        },
+        "citedSourceIds": ["doc-math-gr3-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-006",
+      "agentId": "TB-10",
+      "tags": ["happy_path", "no-printing", "no-devices", "natural-sciences", "grade-6"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The activity satisfies both NO_PRINTING (no handouts, worksheets, or printed materials) and NO_DEVICES (no tablets, computers, or electronic devices). Steps can be completed using only physical objects and verbal interaction. Both energy naming and energy conversion objectives are addressed.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "0e176fc5-d21f-45fa-a76e-a4176a52a3ac",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR6-ENERGY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000006"
+        },
+        "activityTitle": "Resource-Light Activity: Forms of Energy",
+        "overview": "A 30-minute activity on Forms of Energy requiring no special materials. Objectives: Name and give examples of five forms of energy.; Describe how energy changes from one form to another..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Forms of Energy with a brief verbal explanation.",
+            "durationMinutes": 6
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 15
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 9
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 6,
+          "targetBand": {
+            "minGrade": 5,
+            "maxGrade": 7
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr6-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-007",
+      "agentId": "TB-10",
+      "tags": ["happy_path", "all-constraints", "english", "grade-4"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The activity is fully oral: no printing, no devices, no electricity, no writing. All materials and steps require nothing beyond the learners' voices and bodies. Both vocabulary objectives are addressed. The activity is executable in a classroom with no resources at all.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "a0616c80-aed8-4bef-8752-23aed2a15d8c",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-EHL-GR4-VOCABULARY",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000007"
+        },
+        "activityTitle": "Resource-Light Activity: Vocabulary in Context",
+        "overview": "A 25-minute activity on Vocabulary in Context requiring no special materials. Objectives: Identify the meaning of unknown words using context clues.; Use new vocabulary in spoken sentences..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Vocabulary in Context with a brief verbal explanation.",
+            "durationMinutes": 5
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 13
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 8
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 4,
+          "targetBand": {
+            "minGrade": 3,
+            "maxGrade": 5
+          }
+        },
+        "citedSourceIds": ["doc-ehl-gr4-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-008",
+      "agentId": "TB-10",
+      "tags": ["happy_path", "intervention", "no-printing", "mathematics", "grade-8"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"linkage.interventionId\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The activity is linked to an intervention context. No printed handouts appear in materials. Both linear equation objectives are addressed in the steps. The activity includes at least one step focused on solution verification.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "95a9cd95-b943-45c9-82a0-94e02bac9b20",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR8-LINEAR",
+          "interventionId": "aaaaaaaa-bbbb-cccc-dddd-000000000008"
+        },
+        "activityTitle": "Resource-Light Activity: Linear Equations",
+        "overview": "A 35-minute activity on Linear Equations requiring no special materials. Objectives: Solve one-step linear equations.; Verify a solution by substituting back into the equation..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Linear Equations with a brief verbal explanation.",
+            "durationMinutes": 7
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 18
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 11
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 8,
+          "targetBand": {
+            "minGrade": 7,
+            "maxGrade": 9
+          }
+        },
+        "citedSourceIds": ["doc-math-gr8-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-009",
+      "agentId": "TB-10",
+      "tags": ["happy_path", "no-devices", "life-sciences", "grade-10"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"No electronic devices appear in materials or steps. The activity addresses genetics terminology (genotype, phenotype, dominant, recessive) and includes a step where learners draw or construct a Punnett square on paper. Content is appropriate for Grade 10 readability.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "d524e440-79d5-4bfc-b5ff-b1d6d0a5cb0d",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-LS-GR10-GENETICS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000009"
+        },
+        "activityTitle": "Resource-Light Activity: Genetics and Inheritance",
+        "overview": "A 45-minute activity on Genetics and Inheritance requiring no special materials. Objectives: Define genotype, phenotype, dominant, and recessive.; Construct a Punnett square for a monohybrid cross..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Genetics and Inheritance with a brief verbal explanation.",
+            "durationMinutes": 9
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 23
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 14
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 10,
+          "targetBand": {
+            "minGrade": 9,
+            "maxGrade": 11
+          }
+        },
+        "citedSourceIds": ["doc-ls-gr10-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-010",
+      "agentId": "TB-10",
+      "tags": ["happy_path", "afrikaans", "no-electricity", "mathematics", "grade-5"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"artefactType\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The activity title, overview, materials, steps, and adaptations are written in Afrikaans. No electricity-dependent materials appear. The activity addresses measuring in mm/cm/m and estimating/comparing lengths. Language is appropriate for Grade 5 Afrikaans-speaking learners.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "2b88d90e-a90b-40c5-81f3-749d5e86999e",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR5-AF-MEASUREMENT",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000010"
+        },
+        "activityTitle": "Resource-Light Activity: Lengte en meting",
+        "overview": "A 30-minute activity on Lengte en meting requiring no special materials. Objectives: Meet lengtes in millimeter, sentimeter en meter.; Skat en vergelyk die lengte van voorwerpe..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Lengte en meting with a brief verbal explanation.",
+            "durationMinutes": 6
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 15
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 9
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-math-gr5-af-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "TB10-011",
+      "agentId": "TB-10",
+      "tags": ["must_not_regress", "natural-sciences", "grade-5"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The adaptations array is non-empty. It contains at least one concrete differentiation strategy (e.g. scaffolding for struggling learners, extension for advanced learners, or an accommodation for a specific learning need).\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "27ecbf93-3bd7-4f6d-9783-b0eb24bb9974",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR5-WATER",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000011"
+        },
+        "activityTitle": "Resource-Light Activity: The Water Cycle",
+        "overview": "A 30-minute activity on The Water Cycle requiring no special materials. Objectives: Describe the stages of the water cycle..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of The Water Cycle with a brief verbal explanation.",
+            "durationMinutes": 6
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 15
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 9
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 5,
+          "targetBand": {
+            "minGrade": 4,
+            "maxGrade": 6
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr5-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-012",
+      "agentId": "TB-10",
+      "tags": ["must_not_regress", "mathematics", "grade-7"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The activity contains at least two steps. The sum of all step durationMinutes values (where provided) is between 30 and 50 minutes, approximately matching the requested 40 minutes. No single step exceeds 25 minutes.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "10ec76c8-df8e-46a6-a019-c574b0140317",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR7-RATIO",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000012"
+        },
+        "activityTitle": "Resource-Light Activity: Ratio and Rate",
+        "overview": "A 40-minute activity on Ratio and Rate requiring no special materials. Objectives: Write ratios in simplest form.; Solve problems involving ratio..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Ratio and Rate with a brief verbal explanation.",
+            "durationMinutes": 8
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 20
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 12
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-math-gr7-002"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-013",
+      "agentId": "TB-10",
+      "tags": ["must_not_regress", "life-sciences", "grade-9", "no-devices"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "b4f5340a-4480-4e58-88b3-267b71c65758",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-LS-GR9-CELLS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000013"
+        },
+        "activityTitle": "Resource-Light Activity: Cell Division",
+        "overview": "A 35-minute activity on Cell Division requiring no special materials. Objectives: Describe the stages of mitosis.; Explain why mitosis is important for growth and repair..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Cell Division with a brief verbal explanation.",
+            "durationMinutes": 7
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 18
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 11
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 9,
+          "targetBand": {
+            "minGrade": 8,
+            "maxGrade": 10
+          }
+        },
+        "citedSourceIds": ["doc-ls-gr9-002"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-014",
+      "agentId": "TB-10",
+      "tags": ["adversarial", "no-source", "natural-sciences"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Criterion \"The response status is either 'no_source_document' or 'needs_input'. The response is not 'ok'. The agent correctly refuses to generate an activity plan when no source documents are supplied.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "no_source_document",
+        "detail": "No source documents available — activity generation requires at least one cited source."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-015",
+      "agentId": "TB-10",
+      "tags": ["adversarial", "missing-linkage", "mathematics"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "At least one of lessonId or interventionId must be present.",
+        "missingFields": ["lessonId", "interventionId"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-016",
+      "agentId": "TB-10",
+      "tags": ["adversarial", "no-printing", "english", "grade-7"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The materials list contains no reference to printed handouts, worksheets, photocopies, or any item that requires a printer. Steps do not instruct learners to fill in worksheets or read from printed pages. Comprehension strategy objectives are addressed using only oral, written-on-board, or non-printed methods.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "7433aee6-c1e2-47cf-b583-d2121c6131cf",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-EHL-GR7-COMPREHENSION",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000016"
+        },
+        "activityTitle": "Resource-Light Activity: Reading Comprehension Strategies",
+        "overview": "A 35-minute activity on Reading Comprehension Strategies requiring no special materials. Objectives: Identify the main idea and supporting details in a text.; Make inferences based on evidence in the text..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Reading Comprehension Strategies with a brief verbal explanation.",
+            "durationMinutes": 7
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 18
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 11
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 7,
+          "targetBand": {
+            "minGrade": 6,
+            "maxGrade": 8
+          }
+        },
+        "citedSourceIds": ["doc-ehl-gr7-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-017",
+      "agentId": "TB-10",
+      "tags": ["adversarial", "oral-only", "mathematics", "grade-2"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"No step instructs learners to write, draw, or complete a written task. No materials include pens, pencils, paper, or workbooks. The activity is entirely conducted through speaking, listening, and physical handling of objects. 3D shape naming and comparison objectives are addressed orally.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "094ec292-68ed-4755-9161-d6d24ea3459b",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-MATH-GR2-SHAPES",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000017"
+        },
+        "activityTitle": "Resource-Light Activity: 3D Objects",
+        "overview": "A 20-minute activity on 3D Objects requiring no special materials. Objectives: Name and describe common 3D objects: sphere, cube, cylinder, cone.; Compare 3D objects using vocabulary: flat, curved, corners, edges..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of 3D Objects with a brief verbal explanation.",
+            "durationMinutes": 4
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 10
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 6
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 2,
+          "targetBand": {
+            "minGrade": 1,
+            "maxGrade": 3
+          }
+        },
+        "citedSourceIds": ["doc-math-gr2-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-018",
+      "agentId": "TB-10",
+      "tags": ["adversarial", "pii-guard", "natural-sciences", "grade-8"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The output contains no learner names, ID numbers, email addresses, phone numbers, home addresses, or any personally identifiable information. The activity title, overview, materials, steps, and adaptations refer only to generic roles (e.g. 'learner', 'teacher', 'group') and not to any individual.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "d6540508-7900-468a-899e-0ffbf1d164a3",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-NS-GR8-SYSTEMS",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000018"
+        },
+        "activityTitle": "Resource-Light Activity: Human Digestive System",
+        "overview": "A 40-minute activity on Human Digestive System requiring no special materials. Objectives: Trace the path of food through the digestive system.; Describe the function of the stomach and small intestine..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Human Digestive System with a brief verbal explanation.",
+            "durationMinutes": 8
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 20
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 12
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 8,
+          "targetBand": {
+            "minGrade": 7,
+            "maxGrade": 9
+          }
+        },
+        "citedSourceIds": ["doc-ns-gr8-002"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-019",
+      "agentId": "TB-10",
+      "tags": ["adversarial", "invalid-duration", "mathematics"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "activityDurationMinutes must be a positive integer.",
+        "missingFields": ["activityDurationMinutes"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "TB10-020",
+      "agentId": "TB-10",
+      "tags": ["adversarial", "source-grounding", "no-devices", "history", "grade-9"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Criterion \"The activity content is grounded in the supplied source documents and does not introduce historical facts, dates, events, or claims that could not plausibly come from doc-hist-gr9-001. The steps do not fabricate names of historical figures, specific statistics, or treaty details that are absent from any supplied source.\" passed by deterministic stub (no failing condition applies).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1 citation(s) present, all resolve to a valid id."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "artefactId": "b24aa278-185c-46fe-8e35-79f93b44a0c6",
+        "artefactType": "ACTIVITY_PLAN",
+        "linkage": {
+          "capsTopicId": "CAPS-HIST-GR9-COLONIALISM",
+          "lessonId": "aaaaaaaa-bbbb-cccc-dddd-000000000020"
+        },
+        "activityTitle": "Resource-Light Activity: Colonialism in Africa",
+        "overview": "A 45-minute activity on Colonialism in Africa requiring no special materials. Objectives: Explain the causes of European colonialism in Africa.; Describe the impact of colonialism on African societies..",
+        "materials": [],
+        "steps": [
+          {
+            "instruction": "Introduce the topic of Colonialism in Africa with a brief verbal explanation.",
+            "durationMinutes": 9
+          },
+          {
+            "instruction": "Engage learners in a think-pair-share discussion on the key concepts.",
+            "durationMinutes": 23
+          },
+          {
+            "instruction": "Close with a whole-class oral summary and one exit question.",
+            "durationMinutes": 14
+          }
+        ],
+        "adaptations": [
+          "Support: Provide sentence starters for the discussion phase.",
+          "Challenge: Ask learners to generate their own questions about the topic."
+        ],
+        "readabilityCheckResult": {
+          "verdict": "within_band",
+          "measuredGrade": 9,
+          "targetBand": {
+            "minGrade": 8,
+            "maxGrade": 10
+          }
+        },
+        "citedSourceIds": ["doc-hist-gr9-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

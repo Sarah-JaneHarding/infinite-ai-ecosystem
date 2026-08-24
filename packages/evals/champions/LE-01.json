@@ -1,0 +1,621 @@
+{
+  "agentId": "LE-01",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "LE01-001",
+      "agentId": "LE-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "approved",
+          "artefactType": "lesson_plan",
+          "capsTopicId": "CAPS-GR5-NS-WATER",
+          "agentId": "TB-01",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000001"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-002",
+      "agentId": "LE-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.reasonCode\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "edited",
+          "reasonCode": "curriculum_alignment",
+          "artefactType": "worksheet",
+          "capsTopicId": "CAPS-GR7-MATH-FRACTION",
+          "agentId": "TB-02",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000002"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-003",
+      "agentId": "LE-01",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "rejected",
+          "reasonCode": "factual_error",
+          "artefactType": "assessment",
+          "capsTopicId": "CAPS-GR9-ENG-POETRY",
+          "agentId": "TB-03",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000003"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-004",
+      "agentId": "LE-01",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-005",
+      "agentId": "LE-01",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.artefactType\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "approved",
+          "artefactType": "remediation_pack",
+          "capsTopicId": "CAPS-GR8-MATH-ALGEBRA",
+          "agentId": "TB-05",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000005"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-006",
+      "agentId": "LE-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.capsTopicId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "edited",
+          "reasonCode": "tone",
+          "artefactType": "extension_activity",
+          "capsTopicId": "CAPS-GR6-SS-ENVIRONMENTS",
+          "agentId": "TB-06",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000006"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-007",
+      "agentId": "LE-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.agentId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "approved",
+          "artefactType": "slide_deck",
+          "capsTopicId": "CAPS-GR10-PHYS-ENERGY",
+          "agentId": "TB-04",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000007"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-008",
+      "agentId": "LE-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "edited",
+          "reasonCode": "completeness",
+          "artefactType": "assessment",
+          "capsTopicId": "CAPS-GR11-CHEM-REACTIONS",
+          "agentId": "TB-07",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000008"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-009",
+      "agentId": "LE-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "rejected",
+          "reasonCode": "readability",
+          "artefactType": "rubric",
+          "capsTopicId": "CAPS-GR12-MATH-CALCULUS",
+          "agentId": "TB-08",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000009"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-010",
+      "agentId": "LE-01",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.tenantId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "approved",
+          "artefactType": "lesson_plan",
+          "capsTopicId": "CAPS-GR3-MATH-PATTERNS",
+          "agentId": "TB-09",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000010"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-011",
+      "agentId": "LE-01",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "edited",
+          "reasonCode": "template_structure",
+          "artefactType": "assessment",
+          "capsTopicId": "CAPS-GR2-MATH-COUNTING",
+          "agentId": "TB-10",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000011"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-012",
+      "agentId": "LE-01",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.artefactId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "approved",
+          "artefactType": "lesson_plan",
+          "capsTopicId": "CAPS-GR1-ENG-PHONICS",
+          "agentId": "TB-11",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000012"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-013",
+      "agentId": "LE-01",
+      "tags": ["failure_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-014",
+      "agentId": "LE-01",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "approved",
+          "artefactType": "worksheet",
+          "capsTopicId": "CAPS-GR7-MATH-PROBABILITY",
+          "agentId": "TB-02",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000014"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-015",
+      "agentId": "LE-01",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "edited",
+          "reasonCode": "factual",
+          "artefactType": "assessment",
+          "capsTopicId": "CAPS-GR9-LO-CAREER",
+          "agentId": "TB-03",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000015"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-016",
+      "agentId": "LE-01",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "rejected",
+          "reasonCode": "curriculum_alignment",
+          "artefactType": "slide_deck",
+          "capsTopicId": "CAPS-GR10-BIO-GENETICS",
+          "agentId": "TB-04",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000016"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-017",
+      "agentId": "LE-01",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "edited",
+          "reasonCode": "readability",
+          "artefactType": "remediation_pack",
+          "capsTopicId": "CAPS-GR8-SS-DEMOCRACY",
+          "agentId": "TB-05",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000017"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-018",
+      "agentId": "LE-01",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "approved",
+          "artefactType": "extension_activity",
+          "capsTopicId": "CAPS-GR6-MATH-GEOMETRY",
+          "agentId": "TB-06",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000018"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-019",
+      "agentId": "LE-01",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "rejected",
+          "reasonCode": "completeness",
+          "artefactType": "assessment",
+          "capsTopicId": "CAPS-GR11-PHYS-WAVES",
+          "agentId": "TB-07",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000019"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "LE01-020",
+      "agentId": "LE-01",
+      "tags": ["adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"event.label\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "event": {
+          "label": "approved",
+          "artefactType": "rubric",
+          "capsTopicId": "CAPS-GR12-ENG-DRAMA",
+          "agentId": "TB-08",
+          "tenantId": "11111111-2222-3333-4444-555555555555",
+          "artefactId": "bbbbbbbb-0001-0001-0001-000000000020"
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

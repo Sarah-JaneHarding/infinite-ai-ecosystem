@@ -1,0 +1,456 @@
+{
+  "agentId": "PD-07",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "PD07-001",
+      "agentId": "PD-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-002",
+      "agentId": "PD-07",
+      "tags": ["needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-003",
+      "agentId": "PD-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"plan.sessions.length\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-004",
+      "agentId": "PD-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-005",
+      "agentId": "PD-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-006",
+      "agentId": "PD-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-007",
+      "agentId": "PD-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-008",
+      "agentId": "PD-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-009",
+      "agentId": "PD-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-010",
+      "agentId": "PD-07",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-011",
+      "agentId": "PD-07",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-012",
+      "agentId": "PD-07",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-013",
+      "agentId": "PD-07",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-014",
+      "agentId": "PD-07",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-015",
+      "agentId": "PD-07",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-016",
+      "agentId": "PD-07",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-017",
+      "agentId": "PD-07",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-018",
+      "agentId": "PD-07",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-019",
+      "agentId": "PD-07",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD07-020",
+      "agentId": "PD-07",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "plan": {
+          "sessions": [{}, {}, {}]
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

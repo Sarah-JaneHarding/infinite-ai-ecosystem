@@ -1,0 +1,556 @@
+{
+  "agentId": "PD-03",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "PD03-001",
+      "agentId": "PD-03",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"notesAnalysed\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["pedagogy"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-002",
+      "agentId": "PD-03",
+      "tags": ["needs_input"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input"
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-003",
+      "agentId": "PD-03",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"notesAnalysed\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 2,
+        "themes": [
+          {
+            "supportingFoci": ["assessment_practice"],
+            "evidenceStrength": "emerging"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-004",
+      "agentId": "PD-03",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 3,
+        "themes": [
+          {
+            "supportingFoci": ["learner_engagement"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-005",
+      "agentId": "PD-03",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["curriculum_alignment"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-006",
+      "agentId": "PD-03",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["language_of_instruction"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-007",
+      "agentId": "PD-03",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"notesAnalysed\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 4,
+        "themes": [
+          {
+            "supportingFoci": ["pedagogy"],
+            "evidenceStrength": "emerging"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-008",
+      "agentId": "PD-03",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["classroom_management"],
+            "evidenceStrength": "emerging"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-009",
+      "agentId": "PD-03",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["pedagogy"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-010",
+      "agentId": "PD-03",
+      "tags": ["happy_path"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"themes[0].supportingFoci[0]\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 2,
+        "themes": [
+          {
+            "supportingFoci": ["curriculum_alignment"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-011",
+      "agentId": "PD-03",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"themes[0].evidenceStrength\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["pedagogy"],
+            "evidenceStrength": "emerging"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-012",
+      "agentId": "PD-03",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"themes[0].evidenceStrength\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 6,
+        "themes": [
+          {
+            "supportingFoci": ["assessment_practice"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-013",
+      "agentId": "PD-03",
+      "tags": ["happy_path", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["pedagogy"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-014",
+      "agentId": "PD-03",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["learner_engagement"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-015",
+      "agentId": "PD-03",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["classroom_management"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-016",
+      "agentId": "PD-03",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"notesAnalysed\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 3,
+        "themes": [
+          {
+            "supportingFoci": ["pedagogy"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-017",
+      "agentId": "PD-03",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["language_of_instruction"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-018",
+      "agentId": "PD-03",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["curriculum_alignment"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-019",
+      "agentId": "PD-03",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 2,
+        "themes": [
+          {
+            "supportingFoci": ["pedagogy"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "PD03-020",
+      "agentId": "PD-03",
+      "tags": ["happy_path", "adversarial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "notesAnalysed": 1,
+        "themes": [
+          {
+            "supportingFoci": ["assessment_practice"],
+            "evidenceStrength": "strong"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

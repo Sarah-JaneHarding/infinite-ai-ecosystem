@@ -1,0 +1,893 @@
+{
+  "agentId": "DW-07",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "dw-07-no-events-needs-input-001",
+      "agentId": "DW-07",
+      "tags": ["needs_input", "no_events"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"scope\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "scope": "LEARNER",
+        "scopeId": "00000000-0000-0000-0000-000000000100",
+        "detail": "No events found for LEARNER 00000000-0000-0000-0000-000000000100 in domain ATTENDANCE for term 3/2026."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-all-blocked-needs-input-001",
+      "agentId": "DW-07",
+      "tags": ["needs_input", "all_blocked"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "scope": "LEARNER",
+        "scopeId": "00000000-0000-0000-0000-000000000101",
+        "detail": "All events for LEARNER 00000000-0000-0000-0000-000000000101 in domain ATTENDANCE were blocked by the quality gate."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-attendance-decline-narrative-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "attendance_decline"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000102",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 6 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 6,
+            "sourceEventIds": [
+              "evt-w1-001",
+              "evt-w1-002",
+              "evt-w2-001",
+              "evt-w2-002",
+              "evt-w3-001",
+              "evt-w3-002"
+            ],
+            "generatedAt": "2026-08-21T17:54:17.282Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-source-event-ids-required-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "source_event_ids"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000103",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 1 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 1,
+            "sourceEventIds": ["evt-a001"],
+            "generatedAt": "2026-08-21T17:54:17.282Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-confidence-score-clamped-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "confidence_score_max"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"insights[0].confidenceScore\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000104",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 5 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 5,
+            "sourceEventIds": ["evt-001", "evt-002", "evt-003", "evt-004", "evt-005"],
+            "generatedAt": "2026-08-21T17:54:17.282Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-confidence-score-partial-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "confidence_score_partial"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"insights[0].confidenceScore\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000105",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 5 domain event(s).",
+            "confidenceScore": 0.5,
+            "dataPointCount": 5,
+            "sourceEventIds": ["evt-001", "evt-002", "evt-003", "evt-004", "evt-005"],
+            "generatedAt": "2026-08-21T17:54:17.282Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-no-learner-name-in-narrative-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "pii_safety", "no_learner_name"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000106",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 1 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 1,
+            "sourceEventIds": ["evt-001"],
+            "generatedAt": "2026-08-21T17:54:17.282Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-no-scope-uuid-in-narrative-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "pii_safety", "no_scope_uuid"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000107",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 1 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 1,
+            "sourceEventIds": ["evt-001"],
+            "generatedAt": "2026-08-21T17:54:17.282Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-class-scope-insight-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "class_scope"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "CLASS",
+            "scopeId": "00000000-0000-0000-0000-000000000300",
+            "domain": "ASSESSMENT",
+            "narrative": "Synthesised insight from 3 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 3,
+            "sourceEventIds": ["evt-001", "evt-002", "evt-003"],
+            "generatedAt": "2026-08-21T17:54:17.282Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-grade-scope-insight-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "grade_scope"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "GRADE",
+            "scopeId": "00000000-0000-0000-0000-000000000400",
+            "domain": "BEHAVIOUR",
+            "narrative": "Synthesised insight from 3 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 3,
+            "sourceEventIds": ["evt-001", "evt-002", "evt-003"],
+            "generatedAt": "2026-08-21T17:54:17.282Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-school-scope-insight-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "school_scope"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "SCHOOL",
+            "scopeId": "00000000-0000-0000-0000-000000000001",
+            "domain": "WELLBEING",
+            "narrative": "Synthesised insight from 3 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 3,
+            "sourceEventIds": ["evt-001", "evt-002", "evt-003"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-narrative-three-sentences-max-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "narrative_sentences"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000108",
+            "domain": "ASSESSMENT",
+            "narrative": "Synthesised insight from 2 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 2,
+            "sourceEventIds": ["evt-001", "evt-002"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-confidence-never-above-one-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "confidence_clamped_at_one"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"insights[0].confidenceScore\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000109",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 4 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 4,
+            "sourceEventIds": ["evt-001", "evt-002", "evt-003", "evt-004"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-narrative-specific-not-vague-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "specific_narrative"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000110",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 2 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 2,
+            "sourceEventIds": ["evt-w1", "evt-w4"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-multi-tenant-isolation-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000200",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 1 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 1,
+            "sourceEventIds": ["evt-t2-001"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-assessment-below-average-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "assessment_below_average"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000111",
+            "domain": "ASSESSMENT",
+            "narrative": "Synthesised insight from 2 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 2,
+            "sourceEventIds": ["evt-001", "evt-002"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-at-least-one-insight-in-ok-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "at_least_one_insight"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "CLASS",
+            "scopeId": "00000000-0000-0000-0000-000000000301",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 2 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 2,
+            "sourceEventIds": ["evt-001", "evt-002"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-behaviour-trend-insight-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "behaviour_trend"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000112",
+            "domain": "BEHAVIOUR",
+            "narrative": "Synthesised insight from 3 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 3,
+            "sourceEventIds": ["evt-001", "evt-002", "evt-003"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-wellbeing-elevated-score-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "wellbeing_elevated"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000113",
+            "domain": "WELLBEING",
+            "narrative": "Synthesised insight from 1 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 1,
+            "sourceEventIds": ["evt-001"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-source-event-ids-not-empty-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "source_event_ids_populated"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000114",
+            "domain": "ASSESSMENT",
+            "narrative": "Synthesised insight from 1 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 1,
+            "sourceEventIds": ["evt-uuid-abc"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-uses-learner-not-name-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "uses_learner_role_language"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000115",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 1 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 1,
+            "sourceEventIds": ["evt-001"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-present-tense-narrative-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "present_tense"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000116",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 2 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 2,
+            "sourceEventIds": ["evt-001", "evt-002"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-scopeId-not-in-needs-input-detail-001",
+      "agentId": "DW-07",
+      "tags": ["needs_input", "scopeId_in_result"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"scopeId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "scope": "LEARNER",
+        "scopeId": "00000000-0000-0000-0000-000000000117",
+        "detail": "No events found for LEARNER 00000000-0000-0000-0000-000000000117 in domain ATTENDANCE for term 3/2026."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-confidence-zero-for-no-data-points-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "low_confidence"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000118",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 1 domain event(s).",
+            "confidenceScore": 0.05,
+            "dataPointCount": 1,
+            "sourceEventIds": ["evt-001"],
+            "generatedAt": "2026-08-21T17:54:17.283Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 4,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-grade-scope-behaviour-insight-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "grade_scope_behaviour"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "GRADE",
+            "scopeId": "00000000-0000-0000-0000-000000000401",
+            "domain": "BEHAVIOUR",
+            "narrative": "Synthesised insight from 3 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 3,
+            "sourceEventIds": ["evt-g001", "evt-g002", "evt-g003"],
+            "generatedAt": "2026-08-21T17:54:17.288Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-partially-blocked-uses-unblocked-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "partially_blocked_uses_unblocked"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000119",
+            "domain": "ATTENDANCE",
+            "narrative": "Synthesised insight from 1 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 1,
+            "sourceEventIds": ["evt-001"],
+            "generatedAt": "2026-08-21T17:54:17.288Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-school-wellbeing-multiple-learners-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "school_wellbeing_multi"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "SCHOOL",
+            "scopeId": "00000000-0000-0000-0000-000000000001",
+            "domain": "WELLBEING",
+            "narrative": "Synthesised insight from 4 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 4,
+            "sourceEventIds": ["evt-s001", "evt-s002", "evt-s003", "evt-s004"],
+            "generatedAt": "2026-08-21T17:54:17.288Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-07-narrative-not-vague-not-inconsistent-001",
+      "agentId": "DW-07",
+      "tags": ["ok", "not_vague_narrative"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "insights": [
+          {
+            "scope": "LEARNER",
+            "scopeId": "00000000-0000-0000-0000-000000000120",
+            "domain": "ASSESSMENT",
+            "narrative": "Synthesised insight from 1 domain event(s).",
+            "confidenceScore": 1,
+            "dataPointCount": 1,
+            "sourceEventIds": ["evt-001"],
+            "generatedAt": "2026-08-21T17:54:17.288Z"
+          }
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 28,
+    "passedCases": 28,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 6
+  }
+}

@@ -1,0 +1,892 @@
+{
+  "agentId": "DW-05",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "dw-05-perfect-quality-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "perfect_quality"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"qualityScore\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"blockedDownstream\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"totalRecords\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"rejectedRecords\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 3,
+        "rejectedRecords": 0,
+        "issues": []
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-empty-records-needs-input-001",
+      "agentId": "DW-05",
+      "tags": ["needs_input", "empty_records"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No records provided; cannot run quality checks on an empty batch."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-missing-required-field-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "missing_field"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 2,
+        "rejectedRecords": 2,
+        "issues": ["MISSING_FIELD", "attendanceStatus"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-duplicate-record-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "duplicate_record"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 2,
+        "rejectedRecords": 0,
+        "issues": ["DUPLICATE_RECORD"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-attendance-rate-over-100-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "impossible_value", "attendance_rate"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 1,
+        "rejectedRecords": 1,
+        "issues": ["IMPOSSIBLE_VALUE", "attendanceRatePct"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-negative-day-count-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "impossible_value", "negative_count"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 1,
+        "rejectedRecords": 1,
+        "issues": ["IMPOSSIBLE_VALUE", "absentDays"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-future-occurred-at-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "impossible_value", "future_date"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 1,
+        "rejectedRecords": 0,
+        "issues": ["IMPOSSIBLE_VALUE", "occurredAt"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-quality-score-below-60-blocks-downstream-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "blocked_downstream", "low_quality"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"blockedDownstream\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 20,
+        "blockedDownstream": true,
+        "totalRecords": 5,
+        "rejectedRecords": 4,
+        "issues": ["MISSING_FIELD", "attendanceStatus"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-error-severity-blocks-downstream-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "blocked_downstream", "error_severity"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"blockedDownstream\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 1,
+        "rejectedRecords": 1,
+        "issues": ["IMPOSSIBLE_VALUE", "attendanceRatePct"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-quality-score-formula-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "quality_score_formula"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"totalRecords\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"rejectedRecords\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"qualityScore\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 50,
+        "blockedDownstream": true,
+        "totalRecords": 4,
+        "rejectedRecords": 2,
+        "issues": ["MISSING_FIELD", "attendanceStatus"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-issue-detail-specific-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "specific_issue_detail"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 3,
+        "rejectedRecords": 3,
+        "issues": ["MISSING_FIELD", "attendanceStatus"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-no-learner-uuid-in-issues-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "pii_safety", "no_uuid_in_issues"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 1,
+        "rejectedRecords": 1,
+        "issues": ["MISSING_FIELD", "attendanceStatus"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-assessment-domain-missing-score-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "assessment", "missing_score"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 1,
+        "rejectedRecords": 1,
+        "issues": ["MISSING_FIELD", "scorePercent"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-assessment-score-over-100-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "impossible_value", "score_over_100"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 1,
+        "rejectedRecords": 1,
+        "issues": ["IMPOSSIBLE_VALUE", "scorePercent"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-multi-tenant-isolation-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"qualityScore\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 1,
+        "rejectedRecords": 0,
+        "issues": []
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-behaviour-domain-missing-kind-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "behaviour", "missing_field"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 1,
+        "rejectedRecords": 0,
+        "issues": ["MISSING_FIELD", "behaviourKind"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-wellbeing-missing-screener-score-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "wellbeing", "missing_screener_score"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 1,
+        "rejectedRecords": 0,
+        "issues": ["MISSING_FIELD"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-quality-score-clamped-never-negative-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "score_clamped", "boundary"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 2,
+        "rejectedRecords": 2,
+        "issues": [
+          "MISSING_FIELD",
+          "learnerToken",
+          "attendanceStatus",
+          "DUPLICATE_RECORD"
+        ]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-quality-score-clamped-never-above-100-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "score_boundary_100"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"qualityScore\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 1,
+        "rejectedRecords": 0,
+        "issues": []
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-distribution-drift-detected-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "distribution_drift"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 3,
+        "rejectedRecords": 0,
+        "issues": ["DISTRIBUTION_DRIFT"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-no-drift-without-prior-data-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "no_drift_without_baseline"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 1,
+        "rejectedRecords": 0,
+        "issues": []
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-large-batch-100-records-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "large_batch"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"totalRecords\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"rejectedRecords\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"qualityScore\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 100,
+        "rejectedRecords": 0,
+        "issues": []
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-mixed-issues-multiple-kinds-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "mixed_issues"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 67,
+        "blockedDownstream": false,
+        "totalRecords": 3,
+        "rejectedRecords": 1,
+        "issues": ["MISSING_FIELD", "attendanceStatus", "DUPLICATE_RECORD"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-wellbeing-score-out-of-range-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "out_of_range", "wellbeing"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 1,
+        "rejectedRecords": 0,
+        "issues": ["OUT_OF_RANGE"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-high-quality-not-blocked-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "not_blocked"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"qualityScore\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"blockedDownstream\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 100,
+        "blockedDownstream": false,
+        "totalRecords": 5,
+        "rejectedRecords": 0,
+        "issues": []
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-assessment-all-missing-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "blocked_downstream", "all_missing"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"blockedDownstream\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 2,
+        "rejectedRecords": 2,
+        "issues": ["MISSING_FIELD", "learnerToken", "scorePercent"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-single-invalid-record-in-large-batch-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "mixed_validity"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"totalRecords\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"rejectedRecords\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"qualityScore\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"blockedDownstream\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 90,
+        "blockedDownstream": false,
+        "totalRecords": 10,
+        "rejectedRecords": 1,
+        "issues": ["MISSING_FIELD", "learnerToken", "attendanceStatus"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-issues-have-specific-detail-001",
+      "agentId": "DW-05",
+      "tags": ["ok", "specific_detail_field"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "qualityScore": 0,
+        "blockedDownstream": true,
+        "totalRecords": 3,
+        "rejectedRecords": 3,
+        "issues": ["MISSING_FIELD", "attendanceStatus"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-05-unknown-domain-needs-input-001",
+      "agentId": "DW-05",
+      "tags": ["needs_input", "unknown_domain"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Unknown domain: UNKNOWN_DOMAIN_XYZ."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 29,
+    "passedCases": 29,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 2
+  }
+}

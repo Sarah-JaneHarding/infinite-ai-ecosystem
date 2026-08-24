@@ -1,0 +1,676 @@
+{
+  "agentId": "AC-04",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "ac04-high-risk-below-25th-001",
+      "agentId": "AC-04",
+      "tags": ["signals_found", "high_risk", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"riskLevel\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "6c31844b-b0e2-4fbc-8c73-0238e50db4e6",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+        "riskLevel": "HIGH",
+        "signals": [
+          {
+            "domain": "LITERACY",
+            "currentPercentile": 20,
+            "percentileChange": -15,
+            "evidenceIds": ["ev-001"]
+          }
+        ],
+        "recommendFullScreen": true,
+        "evidenceIds": ["ev-001"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-medium-risk-below-35th-001",
+      "agentId": "AC-04",
+      "tags": ["signals_found", "medium_risk", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"riskLevel\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "a8ecaf38-f28c-4b4b-969b-d3412453a733",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+        "riskLevel": "MEDIUM",
+        "signals": [
+          {
+            "domain": "NUMERACY",
+            "currentPercentile": 30,
+            "percentileChange": -20,
+            "evidenceIds": ["ev-002"]
+          }
+        ],
+        "recommendFullScreen": false,
+        "evidenceIds": ["ev-002"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-low-risk-decline-any-001",
+      "agentId": "AC-04",
+      "tags": ["signals_found", "low_risk", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"riskLevel\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "de3842fd-972f-4326-a307-c7f994725f7b",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+        "riskLevel": "LOW",
+        "signals": [
+          {
+            "domain": "ATTENDANCE",
+            "currentPercentile": 58,
+            "percentileChange": -7,
+            "evidenceIds": ["ev-003"]
+          }
+        ],
+        "recommendFullScreen": false,
+        "evidenceIds": ["ev-003"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-no-signals-stable-001",
+      "agentId": "AC-04",
+      "tags": ["no_signals", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "no_signals",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+        "checkedAt": "2026-08-21T17:54:17.234Z",
+        "evidenceIds": ["ev-004", "ev-005"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-empty-readings-needs-input-001",
+      "agentId": "AC-04",
+      "tags": ["needs_input", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No recent readings supplied."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-recommend-full-screen-below-25-001",
+      "agentId": "AC-04",
+      "tags": ["signals_found", "recommend_screen", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recommendFullScreen\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "9544df55-276c-467e-8fdf-25e4a44b0378",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+        "riskLevel": "HIGH",
+        "signals": [
+          {
+            "domain": "LITERACY",
+            "currentPercentile": 15,
+            "percentileChange": -25,
+            "evidenceIds": ["ev-006"]
+          }
+        ],
+        "recommendFullScreen": true,
+        "evidenceIds": ["ev-006"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-no-recommend-full-screen-mild-decline-001",
+      "agentId": "AC-04",
+      "tags": ["signals_found", "no_full_screen"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"recommendFullScreen\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "941fcd9b-86bc-48b0-9e3c-339f0234c727",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+        "riskLevel": "LOW",
+        "signals": [
+          {
+            "domain": "BEHAVIOUR",
+            "currentPercentile": 55,
+            "percentileChange": -5,
+            "evidenceIds": ["ev-007"]
+          }
+        ],
+        "recommendFullScreen": false,
+        "evidenceIds": ["ev-007"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-evidence-ids-carried-through-001",
+      "agentId": "AC-04",
+      "tags": ["evidence_linkage", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "d1bb2abc-5d62-4f4d-85fc-28deaee654fe",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+        "riskLevel": "HIGH",
+        "signals": [
+          {
+            "domain": "LITERACY",
+            "currentPercentile": 22,
+            "percentileChange": -23,
+            "evidenceIds": ["ev-unique-008"]
+          }
+        ],
+        "recommendFullScreen": true,
+        "evidenceIds": ["ev-unique-008"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-no-signals-evidence-ids-present-001",
+      "agentId": "AC-04",
+      "tags": ["no_signals", "evidence_linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "1/1 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "no_signals",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+        "checkedAt": "2026-08-21T17:54:17.234Z",
+        "evidenceIds": ["ev-009"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-high-risk-max-level-multiple-domains-001",
+      "agentId": "AC-04",
+      "tags": ["signals_found", "high_risk", "multi_domain"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"riskLevel\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "e52bab9f-4449-4400-bedf-a64d88404ceb",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+        "riskLevel": "HIGH",
+        "signals": [
+          {
+            "domain": "LITERACY",
+            "currentPercentile": 20,
+            "percentileChange": -40,
+            "evidenceIds": ["ev-010a"]
+          },
+          {
+            "domain": "NUMERACY",
+            "currentPercentile": 55,
+            "percentileChange": -5,
+            "evidenceIds": ["ev-010b"]
+          }
+        ],
+        "recommendFullScreen": true,
+        "evidenceIds": ["ev-010a", "ev-010b"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-signals-no-diagnostic-language-001",
+      "agentId": "AC-04",
+      "tags": ["diagnosis_guard", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "ea4145db-fd4f-4e38-be61-223dfbcf878c",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+        "riskLevel": "HIGH",
+        "signals": [
+          {
+            "domain": "LITERACY",
+            "currentPercentile": 18,
+            "percentileChange": -12,
+            "evidenceIds": ["ev-011"]
+          }
+        ],
+        "recommendFullScreen": true,
+        "evidenceIds": ["ev-011"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-no-baseline-uses-oldest-reading-001",
+      "agentId": "AC-04",
+      "tags": ["no_baseline", "signals_found"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "57824219-36a5-4af7-8641-c60bc22058f6",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+        "riskLevel": "LOW",
+        "signals": [
+          {
+            "domain": "ATTENDANCE",
+            "currentPercentile": 70,
+            "percentileChange": 0,
+            "evidenceIds": ["ev-012a"]
+          },
+          {
+            "domain": "ATTENDANCE",
+            "currentPercentile": 50,
+            "percentileChange": 0,
+            "evidenceIds": ["ev-012b"]
+          }
+        ],
+        "recommendFullScreen": false,
+        "evidenceIds": ["ev-012a", "ev-012b"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-warning-id-is-uuid-001",
+      "agentId": "AC-04",
+      "tags": ["schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "215241a5-1235-4032-bc75-32777528e076",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+        "riskLevel": "HIGH",
+        "signals": [
+          {
+            "domain": "LITERACY",
+            "currentPercentile": 10,
+            "percentileChange": -30,
+            "evidenceIds": ["ev-013"]
+          }
+        ],
+        "recommendFullScreen": true,
+        "evidenceIds": ["ev-013"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-medium-risk-decline-over-10-001",
+      "agentId": "AC-04",
+      "tags": ["signals_found", "medium_risk"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"riskLevel\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "ebd02bbc-0c90-43ec-a657-7672a5701633",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+        "riskLevel": "MEDIUM",
+        "signals": [
+          {
+            "domain": "NUMERACY",
+            "currentPercentile": 45,
+            "percentileChange": -15,
+            "evidenceIds": ["ev-014"]
+          }
+        ],
+        "recommendFullScreen": false,
+        "evidenceIds": ["ev-014"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-signals-include-domain-in-output-001",
+      "agentId": "AC-04",
+      "tags": ["signals_found", "schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "97a54a28-ed86-4f8d-b5ab-9ce5e27656d3",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+        "riskLevel": "HIGH",
+        "signals": [
+          {
+            "domain": "WELLBEING",
+            "currentPercentile": 22,
+            "percentileChange": -28,
+            "evidenceIds": ["ev-015"]
+          }
+        ],
+        "recommendFullScreen": true,
+        "evidenceIds": ["ev-015"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-no-signals-improving-001",
+      "agentId": "AC-04",
+      "tags": ["no_signals"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "no_signals",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+        "checkedAt": "2026-08-21T17:54:17.234Z",
+        "evidenceIds": ["ev-016"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-multiple-evidence-ids-001",
+      "agentId": "AC-04",
+      "tags": ["signals_found", "evidence_linkage"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "2/2 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "187d1504-5c8c-430c-9834-dbad58806085",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+        "riskLevel": "HIGH",
+        "signals": [
+          {
+            "domain": "LITERACY",
+            "currentPercentile": 20,
+            "percentileChange": -30,
+            "evidenceIds": ["ev-017a"]
+          },
+          {
+            "domain": "NUMERACY",
+            "currentPercentile": 18,
+            "percentileChange": -32,
+            "evidenceIds": ["ev-017b"]
+          }
+        ],
+        "recommendFullScreen": true,
+        "evidenceIds": ["ev-017a", "ev-017b"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-learnerId-echoed-in-no-signals-001",
+      "agentId": "AC-04",
+      "tags": ["no_signals", "schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "no_signals",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+        "checkedAt": "2026-08-21T17:54:17.234Z",
+        "evidenceIds": ["ev-018"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-attendance-behaviour-two-domains-001",
+      "agentId": "AC-04",
+      "tags": ["signals_found", "medium_risk", "multi_domain"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"riskLevel\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "signals_found",
+        "warningId": "df23d1f8-e32e-451e-a1cd-5e01ed0efefc",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+        "riskLevel": "MEDIUM",
+        "signals": [
+          {
+            "domain": "ATTENDANCE",
+            "currentPercentile": 30,
+            "percentileChange": -25,
+            "evidenceIds": ["ev-019a"]
+          },
+          {
+            "domain": "BEHAVIOUR",
+            "currentPercentile": 32,
+            "percentileChange": -23,
+            "evidenceIds": ["ev-019b"]
+          }
+        ],
+        "recommendFullScreen": false,
+        "evidenceIds": ["ev-019a", "ev-019b"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac04-checked-at-present-for-no-signals-001",
+      "agentId": "AC-04",
+      "tags": ["no_signals", "schema_validation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "no_signals",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000020",
+        "checkedAt": "2026-08-21T17:54:17.234Z",
+        "evidenceIds": ["ev-020"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 20,
+    "passedCases": 20,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

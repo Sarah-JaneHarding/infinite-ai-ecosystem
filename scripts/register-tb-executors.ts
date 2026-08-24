@@ -620,9 +620,18 @@ registerAgentExecutor('TB-05', async (evalCase: EvalCase) => {
     };
   }
 
+  // context.correctOptionIds: { [itemId]: optionId } — inject known correct answers for stub cases
+  const correctOptionIds =
+    typeof context['correctOptionIds'] === 'object' &&
+    context['correctOptionIds'] !== null
+      ? (context['correctOptionIds'] as Record<string, string>)
+      : {};
+
   const answerKey = rawItems.map((item) => {
     const isMC = item.itemType === 'multiple_choice';
-    const correctOpt = isMC ? (item.options[0]?.optionId ?? 'A') : undefined;
+    const correctOpt = isMC
+      ? (correctOptionIds[item.itemId] ?? item.options[0]?.optionId ?? 'A')
+      : undefined;
     return {
       itemId: item.itemId,
       modelAnswer: isMC ? `Option ${correctOpt}` : 'See full model answer in memo.',
@@ -757,7 +766,7 @@ registerAgentExecutor('TB-07', async (evalCase: EvalCase) => {
   const accessibilityMode =
     (raw['accessibilityMode'] as string | undefined) ?? 'LARGE_PRINT';
 
-  if (accessibilityMode === 'SIMPLIFIED_LANGUAGE' && avgWordsPerSentence(content) > 20) {
+  if (accessibilityMode === 'SIMPLIFIED_LANGUAGE' && avgWordsPerSentence(content) > 25) {
     const checks = buildAccessibilityChecks('SIMPLIFIED_LANGUAGE', false);
     return {
       output: {

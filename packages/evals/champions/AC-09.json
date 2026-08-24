@@ -1,0 +1,898 @@
+{
+  "agentId": "AC-09",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "ac09-referral-pending-compiled-001",
+      "agentId": "AC-09",
+      "tags": ["compiled", "referral-pending", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresSignOff\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "3/3 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "9a82f650-56c2-4c17-b4e0-410dac26ce44",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000001",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000018: composite 22th percentile, TIER_2. Term 00000000-0000-0000-0000-000000000019: composite 18th percentile, TIER_3. Term 00000000-0000-0000-0000-000000000020: composite 14th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "TIER_2 plan over 10 weeks — goal: Reach 30th percentile composite in LITERACY. TIER_3 plan over 14 weeks — goal: Reach 25th percentile in LITERACY and NUMERACY."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: declining. Current percentile: 14, goal: 30. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 2 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000001. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-sc-001", "ev-sc-002", "ev-sc-003"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-state-machine-blocked-monitored-001",
+      "agentId": "AC-09",
+      "tags": ["state_machine_blocked", "wrong-status", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "state_machine_blocked",
+          "explanation": "SIAS status \"MONITORING\" does not permit referral-pack compilation — status must be REFERRAL_PENDING.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "ac09-state-machine-blocked-intervention-active-001",
+      "agentId": "AC-09",
+      "tags": ["state_machine_blocked", "intervention-active"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "state_machine_blocked",
+          "explanation": "SIAS status \"INTERVENTION_ACTIVE\" does not permit referral-pack compilation — status must be REFERRAL_PENDING.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-state-machine-blocked-sbst-review-001",
+      "agentId": "AC-09",
+      "tags": ["state_machine_blocked", "sbst-review"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "state_machine_blocked",
+          "explanation": "SIAS status \"SBST_REVIEW\" does not permit referral-pack compilation — status must be REFERRAL_PENDING.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-five-required-sections-001",
+      "agentId": "AC-09",
+      "tags": ["sections", "five-sections", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "All five required sections present in order.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "15b343e6-e121-4cf7-9d41-3ebe3bc0ca83",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000005",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 8th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "TIER_3 plan over 16 weeks — goal: Reach 20th percentile in LITERACY."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: declining. Current percentile: 8, goal: 25. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 1 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000005. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-fs-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-requires-sign-off-always-true-001",
+      "agentId": "AC-09",
+      "tags": ["requires-sign-off", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresSignOff\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "913bc5d7-e939-456a-bff2-ba3e3fe0bccd",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000006",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 12th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "No formal intervention plans recorded."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: stable. Current percentile: 12, goal: 30. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 0 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000006. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-rs-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-no-diagnostic-language-001",
+      "agentId": "AC-09",
+      "tags": ["diagnosis_guard", "no-clinical-labels"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No diagnostic language detected.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "b2b9bfdb-0e15-48d9-8e81-ac10b32a7aa4",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000007",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 5th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "TIER_3 plan over 14 weeks — goal: Reach 15th percentile."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: declining. Current percentile: 5, goal: 20. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 1 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000007. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-nd-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-sbst-ratification-echoed-in-section-001",
+      "agentId": "AC-09",
+      "tags": ["ratification-id-echo", "sections"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "SBST Ratification section references the ratification ID.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "d06beba4-17d8-42e1-b699-39fb5026fe33",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-111111111111",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 9th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "No formal intervention plans recorded."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: declining. Current percentile: 9, goal: 25. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 0 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-111111111111. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-sb-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-evidence-ids-passed-through-001",
+      "agentId": "AC-09",
+      "tags": ["evidence-linkage", "pass-through"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "3/3 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "dc3d304c-cdd6-4d09-bd4c-6bdf0caf4762",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000009",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000009",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 11th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "No formal intervention plans recorded."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: declining. Current percentile: 11, goal: 28. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 0 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000009. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-ep-001", "ev-ep-002", "ev-ep-003"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-no-pii-in-sections-001",
+      "agentId": "AC-09",
+      "tags": ["pii_guard", "no-personal-identifiers"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No PII detected in section content (executor uses only UUIDs and aggregate statistics).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "ff1c537e-83bc-42b2-b1ae-dfc2a1dcffc0",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000010",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000010",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 7th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "TIER_3 plan over 12 weeks — goal: Reach 18th percentile."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: stable. Current percentile: 7, goal: 18. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 1 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000010. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-pii-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-state-machine-blocked-screened-001",
+      "agentId": "AC-09",
+      "tags": ["state_machine_blocked", "screened-status"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "state_machine_blocked",
+          "explanation": "SIAS status \"SCREENED\" does not permit referral-pack compilation — status must be REFERRAL_PENDING.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-multiple-screen-history-entries-001",
+      "agentId": "AC-09",
+      "tags": ["compiled", "four-screen-history"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresSignOff\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "da1cf661-c16f-4e74-aaf1-34a495485e13",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000012",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000017: composite 30th percentile, TIER_2. Term 00000000-0000-0000-0000-000000000018: composite 22th percentile, TIER_2. Term 00000000-0000-0000-0000-000000000019: composite 14th percentile, TIER_3. Term 00000000-0000-0000-0000-000000000020: composite 9th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "TIER_2 plan over 8 weeks — goal: Reach 30th percentile. TIER_3 plan over 16 weeks — goal: Reach 25th percentile."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: declining. Current percentile: 9, goal: 25. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 2 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000012. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-msh-001", "ev-msh-002"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-no-intervention-history-still-compiles-001",
+      "agentId": "AC-09",
+      "tags": ["compiled", "no-intervention-history"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"requiresSignOff\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "e7b5edc1-cdfa-440c-9cc6-294acdda99a4",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000013",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 3th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "No formal intervention plans recorded."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: declining. Current percentile: 3, goal: 20. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 0 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000013. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-nih-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-improving-trend-still-compiles-001",
+      "agentId": "AC-09",
+      "tags": ["compiled", "improving-trend"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "41982370-a776-4a6c-bf1f-fae56cf49f65",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000014",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 6th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "TIER_3 plan over 16 weeks — goal: Reach 20th percentile."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: improving. Current percentile: 6, goal: 20. Recommendation: continue."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 1 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000014. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-it-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-state-machine-blocked-exited-001",
+      "agentId": "AC-09",
+      "tags": ["state_machine_blocked", "terminal-state"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "state_machine_blocked",
+          "explanation": "SIAS status \"EXITED\" does not permit referral-pack compilation — status must be REFERRAL_PENDING.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-factual-referral-basis-section-001",
+      "agentId": "AC-09",
+      "tags": ["referral-basis", "factual-content"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Referral Basis section is present and contains factual content.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "4f091001-acd5-498b-80f6-80fc78dd6332",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000016",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 4th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "TIER_3 plan over 16 weeks — goal: Reach 15th percentile."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: declining. Current percentile: 4, goal: 15. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 1 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000016. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-rb-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-state-machine-blocked-pending-screen-001",
+      "agentId": "AC-09",
+      "tags": ["state_machine_blocked", "pending-screen"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "state_machine_blocked",
+          "explanation": "SIAS status \"PENDING_SCREEN\" does not permit referral-pack compilation — status must be REFERRAL_PENDING.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-sbst-ratification-id-echoed-in-output-001",
+      "agentId": "AC-09",
+      "tags": ["ratification-id-echo", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"sbstRatificationId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "f0c04fe5-b67d-4428-8909-3bb472c7f298",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000018",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 10th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "No formal intervention plans recorded."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: declining. Current percentile: 10, goal: 25. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 0 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000018. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-sre-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-learner-id-echoed-in-output-001",
+      "agentId": "AC-09",
+      "tags": ["learner-id-echo"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerId\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "7b7b9c52-6093-4ee5-9f9f-b172dcb82c02",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000019",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000020: composite 6th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "No formal intervention plans recorded."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: stable. Current percentile: 6, goal: 20. Recommendation: continue."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 0 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000019. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-lie-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-state-machine-blocked-referred-terminal-001",
+      "agentId": "AC-09",
+      "tags": ["state_machine_blocked", "already-referred-terminal"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "state_machine_blocked",
+          "explanation": "SIAS status \"REFERRED\" does not permit referral-pack compilation — status must be REFERRAL_PENDING.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac09-learner-support-history-section-grounded-in-data-001",
+      "agentId": "AC-09",
+      "tags": ["grounded-content", "no-fabrication"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Learner Support History contains numeric references to input screening data.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "compiled",
+        "compilationId": "43e92ac9-1140-4d3d-92ec-9496b37f21b3",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "sbstRatificationId": "cccccccc-0000-0000-0000-000000000021",
+        "sections": [
+          {
+            "sectionName": "Learner Support History",
+            "content": "Term 00000000-0000-0000-0000-000000000018: composite 25th percentile, TIER_2. Term 00000000-0000-0000-0000-000000000020: composite 9th percentile, TIER_3."
+          },
+          {
+            "sectionName": "Intervention Record",
+            "content": "TIER_2 plan over 10 weeks — goal: Reach 30th percentile."
+          },
+          {
+            "sectionName": "Progress Summary",
+            "content": "Current trend: declining. Current percentile: 9, goal: 30. Recommendation: intensify."
+          },
+          {
+            "sectionName": "Referral Basis",
+            "content": "Despite 1 round(s) of school-based support, the learner has not reached the target percentile band. District support services are required."
+          },
+          {
+            "sectionName": "SBST Ratification",
+            "content": "This referral pack has been compiled following SBST ratification cccccccc-0000-0000-0000-000000000021. The SBST has reviewed and approved the referral decision."
+          }
+        ],
+        "evidenceIds": ["ev-lsh-001"],
+        "requiresSignOff": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 21,
+    "passedCases": 21,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

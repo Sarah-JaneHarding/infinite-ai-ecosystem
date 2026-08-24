@@ -15,6 +15,7 @@
     "check:retention": "tsx scripts/check-retention-schedule.ts",
     "evals:run": "tsx scripts/evals-run.ts",
     "evals:gate": "tsx scripts/evals-gate.ts",
+    "evals:promote": "tsx scripts/evals-promote.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",

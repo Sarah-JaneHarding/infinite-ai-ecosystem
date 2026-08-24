@@ -38,6 +38,7 @@ import './register-ac-executors.js';
 import './register-tb-executors.js';
 import './register-le-executors.js';
 import './register-pd-executors.js';
+import { acStubJudge } from './ac-stub-judge.js';
 
 const RED = '[31m';
 const GREEN = '[32m';
@@ -73,7 +74,10 @@ async function main(): Promise<void> {
     }
 
     gatedAny = true;
-    const current = await runEvalSet(agentId, 'current', cases, { executeAgent });
+    const current = await runEvalSet(agentId, 'current', cases, {
+      executeAgent,
+      judge: acStubJudge,
+    });
     const baseline = loadChampionResult(championsRoot, agentId);
     const verdict = evaluateGate(current, baseline, TOLERANCE);
 

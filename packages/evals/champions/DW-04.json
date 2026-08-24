@@ -1,0 +1,763 @@
+{
+  "agentId": "DW-04",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "dw-04-basic-tokenisation-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "basic_tokenisation"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"deidentified\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerToken\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "attendanceStatus": "PRESENT",
+          "occurredAt": "2026-08-07"
+        },
+        "learnerToken": "tkn_abc123xyz",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-learner-uuid-absent-from-result-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "pii_safety", "uuid_absent_from_result"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "attendanceStatus": "ABSENT",
+          "occurredAt": "2026-08-07"
+        },
+        "learnerToken": "tkn_def456uvw",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-no-learner-token-001",
+      "agentId": "DW-04",
+      "tags": ["needs_input", "no_token"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No learner token available; de-identification cannot proceed."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-deidentified-boolean-not-string-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "deidentified_boolean"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"deidentified\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "scorePercent": 78,
+          "occurredAt": "2026-08-07"
+        },
+        "learnerToken": "tkn_ghi789rst",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-original-payload-not-in-result-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "no_raw_payload"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "attendanceStatus": "PRESENT"
+        },
+        "learnerToken": "tkn_jkl012mno",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-name-field-suppressed-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "name_suppressed"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "attendanceStatus": "PRESENT"
+        },
+        "learnerToken": "tkn_pqr345stu",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-national-id-suppressed-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "national_id_suppressed", "pii_safety"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "screenerScore": 22
+        },
+        "learnerToken": "tkn_vwx678yza",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-token-not-derived-from-hash-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "stable_token"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerToken\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "scorePercent": 55
+        },
+        "learnerToken": "tkn_stable_opaque_007",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-assessment-domain-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "assessment"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"deidentified\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "scorePercent": 82,
+          "subjectCode": "MATH",
+          "occurredAt": "2026-08-07"
+        },
+        "learnerToken": "tkn_assess_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-behaviour-domain-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "behaviour"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"deidentified\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "behaviourKind": "DISRUPTION",
+          "occurredAt": "2026-08-07"
+        },
+        "learnerToken": "tkn_behav_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-wellbeing-domain-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "wellbeing"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"deidentified\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "screenerScore": 30,
+          "occurredAt": "2026-08-07"
+        },
+        "learnerToken": "tkn_well_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-multi-tenant-isolation-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "multi_tenant"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerToken\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "attendanceStatus": "PRESENT"
+        },
+        "learnerToken": "tkn_tenant2_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-uuid-nested-in-payload-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "nested_uuid_removed"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "details": {
+            "reportedBy": "00000000-0000-0000-0000-000000000111",
+            "kind": "DISRUPTION"
+          }
+        },
+        "learnerToken": "tkn_nested_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-impossible-identifier-needs-input-001",
+      "agentId": "DW-04",
+      "tags": ["needs_input", "unsuppressable_identifier"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "PII fields cannot be suppressed: biometricHash."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-deidentified-payload-mirrors-shape-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "payload_shape_preserved"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "scorePercent": 67,
+          "subjectCode": "ENGLISH",
+          "termNumber": 3
+        },
+        "learnerToken": "tkn_shape_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-empty-token-string-001",
+      "agentId": "DW-04",
+      "tags": ["needs_input", "empty_token"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "No learner token available; de-identification cannot proceed."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-phone-number-suppressed-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "phone_suppressed", "pii_safety"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "guardianPhone": "+27821234567",
+          "screenerScore": 15
+        },
+        "learnerToken": "tkn_phone_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-attendance-with-grade-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "non_pii_fields_preserved"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "attendanceStatus": "PRESENT",
+          "gradeCode": "GR10",
+          "classCode": "10A"
+        },
+        "learnerToken": "tkn_grade_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-email-address-suppressed-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "email_suppressed", "pii_safety"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "guardianEmail": "parent@example.com",
+          "screenerScore": 20
+        },
+        "learnerToken": "tkn_email_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-screener-domain-basic-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "screener", "wellbeing"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"deidentified\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "screenerScore": 8,
+          "screenerKind": "SDQ",
+          "occurredAt": "2026-08-07"
+        },
+        "learnerToken": "tkn_sdq_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-empty-payload-needs-input-001",
+      "agentId": "DW-04",
+      "tags": ["needs_input", "empty_payload"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "needs_input",
+        "detail": "Payload is empty — no fields to de-identify."
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-learner-token-from-stored-value-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "stored_token_not_derived"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"learnerToken\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "scorePercent": 91
+        },
+        "learnerToken": "tkn_stored_val_999",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-multiple-uuid-occurrences-removed-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "multiple_uuid_occurrences"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "reportedAbout": "tkn_multi_001",
+          "behaviourKind": "DISRUPTION"
+        },
+        "learnerToken": "tkn_multi_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-numeric-scores-preserved-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "zero_score_preserved"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "scorePercent": 0,
+          "termNumber": 1
+        },
+        "learnerToken": "tkn_zero_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-behaviour-incident-full-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "behaviour", "severity_preserved"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "behaviourKind": "BULLYING",
+          "severity": "HIGH",
+          "occurredAt": "2026-08-07"
+        },
+        "learnerToken": "tkn_bully_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-token-in-result-not-uuid-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "token_format"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "attendanceStatus": "PRESENT"
+        },
+        "learnerToken": "tkn_opaque_token_XYZ",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-uuid-in-non-identity-field-replaced-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "uuid_in_non_identity_field"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "witnessId": "tkn_truancy_001",
+          "behaviourKind": "TRUANCY"
+        },
+        "learnerToken": "tkn_truancy_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-date-fields-not-suppressed-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "date_preserved"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "attendanceStatus": "LATE",
+          "occurredAt": "2026-07-15"
+        },
+        "learnerToken": "tkn_date_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "dw-04-result-has-exactly-three-fields-001",
+      "agentId": "DW-04",
+      "tags": ["ok", "output_schema"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"deidentified\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "ok",
+        "deidentifiedPayload": {
+          "scorePercent": 73
+        },
+        "learnerToken": "tkn_fields_001",
+        "deidentified": true
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 29,
+    "passedCases": 29,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 0
+  }
+}

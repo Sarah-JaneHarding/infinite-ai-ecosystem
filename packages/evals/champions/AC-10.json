@@ -1,0 +1,679 @@
+{
+  "agentId": "AC-10",
+  "agentVersion": "current",
+  "cases": [
+    {
+      "caseId": "ac10-english-improving-continue-001",
+      "agentId": "AC-10",
+      "tags": ["english", "improving", "continue", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"homeLanguage\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"readabilityAdequate\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "2/2 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "3f22368d-fa71-4915-b454-ecbdbdaa612c",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000001",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 8 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-001", "ev-pr-002"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-afrikaans-stable-continue-001",
+      "agentId": "AC-10",
+      "tags": ["afrikaans", "stable", "continue"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"homeLanguage\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"readabilityAdequate\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "5287107e-9dd1-4745-9321-e9eabc02e306",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000002",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "af",
+        "reportText": "Dear Parent or Guardian, Your child is maintaining their current level. Your child has received support for 6 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 4,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-003"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-isizulu-improving-exit-001",
+      "agentId": "AC-10",
+      "tags": ["isizulu", "improving", "exit"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"homeLanguage\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"readabilityAdequate\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "f2900f4f-4e77-4123-b8a5-2a5e32d4b935",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000003",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "zu",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 10 week(s) this term. Your child has reached the target and is ready to exit the additional support programme. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 4,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-004", "ev-pr-005"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-sepedi-declining-intensify-001",
+      "agentId": "AC-10",
+      "tags": ["sepedi", "declining", "intensify"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"homeLanguage\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"readabilityAdequate\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "7dbccc68-240d-4278-806d-5e74a9e755c3",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000004",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "nso",
+        "reportText": "Dear Parent or Guardian, We have noticed that your child needs more support at this time. Your child has received support for 8 week(s) this term. We are increasing the level of support to help your child make faster progress. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 4,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-006"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-setswana-stable-intensify-001",
+      "agentId": "AC-10",
+      "tags": ["setswana", "stable", "intensify"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"homeLanguage\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "62d20231-8ce4-4a4a-8b15-29d49795e5f2",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000005",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "tn",
+        "reportText": "Dear Parent or Guardian, Your child is maintaining their current level. Your child has received support for 12 week(s) this term. We are increasing the level of support to help your child make faster progress. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-007"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-no-diagnostic-language-improving-001",
+      "agentId": "AC-10",
+      "tags": ["diagnosis_guard", "english", "no-clinical-labels"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No diagnostic language detected.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "23c6aade-1e2c-413e-bc27-41bb399c4bff",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000006",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 8 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-008"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-no-learner-name-in-report-001",
+      "agentId": "AC-10",
+      "tags": ["pii_guard", "no-learner-name"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No learner name found in report text (executor uses no names).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "c7222388-ad8b-4269-812a-e598faa930e4",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000007",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, Your child is maintaining their current level. Your child has received support for 6 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-009"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-readability-adequate-grade-5-001",
+      "agentId": "AC-10",
+      "tags": ["readability", "grade-5-target", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"readabilityAdequate\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"estimatedReadabilityGrade\" = 5, within tolerance of 4."
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "e55f8f37-b313-4890-aec3-ff9f8dffac72",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000008",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 10 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-010"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-needs-input-missing-plan-id-001",
+      "agentId": "AC-10",
+      "tags": ["needs_input", "missing-plan-id"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "needs_input",
+          "explanation": "planId is required to link the report to its intervention plan.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-needs-input-missing-home-language-001",
+      "agentId": "AC-10",
+      "tags": ["needs_input", "missing-home-language"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "needs_input",
+          "explanation": "homeLanguage is required to select the correct report format.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-isixhosa-improving-continue-001",
+      "agentId": "AC-10",
+      "tags": ["isixhosa", "improving", "continue"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"homeLanguage\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "d02e23d6-1ab4-4736-aaf9-7030eb88d862",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000011",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "xh",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 7 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 4,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-013"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-sesotho-stable-continue-001",
+      "agentId": "AC-10",
+      "tags": ["sesotho", "stable", "continue"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"homeLanguage\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "c5809a2b-8a62-454c-8272-b9dde0e1cb1a",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000012",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "st",
+        "reportText": "Dear Parent or Guardian, Your child is maintaining their current level. Your child has received support for 9 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-014"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-evidence-ids-passed-through-001",
+      "agentId": "AC-10",
+      "tags": ["evidence-linkage", "three-evidence-ids"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "3/3 expected items present (overlap 1.00).",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "1e51187a-3264-4c6d-af29-d98d6f3c1ee8",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000013",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 8 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-015", "ev-pr-016", "ev-pr-017"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-weeks-elapsed-mentioned-in-report-001",
+      "agentId": "AC-10",
+      "tags": ["weeks-elapsed", "plain-language"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No raw percentile in report text; weeks elapsed communicated.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "4e745f6e-eca4-4e17-a9b6-da295da965f6",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000014",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 12 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-018"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 1,
+      "error": null
+    },
+    {
+      "caseId": "ac10-no-percentile-quoted-to-guardian-001",
+      "agentId": "AC-10",
+      "tags": ["plain-language", "no-raw-percentile"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "No raw percentile in report text; weeks elapsed communicated.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "aa887055-893a-4ed1-a1a4-6972b959b1b8",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000015",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 6 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 4,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-019"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-exit-recommendation-communicated-001",
+      "agentId": "AC-10",
+      "tags": ["exit", "positive-framing"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Exit recommendation communicated positively.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "a89bc991-ce5c-4db1-8435-ac98887e677d",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000016",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 10 week(s) this term. Your child has reached the target and is ready to exit the additional support programme. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-020"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-intensify-recommendation-communicated-001",
+      "agentId": "AC-10",
+      "tags": ["intensify", "guardian-contact-invite"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Intensification communicated with guardian contact invite.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "bdf70cb7-b66e-449f-b9fd-8402d87ca71e",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000017",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, We have noticed that your child needs more support at this time. Your child has received support for 8 week(s) this term. We are increasing the level of support to help your child make faster progress. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-021"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-xitsonga-improving-continue-001",
+      "agentId": "AC-10",
+      "tags": ["xitsonga", "improving"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"homeLanguage\" matches the expected value exactly."
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "894d6d7d-d13d-4c65-ac80-6c3ee36098de",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000018",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "ts",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 9 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 4,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-022"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-english-grade-3-readability-001",
+      "agentId": "AC-10",
+      "tags": ["readability", "grade-3-target", "very-plain-language"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"readabilityAdequate\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "\"estimatedReadabilityGrade\" = 3, within tolerance of 3."
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "65264390-ea93-4f85-972d-af5245200e63",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000019",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, Your child is maintaining their current level. Your child has received support for 5 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 3,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-023"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-needs-input-missing-sbst-ratification-001",
+      "agentId": "AC-10",
+      "tags": ["needs_input", "missing-sbst-ratification"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "Refused correctly."
+        }
+      ],
+      "output": {
+        "status": {
+          "code": "needs_input",
+          "explanation": "sbstRatificationId is required as proof of SBST approval.",
+          "escalation": null
+        }
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    },
+    {
+      "caseId": "ac10-report-text-non-empty-001",
+      "agentId": "AC-10",
+      "tags": ["report-text-length", "must_not_regress"],
+      "passed": true,
+      "expectationResults": [
+        {
+          "passed": true,
+          "detail": "\"status\" matches the expected value exactly."
+        },
+        {
+          "passed": true,
+          "detail": "Report text is a substantive letter with multiple sentences.",
+          "score": 1
+        }
+      ],
+      "output": {
+        "status": "written",
+        "reportId": "95de2bb4-fb84-4426-a086-61749fddb560",
+        "learnerId": "aaaaaaaa-0000-0000-0000-000000000021",
+        "termId": "00000000-0000-0000-0000-000000000020",
+        "homeLanguage": "en",
+        "reportText": "Dear Parent or Guardian, Your child is making good progress. Your child has received support for 7 week(s) this term. We are continuing with the current support plan. We value your partnership in supporting your child at home. Please speak to the class teacher if you have any questions.",
+        "estimatedReadabilityGrade": 5,
+        "readabilityAdequate": true,
+        "evidenceIds": ["ev-pr-025"]
+      },
+      "tokensUsed": null,
+      "costUsd": null,
+      "latencyMs": 0,
+      "error": null
+    }
+  ],
+  "metrics": {
+    "totalCases": 21,
+    "passedCases": 21,
+    "failedCases": 0,
+    "passRate": 1,
+    "totalTokens": 0,
+    "totalCostUsd": 0,
+    "totalLatencyMs": 1
+  }
+}

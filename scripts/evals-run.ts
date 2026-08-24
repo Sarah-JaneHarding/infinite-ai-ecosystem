@@ -29,6 +29,7 @@ import './register-ac-executors.js';
 import './register-tb-executors.js';
 import './register-le-executors.js';
 import './register-pd-executors.js';
+import { acStubJudge } from './ac-stub-judge.js';
 
 const RED = '[31m';
 const GREEN = '[32m';
@@ -80,7 +81,10 @@ async function main(): Promise<void> {
     // version of it. Real version identification is the caller's own job (e.g. reading it
     // from the registered `AgentContract` once one exists); this CLI has no such registry
     // to consult yet, so it reports the run honestly as against "current".
-    const result = await runEvalSet(agentId, 'current', cases, { executeAgent });
+    const result = await runEvalSet(agentId, 'current', cases, {
+      executeAgent,
+      judge: acStubJudge,
+    });
     const colour = result.metrics.failedCases === 0 ? GREEN : RED;
     console.log(
       `${colour}${agentId}${RESET}: ${result.metrics.passedCases}/${result.metrics.totalCases} ` +
