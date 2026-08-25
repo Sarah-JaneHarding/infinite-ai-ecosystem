@@ -126,3 +126,10 @@ jobs:
       # proven against the same real Postgres rather than asserted from a mock transaction.
       - name: Brain write-path integration suite (real Postgres)
         run: pnpm --filter @infinite-ai/brain test:integration
+
+      # Stage 06 step 4's runner: durability, resumability, retries, timeouts,
+      # compensation, human gates and map fan-out, proven against the same real Postgres —
+      # not previously wired into CI (Stage 52), so this whole file's 39 tests had never
+      # actually been run by anyone since being written.
+      - name: Orchestrator runner integration suite (real Postgres)
+        run: pnpm --filter @infinite-ai/orchestrator test:integration

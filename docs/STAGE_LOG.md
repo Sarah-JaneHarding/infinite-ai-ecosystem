@@ -6559,3 +6559,164 @@ Tests: 159 passing (orchestrator package), 0 skipped. Includes 44 new pipeline s
 | `pnpm lint` (full workspace) clean                                                               | PASS   |
 
 Open questions raised: none.
+
+---
+
+## Stage 50 — LE Learning Engine pipeline definitions
+
+Started: 2026-08-24 Completed: 2026-08-24
+Exit gate: PASS
+Tests: 185 passing (orchestrator package), 0 skipped. Includes 26 new pipeline structural tests.
+
+**What was built**
+
+- `packages/orchestrator/src/pipelines/le.ts` — five pipelines covering the LE feedback loop described in Stage 13 of the build manual, split by independent trigger the same way MOD-02 splits into RTI / Monitoring / SBST-Scribe rather than one DAG with dead-end branches:
+  - `LE_SIGNAL_PIPELINE` (`le-signal`): LE-01 correction ingest → LE-02 HITL event processing. Both agents self-persist to Brain; no gates needed.
+  - `LE_PATTERN_PIPELINE` (`le-pattern-mining`): LE-03 pattern mining → LE-04 attribution scoring. Both self-persist including the below-threshold outcome; whether to attempt evolution from a scored pattern is a decision made outside this DAG, from the recorded LE-04 output.
+  - `LE_EVOLUTION_PIPELINE` (`le-evolution`): LE-06 prompt evolution (candidate only) → LE-07 eval gatekeeper (verdict only) → smt ratification gate → promote-challenger (Brain write).
+  - `LE_EXEMPLAR_PIPELINE` (`le-exemplar`): LE-05 exemplar curation (candidate only) → hod ratification gate → promote-exemplar (Brain write).
+  - `LE_COMMONS_PIPELINE` (`le-commons`): LE-08 commons-eligibility evaluation → branch (blocked: record block reason; eligible: smt ratification gate → publish-to-commons). Modeled as a gated tool_call even though LE-08's own contract says `writesToBrain: true`, since publishing de-identified patterns across tenant boundaries is exactly what `validatePipelineGating` exists to catch, and that check only inspects `tool_call` steps.
+- `packages/orchestrator/src/index.ts` — exported all five LE pipelines
+- `packages/orchestrator/test/pipelines/le.spec.ts` — 26 structural tests: DAG validity, gating validation, branch wiring, human gate roles (`smt` for promotion/commons ratification, `hod` for exemplar ratification), and cross-pipeline coverage of LE-01–LE-08 (LE-09 Decay Watchdog is excluded by design — it runs as a standalone TTL/CAPS-version-change trigger, the same way AC-04 Early Warning is excluded from MOD-02's pipelines)
+
+**Design notes**
+
+- Reversibility for a bad prompt promotion is provided by `packages/learning/src/promotion-log.ts`'s rollback-command generation (already built in Stage 13), not DAG-level compensation — compensation steps only run when a _later step in the same run_ fails, and `promote-challenger`/`promote-exemplar`/`publish-to-commons` are each the terminal step in their pipeline, so there is no later failure for a compensation step to react to.
+- Role choice: `smt` (already in the core `Role` enum) fits the manual's "HoD, SMT or a curriculum board" language for the two most consequential decisions (live prompt promotion; cross-tenant commons publication). `hod` fits exemplar promotion, consistent with `hod-approval`'s use for curriculum-adjacent decisions elsewhere in the codebase.
+
+### Exit Gate
+
+| Criterion                                                                                                                                  | Result |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| `packages/orchestrator`: `pnpm typecheck` and `pnpm lint` pass                                                                             | PASS   |
+| `packages/orchestrator`: 185 tests pass, 0 skipped (includes 26 new LE pipeline tests)                                                     | PASS   |
+| `validatePipelineDag` passes for all five LE pipelines                                                                                     | PASS   |
+| `validatePipelineGating` passes: `brain.promote_challenger_prompt`, `brain.promote_exemplar`, `learning.publish_to_commons` are each gated | PASS   |
+| LE-01 through LE-08 present across the five pipelines; LE-09 correctly excluded                                                            | PASS   |
+| `pnpm typecheck` (full workspace) clean                                                                                                    | PASS   |
+| `pnpm lint` (full workspace) clean                                                                                                         | PASS   |
+| `pnpm format:check` clean                                                                                                                  | PASS   |
+
+Open questions raised: none.
+
+---
+
+## Stage 51 — Wire MOD-02/MOD-03/LE pipelines and all remaining tool handlers into the worker
+
+Started: 2026-08-24 Completed: 2026-08-24
+Exit gate: PASS
+Tests: 17 passing (worker package, up from 6), 0 skipped. Full workspace: 51/51 turbo tasks pass.
+
+**Audit finding**
+
+`apps/worker/src/index.ts` — the actual BullMQ runtime that executes pipeline runs — only
+registered 4 of the (by Stage 50) 13 defined pipelines (MOD-01, MOD-04, and both MOD-05
+pipelines), only 38 of ~55 agent contracts (missing AC-03–AC-10 and all of LE), and
+`apps/worker/src/tool-handlers.ts` only implemented 3 of 26 tool names referenced by
+`toolName:` across every pipeline in `packages/orchestrator/src/pipelines/`. Since
+`step-executor.ts`'s `runToolCall` throws `StepExecutorError` for any unregistered tool
+name, every pipeline built in Stage 49 and 50 (MOD-02, MOD-03, all five LE pipelines) —
+and MOD-04/MOD-05, which were already registered — would fail at the first `tool_call`
+step in a real run. Defining a pipeline and proving it structurally sound
+(`validatePipelineDag`/`validatePipelineGating`) is necessary but not sufficient; nothing
+before this stage had checked whether the runtime that actually executes a run could
+reach every step.
+
+**What was built**
+
+- `apps/worker/src/tool-handlers.ts` — 23 new handlers (26 total), each parsing a small
+  Zod input schema and calling `remember()`. Two shapes cover every remaining tool:
+  - `L2_EPISODE` for "this happened" facts (deliveries, dispatches, suppressions,
+    retractions) — a shared `recordEpisode()` helper keeps the 19 episode-shaped handlers
+    (MOD-02 ×7, MOD-03 ×2, MOD-04 ×5, MOD-05 ×5) consistent.
+  - `L3_PROCEDURE` for versioned procedural artefacts — `brain.promote_challenger_prompt`
+    (kind `PROMPT_VERSION`), `brain.promote_exemplar` (kind `EXEMPLAR`), and
+    `learning.publish_to_commons` (kind `SOP`).
+- `apps/worker/src/queue-names.ts` — 9 new queue name constants (`QUEUE_MOD02_RTI`,
+  `QUEUE_MOD02_MONITORING`, `QUEUE_MOD02_SBST_SCRIBE`, `QUEUE_MOD03_WAREHOUSE`,
+  `QUEUE_LE_SIGNAL`, `QUEUE_LE_PATTERN_MINING`, `QUEUE_LE_EVOLUTION`, `QUEUE_LE_EXEMPLAR`,
+  `QUEUE_LE_COMMONS`).
+- `apps/worker/src/index.ts` — imports and registers AC-03–AC-10 and LE-01–LE-09 contracts
+  in `ALL_CONTRACTS`; imports and registers all 9 newly-missing pipelines in
+  `buildPipelineMap()` and `start()`'s `host.register(...)` chain.
+- `apps/worker/test/tool-handlers.spec.ts` — new file (none existed before this stage):
+  11 tests — a full coverage check that every one of the 26 tool names has exactly one
+  registered handler, plus happy-path and failure-path tests for a representative handler
+  from each shape (episode, procedure, enum-validated, empty-array-rejected).
+
+### Exit Gate
+
+| Criterion                                                                                                      | Result |
+| -------------------------------------------------------------------------------------------------------------- | ------ |
+| `apps/worker`: `pnpm typecheck` passes (including `exactOptionalPropertyTypes`)                                | PASS   |
+| `apps/worker`: `pnpm test` — 17 tests pass, 0 skipped                                                          | PASS   |
+| `apps/worker`: `pnpm lint` clean                                                                               | PASS   |
+| Every `toolName` referenced by any pipeline in `packages/orchestrator/src/pipelines/` has a registered handler | PASS   |
+| Every pipeline exported by `@infinite-ai/orchestrator` is registered in `buildPipelineMap()` and has a queue   | PASS   |
+| Every agent contract referenced by an `agent_call` step across all pipelines is in `ALL_CONTRACTS`             | PASS   |
+| `pnpm typecheck` (full workspace, 51 tasks) clean                                                              | PASS   |
+| `pnpm lint` (full workspace) clean                                                                             | PASS   |
+| `pnpm test` (full workspace, 51 tasks) clean                                                                   | PASS   |
+| `pnpm format:check` clean                                                                                      | PASS   |
+
+Open questions raised: none.
+
+---
+
+## Stage 52 — `map` step fan-out, `prepareApproval` wiring, and a branch-condition design gap
+
+Started: 2026-08-24 Completed: 2026-08-24
+Exit gate: PASS
+Tests: unit tier all green (workspace-wide); 7 new integration tests added for `map` fan-out. This environment has a Docker client but no reachable daemon socket, and a manually-started daemon cannot pull images past the organisation's egress policy, so these — and the pre-existing 32 in the same file — are hand-reviewed here and will run for the first time in CI (see the `ci.yml` fix below), not proven locally.
+
+**Audit finding**
+
+`packages/orchestrator/src/runner.ts`'s own header stated plainly that `map` steps were "declared and DAG-validated, but the runner does not yet evaluate... fan a map out into per-item runs" — and its `advanceRun` unconditionally threw `"map step execution is not yet built"` the moment any run reached one. Since `map` is the _entry step_ of MOD-01's curriculum pipeline and MOD-02's RTI/Monitoring pipelines, and appears in MOD-05's PD Analysis pipeline, this meant those pipelines could not progress past their first or second step in a real run — a more severe, unconditional failure than the tool-handler gap Stage 51 fixed (branch at least didn't crash if `evaluateCondition` was supplied). Separately, `apps/worker/src/worker-host.ts`'s `RunnerOptions` only ever set `executeStep`, never `prepareApproval` — meaning `human_gate` steps (in every pipeline with an approval gate) also threw unconditionally.
+
+A third finding, while trying to verify the above: `.github/workflows/ci.yml`'s `database` job runs `@infinite-ai/db`'s and `@infinite-ai/brain`'s integration suites but never `@infinite-ai/orchestrator`'s — `packages/orchestrator/test/runner.integration.spec.ts` (39 tests covering durability, resumability, retries, timeouts, compensation, human gates and now `map`) has never actually been executed by CI, despite `docs/STAGE_LOG.md`'s own Stage 06 entry describing it as "proven." Fixed in the same commit.
+
+**What was built**
+
+- `packages/orchestrator/src/runner.ts` — `map` step execution: `advanceMapStep` fans `itemStepId` out once per item of `run.input[step.collectionField]`, giving each item its own durable, independently-resumable step-run row (keyed `${mapStepId}[${index}]`, no schema change) with the _item step's own_ `timeoutMs`/`maxRetries`/concurrency — not the outer map step's. One item's exhausted retries fails the whole map through the same `runCompensation` path an ordinary step's exhausted failure already uses. Deliberately one internal loop across all not-yet-succeeded items per `advanceRun` call rather than one call per item — documented in `advanceMapStep`'s own header for why `runToCompletion`'s "no progress" check requires it. `StepExecutionContext` gained an optional `mapItemIndex` field so a caller building an idempotency key (`apps/worker/src/step-executor.ts`'s `runAgentCall`) can still tell two items of the same map apart — `stepId` and `attempt` alone collide across items, since every item's first attempt is `attempt: 0` against the same declared `itemStepId`.
+- `apps/worker/src/step-executor.ts` — `runAgentCall`'s idempotency key now includes `mapItemIndex` when present.
+- `apps/worker/src/approval.ts` — new file: `prepareApproval`, wired into `worker-host.ts`'s `RunnerOptions`. Uses the run's own input as the approval artefact (the only thing genuinely available — see the design gap below) and records `stepId`/`requiredRole` as evidence. `diffAgainstPrevious` stays omitted, the same honest gap `ApprovalMaterial`'s own field comment already documents.
+- `packages/orchestrator/test/runner.integration.spec.ts` — 7 new tests: ordered fan-out, empty collection, malformed collection field, durable resumption (an item's SUCCEEDED row is never re-run), per-item retry without disturbing other items, per-item timeout-then-retry, and an exhausted item failing the whole map through compensation.
+- `apps/worker/test/approval.spec.ts` — 2 new tests for `prepareApproval`.
+- `docs/OPEN_QUESTIONS.md` — **OQ-024**: `evaluateCondition` was deliberately left unwired in the worker. Every `branch` condition built so far (MOD-02, MOD-05, LE-commons) is narrated in its own pipeline file as evaluating a _prior step's output_, but the runner only ever gives a condition evaluator the run's static original `input` — the same accepted Stage 06 step 5 simplification ("every step today reads the run's original input, not a previous step's output"), now blocking something structural rather than an edit diff. Wiring a real per-condition evaluator today would silently misrepresent what each condition claims to check, so a run hitting `branch` now fails loudly with `OrchestratorRunnerError` instead. Needs a human design decision (mutable run context, explicit output-threading, or similar) before real branching can go to production in MOD-02/MOD-05/LE.
+- `.github/workflows/ci.yml` — the `database` job now also runs `pnpm --filter @infinite-ai/orchestrator test:integration`, alongside the existing `@infinite-ai/db` and `@infinite-ai/brain` steps. This is the first time `runner.integration.spec.ts` — pre-existing tests and this stage's 7 new ones alike — will actually run anywhere; if CI surfaces a defect in a pre-existing test, that is this fix doing its job, not a regression introduced here, and will be triaged the same as any other CI failure on this PR.
+
+**Verification**
+
+Docker's client binary is present in this environment but its daemon socket is not (`/var/run/docker.sock` missing) — matching CLAUDE.md's documented sandbox constraint. `dockerd` was started manually to check further, and did fully initialize, but `docker pull testcontainers/ryuk:0.14.0` then failed with `403 Forbidden` from the proxy — an organisation egress-policy denial, not a transient failure, so per the proxy's own guidance it was not retried or routed around. The manually-started daemon was stopped afterward, restoring the environment to its original state. The 7 new integration tests were therefore reviewed by hand against the exact persistence primitives (`startStepRun`/`finishStepRun`/`listStepRuns`) the rest of the file's already-established tests use, including tracing through `startStepRun`'s own `PENDING→RUNNING` side effect to get the "per-step timeouts"-style stale-row test's timing right; two bugs found during that review (a stray `String(ctx.input ?? ctx.stepId)` producing `"[object Object]"` for a tool_call step, and a flaky "simulated crash via throw" test that actually schedules a real, timing-dependent retry) were fixed before commit.
+
+### Exit Gate
+
+| Criterion                                                                                                                                                                                                        | Result                                  |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `packages/orchestrator`: `pnpm typecheck` passes                                                                                                                                                                 | PASS                                    |
+| `packages/orchestrator`: `pnpm test` (unit tier) — 185 tests pass, 0 skipped                                                                                                                                     | PASS                                    |
+| `packages/orchestrator`: `pnpm lint` clean                                                                                                                                                                       | PASS                                    |
+| `apps/worker`: `pnpm typecheck` passes                                                                                                                                                                           | PASS                                    |
+| `apps/worker`: `pnpm test` — 21 tests pass (up from 17), 0 skipped                                                                                                                                               | PASS                                    |
+| `apps/worker`: `pnpm lint` clean                                                                                                                                                                                 | PASS                                    |
+| Every existing pipeline using `map` (MOD-01, MOD-02 RTI/Monitoring, MOD-05 PD Analysis) can now progress past a map step in the runner                                                                           | PASS                                    |
+| Every existing pipeline using `human_gate` can now progress past a gate in the worker                                                                                                                            | PASS                                    |
+| `docs/OPEN_QUESTIONS.md` has OQ-024 for the branch-condition design gap                                                                                                                                          | PASS                                    |
+| `pnpm typecheck` / `pnpm lint` / `pnpm format:check` (full workspace) clean                                                                                                                                      | PASS                                    |
+| `packages/orchestrator`'s `test:integration` — written and reviewed; not locally executable (Docker daemon unreachable, image pulls blocked by egress policy); wired into `ci.yml` for the first time this stage | DEFERRED TO CI — first real run pending |
+
+Open questions raised: OQ-024.
+
+**Addendum — CI's first real run found two genuine bugs**
+
+The `ci.yml` fix above did its job immediately: the very next PR run exercised `runner.integration.spec.ts` for the first time ever and failed 5 of its 32 (now 39) tests. Both root causes were real, not flaky infrastructure.
+
+1. **A real bug in this stage's own `map` implementation.** `@infinite-ai/db`'s `startStepRun` — shared by every step kind, not something `runner.ts` can opt out of per call — always writes back whatever `stepId` it was given as the run's new `currentStepId`. Every map item's own attempt is persisted under its synthetic `mapItemStepId` (by design, for independent per-item durability), so starting _any_ map item's attempt at all left `run.currentStepId` holding that item's synthetic id in the database — not only on an unlucky crash, but as the ordinary, expected outcome. The next `advanceRun` call would then try `stepFor(pipeline, "screen-all[0]")`, find no such declared step, and throw — exactly the `OrchestratorRunnerError: Pipeline "map-pipeline": no such step "screen-all[0]"` CI reported, on any test that made more than one `advanceRun`/`runToCompletion` call against a map step (the "happy path, nothing waits" test never surfaced it, because `advanceMapStep`'s own internal loop processes every item within one outer `advanceRun` call when nothing fails or waits).
+
+   **Fix:** `runner.ts` gained `resolveCurrentStep`, called before the generic per-attempt pre-checks: if `currentStepId` doesn't name a declared step but matches the `<mapStepId>[<index>]` pattern and the prefix names a declared `map` step, that map step is treated as the one actually driving the run — exactly what `advanceMapStep` already re-derives independently from `listStepRuns`, never from `currentStepId`. The `map` dispatch itself moved to immediately after this resolution, ahead of the generic RUNNING/RETRY_SCHEDULED pre-check block (which assumes `currentStepId` names the one step whose latest attempt it should inspect — never true for a map step's synthetic `currentStepId`). This makes the runner robust to `startStepRun`'s side effect by construction, rather than trying to prevent it.
+
+2. **A real, pre-existing bug in two tests, exposed for the first time by this being the first time the file ever ran.** "per-step timeouts" and "durability: killing the worker mid-run" each called `runToCompletion` exactly once with a single fixed `now`, expecting that one call to both notice a stale timed-out attempt _and_ complete its scheduled retry. That is structurally impossible: a freshly-scheduled retry's `nextAttemptAt` is always `now + delay`, strictly later than the very `now` that scheduled it, so it can never be due within that same call — `runToCompletion`'s own "no progress" check (`status`/`currentStepId` unchanged) correctly stops right after the retry is scheduled. The already-existing "retries with jitter" test avoids this by making two explicit calls with a controlled delay and a later `now` for the second; these two did not.
+
+   **Fix:** both rewritten to the same two-call, controlled-timing pattern — the first call schedules the retry with `random: () => 1` (a known 1000ms delay) and asserts `status: 'RUNNING'`; the second call, 1500ms later, actually completes it. No production code changed for this one; the tests were asserting something the runner was never able to do in a single call.
+
+Both fixes verified by re-running the full unit tier (185/185) and a fresh manual trace of every `stepFor`/`resolveCurrentStep`/`currentStepId` call site in `runner.ts`; the integration suite itself remains unrun locally for the reason already stated, and this addendum's fixes are what the _next_ CI run on this PR verifies for real.

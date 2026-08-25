@@ -68,6 +68,13 @@ export {
 export { MOD03_WAREHOUSE_PIPELINE } from './pipelines/mod-03.js';
 export { MOD04_TOOLBOX_PIPELINE } from './pipelines/mod-04.js';
 export { MOD05_CPTD_PIPELINE, MOD05_PD_ANALYSIS_PIPELINE } from './pipelines/mod-05.js';
+export {
+  LE_COMMONS_PIPELINE,
+  LE_EVOLUTION_PIPELINE,
+  LE_EXEMPLAR_PIPELINE,
+  LE_PATTERN_PIPELINE,
+  LE_SIGNAL_PIPELINE,
+} from './pipelines/le.js';
 
 export {
   dispatchExport,
