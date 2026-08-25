@@ -6720,3 +6720,102 @@ The `ci.yml` fix above did its job immediately: the very next PR run exercised `
    **Fix:** both rewritten to the same two-call, controlled-timing pattern — the first call schedules the retry with `random: () => 1` (a known 1000ms delay) and asserts `status: 'RUNNING'`; the second call, 1500ms later, actually completes it. No production code changed for this one; the tests were asserting something the runner was never able to do in a single call.
 
 Both fixes verified by re-running the full unit tier (185/185) and a fresh manual trace of every `stepFor`/`resolveCurrentStep`/`currentStepId` call site in `runner.ts`; the integration suite itself remains unrun locally for the reason already stated, and this addendum's fixes are what the _next_ CI run on this PR verifies for real.
+
+---
+
+## Post-Stage-52 — proving the full local stack end to end for the first time
+
+Started: 2026-08-25 Completed: 2026-08-25
+Not a numbered stage: verification work, not new feature work. Every prior "app boots"
+claim in this log was made against unit-tested code paths or a review, never a real
+Postgres, Redis and running process together. This entry is what happened the first time
+that was actually tried.
+
+**Environment.** The authoring sandbox has a Docker client but its daemon does not run by
+default (matches this log's own prior note). `dockerd` was started manually and did
+initialize fully. Two registry findings, both handled per the proxy's own guidance (never
+retried, never routed around silently):
+
+- Docker Hub's anonymous-pull rate limit (`429`) was hit pulling `postgres`/`redis` images
+  directly; resolved by pointing the daemon's `registry-mirrors` at `mirror.gcr.io` — a
+  standard public pull-through cache for Docker Hub, not a policy workaround.
+- `quay.io` (Keycloak's registry) returned a `403` at the proxy's own CONNECT layer — a
+  genuine organisation egress-policy denial, confirmed via the proxy's status endpoint.
+  Per the proxy's README ("do not retry or route around it — report the blocked host"),
+  this was left blocked and reported rather than worked around. **Keycloak could not be
+  brought up in this environment**, so `apps/web`'s auth flow was smoke-tested
+  unauthenticated only (see OQ-025).
+
+`infra/docker/.env`, root `.env`, `apps/gateway/.env` and `apps/web/.env` were generated
+per `docs/DEV_SETUP.md` and are gitignored, not committed. All 22 migrations applied
+cleanly against the live database as `migrator`. `pnpm --filter @infinite-ai/db
+test:integration` (668 tests, 18 suites) passed against a throwaway Testcontainers
+Postgres, proving the Docker path independently of the dev-stack containers.
+
+**Defect 1 — the worker cannot start against a real Redis; the failure mode is an
+uncontrolled resource leak, not a clean crash.** `apps/worker/src/worker-host.ts` builds
+each BullMQ `Worker` with `connection: { url: ... }` (connection options, not a
+pre-built client), which is exactly the shape `bullmq`'s own `peerDependencies` require
+`ioredis` (`>=5.0.0`) for — and `ioredis` was not a dependency anywhere in the workspace.
+Starting the worker against the real dev-stack Redis for the first time did not crash
+cleanly: the process kept running as an orphan after its parent exited, pegged at ~99%
+CPU, and its stdout log grew past 1 GB before it was found and killed. This is worse than
+a missing-dependency crash normally would be — a worker in this state in a real deployment
+would consume unbounded CPU and disk with no supervisor signal that anything was wrong
+beyond resource exhaustion itself.
+
+**Fix.** Added `ioredis@6.0.0` (MIT) to `apps/worker/package.json`'s dependencies,
+recorded in `docs/DEPENDENCIES.md`. Re-tested foreground with a hard `timeout` bound
+first (so a recurrence could not run away unsupervised again): the worker now logs
+`worker.started` and stays quiet and stable for the full window, confirmed again running
+in the background with log size and CPU checked directly.
+
+**Defect 2 — `apps/web` 500s on every single request.** `apps/web/src/middleware.ts` ran
+on Next.js's Edge runtime by default and imported `@infinite-ai/security` for
+`buildCsp()`/`generateNonce()` — which imports `node:crypto` for real cryptographic
+randomness (`randomBytes`) and constant-time comparison (`timingSafeEqual`), neither of
+which the Edge runtime provides. This is not a corner case: it is the CSP nonce every
+single request needs, so every route failed with `Failed to load external module
+node:crypto` before any page could render. Unit tests never exercise the real Next.js
+middleware pipeline, so nothing had ever caught this.
+
+**Fix.** Migrated `middleware.ts` to Next.js 16's `proxy.ts` convention — a straight file
+and export rename (`middleware` → `proxy`), no behavioural change to the code itself —
+because Proxy defaults to the Node.js runtime as of Next.js 16.0.0 (confirmed against the
+docs bundled with this repo's own pinned `next` version, not assumed). `node:crypto` needs
+no substitute; it now runs where it was always meant to. Updated the one `eslint.config.mjs`
+file-glob exemption and the two doc references (`next.config.ts`'s comment,
+`docs/SECURITY.md`'s threat table) that named the old filename. Verified: unauthenticated
+requests to a protected route now correctly redirect to `/sign-in` with the full static
+security-header set present; `pnpm typecheck`, `pnpm lint` (root `eslint .`, the actual
+CI-sanctioned command — `apps/web`'s own `next lint` script errors on invocation,
+confirmed pre-existing and unrelated by reproducing it on the pre-fix tree too), and
+`pnpm test` (51/51 workspace tasks) all stayed green.
+
+**Found, not fixed — OQ-025.** Smoke-testing the fix above surfaced a further, deeper
+gap: the public `/sign-in` page's response carries no `Content-Security-Policy` header at
+all, meaning the nonce `proxy.ts` is supposed to attach per-request may never have reached
+a real client since Stage 16 shipped it — nothing in the test suite actually proves it
+does, only that `buildCsp()` produces a correctly-shaped string in isolation. Root cause
+not established (candidates include `next-auth@4.24.15` — which predates Next.js 16's
+Proxy convention entirely — not invoking the wrapped handler as expected under it, versus
+something else); logged as OQ-025 rather than guessed at, per Part 0 §0.3.
+
+### Exit Gate
+
+This is a verification entry, not a stage with its own numbered exit gate. What was
+proven:
+
+| Criterion                                                                                       | Result                                                                  |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Dev-stack Postgres + Redis reachable via `docker compose`, both healthy                         | PASS                                                                    |
+| All 22 migrations apply cleanly against the live database as `migrator`                         | PASS                                                                    |
+| `pnpm --filter @infinite-ai/db test:integration` — 668 tests, 18 suites, real Testcontainers PG | PASS                                                                    |
+| `apps/gateway` boots and serves `/health` against the real dev stack                            | PASS                                                                    |
+| `apps/worker` boots against real Redis, stays stable (no crash, no runaway resource use)        | PASS (after the `ioredis` fix)                                          |
+| `apps/web` serves a page against the real dev stack instead of 500ing on every request          | PASS (after the `proxy.ts` fix)                                         |
+| Keycloak brought up alongside the rest of the stack in this environment                         | BLOCKED — `quay.io` denied by egress policy, reported not routed around |
+| CSP nonce header verified present on a real HTTP response                                       | FAILED — logged as OQ-025, not fixed                                    |
+| `pnpm typecheck` / `pnpm lint` / `pnpm test` (full workspace) clean after both fixes            | PASS                                                                    |
+
+Open questions raised: OQ-025.

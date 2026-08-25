@@ -433,12 +433,13 @@ No new external runtime dependencies. The workspace package itself depends only 
 
 ## P0 — Worker host and CE-01 end-to-end wiring
 
-`apps/worker` is promoted from a stub to a full BullMQ consumer host. One new external
-runtime dependency:
+`apps/worker` is promoted from a stub to a full BullMQ consumer host. Two new external
+runtime dependencies:
 
-| Package  | Version | Licence | Why                                                                                                                                                | Replaces |
-| -------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `bullmq` | `6.1.2` | MIT     | Redis-backed job queue. Provides `Worker` and `Queue` classes used by the worker host to consume MOD-01, MOD-04, and MOD-05 pipeline job payloads. | —        |
+| Package   | Version | Licence | Why                                                                                                                                                                                                                                                                        | Replaces |
+| --------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `bullmq`  | `6.1.2` | MIT     | Redis-backed job queue. Provides `Worker` and `Queue` classes used by the worker host to consume MOD-01, MOD-04, and MOD-05 pipeline job payloads.                                                                                                                         | —        |
+| `ioredis` | `6.0.0` | MIT     | `bullmq`'s own `peerDependencies` require it (`>=5.0.0`) to build a Redis client from connection options — undeclared until a real local run against Redis surfaced it (`WorkerHost.register()` throws `BullMQ could not load the optional 'ioredis' package` without it). | —        |
 
 No other new external dependencies. `apps/worker` consumes `@infinite-ai/*` workspace
 packages already in the tree, plus `zod` (MIT, Stage 00) for job-payload validation.

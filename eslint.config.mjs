@@ -304,9 +304,9 @@ export default tseslint.config(
     },
   },
   {
-    // Next.js config files and app-level server files (middleware, next.config)
+    // Next.js config files and app-level server files (proxy, next.config)
     // need access to process.env and Next.js APIs.
-    files: ['apps/web/next.config.ts', 'apps/web/src/middleware.ts'],
+    files: ['apps/web/next.config.ts', 'apps/web/src/proxy.ts'],
     rules: { 'no-restricted-globals': 'off', 'no-restricted-syntax': 'off' },
   },
   {
