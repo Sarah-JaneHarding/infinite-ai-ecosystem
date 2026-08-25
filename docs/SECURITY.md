@@ -37,18 +37,18 @@ Completed in Stage 16.
 
 ### 3.1 Browser → Web App
 
-| Threat                             | STRIDE | Mitigation                                                                                                           | Test                                                    |
-| ---------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| XSS via rendered agent output      | T      | CSP with per-request nonce (`proxy.ts` + `buildCsp()`); `isOutputSafe()` in `packages/security/src/agent-surface.ts` | `test:security` (headers, agent-surface tests)          |
-| XSS via reflected input            | T      | React's JSX escaping; no `dangerouslySetInnerHTML` in production code                                                | ESLint rule (no `dangerouslySetInnerHTML`); code review |
-| Clickjacking                       | T      | `X-Frame-Options: DENY` + `frame-ancestors 'none'` in CSP                                                            | `test:security` (headers.spec.ts)                       |
-| CSRF on state-changing requests    | T/E    | Double-submit cookie pattern (`generateCsrfToken`, `validateCsrfToken`); `SameSite=Strict`                           | `test:security` (csrf.spec.ts)                          |
-| Session fixation                   | E      | Session ID regenerated on login (Auth.js/Keycloak)                                                                   | Stage 02 auth suite                                     |
-| Cookie theft                       | I      | `Secure`, `HttpOnly`, `SameSite=Strict` on session cookie                                                            | `test:security` (cookie flag assertions)                |
-| Brute force / credential stuffing  | D      | Keycloak brute-force protection + account lockout                                                                    | Keycloak configuration; Stage 02 suite                  |
-| Mixed content downgrade            | T      | `Strict-Transport-Security` + `upgrade-insecure-requests` in CSP                                                     | `test:security` (headers.spec.ts)                       |
-| MIME-type confusion                | T      | `X-Content-Type-Options: nosniff`                                                                                    | `test:security` (headers.spec.ts)                       |
-| Prompt injection via uploaded file | T/E    | File-type verification by content (magic bytes) not extension; content sanitisation before agent injection           | `test:injection` (guardrails suite)                     |
+| Threat                             | STRIDE | Mitigation                                                                                                           | Test                                                                                           |
+| ---------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| XSS via rendered agent output      | T      | CSP with per-request nonce (`proxy.ts` + `buildCsp()`); `isOutputSafe()` in `packages/security/src/agent-surface.ts` | `test:security` (headers, agent-surface tests); `apps/web` `proxy.spec.ts` (real request path) |
+| XSS via reflected input            | T      | React's JSX escaping; no `dangerouslySetInnerHTML` in production code                                                | ESLint rule (no `dangerouslySetInnerHTML`); code review                                        |
+| Clickjacking                       | T      | `X-Frame-Options: DENY` + `frame-ancestors 'none'` in CSP                                                            | `test:security` (headers.spec.ts)                                                              |
+| CSRF on state-changing requests    | T/E    | Double-submit cookie pattern (`generateCsrfToken`, `validateCsrfToken`); `SameSite=Strict`                           | `test:security` (csrf.spec.ts)                                                                 |
+| Session fixation                   | E      | Session ID regenerated on login (Auth.js/Keycloak)                                                                   | Stage 02 auth suite                                                                            |
+| Cookie theft                       | I      | `Secure`, `HttpOnly`, `SameSite=Strict` on session cookie                                                            | `test:security` (cookie flag assertions)                                                       |
+| Brute force / credential stuffing  | D      | Keycloak brute-force protection + account lockout                                                                    | Keycloak configuration; Stage 02 suite                                                         |
+| Mixed content downgrade            | T      | `Strict-Transport-Security` + `upgrade-insecure-requests` in CSP                                                     | `test:security` (headers.spec.ts)                                                              |
+| MIME-type confusion                | T      | `X-Content-Type-Options: nosniff`                                                                                    | `test:security` (headers.spec.ts)                                                              |
+| Prompt injection via uploaded file | T/E    | File-type verification by content (magic bytes) not extension; content sanitisation before agent injection           | `test:injection` (guardrails suite)                                                            |
 
 ### 3.2 Web App → Worker (internal service-to-service)
 

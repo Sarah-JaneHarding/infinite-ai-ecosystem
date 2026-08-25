@@ -6815,7 +6815,36 @@ proven:
 | `apps/worker` boots against real Redis, stays stable (no crash, no runaway resource use)        | PASS (after the `ioredis` fix)                                          |
 | `apps/web` serves a page against the real dev stack instead of 500ing on every request          | PASS (after the `proxy.ts` fix)                                         |
 | Keycloak brought up alongside the rest of the stack in this environment                         | BLOCKED — `quay.io` denied by egress policy, reported not routed around |
-| CSP nonce header verified present on a real HTTP response                                       | FAILED — logged as OQ-025, not fixed                                    |
+| CSP nonce header verified present on a real HTTP response                                       | PASS (see addendum below)                                               |
 | `pnpm typecheck` / `pnpm lint` / `pnpm test` (full workspace) clean after both fixes            | PASS                                                                    |
 
-Open questions raised: OQ-025.
+Open questions raised: none — OQ-025 was raised and resolved within this same entry (see
+addendum).
+
+**Addendum — OQ-025 root-caused and fixed the same day**
+
+Reading `next-auth@4.24.15`'s own installed source
+(`next-auth/src/next/middleware.ts`) found the exact cause: `withAuth()`'s internal
+`handleMiddleware` unconditionally `return`s — before ever invoking the wrapped handler —
+for any request matching the configured sign-in page, error page, or `NEXTAUTH_URL`'s auth
+path. This is `next-auth`'s own built-in anti-redirect-loop guard, and it fires regardless
+of what this codebase's own `authorized` callback returns. Since the CSP nonce was only
+ever generated inside the wrapped handler, `/sign-in` never got one — not a caching issue,
+not a session-dependent path, exactly the mechanism this entry's own text named as one of
+two candidates.
+
+`apps/web/src/proxy.ts` no longer uses `withAuth()`. It now computes the CSP nonce
+unconditionally on every matched request, then gates access itself with `getToken` from
+`next-auth/jwt` — next-auth's own documented lower-level primitive for exactly this case,
+confirmed as a stable package export (`next-auth/package.json`'s `exports["./jwt"]`), not
+a deep-import hack. `apps/web/tests/unit/proxy.spec.ts` is new (4 tests): constructs a real
+`NextRequest` and calls the exported handler directly — the exact test category this
+entry's own text said was missing — asserting the CSP header and nonce are present on
+`/sign-in`, the protected-route redirect is unchanged, and public NextAuth API routes are
+not redirected. Verified again against a live `next dev` server: `/sign-in` now returns a
+`content-security-policy` header with a fresh nonce on every request.
+
+Not independently re-verified against a real Keycloak-issued session — this sandbox's
+`quay.io` block still stands — but the fix removes `next-auth`'s internal short-circuit
+entirely, so correctness does not depend on Keycloak being reachable. Full detail in
+`docs/OPEN_QUESTIONS.md`'s OQ-025 resolved entry.
