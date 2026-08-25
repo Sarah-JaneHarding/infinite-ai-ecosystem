@@ -259,6 +259,18 @@ export default tseslint.config(
     },
   },
   {
+    // The CAPS/ATP write-path integration suite needs the same thing the Brain and
+    // orchestrator suites already have an exception for: its own Testcontainers Postgres,
+    // pointed at by @infinite-ai/db's `withTenant()`. Confined to curriculum-seed's own
+    // tests.
+    files: ['packages/curriculum-seed/test/**/*.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+      'no-restricted-syntax': 'off',
+      'no-restricted-globals': 'off',
+    },
+  },
+  {
     // The seed script runs as a standalone CLI against a fresh database, before any
     // application boots. It legitimately constructs its own client, reads the encryption
     // key from the environment, and prints progress.

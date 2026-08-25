@@ -59,6 +59,7 @@
       "name": "Infinite AI Web",
       "enabled": true,
       "publicClient": false,
+      "secret": "${KEYCLOAK_WEB_CLIENT_SECRET}",
       "bearerOnly": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,

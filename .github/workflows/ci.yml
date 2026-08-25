@@ -85,13 +85,20 @@ jobs:
             exit 1
           fi
 
-      # Rule 7: .env.example carries key names with empty values only.
-      - name: .env.example holds no values
+      # Rule 7: every .env.example in the repo carries key names with empty values only.
+      # apps/gateway and apps/web additionally assert this in their own unit tests
+      # (parity against GatewayEnvSchema/WebEnvSchema); this check is the belt-and-braces
+      # net that also catches infra/docker/.env.example, which nothing else validates.
+      - name: .env.example files hold no values
         run: |
-          if grep -vE '^\s*(#.*)?$' .env.example | grep -vE '^[A-Z0-9_]+=$'; then
-            echo "::error::Rule 7 — .env.example must contain key names with empty values only."
-            exit 1
-          fi
+          status=0
+          while IFS= read -r -d '' file; do
+            if grep -vE '^\s*(#.*)?$' "$file" | grep -vE '^[A-Z0-9_]+=$'; then
+              echo "::error::Rule 7 — $file must contain key names with empty values only."
+              status=1
+            fi
+          done < <(find . -name '.env.example' -not -path '*/node_modules/*' -print0)
+          exit $status
 
   database:
     name: RLS isolation suite (real Postgres)
@@ -133,3 +140,8 @@ jobs:
       # actually been run by anyone since being written.
       - name: Orchestrator runner integration suite (real Postgres)
         run: pnpm --filter @infinite-ai/orchestrator test:integration
+
+      # Stage 29's CAPS/ATP write path: the same gap as the orchestrator suite above —
+      # written blind against the same Testcontainers pattern, never previously wired in.
+      - name: Curriculum-seed write-path integration suite (real Postgres)
+        run: pnpm --filter @infinite-ai/curriculum-seed test:integration

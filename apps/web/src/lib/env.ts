@@ -2,7 +2,7 @@
 // Mirrors the pattern in apps/gateway/src/config.
 import { z } from 'zod';
 
-const WebEnvSchema = z.object({
+export const WebEnvSchema = z.object({
   NEXTAUTH_URL: z.string().url().optional(),
   NEXTAUTH_SECRET: z.string().min(32),
   AUTH_KEYCLOAK_ID: z.string().default(''),
