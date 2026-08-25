@@ -104,10 +104,14 @@ AUTH_KEYCLOAK_ISSUER=http://localhost:8180/realms/infinite-ai
 
 CE-01/CE-02 need real CAPS/ATP data in L0 to produce anything other than
 `NEEDS_INPUT` — see `docs/OPEN_QUESTIONS.md`'s OQ-002 for what's actually been ingested
-so far:
+so far. `pnpm curriculum:seed`/`pnpm curriculum:ratify` write into three fixed dev tenant
+ids (`10000000-…001/002/003`), so the dev tenants themselves have to exist first —
+`pnpm --filter @infinite-ai/db db:seed` creates them (idempotent; safe to run again):
 
 ```bash
-pnpm curriculum:seed
+pnpm --filter @infinite-ai/db db:seed   # creates the three dev tenants, if not already done
+pnpm curriculum:seed                    # submits CAPS/ATP source documents to L0
+pnpm curriculum:ratify                  # advances them to committed brain_constitution rows
 ```
 
 ## 6. Start the apps

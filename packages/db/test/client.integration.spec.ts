@@ -149,4 +149,25 @@ describe('withTenant against a real database', () => {
     );
     expect(answer).toBe(42);
   });
+
+  it('accepts a longer transaction timeout for callers that need it', async () => {
+    // Prisma's own interactive-transaction default is 5000ms. A callback that holds the
+    // transaction open past that would normally be killed with `Transaction already
+    // closed` — exactly what scripts/seed-curriculum.ts hit for real, seeding well over a
+    // hundred documents per tenant. `pg_sleep` proves the override actually reaches
+    // Prisma's transaction lifecycle, not just that withTenant()'s own signature accepts
+    // an options argument.
+    const result = await withTenant(
+      { tenantId: TENANT_A, actorId: ACTOR },
+      async (tx) => {
+        // pg_sleep() returns void, which $queryRaw cannot deserialize regardless of what
+        // else is in the select list — $executeRaw doesn't attempt to deserialize a
+        // result set at all, so it tolerates the void column fine.
+        await tx.$executeRaw`SELECT pg_sleep(6)`;
+        return 'survived';
+      },
+      { timeoutMs: 10_000 },
+    );
+    expect(result).toBe('survived');
+  }, 20_000);
 });

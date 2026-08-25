@@ -70,6 +70,20 @@ function client(): PrismaClient {
 }
 
 /**
+ * Overrides for Prisma's own interactive-transaction defaults (5000ms timeout, 2000ms
+ * maxWait). Almost never needed — a request-scoped call should finish well inside the
+ * default — but a batch or seed operation doing genuinely more work per call (many writes,
+ * each going through the full audited Brain write-path) legitimately needs longer than an
+ * API request ever should. Omit to keep Prisma's defaults.
+ */
+export interface WithTenantOptions {
+  /** Forwarded to `$transaction`'s `timeout`. */
+  readonly timeoutMs?: number;
+  /** Forwarded to `$transaction`'s `maxWait`. */
+  readonly maxWaitMs?: number;
+}
+
+/**
  * Runs `fn` inside a transaction scoped to one tenant.
  *
  * The scoping works by setting `app.tenant_id` and `app.actor_id` as **transaction-local**
@@ -90,15 +104,27 @@ function client(): PrismaClient {
 export async function withTenant<T>(
   context: TenantContext,
   fn: (tx: TenantClient) => Promise<T>,
+  options?: WithTenantOptions,
 ): Promise<T> {
   assertUuid(context.tenantId, 'tenantId');
   assertUuid(context.actorId, 'actorId');
+
+  // exactOptionalPropertyTypes (rule 8) means `{ timeout: options.timeoutMs }` is not the
+  // same as omitting `timeout` when the value is undefined — Prisma's own option type
+  // doesn't accept an explicit `undefined`, so each key is only set when actually provided.
+  const transactionOptions: { timeout?: number; maxWait?: number } = {};
+  if (options?.timeoutMs !== undefined) {
+    transactionOptions.timeout = options.timeoutMs;
+  }
+  if (options?.maxWaitMs !== undefined) {
+    transactionOptions.maxWait = options.maxWaitMs;
+  }
 
   return client().$transaction(async (tx: TenantClient) => {
     await tx.$executeRaw`SELECT set_config('app.tenant_id', ${context.tenantId}, true)`;
     await tx.$executeRaw`SELECT set_config('app.actor_id', ${context.actorId}, true)`;
     return fn(tx);
-  });
+  }, transactionOptions);
 }
 
 /**
