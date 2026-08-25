@@ -30,7 +30,10 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build
 pnpm verify:stage 00
 ```
 
-Node 22+ and pnpm 10+ are required. The dev data plane (Postgres 16 with pgvector, Redis 7) comes up with `docker compose -f infra/docker/compose.dev.yml up -d` from Stage 01.
+Node 22+ and pnpm 10+ are required. The commands above are everything the automated test
+suites need — the integration tier (real Postgres, via Testcontainers) is self-contained
+and needs nothing beyond a running Docker daemon. For the full local stack (Postgres,
+Redis, Keycloak, the gateway, the worker, the web app), see `docs/DEV_SETUP.md`.
 
 ## Build pipeline
 
@@ -86,5 +89,13 @@ The long form is `CLAUDE.md`; the enforcement is `eslint.config.mjs` and CI.
 
 ## Status
 
-Stage 00, in progress. Open questions that block later stages — the CAPS and ATP source
-documents, the school's artefact templates — are logged in `docs/OPEN_QUESTIONS.md`.
+All 19 stages of the original build manual (00–18) are complete, plus a further
+extension phase (Stages 19–52) covering the Visual Agent Builder, Prompt/System Prompt
+Builders, game-based learning, low-tech assessment, document annotation, the learner
+client, PD journal, and the Learning Engine's own orchestrator pipelines. Full detail,
+stage by stage, is in `docs/STAGE_LOG.md`.
+
+This is not yet pilot-ready. A number of items are blocked on a human decision or a
+credential this build cannot supply itself — a paging integration for safeguarding
+escalation, LLM-judge calibration data, load-test results from a live environment, and
+identifying actual pilot schools among them — tracked in `docs/OPEN_QUESTIONS.md`.

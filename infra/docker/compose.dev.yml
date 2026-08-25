@@ -7,6 +7,11 @@
 # Rule 7: no secret in this file. Values come from a local .env that is never committed.
 # The placeholders below resolve from the developer's environment and have no defaults,
 # so an unconfigured machine fails loudly instead of booting with a known password.
+#
+# See infra/docker/.env.example for every variable this file needs (a disjoint set from
+# the root .env.example, which covers the application's own runtime config, not the
+# database superuser or per-role passwords) and docs/DEV_SETUP.md for the full sequence:
+# `docker compose --env-file infra/docker/.env -f infra/docker/compose.dev.yml up -d`.
 
 name: infinite-ai-dev
 
@@ -69,6 +74,12 @@ services:
       KC_HTTP_ENABLED: 'true'
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:?set KEYCLOAK_ADMIN in your local .env}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD in your local .env}
+      # Substituted into infra/keycloak/realm.json's infinite-ai-web/infinite-ai-worker
+      # client secrets at import time via Keycloak's own ${VAR} environment-variable
+      # placeholder resolution. Without these, the container never sees the values the
+      # realm file references — apps/web's AUTH_KEYCLOAK_SECRET must match the web one.
+      KEYCLOAK_WEB_CLIENT_SECRET: ${KEYCLOAK_WEB_CLIENT_SECRET:?set KEYCLOAK_WEB_CLIENT_SECRET in your local .env}
+      KEYCLOAK_WORKER_CLIENT_SECRET: ${KEYCLOAK_WORKER_CLIENT_SECRET:?set KEYCLOAK_WORKER_CLIENT_SECRET in your local .env}
     ports:
       - '8180:8080'
     volumes:

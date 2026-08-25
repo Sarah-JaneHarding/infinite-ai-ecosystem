@@ -13,7 +13,8 @@
     "build": "tsc --build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "start": "tsx src/main.ts"
   },
   "dependencies": {
     "@infinite-ai/agents": "workspace:*",
@@ -28,6 +29,7 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "tsx": "4.23.1",
     "typescript": "5.9.3",
     "vitest": "3.2.7"
   }
