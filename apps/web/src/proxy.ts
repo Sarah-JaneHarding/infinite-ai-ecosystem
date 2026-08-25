@@ -12,7 +12,7 @@ function isPublic(pathname: string): boolean {
 }
 
 export default withAuth(
-  function middleware(req: NextRequest) {
+  function proxy(req: NextRequest) {
     // Generate a fresh nonce for every request so each page's CSP is unique.
     // The nonce is forwarded to the page via a request header; layouts read it and pass
     // it to <Script nonce={nonce}> tags. The CSP is set on the response so the browser

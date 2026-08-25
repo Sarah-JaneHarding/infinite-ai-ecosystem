@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   // loader which does not do .js→.ts extension remapping for workspace packages.
   // The authoritative definitions live in packages/security/src/headers.ts; these
   // must stay in sync with them.
-  // The Content-Security-Policy nonce is injected per-request by middleware.ts and is
+  // The Content-Security-Policy nonce is injected per-request by proxy.ts and is
   // not set statically here — a static CSP cannot carry a per-request nonce.
   async headers() {
     return [
