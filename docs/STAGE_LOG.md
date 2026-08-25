@@ -6848,3 +6848,57 @@ Not independently re-verified against a real Keycloak-issued session — this sa
 `quay.io` block still stands — but the fix removes `next-auth`'s internal short-circuit
 entirely, so correctness does not depend on Keycloak being reachable. Full detail in
 `docs/OPEN_QUESTIONS.md`'s OQ-025 resolved entry.
+
+**Addendum — completing step 5 (curriculum seed) found three more real defects, never
+run successfully before**
+
+`pnpm curriculum:seed` and `pnpm curriculum:ratify` (`scripts/seed-curriculum.ts`,
+`scripts/ratify-curriculum.ts`) had, as far as this log can tell, never been executed
+against a real database. Running them for the first time surfaced three genuine, distinct
+defects, each one blocking the next:
+
+1. **Same class of bug as the curriculum-seed test suite's own defect (Stage 52's earlier
+   audit).** Both scripts hardcoded `actorId: 'system-seed'` / `'system-ratifier'` —
+   non-UUID strings — and `withTenant()` refuses any non-UUID `actorId` outright
+   (`InvalidTenantContextError`), before a single query runs. Fixed by using the same
+   well-formed placeholder UUID `packages/db/prisma/seed.ts` already uses for its own
+   system-seed actor (`SEED_ACTOR = '00000000-0000-4000-8000-00000000f00d'`), rather than
+   inventing a third convention.
+
+2. **A missing prerequisite, undocumented in this session's own `docs/DEV_SETUP.md`.**
+   Both scripts write into three fixed dev tenant ids
+   (`10000000-0000-4000-8000-00000000000{1,2,3}`) that only exist once
+   `pnpm --filter @infinite-ai/db db:seed` has been run — without it, the very first write
+   fails with a foreign-key violation (`brain_write_candidate_tenant_id_fkey`). Fixed by
+   running `db:seed` (idempotent, confirmed by re-running it) and adding the missing step
+   to `docs/DEV_SETUP.md`'s §5.
+
+3. **A structural gap in `withTenant()` itself.** With the tenants in place, the seed
+   failed a third way: `Transaction already closed... The timeout for this transaction was
+5000 ms`. `packages/db/src/client.ts`'s `withTenant()` called Prisma's `$transaction`
+   with no options, so every caller — a 50ms API request and a batch job submitting 157
+   CAPS/ATP documents through the full audited Brain write-path alike — was held to
+   Prisma's 5000ms interactive-transaction default. This is not specific to curriculum
+   seeding; any sufficiently large batch operation through `withTenant()` would hit the
+   same wall.
+
+   **Fix.** `withTenant()` gained an optional third parameter, `WithTenantOptions`
+   (`timeoutMs`/`maxWaitMs`, forwarded to `$transaction`), defaulting to Prisma's own
+   defaults when omitted — every existing caller across the codebase is unaffected.
+   `packages/db/test/export-surface.spec.ts`'s `db.withTenant.length` assertion was
+   deliberately updated from `2` to `3` (the file's own stated philosophy: "every addition
+   to this list is a deliberate edit to a test") — the invariant it guards, no export path
+   to an unscoped client, is unchanged; a tuning knob on the transaction itself is not a
+   second way to obtain one. `packages/db/test/client.integration.spec.ts` gained a new
+   test that holds a real transaction open past the 5000ms default with `pg_sleep(6)` under
+   an explicit `{ timeoutMs: 10_000 }`, proving the override reaches Prisma's actual
+   transaction lifecycle rather than just changing `withTenant`'s signature. Both
+   `scripts/seed-curriculum.ts` and `scripts/ratify-curriculum.ts` now pass
+   `{ timeoutMs: 120_000 }`.
+
+All three fixed, in order, in the same run: `pnpm curriculum:seed` now seeds 157 CAPS+ATP
+candidates per tenant (471 total) in ~26s, and `pnpm curriculum:ratify` commits all 471 to
+`brain_constitution` in ~27s — both commands, run against the real dev stack, for the
+first time succeeding end to end. Full workspace `pnpm typecheck` / `pnpm lint` /
+`pnpm test` (51/51) and `pnpm --filter @infinite-ai/db test:integration` (669/669,
+including the new timeout test) all pass after the fix.

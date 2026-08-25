@@ -147,6 +147,9 @@ describe('package export surface', () => {
     // disconnect() is the only other function, and it returns void rather than a client.
     expect(typeof db.withTenant).toBe('function');
     expect(typeof db.disconnect).toBe('function');
-    expect(db.withTenant.length).toBe(2);
+    // context, fn, and an optional WithTenantOptions (transaction timeout overrides for
+    // batch/seed callers) — still exactly the same two ways in (context + callback), the
+    // third is a tuning knob on the transaction itself, not a second path to a client.
+    expect(db.withTenant.length).toBe(3);
   });
 });
