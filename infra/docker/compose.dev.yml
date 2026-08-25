@@ -1,8 +1,12 @@
 # Development data plane — Stage 01 step 1.
 #
 # Postgres 16 with pgvector, pg_trgm and pgcrypto; Redis 7 for queues, rate limits and
-# idempotency keys. Keycloak (Stage 02), MinIO, Langfuse and the Grafana stack are added
-# by the stages that need them, not before.
+# idempotency keys; Keycloak (Stage 02); MinIO (object storage — see below). Langfuse and
+# the Grafana stack are still not here: a production-readiness audit found this file's
+# own comment claiming they were "added by the stages that need them" had gone stale —
+# neither ever landed, and Langfuse's self-hosted footprint (its own Postgres, ClickHouse,
+# Redis and S3 bucket) is a separate, larger piece of work than this file's other
+# additions. Tracked as a follow-up, not silently left implied-done by this comment.
 #
 # Rule 7: no secret in this file. Values come from a local .env that is never committed.
 # The placeholders below resolve from the developer's environment and have no defaults,
@@ -93,6 +97,48 @@ services:
       timeout: 5s
       retries: 30
 
+  # MinIO — S3-compatible object storage for local dev. `OBJECT_STORE_ENDPOINT` and
+  # `OBJECT_STORE_BUCKET` (root .env.example) point here; production points the same two
+  # variables at a real S3 bucket in af-south-1 instead — nothing in application code
+  # changes between the two, since both speak the S3 API.
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in your local .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in your local .env}
+    ports:
+      - '9000:9000' # S3 API — this is what OBJECT_STORE_ENDPOINT points at.
+      - '9001:9001' # Web console, for looking inside the bucket by hand.
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # One-shot: creates the bucket application code expects and exits. `mc` has no
+  # "create if missing, otherwise no-op" flag, hence `mb --ignore-existing`, so a second
+  # `docker compose up` on an already-provisioned volume is a clean no-op, not an error.
+  minio-init:
+    image: minio/mc:RELEASE.2025-04-16T18-13-26Z
+    restart: 'no'
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in your local .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in your local .env}
+      OBJECT_STORE_BUCKET: ${OBJECT_STORE_BUCKET:?set OBJECT_STORE_BUCKET in your local .env}
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        mc alias set local http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD" &&
+        mc mb --ignore-existing "local/$$OBJECT_STORE_BUCKET"
+
 volumes:
   postgres-data:
   redis-data:
+  minio-data:

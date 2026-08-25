@@ -6970,3 +6970,101 @@ integration suite.
 Open questions raised: OQ-026 (`checkDiagnosticLanguage` has the same "no caller" gap as
 `checkAgeAppropriateness` did, deliberately left unwired — see the entry for why).
 OQ-014 and OQ-015 updated in place rather than raised fresh.
+
+---
+
+## Tier 1 (deployability) — worker liveness probe, Dockerfiles, MinIO in the dev stack
+
+Started: 2026-08-25 Completed: 2026-08-25
+
+A production-readiness audit's Tier 1 findings, closed to the extent possible without a
+real cloud account: `apps/worker` had no HTTP surface at all (no way for an orchestrator
+to ask whether it was alive), no app had a `Dockerfile`, and `infra/docker/compose.dev.yml`'s
+own header comment claimed MinIO and Langfuse were "added by the stages that need them" —
+neither had actually landed.
+
+**Worker liveness/readiness probe.** New `apps/worker/src/health-server.ts`: a minimal
+`node:http` server (`/health` — always 200 once listening; `/ready` — 200 once
+`WorkerHost.register()` has been called for every queue and until shutdown begins, 503
+otherwise). `WORKER_PORT` added to the shared `EnvSchema` (`packages/config`), default
+8081, since this is the first thing in `apps/worker` that needed a port at all.
+`apps/worker/src/index.ts`'s `start()` now listens on it after registering every queue
+and calls `setReady(false)` before draining on SIGTERM/SIGINT. Verified against a real
+running process, not just the 4 new unit tests: `curl localhost:8081/health` and `/ready`
+both correct while running, sending `SIGTERM` to the real node PID (not the `pnpm`/`tsx`
+wrapper — the first attempt hit the wrong PID and proved nothing) produced the expected
+`worker.shutting_down` → `worker.stopped` log sequence and freed the port.
+
+**Dockerfiles.** `apps/worker/Dockerfile`, `apps/gateway/Dockerfile`, `apps/web/Dockerfile`
+(the last with a `next build` stage the other two don't need) — all built from the repo
+root, since every `@infinite-ai/*` dependency resolves through pnpm's `workspace:*`
+protocol and needs the whole tree present. Each runs the app the same way local dev
+already does (`pnpm start`, i.e. `tsx` against source) rather than inventing a separate,
+unproven production build path — nothing in this repo emits standalone build output yet.
+Deliberately not done: slimming the image to only what one app needs at runtime (a
+pruned `pnpm deploy` output, or a real compiled build) — a size optimization on top of a
+working image, not a prerequisite for one.
+
+Two real defects found and fixed while actually building these, not just writing them:
+
+1. `node:22-slim` has no `libssl`/`libcrypto` at all (confirmed by `find /` inside the
+   base image turning up nothing) — Prisma's query engine needs it. The obvious fix,
+   `apt-get install openssl`, needed a live fetch against Debian's package repository,
+   which this sandbox's egress policy blocks (`403`, the same class of restriction as
+   the earlier `quay.io` block). Fixed by switching to the full `node:22` image, which
+   already carries `libssl.so`/`libcrypto.so` in its own layers — no live `apt-get`
+   needed at all, in this sandbox or any other.
+2. `corepack prepare pnpm@10.33.0` failed with a generic fetch error against
+   `registry.npmjs.org` — a domain this sandbox's own `NO_PROXY` config says should be
+   directly reachable, and is, from the host. Root cause: the sandbox's outbound network
+   transparently intercepts direct (non-proxied) HTTPS with a self-signed
+   re-termination certificate that a container doesn't trust (`curl` inside the
+   container reproduced this exactly: "self-signed certificate in certificate chain").
+   Routing the request explicitly _through_ the documented CONNECT proxy instead —
+   `HTTPS_PROXY` set, plus `NODE_USE_ENV_PROXY=1` so Node's own `fetch` (which corepack
+   uses) actually reads it — avoided the interception entirely, since CONNECT tunneling
+   relays encrypted bytes without ever terminating TLS itself. **This fix is
+   verification-only, sandbox-specific, and is not in the committed Dockerfiles** — a
+   real CI runner or developer machine has no such interception to route around in the
+   first place, and baking trust for this session's own ephemeral proxy CA into a
+   shipped Dockerfile would be actively wrong for the real artifact. The committed
+   `apps/worker/Dockerfile` (identical in every way that matters to the temporary,
+   uncommitted copy this proxy fix was applied to, for this one verification build) was
+   built end to end this way and actually run: `docker run` against the real dev stack's
+   Postgres and Redis produced the identical `worker.starting` → `worker.started` log
+   sequence the non-containerized process already proved, `curl` against the container's
+   published health port returned `{"status":"ok"}`, and `docker stop` (SIGTERM) drained
+   it cleanly. The image itself is 2.77GB, consistent with this file's own
+   size-optimization follow-up note. The other two Dockerfiles were not run this way —
+   `apps/worker`'s success is what the "same shape, same base image fix" reasoning in
+   their own header comments rests on — but were reviewed line by line against the one
+   that was.
+
+**MinIO — object storage actually running in the dev stack.** New `minio` and
+`minio-init` services in `infra/docker/compose.dev.yml`; `minio-init` is a one-shot
+`mc mb --ignore-existing` that creates the bucket named by `OBJECT_STORE_BUCKET` and
+exits 0 (confirmed idempotent by running it twice against the same volume — the same
+bucket-created message both times, exit 0 both times, no error on the second). Verified
+against the real dev stack: MinIO reports `healthy`, the bucket exists after both runs.
+`infra/docker/.env.example` and `docs/DEV_SETUP.md` updated with the new variables and
+the "same value, two files" note the file already uses for
+`KEYCLOAK_WEB_CLIENT_SECRET`. The compose file's own header comment — which had gone
+stale, claiming MinIO and Langfuse were both already "added by the stages that need
+them" — corrected to name what's actually here now versus what still isn't: Langfuse's
+self-hosted footprint (its own Postgres, ClickHouse, Redis and S3 bucket) is
+meaningfully larger than one MinIO container and is a separate follow-up, not silently
+implied done by a comment nobody had updated.
+
+**Deliberately not done, and why.** Terraform (`infra/terraform` is still exactly one
+README describing a planned layout) and a CD pipeline are the two remaining Tier 1
+items. Both need real decisions — a cloud account, VPC/subnet layout, IAM policy
+specifics, secrets management, instance sizing, which of ECS/EKS/Fargate — that would be
+invented, not scaffolded, without a human weighing in; unlike a Dockerfile or a dev
+compose addition, there is no way to validate a guess here against anything real in this
+environment. Raised as a question rather than guessed at.
+
+### Verification
+
+Full workspace `pnpm typecheck` / `pnpm lint` / `pnpm test` (51/51) / `pnpm format:check`
+all clean. `apps/worker`'s own unit tier: 29/29 (up from 25). `docker compose ps` shows
+`postgres`, `redis`, `minio` all `healthy`; `minio-init` `Exited (0)`.
