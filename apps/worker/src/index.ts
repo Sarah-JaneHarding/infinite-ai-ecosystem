@@ -107,7 +107,11 @@ import {
 import { WorkerHost } from './worker-host.js';
 
 export { WorkerHost } from './worker-host.js';
-export { createStepExecutor, StepExecutorError } from './step-executor.js';
+export {
+  createStepExecutor,
+  StepExecutorError,
+  GuardrailRefusalError,
+} from './step-executor.js';
 export type { ToolHandler, ToolHandlerMap, StepExecutorDeps } from './step-executor.js';
 export { createToolHandlers } from './tool-handlers.js';
 export {

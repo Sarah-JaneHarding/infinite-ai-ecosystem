@@ -184,6 +184,9 @@ importers:
       '@infinite-ai/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@infinite-ai/guardrails':
+        specifier: workspace:*
+        version: link:../../packages/guardrails
       '@infinite-ai/orchestrator':
         specifier: workspace:*
         version: link:../../packages/orchestrator

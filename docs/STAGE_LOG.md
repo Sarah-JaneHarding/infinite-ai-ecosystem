@@ -6902,3 +6902,71 @@ candidates per tenant (471 total) in ~26s, and `pnpm curriculum:ratify` commits 
 first time succeeding end to end. Full workspace `pnpm typecheck` / `pnpm lint` /
 `pnpm test` (51/51) and `pnpm --filter @infinite-ai/db test:integration` (669/669,
 including the new timeout test) all pass after the fix.
+
+---
+
+## Post-52 audit — the guardrail engine had no caller
+
+A repository-wide production-readiness audit (2026-08-25) found a defect more
+foundational than either open question it touches names: Stage 06 step 6's guardrail
+engine (`runInputGuardrails`/`runOutputGuardrails` in `packages/guardrails`) — the
+composition that runs `checkAgeAppropriateness` and dispatches safeguarding escalation —
+had zero callers anywhere in `apps/worker` or `apps/gateway`. `apps/worker/src/step-executor.ts`'s
+`runAgentCall` posted to the gateway, parsed the JSON reply, and returned it; the gateway
+itself enforces only the narrow PII-egress check (rule 4). `engine.ts`'s own header
+comment said this wiring "belongs to whichever call site first invokes a real agent — not
+yet built," but that call site _was_ built later (Stage 51 wired every module's pipelines
+into the worker) without the guardrail engine being connected to it. Practical effect: a
+fully-credentialed OQ-014 paging integration could not have fired on a real agent call,
+because nothing ever called the check that would produce the escalation.
+
+**What was built.** The full `runInputGuardrails`/`runOutputGuardrails` composition was
+not wired in wholesale — most of its checks need inputs this call site does not have
+(a per-agent citation set for grounding, a cost budget, a readability range) or a
+convention that does not exist yet (how would an agent's own structured output signal
+that it is itself a refusal, for `checkRefusalPolicy`?). Fabricating any of those would
+have produced a check that looks wired but tests against invented data. Only
+`checkAgeAppropriateness` was added — it needs nothing but the parsed output and an
+optional injected checker, exactly the "mechanism now, real policy wired in once
+ratified" shape it was already built for.
+
+- `apps/worker/src/step-executor.ts` — `runAgentCall` now runs `checkAgeAppropriateness`
+  against every agent's parsed output. `StepExecutorDeps` gained two optional fields:
+  `ageAppropriatenessChecker` (unset by default — behaviour unchanged, every output still
+  passes) and `notify` (an `EscalationNotifier`, defaulting to `defaultEscalationNotifier`,
+  which throws rather than silently dropping a safeguarding concern). A refusal throws the
+  new `GuardrailRefusalError`, carrying the `Refusal`, distinct from `StepExecutorError`
+  (the call itself breaking) — the run stops rather than returning unreviewed content.
+- `apps/worker/src/worker-host.ts` — threads both fields from `WorkerHostDeps` through to
+  every `StepExecutor` it creates.
+- `apps/worker/src/index.ts` — exports `GuardrailRefusalError`.
+- `apps/worker/package.json` / `docs/DEPENDENCIES.md` — `@infinite-ai/guardrails` added as
+  a real dependency (it was reachable only transitively before).
+- `apps/worker/test/step-executor.spec.ts` — four new tests: default behaviour is
+  unchanged with nothing configured; a refusal with no escalation route throws
+  `GuardrailRefusalError` without calling the notifier; a refusal with an escalation route
+  calls the configured notifier with the exact route and refusal, then throws; with no
+  notifier configured, the escalation surfaces as `GuardrailEscalationError` (from
+  `defaultEscalationNotifier`) rather than ever reaching the `GuardrailRefusalError` throw.
+- `docs/OPEN_QUESTIONS.md` — OQ-014 and OQ-015 updated: both now describe a live,
+  reachable mechanism waiting on exactly one thing each (a real paging account; a real
+  content policy) rather than a mechanism with no call site at all.
+
+**Deliberately not done**, and not silently dropped: `checkRefusalPolicy` (no agent-output
+refusal convention exists — a cross-cutting prompt-contract decision, not a wiring gap),
+`checkDiagnosticLanguage` (MOD-02-specific, needs per-agent knowledge of which output
+fields are free text — also unwired, discovered during this same audit, not yet actioned),
+and the rest of `runOutputGuardrails`'s checks (grounding, template fidelity, readability,
+cost) and all of `runInputGuardrails` (PII/consent/token-budget at this layer — largely
+covered today by the gateway's own narrower PII check and `packages/policy`'s access
+gates elsewhere, but not via this composed engine).
+
+**Verification.** `apps/worker`'s full unit tier: 25/25 (up from 21), including the four
+new tests. Full workspace `pnpm typecheck` / `pnpm lint` / `pnpm test` (51/51) all clean.
+`packages/orchestrator`'s own test suites were confirmed to have no dependency on
+`apps/worker`'s step executor, so this change carries no risk to the 39-case runner
+integration suite.
+
+Open questions raised: OQ-026 (`checkDiagnosticLanguage` has the same "no caller" gap as
+`checkAgeAppropriateness` did, deliberately left unwired — see the entry for why).
+OQ-014 and OQ-015 updated in place rather than raised fresh.

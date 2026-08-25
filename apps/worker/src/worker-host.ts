@@ -17,6 +17,10 @@
 import type { AgentContract } from '@infinite-ai/agents';
 import { loadEnv } from '@infinite-ai/config';
 import { withTenant } from '@infinite-ai/db';
+import type {
+  AgeAppropriatenessChecker,
+  EscalationNotifier,
+} from '@infinite-ai/guardrails';
 import type { PipelineDefinition, RunnerOptions } from '@infinite-ai/orchestrator';
 import { runToCompletion } from '@infinite-ai/orchestrator';
 import { createLogger, type Logger } from '@infinite-ai/telemetry';
@@ -40,6 +44,10 @@ export interface WorkerHostDeps {
   readonly promptsRoot: string;
   readonly redisUrl: string;
   readonly logger?: Logger;
+  /** Forwarded to every StepExecutor this host creates — see step-executor.ts's own doc
+   * comments (OQ-014, OQ-015) for what each one does and why it defaults to unset. */
+  readonly ageAppropriatenessChecker?: AgeAppropriatenessChecker;
+  readonly notify?: EscalationNotifier;
 }
 
 export class WorkerHost {
@@ -68,6 +76,9 @@ export class WorkerHost {
         await withTenant({ tenantId, actorId }, async (tx) => {
           const toolHandlers = createToolHandlers(tx);
 
+          // exactOptionalPropertyTypes (rule 8): only set these keys when this host was
+          // actually given a checker/notifier, rather than assigning `undefined` to an
+          // optional field explicitly.
           const executeStep = createStepExecutor({
             pipeline,
             agentContracts: this.deps.agentContracts,
@@ -75,6 +86,10 @@ export class WorkerHost {
             gatewayBaseUrl: env.GATEWAY_BASE_URL,
             tenantId,
             toolHandlers,
+            ...(this.deps.ageAppropriatenessChecker === undefined
+              ? {}
+              : { ageAppropriatenessChecker: this.deps.ageAppropriatenessChecker }),
+            ...(this.deps.notify === undefined ? {} : { notify: this.deps.notify }),
           });
 
           const runnerOptions: RunnerOptions = { executeStep, prepareApproval };

@@ -443,3 +443,14 @@ runtime dependencies:
 
 No other new external dependencies. `apps/worker` consumes `@infinite-ai/*` workspace
 packages already in the tree, plus `zod` (MIT, Stage 00) for job-payload validation.
+
+## Post-Stage-52 — guardrail engine wired into the live agent-call path
+
+One new workspace dependency, added when an audit found `runInputGuardrails`/
+`runOutputGuardrails` (Stage 06) had no caller anywhere in `apps/worker` or
+`apps/gateway` — the age-appropriateness check and safeguarding-escalation dispatch
+could not fire on a real agent call regardless of OQ-014/OQ-015's status.
+
+| Package                   | Version       | Licence | Why                                                                                                                                                                    | Replaces |
+| ------------------------- | ------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `@infinite-ai/guardrails` | `workspace:*` | —       | `checkAgeAppropriateness`, `defaultEscalationNotifier`, and their types, now called from `apps/worker/src/step-executor.ts` after every agent call's output is parsed. | —        |

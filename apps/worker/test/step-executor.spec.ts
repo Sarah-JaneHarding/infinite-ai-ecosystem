@@ -6,10 +6,16 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { CE01Contract } from '@infinite-ai/agents';
+import {
+  GuardrailEscalationError,
+  refuse,
+  type AgeAppropriatenessChecker,
+} from '@infinite-ai/guardrails';
 import { MOD01_CURRICULUM_PIPELINE } from '@infinite-ai/orchestrator';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  GuardrailRefusalError,
   StepExecutorError,
   createStepExecutor,
   type StepExecutorDeps,
@@ -200,6 +206,97 @@ describe('createStepExecutor', () => {
           input: {},
         }),
       ).rejects.toThrow(StepExecutorError);
+    });
+  });
+
+  describe('agent_call guardrails (OQ-014, OQ-015)', () => {
+    function stubGatewayResponse(): void {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => FAKE_RESPONSE,
+          text: async () => JSON.stringify(FAKE_RESPONSE),
+        }),
+      );
+    }
+
+    it('returns the output unchanged when no ageAppropriatenessChecker is supplied', async () => {
+      stubGatewayResponse();
+      const executor = createStepExecutor(makeDeps());
+      const result = await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'build-topic-graph',
+        attempt: 1,
+        input: {},
+      });
+      expect(result).toEqual({ status: 'ok', framework: {} });
+    });
+
+    it('throws GuardrailRefusalError when the checker refuses, without escalating', async () => {
+      stubGatewayResponse();
+      const checker: AgeAppropriatenessChecker = () =>
+        refuse('age_inappropriate', 'not suitable for this grade');
+      const notify = vi.fn();
+
+      const executor = createStepExecutor(
+        makeDeps({ ageAppropriatenessChecker: checker, notify }),
+      );
+      await expect(
+        executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'build-topic-graph',
+          attempt: 1,
+          input: {},
+        }),
+      ).rejects.toThrow(GuardrailRefusalError);
+      expect(notify).not.toHaveBeenCalled();
+    });
+
+    it('calls the configured notifier when the checker refuses with an escalation route', async () => {
+      stubGatewayResponse();
+      const escalation = { category: 'safeguarding_concern', notifyRole: 'sbst' };
+      const checker: AgeAppropriatenessChecker = () =>
+        refuse('age_inappropriate', 'contains a safeguarding concern', escalation);
+      const notify = vi.fn().mockResolvedValue(undefined);
+
+      const executor = createStepExecutor(
+        makeDeps({ ageAppropriatenessChecker: checker, notify }),
+      );
+      await expect(
+        executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'build-topic-graph',
+          attempt: 1,
+          input: {},
+        }),
+      ).rejects.toThrow(GuardrailRefusalError);
+
+      expect(notify).toHaveBeenCalledOnce();
+      const [route, refusal] = notify.mock.calls[0] as [unknown, { code: string }];
+      expect(route).toEqual(escalation);
+      expect(refusal.code).toBe('age_inappropriate');
+    });
+
+    it('surfaces GuardrailEscalationError when a refusal escalates and no notifier is configured', async () => {
+      stubGatewayResponse();
+      const escalation = { category: 'safeguarding_concern', notifyRole: 'sbst' };
+      const checker: AgeAppropriatenessChecker = () =>
+        refuse('age_inappropriate', 'contains a safeguarding concern', escalation);
+
+      // No `notify` supplied — falls back to defaultEscalationNotifier, which throws
+      // rather than silently dropping a safeguarding concern (OQ-014).
+      const executor = createStepExecutor(
+        makeDeps({ ageAppropriatenessChecker: checker }),
+      );
+      await expect(
+        executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'build-topic-graph',
+          attempt: 1,
+          input: {},
+        }),
+      ).rejects.toThrow(GuardrailEscalationError);
     });
   });
 
