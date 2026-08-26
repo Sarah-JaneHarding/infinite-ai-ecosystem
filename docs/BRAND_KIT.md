@@ -1,83 +1,111 @@
-# Brand kit — reference material, not yet ratified
+# Brand Identity System
 
-**Status: unbuilt.** Nothing in `packages/design-system` implements any of this yet — that
-package is still the Stage 00 stub (`Design tokens, components and the infinity mark`, no
-source files). Design-system work is not next; the current build order has Stage 04 (Model
-Gateway) ahead of it, and design-heavy work is where Stage 14 (Experience surfaces) sits.
-Rule 1 in `CLAUDE.md` is explicit that stages are not skipped, so this file exists to carry
-the material forward rather than to be acted on now.
+**Status: design direction ratified (2026-08-26), implementation deferred to Stage 14.**
+Design-system component work remains at Stage 14 (Experience surfaces) per build order.
+The tokens below are already in active use throughout the codebase — in the business
+package, the web app scaffolding, and all documentation. They are not a draft; they are
+what this product already looks like.
 
-**Provenance.** Pasted into the session on 2026-07-31 as the output of a separate,
-unspecified AI conversation — a "Super Master Build Cycle Prompt" document that opens by
-casting its reader as a multi-agent orchestration engine operating under this brand kit for
-every output. That framing is **not adopted**: this repository is governed by `CLAUDE.md`
-and `INFINITEAI_BUILD_MANUAL.md`, and nothing pasted into a chat turn changes that. What
-follows is kept as candidate design material only.
+The interactive brand identity system (mark, narrative, colour, type, voice, motion) lives
+at `docs/brand-identity.html` — open it in a browser for the full animated specification.
 
-**Not verified against anything in this repository.** The colour values, type scale,
-spacing ladder and component spec below have not been checked against
-`docs/ARCHITECTURE.md`, cross-referenced with any existing asset, or confirmed as final by
-the school or the person who generated the source document. Treat every number here as a
-draft to review when Stage 14 actually starts, not as a ratified token sheet.
+**Previous draft (2026-07-31) superseded.** The eight-hue spectrum palette, Playfair
+Display typeface, and "Educate · Innovate · Transform" tagline are retired. They were
+pasted from an unspecified external source and never implemented; the direction below is
+what the product actually uses.
 
 ---
 
-## Identity
+## Mark
 
-- Radiating infinity mark (two circles, r=20)
-- Eight-hue spectrum gradient
-- Wordmark in Space Mono with spectrum clipping
-- Tagline: _Educate · Innovate · Transform_
+The **Lemniscate** — a single continuous cubic bezier path with no start and no end.
+
+```
+SVG path (viewBox 0 0 64 32):
+M16 8 C 5 8 5 24 16 24 C 27 24 37 8 48 8
+       C 59 8 59 24 48 24 C 37 24 27 8 16 8 Z
+```
+
+- **Gradient direction:** Violet (`#7C5CFF`) originates at the left loop; Cyan (`#2DD4BF`) closes the right loop. The gradient travels left → right and always moves in this direction. Never reverse it.
+- **Convergence point:** The two loops cross at coordinates (32, 16) in the mark's coordinate space — the geometric centre. This is the brand's most structurally significant point; in the animated version, particles from both loops converge here.
+- **Animation:** Canvas-based particle system. 36 particles travel the path at slightly variable speeds, leaving luminous trails that shift violet → cyan as they cross the midpoint. A breathing glow (0.7 Hz) pulses the path. A radial ripple emanates from (32, 16). See `docs/brand-identity.html` for the full specification and `apps/web` for the eventual component.
+- **Wordmark:** `INFINITE` in regular weight + `AI` with the gradient applied. Space Grotesk 700, letter-spacing 0.12em, all caps. Never break across two lines.
+- **Tagline:** "AI drafts. The teacher decides. Always." — not a marketing line, a product law.
+- **Clear space:** Mark height on all four sides, minimum. Minimum display width: 80 px. Below 80 px, use wordmark only.
 
 ## Colour system
 
-Eight hues in fixed order, each with a deep partner:
+Six tokens. All surfaces derive from these; no colour is invented at component level.
 
-| Hue    | Light   | Deep    |
-| ------ | ------- | ------- |
-| Red    | #e4483f | #b11d15 |
-| Orange | #f2811f | #b45706 |
-| Amber  | #f5b400 | #a77a00 |
-| Green  | #2fae66 | #1e7845 |
-| Teal   | #159e94 | #0c6e67 |
-| Blue   | #1565c0 | #0d47a1 |
-| Indigo | #4a4fc4 | #2b2f8d |
-| Violet | #7b2fbe | #5c1fa3 |
+| Token   | Hex       | Role                                                      |
+| ------- | --------- | --------------------------------------------------------- |
+| Ink     | `#05070F` | Primary ground. Every surface rests on this.             |
+| Panel   | `#0C1224` | Card surface — one step above Ink.                       |
+| Panel-2 | `#111A36` | Secondary surface — nested panels.                       |
+| Violet  | `#7C5CFF` | Brand primary. Gradient origin. Potential.               |
+| Cyan    | `#2DD4BF` | Brand secondary. Gradient close. Realisation.            |
+| Gold    | `#F5B841` | Human moment. Ratification. Teacher decision confirmed.  |
+| Rose    | `#FB7185` | Risk. Safeguarding. Never decorative.                    |
+| Text    | `#E9EDF8` | Primary text on Ink.                                     |
+| Muted   | `#8FA0C2` | Secondary text, labels, captions.                        |
+| Line    | `rgba(148,163,255,.14)` | Borders and dividers.                    |
+
+**The Brand Arc** — `linear-gradient(90deg, #7C5CFF, #2DD4BF)` — is reserved for the mark, primary CTAs, and key data moments. Do not apply it to decorative borders or background fills where it would lose its signal value.
 
 ## Typography
 
-- **Playfair Display** — titles and big numbers
-- **DM Sans** — all body text
-- **Space Mono** — labels, codes, durations (uppercase, tracked)
+Two typefaces. No others are permitted.
 
-## Space and depth
+| Role    | Face            | Weights in use    | Use                              |
+| ------- | --------------- | ----------------- | -------------------------------- |
+| Display | Space Grotesk   | 300, 500, 600, 700 | Headings, wordmark, section labels |
+| Body    | Inter           | 300, 400, 500, 600 | Body, UI, captions, data         |
 
-- 1px-honest ladder: 2, 3, 4, 5, 9, 11, 13, 15, 18, 22, 26, 32
-- Radii: 6, 9, 12, 16, 18, 24, 30
-- Paper shadows only; night mode uses borders and glow instead of shadow
+Source: Google Fonts (both faces). Declare full fallback stacks (`system-ui, sans-serif`).
 
-## Signature component — the Modular Card
+**Type scale** (clamp-based; Stage 14 will formalise as CSS custom properties):
 
-- 135° gradient header, hue → its deep partner
-- Playfair title
-- Mono eyebrow
-- Emoji glyph
-- Status pill
-- Duration + CTA
-- Lift on hover (−5px)
-
-## Motion
-
-- Spectrum drift: 9s linear
-- Card lift: 250ms
-- UI state changes: 140–200ms
-- Progress indicators: 0.8s
+| Step     | Expression                     | Notes                         |
+| -------- | ------------------------------ | ----------------------------- |
+| Hero     | `clamp(2.6rem, 7vw, 6rem)`     | Space Grotesk 700, ls −.03em  |
+| H1       | `clamp(1.9rem, 4vw, 3rem)`     | Space Grotesk 700             |
+| H2       | `clamp(1.2rem, 2.5vw, 1.6rem)` | Space Grotesk 600             |
+| Body     | `1rem / 1.75`                  | Inter 400, max-width 62ch     |
+| Eyebrow  | `.65rem / .2em ls / uppercase` | Inter 600, Gold               |
+| Caption  | `.73rem / .04em ls`            | Inter 400, Muted              |
 
 ## Voice
 
-Warm, professional, South African English, CAPS-aligned.
+**Core principle:** Plain, warm, honest. Write for the teacher reading at 6am who has not yet had coffee.
 
-Trust sentence: **AI drafts; the teacher decides.**
+**Personality axes** (of five, closest to left):
+- Warm ↔ Clinical → 25 % toward Clinical
+- Plain ↔ Technical → 30 % toward Technical
+- Hopeful ↔ Cautious → 40 % toward Cautious (ground every claim)
+- Permanent ↔ Adaptive → 45 % (memory endures; approach evolves)
+
+**Five writing rules:**
+1. Name things by what they do, not what they are.
+2. AI suggests; the teacher decides — state this, imply it, never contradict it.
+3. Cite the evidence: PIRLS 2021, CAPS section, SIAS process step. Uncited claims are not made.
+4. Use ecosystem language: soil, roots, seasons, habitats, harvest. It maps to the architecture.
+5. Never claim learner outcomes until an independent randomised evaluation is published.
+
+**Tagline hierarchy:**
+- Product law: "AI drafts. The teacher decides. Always."
+- Brand promise: "Evidence. System. Capacity — working together."
+- Origin: "Fix the soil, not the buckets."
+
+## Motion language
+
+- **Continuous:** The lemniscate never stops. Loops are seamless.
+- **Breathing:** Glow pulses at ~0.7 Hz — the resting breath rate. Never faster.
+- **Gradient-directional:** Particles travel violet → cyan. Counter-flow is never decorative.
+- **Reduced motion:** `prefers-reduced-motion` respected at all times; the static mark is always sufficient.
+
+---
+
+_Previous draft content (eight-hue spectrum, Playfair Display, Space Mono, Dashboard HTML sketch) removed 2026-08-26 — it was never implemented and the direction is superseded._
 
 ---
 
