@@ -91,33 +91,72 @@ p  { max-width:62ch; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2.5rem;
-  padding: 4rem clamp(1.5rem,5vw,3rem);
+  justify-content: flex-end;
+  padding: 0;
   position: relative;
   overflow: hidden;
 }
 
-#hero::before {
-  content: '';
+/* full-bleed original logo image */
+#hero-image-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+#hero-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  display: block;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+#hero-bg-img.loaded { opacity: 1; }
+
+/* dark overlay so text stays legible over the image */
+#hero-overlay {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 60% 50% at 50% 40%, rgba(124,92,255,.10) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 30% at 50% 40%, rgba(45,212,191,.06) 0%, transparent 60%);
-  pointer-events: none;
+    linear-gradient(to bottom, rgba(5,7,15,.35) 0%, rgba(5,7,15,.15) 40%, rgba(5,7,15,.85) 80%, var(--ink) 100%),
+    radial-gradient(ellipse 60% 50% at 50% 35%, rgba(124,92,255,.12) 0%, transparent 70%);
 }
 
+/* canvas sits centred over the image */
 #logo-wrap {
-  position: relative;
-  width: min(680px,90vw);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  width: min(680px, 90vw);
   aspect-ratio: 2.2/1;
+  z-index: 1;
+}
+/* when image doesn't load, canvas is the sole hero — bring it back to centre */
+#hero.no-image #logo-wrap {
+  position: relative;
+  top: auto; left: auto;
+  transform: none;
+  margin-top: 4rem;
 }
 
 #logo-canvas {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* text content at the bottom of the hero */
+#hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 0 clamp(1.5rem,5vw,3rem) 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
 }
 
 .wordmark {
@@ -452,21 +491,34 @@ footer p { font-size: .72rem; color: var(--muted); max-width: none; }
 </style>
 
 <!-- ══════════ HERO ══════════ -->
-<header id="hero">
+<header id="hero" class="no-image">
+  <!-- original logo image — loads in a real browser; hidden gracefully if blocked -->
+  <div id="hero-image-wrap">
+    <img id="hero-bg-img"
+      src="https://image.qwenlm.ai/public_source/b222c791-c587-4205-aba5-274352c6e01a/1f630670d-6420-41c9-8189-a7e77ce7fe57.png"
+      alt="INFINITE-AI infinity mark in violet and cyan light"
+      onload="this.classList.add('loaded');document.getElementById('hero').classList.remove('no-image')"
+      onerror="this.style.display='none'">
+    <div id="hero-overlay"></div>
+  </div>
+
+  <!-- animated canvas mark — always rendered, sits over the image -->
   <div id="logo-wrap">
     <canvas id="logo-canvas"></canvas>
   </div>
 
-  <div class="wordmark">
-    <div class="name">INFINITE&#8202;<span class="grad-text">AI</span></div>
-    <div class="tagline">AI drafts. The teacher decides. Always.</div>
-  </div>
-
-  <div class="scroll-hint">
-    <span>Brand Identity System</span>
-    <svg width="14" height="20" viewBox="0 0 14 20" fill="none">
-      <path d="M7 1v14M1 9l6 8 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+  <!-- wordmark + tagline pinned to the bottom of the hero -->
+  <div id="hero-content">
+    <div class="wordmark">
+      <div class="name">INFINITE&#8202;<span class="grad-text">AI</span></div>
+      <div class="tagline">AI drafts. The teacher decides. Always.</div>
+    </div>
+    <div class="scroll-hint">
+      <span>Brand Identity System</span>
+      <svg width="14" height="20" viewBox="0 0 14 20" fill="none">
+        <path d="M7 1v14M1 9l6 8 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
   </div>
 </header>
 
