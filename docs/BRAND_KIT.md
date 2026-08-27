@@ -37,18 +37,18 @@ M16 8 C 5 8 5 24 16 24 C 27 24 37 8 48 8
 
 Six tokens. All surfaces derive from these; no colour is invented at component level.
 
-| Token   | Hex       | Role                                                      |
-| ------- | --------- | --------------------------------------------------------- |
-| Ink     | `#05070F` | Primary ground. Every surface rests on this.             |
-| Panel   | `#0C1224` | Card surface — one step above Ink.                       |
-| Panel-2 | `#111A36` | Secondary surface — nested panels.                       |
-| Violet  | `#7C5CFF` | Brand primary. Gradient origin. Potential.               |
-| Cyan    | `#2DD4BF` | Brand secondary. Gradient close. Realisation.            |
-| Gold    | `#F5B841` | Human moment. Ratification. Teacher decision confirmed.  |
-| Rose    | `#FB7185` | Risk. Safeguarding. Never decorative.                    |
-| Text    | `#E9EDF8` | Primary text on Ink.                                     |
-| Muted   | `#8FA0C2` | Secondary text, labels, captions.                        |
-| Line    | `rgba(148,163,255,.14)` | Borders and dividers.                    |
+| Token   | Hex                     | Role                                                    |
+| ------- | ----------------------- | ------------------------------------------------------- |
+| Ink     | `#05070F`               | Primary ground. Every surface rests on this.            |
+| Panel   | `#0C1224`               | Card surface — one step above Ink.                      |
+| Panel-2 | `#111A36`               | Secondary surface — nested panels.                      |
+| Violet  | `#7C5CFF`               | Brand primary. Gradient origin. Potential.              |
+| Cyan    | `#2DD4BF`               | Brand secondary. Gradient close. Realisation.           |
+| Gold    | `#F5B841`               | Human moment. Ratification. Teacher decision confirmed. |
+| Rose    | `#FB7185`               | Risk. Safeguarding. Never decorative.                   |
+| Text    | `#E9EDF8`               | Primary text on Ink.                                    |
+| Muted   | `#8FA0C2`               | Secondary text, labels, captions.                       |
+| Line    | `rgba(148,163,255,.14)` | Borders and dividers.                                   |
 
 **The Brand Arc** — `linear-gradient(90deg, #7C5CFF, #2DD4BF)` — is reserved for the mark, primary CTAs, and key data moments. Do not apply it to decorative borders or background fills where it would lose its signal value.
 
@@ -56,35 +56,37 @@ Six tokens. All surfaces derive from these; no colour is invented at component l
 
 Two typefaces. No others are permitted.
 
-| Role    | Face            | Weights in use    | Use                              |
-| ------- | --------------- | ----------------- | -------------------------------- |
-| Display | Space Grotesk   | 300, 500, 600, 700 | Headings, wordmark, section labels |
-| Body    | Inter           | 300, 400, 500, 600 | Body, UI, captions, data         |
+| Role    | Face          | Weights in use     | Use                                |
+| ------- | ------------- | ------------------ | ---------------------------------- |
+| Display | Space Grotesk | 300, 500, 600, 700 | Headings, wordmark, section labels |
+| Body    | Inter         | 300, 400, 500, 600 | Body, UI, captions, data           |
 
 Source: Google Fonts (both faces). Declare full fallback stacks (`system-ui, sans-serif`).
 
 **Type scale** (clamp-based; Stage 14 will formalise as CSS custom properties):
 
-| Step     | Expression                     | Notes                         |
-| -------- | ------------------------------ | ----------------------------- |
-| Hero     | `clamp(2.6rem, 7vw, 6rem)`     | Space Grotesk 700, ls −.03em  |
-| H1       | `clamp(1.9rem, 4vw, 3rem)`     | Space Grotesk 700             |
-| H2       | `clamp(1.2rem, 2.5vw, 1.6rem)` | Space Grotesk 600             |
-| Body     | `1rem / 1.75`                  | Inter 400, max-width 62ch     |
-| Eyebrow  | `.65rem / .2em ls / uppercase` | Inter 600, Gold               |
-| Caption  | `.73rem / .04em ls`            | Inter 400, Muted              |
+| Step    | Expression                     | Notes                        |
+| ------- | ------------------------------ | ---------------------------- |
+| Hero    | `clamp(2.6rem, 7vw, 6rem)`     | Space Grotesk 700, ls −.03em |
+| H1      | `clamp(1.9rem, 4vw, 3rem)`     | Space Grotesk 700            |
+| H2      | `clamp(1.2rem, 2.5vw, 1.6rem)` | Space Grotesk 600            |
+| Body    | `1rem / 1.75`                  | Inter 400, max-width 62ch    |
+| Eyebrow | `.65rem / .2em ls / uppercase` | Inter 600, Gold              |
+| Caption | `.73rem / .04em ls`            | Inter 400, Muted             |
 
 ## Voice
 
 **Core principle:** Plain, warm, honest. Write for the teacher reading at 6am who has not yet had coffee.
 
 **Personality axes** (of five, closest to left):
+
 - Warm ↔ Clinical → 25 % toward Clinical
 - Plain ↔ Technical → 30 % toward Technical
 - Hopeful ↔ Cautious → 40 % toward Cautious (ground every claim)
 - Permanent ↔ Adaptive → 45 % (memory endures; approach evolves)
 
 **Five writing rules:**
+
 1. Name things by what they do, not what they are.
 2. AI suggests; the teacher decides — state this, imply it, never contradict it.
 3. Cite the evidence: PIRLS 2021, CAPS section, SIAS process step. Uncited claims are not made.
@@ -92,6 +94,7 @@ Source: Google Fonts (both faces). Declare full fallback stacks (`system-ui, san
 5. Never claim learner outcomes until an independent randomised evaluation is published.
 
 **Tagline hierarchy:**
+
 - Product law: "AI drafts. The teacher decides. Always."
 - Brand promise: "Evidence. System. Capacity — working together."
 - Origin: "Fix the soil, not the buckets."
