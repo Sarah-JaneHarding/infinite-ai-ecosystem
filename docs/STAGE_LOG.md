@@ -7068,3 +7068,84 @@ environment. Raised as a question rather than guessed at.
 Full workspace `pnpm typecheck` / `pnpm lint` / `pnpm test` (51/51) / `pnpm format:check`
 all clean. `apps/worker`'s own unit tier: 29/29 (up from 25). `docker compose ps` shows
 `postgres`, `redis`, `minio` all `healthy`; `minio-init` `Exited (0)`.
+
+## Age-appropriateness/developmental-readiness clauses ingested into L0
+
+A human supplied a real, sourced dataset — 206 paraphrased developmental-readiness
+clauses drawn from 23 real DBE CAPS documents across Foundation, Intermediate and Senior
+Phase and 13 subjects — the first source material OQ-015 has ever had. Rule 0.3 ("never
+invent curriculum policy... if it is not in a supplied source document, ask") is exactly
+what OQ-015 was blocked on; a supplied source document is precisely the condition that
+unblocks it.
+
+**Data layer.** `packages/contracts/src/curriculum/sources/
+age-appropriateness-developmental-readiness.ts` — all 206 entries as a typed
+`AGE_APPROPRIATENESS_ENTRIES` array (`AgeAppropriatenessSourceEntry`: `phase`,
+`gradeRange`, `subject`, `clauseType`, `content`, `source: SourceRef`). Generated
+mechanically from the supplied JSON via a throwaway Python script rather than hand-typed
+— 206 entries is exactly the volume where manual transcription risks silent corruption —
+then independently verified: a separate Node/tsx script compared every one of the 206
+generated entries against the original JSON field-by-field. Result: 206/206 matched, 0
+mismatches. One entry per clause, not one per source document (contrast with this
+directory's CAPS_CANON files, which group a whole document under one key): this dataset
+exists to be individually retrieved by a guardrail check asking "is this developmentally
+appropriate for grade N", and bundling 20+ unrelated clauses under one key would dilute
+exactly the retrieval granularity that needs.
+
+**Brain layer.** `AGE_APPROPRIATENESS` added to `BrainConstitutionKind`
+(`write-path-schemas.ts`) and to the Prisma-level `brain_constitution_kind` enum
+(`schema.prisma` — migration `20260828120000_brain_age_appropriateness_kind`, additive-only,
+`ALTER TYPE ... ADD VALUE`). `packages/brain/src/age-appropriateness.ts` is the thin typed
+wrapper around `remember()`/`ratify()` — the same pattern `curriculum-templates.ts`
+established for the `'TEMPLATE'` kind in Stage 08 step 1 — `submitAgeAppropriatenessEntry`
+(opens an L0_CONSTITUTION candidate, forces `source.ratifiedBy: null`) and
+`selectAgeAppropriatenessEntries` (reads ratified candidates back, Zod-parses, throws
+`AgeAppropriatenessError` on a parse failure since that means something bypassed the
+typed write path). Each entry's `key` is derived from its stable position in
+`AGE_APPROPRIATENESS_ENTRIES` (`age-appropriateness-000`...`age-appropriateness-205`) since
+the entries carry no natural unique key of their own (`clause` is free text, not
+guaranteed unique). Unit tests (7 cases) plus an integration test proving a real
+submit → ratify → recall → select round-trip against Testcontainers Postgres.
+
+**Seeding.** `scripts/seed-age-appropriateness.ts` / `scripts/ratify-age-appropriateness.ts`
+— the same two-script `curriculum:seed`/`curriculum:ratify` shape, run against the three
+fixed dev tenants. The ratify script reuses `@infinite-ai/curriculum-seed`'s
+`ratifyCurriculumForTenant` as-is (it already sweeps every AWAITING_RATIFICATION
+L0_CONSTITUTION candidate for a tenant regardless of kind) rather than duplicating that
+logic. Root `package.json` took `@infinite-ai/brain` as a dependency for the first time
+(`docs/DEPENDENCIES.md` updated) since the seed script calls
+`submitAgeAppropriatenessEntry` directly.
+
+**Actually run, not just written.** The dev Docker daemon and stack (`postgres`, `redis`,
+`minio`; Keycloak's `quay.io` pull was blocked by this sandbox's egress policy, same as
+noted in the prior Tier 1 entry — not needed for this task) were brought up, migrations
+deployed (only the one new migration was pending — the other 22 were already applied
+from earlier session work), and `pnpm --filter @infinite-ai/db db:seed` confirmed the
+three dev tenants exist. `pnpm age-appropriateness:seed` then `pnpm
+age-appropriateness:ratify` were run for real against that database: 206 candidates
+submitted and 206 ratified for each of the three tenants (618 total). Verified directly
+against Postgres with `psql` (`SET app.tenant_id = ...` then a real RLS-scoped query) —
+206 `AGE_APPROPRIATENESS` rows for the first tenant, spot-checked content and
+`ratified_at`. The brain package's integration suite
+(`age-appropriateness.integration.spec.ts`, `curriculum-templates.integration.spec.ts`)
+was also run against a throwaway Testcontainers Postgres — both pass.
+
+**Deliberately not done, and why.** Wiring a real runtime checker
+(`packages/guardrails/src/output-checks.ts`'s `AgeAppropriatenessChecker`) to query this
+newly-ingested data was not attempted here. That type is currently synchronous
+(`(output: unknown) => GuardrailVerdict`) while Brain retrieval is inherently async
+(`recall()` returns a `Promise`), so a real implementation needs a breaking signature
+change to `AgeAppropriatenessChecker` and to its call site in
+`apps/worker/src/step-executor.ts` (added in the Tier 0 guardrail-wiring work). This
+ingests the policy source material the checker was blocked on; it does not itself wire
+the checker. `docs/OPEN_QUESTIONS.md`'s OQ-015 updated to reflect exactly this: the
+"no source material" half of the gap is resolved, the runtime-wiring half is not.
+
+### Verification
+
+`packages/contracts` typecheck clean; full workspace `pnpm lint` / `pnpm typecheck`
+(51/51 tasks) / `pnpm test` (51/51 tasks) / `pnpm build` (31/31 tasks) / `pnpm
+format:check` all clean. `packages/brain`'s own unit tier: 10 files / 86 tests, up from
+9/79. Both new integration tests pass against a real (Testcontainers) Postgres. The seed
+and ratify scripts were run against the real dev stack's Postgres, not merely reviewed —
+618 rows created and verified with a direct RLS-scoped `psql` query.

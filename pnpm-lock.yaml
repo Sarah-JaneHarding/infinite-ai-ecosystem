@@ -17,6 +17,9 @@ importers:
       '@infinite-ai/analytics':
         specifier: workspace:*
         version: link:packages/analytics
+      '@infinite-ai/brain':
+        specifier: workspace:*
+        version: link:packages/brain
       '@infinite-ai/contracts':
         specifier: workspace:*
         version: link:packages/contracts

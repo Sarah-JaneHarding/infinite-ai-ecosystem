@@ -27,6 +27,7 @@ export const BrainConstitutionKind = z.enum([
   'ASSESSMENT_POLICY',
   'POPIA_RULE',
   'HOUSE_VOICE',
+  'AGE_APPROPRIATENESS',
 ]);
 export type BrainConstitutionKind = z.infer<typeof BrainConstitutionKind>;
 
