@@ -86,6 +86,12 @@ export const EnvSchema = z.object({
   // Model gateway — Stage 04. Application code talks to the gateway, never a provider.
   GATEWAY_BASE_URL: z.string().url().default('http://localhost:8080'),
 
+  // apps/worker has no other HTTP surface — a queue consumer, not a request handler —
+  // so this exists solely for a liveness/readiness probe. Not a secret, and every
+  // service that boots WorkerHost needs the same value, so it lives here rather than in
+  // a narrower per-app schema built for exactly one field.
+  WORKER_PORT: z.coerce.number().int().positive().default(8081),
+
   // Object storage — MinIO in dev, S3 af-south-1 in prod.
   OBJECT_STORE_ENDPOINT: z.string().url().optional(),
   OBJECT_STORE_BUCKET: nonEmpty('OBJECT_STORE_BUCKET').optional(),

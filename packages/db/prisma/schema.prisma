@@ -799,8 +799,9 @@ enum DataSubjectRequestStatus {
 // durable Brain memory — see packages/brain/src/working-memory.ts.
 
 /// L0 Constitution — school policy, CAPS canon, ATP calendars, templates, assessment
-/// policy, POPIA rules, house voice. Immutable and human-ratified: nothing in this table
-/// is inferred by an agent, and nothing is ever true "for now."
+/// policy, POPIA rules, house voice, age-appropriateness clauses. Immutable and
+/// human-ratified: nothing in this table is inferred by an agent, and nothing is ever
+/// true "for now."
 model BrainConstitution {
   id         String                @id @default(uuid()) @db.Uuid
   tenantId   String                @map("tenant_id") @db.Uuid
@@ -838,6 +839,7 @@ enum BrainConstitutionKind {
   ASSESSMENT_POLICY
   POPIA_RULE
   HOUSE_VOICE
+  AGE_APPROPRIATENESS
 
   @@map("brain_constitution_kind")
 }

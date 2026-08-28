@@ -34,7 +34,7 @@ cp infra/docker/.env.example infra/docker/.env
 docker compose --env-file infra/docker/.env -f infra/docker/compose.dev.yml up -d
 ```
 
-Wait for all three services to report healthy:
+Wait for every service to report healthy:
 
 ```bash
 docker compose -f infra/docker/compose.dev.yml ps
@@ -51,6 +51,11 @@ this has not been verified against a live container in this build): open
 `infinite-ai` realm → Clients → `infinite-ai-web` → Credentials tab, and copy the secret
 shown there into `apps/web/.env`'s `AUTH_KEYCLOAK_SECRET` instead of what you put in
 `infra/docker/.env`.
+
+`minio-init` runs once, creates the bucket named by `infra/docker/.env`'s
+`OBJECT_STORE_BUCKET`, and exits — `docker compose ps` will show it `Exited (0)`, which is
+success, not a crash. The MinIO console is at `http://localhost:9001`
+(`MINIO_ROOT_USER`/`MINIO_ROOT_PASSWORD`) if you want to look inside the bucket.
 
 ## 3. Run migrations
 
@@ -81,10 +86,20 @@ at `app_rw` — least-privilege, RLS-enforced, what the app actually runs as in 
 DATABASE_URL=postgresql://app_rw:<APP_RW_PASSWORD>@localhost:5432/<POSTGRES_DB>
 REDIS_URL=redis://localhost:6379
 GATEWAY_BASE_URL=http://localhost:8080
+WORKER_PORT=8081
 ```
 
-Leave `DB_ENCRYPTION_KEY`, `OBJECT_STORE_*` and `OTEL_*` unset for local dev unless
-you're specifically testing something that needs them.
+`OBJECT_STORE_ENDPOINT`/`OBJECT_STORE_BUCKET` point at the MinIO brought up in step 2 —
+matching `infra/docker/.env`'s own `OBJECT_STORE_BUCKET` exactly:
+
+```bash
+OBJECT_STORE_ENDPOINT=http://localhost:9000
+OBJECT_STORE_BUCKET=<same value as infra/docker/.env's OBJECT_STORE_BUCKET>
+```
+
+Leave `DB_ENCRYPTION_KEY` and `OTEL_*` unset for local dev unless you're specifically
+testing something that needs them — there's no self-hosted Langfuse in this compose file
+yet for `OTEL_EXPORTER_OTLP_ENDPOINT` to point at (see the file's own header comment).
 
 **`apps/gateway/.env`** — real provider credentials only if you're testing an agent flow
 that actually calls a model. For everything else (pipeline wiring, RLS, most UI flows),
@@ -141,6 +156,35 @@ user account and role assignment in the realm to actually reach a role surface �
 imported realm ships no users; create one via the Keycloak admin console
 (`http://localhost:8180`) or through the app's own onboarding flow once you're signed in
 as an admin.
+
+## Building and running the apps as containers
+
+Each app has its own `Dockerfile` (`apps/gateway/Dockerfile`, `apps/worker/Dockerfile`,
+`apps/web/Dockerfile`), built from the repository root since every `@infinite-ai/*`
+dependency resolves through pnpm's `workspace:*` protocol — the whole monorepo tree needs
+to be present, not just one app's own directory:
+
+```bash
+docker build -f apps/worker/Dockerfile -t infinite-ai-worker .
+docker build -f apps/gateway/Dockerfile -t infinite-ai-gateway .
+docker build -f apps/web/Dockerfile -t infinite-ai-web .
+```
+
+Each image runs the same way its `pnpm start` already does locally — see each
+Dockerfile's own header comment for why (no separate compiled build output exists yet)
+and the known follow-up it names (the image carries the whole workspace, not just what
+that one app needs at runtime — a size optimization on top of a working image, not a
+prerequisite for one). Run one with the same environment variables `docs/DEV_SETUP.md`'s
+earlier steps already describe, e.g.:
+
+```bash
+docker run --rm -p 8081:8081 --env-file .env infinite-ai-worker
+```
+
+(`--env-file` needs real values, not `NAME=` placeholders — point `DATABASE_URL`/
+`REDIS_URL` at a reachable Postgres/Redis, which `localhost` won't resolve to from inside
+the container; use `host.docker.internal` in its place, or run the container on the same
+Docker network as the dev-stack `docker compose` services.)
 
 ## Running the automated tests
 

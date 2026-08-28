@@ -17,6 +17,9 @@ importers:
       '@infinite-ai/analytics':
         specifier: workspace:*
         version: link:packages/analytics
+      '@infinite-ai/brain':
+        specifier: workspace:*
+        version: link:packages/brain
       '@infinite-ai/contracts':
         specifier: workspace:*
         version: link:packages/contracts
@@ -184,6 +187,9 @@ importers:
       '@infinite-ai/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@infinite-ai/guardrails':
+        specifier: workspace:*
+        version: link:../../packages/guardrails
       '@infinite-ai/orchestrator':
         specifier: workspace:*
         version: link:../../packages/orchestrator

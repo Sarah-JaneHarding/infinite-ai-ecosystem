@@ -1,0 +1,21 @@
+# Rebuilt inside the image against its own platform — never copy the host's, which may
+# carry native bindings (better-sqlite3-style, esbuild, sharp) built for the wrong OS/arch.
+node_modules
+**/node_modules
+
+# Local dev state and generated output — none of it belongs in a build context.
+.git
+.turbo
+**/.turbo
+**/dist
+**/build
+**/.next
+**/coverage
+**/.vite
+
+# Rule 7: never let a local .env reach an image layer, even by accident.
+.env
+.env.*
+!.env.example
+infra/docker/.env
+apps/*/.env

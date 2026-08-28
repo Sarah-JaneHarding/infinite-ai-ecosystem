@@ -122,4 +122,11 @@ export {
   submitTemplateDefinition,
 } from './curriculum-templates.js';
 
+export {
+  AgeAppropriatenessError,
+  keyFor as ageAppropriatenessKeyFor,
+  selectAgeAppropriatenessEntries,
+  submitAgeAppropriatenessEntry,
+} from './age-appropriateness.js';
+
 export const PACKAGE_NAME = '@infinite-ai/brain' as const;

@@ -104,10 +104,17 @@ import {
   QUEUE_MOD05_CPTD,
   QUEUE_MOD05_PD,
 } from './queue-names.js';
+import { createWorkerHealthServer } from './health-server.js';
 import { WorkerHost } from './worker-host.js';
 
 export { WorkerHost } from './worker-host.js';
-export { createStepExecutor, StepExecutorError } from './step-executor.js';
+export { createWorkerHealthServer } from './health-server.js';
+export type { WorkerHealthServer } from './health-server.js';
+export {
+  createStepExecutor,
+  StepExecutorError,
+  GuardrailRefusalError,
+} from './step-executor.js';
 export type { ToolHandler, ToolHandlerMap, StepExecutorDeps } from './step-executor.js';
 export { createToolHandlers } from './tool-handlers.js';
 export {
@@ -269,7 +276,11 @@ export async function start(): Promise<void> {
     .register(QUEUE_LE_EXEMPLAR, LE_EXEMPLAR_PIPELINE.id)
     .register(QUEUE_LE_COMMONS, LE_COMMONS_PIPELINE.id);
 
-  logger.info('worker.started');
+  const health = createWorkerHealthServer();
+  health.listen(env.WORKER_PORT);
+  health.setReady(true);
+
+  logger.info('worker.started', { healthPort: env.WORKER_PORT });
 
   await new Promise<void>((resolve) => {
     const shutdown = (): void => {
@@ -279,7 +290,9 @@ export async function start(): Promise<void> {
     process.once('SIGINT', shutdown);
   });
 
+  health.setReady(false);
   logger.info('worker.shutting_down');
   await host.close();
+  await health.close();
   logger.info('worker.stopped');
 }

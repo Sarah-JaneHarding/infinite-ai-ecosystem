@@ -443,3 +443,30 @@ runtime dependencies:
 
 No other new external dependencies. `apps/worker` consumes `@infinite-ai/*` workspace
 packages already in the tree, plus `zod` (MIT, Stage 00) for job-payload validation.
+
+## Post-Stage-52 — guardrail engine wired into the live agent-call path
+
+One new workspace dependency, added when an audit found `runInputGuardrails`/
+`runOutputGuardrails` (Stage 06) had no caller anywhere in `apps/worker` or
+`apps/gateway` — the age-appropriateness check and safeguarding-escalation dispatch
+could not fire on a real agent call regardless of OQ-014/OQ-015's status.
+
+| Package                   | Version       | Licence | Why                                                                                                                                                                    | Replaces |
+| ------------------------- | ------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `@infinite-ai/guardrails` | `workspace:*` | —       | `checkAgeAppropriateness`, `defaultEscalationNotifier`, and their types, now called from `apps/worker/src/step-executor.ts` after every agent call's output is parsed. | —        |
+
+## Age-appropriateness/developmental-readiness clauses ingested into L0
+
+One new workspace dependency, added when a human supplied a real, sourced dataset (206
+paraphrased DBE CAPS clauses across Foundation/Intermediate/Senior Phase — see
+`docs/sources/pedagogy/age-appropriateness-developmental-readiness/SOURCES.md`) that the
+root package's new seed scripts needed to submit into L0_CONSTITUTION.
+
+| Package              | Version       | Licence | Why                                                                                                                                                                                                                                                                                      | Replaces |
+| -------------------- | ------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `@infinite-ai/brain` | `workspace:*` | —       | `submitAgeAppropriatenessEntry` (packages/brain/src/age-appropriateness.ts), called from `scripts/seed-age-appropriateness.ts` for the first time — the root package.json had never taken the Brain package as a dependency of its own before (only via `@infinite-ai/curriculum-seed`). | —        |
+
+`@infinite-ai/curriculum-seed`'s existing `ratifyCurriculumForTenant` is reused as-is by
+the new `scripts/ratify-age-appropriateness.ts` (it already ratifies every
+AWAITING_RATIFICATION L0_CONSTITUTION candidate for a tenant regardless of kind) — no new
+dependency for that half.

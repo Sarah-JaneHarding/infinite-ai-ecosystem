@@ -6902,3 +6902,250 @@ candidates per tenant (471 total) in ~26s, and `pnpm curriculum:ratify` commits 
 first time succeeding end to end. Full workspace `pnpm typecheck` / `pnpm lint` /
 `pnpm test` (51/51) and `pnpm --filter @infinite-ai/db test:integration` (669/669,
 including the new timeout test) all pass after the fix.
+
+---
+
+## Post-52 audit — the guardrail engine had no caller
+
+A repository-wide production-readiness audit (2026-08-25) found a defect more
+foundational than either open question it touches names: Stage 06 step 6's guardrail
+engine (`runInputGuardrails`/`runOutputGuardrails` in `packages/guardrails`) — the
+composition that runs `checkAgeAppropriateness` and dispatches safeguarding escalation —
+had zero callers anywhere in `apps/worker` or `apps/gateway`. `apps/worker/src/step-executor.ts`'s
+`runAgentCall` posted to the gateway, parsed the JSON reply, and returned it; the gateway
+itself enforces only the narrow PII-egress check (rule 4). `engine.ts`'s own header
+comment said this wiring "belongs to whichever call site first invokes a real agent — not
+yet built," but that call site _was_ built later (Stage 51 wired every module's pipelines
+into the worker) without the guardrail engine being connected to it. Practical effect: a
+fully-credentialed OQ-014 paging integration could not have fired on a real agent call,
+because nothing ever called the check that would produce the escalation.
+
+**What was built.** The full `runInputGuardrails`/`runOutputGuardrails` composition was
+not wired in wholesale — most of its checks need inputs this call site does not have
+(a per-agent citation set for grounding, a cost budget, a readability range) or a
+convention that does not exist yet (how would an agent's own structured output signal
+that it is itself a refusal, for `checkRefusalPolicy`?). Fabricating any of those would
+have produced a check that looks wired but tests against invented data. Only
+`checkAgeAppropriateness` was added — it needs nothing but the parsed output and an
+optional injected checker, exactly the "mechanism now, real policy wired in once
+ratified" shape it was already built for.
+
+- `apps/worker/src/step-executor.ts` — `runAgentCall` now runs `checkAgeAppropriateness`
+  against every agent's parsed output. `StepExecutorDeps` gained two optional fields:
+  `ageAppropriatenessChecker` (unset by default — behaviour unchanged, every output still
+  passes) and `notify` (an `EscalationNotifier`, defaulting to `defaultEscalationNotifier`,
+  which throws rather than silently dropping a safeguarding concern). A refusal throws the
+  new `GuardrailRefusalError`, carrying the `Refusal`, distinct from `StepExecutorError`
+  (the call itself breaking) — the run stops rather than returning unreviewed content.
+- `apps/worker/src/worker-host.ts` — threads both fields from `WorkerHostDeps` through to
+  every `StepExecutor` it creates.
+- `apps/worker/src/index.ts` — exports `GuardrailRefusalError`.
+- `apps/worker/package.json` / `docs/DEPENDENCIES.md` — `@infinite-ai/guardrails` added as
+  a real dependency (it was reachable only transitively before).
+- `apps/worker/test/step-executor.spec.ts` — four new tests: default behaviour is
+  unchanged with nothing configured; a refusal with no escalation route throws
+  `GuardrailRefusalError` without calling the notifier; a refusal with an escalation route
+  calls the configured notifier with the exact route and refusal, then throws; with no
+  notifier configured, the escalation surfaces as `GuardrailEscalationError` (from
+  `defaultEscalationNotifier`) rather than ever reaching the `GuardrailRefusalError` throw.
+- `docs/OPEN_QUESTIONS.md` — OQ-014 and OQ-015 updated: both now describe a live,
+  reachable mechanism waiting on exactly one thing each (a real paging account; a real
+  content policy) rather than a mechanism with no call site at all.
+
+**Deliberately not done**, and not silently dropped: `checkRefusalPolicy` (no agent-output
+refusal convention exists — a cross-cutting prompt-contract decision, not a wiring gap),
+`checkDiagnosticLanguage` (MOD-02-specific, needs per-agent knowledge of which output
+fields are free text — also unwired, discovered during this same audit, not yet actioned),
+and the rest of `runOutputGuardrails`'s checks (grounding, template fidelity, readability,
+cost) and all of `runInputGuardrails` (PII/consent/token-budget at this layer — largely
+covered today by the gateway's own narrower PII check and `packages/policy`'s access
+gates elsewhere, but not via this composed engine).
+
+**Verification.** `apps/worker`'s full unit tier: 25/25 (up from 21), including the four
+new tests. Full workspace `pnpm typecheck` / `pnpm lint` / `pnpm test` (51/51) all clean.
+`packages/orchestrator`'s own test suites were confirmed to have no dependency on
+`apps/worker`'s step executor, so this change carries no risk to the 39-case runner
+integration suite.
+
+Open questions raised: OQ-026 (`checkDiagnosticLanguage` has the same "no caller" gap as
+`checkAgeAppropriateness` did, deliberately left unwired — see the entry for why).
+OQ-014 and OQ-015 updated in place rather than raised fresh.
+
+---
+
+## Tier 1 (deployability) — worker liveness probe, Dockerfiles, MinIO in the dev stack
+
+Started: 2026-08-25 Completed: 2026-08-25
+
+A production-readiness audit's Tier 1 findings, closed to the extent possible without a
+real cloud account: `apps/worker` had no HTTP surface at all (no way for an orchestrator
+to ask whether it was alive), no app had a `Dockerfile`, and `infra/docker/compose.dev.yml`'s
+own header comment claimed MinIO and Langfuse were "added by the stages that need them" —
+neither had actually landed.
+
+**Worker liveness/readiness probe.** New `apps/worker/src/health-server.ts`: a minimal
+`node:http` server (`/health` — always 200 once listening; `/ready` — 200 once
+`WorkerHost.register()` has been called for every queue and until shutdown begins, 503
+otherwise). `WORKER_PORT` added to the shared `EnvSchema` (`packages/config`), default
+8081, since this is the first thing in `apps/worker` that needed a port at all.
+`apps/worker/src/index.ts`'s `start()` now listens on it after registering every queue
+and calls `setReady(false)` before draining on SIGTERM/SIGINT. Verified against a real
+running process, not just the 4 new unit tests: `curl localhost:8081/health` and `/ready`
+both correct while running, sending `SIGTERM` to the real node PID (not the `pnpm`/`tsx`
+wrapper — the first attempt hit the wrong PID and proved nothing) produced the expected
+`worker.shutting_down` → `worker.stopped` log sequence and freed the port.
+
+**Dockerfiles.** `apps/worker/Dockerfile`, `apps/gateway/Dockerfile`, `apps/web/Dockerfile`
+(the last with a `next build` stage the other two don't need) — all built from the repo
+root, since every `@infinite-ai/*` dependency resolves through pnpm's `workspace:*`
+protocol and needs the whole tree present. Each runs the app the same way local dev
+already does (`pnpm start`, i.e. `tsx` against source) rather than inventing a separate,
+unproven production build path — nothing in this repo emits standalone build output yet.
+Deliberately not done: slimming the image to only what one app needs at runtime (a
+pruned `pnpm deploy` output, or a real compiled build) — a size optimization on top of a
+working image, not a prerequisite for one.
+
+Two real defects found and fixed while actually building these, not just writing them:
+
+1. `node:22-slim` has no `libssl`/`libcrypto` at all (confirmed by `find /` inside the
+   base image turning up nothing) — Prisma's query engine needs it. The obvious fix,
+   `apt-get install openssl`, needed a live fetch against Debian's package repository,
+   which this sandbox's egress policy blocks (`403`, the same class of restriction as
+   the earlier `quay.io` block). Fixed by switching to the full `node:22` image, which
+   already carries `libssl.so`/`libcrypto.so` in its own layers — no live `apt-get`
+   needed at all, in this sandbox or any other.
+2. `corepack prepare pnpm@10.33.0` failed with a generic fetch error against
+   `registry.npmjs.org` — a domain this sandbox's own `NO_PROXY` config says should be
+   directly reachable, and is, from the host. Root cause: the sandbox's outbound network
+   transparently intercepts direct (non-proxied) HTTPS with a self-signed
+   re-termination certificate that a container doesn't trust (`curl` inside the
+   container reproduced this exactly: "self-signed certificate in certificate chain").
+   Routing the request explicitly _through_ the documented CONNECT proxy instead —
+   `HTTPS_PROXY` set, plus `NODE_USE_ENV_PROXY=1` so Node's own `fetch` (which corepack
+   uses) actually reads it — avoided the interception entirely, since CONNECT tunneling
+   relays encrypted bytes without ever terminating TLS itself. **This fix is
+   verification-only, sandbox-specific, and is not in the committed Dockerfiles** — a
+   real CI runner or developer machine has no such interception to route around in the
+   first place, and baking trust for this session's own ephemeral proxy CA into a
+   shipped Dockerfile would be actively wrong for the real artifact. The committed
+   `apps/worker/Dockerfile` (identical in every way that matters to the temporary,
+   uncommitted copy this proxy fix was applied to, for this one verification build) was
+   built end to end this way and actually run: `docker run` against the real dev stack's
+   Postgres and Redis produced the identical `worker.starting` → `worker.started` log
+   sequence the non-containerized process already proved, `curl` against the container's
+   published health port returned `{"status":"ok"}`, and `docker stop` (SIGTERM) drained
+   it cleanly. The image itself is 2.77GB, consistent with this file's own
+   size-optimization follow-up note. The other two Dockerfiles were not run this way —
+   `apps/worker`'s success is what the "same shape, same base image fix" reasoning in
+   their own header comments rests on — but were reviewed line by line against the one
+   that was.
+
+**MinIO — object storage actually running in the dev stack.** New `minio` and
+`minio-init` services in `infra/docker/compose.dev.yml`; `minio-init` is a one-shot
+`mc mb --ignore-existing` that creates the bucket named by `OBJECT_STORE_BUCKET` and
+exits 0 (confirmed idempotent by running it twice against the same volume — the same
+bucket-created message both times, exit 0 both times, no error on the second). Verified
+against the real dev stack: MinIO reports `healthy`, the bucket exists after both runs.
+`infra/docker/.env.example` and `docs/DEV_SETUP.md` updated with the new variables and
+the "same value, two files" note the file already uses for
+`KEYCLOAK_WEB_CLIENT_SECRET`. The compose file's own header comment — which had gone
+stale, claiming MinIO and Langfuse were both already "added by the stages that need
+them" — corrected to name what's actually here now versus what still isn't: Langfuse's
+self-hosted footprint (its own Postgres, ClickHouse, Redis and S3 bucket) is
+meaningfully larger than one MinIO container and is a separate follow-up, not silently
+implied done by a comment nobody had updated.
+
+**Deliberately not done, and why.** Terraform (`infra/terraform` is still exactly one
+README describing a planned layout) and a CD pipeline are the two remaining Tier 1
+items. Both need real decisions — a cloud account, VPC/subnet layout, IAM policy
+specifics, secrets management, instance sizing, which of ECS/EKS/Fargate — that would be
+invented, not scaffolded, without a human weighing in; unlike a Dockerfile or a dev
+compose addition, there is no way to validate a guess here against anything real in this
+environment. Raised as a question rather than guessed at.
+
+### Verification
+
+Full workspace `pnpm typecheck` / `pnpm lint` / `pnpm test` (51/51) / `pnpm format:check`
+all clean. `apps/worker`'s own unit tier: 29/29 (up from 25). `docker compose ps` shows
+`postgres`, `redis`, `minio` all `healthy`; `minio-init` `Exited (0)`.
+
+## Age-appropriateness/developmental-readiness clauses ingested into L0
+
+A human supplied a real, sourced dataset — 206 paraphrased developmental-readiness
+clauses drawn from 23 real DBE CAPS documents across Foundation, Intermediate and Senior
+Phase and 13 subjects — the first source material OQ-015 has ever had. Rule 0.3 ("never
+invent curriculum policy... if it is not in a supplied source document, ask") is exactly
+what OQ-015 was blocked on; a supplied source document is precisely the condition that
+unblocks it.
+
+**Data layer.** `packages/contracts/src/curriculum/sources/
+age-appropriateness-developmental-readiness.ts` — all 206 entries as a typed
+`AGE_APPROPRIATENESS_ENTRIES` array (`AgeAppropriatenessSourceEntry`: `phase`,
+`gradeRange`, `subject`, `clauseType`, `content`, `source: SourceRef`). Generated
+mechanically from the supplied JSON via a throwaway Python script rather than hand-typed
+— 206 entries is exactly the volume where manual transcription risks silent corruption —
+then independently verified: a separate Node/tsx script compared every one of the 206
+generated entries against the original JSON field-by-field. Result: 206/206 matched, 0
+mismatches. One entry per clause, not one per source document (contrast with this
+directory's CAPS_CANON files, which group a whole document under one key): this dataset
+exists to be individually retrieved by a guardrail check asking "is this developmentally
+appropriate for grade N", and bundling 20+ unrelated clauses under one key would dilute
+exactly the retrieval granularity that needs.
+
+**Brain layer.** `AGE_APPROPRIATENESS` added to `BrainConstitutionKind`
+(`write-path-schemas.ts`) and to the Prisma-level `brain_constitution_kind` enum
+(`schema.prisma` — migration `20260828120000_brain_age_appropriateness_kind`, additive-only,
+`ALTER TYPE ... ADD VALUE`). `packages/brain/src/age-appropriateness.ts` is the thin typed
+wrapper around `remember()`/`ratify()` — the same pattern `curriculum-templates.ts`
+established for the `'TEMPLATE'` kind in Stage 08 step 1 — `submitAgeAppropriatenessEntry`
+(opens an L0_CONSTITUTION candidate, forces `source.ratifiedBy: null`) and
+`selectAgeAppropriatenessEntries` (reads ratified candidates back, Zod-parses, throws
+`AgeAppropriatenessError` on a parse failure since that means something bypassed the
+typed write path). Each entry's `key` is derived from its stable position in
+`AGE_APPROPRIATENESS_ENTRIES` (`age-appropriateness-000`...`age-appropriateness-205`) since
+the entries carry no natural unique key of their own (`clause` is free text, not
+guaranteed unique). Unit tests (7 cases) plus an integration test proving a real
+submit → ratify → recall → select round-trip against Testcontainers Postgres.
+
+**Seeding.** `scripts/seed-age-appropriateness.ts` / `scripts/ratify-age-appropriateness.ts`
+— the same two-script `curriculum:seed`/`curriculum:ratify` shape, run against the three
+fixed dev tenants. The ratify script reuses `@infinite-ai/curriculum-seed`'s
+`ratifyCurriculumForTenant` as-is (it already sweeps every AWAITING_RATIFICATION
+L0_CONSTITUTION candidate for a tenant regardless of kind) rather than duplicating that
+logic. Root `package.json` took `@infinite-ai/brain` as a dependency for the first time
+(`docs/DEPENDENCIES.md` updated) since the seed script calls
+`submitAgeAppropriatenessEntry` directly.
+
+**Actually run, not just written.** The dev Docker daemon and stack (`postgres`, `redis`,
+`minio`; Keycloak's `quay.io` pull was blocked by this sandbox's egress policy, same as
+noted in the prior Tier 1 entry — not needed for this task) were brought up, migrations
+deployed (only the one new migration was pending — the other 22 were already applied
+from earlier session work), and `pnpm --filter @infinite-ai/db db:seed` confirmed the
+three dev tenants exist. `pnpm age-appropriateness:seed` then `pnpm
+age-appropriateness:ratify` were run for real against that database: 206 candidates
+submitted and 206 ratified for each of the three tenants (618 total). Verified directly
+against Postgres with `psql` (`SET app.tenant_id = ...` then a real RLS-scoped query) —
+206 `AGE_APPROPRIATENESS` rows for the first tenant, spot-checked content and
+`ratified_at`. The brain package's integration suite
+(`age-appropriateness.integration.spec.ts`, `curriculum-templates.integration.spec.ts`)
+was also run against a throwaway Testcontainers Postgres — both pass.
+
+**Deliberately not done, and why.** Wiring a real runtime checker
+(`packages/guardrails/src/output-checks.ts`'s `AgeAppropriatenessChecker`) to query this
+newly-ingested data was not attempted here. That type is currently synchronous
+(`(output: unknown) => GuardrailVerdict`) while Brain retrieval is inherently async
+(`recall()` returns a `Promise`), so a real implementation needs a breaking signature
+change to `AgeAppropriatenessChecker` and to its call site in
+`apps/worker/src/step-executor.ts` (added in the Tier 0 guardrail-wiring work). This
+ingests the policy source material the checker was blocked on; it does not itself wire
+the checker. `docs/OPEN_QUESTIONS.md`'s OQ-015 updated to reflect exactly this: the
+"no source material" half of the gap is resolved, the runtime-wiring half is not.
+
+### Verification
+
+`packages/contracts` typecheck clean; full workspace `pnpm lint` / `pnpm typecheck`
+(51/51 tasks) / `pnpm test` (51/51 tasks) / `pnpm build` (31/31 tasks) / `pnpm
+format:check` all clean. `packages/brain`'s own unit tier: 10 files / 86 tests, up from
+9/79. Both new integration tests pass against a real (Testcontainers) Postgres. The seed
+and ratify scripts were run against the real dev stack's Postgres, not merely reviewed —
+618 rows created and verified with a direct RLS-scoped `psql` query.

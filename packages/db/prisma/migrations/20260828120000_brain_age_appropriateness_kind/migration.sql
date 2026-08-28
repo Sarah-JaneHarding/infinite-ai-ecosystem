@@ -1,0 +1,15 @@
+-- Adds a new BrainConstitutionKind member for age-appropriateness/developmental-readiness
+-- clauses (packages/brain/src/age-appropriateness.ts, packages/contracts'
+-- AGE_APPROPRIATENESS_ENTRIES) — the same TEMPLATE-kind precedent, a new free-standing L0
+-- fact category rather than per-document CAPS canon.
+--
+-- Additive only: no existing row's `kind` changes, and nothing reads this new value until
+-- the write path above starts using it. Rollback is the documented exception to "every
+-- migration needs a tested rollback" (rule 10, docs/DEPENDENCIES.md's own migration
+-- conventions) that every other enum in this schema already accepts: Postgres has no
+-- `ALTER TYPE ... DROP VALUE`, so reverting an added enum value requires rebuilding the
+-- type (rename, recreate, migrate column, drop old) rather than a single reverse
+-- statement — the same tradeoff accepted implicitly by every other bare `enum` block in
+-- schema.prisma. Safe unconditionally here because no row will carry this value until the
+-- write path above is deployed and used.
+ALTER TYPE "brain_constitution_kind" ADD VALUE 'AGE_APPROPRIATENESS';
