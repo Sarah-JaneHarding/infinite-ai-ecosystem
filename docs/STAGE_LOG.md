@@ -7342,3 +7342,80 @@ is a real, reviewed starting point for a human with AWS credentials to actually 
 explicitly not claimed as proven, the same honesty this repo's own STAGE_LOG entries have
 held to throughout for every other sandbox-blocked verification (the worker Dockerfile's
 corepack fetch, Keycloak's `quay.io` pull).
+
+## OQ-007 demo/pilot resolution — retention estimates, per tenant, gated by onboarding
+
+A human resolved the open half of OQ-007 for the demo/pilot release specifically:
+"use estimated time frames for the demo release. these time frames will be added per
+school and must be part of the onboarding process." The design constraint was that
+`retention.ts`'s own header — and a structural test guarding it — already forbid this
+package from ever shipping a retention period, because the real determination is each
+school's legal call, not this codebase's to invent (rule 11). Three pieces resolve
+both requirements at once without touching that discipline.
+
+**`packages/contracts/src/popia/retention-demo-defaults.ts`** — `DEMO_RETENTION_ESTIMATES`,
+one round-number estimate per `DataCategory` (7 years for identifiers/enrolment/marks, 3
+years for attendance/behaviour/staff-practice, 5 years for support-need/special-personal,
+2 years for family-context), and `buildDemoRetentionSchedule(tenantId, ratifiedBy, now,
+overrides?)`. The function is the whole design: it never invents `ratifiedBy`/`ratifiedAt`
+itself, only stamps what its caller actually supplies, and every non-overridden rule's
+`authority` reads in full "INFINITE-AI DEMO ESTIMATE — not a legal citation; confirm or
+replace with your own governing body's determination." An estimate a person accepted
+during onboarding and a citation a governing body researched are both real events; this
+is what keeps them from ever being recorded as the same one. Output is built with
+`RetentionRule.parse`/`RetentionSchedule.parse` (rule 8) so a bad override fails loudly
+here, not at the database.
+
+This is the one deliberate, named exception to `packages/contracts/test/exports.spec.ts`'s
+structural "ships no retention schedule, default or example" guard — the test was
+renamed, not weakened, to `'ships no retention schedule adopted without ratification,
+default or example'`, with a documented `if (name === 'DEMO_RETENTION_ESTIMATES')
+continue` and an explanation of why this specific export doesn't reopen the gap the test
+exists to catch. A one-word bug caught before it shipped: an early draft's
+`DIRECT_IDENTIFIER` rationale used the word "pending," which collided with
+`retention.ts`'s own `PLACEHOLDER_AUTHORITY` regex and would have made `reviewSchedule()`
+flag every estimate as a placeholder — reworded to "awaiting" once a grep for the regex's
+trip words caught it.
+
+**`packages/db/src/retention.ts`** — `upsertRetentionRule`, the write side `getRetentionRule`
+never had. One row per `(tenantId, category)` (`@@unique`), `version` incrementing on
+every re-ratification (a plain counter, not a Brain-style supersession chain — this table
+was never versioned that way). `ratifiedAt`/`ratifiedBy` are caller-supplied, same
+reasoning as `buildDemoRetentionSchedule`: whichever event actually happened is the one
+that gets recorded, and this function does not get to decide which.
+
+**`packages/provisioning`** — the piece that makes this "per school, part of onboarding"
+rather than a silent default anyone could skip. `wizard.ts` gains a new step,
+`ratify_retention_schedule`, inserted between `ratify_constitution` and
+`readiness_check` in both `WIZARD_STEPS` and `REQUIRED_STEPS` — required, not optional,
+unlike `connect_sources`. It validates against `@infinite-ai/contracts`'s own
+`RetentionSchedule` (a new workspace dependency for this package, `docs/DEPENDENCIES.md`
+updated), the same shape `upsertRetentionRule` persists — a school's input either parses
+or the step fails, same as every other validated step. `readiness.ts` gains
+`hasRetentionScheduleRatified` on `TenantReadinessInput` and a `retention_schedule_ratified`
+check (`runReadinessChecks` now returns 6 checks, not 5) — a tenant cannot be ready for
+go-live without one, whether that's the demo estimate accepted as-is or a school's own
+ratified schedule.
+
+`docs/RETENTION_SCHEDULE_TEMPLATE.md` gained a "Demo/pilot release: a starting point, not
+an exception" section explaining the three honest options a school has at this step
+(accept, override a category, or do the real exercise and supersede it) without softening
+anything the rest of the document already says. `docs/ONBOARDING_GUIDE.md`'s Step 6 folds
+in the same content next to the consent/DPA step it already covers, rather than adding a
+renumbered new step to a doc whose seven-step product narrative was already a known,
+separate mismatch against `WIZARD_STEPS`' own step names (not fixed here — out of scope
+for this change). OQ-007 in `docs/OPEN_QUESTIONS.md` moves from OPEN to PARTIALLY ANSWERED:
+what's resolved is the demo path and the per-tenant onboarding gate; what remains open,
+unchanged, is that a school's real governing-body determination is still outstanding.
+
+### Verification
+
+`pnpm --filter @infinite-ai/contracts typecheck` (clean) and `test` — 45 files, 1011
+tests, including a new `retention-demo-defaults.spec.ts` (7 tests: full category
+coverage, schema validity, real `ratifiedBy`/`ratifiedAt` stamped, every non-overridden
+authority reads as a demo estimate, an override is honoured and everything else stays an
+estimate, `reviewSchedule()` raises zero findings against the defaults). `pnpm --filter
+@infinite-ai/db typecheck` (clean) and `test` — 5 files, 220 tests, `export-surface.spec.ts`
+updated for `upsertRetentionRule`. `pnpm --filter @infinite-ai/provisioning typecheck`
+(clean) and `test` — 3 files, 63 tests, `wizard.spec.ts` and `readiness.spec.ts` both
+updated for the new step and check.

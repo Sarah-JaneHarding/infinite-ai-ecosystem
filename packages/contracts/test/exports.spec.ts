@@ -216,6 +216,7 @@ describe('package export surface', () => {
       'DBE_SIAS_2014_METADATA',
       'DBE_SIAS_2014_SECTIONS',
       'DBE_SIAS_2014_VERSION',
+      'DEMO_RETENTION_ESTIMATES',
       'DOE_FREE_QUALITY_EDUCATION_2003_DOC_ID',
       'DOE_FREE_QUALITY_EDUCATION_2003_METADATA',
       'DOE_FREE_QUALITY_EDUCATION_2003_SECTIONS',
@@ -450,6 +451,7 @@ describe('package export surface', () => {
       'WorksheetSection',
       'WsePerformanceRating',
       'addMonths',
+      'buildDemoRetentionSchedule',
       'checkArtefactStructure',
       'definitionOf',
       'dispatchRender',
@@ -463,11 +465,20 @@ describe('package export surface', () => {
     ]);
   });
 
-  it('ships no retention schedule, default or example', () => {
+  it('ships no retention schedule adopted without ratification, default or example', () => {
     // The periods are each school's legal determination, ratified in its L0 constitution.
-    // An exported default here would be adopted by every tenant that never got round to
+    // An unguarded default here would be adopted by every tenant that never got round to
     // ratifying one, which is the opposite of what ratification is for. See OQ-007.
+    //
+    // `DEMO_RETENTION_ESTIMATES` is the one deliberate, named exception: an onboarding-time
+    // starting template (packages/provisioning's `ratify_retention_schedule` wizard step),
+    // never read by evaluateRetention/addMonths or anything else in this package on its
+    // own — it only ever becomes a real `RetentionRule` through `buildDemoRetentionSchedule`,
+    // which requires a real `ratifiedBy` and `ratifiedAt` a human onboarding step supplies.
+    // See retention-demo-defaults.ts's own header for why that is not the silent adoption
+    // this test guards against.
     for (const [name, value] of Object.entries(contracts)) {
+      if (name === 'DEMO_RETENTION_ESTIMATES') continue;
       if (!Array.isArray(value)) continue;
       expect(
         value.some(

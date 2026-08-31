@@ -1,3 +1,4 @@
+import { buildDemoRetentionSchedule } from '@infinite-ai/contracts';
 import { describe, it, expect } from 'vitest';
 import {
   validateStepInput,
@@ -81,6 +82,45 @@ describe('validateStepInput', () => {
         termWeeks: 0,
         phaseCount: 3,
       });
+      expect(result.ok).toBe(false);
+    });
+  });
+
+  describe('ratify_retention_schedule', () => {
+    const tenantId = '10000000-0000-4000-8000-000000000001';
+    const ratifiedBy = '20000000-0000-4000-8000-000000000002';
+
+    it('accepts the demo estimate schedule, pre-filled and accepted as-is', () => {
+      const schedule = buildDemoRetentionSchedule(tenantId, ratifiedBy, new Date());
+      const result = validateStepInput('ratify_retention_schedule', schedule);
+      expect(result.ok).toBe(true);
+    });
+
+    it('accepts a demo schedule with one category overridden by the school', () => {
+      const schedule = buildDemoRetentionSchedule(tenantId, ratifiedBy, new Date(), {
+        ATTENDANCE: {
+          retainMonths: 12,
+          authority: 'Gauteng Department of Education Circular 14 of 2024, schedule 2',
+        },
+      });
+      const result = validateStepInput('ratify_retention_schedule', schedule);
+      expect(result.ok).toBe(true);
+    });
+
+    it('rejects a schedule missing the required tenantId', () => {
+      const result = validateStepInput('ratify_retention_schedule', { rules: [] });
+      expect(result.ok).toBe(false);
+    });
+
+    it('rejects a schedule with two rules for the same category', () => {
+      const schedule = buildDemoRetentionSchedule(tenantId, ratifiedBy, new Date());
+      const duplicated = { ...schedule, rules: [...schedule.rules, schedule.rules[0]] };
+      const result = validateStepInput('ratify_retention_schedule', duplicated);
+      expect(result.ok).toBe(false);
+    });
+
+    it('rejects a schedule that is not an object', () => {
+      const result = validateStepInput('ratify_retention_schedule', null);
       expect(result.ok).toBe(false);
     });
   });

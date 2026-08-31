@@ -43,6 +43,13 @@ export {
 } from './popia/retention.js';
 
 export {
+  DEMO_RETENTION_ESTIMATES,
+  buildDemoRetentionSchedule,
+  type RetentionEstimateOverride,
+  type RetentionPeriodEstimate,
+} from './popia/retention-demo-defaults.js';
+
+export {
   AssessmentWeighting,
   CurriculumFramework,
   FrameworkNeedsInput,

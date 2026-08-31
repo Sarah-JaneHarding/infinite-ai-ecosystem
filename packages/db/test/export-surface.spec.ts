@@ -76,6 +76,7 @@ describe('package export surface', () => {
       'startStepRun',
       'tombstoneBrainFact',
       'updateRunStatus',
+      'upsertRetentionRule',
       'vectorTopK',
       'withTenant',
     ]);
@@ -111,6 +112,7 @@ describe('package export surface', () => {
       db.listEffectiveExemplars,
       db.getFactProvenance,
       db.getRetentionRule,
+      db.upsertRetentionRule,
       db.tombstoneBrainFact,
       db.openRun,
       db.getRun,

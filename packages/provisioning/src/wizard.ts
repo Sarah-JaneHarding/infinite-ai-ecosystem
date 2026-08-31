@@ -1,3 +1,4 @@
+import { RetentionSchedule } from '@infinite-ai/contracts';
 import { z } from 'zod';
 
 // ---------------------------------------------------------------------------
@@ -15,6 +16,7 @@ export const WIZARD_STEPS = [
   'import_learners',
   'connect_sources',
   'ratify_constitution',
+  'ratify_retention_schedule',
   'readiness_check',
 ] as const;
 
@@ -26,6 +28,7 @@ export const REQUIRED_STEPS: ReadonlySet<WizardStep> = new Set([
   'import_staff',
   'import_learners',
   'ratify_constitution',
+  'ratify_retention_schedule',
   'readiness_check',
 ]);
 
@@ -80,6 +83,13 @@ const STEP_SCHEMAS: Partial<Record<WizardStep, z.ZodTypeAny>> = {
   configure_school_profile: SchoolProfileInputSchema,
   import_staff: ImportStaffInputSchema,
   import_learners: ImportLearnersInputSchema,
+  // Pre-filled with @infinite-ai/contracts' DEMO_RETENTION_ESTIMATES for the demo/pilot
+  // release (buildDemoRetentionSchedule); a real person at the school accepts or amends
+  // it here, and that acceptance is what ratifiedBy/ratifiedAt on the resulting schedule
+  // records. Validating against the same RetentionSchedule the db layer's
+  // upsertRetentionRule ultimately persists is what makes this step more than a UI
+  // formality — a schedule that doesn't parse never reaches the database.
+  ratify_retention_schedule: RetentionSchedule,
 };
 
 // ---------------------------------------------------------------------------

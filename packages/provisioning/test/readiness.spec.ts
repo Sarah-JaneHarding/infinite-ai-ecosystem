@@ -9,6 +9,7 @@ const PASSING_INPUT: TenantReadinessInput = {
   staffCount: 10,
   learnerCount: 100,
   hasConstitutionRatified: true,
+  hasRetentionScheduleRatified: true,
   hasAtLeastOnePhase: true,
   hasAtLeastOneGrade: true,
   hasAtLeastOneSubject: true,
@@ -17,9 +18,9 @@ const PASSING_INPUT: TenantReadinessInput = {
 };
 
 describe('runReadinessChecks', () => {
-  it('returns 5 checks for a fully configured tenant', () => {
+  it('returns 6 checks for a fully configured tenant', () => {
     const results = runReadinessChecks(PASSING_INPUT);
-    expect(results).toHaveLength(5);
+    expect(results).toHaveLength(6);
   });
 
   it('all checks pass for a fully configured tenant', () => {
@@ -50,6 +51,16 @@ describe('runReadinessChecks', () => {
     const check = results.find((r) => r.name === 'constitution_ratified');
     expect(check?.passed).toBe(false);
     expect(check?.message).toMatch(/constitution/i);
+  });
+
+  it('retention_schedule_ratified fails when hasRetentionScheduleRatified is false', () => {
+    const results = runReadinessChecks({
+      ...PASSING_INPUT,
+      hasRetentionScheduleRatified: false,
+    });
+    const check = results.find((r) => r.name === 'retention_schedule_ratified');
+    expect(check?.passed).toBe(false);
+    expect(check?.message).toMatch(/retention schedule/i);
   });
 
   it('school_profile_complete fails when no phase is configured', () => {
