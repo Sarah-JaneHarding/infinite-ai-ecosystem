@@ -31,6 +31,7 @@ describe('package export surface', () => {
       'checkRefusalPolicy',
       'checkTemplateFidelity',
       'checkTokenBudget',
+      'createBrainAgeAppropriatenessChecker',
       'defaultEscalationNotifier',
       'inspectEgress',
       'refuse',
