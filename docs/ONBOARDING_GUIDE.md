@@ -120,6 +120,41 @@ data-processing agreement, and the name and role of the authorising officer.
 lawfully authorised data processing. Revoking it requires contacting the operations
 team, who will follow the POPIA data-subject request process.
 
+### Retention schedule
+
+Consent says the school may process learner data for a stated purpose. It does not say
+for how long — that is a separate POPIA §14(1) question, and it is answered here, as
+part of the same step, because both are decisions the authorising officer is making on
+the school's behalf.
+
+**What you see:** A pre-filled table, one row per data category (identifiers, enrolment,
+academic performance, attendance, behaviour, support need, special personal information,
+family context, staff practice), each with a suggested retention period and an anchor
+event (record created, academic year end, learner exit, or case closed). Every row's
+authority reads **"INFINITE-AI DEMO ESTIMATE — not a legal citation"** — these are
+reasonable starting numbers for a demo or pilot release, not a researched legal
+determination.
+
+**What you can do:**
+
+- **Accept the estimates as they stand**, to get through onboarding quickly. You can
+  revisit and override them later.
+- **Override any row** with your own school's determination and its source (an Act, a
+  provincial circular, or a minuted governing-body resolution).
+- **Do the full exercise properly**, using `docs/RETENTION_SCHEDULE_TEMPLATE.md` with your
+  own legal advisor, and enter the ratified result here instead.
+
+**What the system validates:** Every row must have a positive whole-month period, a
+real anchor, and an authority that is not empty or a placeholder (`TBC`, `pending`, and
+similar are rejected).
+
+**What the system records:** One `retention_rule` row per category, stamped with who
+accepted or ratified it and when (`ratifiedBy`/`ratifiedAt`) — whether that is "the
+demo estimate, reviewed and accepted during onboarding" or "the governing body's own
+researched determination." This step cannot be skipped: a tenant is not considered
+ready for go-live (see Step 7) until a retention schedule — even the demo estimate — has
+been ratified for it. See OQ-007 in `docs/OPEN_QUESTIONS.md`.
+
 ---
 
 ## Step 7 — Billing and subscription

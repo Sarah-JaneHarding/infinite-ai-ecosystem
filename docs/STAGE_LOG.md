@@ -7225,3 +7225,197 @@ Full workspace `pnpm typecheck` / `pnpm lint` clean for `packages/guardrails` an
 run directly, not just reviewed. `apps/worker`'s own unit tier: 29/29, unchanged (the
 existing tests already used sync mock checkers, which the widened
 `GuardrailVerdict | Promise<GuardrailVerdict>` type still accepts).
+
+## Tier 1 (deployability) — the actual Terraform
+
+The other half of Tier 1's remaining pair (Terraform, a CD pipeline). Two design
+decisions this audit had explicitly left open were settled with the user first, rather
+than guessed: AWS was already implicit (`.env.example`'s own comment names "AWS Secrets
+Manager in production"; `af-south-1` is already the documented region), but ECS vs. EKS
+was a genuine fork — `infra/terraform/README.md`'s planned module list said
+`ecs-service`, while `docs/RUNBOOKS/canary-deploy.md`'s entire procedure was written
+around `kubectl` and `infra/k8s/` manifests that never existed. Asked; the user chose
+ECS/Fargate and agreed the canary runbook should be rewritten to match rather than kept
+as a stale kubectl-shaped procedure.
+
+**What's built**, matching `infra/terraform/README.md`'s own planned layout exactly plus
+one composition module it doesn't list:
+
+- `modules/network` — VPC, public/private subnets across 2 AZs, NAT gateway(s)
+  (`single_nat_gateway` toggle: shared for dev/staging, one-per-AZ for production), an S3
+  gateway VPC endpoint (free, and both ECR image pulls and the object-store bucket cross
+  it).
+- `modules/database` — RDS Postgres 16 (the version pgvector needs without a preview
+  flag, matching `infra/docker/compose.dev.yml`'s own dev image), RDS-managed master
+  password (`manage_master_user_password` — Terraform itself never generates or reads
+  it), a generated password per app role (`migrator`/`app_rw`/`worker_rw`/
+  `analytics_ro` — the same four `infra/docker/initdb/02-roles.sh` already defines for
+  dev) in Secrets Manager. `bootstrap-roles.sh` is the one manual step this can't do
+  itself: it has no network path into the database it just created, so a human (or a
+  future CD job with real network access) runs it once per environment to create the
+  three extensions (`vector`, `pg_trgm`, `pgcrypto`) and replay `02-roles.sh`'s own
+  schema-ownership and grant statements — verbatim, not re-derived — against the real
+  instance. The script never writes a password to disk; every value is read from
+  Secrets Manager straight into `psql`'s stdin.
+- `modules/cache` — ElastiCache Redis, TLS + AUTH token (`rediss://`, which
+  `packages/config/src/env.ts`'s `REDIS_URL` schema already accepted alongside
+  `redis://` before this — nothing to change there).
+- `modules/object-store` — S3 bucket for Brain snapshots (`OBJECT_STORE_BUCKET`),
+  versioned, KMS-encrypted, a scoped read/write IAM policy for a task role to attach.
+- `modules/ecs-service` — one reusable Fargate service, instantiated three times by
+  `modules/stack` (gateway/worker/web): its own ECR repository (immutable tags — a
+  deploy always pushes a new tag, `latest` is never re-pointed), CloudWatch log group,
+  execution role (image pull + log write + read exactly the Secrets Manager ARNs this
+  service was given, nothing broader) and task role (extra IAM policies attached per
+  caller, e.g. the object-store module's read/write policy), a container health check
+  every app already serves (`/health`), autoscaling on CPU (target-tracking, 60%). Worker
+  never attaches to the ALB (a queue consumer, nothing for it to route to) but still gets
+  the same container-level health check.
+- `modules/observability` — CloudWatch alarms against the ALB's own
+  `HTTPCode_Target_5XX_Count`/`TargetResponseTime` metrics, reusing
+  `canary-deploy.md`'s own numeric thresholds (1% error rate, 10s p95) rather than
+  inventing new ones — and an honest limit documented in the module's own header: these
+  are not the named SLO metrics (`gateway.error_rate`, `web_availability_burn_rate`)
+  those runbooks eventually want from Stage 15's own observability stack, which still
+  isn't deployed anywhere (Langfuse's self-hosted footprint remains a separate, larger
+  follow-up, as the prior Tier 1 entry already noted for MinIO).
+- `modules/stack` — composes all of the above into one environment. Not in the
+  README's own planned layout (which lists leaf modules only), added because dev/
+  staging/production would otherwise each duplicate the same wiring three times over.
+  Security groups for the three services are created here rather than inside
+  `ecs-service`, specifically to break a cycle: database/cache need to reference them in
+  ingress rules, and `ecs-service` needing database/cache secrets to inject as task
+  environment would otherwise make a cycle out of "who creates whose security group."
+  ALB + listener(s): plain HTTP only when no domain is supplied (a real starting point
+  for a first `apply` before DNS ownership is decided); an ACM cert (DNS-validated) +
+  HTTPS + HTTP→HTTPS redirect once one is. Gateway gets a listener rule for `/v1/*` and
+  `/health` (its own real route prefixes, `apps/gateway/src/server.ts`); web is the
+  listener's default action.
+- `environments/{dev,staging,production}` — each a thin root module instantiating
+  `modules/stack` with different values only: dev/staging single-NAT and no Multi-AZ;
+  production Multi-AZ database and cache, one NAT per AZ, deletion protection on, >=2
+  tasks per service, and (deliberately) no default for `domain_name` — production
+  should not silently apply without a real domain decided, even though the stack module
+  itself tolerates `null` for dev/staging.
+- `bootstrap/` — the remote-state S3 bucket + DynamoDB lock table + GitHub Actions OIDC
+  IAM role, applied once, manually, before anything else here can `init`. The OIDC trust
+  policy is scoped to specific branches (default `["main"]`) via the token's own `sub`
+  claim — a PR branch can never assume the deploy role, which is the actual enforcement
+  of "CD only runs from main," not a convention CI happens to follow. The role's
+  permissions are `PowerUserAccess` (AWS-managed, covers everything this Terraform
+  manages except IAM) plus a supplemental statement re-granting IAM role/policy
+  management scoped to this project's own `infinite-ai-*` resource-name prefix —
+  documented in the module's own comment as a real, wide grant that tightening to an
+  exact action list (most likely a permissions boundary) is separate security work, not
+  guessed at here.
+
+**Deliberately not built, and why** (each named in `infra/terraform/README.md`'s own
+"what this does not do" section, not silently left out):
+
+1. **A CD pipeline.** This Terraform stands up what a pipeline would deploy _to_; it
+   does not itself build, push, or trigger a deployment. Still the next Tier 1 item.
+2. **A true weighted canary.** `docs/RUNBOOKS/canary-deploy.md` rewritten to match what
+   `ecs-service` actually provisions — one target group per service, ECS's own rolling
+   deployment, a real (manual) rollback path — rather than the `kubectl`-based weighted
+   procedure it used to describe against manifests that were never built. The runbook's
+   own new "What this cannot do yet" section names exactly what a real canary would
+   need: a second, paired target group and either a weighted listener rule or an AWS
+   CodeDeploy blue/green deployment controller.
+3. **Cross-region failover automation** (`region-loss.md`). Production is single-region
+   Multi-AZ; a promoted cross-region read replica is a real, separate decision (which
+   region, cost, when), not assumed here.
+4. **Narrower CI IAM permissions than `PowerUserAccess`** — see `bootstrap/` above.
+
+### Verification
+
+`terraform fmt -recursive -check` passes across the whole `infra/terraform` tree
+(exit 0) — real syntax verification. `terraform validate`/`plan`/`apply` were not run:
+this sandbox's own egress policy explicitly denies `registry.terraform.io` (confirmed via
+`terraform init` failing with `Forbidden`, then via the agent proxy's own status endpoint
+showing `registry.terraform.io` policy-denied, not a transient failure) — the same class
+of restriction already documented in this repo for `quay.io` and Docker Hub. Every
+resource argument was written against the AWS provider's documented schema and
+cross-checked by hand (every module's own `variables.tf` against every call site's
+argument list, via a script comparing the two directly, not by eye alone) rather than by
+the provider's own schema validation, which is not available in this environment. This
+is a real, reviewed starting point for a human with AWS credentials to actually run —
+explicitly not claimed as proven, the same honesty this repo's own STAGE_LOG entries have
+held to throughout for every other sandbox-blocked verification (the worker Dockerfile's
+corepack fetch, Keycloak's `quay.io` pull).
+
+## OQ-007 demo/pilot resolution — retention estimates, per tenant, gated by onboarding
+
+A human resolved the open half of OQ-007 for the demo/pilot release specifically:
+"use estimated time frames for the demo release. these time frames will be added per
+school and must be part of the onboarding process." The design constraint was that
+`retention.ts`'s own header — and a structural test guarding it — already forbid this
+package from ever shipping a retention period, because the real determination is each
+school's legal call, not this codebase's to invent (rule 11). Three pieces resolve
+both requirements at once without touching that discipline.
+
+**`packages/contracts/src/popia/retention-demo-defaults.ts`** — `DEMO_RETENTION_ESTIMATES`,
+one round-number estimate per `DataCategory` (7 years for identifiers/enrolment/marks, 3
+years for attendance/behaviour/staff-practice, 5 years for support-need/special-personal,
+2 years for family-context), and `buildDemoRetentionSchedule(tenantId, ratifiedBy, now,
+overrides?)`. The function is the whole design: it never invents `ratifiedBy`/`ratifiedAt`
+itself, only stamps what its caller actually supplies, and every non-overridden rule's
+`authority` reads in full "INFINITE-AI DEMO ESTIMATE — not a legal citation; confirm or
+replace with your own governing body's determination." An estimate a person accepted
+during onboarding and a citation a governing body researched are both real events; this
+is what keeps them from ever being recorded as the same one. Output is built with
+`RetentionRule.parse`/`RetentionSchedule.parse` (rule 8) so a bad override fails loudly
+here, not at the database.
+
+This is the one deliberate, named exception to `packages/contracts/test/exports.spec.ts`'s
+structural "ships no retention schedule, default or example" guard — the test was
+renamed, not weakened, to `'ships no retention schedule adopted without ratification,
+default or example'`, with a documented `if (name === 'DEMO_RETENTION_ESTIMATES')
+continue` and an explanation of why this specific export doesn't reopen the gap the test
+exists to catch. A one-word bug caught before it shipped: an early draft's
+`DIRECT_IDENTIFIER` rationale used the word "pending," which collided with
+`retention.ts`'s own `PLACEHOLDER_AUTHORITY` regex and would have made `reviewSchedule()`
+flag every estimate as a placeholder — reworded to "awaiting" once a grep for the regex's
+trip words caught it.
+
+**`packages/db/src/retention.ts`** — `upsertRetentionRule`, the write side `getRetentionRule`
+never had. One row per `(tenantId, category)` (`@@unique`), `version` incrementing on
+every re-ratification (a plain counter, not a Brain-style supersession chain — this table
+was never versioned that way). `ratifiedAt`/`ratifiedBy` are caller-supplied, same
+reasoning as `buildDemoRetentionSchedule`: whichever event actually happened is the one
+that gets recorded, and this function does not get to decide which.
+
+**`packages/provisioning`** — the piece that makes this "per school, part of onboarding"
+rather than a silent default anyone could skip. `wizard.ts` gains a new step,
+`ratify_retention_schedule`, inserted between `ratify_constitution` and
+`readiness_check` in both `WIZARD_STEPS` and `REQUIRED_STEPS` — required, not optional,
+unlike `connect_sources`. It validates against `@infinite-ai/contracts`'s own
+`RetentionSchedule` (a new workspace dependency for this package, `docs/DEPENDENCIES.md`
+updated), the same shape `upsertRetentionRule` persists — a school's input either parses
+or the step fails, same as every other validated step. `readiness.ts` gains
+`hasRetentionScheduleRatified` on `TenantReadinessInput` and a `retention_schedule_ratified`
+check (`runReadinessChecks` now returns 6 checks, not 5) — a tenant cannot be ready for
+go-live without one, whether that's the demo estimate accepted as-is or a school's own
+ratified schedule.
+
+`docs/RETENTION_SCHEDULE_TEMPLATE.md` gained a "Demo/pilot release: a starting point, not
+an exception" section explaining the three honest options a school has at this step
+(accept, override a category, or do the real exercise and supersede it) without softening
+anything the rest of the document already says. `docs/ONBOARDING_GUIDE.md`'s Step 6 folds
+in the same content next to the consent/DPA step it already covers, rather than adding a
+renumbered new step to a doc whose seven-step product narrative was already a known,
+separate mismatch against `WIZARD_STEPS`' own step names (not fixed here — out of scope
+for this change). OQ-007 in `docs/OPEN_QUESTIONS.md` moves from OPEN to PARTIALLY ANSWERED:
+what's resolved is the demo path and the per-tenant onboarding gate; what remains open,
+unchanged, is that a school's real governing-body determination is still outstanding.
+
+### Verification
+
+`pnpm --filter @infinite-ai/contracts typecheck` (clean) and `test` — 45 files, 1011
+tests, including a new `retention-demo-defaults.spec.ts` (7 tests: full category
+coverage, schema validity, real `ratifiedBy`/`ratifiedAt` stamped, every non-overridden
+authority reads as a demo estimate, an override is honoured and everything else stays an
+estimate, `reviewSchedule()` raises zero findings against the defaults). `pnpm --filter
+@infinite-ai/db typecheck` (clean) and `test` — 5 files, 220 tests, `export-surface.spec.ts`
+updated for `upsertRetentionRule`. `pnpm --filter @infinite-ai/provisioning typecheck`
+(clean) and `test` — 3 files, 63 tests, `wizard.spec.ts` and `readiness.spec.ts` both
+updated for the new step and check.

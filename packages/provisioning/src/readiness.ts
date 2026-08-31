@@ -17,6 +17,7 @@ export interface TenantReadinessInput {
   readonly staffCount: number;
   readonly learnerCount: number;
   readonly hasConstitutionRatified: boolean;
+  readonly hasRetentionScheduleRatified: boolean;
   readonly hasAtLeastOnePhase: boolean;
   readonly hasAtLeastOneGrade: boolean;
   readonly hasAtLeastOneSubject: boolean;
@@ -51,6 +52,13 @@ export function runReadinessChecks(input: TenantReadinessInput): ReadinessCheckR
       message: input.hasConstitutionRatified
         ? 'L0 constitution has been ratified.'
         : 'The L0 constitution must be ratified before go-live.',
+    },
+    {
+      name: 'retention_schedule_ratified',
+      passed: input.hasRetentionScheduleRatified,
+      message: input.hasRetentionScheduleRatified
+        ? 'A retention schedule has been ratified for this tenant.'
+        : 'A retention schedule (even the demo estimate, reviewed and accepted) must be ratified before go-live.',
     },
     {
       name: 'school_profile_complete',

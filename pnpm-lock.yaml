@@ -714,6 +714,9 @@ importers:
 
   packages/provisioning:
     dependencies:
+      '@infinite-ai/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       zod:
         specifier: 3.25.76
         version: 3.25.76

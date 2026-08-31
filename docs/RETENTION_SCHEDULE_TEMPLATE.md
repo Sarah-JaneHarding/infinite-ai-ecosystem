@@ -30,6 +30,41 @@ the gap is made loud rather than silent.
 
 ---
 
+## Demo/pilot release: a starting point, not an exception
+
+Everything above still holds. What changed for the demo/pilot release is that a school no
+longer has to arrive at the `ratify_retention_schedule` onboarding step with a blank page:
+it is pre-filled with `@infinite-ai/contracts`' `DEMO_RETENTION_ESTIMATES` — one round-number
+estimate per category (7 years for identifiers/enrolment/marks, 3 years for
+attendance/behaviour/staff-practice, 5 years for support-need/special-personal, 2 years for
+family-context) — the same role this document's own blank table already plays, pre-filled
+instead of blank.
+
+Every one of those estimates carries an `authority` field that says, in full, **"INFINITE-AI
+DEMO ESTIMATE — not a legal citation; confirm or replace with your own governing body's
+determination."** That is not decoration: it is what stops "an admin clicked accept during
+onboarding" from ever being mistaken for "the school's governing body researched and cited a
+real retention law." Those are both real events. They are not the same event.
+
+A school at onboarding has exactly three honest options, in order of how much this document
+still matters:
+
+1. **Accept the estimates as-is** to unblock a demo or pilot quickly. The resulting rules
+   are real (`ratifiedBy`/`ratifiedAt` capture who did this and when), but every `authority`
+   still reads as a demo estimate — nothing here claims to be a legal citation.
+2. **Override one or more categories** during the same onboarding step, supplying a real
+   `authority` for just the categories the school has already settled.
+3. **Fill in this template for real** — the process this whole document describes — and
+   have the school's own legal advisor supersede every estimate before go-live.
+
+None of this changes what the rest of this document says: the actual determination is still
+each school's own, nothing here is a legal opinion, and a rule with a placeholder authority is
+still refused by `pnpm check:retention` and by `reviewSchedule()`. See
+`packages/contracts/src/popia/retention-demo-defaults.ts` for the estimates themselves, and
+OQ-007's 2026-08-31 update in `docs/OPEN_QUESTIONS.md`.
+
+---
+
 ## What each row needs
 
 A rule is only accepted by the system if it carries all four. The fourth is the one people

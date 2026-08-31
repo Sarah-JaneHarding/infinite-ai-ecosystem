@@ -486,3 +486,17 @@ already pin, for its own copy of the same integration-tier harness.
 
 No cycle: `@infinite-ai/brain` does not depend on `@infinite-ai/guardrails`, confirmed
 before adding this.
+
+## Demo/pilot retention-schedule estimates wired into onboarding (OQ-007)
+
+One new workspace dependency, added when the onboarding wizard's new
+`ratify_retention_schedule` step needed to validate its input against the real
+`RetentionSchedule` shape rather than duplicating it — the same shape
+`packages/db`'s `upsertRetentionRule` ultimately persists.
+
+| Package                  | Version       | Licence | Why                                                                                                                                                                                                        | Replaces |
+| ------------------------ | ------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `@infinite-ai/contracts` | `workspace:*` | —       | `RetentionSchedule` (validates the new `ratify_retention_schedule` step's input in `packages/provisioning/src/wizard.ts`) and `buildDemoRetentionSchedule`/`DEMO_RETENTION_ESTIMATES` (used by its tests). | —        |
+
+No cycle: `@infinite-ai/contracts` depends on nothing in the workspace, confirmed before
+adding this.
