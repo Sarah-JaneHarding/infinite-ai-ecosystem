@@ -24,6 +24,17 @@ one at a time, never below the desired count). This runbook covers running that 
 deliberately — one task at a time, watched — rather than all at once, and the rollback
 path if it goes wrong.
 
+**Update:** `.github/workflows/cd.yml` now runs this same rollout automatically on every
+merge to `main` — build, push, register a new task definition revision, update the
+service, wait for it to stabilise, then poll the alarms below for a few minutes and roll
+back automatically if one fires (see "Automatic rollback" below for exactly what that
+does and does not cover). Staging deploys automatically; production sits behind a
+GitHub Environment's required-reviewers gate (a human approves the promotion, nothing in
+the workflow can skip it). This runbook's manual commands are still the right tool for:
+a deploy the "When to use this runbook" section flags for extra care, watching signals
+the pipeline cannot evaluate (application logs, RLS violations), or a manual rollback
+outside the pipeline's own bounded monitoring window.
+
 ---
 
 ## When to use this runbook
@@ -120,12 +131,23 @@ Confirm all metrics are stable for 30 minutes before closing the deploy.
 
 ## Automatic rollback
 
-The CloudWatch alarms above have no `alarm_actions` wired to anything that stops a
-rollout automatically yet — `infra/terraform/modules/observability`'s `alerts` SNS topic
+The CloudWatch alarms above have no `alarm_actions` wired to anything in AWS that stops
+a rollout automatically — `infra/terraform/modules/observability`'s `alerts` SNS topic
 notifies (an email subscription, or whatever OQ-014's real paging integration ends up
-being once it exists), it does not act. A fired alarm during step 1 is a **manual**
-rollback trigger; there is no automatic one until something subscribes to `alerts` and
-calls `aws ecs update-service` back to the previous task definition itself.
+being once it exists), it does not act on its own. What does act is
+`.github/workflows/cd.yml`'s own deploy step
+(`scripts/cd/deploy-ecs-service.sh`): after a deploy it made stabilises, it polls the
+same alarms by name for a few minutes (`aws cloudwatch describe-alarms --state-value
+ALARM`) and, if any has fired, rolls the service back to the task definition revision it
+captured before that deploy — no human action required.
+
+**What this covers, and what it does not:** this is a real automatic rollback for a
+deploy the CD pipeline itself made, bounded to the few minutes right after that deploy.
+It is not a standing subscriber to `alerts` — an alarm that fires later, from a cause
+unrelated to a deploy in progress, does not trigger anything here; that is still a page
+(once OQ-014's integration exists) or the manual procedure below. A deploy run manually
+via this runbook's own commands, outside the pipeline, is also not covered — a fired
+alarm during a manual step 1 is still a **manual** rollback trigger, exactly as before.
 
 ---
 
@@ -187,7 +209,10 @@ Update `docs/STAGE_LOG.md` if this deploy completes a stage gate.
   is the AWS-managed equivalent of this runbook's old 5%/25%/50%/100% steps). Neither is
   built in `infra/terraform/modules/ecs-service` yet — a real, scoped follow-up, not
   assumed done here.
-- **No automatic rollback trigger.** See "Automatic rollback" above.
+- **Automatic rollback exists, but only around the CD pipeline's own deploys, and only
+  for a few minutes.** See "Automatic rollback" above for exactly what it covers and
+  what it does not — it is not a standing subscriber to the alarms, and a manual deploy
+  made outside `.github/workflows/cd.yml` is not covered by it.
 
 ## Contacts
 

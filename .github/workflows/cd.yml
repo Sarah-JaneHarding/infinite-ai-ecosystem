@@ -1,0 +1,196 @@
+name: CD
+
+# The "Deploy code" gap infra/terraform/README.md names as not built by that Terraform:
+# nothing there builds or pushes an image, or moves a running service onto a new tag —
+# this workflow is that CD pipeline. It never touches Terraform state (no `terraform
+# apply` here — every infra change is still a human running the commands in that
+# README); it only ever changes which already-provisioned task definition revision a
+# service points at, the same thing docs/RUNBOOKS/canary-deploy.md's manual commands do.
+#
+# Triggered by the CI workflow finishing successfully on `main`, not by push directly —
+# a run that merged with failing CI must never reach a deploy step, and gating on the
+# other workflow's own conclusion is the only way to guarantee that without duplicating
+# CI's checks here.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+# One deploy at a time, and never cancelled mid-flight — a cancelled `aws ecs
+# update-service` still leaves the rollout running server-side; cancelling the workflow
+# would just stop this pipeline from watching it, not stop the deploy.
+concurrency:
+  group: cd-deploy
+  cancel-in-progress: false
+
+permissions:
+  id-token: write # GitHub Actions OIDC — infra/terraform/bootstrap's github_deploy_role_arn
+  contents: read
+
+env:
+  AWS_REGION: af-south-1
+
+jobs:
+  build-and-push:
+    name: Build and push images
+    # Only a CI run that (a) completed successfully (b) for a push (c) to main — never a
+    # pull_request run, which also triggers a workflow_run event but on the PR's own
+    # branch, never main.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+    outputs:
+      image_tag: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2.1.7
+        id: ecr
+
+      # One build per app, from the repo root — every Dockerfile in this repo builds
+      # from the whole workspace (pnpm's workspace:* protocol needs the full tree; see
+      # each Dockerfile's own header). Tagged with the full commit SHA, never `latest` —
+      # each ECR repository is IMMUTABLE-tagged specifically so a tag can never be
+      # silently re-pointed (infra/terraform/modules/ecs-service/main.tf).
+      - name: Build and push gateway
+        run: |
+          docker build -f apps/gateway/Dockerfile \
+            -t "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-gateway:${{ github.event.workflow_run.head_sha }}" .
+          docker push "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-gateway:${{ github.event.workflow_run.head_sha }}"
+
+      - name: Build and push worker
+        run: |
+          docker build -f apps/worker/Dockerfile \
+            -t "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-worker:${{ github.event.workflow_run.head_sha }}" .
+          docker push "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-worker:${{ github.event.workflow_run.head_sha }}"
+
+      - name: Build and push web
+        run: |
+          docker build -f apps/web/Dockerfile \
+            -t "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-web:${{ github.event.workflow_run.head_sha }}" .
+          docker push "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-web:${{ github.event.workflow_run.head_sha }}"
+
+  deploy-staging:
+    name: Deploy to staging
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.build-and-push.outputs.image_tag }}
+
+      - uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2.1.7
+        id: ecr
+
+      # gateway and web sit behind the ALB and have the error-rate/latency-p95 alarms
+      # infra/terraform/modules/observability creates for them
+      # (docs/RUNBOOKS/canary-deploy.md's own rollback thresholds); apps/worker has no
+      # ALB target group and so no alarms of that shape to watch.
+      - name: Deploy gateway
+        run: |
+          scripts/cd/deploy-ecs-service.sh infinite-ai-staging infinite-ai-staging-gateway \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-gateway" \
+            "${{ needs.build-and-push.outputs.image_tag }}" \
+            infinite-ai-staging-gateway-error-rate infinite-ai-staging-gateway-latency-p95
+
+      - name: Deploy worker
+        run: |
+          scripts/cd/deploy-ecs-service.sh infinite-ai-staging infinite-ai-staging-worker \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-worker" \
+            "${{ needs.build-and-push.outputs.image_tag }}"
+
+      - name: Deploy web
+        run: |
+          scripts/cd/deploy-ecs-service.sh infinite-ai-staging infinite-ai-staging-web \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-web" \
+            "${{ needs.build-and-push.outputs.image_tag }}" \
+            infinite-ai-staging-web-error-rate infinite-ai-staging-web-latency-p95
+
+  promote-to-production:
+    name: Promote to production
+    needs: [build-and-push, deploy-staging]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # A human gate, not code: this Environment's own required-reviewers protection rule
+    # (configured in the repository's Settings → Environments, not in this file) is what
+    # holds this job until someone approves it — GitHub pauses the job itself, the same
+    # mechanism the "Environments" feature exists for. Nothing in this workflow can grant
+    # that approval; there is deliberately no bypass.
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.build-and-push.outputs.image_tag }}
+
+      - uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2.1.7
+        id: ecr
+
+      # Promotes the exact image staging just ran through the checks above — never a
+      # second build. See scripts/cd/promote-image.sh's own header for why that
+      # distinction matters. Both registries are the same AWS account today (one
+      # bootstrap, one github_deploy_role_arn); if staging and production ever move to
+      # separate accounts, this step needs its own second `aws ecr get-login-password`
+      # against the source account, not assumed here.
+      - name: Promote gateway image
+        run: |
+          scripts/cd/promote-image.sh \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-gateway" \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-production-gateway" \
+            "${{ needs.build-and-push.outputs.image_tag }}"
+
+      - name: Promote worker image
+        run: |
+          scripts/cd/promote-image.sh \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-worker" \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-production-worker" \
+            "${{ needs.build-and-push.outputs.image_tag }}"
+
+      - name: Promote web image
+        run: |
+          scripts/cd/promote-image.sh \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-staging-web" \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-production-web" \
+            "${{ needs.build-and-push.outputs.image_tag }}"
+
+      - name: Deploy gateway
+        run: |
+          scripts/cd/deploy-ecs-service.sh infinite-ai-production infinite-ai-production-gateway \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-production-gateway" \
+            "${{ needs.build-and-push.outputs.image_tag }}" \
+            infinite-ai-production-gateway-error-rate infinite-ai-production-gateway-latency-p95
+
+      - name: Deploy worker
+        run: |
+          scripts/cd/deploy-ecs-service.sh infinite-ai-production infinite-ai-production-worker \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-production-worker" \
+            "${{ needs.build-and-push.outputs.image_tag }}"
+
+      - name: Deploy web
+        run: |
+          scripts/cd/deploy-ecs-service.sh infinite-ai-production infinite-ai-production-web \
+            "${{ steps.ecr.outputs.registry }}/infinite-ai-production-web" \
+            "${{ needs.build-and-push.outputs.image_tag }}" \
+            infinite-ai-production-web-error-rate infinite-ai-production-web-latency-p95

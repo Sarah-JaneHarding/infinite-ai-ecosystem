@@ -500,3 +500,18 @@ One new workspace dependency, added when the onboarding wizard's new
 
 No cycle: `@infinite-ai/contracts` depends on nothing in the workspace, confirmed before
 adding this.
+
+## CD pipeline (`.github/workflows/cd.yml`)
+
+Two new GitHub Actions — the first recorded here; `ci.yml`'s own `actions/checkout`,
+`actions/setup-node` and `pnpm/action-setup` predate this practice and are already
+relied on by every job in this repository's CI.
+
+| Package                                 | Version  | Licence | Why                                                                                                                                                                                                                                        | Replaces |
+| --------------------------------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| `aws-actions/configure-aws-credentials` | `v6.2.3` | MIT     | Exchanges the workflow's OIDC token for temporary AWS credentials scoped to `infra/terraform/bootstrap`'s `github_deploy_role_arn` — the "no long-lived cloud credentials" standing constraint `infra/terraform/README.md` already states. | —        |
+| `aws-actions/amazon-ecr-login`          | `v2.1.7` | MIT     | Authenticates `docker push`/`docker pull` against ECR using those same temporary credentials, and provides the registry hostname the workflow builds each image tag from.                                                                  | —        |
+
+No new npm dependency: `scripts/cd/deploy-ecs-service.sh` and `scripts/cd/promote-image.sh`
+are plain bash, using the `aws` and `docker`/`jq` CLIs already available on
+`ubuntu-latest` GitHub-hosted runners.

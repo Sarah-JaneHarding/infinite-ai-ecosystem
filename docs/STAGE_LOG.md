@@ -7419,3 +7419,94 @@ estimate, `reviewSchedule()` raises zero findings against the defaults). `pnpm -
 updated for `upsertRetentionRule`. `pnpm --filter @infinite-ai/provisioning typecheck`
 (clean) and `test` — 3 files, 63 tests, `wizard.spec.ts` and `readiness.spec.ts` both
 updated for the new step and check.
+
+## Tier 1 (deployability) — the CD pipeline
+
+The last named Tier 1 item: `infra/terraform/README.md`'s own "What this does not do"
+section named it directly — "Deploy code... that is a CD pipeline, the next Tier 1 item
+after this one, not built here." It's built now: `.github/workflows/cd.yml`, plus two
+reusable scripts, `scripts/cd/deploy-ecs-service.sh` and `scripts/cd/promote-image.sh`.
+
+**What it does, end to end, on every merge to `main`:**
+
+1. **Trigger.** `cd.yml` listens for the existing `CI` workflow's own `workflow_run`
+   completion, filtered to `conclusion == 'success' && event == 'push' && head_branch ==
+'main'` — not a `push` trigger of its own. A run that merged with red CI can never
+   reach a deploy step this way, without duplicating CI's own checks in a second
+   workflow file.
+2. **Build once.** `build-and-push` builds all three Dockerfiles (`apps/gateway`,
+   `apps/worker`, `apps/web` — each already builds from the whole workspace, see their
+   own headers) and pushes each, tagged with the full commit SHA, to **staging's** ECR
+   repositories only. Never `latest` — every ECR repository is `IMMUTABLE`-tagged
+   specifically so a tag can't be silently re-pointed
+   (`infra/terraform/modules/ecs-service/main.tf`).
+3. **Deploy to staging.** `deploy-staging` calls the new `scripts/cd/
+deploy-ecs-service.sh` once per service. That script: captures the service's current
+   task definition (the rollback target), registers a new revision with only the image
+   changed (the same `jq` transform `docs/RUNBOOKS/canary-deploy.md`'s own manual
+   commands already used), updates the service with the same
+   `minimumHealthyPercent=100,maximumPercent=200` configuration that runbook's "Step 2 —
+   Full rollout" uses, waits for it to stabilise, then — for gateway and web, which have
+   the ALB-backed error-rate/latency-p95 alarms `infra/terraform/modules/observability`
+   creates for them — polls those alarms by name every 60 seconds for 5 checks. Any
+   alarm in `ALARM` state during that window triggers an automatic rollback to the
+   captured task definition and fails the job. `apps/worker` has no ALB target group and
+   so nothing of that shape to poll; it gets the deploy and the wait, not the alarm
+   check.
+4. **Promote to production.** `promote-to-production` needs `deploy-staging` and runs
+   under a `production` GitHub Environment — the actual approval gate is that
+   Environment's own required-reviewers protection rule (configured in the repository's
+   settings, not in the workflow file); nothing in `cd.yml` can bypass it. Once approved,
+   the new `scripts/cd/promote-image.sh` pulls the **exact image staging just ran
+   through the checks above** from staging's ECR repository and pushes it, unchanged,
+   to production's — "build once, promote the same artefact," never a second build from
+   the same commit, which could in principle produce different bytes and would make
+   "tested in staging" mean nothing. The same `deploy-ecs-service.sh` then runs against
+   the production cluster and services.
+
+**What this closes, named directly by name in existing docs:**
+
+- `infra/terraform/README.md`'s own "Deploy code" gap (quoted above) — closed; that
+  section now describes what `cd.yml` does instead of what's missing.
+- `docs/RUNBOOKS/canary-deploy.md`'s own "Automatic rollback" section used to read
+  "there is no automatic one until something subscribes to `alerts` and calls `aws ecs
+update-service` back to the previous task definition itself." `deploy-ecs-service.sh`
+  is that something — but the runbook is now precise about the shape of what exists:
+  automatic rollback bounded to a few minutes around a deploy the pipeline itself made,
+  polling the named alarms directly, not a standing subscriber to the `alerts` SNS topic
+  that would also catch an alarm firing hours later from an unrelated cause (still a
+  page, once OQ-014's integration exists) or a manual deploy made outside the pipeline
+  (still the manual rollback procedure, unchanged).
+
+**What is deliberately not built here, named for the same reason every other honest gap
+in this repo is:**
+
+- **A true weighted canary.** Unchanged from `canary-deploy.md`'s own existing
+  "What this cannot do yet" section — still needs a second, paired target group and a
+  weighted listener rule or an AWS CodeDeploy blue/green controller. This pipeline
+  automates the _existing_ rolling-deploy procedure faithfully; it does not build the
+  traffic-splitting infrastructure that procedure never had either.
+- **Terraform `apply` from CI.** `cd.yml` never touches Terraform state. Creating or
+  resizing the infrastructure this pipeline deploys onto is still `infra/terraform/
+README.md`'s own human-run steps 1-4; this pipeline only ever changes which
+  already-registered task definition revision a service points at (step 5, newly added
+  to that README, documents exactly what a human must configure in GitHub — two
+  Environments, an `AWS_DEPLOY_ROLE_ARN` variable on each, required reviewers on
+  `production` only — before this workflow can authenticate at all).
+- **A live, continuous alarm subscriber.** See "What this closes" above — the bounded
+  polling window is a real, working automatic rollback for the case it targets (a bad
+  deploy), not a general-purpose alerting actor. That remains OQ-014's own gap.
+
+### Verification
+
+`bash -n` on both new scripts (syntax only — no AWS account exists in this sandbox to
+exercise them against, the same restriction already documented for every other
+AWS-dependent piece of this repo). The workflow YAML was parsed with `js-yaml` to
+confirm it is well-formed and resolves to the three expected jobs (`shellcheck` and
+`actionlint` are not installed in this sandbox, so neither ran). `docs/DEPENDENCIES.md`
+gained an entry for the two new GitHub Actions this workflow is the first to use
+(`aws-actions/configure-aws-credentials@v6.2.3`, `aws-actions/amazon-ecr-login@v2.1.7`,
+both MIT — verified against each repository's own `LICENSE` file, not assumed). Like
+every other AWS-account-dependent piece of this repository's Tier 1 work, this has never
+run for real: it deploys onto environments that have themselves never been `apply`'d,
+and needs the GitHub-side configuration named above before it can authenticate at all.
