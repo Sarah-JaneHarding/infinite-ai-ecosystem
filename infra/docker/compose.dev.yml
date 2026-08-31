@@ -1,12 +1,19 @@
 # Development data plane — Stage 01 step 1.
 #
 # Postgres 16 with pgvector, pg_trgm and pgcrypto; Redis 7 for queues, rate limits and
-# idempotency keys; Keycloak (Stage 02); MinIO (object storage — see below). Langfuse and
-# the Grafana stack are still not here: a production-readiness audit found this file's
-# own comment claiming they were "added by the stages that need them" had gone stale —
-# neither ever landed, and Langfuse's self-hosted footprint (its own Postgres, ClickHouse,
-# Redis and S3 bucket) is a separate, larger piece of work than this file's other
-# additions. Tracked as a follow-up, not silently left implied-done by this comment.
+# idempotency keys; Keycloak (Stage 02); MinIO (object storage); Langfuse (self-hosted
+# LLM observability — see below). The Grafana stack (Tempo/Loki/Mimir) is still not
+# here: `packages/telemetry/src/tracing.ts`'s own header explains why the code in this
+# repo only ever targets one OTLP endpoint — Langfuse ingests OTLP directly at
+# `/api/public/otel`, so standing up Langfuse is what actually makes
+# `OTEL_EXPORTER_OTLP_ENDPOINT` point at something real; a separate Tempo/Loki/Mimir
+# stack was never wired into any application code to send spans to in the first place.
+#
+# Langfuse gets its own Postgres, Redis and ClickHouse — never sharing the app's own
+# `postgres`/`redis` above — so its migrations and internal queues can never collide
+# with ours. Only MinIO is shared: a second bucket (`langfuse`, created by `minio-init`
+# below) costs nothing extra to run, and S3 buckets are namespaced, so there is no
+# collision risk the way there would be sharing a database or a queue.
 #
 # Rule 7: no secret in this file. Values come from a local .env that is never committed.
 # The placeholders below resolve from the developer's environment and have no defaults,
@@ -136,9 +143,165 @@ services:
     command:
       - |
         mc alias set local http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD" &&
-        mc mb --ignore-existing "local/$$OBJECT_STORE_BUCKET"
+        mc mb --ignore-existing "local/$$OBJECT_STORE_BUCKET" &&
+        mc mb --ignore-existing "local/langfuse"
+
+  # --- Langfuse (self-hosted) — LLM observability backend, per this file's own header
+  # comment. Shape verified against Langfuse's own reference compose file
+  # (github.com/langfuse/langfuse, `docker-compose.yml`, fetched 2026-08-31); every
+  # credential below is required with no default, unlike that reference's own `:-`
+  # fallbacks — rule 7 and this file's own existing convention (Postgres/Keycloak/MinIO
+  # above) both already refuse to ship a guessable default password.
+  langfuse-clickhouse:
+    image: clickhouse/clickhouse-server:25.12
+    restart: unless-stopped
+    user: '101:101'
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: ${LANGFUSE_CLICKHOUSE_USER:?set LANGFUSE_CLICKHOUSE_USER in your local .env}
+      CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:?set LANGFUSE_CLICKHOUSE_PASSWORD in your local .env}
+    volumes:
+      - langfuse-clickhouse-data:/var/lib/clickhouse
+      - langfuse-clickhouse-logs:/var/log/clickhouse-server
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:8123/ping',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  langfuse-postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: langfuse
+      POSTGRES_USER: ${LANGFUSE_POSTGRES_USER:?set LANGFUSE_POSTGRES_USER in your local .env}
+      POSTGRES_PASSWORD: ${LANGFUSE_POSTGRES_PASSWORD:?set LANGFUSE_POSTGRES_PASSWORD in your local .env}
+    volumes:
+      - langfuse-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  langfuse-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --requirepass
+      - ${LANGFUSE_REDIS_PASSWORD:?set LANGFUSE_REDIS_PASSWORD in your local .env}
+      - --maxmemory-policy
+      - noeviction
+    volumes:
+      - langfuse-redis-data:/data
+    healthcheck:
+      # Compose substitutes ${VAR} in this string at parse time, from the same
+      # infra/docker/.env file — no need to also inject it as a container-runtime var,
+      # unlike `$$POSTGRES_USER`-style references elsewhere in this file, which
+      # deliberately defer to the container's own runtime environment instead.
+      test:
+        [
+          'CMD-SHELL',
+          'redis-cli -a "${LANGFUSE_REDIS_PASSWORD:?set LANGFUSE_REDIS_PASSWORD in your local .env}" ping',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Registers every field application code needs, then langfuse-web's own block below
+  # adds the handful (NEXTAUTH_SECRET, the LANGFUSE_INIT_* bootstrap) only it needs.
+  langfuse-worker:
+    image: docker.langfuse.com/langfuse/langfuse-worker:4.25.0
+    restart: unless-stopped
+    depends_on:
+      langfuse-postgres:
+        condition: service_healthy
+      langfuse-redis:
+        condition: service_healthy
+      langfuse-clickhouse:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment: &langfuse-env
+      NEXTAUTH_URL: http://localhost:3001
+      DATABASE_URL: postgresql://${LANGFUSE_POSTGRES_USER:?set LANGFUSE_POSTGRES_USER in your local .env}:${LANGFUSE_POSTGRES_PASSWORD:?set LANGFUSE_POSTGRES_PASSWORD in your local .env}@langfuse-postgres:5432/langfuse
+      SALT: ${LANGFUSE_SALT:?set LANGFUSE_SALT in your local .env}
+      ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:?set LANGFUSE_ENCRYPTION_KEY in your local .env}
+      TELEMETRY_ENABLED: 'false'
+      CLICKHOUSE_MIGRATION_URL: clickhouse://langfuse-clickhouse:9000
+      CLICKHOUSE_URL: http://langfuse-clickhouse:8123
+      CLICKHOUSE_USER: ${LANGFUSE_CLICKHOUSE_USER:?set LANGFUSE_CLICKHOUSE_USER in your local .env}
+      CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:?set LANGFUSE_CLICKHOUSE_PASSWORD in your local .env}
+      REDIS_HOST: langfuse-redis
+      REDIS_PORT: '6379'
+      REDIS_AUTH: ${LANGFUSE_REDIS_PASSWORD:?set LANGFUSE_REDIS_PASSWORD in your local .env}
+      # The langfuse bucket minio-init (above) creates on the app's own shared MinIO —
+      # see this file's header for why sharing MinIO (not Postgres/Redis) is safe.
+      LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
+      LANGFUSE_S3_EVENT_UPLOAD_REGION: auto
+      LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in your local .env}
+      LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in your local .env}
+      LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://minio:9000
+      LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: 'true'
+      LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+      LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
+      LANGFUSE_S3_MEDIA_UPLOAD_REGION: auto
+      LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in your local .env}
+      LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in your local .env}
+      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://minio:9000
+      LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: 'true'
+      LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+    ports:
+      - '127.0.0.1:3030:3030'
+
+  langfuse-web:
+    image: docker.langfuse.com/langfuse/langfuse:4.25.0
+    restart: unless-stopped
+    depends_on:
+      langfuse-postgres:
+        condition: service_healthy
+      langfuse-redis:
+        condition: service_healthy
+      langfuse-clickhouse:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      <<: *langfuse-env
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:?set LANGFUSE_NEXTAUTH_SECRET in your local .env}
+      # Bootstraps a real org/project/user/API-key pair on first boot — the public/secret
+      # key pair here is what the root .env's OTEL_EXPORTER_OTLP_HEADERS is built from
+      # (docs/DEV_SETUP.md), the same "same value, two files" shape
+      # KEYCLOAK_WEB_CLIENT_SECRET already has. No manual "sign up in the UI" step.
+      LANGFUSE_INIT_ORG_ID: dev-org
+      LANGFUSE_INIT_ORG_NAME: INFINITE-AI Dev
+      LANGFUSE_INIT_PROJECT_ID: dev-project
+      LANGFUSE_INIT_PROJECT_NAME: infinite-ai-dev
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_INIT_PROJECT_PUBLIC_KEY:?set LANGFUSE_INIT_PROJECT_PUBLIC_KEY in your local .env}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_INIT_PROJECT_SECRET_KEY:?set LANGFUSE_INIT_PROJECT_SECRET_KEY in your local .env}
+      LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_INIT_USER_EMAIL:?set LANGFUSE_INIT_USER_EMAIL in your local .env}
+      LANGFUSE_INIT_USER_NAME: Dev Admin
+      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:?set LANGFUSE_INIT_USER_PASSWORD in your local .env}
+    ports:
+      # 3000 is already apps/web's own dev port (docs/DEV_SETUP.md step 6) — published on
+      # 3001 instead so both can run at once, which is the whole point of having traces
+      # to look at while exercising the app.
+      - '3001:3000'
 
 volumes:
   postgres-data:
   redis-data:
   minio-data:
+  langfuse-clickhouse-data:
+  langfuse-clickhouse-logs:
+  langfuse-postgres-data:
+  langfuse-redis-data:

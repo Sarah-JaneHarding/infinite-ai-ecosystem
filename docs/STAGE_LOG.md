@@ -7510,3 +7510,93 @@ both MIT — verified against each repository's own `LICENSE` file, not assumed)
 every other AWS-account-dependent piece of this repository's Tier 1 work, this has never
 run for real: it deploys onto environments that have themselves never been `apply`'d,
 and needs the GitHub-side configuration named above before it can authenticate at all.
+
+## Tier 1 (deployability) — Langfuse actually running in the dev stack
+
+The last named Tier 1 gap, from the audit's own words: "Object storage now runs in dev;
+observability still doesn't" — `OBJECT_STORE_ENDPOINT` pointed at a real MinIO after the
+prior Tier 1 entry, but every gateway boot still logged `OTEL_EXPORTER_OTLP_ENDPOINT not
+set. No LLM traces will reach Langfuse.` because nothing served that endpoint anywhere,
+dev included. `packages/telemetry/src/tracing.ts`'s own header settles what "the
+observability backend" even means for this codebase before touching infrastructure:
+Langfuse ingests OTLP directly at `/api/public/otel`, so this repository's code was
+always going to target one OTLP endpoint, not two — the manual's separate "Telemetry:
+OpenTelemetry → Grafana (Tempo/Loki/Mimir)" row was never wired to anything, and standing
+up a second Tempo/Loki/Mimir stack for spans nothing sends there would be building
+infrastructure for a code path that does not exist. Getting Langfuse running is what
+makes `OTEL_EXPORTER_OTLP_ENDPOINT` point at something real.
+
+**`infra/docker/compose.dev.yml`** gains six new services: `langfuse-clickhouse`,
+`langfuse-postgres`, `langfuse-redis`, `langfuse-worker`, `langfuse-web`. Shape verified
+directly against Langfuse's own reference compose file
+(`github.com/langfuse/langfuse/docker-compose.yml`, fetched 2026-08-31, the current `v4`
+line — latest tagged release at the time, `v4.25.0`, confirmed via that repository's own
+releases page), not guessed at or reconstructed from memory. Two deliberate departures
+from that reference, both already this file's own established convention:
+
+1. **Every credential is required, with no default** (`${VAR:?set VAR in your local
+.env}`), where the upstream reference ships `:-` fallback passwords
+   (`REDIS_AUTH:-myredissecret` and similar) — rule 7 and this file's Postgres/Keycloak/
+   MinIO services already refuse a guessable default, and Langfuse's own six new
+   credentials (`LANGFUSE_POSTGRES_PASSWORD`, `LANGFUSE_REDIS_PASSWORD`,
+   `LANGFUSE_CLICKHOUSE_PASSWORD`, `LANGFUSE_SALT`, `LANGFUSE_ENCRYPTION_KEY`,
+   `LANGFUSE_NEXTAUTH_SECRET`) hold to the same rule.
+2. **Its own dedicated Postgres, Redis and ClickHouse — never the app's own.** The
+   upstream reference already does this (it is not itself sharing anything), but it was
+   worth deciding deliberately rather than by default: reusing the app's own `postgres`/
+   `redis` would have meant a second database and a second set of BullMQ-shaped queue
+   keys sharing one server/instance with no prior art in this file for whether that is
+   safe, and unlike Keycloak (which already does share the app's own Postgres
+   `POSTGRES_DB`, a pre-existing choice not revisited here), Langfuse's own internal
+   queue names were not something this session could verify never collide with the
+   app's own pipeline queue names. Only MinIO is shared — a second bucket
+   (`langfuse`, `minio-init` extended to create it) costs nothing extra, since S3
+   buckets are namespaced and carry no shared-keyspace risk the way a database or a
+   Redis instance would.
+
+`LANGFUSE_INIT_ORG_ID`/`LANGFUSE_INIT_PROJECT_ID`/`LANGFUSE_INIT_PROJECT_PUBLIC_KEY`/
+`LANGFUSE_INIT_PROJECT_SECRET_KEY`/`LANGFUSE_INIT_USER_EMAIL`/`LANGFUSE_INIT_USER_PASSWORD`
+bootstrap a real org, project, user and API-key pair on first boot — no manual "sign up
+in the Langfuse UI" step for a fresh clone. Published on `3001`, not Langfuse's own
+default `3000`, since `apps/web`'s own dev server already owns `3000` and the entire
+point of running this locally is having both up at once.
+
+`docs/DEV_SETUP.md` and `infra/docker/.env.example` updated in the same commit: what the
+new services need, how long first boot takes (ClickHouse's own migrations run before
+`langfuse-web`/`langfuse-worker` report healthy), and the exact
+`OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:3001/api/public/otel` /
+`OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <base64 of publicKey:secretKey>` values
+to put in the root `.env` — built from the same `LANGFUSE_INIT_PROJECT_PUBLIC_KEY`/
+`SECRET_KEY` pair a developer already chose, the same "same value, two files" shape
+`KEYCLOAK_WEB_CLIENT_SECRET` already has.
+
+**Deliberately not done here, and why.** A staging/production deployment of this same
+stack was not attempted in this pass. Unlike every other piece of Tier 1 infrastructure
+built so far, this one has a real, unresolved design fork: ClickHouse needs a real disk
+under it, and this repository's whole production Terraform is ECS Fargate, which has no
+persistent local disk — an EFS-backed volume works but is not what ClickHouse's own docs
+recommend for its data directory (meaningfully worse I/O latency than local NVMe); a
+separate EC2-plus-EBS instance is a different compute model than every other service
+this Terraform runs; a managed ClickHouse service would mean self-hosted Langfuse
+storing data on a third-party platform, in tension with the manual's own explicit "LLM
+observability: Langfuse (self-hosted)" line and this session's own read of what that
+constraint is for (POPIA data residency, §1.3 — the same reasoning `af-south-1` and
+`infra/terraform/README.md`'s own header already state for every other data store this
+Terraform provisions). This is the same shape of decision the ECS-vs-EKS orchestrator
+choice was earlier in this Tier 1 work — asked rather than guessed, for the same reason.
+
+### Verification
+
+`docker compose --env-file <test values> -f infra/docker/compose.dev.yml config --quiet`
+exits 0 with no errors — real schema validation and full variable-interpolation
+resolution (every `${VAR:?...}` reference, every environment/healthcheck/port/depends_on
+field checked against Compose's own schema), not merely `bash -n`-level syntax checking.
+Manually inspected the fully-resolved `config` output for `langfuse-worker`/`langfuse-web`/
+`langfuse-redis` against the values supplied — every URL, bucket name, and port matched
+what was intended. Not run end-to-end: this sandbox's own Docker daemon does not start
+cleanly here (`service docker start` fails on an `ulimit` permission error even with the
+sandbox's own override), and `docker.langfuse.com` — confirmed via the agent proxy's own
+status endpoint — is separately policy-denied regardless, the same class of restriction
+already documented in this repo for `quay.io` and `registry.terraform.io`. A real
+`docker compose up` against this file, by a developer or in CI with normal Docker and
+network access, is the next real verification step, not performed here.
