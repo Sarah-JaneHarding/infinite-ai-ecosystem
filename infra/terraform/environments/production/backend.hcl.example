@@ -1,0 +1,4 @@
+# Copy to backend.hcl (gitignored) and fill in the real values bootstrap/ created, then:
+#   terraform init -backend-config=backend.hcl
+bucket         = "REPLACE_WITH_BOOTSTRAP_STATE_BUCKET_NAME"
+dynamodb_table = "REPLACE_WITH_BOOTSTRAP_LOCK_TABLE_NAME"

@@ -27,3 +27,16 @@ packages/db/generated/
 # Vitest blob reports, written by the per-tier coverage runs and consumed by
 # `pnpm --filter @infinite-ai/db coverage:merged`.
 .vitest-reports/
+
+# Terraform — rule 7 extends here too: a state file can contain resource attributes that
+# are secrets in practice (the database module's own generated passwords, before they
+# reach Secrets Manager), and backend.hcl names a real state bucket. Nothing in
+# infra/terraform is ever applied from this environment; these entries exist so a human
+# running it for real, from a clone of this repo, doesn't accidentally commit either.
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+backend.hcl
+*.auto.tfvars
+*.auto.tfvars.json

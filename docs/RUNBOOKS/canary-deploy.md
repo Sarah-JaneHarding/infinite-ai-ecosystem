@@ -3,28 +3,41 @@
 RTO: 30 minutes (rollback to previous version)
 RPO: 0 (no data written by the canary that cannot be rolled back at the application layer)
 
+**Update:** this runbook previously described a `kubectl`-based procedure against
+`infra/k8s/` manifests that were never actually built — orchestrator choice (ECS vs.
+Kubernetes) had never been decided when it was written. It's ECS Fargate
+(`infra/terraform/modules/ecs-service`); see that module's own README for why. Rewritten
+below to match what that Terraform actually provisions, and to be honest about what it
+does not: **a true weighted canary (5% → 25% → 50% → 100% traffic split) needs a second,
+paired target group per service and either a weighted listener rule or an AWS CodeDeploy
+blue/green deployment — neither exists yet.** What's below is ECS's own rolling
+deployment, monitored against the same thresholds this runbook always used, with a real
+rollback path — not a weighted canary. The gap is scoped at the end.
+
 ---
 
 ## Overview
 
-Canary deploys route a small fraction of production traffic to the new version while the
-old version continues to serve the rest. If the canary violates SLOs, an automatic
-rollback fires. This runbook covers manual execution and the automatic rollback trigger.
+A deploy pushes a new image, updates the ECS service to a new task definition revision,
+and ECS rolls the new revision out (default: 200% max, 100% min healthy — replace tasks
+one at a time, never below the desired count). This runbook covers running that rollout
+deliberately — one task at a time, watched — rather than all at once, and the rollback
+path if it goes wrong.
 
 ---
 
-## When to use a canary deploy
+## When to use this runbook
 
 - Any change to `apps/gateway` or `apps/web`.
 - Any database migration that adds a column, index, or table (additive changes only —
   destructive migrations require a separate, explicitly approved step per CLAUDE.md rule 10).
 - Any change to `packages/guardrails`, `packages/policy`, or `packages/deident`.
 
-Do NOT use canary for:
+Do NOT use this runbook for:
 
 - Configuration-only changes (env vars, flag flips).
 - Documentation-only changes.
-- Hotfixes to an active P1 incident (go straight to full deploy).
+- Hotfixes to an active P1 incident (go straight to full deploy — see "Full rollout" below).
 
 ---
 
@@ -33,92 +46,109 @@ Do NOT use canary for:
 - [ ] `pnpm verify:stage 18` exits 0 on the commit being deployed.
 - [ ] Database migrations applied: `pnpm --filter @infinite-ai/db db:migrate:deploy`.
 - [ ] Migrations are backwards-compatible with the current running version (old code can
-      read new schema; new code can read old schema until 100 % rollout).
+      read new schema; new code can read old schema until 100% rollout).
 - [ ] Feature flags: any new behaviour gated behind a flag that is off by default.
 - [ ] `pnpm check:flags` exits 0 (no expired flags).
 - [ ] Runbook reviewed by the deploying engineer and the on-call engineer.
+- [ ] A new image is built and pushed to the service's own ECR repository (the
+      `<environment>_ecr_repository_url` outputs in `infra/terraform/environments/<env>/`),
+      tagged with the commit SHA — never `latest`; the ECR repository is
+      `IMMUTABLE`-tagged specifically so a tag can't be silently re-pointed.
 
 ---
 
-## Canary rollout steps
+## Rollout steps
 
-### Step 1 — Deploy canary (5 % traffic)
+### Step 1 — Deploy to one task, watch the rest stay on the old version
+
+Register a new task definition revision with the new image tag, then update the service
+with a deployment configuration that only replaces the minimum:
 
 ```bash
-# Set canary weight to 5 % in your load balancer / deployment platform.
-# Example for a Kubernetes ingress with weighted routing:
-kubectl set image deployment/gateway gateway=<new-image>:<sha>
-kubectl apply -f infra/k8s/canary-5pct.yaml
+NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
+  --cli-input-json file://<(aws ecs describe-task-definition \
+    --task-definition infinite-ai-<env>-gateway \
+    --query 'taskDefinition' | \
+    jq '.containerDefinitions[0].image = "<ecr-repo-url>:<new-sha>"' | \
+    jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)') \
+  --query 'taskDefinition.taskDefinitionArn' --output text)
+
+aws ecs update-service \
+  --cluster infinite-ai-<env> \
+  --service infinite-ai-<env>-gateway \
+  --task-definition "$NEW_TASK_DEF_ARN" \
+  --deployment-configuration "minimumHealthyPercent=100,maximumPercent=$((100 + 100 / $(aws ecs describe-services --cluster infinite-ai-<env> --services infinite-ai-<env>-gateway --query 'services[0].desiredCount' --output text)))"
 ```
 
-Monitor for **15 minutes**:
-
-- Error rate: `gateway.error_rate` < 0.5 %
-- p95 latency: `gateway.latency_p95` < 8 s
-- No RLS policy violations logged
-
-### Step 2 — Advance to 25 %
-
-If step 1 monitors are green after 15 minutes:
+The `maximumPercent` expression above caps the rollout at exactly one extra task
+regardless of `desiredCount` — with `desiredCount=2`, that's 150% (3 tasks total, 1 new);
+with `desiredCount=1`, that's 200% (2 tasks total, 1 new). Confirm the deployment reached
+exactly that shape:
 
 ```bash
-kubectl apply -f infra/k8s/canary-25pct.yaml
+aws ecs describe-services --cluster infinite-ai-<env> --services infinite-ai-<env>-gateway \
+  --query 'services[0].deployments'
 ```
 
-Monitor for **15 minutes** with the same thresholds.
+Monitor for **15 minutes** (the CloudWatch alarms `infra/terraform/modules/observability`
+already creates, at the same thresholds this runbook has always used):
 
-### Step 3 — Advance to 50 %
+- `<env>-gateway-error-rate` — 5xx rate < 1% (target-group-wide, not new-task-only; see
+  "What this cannot do" below for why).
+- `<env>-gateway-latency-p95` — p95 response time < 10s.
+- No RLS policy violations in the application logs (`aws logs tail
+/ecs/infinite-ai-<env>-gateway --follow`).
+
+### Step 2 — Full rollout
+
+If step 1's monitors are green after 15 minutes, let ECS finish the rollout at its normal
+deployment configuration:
 
 ```bash
-kubectl apply -f infra/k8s/canary-50pct.yaml
-```
+aws ecs update-service \
+  --cluster infinite-ai-<env> \
+  --service infinite-ai-<env>-gateway \
+  --task-definition "$NEW_TASK_DEF_ARN" \
+  --deployment-configuration "minimumHealthyPercent=100,maximumPercent=200"
 
-Monitor for **15 minutes**.
-
-### Step 4 — Full rollout (100 %)
-
-```bash
-kubectl apply -f infra/k8s/canary-100pct.yaml
-kubectl delete -f infra/k8s/canary-5pct.yaml  # clean up routing rules
+aws ecs wait services-stable --cluster infinite-ai-<env> --services infinite-ai-<env>-gateway
 ```
 
 Confirm all metrics are stable for 30 minutes before closing the deploy.
 
 ---
 
-## Automatic rollback trigger
+## Automatic rollback
 
-The monitoring system fires a rollback if, during any canary step:
-
-- **Error rate** > 1 % for 2 consecutive minutes, OR
-- **p95 latency** > 10 s for 2 consecutive minutes.
-
-When the trigger fires:
-
-1. Traffic routing reverts to 0 % canary immediately (< 30 seconds).
-2. The on-call engineer is paged.
-3. The canary deployment is halted.
-4. An incident is opened automatically.
+The CloudWatch alarms above have no `alarm_actions` wired to anything that stops a
+rollout automatically yet — `infra/terraform/modules/observability`'s `alerts` SNS topic
+notifies (an email subscription, or whatever OQ-014's real paging integration ends up
+being once it exists), it does not act. A fired alarm during step 1 is a **manual**
+rollback trigger; there is no automatic one until something subscribes to `alerts` and
+calls `aws ecs update-service` back to the previous task definition itself.
 
 ---
 
 ## Manual rollback
 
-If automatic rollback does not fire but you need to roll back:
-
 ```bash
-# Revert routing to previous version immediately.
-kubectl apply -f infra/k8s/canary-0pct.yaml
+# List recent revisions and pick the one that was running before this deploy —
+# confirm by eye, never script a blind "current minus one" decrement.
+aws ecs list-task-definitions --family-prefix infinite-ai-<env>-gateway --sort DESC
 
-# Confirm traffic is fully on the old version.
-kubectl rollout status deployment/gateway
+PREVIOUS_TASK_DEF_ARN="<the ARN you confirmed above>"
 
-# Revert the commit and push.
-git revert <canary-sha>
+aws ecs update-service \
+  --cluster infinite-ai-<env> \
+  --service infinite-ai-<env>-gateway \
+  --task-definition "$PREVIOUS_TASK_DEF_ARN" \
+  --deployment-configuration "minimumHealthyPercent=100,maximumPercent=200"
+
+aws ecs wait services-stable --cluster infinite-ai-<env> --services infinite-ai-<env>-gateway
+
+# Revert the commit so the next deploy doesn't reintroduce the same regression.
+git revert <bad-sha>
 git push origin main
-
-# Apply the revert deploy (no canary needed for a rollback).
-kubectl set image deployment/gateway gateway=<previous-image>:<sha>
 ```
 
 If the migration is not backwards-compatible (unusual; should not happen if the
@@ -140,6 +170,24 @@ pnpm test:telemetry-coverage
 Update `docs/STAGE_LOG.md` if this deploy completes a stage gate.
 
 ---
+
+## What this cannot do yet (the actual gap, not glossed over)
+
+- **No traffic-level isolation between the canary task and the rest.** Step 1 puts one
+  new task behind the _same_ ALB target group as every old task — the ALB round-robins
+  across all of them, so "5% of traffic" is never true; it's closer to "1 in N requests,
+  N = current task count," and the CloudWatch alarms above are target-group-wide, not
+  scoped to the new task alone. A bad new task's errors are diluted by the old tasks'
+  successes in the same aggregate metric, which is a real detection gap against a subtle
+  regression.
+- **A real weighted canary needs:** a second target group per service (paired
+  "stable"/"canary"), a listener rule with a `forward` action listing both target groups
+  with explicit weights (or an AWS CodeDeploy `CODE_DEPLOY` deployment controller on the
+  ECS service, which automates exactly this — `CodeDeployDefault.ECSCanary10Percent5Minutes`
+  is the AWS-managed equivalent of this runbook's old 5%/25%/50%/100% steps). Neither is
+  built in `infra/terraform/modules/ecs-service` yet — a real, scoped follow-up, not
+  assumed done here.
+- **No automatic rollback trigger.** See "Automatic rollback" above.
 
 ## Contacts
 
