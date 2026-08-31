@@ -470,3 +470,19 @@ root package's new seed scripts needed to submit into L0_CONSTITUTION.
 the new `scripts/ratify-age-appropriateness.ts` (it already ratifies every
 AWAITING_RATIFICATION L0_CONSTITUTION candidate for a tenant regardless of kind) — no new
 dependency for that half.
+
+## Wiring `AgeAppropriatenessChecker` to the ingested data (OQ-015's runtime-checker half)
+
+`packages/guardrails` takes two new workspace dependencies, plus the same
+Testcontainers pair `packages/brain`/`packages/orchestrator`/`packages/curriculum-seed`
+already pin, for its own copy of the same integration-tier harness.
+
+| Package                      | Version       | Licence | Why                                                                                                                                                                                                                            | Replaces |
+| ---------------------------- | ------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| `@infinite-ai/brain`         | `workspace:*` | —       | `recall()` and `selectAgeAppropriatenessEntries()`, called from the new `brain-age-appropriateness.ts` — the first time this package has read Brain data rather than only validating and refusing on caller-supplied payloads. | —        |
+| `@infinite-ai/db`            | `workspace:*` | —       | `TenantClient` — the type `createBrainAgeAppropriatenessChecker` takes so its caller's already-open `withTenant()` transaction is what the Brain read runs inside (rule 5), not a second connection.                           | —        |
+| `@testcontainers/postgresql` | `12.0.4`      | MIT     | Same pinned version every other package's integration-tier harness already uses; spins up a real Postgres for `brain-age-appropriateness.integration.spec.ts`.                                                                 | —        |
+| `testcontainers`             | `12.0.4`      | MIT     | `@testcontainers/postgresql`'s own peer dependency, same version already pinned elsewhere in the tree.                                                                                                                         | —        |
+
+No cycle: `@infinite-ai/brain` does not depend on `@infinite-ai/guardrails`, confirmed
+before adding this.

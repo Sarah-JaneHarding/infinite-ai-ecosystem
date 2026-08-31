@@ -164,7 +164,14 @@ export async function runOutputGuardrails(
   const notify = options.notify ?? defaultEscalationNotifier;
   const span = tracer.startSpan('guardrails.output');
   try {
-    const checks: readonly (readonly [string, () => GuardrailVerdict])[] = [
+    // age_appropriateness is the one check in this composition that can be async (see
+    // AgeAppropriatenessChecker's own doc comment) — everything else here is synchronous,
+    // so the tuple type allows either and every branch is awaited uniformly rather than
+    // special-casing the one async entry.
+    const checks: readonly (readonly [
+      string,
+      () => GuardrailVerdict | Promise<GuardrailVerdict>,
+    ])[] = [
       ['schema', () => checkOutputSchema(input.outputSchema, input.output)],
       ['grounding', () => checkGrounding(input.citedIds, input.validCitationIds)],
       [
@@ -183,7 +190,7 @@ export async function runOutputGuardrails(
       ['cost', () => checkCost(input.actualCostUsd, input.costBudget)],
     ];
     for (const [name, run] of checks) {
-      const verdict = run();
+      const verdict = await run();
       span.addEvent(`guardrail.${name}`, { passed: verdict.passed });
       if (!verdict.passed) return await maybeEscalate(verdict, notify);
     }

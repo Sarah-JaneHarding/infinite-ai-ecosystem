@@ -271,6 +271,17 @@ export default tseslint.config(
     },
   },
   {
+    // brain-age-appropriateness.integration.spec.ts needs the same Testcontainers Postgres
+    // exception as every other package's integration tier (its own test/support/database.ts
+    // sets DATABASE_URL directly). Confined to guardrails' own tests.
+    files: ['packages/guardrails/test/**/*.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+      'no-restricted-syntax': 'off',
+      'no-restricted-globals': 'off',
+    },
+  },
+  {
     // The seed script runs as a standalone CLI against a fresh database, before any
     // application boots. It legitimately constructs its own client, reads the encryption
     // key from the environment, and prints progress.

@@ -145,3 +145,9 @@ jobs:
       # written blind against the same Testcontainers pattern, never previously wired in.
       - name: Curriculum-seed write-path integration suite (real Postgres)
         run: pnpm --filter @infinite-ai/curriculum-seed test:integration
+
+      # OQ-015's runtime-checker half: createBrainAgeAppropriatenessChecker's real
+      # recall()/selectAgeAppropriatenessEntries() read against a real Postgres, not the
+      # mocked unit test the package's own default `test` script already covers.
+      - name: Guardrails age-appropriateness checker integration suite (real Postgres)
+        run: pnpm --filter @infinite-ai/guardrails test:integration

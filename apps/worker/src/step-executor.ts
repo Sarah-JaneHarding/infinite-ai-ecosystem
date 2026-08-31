@@ -205,7 +205,7 @@ async function runAgentCall(
     );
   }
 
-  const verdict = checkAgeAppropriateness(output, deps.ageAppropriatenessChecker);
+  const verdict = await checkAgeAppropriateness(output, deps.ageAppropriatenessChecker);
   if (!verdict.passed) {
     if (verdict.refusal.escalation !== null) {
       const notify = deps.notify ?? defaultEscalationNotifier;

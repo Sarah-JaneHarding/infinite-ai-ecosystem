@@ -197,6 +197,7 @@ pnpm --filter @infinite-ai/db test:integration
 pnpm --filter @infinite-ai/brain test:integration
 pnpm --filter @infinite-ai/orchestrator test:integration
 pnpm --filter @infinite-ai/curriculum-seed test:integration
+pnpm --filter @infinite-ai/guardrails test:integration
 ```
 
 Each spins up its own throwaway Postgres, runs migrations against it, and tears it down

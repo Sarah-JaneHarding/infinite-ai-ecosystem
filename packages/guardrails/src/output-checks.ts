@@ -6,12 +6,18 @@
 // — template fidelity and age-appropriateness — are real mechanisms with no built-in rule,
 // not a silent pass dressed up as a check. Neither has a source this codebase can validate
 // against yet: `docs/OPEN_QUESTIONS.md` OQ-003 already asks for the school's own artefact
-// templates before template-fidelity can be built for real, and OQ-014 asks the same
+// templates before template-fidelity can be built for real, and OQ-015 asks the same
 // question for an age-appropriateness content policy — inventing either would be exactly
 // the kind of unsourced policy rule 0.3 forbids. Both take an injected checker, the same
 // "mechanism now, real check wired in once the source exists" shape
 // `packages/agents/src/registry.ts` already uses for `promptExists`/`evalSetExists`, and
 // default to passing when none is supplied — a documented gap, not a fake guarantee.
+//
+// OQ-015's source-material half is resolved as of 2026-08-28: `brain-age-appropriateness.ts`
+// in this same directory is a real `AgeAppropriatenessChecker` implementation, grounded in
+// the 206 ratified DBE CAPS clauses now in L0 (`@infinite-ai/brain`'s `AGE_APPROPRIATENESS`
+// constitution kind) — not wired in by default here, since a specific caller supplies it
+// (see that file's own header for why).
 
 import type { z } from 'zod';
 
@@ -89,14 +95,24 @@ export function checkReadability(
   return PASSED;
 }
 
-export type AgeAppropriatenessChecker = (output: unknown) => GuardrailVerdict;
+/**
+ * Async because a real implementation (`createBrainAgeAppropriatenessChecker`,
+ * brain-age-appropriateness.ts) has to read L0 constitution data through
+ * `@infinite-ai/brain`'s `recall()` — an inherently async Postgres read — before it can
+ * judge anything. There is no synchronous way to ground a verdict in ratified policy, so
+ * this type was never really synchronous; the original signature just hadn't needed to
+ * read anything yet.
+ */
+export type AgeAppropriatenessChecker = (
+  output: unknown,
+) => GuardrailVerdict | Promise<GuardrailVerdict>;
 
-/** See this module's header: no content policy is supplied yet (OQ-014), so with no
+/** See this module's header: no content policy is supplied yet (OQ-015), so with no
  * `checker` supplied this passes every output rather than refusing against invented rules.*/
-export function checkAgeAppropriateness(
+export async function checkAgeAppropriateness(
   output: unknown,
   checker?: AgeAppropriatenessChecker,
-): GuardrailVerdict {
+): Promise<GuardrailVerdict> {
   return checker === undefined ? PASSED : checker(output);
 }
 

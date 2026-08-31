@@ -50,6 +50,11 @@ export {
 export { buildTemplateFidelityChecker } from './template-fidelity.js';
 
 export {
+  createBrainAgeAppropriatenessChecker,
+  type AgeAppropriatenessJudge,
+} from './brain-age-appropriateness.js';
+
+export {
   GuardrailEscalationError,
   defaultEscalationNotifier,
   runInputGuardrails,

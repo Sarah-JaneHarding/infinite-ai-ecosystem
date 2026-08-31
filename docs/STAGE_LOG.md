@@ -7149,3 +7149,79 @@ format:check` all clean. `packages/brain`'s own unit tier: 10 files / 86 tests, 
 9/79. Both new integration tests pass against a real (Testcontainers) Postgres. The seed
 and ratify scripts were run against the real dev stack's Postgres, not merely reviewed —
 618 rows created and verified with a direct RLS-scoped `psql` query.
+
+## Wiring `AgeAppropriatenessChecker` to the ingested data — OQ-015's runtime-checker half
+
+The prior entry's "deliberately not done" item, picked up the same day. `PR #48`'s merge
+restarted `claude/continue-building-mpf8sl` from `main` first (its own PR had merged and
+another PR — brand-identity work from a different session — had landed on `main` in the
+meantime), per this repo's merged-PR restart convention.
+
+**The breaking signature change.** `AgeAppropriatenessChecker`
+(`packages/guardrails/src/output-checks.ts`) is now
+`(output: unknown) => GuardrailVerdict | Promise<GuardrailVerdict>` — a real
+implementation has to read L0 through `recall()`, an inherently async Postgres read, so
+the type was never really synchronous; it just hadn't needed to read anything yet.
+`checkAgeAppropriateness` is now `async`; `engine.ts`'s `runOutputGuardrails` awaits its
+composed check same as every other; `apps/worker/src/step-executor.ts`'s call site awaits
+it. A pre-existing comment typo (`output-checks.ts`'s own header citing "OQ-014" for the
+age-appropriateness gap — should always have said OQ-015, OQ-014 is the paging question)
+was fixed while touching the same lines.
+
+**The real implementation.** `packages/guardrails/src/brain-age-appropriateness.ts`'s new
+`createBrainAgeAppropriatenessChecker(tx, tenantId, phase, judge?)` retrieves the ratified
+`AGE_APPROPRIATENESS` clauses for one phase via the same `recall()` every other Brain
+consumer uses — no second read path — using a fixed, documented system actor
+(`GUARDRAIL_SYSTEM_ACTOR`) with the least-broad existing role (`smt`, tenant-wide
+`lesson_plan` read) that RBAC already grants, the same "fixed system identity, least
+privilege for its one job" shape `packages/db/prisma/seed.ts`'s own `SEED_ACTOR` already
+uses for a different mechanical task. What it deliberately does not do: decide whether
+`output` actually _is_ age-appropriate. The 206 ingested clauses are descriptive
+developmental principles, not a wordlist or a mechanical pass/fail rule — mechanically
+"matching" free-text output against them would be fabricating a classifier, exactly the
+kind of invented policy rule 0.3 forbids. So the checker retrieves the real, ratified
+clauses and hands them to an injected `AgeAppropriatenessJudge` — the same "mechanism now,
+real model call once a caller with its own prompt/eval set/cost budget exists" shape
+`packages/evals/src/scorers.ts`'s own `LlmJudge` already uses for the identical reason
+(OQ-016): a model call has to go through the Model Gateway (rule 3), which means a new
+agent, not something this package can stand up unilaterally. With no judge supplied, it
+passes — the same honesty every other check in `output-checks.ts` already holds to when
+its policy input is missing.
+
+**Deliberately not wired into `apps/worker`'s default path, and why.** Neither
+`StepExecutorDeps` nor `WorkerHostDeps` were changed to construct and inject this checker
+by default. Reason: nothing in the generic agent-call path — `PipelineJobData`
+(`runId`/`tenantId`/`actorId` only) or `StepExecutionContext.input: unknown` — carries a
+phase or grade for an arbitrary agent call. No `AgentContract` field declares one either.
+Guessing at a convention for extracting one from an arbitrary agent's own output shape
+would be inventing exactly the kind of thing this file already declines to invent for the
+judgment itself. A specific pipeline that already knows its own phase (e.g. a MOD-01
+curriculum-planning pipeline) can construct `createBrainAgeAppropriatenessChecker`
+directly and pass it through `WorkerHostDeps.ageAppropriatenessChecker` — the injection
+point already existed and takes effect with no other code change, exactly as
+`step-executor.ts`'s own comments already promised.
+
+**Testing.** `packages/guardrails` gained its own integration tier (previously it had
+none — "everything in it is pure and synchronous" was true until this change), mirroring
+`packages/brain`/`packages/orchestrator`/`packages/curriculum-seed`'s own
+Testcontainers-harness shape exactly (`test/support/database.ts`,
+`vitest.integration.config.ts`). `brain-age-appropriateness.spec.ts` (4 cases, mocking
+`@infinite-ai/brain`) proves the dispatch logic — no judge passes, an appropriate verdict
+passes, an inappropriate one refuses with the judge's own rationale, the phase is threaded
+through to `selectAgeAppropriatenessEntries` correctly — without needing a database.
+`brain-age-appropriateness.integration.spec.ts` submits and ratifies two clauses (one
+Foundation, one Senior) into a real Testcontainers Postgres, then proves the checker
+retrieves only the Foundation one when asked for that phase and hands it to the judge —
+a real `recall()`, not a mock. Wired into CI (`.github/workflows/ci.yml`) alongside the
+existing Postgres-backed integration jobs, and `docs/DEV_SETUP.md`'s integration-test list
+updated.
+
+### Verification
+
+Full workspace `pnpm typecheck` / `pnpm lint` clean for `packages/guardrails` and
+`apps/worker`. `packages/guardrails`'s unit tier: 10 files / 186 tests (up from 9/182),
+100% coverage on the new file, package-wide coverage still above the §4.2 95% threshold
+(99.63% lines). Its new integration test passed against a real Testcontainers Postgres —
+run directly, not just reviewed. `apps/worker`'s own unit tier: 29/29, unchanged (the
+existing tests already used sync mock checkers, which the widened
+`GuardrailVerdict | Promise<GuardrailVerdict>` type still accepts).

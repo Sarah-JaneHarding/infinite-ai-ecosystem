@@ -85,14 +85,21 @@ describe('checkReadability', () => {
 });
 
 describe('checkAgeAppropriateness', () => {
-  it('passes when no checker is supplied — no content policy exists yet (OQ-014)', () => {
-    expect(checkAgeAppropriateness({ anything: true }).passed).toBe(true);
+  it('passes when no checker is supplied — no content policy exists yet (OQ-015)', async () => {
+    expect((await checkAgeAppropriateness({ anything: true })).passed).toBe(true);
   });
 
-  it('defers entirely to an injected checker when one is supplied', () => {
+  it('defers entirely to an injected checker when one is supplied', async () => {
     const alwaysRefuses = () =>
       refuse('age_inappropriate', 'not suitable for this grade');
-    const verdict = checkAgeAppropriateness({}, alwaysRefuses);
+    const verdict = await checkAgeAppropriateness({}, alwaysRefuses);
+    expect(verdict.passed).toBe(false);
+    if (!verdict.passed) expect(verdict.refusal.code).toBe('age_inappropriate');
+  });
+
+  it('awaits an injected async checker', async () => {
+    const asyncRefuses = async () => refuse('age_inappropriate', 'async refusal');
+    const verdict = await checkAgeAppropriateness({}, asyncRefuses);
     expect(verdict.passed).toBe(false);
     if (!verdict.passed) expect(verdict.refusal.code).toBe('age_inappropriate');
   });
