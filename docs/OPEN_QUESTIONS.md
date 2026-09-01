@@ -28,9 +28,10 @@ values.** If it is not in a supplied source document, it goes here.
 | OQ-021 | 2026-08-12 | 18 | OPEN | **Dunning emails need a transactional email provider.** The `billing_dunning_emails` feature flag gates automated OVERDUE/SUSPENDED notifications. No credentialed email provider (SendGrid, AWS SES, or similar) has been configured. OQ-014 (paging) and this question should be resolved together — the same provider likely serves both. |
 | OQ-022 | 2026-08-12 | 17 | OPEN | **POPIA erasure for append-only tables.** `audit_event`, `consent_record`, and `tenant_metering_event` carry BEFORE DELETE triggers that refuse all deletes, including CASCADE deletes from `tenant`. On tenant closure, only mutable tables are erased; append-only ledgers are retained under legal-obligation and POPIA compliance bases. Three decisions are needed: (1) Which data categories in these tables constitute "personal information" under POPIA §1? (2) Is pseudonymization (replacing `actor_id` and `subject_token` with a replacement token) the correct erasure technique, and if so what replaces them? (3) Which specific retention periods apply to audit and consent records for South African schools? Until resolved, append-only data is retained indefinitely on tenant closure. See `docs/POPIA.md` and `docs/COST_MODEL.md`. |
 | OQ-023 | 2026-08-20 | 29 | OPEN | **`GradeFramework` needs `hoursPerWeek` and `assessmentWeighting` data.** `GradeFramework` in `@infinite-ai/contracts` requires `time.hoursPerWeek` (a Sourced, required field) and `assessment` (SBA/exam splits per component, similarly Sourced). Neither field is present in any of the 21 CAPS source files ingested into L0 in Stage 29 — those files record topic-area names, content areas, and term-level weightings, but not per-subject time allocations or formal SBA/exam splits at the grade-level. CE-01 can populate `contentAreas` from L0 `CAPS_CANON` records but will continue to return `NEEDS_INPUT` for a complete `GradeFramework` until these fields are supplied. Source documents needed: CAPS Policy section-level time-allocation tables (typically an appendix per subject/phase document) and the CAPS Assessment Policy for each phase. These have not been supplied. |
-| OQ-024 | 2026-08-24 | 06 | OPEN | **`branch` step conditions cannot see a prior step's actual output.** Stage 06 step 4's own accepted scope line — recorded in `docs/STAGE_LOG.md`'s step 5 entry — is that "every step today reads the run's original `input`, not a previous step's output." That was a deliberate, reviewed simplification when it only affected an edited artefact not being fed forward. Stage 52 (`packages/orchestrator/src/runner.ts`) built real `branch` condition evaluation (`RunnerOptions.evaluateCondition: (condition: string, input: unknown) => boolean`) and found the same simplification now blocks something bigger: `evaluateCondition` only ever receives `run.input` — the static payload the run opened with — never what an intervening agent actually produced. Every branch built so far is narrated in its own pipeline file as evaluating a prior agent's output (e.g. `mod-02.ts`'s `branch-on-core-health`: "Condition support.core_health_blocked evaluates AC-02's output.status === 'blocked'"; `mod-05.ts`'s `branch-on-suppression`, `branch-on-intervention`; `le.ts`'s `branch-on-commons-eligible`), but the runner has no mechanism to make that true. Wiring a real per-condition evaluator in `apps/worker` today (the same "mechanism now, real check wired later" shape `@infinite-ai/agents`' registry already uses for `promptExists`/`evalSetExists`) would either silently read stale/absent fields from the original request, or require inventing which fields `run.input` is expected to carry up front — both misrepresent what the condition claims to check, not merely an honest gap. `apps/worker/src/worker-host.ts` therefore wires `prepareApproval` (Stage 52) but deliberately leaves `evaluateCondition` unwired, so a run hitting a `branch` step fails loudly (`OrchestratorRunnerError`) rather than silently branching on the wrong thing. **Decision needed:** how should a step's own output become available to a later step's condition (and, more broadly, to a later step's `input`, the same gap step 5 already named) — a mutable run-context column with a migration, an explicit "read the last N step outputs" parameter threaded through `StepExecutionContext`, or something else? This blocks real branching in MOD-02 (RTI, Monitoring), MOD-05 (PD Analysis), and LE (Commons) in production; it blocks nothing already built, since those pipelines still validate structurally and run their non-branch steps correctly. |
+| OQ-024 | 2026-08-24 | 06 | RESOLVED (2026-09-01) | **`branch` step conditions cannot see a prior step's actual output.** `evaluateCondition` only ever received `run.input`, never what an intervening agent produced, even though every `branch` step is narrated as reading one specific prior step's output. **Answer:** derive it structurally — no migration, no new field. See Resolved section below. |
 | OQ-025 | 2026-08-25 | 16 | RESOLVED (2026-08-25) | The per-request CSP nonce did not reach the client on `/sign-in`. **Answer:** root cause was `next-auth@4.24.15`'s `withAuth()` unconditionally short-circuiting before the wrapped handler for the sign-in page. See Resolved section below. |
 | OQ-026 | 2026-08-25 | 06/10 | OPEN | **`checkDiagnosticLanguage` has no caller.** `packages/guardrails/src/output-checks.ts` scans MOD-02 agent output for diagnostic/clinical terms (ADHD, dyslexia, autism, and similar) that must never appear in content reaching guardians or general school records — "the SIAS programme is an educational process, not a clinical one." Found alongside OQ-014/OQ-015 while wiring `checkAgeAppropriateness` into `apps/worker/src/step-executor.ts` (see `docs/STAGE_LOG.md`'s "Post-52 audit" entry): the function exists, is unit-tested, and is never called from anywhere in `apps/worker` or `apps/gateway`. Unlike age-appropriateness, this one was deliberately left unwired rather than added alongside it, because it needs per-agent knowledge the generic step executor does not have — which of a MOD-02 agent's output fields are the "free text output fields (letter body, goal text, next steps, section content)" its own doc comment says to scan; wiring it against the wrong fields, or against all of an agent's output indiscriminately, risks both false negatives (a field missed) and false positives (a legitimate use of "screening" or similar in a field never meant to reach a guardian). **Decision needed:** where this belongs — a field allow-list per MOD-02 agent contract, a dedicated post-processing step in the MOD-02 pipelines specifically, or another shape — before it can be wired in for real. Blocks nothing already built; blocks trusting that no diagnostic label can reach a guardian via a MOD-02 pipeline today. |
+| OQ-027 | 2026-09-01 | 06/10 | OPEN | **`support.needs_referral`'s SIAS-status field has no ratified shape.** Found while resolving OQ-024: `mod-02.ts`'s `branch-on-referral` is narrated as evaluating "whether any monitored learner has reached REFERRAL_PENDING SIAS status," but its predecessor step (`check-fidelity`, a `map` over AC-07 fidelity checks) never produces that — `AC07Result` (`@infinite-ai/analytics`) has no `siasStatus` field, and no schema anywhere in `@infinite-ai/contracts` or `@infinite-ai/analytics` declares what an `activeInterventions` collection item carries. Whatever the real source is (each item carrying its own `siasStatus`, a separate collection alongside `activeInterventions` in the run's own input, or a fresh read from the SIAS state machine at branch time — a capability `evaluateCondition` does not have today), inventing a field name to unblock this one condition risks exactly the "silently read stale/absent fields" failure OQ-024 itself flagged. `apps/worker/src/condition-evaluator.ts`'s `evaluateCondition` implements the other four conditions for real (each reads a field a ratified Zod schema already fixes) and throws `UnresolvedConditionError` for this one rather than guessing. **Decision needed:** what shape carries a monitored learner's current SIAS status into the MOD-02 Monitoring pipeline, and where it is read from. Blocks real branching in MOD-02 Monitoring only; blocks nothing else, since MOD-02 RTI, MOD-05 PD Analysis and LE Commons are all resolved. |
 
 ### Phase 4 — proposed extension (Stages 19-25), not in the original 18-stage manual
 
@@ -127,3 +128,58 @@ Not independently re-verified against a real Keycloak-issued session (this sandb
 entirely, so it does not depend on Keycloak being reachable to be correct, but a real
 authenticated request through Keycloak is still the strongest possible confirmation and
 has not been done.
+
+### OQ-024 — `branch` step conditions cannot see a prior step's actual output · resolved 2026-09-01
+
+**Question.** `RunnerOptions.evaluateCondition` only ever received `run.input` — the run's
+static starting payload — never what an intervening agent actually produced, even though
+every `branch` step built so far is narrated in its own pipeline file as reading one
+specific prior step's output (e.g. `mod-02.ts`'s `branch-on-core-health`: "Condition
+support.core_health_blocked evaluates AC-02's output.status === 'blocked'"). Wiring a real
+per-condition evaluator against `run.input` alone would mean silently reading stale or
+absent fields from the original request — `apps/worker/src/worker-host.ts` therefore left
+`evaluateCondition` unwired entirely, so any run reaching a `branch` step failed loudly.
+
+**Answer.** No migration and no new field on `BranchStep` are needed — the DAG already
+says which step feeds a branch's condition; the runner just never looked. `dag.ts` gained
+`findPredecessorStepId(pipeline, stepId)`: the one step whose forward edge (`next`, or a
+branch's own `onTrue`/`onFalse`) points at `stepId`, throwing if more than one step does
+(an ambiguous target is a pipeline authoring error, not something to guess between). Every
+`branch` step across MOD-02, MOD-05 and LE has exactly one predecessor today.
+
+`runner.ts`'s `resolveConditionInput` uses that to build a new `ConditionInput` —
+`{ runInput, stepOutput }` — from data the runner already persists, no schema change:
+`stepOutput` is the predecessor's own `SUCCEEDED` `OrchestratorStepRunRow.output`
+(`listStepRuns` already reads this for retry/timeout bookkeeping elsewhere in the same
+file), or an array of every item's output, in collection order, when the predecessor is a
+`map` step (a map step has no output of its own — `branch-on-referral`'s predecessor,
+`check-fidelity`, is one). `runInput` stays `run.input`, unchanged, because not every
+condition can be answered from a predecessor's output alone: `branch-on-referral` needs
+each monitored learner's SIAS status, which no step in its pipeline computes (see OQ-027,
+below — that specific condition is still not resolved). `ConditionEvaluator`'s signature
+changed from `(condition, input: unknown)` to `(condition, input: ConditionInput)` — a
+breaking change with zero blast radius, since nothing implemented it before this fix.
+
+`apps/worker/src/condition-evaluator.ts` is new: a real `evaluateCondition`, wired into
+`worker-host.ts`'s `RunnerOptions` alongside `executeStep`/`prepareApproval`. It resolves
+four of the five declared conditions for real, each against a field a ratified Zod schema
+already fixes (`AC02Result.status`, `PD04Result.status`, `PD05Result`'s
+`topPriorityGap.suggestedInterventionType`, `LE08Result.status`). Writing this surfaced a
+separate, pre-existing defect: `le.ts`'s own comment said `learning.commons_publish_blocked`
+checks `LE08Result.status === 'blocked'`, but `LE08Result` has no `'blocked'` literal at
+all — its real statuses are `'published'`, `'suppressed_below_threshold'`,
+`'suppressed_no_opt_in'` and `'needs_input'`. Fixed to `status !== 'published'` and the
+stale comment corrected in the same commit.
+
+Verified: `packages/orchestrator`'s full unit suite (189 tests, including new
+`findPredecessorStepId` cases in `dag.spec.ts`) and `apps/worker`'s full unit suite (35
+tests, including the new `condition-evaluator.spec.ts`) pass; the whole workspace's
+`typecheck`/`lint`/`test` are clean. New integration coverage in
+`runner.integration.spec.ts` (a branch reading its predecessor's real output, routing on
+both outcomes, aggregating a map predecessor's item outputs in order, and the two error
+paths — no `evaluateCondition` supplied, and a `branch` step with no predecessor) could not
+be run in this authoring sandbox (no Docker daemon) — proven for real the same way every
+other Testcontainers-backed suite in this package already is, by CI's own `database` job.
+
+This blocked real branching in MOD-02 RTI, MOD-05 PD Analysis and LE Commons; all three are
+now resolved. MOD-02 Monitoring's `branch-on-referral` is the one exception — see OQ-027.

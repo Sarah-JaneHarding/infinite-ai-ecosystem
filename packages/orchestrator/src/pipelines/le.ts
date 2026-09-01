@@ -263,8 +263,11 @@ const commonsDefinition = {
       compensatesWith: null,
       next: 'branch-on-commons-eligible',
     },
-    // Condition "learning.commons_publish_blocked" evaluates LE-08's output.status ===
-    // "blocked". The runner's ConditionEvaluator injects this check.
+    // Condition "learning.commons_publish_blocked" evaluates LE-08's output.status !==
+    // "published" — LE08Result's real statuses are "published", "suppressed_below_
+    // threshold", "suppressed_no_opt_in" and "needs_input"; there is no literal "blocked"
+    // (a stale assumption this comment used to repeat before LE-08's contract was
+    // finalised). The runner's ConditionEvaluator injects this check.
     'branch-on-commons-eligible': {
       id: 'branch-on-commons-eligible',
       kind: 'branch' as const,

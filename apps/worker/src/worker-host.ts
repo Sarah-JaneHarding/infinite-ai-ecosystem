@@ -28,6 +28,7 @@ import { Worker } from 'bullmq';
 import { z } from 'zod';
 
 import { prepareApproval } from './approval.js';
+import { evaluateCondition } from './condition-evaluator.js';
 import type { PipelineJobData } from './queue-names.js';
 import { createStepExecutor } from './step-executor.js';
 import { createToolHandlers } from './tool-handlers.js';
@@ -92,7 +93,11 @@ export class WorkerHost {
             ...(this.deps.notify === undefined ? {} : { notify: this.deps.notify }),
           });
 
-          const runnerOptions: RunnerOptions = { executeStep, prepareApproval };
+          const runnerOptions: RunnerOptions = {
+            executeStep,
+            prepareApproval,
+            evaluateCondition,
+          };
 
           await runToCompletion(tx, pipeline, runId, runnerOptions);
         });
