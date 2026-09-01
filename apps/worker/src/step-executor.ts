@@ -27,6 +27,12 @@
 //   guess which output fields are free text: it reads that list straight off the contract
 //   and lets `extractFreeText` do the walking.
 //
+//   `checkReadability` is wired in too, but only for AC-10 (`"readability_guard"` is also
+//   declared by TB-03, left for its own follow-up — see the call site's own comment for
+//   why): AC-10's own schema already states its exact tolerance rule, so this independently
+//   re-measures its self-reported `readabilityAdequate` claim rather than trusting it,
+//   English-only (the metric itself is), which AC-10's own `homeLanguage` may not be.
+//
 // tool_call and compensation/tool: look up the handler by toolName and invoke it. The
 //   handlers are created by the caller within a withTenant transaction so they have a live
 //   TenantClient — rule 5 enforced at the call site, not here.
@@ -42,6 +48,7 @@ import { ChatCompletionRequest, ChatCompletionResponse } from '@infinite-ai/cont
 import {
   checkAgeAppropriateness,
   checkDiagnosticLanguage,
+  checkReadability,
   defaultEscalationNotifier,
   extractFreeText,
   type AgeAppropriatenessChecker,
@@ -227,6 +234,44 @@ async function runAgentCall(
           diagnosisVerdict.refusal.explanation,
         diagnosisVerdict.refusal,
       );
+    }
+  }
+
+  // A sibling gap to OQ-026, scoped to AC-10 only: "readability_guard" was declared on
+  // AC-10's own contract but never independently checked — only ever the agent's own
+  // self-reported `readabilityAdequate`, taken at face value. AC10Result's own comment
+  // already states the exact rule ("estimatedReadabilityGrade <= targetReadabilityGrade +
+  // 1" — a ceiling only, no floor: a guardian letter simpler than the target grade is
+  // never a problem), so this re-measures `reportText` with the guardrails package's real
+  // Flesch-Kincaid scorer instead of trusting the claim. English only: the metric is
+  // English-only (see `packages/contracts`' `toolbox-readability-bands.spec.ts`), and
+  // AC-10 may write in any of the eleven official languages (`AC10Input.homeLanguage`) —
+  // for anything else there is no validated metric to check against, so the agent's own
+  // claim is trusted, the same "no invented metric" carve-out TB-03/TB-06 already
+  // established for readability. TB-03 also declares `readability_guard` but is not
+  // covered here — a separate, larger piece of work (its own two-sided `GradeBand` and the
+  // same English-only carve-out) left for its own follow-up rather than guessed at now.
+  if (agentId === 'AC-10' && contract.guardrails.includes('readability_guard')) {
+    const reportText = (output as { reportText?: unknown } | null)?.reportText;
+    const homeLanguage = (input as { homeLanguage?: unknown } | null)?.homeLanguage;
+    const targetGrade = (input as { targetReadabilityGrade?: unknown } | null)
+      ?.targetReadabilityGrade;
+    if (
+      typeof reportText === 'string' &&
+      homeLanguage === 'en' &&
+      typeof targetGrade === 'number'
+    ) {
+      const readabilityVerdict = checkReadability(reportText, {
+        minGrade: Number.NEGATIVE_INFINITY,
+        maxGrade: targetGrade + 1,
+      });
+      if (!readabilityVerdict.passed) {
+        throw new GuardrailRefusalError(
+          `Agent "${agentId}" (step "${stepId}") output failed readability_guard: ` +
+            readabilityVerdict.refusal.explanation,
+          readabilityVerdict.refusal,
+        );
+      }
     }
   }
 
