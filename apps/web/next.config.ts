@@ -4,7 +4,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   // Transpile workspace packages so Next.js can process their TypeScript source.
-  transpilePackages: ['@infinite-ai/design-system', '@infinite-ai/security'],
+  transpilePackages: [
+    '@infinite-ai/design-system',
+    '@infinite-ai/security',
+    '@infinite-ai/school-setup',
+  ],
   // Stage 16: full security header hardening.
   // Values are inlined here because next.config.ts is loaded by Next.js's own config
   // loader which does not do .js→.ts extension remapping for workspace packages.
