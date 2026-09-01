@@ -838,6 +838,7 @@ enum BrainConstitutionKind {
   ASSESSMENT_POLICY
   POPIA_RULE
   HOUSE_VOICE
+  AGE_APPROPRIATENESS
 
   @@map("brain_constitution_kind")
 }
