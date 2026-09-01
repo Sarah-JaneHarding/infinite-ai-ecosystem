@@ -1,5 +1,5 @@
-import { SchoolConfig } from './types.js';
-import type { LanguageSettings, TermWeeks } from './types.js';
+import { SchoolConfig } from './types';
+import type { LanguageSettings, TermWeeks } from './types';
 
 /** Returns periods per week (each period = 30 min; 2 periods per hour). */
 export function periodsFromHours(hoursPerWeek: number): number {

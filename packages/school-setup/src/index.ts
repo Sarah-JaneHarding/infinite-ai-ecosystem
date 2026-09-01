@@ -10,13 +10,13 @@ export {
   SubjectGradePeriods,
   StaffMember,
   SchoolConfig,
-} from './types.js';
+} from './types';
 
-export type { SaLanguage, CapsPhase, CapsSubject, StaffRole } from './types.js';
+export type { SaLanguage, CapsPhase, CapsSubject, StaffRole } from './types';
 
 export {
   periodsFromHours,
   totalWeeks,
   validateLanguageConflicts,
   validateSchoolConfig,
-} from './validate.js';
+} from './validate';
