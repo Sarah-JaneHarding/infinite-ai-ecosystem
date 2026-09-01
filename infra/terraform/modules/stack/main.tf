@@ -298,15 +298,23 @@ module "ecs_service_gateway" {
 
   iam_policy_arns = [module.object_store.read_write_policy_arn]
 
-  environment = {
-    NODE_ENV     = "production"
-    APP_REGION   = "af-south-1"
-    LOG_LEVEL    = var.log_level
-    GATEWAY_PORT = "8080"
-  }
+  environment = merge(
+    {
+      NODE_ENV     = "production"
+      APP_REGION   = "af-south-1"
+      LOG_LEVEL    = var.log_level
+      GATEWAY_PORT = "8080"
+    },
+    # Ship LLM traces to Langfuse (packages/telemetry/src/tracing.ts's own header) —
+    # plain, not secret: it's a URL, no credential in it.
+    { OTEL_EXPORTER_OTLP_ENDPOINT = module.langfuse.otlp_endpoint },
+  )
 
   secrets = {
     DATABASE_URL = "${module.database.app_role_secret_arns["app_rw"]}:url::"
+    # The Basic-auth header module.langfuse generated for this environment's own
+    # Langfuse project — never plain env, since it carries the project's secret key.
+    OTEL_EXPORTER_OTLP_HEADERS = "${module.langfuse.otlp_header_secret_arn}:header::"
   }
 
   tags = var.tags
@@ -334,19 +342,23 @@ module "ecs_service_worker" {
 
   iam_policy_arns = [module.object_store.read_write_policy_arn]
 
-  environment = {
-    NODE_ENV              = "production"
-    APP_REGION            = "af-south-1"
-    LOG_LEVEL             = var.log_level
-    WORKER_PORT           = "8081"
-    GATEWAY_BASE_URL      = "http://${aws_lb.this.dns_name}"
-    OBJECT_STORE_ENDPOINT = module.object_store.endpoint
-    OBJECT_STORE_BUCKET   = module.object_store.bucket_name
-  }
+  environment = merge(
+    {
+      NODE_ENV              = "production"
+      APP_REGION            = "af-south-1"
+      LOG_LEVEL             = var.log_level
+      WORKER_PORT           = "8081"
+      GATEWAY_BASE_URL      = "http://${aws_lb.this.dns_name}"
+      OBJECT_STORE_ENDPOINT = module.object_store.endpoint
+      OBJECT_STORE_BUCKET   = module.object_store.bucket_name
+    },
+    { OTEL_EXPORTER_OTLP_ENDPOINT = module.langfuse.otlp_endpoint },
+  )
 
   secrets = {
-    DATABASE_URL = "${module.database.app_role_secret_arns["worker_rw"]}:url::"
-    REDIS_URL    = "${module.cache.redis_url_secret_arn}:url::"
+    DATABASE_URL               = "${module.database.app_role_secret_arns["worker_rw"]}:url::"
+    REDIS_URL                  = "${module.cache.redis_url_secret_arn}:url::"
+    OTEL_EXPORTER_OTLP_HEADERS = "${module.langfuse.otlp_header_secret_arn}:header::"
   }
 
   tags = var.tags
@@ -384,7 +396,52 @@ module "ecs_service_web" {
   tags = var.tags
 }
 
+# --- Langfuse (self-hosted LLM observability) --------------------------------------
+# See modules/langfuse's own header. Runs on this same ECS cluster (not a second one);
+# its own ALB, since host-based routing on the ALB above needs a real domain to route
+# on and this must also work when var.domain_name is null.
+
+module "langfuse" {
+  source = "../langfuse"
+
+  name               = "${var.name}-langfuse"
+  vpc_id             = module.network.vpc_id
+  public_subnet_ids  = module.network.public_subnet_ids
+  private_subnet_ids = module.network.private_subnet_ids
+  # A single AZ — see modules/clickhouse's own variable doc for why this can't be a list.
+  clickhouse_subnet_id = module.network.private_subnet_ids[0]
+
+  cluster_id   = aws_ecs_cluster.this.arn
+  cluster_name = aws_ecs_cluster.this.name
+
+  # "langfuse." + the main app's own domain — not a second, independent domain
+  # decision; null flows through unchanged when var.domain_name itself is null.
+  domain_name = var.domain_name == null ? null : "langfuse.${var.domain_name}"
+  dns_zone_id = var.dns_zone_id
+
+  clickhouse_instance_type  = var.langfuse_clickhouse_instance_type
+  clickhouse_volume_size_gb = var.langfuse_clickhouse_volume_size_gb
+  db_instance_class         = var.langfuse_db_instance_class
+  db_multi_az               = var.langfuse_db_multi_az
+  cache_node_type           = var.langfuse_cache_node_type
+  cache_multi_az            = var.langfuse_cache_multi_az
+  web_desired_count         = var.langfuse_web_desired_count
+  worker_desired_count      = var.langfuse_worker_desired_count
+  image_tag                 = var.langfuse_image_tag
+  init_user_email           = var.langfuse_init_user_email
+
+  tags = var.tags
+}
+
 # --- Observability -----------------------------------------------------------------
+#
+# Deliberately does not (yet) cover module.langfuse's own two services or its ALB: this
+# module's alarms are keyed on one ALB's arn_suffix (aws_lb.this above), and Langfuse
+# has its own, separate ALB (modules/langfuse's own header explains why) — extending
+# this module to alarm across a second, independent ALB is a real, scoped follow-up,
+# not assumed here. Langfuse's own CPU could still be added to ecs_service_names
+# trivially; left out for now so this list stays "the app's own three services," not a
+# silent partial addition of a fourth and fifth.
 
 module "observability" {
   source = "../observability"

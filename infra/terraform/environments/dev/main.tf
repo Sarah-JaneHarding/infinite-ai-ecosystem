@@ -55,4 +55,6 @@ module "stack" {
   gateway_image_tag = var.gateway_image_tag
   worker_image_tag  = var.worker_image_tag
   web_image_tag     = var.web_image_tag
+
+  langfuse_init_user_email = var.langfuse_init_user_email
 }

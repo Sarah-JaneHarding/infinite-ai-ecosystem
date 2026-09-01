@@ -173,6 +173,62 @@ variable "alert_email" {
   default = null
 }
 
+# --- Langfuse (self-hosted LLM observability) -------------------------------------
+# See modules/langfuse's own header for what this deploys and why. domain_name for
+# Langfuse's own ALB/cert/DNS is derived below ("langfuse." + var.domain_name), not a
+# second independent domain decision — see the "module langfuse" block.
+
+variable "langfuse_clickhouse_instance_type" {
+  type    = string
+  default = "t4g.medium"
+}
+
+variable "langfuse_clickhouse_volume_size_gb" {
+  type    = number
+  default = 50
+}
+
+variable "langfuse_db_instance_class" {
+  type    = string
+  default = "db.t4g.micro"
+}
+
+variable "langfuse_db_multi_az" {
+  type    = bool
+  default = false
+}
+
+variable "langfuse_cache_node_type" {
+  type    = string
+  default = "cache.t4g.micro"
+}
+
+variable "langfuse_cache_multi_az" {
+  type    = bool
+  default = false
+}
+
+variable "langfuse_web_desired_count" {
+  type    = number
+  default = 1
+}
+
+variable "langfuse_worker_desired_count" {
+  type    = number
+  default = 1
+}
+
+variable "langfuse_image_tag" {
+  description = "Langfuse's own release tag — see modules/langfuse's own doc comment on this same variable for why this is a deliberate version bump, not a CD-pipeline deploy."
+  type        = string
+  default     = "4.25.0"
+}
+
+variable "langfuse_init_user_email" {
+  description = "The first admin account for this environment's own Langfuse instance. No default — see modules/langfuse's own doc comment on this variable."
+  type        = string
+}
+
 variable "tags" {
   type    = map(string)
   default = {}
