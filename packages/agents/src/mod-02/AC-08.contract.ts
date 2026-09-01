@@ -20,6 +20,9 @@ export const AC08Contract = validateAgentContract({
   model: 'support.screen',
   tools: [],
   guardrails: ['pii_guard', 'diagnosis_guard'],
+  /** 'scribed'.actionItems (meeting-level text), each decision's own nextSteps (an array
+   * nested inside the decisions array), and 'needs_input'.detail. */
+  freeTextOutputFields: ['actionItems', 'decisions.nextSteps', 'detail'],
   budget: { maxTokens: 2000, maxCostUsd: 0.006 },
   evalSetRef: 'AC-08',
   requiresApproval: true,

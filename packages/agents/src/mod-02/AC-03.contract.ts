@@ -19,6 +19,8 @@ export const AC03Contract = validateAgentContract({
   model: 'support.screen',
   tools: [],
   guardrails: ['pii_guard', 'diagnosis_guard'],
+  /** 'recommended'.rationale (the SBST-facing text) and 'needs_input'.detail. */
+  freeTextOutputFields: ['rationale', 'detail'],
   budget: { maxTokens: 1200, maxCostUsd: 0.004 },
   evalSetRef: 'AC-03',
   requiresApproval: false,

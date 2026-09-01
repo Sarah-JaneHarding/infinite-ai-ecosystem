@@ -7862,3 +7862,61 @@ predecessor) — this could not be run in this authoring sandbox (no Docker daem
 same documented limitation as every other Testcontainers-backed suite in this package;
 proven for real by `ci.yml`'s own `database` job. Full workspace `pnpm lint`/`typecheck`/
 `test` all green (51/51 packages).
+
+## OQ-026 resolved — `checkDiagnosticLanguage` wired into MOD-02 for real
+
+**What was wrong.** `checkDiagnosticLanguage` — the guardrail blocking diagnostic/clinical
+labels ("ADHD", "autism", and 16 similar terms) from reaching a guardian or a general
+school record — was real and unit-tested but had no caller anywhere in `apps/worker` or
+`apps/gateway`. It needed to know which of a MOD-02 agent's own output fields are actual
+free text before it could scan them safely; guessing wrong risked either a missed label
+or a false refusal on a legitimate structured field.
+
+**Decision, asked rather than picked.** Two shapes were named in OQ-026 itself: a field
+allow-list per agent contract, or a dedicated post-processing step per MOD-02 pipeline.
+Unlike OQ-024 (a mechanism question with one clearly-superior answer), this is a genuine
+architecture fork on a safety-relevant guardrail with real tradeoffs either way — asked via
+`AskUserQuestion` rather than picked unilaterally. Answer: a field allow-list per agent
+contract.
+
+**What was built.** `packages/agents/src/contract.ts`'s `AgentContract` gained an optional
+`freeTextOutputFields: readonly string[]` — dot-separated paths naming an agent's own
+free-text output fields. `packages/guardrails/src/output-checks.ts`'s new `extractFreeText`
+walks a path against a parsed output, treating arrays transparently at any point (an array
+of objects, or a field that is itself an array of strings, both resolve correctly) — so
+`"sections.content"` reads every section's own `content` across an array, and
+`"decisions.nextSteps"` flattens every decision's own `nextSteps` array into one list.
+`AgentContract` gained a `superRefine`: `freeTextOutputFields` must be non-empty exactly
+when `guardrails` includes `"diagnosis_guard"` — a MOD-02 agent cannot claim the guardrail
+without naming what it actually scans.
+
+Adding that invariant immediately failed all 8 MOD-02 contracts that already declared
+`"diagnosis_guard"` (AC-01, AC-03, AC-04, AC-05, AC-06, AC-08, AC-09, AC-10) at their own
+`validateAgentContract` call — proof the check works, not a regression. Each now declares
+its real free-text fields, read off its own ratified output schema
+(`@infinite-ai/analytics`'s `agent-schemas.ts`), not guessed: AC-01/AC-04/AC-06 just
+`['detail']` (their only free text); AC-03 `['rationale', 'detail']`; AC-05 `['goal',
+'strategy', 'detail']`; AC-08 `['actionItems', 'decisions.nextSteps', 'detail']`; AC-09
+`['sections.content', 'detail']`; AC-10 `['reportText', 'detail']`. AC-02 and AC-07 do not
+declare `"diagnosis_guard"` at all — correctly: neither agent's output carries any free
+text (AC02Result is percentages and a gate flag; AC07Result is a fidelity rate).
+
+`apps/worker/src/step-executor.ts`'s `runAgentCall` now checks
+`contract.guardrails.includes('diagnosis_guard')` right after parsing the agent's output
+and, when true, extracts those fields and calls `checkDiagnosticLanguage`, throwing the
+same `GuardrailRefusalError` the age-appropriateness check already throws on refusal. No
+injected checker needed here, unlike age-appropriateness/template-fidelity (OQ-014/OQ-015):
+the diagnostic-term vocabulary is fixed, not a policy this codebase would otherwise have to
+invent.
+
+### Verification
+
+`packages/guardrails` (194 tests: new `extractFreeText` coverage in
+`diagnosis-redteam.spec.ts` covers a plain field, an array-of-strings field, a nested
+array-of-objects path, a path absent on one discriminated-union variant, null/undefined/
+missing input, and a diagnostic term buried in a nested field still refused). `packages/
+agents` (460 tests: all 8 MOD-02 contracts pass with real field lists). `apps/worker` (38
+tests: new `step-executor.spec.ts` coverage — clean output passes, a diagnostic term in a
+declared field is refused, and a contract without `"diagnosis_guard"` is never scanned).
+Full workspace `pnpm lint`/`typecheck`/`test`/`format:check` all green across all 51
+packages.

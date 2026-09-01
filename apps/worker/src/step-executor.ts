@@ -20,6 +20,13 @@
 //   is also the first real call site for `EscalationNotifier` (OQ-014) — see
 //   `deps.notify`'s doc comment.
 //
+//   `checkDiagnosticLanguage` (OQ-026) is now wired in too, ahead of the age-appropriateness
+//   check, but only for a contract that declares `"diagnosis_guard"` in its own `guardrails`
+//   array — every such contract also declares `freeTextOutputFields` (an `AgentContract`
+//   invariant enforced at `validateAgentContract` time), so this call site never has to
+//   guess which output fields are free text: it reads that list straight off the contract
+//   and lets `extractFreeText` do the walking.
+//
 // tool_call and compensation/tool: look up the handler by toolName and invoke it. The
 //   handlers are created by the caller within a withTenant transaction so they have a live
 //   TenantClient — rule 5 enforced at the call site, not here.
@@ -34,7 +41,9 @@ import type { AgentContract } from '@infinite-ai/agents';
 import { ChatCompletionRequest, ChatCompletionResponse } from '@infinite-ai/contracts';
 import {
   checkAgeAppropriateness,
+  checkDiagnosticLanguage,
   defaultEscalationNotifier,
+  extractFreeText,
   type AgeAppropriatenessChecker,
   type EscalationNotifier,
   type Refusal,
@@ -203,6 +212,22 @@ async function runAgentCall(
     throw new StepExecutorError(
       `Agent "${agentId}" returned non-JSON content (first 200 chars): ${content.slice(0, 200)}`,
     );
+  }
+
+  // OQ-026: a MOD-02 agent that declares "diagnosis_guard" also declares which of its own
+  // output fields are free text (AgentContract's own invariant — see contract.ts). No
+  // injected checker needed, unlike age-appropriateness/template-fidelity: the term list
+  // is fixed, not a policy this codebase would otherwise have to invent.
+  if (contract.guardrails.includes('diagnosis_guard')) {
+    const texts = extractFreeText(output, contract.freeTextOutputFields ?? []);
+    const diagnosisVerdict = checkDiagnosticLanguage(texts);
+    if (!diagnosisVerdict.passed) {
+      throw new GuardrailRefusalError(
+        `Agent "${agentId}" (step "${stepId}") output failed diagnosis_guard: ` +
+          diagnosisVerdict.refusal.explanation,
+        diagnosisVerdict.refusal,
+      );
+    }
   }
 
   const verdict = await checkAgeAppropriateness(output, deps.ageAppropriatenessChecker);

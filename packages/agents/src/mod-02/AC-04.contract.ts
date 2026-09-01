@@ -19,6 +19,8 @@ export const AC04Contract = validateAgentContract({
   model: 'support.screen',
   tools: [],
   guardrails: ['pii_guard', 'diagnosis_guard'],
+  /** 'needs_input'.detail — 'signals_found'/'no_signals' are entirely structured. */
+  freeTextOutputFields: ['detail'],
   budget: { maxTokens: 800, maxCostUsd: 0.002 },
   evalSetRef: 'AC-04',
   requiresApproval: false,

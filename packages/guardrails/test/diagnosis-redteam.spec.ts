@@ -6,7 +6,11 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { checkDiagnosticLanguage, DIAGNOSTIC_TERMS } from '../src/output-checks.js';
+import {
+  checkDiagnosticLanguage,
+  extractFreeText,
+  DIAGNOSTIC_TERMS,
+} from '../src/output-checks.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -141,5 +145,78 @@ describe('diagnosis red-team: every poisoned input is refused', () => {
     // Structural guard: adding a term without a red-team case is not enforced, but
     // removing more terms than cases will fail this count.
     expect(DIAGNOSTIC_TERMS.length).toBeGreaterThanOrEqual(18);
+  });
+});
+
+describe('extractFreeText (OQ-026)', () => {
+  it('reads a plain string field', () => {
+    expect(extractFreeText({ detail: 'inadequate fidelity' }, ['detail'])).toEqual([
+      'inadequate fidelity',
+    ]);
+  });
+
+  it('reads an array-of-strings field directly, as the whole leaf', () => {
+    expect(
+      extractFreeText({ actionItems: ['follow up with parent', 'schedule review'] }, [
+        'actionItems',
+      ]),
+    ).toEqual(['follow up with parent', 'schedule review']);
+  });
+
+  it('walks into an array of objects and reads each one’s own field', () => {
+    const output = {
+      sections: [
+        { sectionName: 'Background', content: 'progress has been steady' },
+        { sectionName: 'Recommendation', content: 'continue current plan' },
+      ],
+    };
+    expect(extractFreeText(output, ['sections.content'])).toEqual([
+      'progress has been steady',
+      'continue current plan',
+    ]);
+  });
+
+  it('walks into an array of objects whose own field is itself an array, and flattens', () => {
+    const output = {
+      decisions: [
+        { learnerId: 'a', nextSteps: ['book intervention', 'notify guardian'] },
+        { learnerId: 'b', nextSteps: ['schedule follow-up'] },
+      ],
+    };
+    expect(extractFreeText(output, ['decisions.nextSteps'])).toEqual([
+      'book intervention',
+      'notify guardian',
+      'schedule follow-up',
+    ]);
+  });
+
+  it('collects across every path given, in order', () => {
+    const output = { goal: 'improve reading fluency', strategy: 'daily paired reading' };
+    expect(extractFreeText(output, ['goal', 'strategy', 'detail'])).toEqual([
+      'improve reading fluency',
+      'daily paired reading',
+    ]);
+  });
+
+  it('contributes nothing for a path absent on this discriminated-union variant', () => {
+    // AC05Result's 'needs_input' variant has no 'goal'/'strategy' — only 'detail'.
+    const output = { status: 'needs_input', detail: 'missing evidence' };
+    expect(extractFreeText(output, ['goal', 'strategy', 'detail'])).toEqual([
+      'missing evidence',
+    ]);
+  });
+
+  it('does not throw on null/undefined output or a missing field', () => {
+    expect(extractFreeText(null, ['detail'])).toEqual([]);
+    expect(extractFreeText(undefined, ['detail'])).toEqual([]);
+    expect(extractFreeText({}, ['detail'])).toEqual([]);
+  });
+
+  it('a diagnostic term inside a nested free-text field is still refused', () => {
+    const output = {
+      sections: [{ sectionName: 'Background', content: 'the learner has ADHD' }],
+    };
+    const texts = extractFreeText(output, ['sections.content', 'detail']);
+    expect(checkDiagnosticLanguage(texts).passed).toBe(false);
   });
 });

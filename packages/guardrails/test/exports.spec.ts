@@ -33,6 +33,7 @@ describe('package export surface', () => {
       'checkTokenBudget',
       'createBrainAgeAppropriatenessChecker',
       'defaultEscalationNotifier',
+      'extractFreeText',
       'inspectEgress',
       'refuse',
       'runInputGuardrails',

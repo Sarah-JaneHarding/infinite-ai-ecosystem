@@ -19,6 +19,9 @@ export const AC05Contract = validateAgentContract({
   model: 'support.screen',
   tools: [],
   guardrails: ['pii_guard', 'diagnosis_guard'],
+  /** 'planned'.goal and 'planned'.strategy — the only free prose in AC05Result — plus
+   * 'needs_input'.detail. */
+  freeTextOutputFields: ['goal', 'strategy', 'detail'],
   budget: { maxTokens: 1500, maxCostUsd: 0.005 },
   evalSetRef: 'AC-05',
   requiresApproval: false,

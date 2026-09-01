@@ -20,6 +20,8 @@ export const AC06Contract = validateAgentContract({
   model: 'support.screen',
   tools: [],
   guardrails: ['pii_guard', 'diagnosis_guard'],
+  /** 'monitored'.detail and 'needs_input'.detail — the only free text AC06Result carries. */
+  freeTextOutputFields: ['detail'],
   budget: { maxTokens: 1000, maxCostUsd: 0.003 },
   evalSetRef: 'AC-06',
   requiresApproval: false,

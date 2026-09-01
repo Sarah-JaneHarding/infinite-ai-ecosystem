@@ -21,6 +21,8 @@ export const AC10Contract = validateAgentContract({
   model: 'support.screen',
   tools: [],
   guardrails: ['pii_guard', 'diagnosis_guard', 'readability_guard'],
+  /** 'written'.reportText — the actual guardian-facing letter — and 'needs_input'.detail. */
+  freeTextOutputFields: ['reportText', 'detail'],
   budget: { maxTokens: 1500, maxCostUsd: 0.005 },
   evalSetRef: 'AC-10',
   requiresApproval: true,
