@@ -104,7 +104,7 @@ export type AgentBudget = z.infer<typeof AgentBudgetSchema>;
  * per Part 3.3) is built to — every field required, none defaulted, so a contract missing
  * one fails `AgentContract.safeParse` rather than compiling with a silent gap.
  */
-export const AgentContract = z.object({
+const AgentContractShape = z.object({
   /** Short, stable identifier — e.g. `"CE-05"`. Never reused for a different agent. */
   id: z.string().min(1),
   version: z.string().regex(SEMVER_PATTERN, SEMVER_MESSAGE),
@@ -125,8 +125,34 @@ export const AgentContract = z.object({
   evalSetRef: z.string().min(1),
   requiresApproval: z.boolean(),
   writesToBrain: z.boolean(),
+  /**
+   * Dot-separated paths (`@infinite-ai/guardrails`' `extractFreeText`) naming this agent's
+   * own free-text output fields — e.g. `"reportText"`, `"sections.content"` — that
+   * `checkDiagnosticLanguage` (OQ-026) scans when `guardrails` declares
+   * `"diagnosis_guard"`. Optional because most agents outside MOD-02 have no reason to
+   * declare it; required and non-empty (checked below) exactly when `"diagnosis_guard"`
+   * is declared, so a MOD-02 agent cannot claim the guardrail without actually naming
+   * what it scans.
+   */
+  freeTextOutputFields: z.array(z.string().min(1)).optional(),
 });
-export type AgentContract = z.infer<typeof AgentContract>;
+
+export const AgentContract = AgentContractShape.superRefine((contract, ctx) => {
+  const declaresDiagnosisGuard = contract.guardrails.includes('diagnosis_guard');
+  const hasFreeTextFields =
+    contract.freeTextOutputFields !== undefined &&
+    contract.freeTextOutputFields.length > 0;
+  if (declaresDiagnosisGuard && !hasFreeTextFields) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['freeTextOutputFields'],
+      message:
+        'freeTextOutputFields must be a non-empty array when guardrails includes ' +
+        '"diagnosis_guard" (OQ-026) — otherwise diagnosis_guard has nothing to scan.',
+    });
+  }
+});
+export type AgentContract = z.infer<typeof AgentContractShape>;
 
 export class AgentContractError extends Error {
   public override readonly name = 'AgentContractError';

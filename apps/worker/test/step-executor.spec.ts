@@ -5,13 +5,16 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { CE01Contract } from '@infinite-ai/agents';
+import { AC01Contract, CE01Contract } from '@infinite-ai/agents';
 import {
   GuardrailEscalationError,
   refuse,
   type AgeAppropriatenessChecker,
 } from '@infinite-ai/guardrails';
-import { MOD01_CURRICULUM_PIPELINE } from '@infinite-ai/orchestrator';
+import {
+  MOD01_CURRICULUM_PIPELINE,
+  type PipelineDefinition,
+} from '@infinite-ai/orchestrator';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -352,6 +355,112 @@ describe('createStepExecutor', () => {
           input: {},
         }),
       ).rejects.toThrow(/l0.ingest_ratified_source/);
+    });
+  });
+
+  describe('agent_call diagnosis_guard (OQ-026)', () => {
+    // A minimal one-step pipeline calling AC-01 (mod-02), which declares "diagnosis_guard"
+    // and freeTextOutputFields: ['detail'] on its real contract — enough to exercise the
+    // wiring without pulling in the full MOD02_RTI_PIPELINE.
+    const AC01_PIPELINE: PipelineDefinition = {
+      id: 'mod-02-test',
+      version: '1.0.0',
+      entryStepId: 'screen-learner',
+      steps: {
+        'screen-learner': {
+          id: 'screen-learner',
+          kind: 'agent_call',
+          agentId: 'AC-01',
+          next: null,
+          timeoutMs: 10_000,
+          maxRetries: 0,
+          compensatesWith: null,
+        },
+      },
+    };
+
+    function makeAc01Deps(overrides?: Partial<StepExecutorDeps>): StepExecutorDeps {
+      return makeDeps({
+        pipeline: AC01_PIPELINE,
+        agentContracts: new Map([[AC01Contract.id, AC01Contract]]),
+        ...overrides,
+      });
+    }
+
+    function stubGatewayResponse(content: unknown): void {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({
+            ...FAKE_RESPONSE,
+            message: { role: 'assistant', content: JSON.stringify(content) },
+          }),
+        }),
+      );
+    }
+
+    it('passes clean output through unchanged', async () => {
+      stubGatewayResponse({
+        status: 'needs_input',
+        detail: 'Insufficient data for the literacy domain.',
+        insufficientDomains: ['literacy'],
+      });
+      const executor = createStepExecutor(makeAc01Deps());
+      const result = await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'screen-learner',
+        attempt: 1,
+        input: {},
+      });
+      expect(result).toEqual({
+        status: 'needs_input',
+        detail: 'Insufficient data for the literacy domain.',
+        insufficientDomains: ['literacy'],
+      });
+    });
+
+    it('throws GuardrailRefusalError when a diagnostic term appears in a declared free-text field', async () => {
+      stubGatewayResponse({
+        status: 'needs_input',
+        detail: 'The learner shows signs of dyslexia in reading tasks.',
+        insufficientDomains: ['literacy'],
+      });
+      const executor = createStepExecutor(makeAc01Deps());
+      await expect(
+        executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'screen-learner',
+          attempt: 1,
+          input: {},
+        }),
+      ).rejects.toThrow(GuardrailRefusalError);
+    });
+
+    it('does not scan a contract that has not declared diagnosis_guard', async () => {
+      // CE-01 (mod-01) carries no diagnosis_guard — a diagnostic-sounding word in its
+      // output must not be refused by this check.
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({
+            ...FAKE_RESPONSE,
+            message: {
+              role: 'assistant',
+              content: JSON.stringify({ status: 'ok', framework: { note: 'autism' } }),
+            },
+          }),
+        }),
+      );
+      const executor = createStepExecutor(makeDeps());
+      const result = await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'build-topic-graph',
+        attempt: 1,
+        input: {},
+      });
+      expect(result).toEqual({ status: 'ok', framework: { note: 'autism' } });
     });
   });
 });

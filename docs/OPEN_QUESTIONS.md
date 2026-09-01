@@ -30,7 +30,7 @@ values.** If it is not in a supplied source document, it goes here.
 | OQ-023 | 2026-08-20 | 29 | OPEN | **`GradeFramework` needs `hoursPerWeek` and `assessmentWeighting` data.** `GradeFramework` in `@infinite-ai/contracts` requires `time.hoursPerWeek` (a Sourced, required field) and `assessment` (SBA/exam splits per component, similarly Sourced). Neither field is present in any of the 21 CAPS source files ingested into L0 in Stage 29 — those files record topic-area names, content areas, and term-level weightings, but not per-subject time allocations or formal SBA/exam splits at the grade-level. CE-01 can populate `contentAreas` from L0 `CAPS_CANON` records but will continue to return `NEEDS_INPUT` for a complete `GradeFramework` until these fields are supplied. Source documents needed: CAPS Policy section-level time-allocation tables (typically an appendix per subject/phase document) and the CAPS Assessment Policy for each phase. These have not been supplied. |
 | OQ-024 | 2026-08-24 | 06 | RESOLVED (2026-09-01) | **`branch` step conditions cannot see a prior step's actual output.** `evaluateCondition` only ever received `run.input`, never what an intervening agent produced, even though every `branch` step is narrated as reading one specific prior step's output. **Answer:** derive it structurally — no migration, no new field. See Resolved section below. |
 | OQ-025 | 2026-08-25 | 16 | RESOLVED (2026-08-25) | The per-request CSP nonce did not reach the client on `/sign-in`. **Answer:** root cause was `next-auth@4.24.15`'s `withAuth()` unconditionally short-circuiting before the wrapped handler for the sign-in page. See Resolved section below. |
-| OQ-026 | 2026-08-25 | 06/10 | OPEN | **`checkDiagnosticLanguage` has no caller.** `packages/guardrails/src/output-checks.ts` scans MOD-02 agent output for diagnostic/clinical terms (ADHD, dyslexia, autism, and similar) that must never appear in content reaching guardians or general school records — "the SIAS programme is an educational process, not a clinical one." Found alongside OQ-014/OQ-015 while wiring `checkAgeAppropriateness` into `apps/worker/src/step-executor.ts` (see `docs/STAGE_LOG.md`'s "Post-52 audit" entry): the function exists, is unit-tested, and is never called from anywhere in `apps/worker` or `apps/gateway`. Unlike age-appropriateness, this one was deliberately left unwired rather than added alongside it, because it needs per-agent knowledge the generic step executor does not have — which of a MOD-02 agent's output fields are the "free text output fields (letter body, goal text, next steps, section content)" its own doc comment says to scan; wiring it against the wrong fields, or against all of an agent's output indiscriminately, risks both false negatives (a field missed) and false positives (a legitimate use of "screening" or similar in a field never meant to reach a guardian). **Decision needed:** where this belongs — a field allow-list per MOD-02 agent contract, a dedicated post-processing step in the MOD-02 pipelines specifically, or another shape — before it can be wired in for real. Blocks nothing already built; blocks trusting that no diagnostic label can reach a guardian via a MOD-02 pipeline today. |
+| OQ-026 | 2026-08-25 | 06/10 | RESOLVED (2026-09-01) | **`checkDiagnosticLanguage` has no caller.** Needed to know which of a MOD-02 agent's own output fields are free text before it could be wired in for real, without guessing. **Answer:** a field allow-list per agent contract, the human's own choice between two named options. See Resolved section below. |
 | OQ-027 | 2026-09-01 | 06/10 | OPEN | **`support.needs_referral`'s SIAS-status field has no ratified shape.** Found while resolving OQ-024: `mod-02.ts`'s `branch-on-referral` is narrated as evaluating "whether any monitored learner has reached REFERRAL_PENDING SIAS status," but its predecessor step (`check-fidelity`, a `map` over AC-07 fidelity checks) never produces that — `AC07Result` (`@infinite-ai/analytics`) has no `siasStatus` field, and no schema anywhere in `@infinite-ai/contracts` or `@infinite-ai/analytics` declares what an `activeInterventions` collection item carries. Whatever the real source is (each item carrying its own `siasStatus`, a separate collection alongside `activeInterventions` in the run's own input, or a fresh read from the SIAS state machine at branch time — a capability `evaluateCondition` does not have today), inventing a field name to unblock this one condition risks exactly the "silently read stale/absent fields" failure OQ-024 itself flagged. `apps/worker/src/condition-evaluator.ts`'s `evaluateCondition` implements the other four conditions for real (each reads a field a ratified Zod schema already fixes) and throws `UnresolvedConditionError` for this one rather than guessing. **Decision needed:** what shape carries a monitored learner's current SIAS status into the MOD-02 Monitoring pipeline, and where it is read from. Blocks real branching in MOD-02 Monitoring only; blocks nothing else, since MOD-02 RTI, MOD-05 PD Analysis and LE Commons are all resolved. |
 
 ### Phase 4 — proposed extension (Stages 19-25), not in the original 18-stage manual
@@ -183,3 +183,49 @@ other Testcontainers-backed suite in this package already is, by CI's own `datab
 
 This blocked real branching in MOD-02 RTI, MOD-05 PD Analysis and LE Commons; all three are
 now resolved. MOD-02 Monitoring's `branch-on-referral` is the one exception — see OQ-027.
+
+### OQ-026 — `checkDiagnosticLanguage` has no caller · resolved 2026-09-01
+
+**Question.** `checkDiagnosticLanguage` (`packages/guardrails/src/output-checks.ts`) is a
+real, unit-tested guardrail with no caller anywhere in `apps/worker` or `apps/gateway` — it
+needs to know which of a MOD-02 agent's own output fields are actual free text before it can
+scan them, and guessing wrong risks both a missed diagnostic label and a false refusal on a
+legitimate field. Two shapes were named: a field allow-list per agent contract, or a
+dedicated post-processing step in the MOD-02 pipelines.
+
+**Answer** (the human's own choice, asked via `AskUserQuestion` rather than picked
+unilaterally, since this is a real architecture fork on a safety-relevant guardrail):
+a field allow-list per agent contract.
+
+`AgentContract` (`packages/agents/src/contract.ts`) gained an optional
+`freeTextOutputFields: readonly string[]` — dot-separated paths (`"detail"`,
+`"reportText"`, `"sections.content"`, `"decisions.nextSteps"`) naming an agent's own
+free-text output fields, read by `@infinite-ai/guardrails`' new `extractFreeText`, which
+walks a path and treats arrays transparently at any point along the way (an array of
+section objects, or a field that is itself an array of strings, both resolve correctly).
+Optional because most agents outside MOD-02 have no reason to declare it — a
+`superRefine` on `AgentContract` makes it required and non-empty exactly when `guardrails`
+declares `"diagnosis_guard"`, so a MOD-02 agent cannot claim the guardrail without naming
+what it actually scans. This caught all 8 MOD-02 contracts that declare `"diagnosis_guard"`
+(AC-01, AC-03, AC-04, AC-05, AC-06, AC-08, AC-09, AC-10) failing `validateAgentContract` the
+moment the invariant was added — each now declares its real free-text fields, worked out
+from its own ratified output schema (`@infinite-ai/analytics`'s `agent-schemas.ts`), not
+guessed: e.g. AC-05's `['goal', 'strategy', 'detail']`, AC-09's `['sections.content',
+'detail']`. AC-02 and AC-07 do not declare `"diagnosis_guard"` at all — correctly, since
+neither agent's output carries any free text to scan.
+
+`apps/worker/src/step-executor.ts`'s `runAgentCall` now checks
+`contract.guardrails.includes('diagnosis_guard')` and, when true, extracts those fields
+from the parsed output and calls `checkDiagnosticLanguage`, throwing the same
+`GuardrailRefusalError` the age-appropriateness check already throws on refusal — no
+injected checker needed here, unlike age-appropriateness/template-fidelity, since the term
+list is a fixed vocabulary, not a policy this codebase would otherwise have to invent.
+
+Verified: `packages/guardrails` (194 tests, including new `extractFreeText` coverage in
+`diagnosis-redteam.spec.ts` — plain fields, array-of-strings fields, nested array-of-objects
+paths, a path absent on one discriminated-union variant, and a diagnostic term buried in a
+nested field still refused), `packages/agents` (460 tests, all 8 MOD-02 contracts now
+passing `validateAgentContract` with real field lists), and `apps/worker` (38 tests,
+including new `step-executor.spec.ts` coverage: clean output passes, a diagnostic term in a
+declared field is refused, and a contract without `"diagnosis_guard"` is never scanned).
+Full workspace `pnpm lint`/`typecheck`/`test`/`format:check` all green (51/51 packages).

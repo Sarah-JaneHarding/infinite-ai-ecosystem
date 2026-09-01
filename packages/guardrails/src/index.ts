@@ -41,6 +41,7 @@ export {
   checkReadability,
   checkRefusalPolicy,
   checkTemplateFidelity,
+  extractFreeText,
   type AgeAppropriatenessChecker,
   type CostBudget,
   type ReadabilityRange,

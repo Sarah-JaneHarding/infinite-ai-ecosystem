@@ -198,3 +198,39 @@ export function checkDiagnosticLanguage(texts: readonly string[]): GuardrailVerd
   }
   return PASSED;
 }
+
+/**
+ * Collects every string reachable from `output` by walking `path` — a dot-separated
+ * field-name path from `AgentContract.freeTextOutputFields` (OQ-026) — treating arrays
+ * transparently at any point along the way. `"detail"` reads a plain string field;
+ * `"reportText"` the same; `"actionItems"` reads an array-of-strings field directly (the
+ * whole array is the leaf); `"sections.content"` walks into an array of section objects
+ * and reads each one's own `content`; `"decisions.nextSteps"` walks into an array of
+ * decision objects, each of whose `nextSteps` is itself an array of strings, and flattens
+ * the result. A path segment that resolves to `null`/`undefined`, a non-string leaf, or a
+ * missing field contributes nothing rather than throwing — a discriminated union's other
+ * variants routinely lack fields a `path` names for one specific variant (e.g.
+ * `"needs_input"` has no `reportText`), and that absence is not itself a defect.
+ */
+export function extractFreeText(output: unknown, paths: readonly string[]): string[] {
+  return paths.flatMap((path) => collectByPath(output, path));
+}
+
+function collectByPath(value: unknown, path: string): string[] {
+  if (value === null || value === undefined) return [];
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => collectByPath(item, path));
+  }
+  const dotIndex = path.indexOf('.');
+  const head = dotIndex === -1 ? path : path.slice(0, dotIndex);
+  const rest = dotIndex === -1 ? '' : path.slice(dotIndex + 1);
+
+  if (typeof value !== 'object') return [];
+  const next = (value as Record<string, unknown>)[head];
+
+  if (rest !== '') return collectByPath(next, rest);
+  if (typeof next === 'string') return [next];
+  if (Array.isArray(next))
+    return next.filter((item): item is string => typeof item === 'string');
+  return [];
+}

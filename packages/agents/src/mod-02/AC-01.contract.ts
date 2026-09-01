@@ -24,6 +24,9 @@ export const AC01Contract = validateAgentContract({
   model: 'support.screen',
   tools: [],
   guardrails: ['pii_guard', 'diagnosis_guard'],
+  /** 'needs_input'.detail and 'safeguarding'.detail — the only free text AC01Result ever
+   * carries; 'ok' is entirely structured (percentiles, tier, sufficiency verdicts). */
+  freeTextOutputFields: ['detail'],
   budget: { maxTokens: 1500, maxCostUsd: 0.005 },
   evalSetRef: 'AC-01',
   requiresApproval: false,

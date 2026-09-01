@@ -20,6 +20,9 @@ export const AC09Contract = validateAgentContract({
   model: 'support.screen',
   tools: [],
   guardrails: ['pii_guard', 'diagnosis_guard'],
+  /** 'compiled'.sections is an array of SiasSection, each with its own free-text
+   * content — the referral pack's actual prose. Plus the two error variants' detail. */
+  freeTextOutputFields: ['sections.content', 'detail'],
   budget: { maxTokens: 2500, maxCostUsd: 0.008 },
   evalSetRef: 'AC-09',
   requiresApproval: true,
