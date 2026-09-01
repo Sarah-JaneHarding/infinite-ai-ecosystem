@@ -833,6 +833,53 @@ const STAGES: readonly Stage[] = [
       'pnpm evals:gate',
     ],
   },
+  {
+    id: '49',
+    name: 'MOD-02 and MOD-03 pipeline definitions + repository audit',
+    commands: [
+      // 17 missing agent-contract exports fixed (AC-03–AC-10, LE-01–LE-09); three new
+      // MOD-02 pipelines and MOD03_WAREHOUSE_PIPELINE, each proven structurally sound
+      // (validatePipelineDag/validatePipelineGating) by the package's own test suite.
+      'pnpm --filter @infinite-ai/agents test',
+      'pnpm --filter @infinite-ai/orchestrator test',
+    ],
+  },
+  {
+    id: '50',
+    name: 'LE Learning Engine pipeline definitions',
+    commands: [
+      // Five LE pipelines (signal, pattern-mining, evolution, exemplar, commons) — same
+      // package as Stage 49's own orchestrator command above, now covering LE-01–LE-08
+      // (LE-09 correctly excluded as a standalone trigger, same shape as AC-04).
+      'pnpm --filter @infinite-ai/orchestrator test',
+    ],
+  },
+  {
+    id: '51',
+    name: 'Wire MOD-02/MOD-03/LE pipelines and all remaining tool handlers into the worker',
+    commands: [
+      // The audit finding this stage fixed: defining a pipeline and proving it
+      // structurally sound is not sufficient — apps/worker is the runtime that actually
+      // executes a run, and before this stage it could reach barely half of every
+      // declared tool name, pipeline, and agent contract. This is the gate that would
+      // have caught that gap directly, had it existed before Stage 49/50 shipped.
+      'pnpm --filter @infinite-ai/worker test',
+      'pnpm --filter @infinite-ai/worker typecheck',
+    ],
+  },
+  {
+    id: '52',
+    name: '`map` step fan-out, `prepareApproval` wiring, and a branch-condition design gap',
+    commands: [
+      'pnpm --filter @infinite-ai/orchestrator test',
+      'pnpm --filter @infinite-ai/worker test',
+      // NOTE: pnpm --filter @infinite-ai/orchestrator test:integration (Testcontainers)
+      // requires Docker. This stage is what first wired it into
+      // .github/workflows/ci.yml's own `database` job — it runs there, for real, on
+      // every PR; not repeated here for the same reason Stages 01/05/06 don't repeat
+      // their own Docker-dependent commands in this cumulative gate.
+    ],
+  },
 ];
 
 function usage(): never {

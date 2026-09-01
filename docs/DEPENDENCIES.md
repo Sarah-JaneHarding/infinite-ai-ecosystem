@@ -406,6 +406,24 @@ to the library itself. No proprietary source is combined with axe-core; the pack
 dev dependency only and ships no code to end users. The exception is recorded here
 explicitly as rule 9 requires.
 
+## Stage 16 — Security hardening and pen-test readiness
+
+No new dependencies were added for `packages/security` itself. Two `pnpm.overrides`
+entries in the root `package.json` — not new dependencies in their own right, but
+version pins rule 9 requires recording since each replaces a vulnerable transitive
+resolution with a patched one:
+
+| Override       | Pinned to | Why                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `nanoid`       | `3.3.18`  | `pnpm audit:supply-chain`'s first real run (this stage) found GHSA-2v37-7h3g-55p8 (high) in the `next → postcss → nanoid` transitive chain. Recorded in `docs/STAGE_LOG.md`'s own Stage 16 entry at the time; not previously recorded here — added now as part of closing that gap.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `deepmerge-ts` | `8.0.2`   | GHSA-ggr8-5vv4-36mx (high, stack exhaustion merging recursive object graphs) in the `packages/db → prisma → @prisma/config → deepmerge-ts` transitive chain, versions `<8.0.0`. `@prisma/config@6.19.3` pins `deepmerge-ts` to an exact `7.1.5` — no newer Prisma 6.x release exists to pick up a fix (6.19.3 is the last 6.x version; see "Why Prisma 6 rather than 7" above for why this repo is not yet on 7), so an override is the only remediation short of the Prisma-major-version upgrade already deferred. `deepmerge-ts` is a build-time-only dependency of Prisma's own config-loading tooling, never imported by this codebase directly — `prisma generate` and `packages/db`'s own test suite were re-verified against the override before it was adopted. |
+
+Found while making the CI stage gate actually track the repository's current stage
+(this same commit) — the very first time `pnpm audit:supply-chain` (declared as part
+of this stage's own verification set since it was written) had ever been executed by
+CI, since `.github/workflows/ci.yml` had called `pnpm verify:stage 00` unconditionally
+since Stage 00 itself.
+
 ## Stage 17 — Tenant lifecycle, provisioning, billing
 
 No new external runtime dependencies were added. Both `packages/provisioning` and

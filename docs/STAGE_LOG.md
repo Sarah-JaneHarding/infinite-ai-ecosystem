@@ -7716,3 +7716,85 @@ before init ever reached that step. Every `module.<name>.<output>` reference thi
 code uses was cross-checked by hand against the referenced module's own `outputs.tf`.
 `terraform validate`/`plan`/`apply` were not run — the same registry block, and no real
 AWS account exists to validate resource arguments against in any case.
+
+## Tier 2 (verification debt) — the CI stage gate never advanced past Stage 00
+
+The production-readiness audit's own words: "`.github/workflows/ci.yml` runs `pnpm
+verify:stage 00` on every PR — the very first stage's gate — while the repository sits
+at Stage 52. The cumulative gate CLAUDE.md itself requires before starting a new stage
+is not automatically re-proven on any push." True since Stage 00 itself: nothing had
+ever changed that one line. Worse, `scripts/verify-stage.ts`'s own `STAGES` array
+stopped at Stage 48 — four real stages (49–52, MOD-02/MOD-03/LE pipelines, wiring the
+worker, `map`/`prepareApproval`) had no declared verification commands at all, meaning
+even manually running the highest stage number that existed could not have caught a
+regression in any of that work.
+
+**What was built.** Four new `STAGES` entries (49–52), each declaring the commands its
+own `docs/STAGE_LOG.md` exit gate already lists — Stage 49/50's `@infinite-ai/agents`/
+`@infinite-ai/orchestrator` test suites, Stage 51's `@infinite-ai/worker` test+typecheck,
+Stage 52's same two packages again (its own exit gate re-asserts both). Stage 52's entry
+notes, rather than repeats, that `orchestrator`'s `test:integration` is Docker-dependent
+and already proven by `ci.yml`'s own separate `database` job — the same pattern Stages
+01/05/06 already established for their own Testcontainers-backed suites.
+`.github/workflows/ci.yml`'s Stage gate step: `pnpm verify:stage 00` → `pnpm verify:stage
+52`, with its own comment explaining exactly what changed and why. The `verify` job's
+timeout raised 15 → 30 minutes: the cumulative gate now runs every declared stage's
+commands, not one stage's.
+
+**Actually run, not just changed** — this is the whole point of the finding, so it would
+have been exactly the wrong moment to skip verifying it: `pnpm verify:stage 52` was run
+end to end in this sandbox (background, ~10 minutes). Of dozens of cumulative commands
+across 52 stages, exactly four failed on the first attempt, three exactly where expected
+(`@infinite-ai/db coverage:merged`, `@infinite-ai/brain test:integration`/`test:temporal`
+— Testcontainers, no reachable Docker daemon here, the same documented sandbox
+limitation as every prior stage's own Docker-dependent command) — and one real,
+previously-uncaught finding: **`pnpm audit:supply-chain` failed** with a high-severity
+vulnerability (GHSA-ggr8-5vv4-36mx, stack exhaustion merging recursive object graphs) in
+`deepmerge-ts@7.1.5`, pulled in transitively via `packages/db → prisma → @prisma/config`.
+This is exactly the audit step Stage 16 declared and exactly the kind of regression the
+finding above says nothing was catching — surfaced the moment the gate actually reached
+it, on the very first real run.
+
+**Fixed in the same commit**, the same way Stage 16's own original supply-chain audit
+found and fixed an unrelated `nanoid` vulnerability: `@prisma/config@6.19.3` pins
+`deepmerge-ts` to an exact `7.1.5`, and 6.19.3 is the last Prisma 6.x release (this repo
+deliberately stayed on Prisma 6 — see `docs/DEPENDENCIES.md`'s "Why Prisma 6 rather than
+7" — so there is no newer 6.x to pick up a fix). Added `pnpm.overrides.deepmerge-ts =
+"8.0.2"` to the root `package.json`, the same remediation mechanism the pre-existing
+`nanoid` override already uses. Verified safe before adopting: `pnpm why deepmerge-ts`
+confirms the override resolved everywhere (one version in the tree); `prisma generate`
+(the `packages/db` postinstall hook) still succeeds; `packages/db`'s own `typecheck` and
+full unit suite (220 tests) still pass — `deepmerge-ts` is a build-time-only dependency
+of Prisma's own config-loading tooling, never imported by this codebase's own source.
+`pnpm audit:supply-chain` re-run clean afterward. `docs/DEPENDENCIES.md` gained a new
+Stage 16 section documenting both overrides — the `nanoid` one had never actually been
+recorded there despite Stage 16's own `STAGE_LOG.md` entry saying it was remediated;
+fixed alongside, in the same section, rather than left as a second, smaller version of
+the exact gap this whole entry is about.
+
+A second `pnpm verify:stage 52` run afterward reproduced only the three expected
+Docker-dependent failures — nothing else. Those three are not treated as this fix's to
+solve: they are the same sandbox limitation this repository has documented at every
+prior Docker-dependent stage (01, 05, 06, 16's own `test:rls:exhaustive`, 17's own
+`test:tenant-deletion`), proven for real by `ci.yml`'s `database` job on GitHub-hosted
+runners, which have a working Docker daemon this authoring sandbox does not.
+
+**Deliberately not done, and why.** `ci.yml`'s `database` job independently already runs
+`@infinite-ai/db coverage:merged`, `@infinite-ai/brain test:integration`, and
+`@infinite-ai/orchestrator test:integration` — the same three suites `verify:stage 52`'s
+own cumulative command list now also includes in the `verify` job. Bumping the stage
+number does not remove that overlap: both jobs will run these suites independently on
+every PR going forward. This is acknowledged, not silently accepted — CLAUDE.md's own
+cumulative-gate philosophy ("a gate that only checks the newest work cannot catch a
+regression") argues for keeping both, and untangling which job owns which Docker-backed
+suite is a real, separate restructuring decision, not a rename this fix should absorb
+under its own name.
+
+### Verification
+
+`pnpm verify:stage 52` run twice, locally, end to end (not merely inspected) — first run
+surfaced the `deepmerge-ts` vulnerability above; second run, after the fix, reproduced
+only the three Docker-dependent failures every prior stage already documents as
+sandbox-only. `pnpm --filter @infinite-ai/db typecheck`/`test` re-verified directly
+against the `deepmerge-ts` override (clean, 220/220). Full workspace `pnpm lint`/
+`format:check`/`typecheck`/`test`/`build` all green.

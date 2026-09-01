@@ -2,7 +2,7 @@
   "bomFormat": "minimal-pnpm-list",
   "specVersion": "1.0",
   "metadata": {
-    "timestamp": "2026-08-21T13:11:54.273Z",
+    "timestamp": "2026-09-01T07:41:23.213Z",
     "component": "infinite-ai-ecosystem"
   },
   "components": [
@@ -22,6 +22,11 @@
           "from": "@infinite-ai/analytics",
           "version": "link:packages/analytics",
           "path": "/home/user/infinite-ai-ecosystem/packages/analytics"
+        },
+        "@infinite-ai/brain": {
+          "from": "@infinite-ai/brain",
+          "version": "link:packages/brain",
+          "path": "/home/user/infinite-ai-ecosystem/packages/brain"
         },
         "@infinite-ai/contracts": {
           "from": "@infinite-ai/contracts",
