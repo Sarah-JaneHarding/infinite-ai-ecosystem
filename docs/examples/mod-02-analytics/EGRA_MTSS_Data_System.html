@@ -1,994 +1,2428 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INFINITE-AI | EGRA MTSS Data System</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --red:#e8273c; --orange:#f47920; --yellow:#ffd700; --green:#2db24c;
-    --blue:#1565c0; --purple:#7b2fbe; --teal:#00897b;
-    --dark:#0e1117; --mid:#3a3d4a; --off-white:#f9f9fb; --light-gray:#eaedf3;
-    --shadow:0 4px 24px rgba(0,0,0,0.08);
-  }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--mid);min-height:100vh}
-  .rainbow-stripe{height:5px;background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--purple))}
-
-  header.topbar{background:linear-gradient(135deg,#0e1117,#1a2240);color:#fff;padding:16px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-  .brandblock{display:flex;align-items:center;gap:12px}
-  .logo-mark{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:1.2rem;flex-shrink:0}
-  .brand-name{font-family:'Space Mono',monospace;font-size:1.15rem;font-weight:700;background:linear-gradient(90deg,var(--orange),var(--yellow),var(--green),var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .app-title{font-family:'Playfair Display',serif;font-size:0.95rem;color:rgba(255,255,255,0.75);margin-left:10px;padding-left:10px;border-left:1px solid rgba(255,255,255,0.25)}
-  .school-badge{font-family:'Space Mono',monospace;font-size:0.72rem;background:rgba(255,255,255,0.1);padding:6px 12px;border-radius:20px;color:rgba(255,255,255,0.85)}
-
-  nav.tabs{display:flex;gap:2px;background:#fff;border-bottom:1px solid var(--light-gray);padding:0 20px;overflow-x:auto}
-  nav.tabs button{font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.85rem;padding:14px 16px;border:none;background:transparent;color:#888;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
-  nav.tabs button.active{color:var(--dark);border-bottom-color:var(--blue)}
-  nav.tabs button:hover{color:var(--dark)}
-
-  main{max-width:1180px;margin:0 auto;padding:28px 22px 80px}
-  .view{display:none}
-  .view.active{display:block}
-  .panel{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:22px 24px;margin-bottom:22px}
-  .panel h2{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--dark);margin-bottom:4px}
-  .panel .sub{font-size:0.82rem;color:#888;margin-bottom:16px}
-
-  .grid{display:grid;gap:16px}
-  .grid-4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
-  .grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-
-  .kpi{background:var(--off-white);border-radius:12px;padding:16px;text-align:center;border:1px solid var(--light-gray)}
-  .kpi .num{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900}
-  .kpi .lbl{font-size:0.74rem;color:#888;margin-top:4px}
-
-  table{width:100%;border-collapse:collapse;font-size:0.85rem}
-  th{background:var(--dark);color:#fff;text-align:left;padding:9px 10px;font-family:'Space Mono',monospace;font-size:0.63rem;letter-spacing:0.06em;text-transform:uppercase}
-  td{padding:9px 10px;border-bottom:1px solid var(--light-gray)}
-  tr:hover td{background:rgba(21,101,192,0.03)}
-  .tablewrap{overflow-x:auto}
-
-  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-family:'Space Mono',monospace;font-size:0.66rem;font-weight:700;color:#fff}
-  .b-green{background:var(--green)} .b-yellow{background:#c99400} .b-red{background:var(--red)} .b-gray{background:#999}
-
-  label{display:block;font-size:0.78rem;font-weight:600;color:var(--dark);margin-bottom:5px;margin-top:12px}
-  label:first-child{margin-top:0}
-  input,select,textarea{width:100%;padding:9px 11px;border:1.5px solid var(--light-gray);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.87rem;background:#fff}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
-  textarea{resize:vertical;min-height:60px}
-
-  .btn{font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.83rem;padding:10px 20px;border:none;border-radius:24px;cursor:pointer;color:#fff;background:linear-gradient(90deg,var(--blue),#0d47a1)}
-  .btn:hover{opacity:0.9}
-  .btn.secondary{background:var(--off-white);color:var(--dark);border:1.5px solid var(--light-gray)}
-  .btn.danger{background:linear-gradient(90deg,var(--red),#9c1524)}
-  .btn.small{padding:6px 14px;font-size:0.76rem}
-  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-
-  .formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px 16px}
-
-  .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-  .pill{font-family:'Space Mono',monospace;font-size:0.72rem;padding:6px 14px;border-radius:20px;background:var(--off-white);border:1.5px solid var(--light-gray);cursor:pointer;color:var(--mid)}
-  .pill.active{background:var(--dark);color:#fff;border-color:var(--dark)}
-
-  .skillrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--light-gray)}
-  .skillrow:last-child{border-bottom:none}
-  .skillrow .sname{font-size:0.85rem;font-weight:600;color:var(--dark)}
-  .skillrow .sval{font-family:'Space Mono',monospace;font-size:0.8rem;color:#888;margin-right:10px}
-
-  .diag-callout{background:#fff7e6;border-left:4px solid var(--orange);border-radius:0 10px 10px 0;padding:14px 18px;margin-top:16px;font-size:0.87rem;line-height:1.6}
-  .diag-callout strong{color:var(--dark)}
-
-  .chart-wrap{background:var(--off-white);border-radius:10px;padding:16px;margin-top:10px}
-  svg text{font-family:'DM Sans',sans-serif}
-
-  .empty{text-align:center;padding:40px 20px;color:#aaa;font-size:0.9rem}
-  .toast{position:fixed;bottom:20px;right:20px;background:var(--dark);color:#fff;padding:12px 20px;border-radius:10px;font-size:0.85rem;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:all .3s;z-index:999;pointer-events:none}
-  .toast.show{opacity:1;transform:translateY(0)}
-
-  .bench-table input{width:70px;padding:5px 6px;font-size:0.8rem}
-
-  @media(max-width:640px){
-    main{padding:20px 14px 70px}
-    .panel{padding:18px}
-  }
-  @media print{
-    header.topbar,nav.tabs,.btn-row,.no-print{display:none !important}
-    .panel{box-shadow:none;border:1px solid #ccc}
-  }
-</style>
-</head>
-<body>
-<div class="rainbow-stripe"></div>
-<header class="topbar">
-  <div class="brandblock">
-    <div class="logo-mark">∞</div>
-    <div class="brand-name">INFINITE-AI</div>
-    <div class="app-title">EGRA MTSS Data System</div>
-  </div>
-  <div class="school-badge" id="schoolBadge">School not set — see Settings</div>
-</header>
-
-<nav class="tabs" id="tabNav">
-  <button data-view="dashboard" class="active">Dashboard</button>
-  <button data-view="learners">Learners</button>
-  <button data-view="screening">Screening</button>
-  <button data-view="diagnostics">Diagnostics</button>
-  <button data-view="monitoring">Progress Monitoring</button>
-  <button data-view="intervention">Intervention</button>
-  <button data-view="reports">Reports</button>
-  <button data-view="settings">Settings</button>
-</nav>
-
-<main>
-
-  <div class="view active" id="view-dashboard">
-    <div class="panel">
-      <h2>Whole-School Outcomes Dashboard</h2>
-      <div class="sub">Composite risk status across all learners with a screening record, most recent assessment window.</div>
-      <div class="grid grid-4" id="dashKpis"></div>
-    </div>
-    <div class="panel">
-      <h2>Risk Distribution by Grade</h2>
-      <div class="sub">Green = At/Above Benchmark · Yellow = Below Benchmark · Red = Well Below Benchmark</div>
-      <div id="gradeBars"></div>
-    </div>
-    <div class="panel">
-      <h2>Learners Currently in Tier 2 / Tier 3</h2>
-      <div id="dashTierList" class="tablewrap"></div>
-    </div>
-  </div>
-
-  <div class="view" id="view-learners">
-    <div class="panel">
-      <h2>Add a Learner</h2>
-      <div class="sub">Learners are the foundation record every assessment, intervention, and report links to.</div>
-      <div class="formgrid">
-        <div><label>Full Name</label><input id="lnName" placeholder="e.g. Thandeka Nkosi"></div>
-        <div><label>Grade</label><select id="lnGrade"></select></div>
-        <div><label>Class</label><input id="lnClass" placeholder="e.g. 3A"></div>
-        <div><label>Home Language</label><select id="lnLang"></select></div>
-      </div>
-      <div class="btn-row"><button class="btn" onclick="addLearner()">+ Add Learner</button></div>
-    </div>
-    <div class="panel">
-      <h2>Learner Roster</h2>
-      <div class="pill-row" id="rosterGradeFilter"></div>
-      <div class="tablewrap"><table id="rosterTable"><thead><tr><th>Name</th><th>Grade</th><th>Class</th><th>Home Language</th><th>Latest Status</th><th></th></tr></thead><tbody></tbody></table></div>
-    </div>
-  </div>
-
-  <div class="view" id="view-screening">
-    <div class="panel">
-      <h2>EGRA Screening / Benchmark Entry</h2>
-      <div class="sub">Record a full EGRA administration for a learner. Use this at the start, middle, and end of year for universal screening.</div>
-      <div class="formgrid">
-        <div><label>Learner</label><select id="scLearner"></select></div>
-        <div><label>Assessment Window</label><select id="scWindow">
-          <option>Term 1</option><option>Term 2</option><option>Term 3</option><option>Term 4</option>
-        </select></div>
-        <div><label>Year</label><input id="scYear" type="number" value="2026"></div>
-        <div><label>Date</label><input id="scDate" type="date"></div>
-      </div>
-      <div id="scSubtestForm" class="formgrid" style="margin-top:16px"></div>
-      <div><label>Notes (optional)</label><textarea id="scNotes" placeholder="Anything the assessor noticed — hesitations, fatigue, language switching, etc."></textarea></div>
-      <div class="btn-row"><button class="btn" onclick="saveScreening()">✓ Save EGRA Screening</button></div>
-    </div>
-    <div class="panel">
-      <h2>Recent Screening Records</h2>
-      <div class="tablewrap"><table id="screeningLog"><thead><tr><th>Learner</th><th>Window</th><th>Composite Status</th><th>Date</th><th></th></tr></thead><tbody></tbody></table></div>
-    </div>
-  </div>
-
-  <div class="view" id="view-diagnostics">
-    <div class="panel">
-      <h2>Diagnostic Breakdown</h2>
-      <div class="sub">Select a learner to see their most recent EGRA subtest results, benchmark status, and the single lowest skill to prioritise first.</div>
-      <select id="diagLearner" onchange="renderDiagnostics()"></select>
-      <div id="diagBody" style="margin-top:16px"></div>
-    </div>
-  </div>
-
-  <div class="view" id="view-monitoring">
-    <div class="panel">
-      <h2>Log a Progress-Monitoring Check</h2>
-      <div class="sub">For learners already in Tier 2 or Tier 3. A quick, single-skill re-check — not a full EGRA re-administration.</div>
-      <div class="formgrid">
-        <div><label>Learner (Tier 2/3 only)</label><select id="pmLearner" onchange="loadPMChart()"></select></div>
-        <div><label>Date</label><input id="pmDate" type="date"></div>
-        <div><label>Focus Skill</label><select id="pmSkill"></select></div>
-        <div><label>Score</label><input id="pmScore" type="number" placeholder="e.g. 22"></div>
-      </div>
-      <div><label>Note (optional — e.g. instructional change)</label><input id="pmNote" placeholder="e.g. Switched to daily 1:1 blending drills"></div>
-      <div class="btn-row"><button class="btn" onclick="savePM()">+ Log Check</button></div>
-    </div>
-    <div class="panel">
-      <h2>Progress Trend</h2>
-      <div id="pmChartWrap" class="chart-wrap"><div class="empty">Select a learner above to view their progress-monitoring trend.</div></div>
-    </div>
-  </div>
-
-  <div class="view" id="view-intervention">
-    <div class="panel">
-      <h2>Assign / Update Intervention</h2>
-      <div class="formgrid">
-        <div><label>Learner</label><select id="ivLearner"></select></div>
-        <div><label>Tier</label><select id="ivTier"><option value="2">Tier 2 — Targeted</option><option value="3">Tier 3 — Intensive</option></select></div>
-        <div><label>Focus Skill</label><select id="ivSkill"></select></div>
-        <div><label>Start Date</label><input id="ivStart" type="date"></div>
-      </div>
-      <div class="btn-row"><button class="btn" onclick="assignIntervention()">+ Start Intervention</button></div>
-    </div>
-    <div class="panel">
-      <h2>Active Interventions</h2>
-      <div class="tablewrap"><table id="ivActiveTable"><thead><tr><th>Learner</th><th>Tier</th><th>Focus</th><th>Started</th><th>Latest Check</th><th></th></tr></thead><tbody></tbody></table></div>
-    </div>
-    <div class="panel">
-      <h2>Exited / Completed Interventions</h2>
-      <div class="tablewrap"><table id="ivExitTable"><thead><tr><th>Learner</th><th>Tier</th><th>Focus</th><th>Started</th><th>Exited</th></tr></thead><tbody></tbody></table></div>
-    </div>
-  </div>
-
-  <div class="view" id="view-reports">
-    <div class="panel">
-      <h2>Class Composition Report</h2>
-      <div class="sub">Every learner in a class, their latest composite status, and recommended focus — for a grade-level or phase meeting.</div>
-      <div class="formgrid">
-        <div><label>Grade</label><select id="repGrade" onchange="renderClassReport()"></select></div>
-        <div><label>Class</label><select id="repClass" onchange="renderClassReport()"></select></div>
-      </div>
-      <div class="tablewrap" id="classReportTable" style="margin-top:16px"></div>
-      <div class="btn-row no-print"><button class="btn secondary" onclick="window.print()">🖨 Print This Report</button></div>
-    </div>
-    <div class="panel">
-      <h2>Individual Learner Report</h2>
-      <select id="repLearner" onchange="renderLearnerReport()"></select>
-      <div id="learnerReportBody" style="margin-top:16px"></div>
-      <div class="btn-row no-print"><button class="btn secondary" onclick="window.print()">🖨 Print This Report</button></div>
-    </div>
-    <div class="panel no-print">
-      <h2>Data Export</h2>
-      <div class="sub">Download all data as a spreadsheet-ready CSV, or a full JSON backup you can re-import later.</div>
-      <div class="btn-row">
-        <button class="btn secondary" onclick="exportCSV()">⬇ Export Assessments as CSV</button>
-        <button class="btn secondary" onclick="exportJSON()">⬇ Export Full Backup (JSON)</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="view" id="view-settings">
-    <div class="panel">
-      <h2>School Details</h2>
-      <div class="formgrid">
-        <div><label>School Name</label><input id="setSchool" placeholder="e.g. Benjamin Pine Primary School"></div>
-      </div>
-      <div class="btn-row"><button class="btn" onclick="saveSchool()">Save</button></div>
-    </div>
-
-    <div class="panel">
-      <h2>Grades & Home Languages Offered</h2>
-      <div class="sub">Comma-separated. These populate every dropdown in the system.</div>
-      <label>Grades</label><input id="setGrades" placeholder="R,1,2,3,4,5,6,7">
-      <label>Home Languages (South Africa's 11 official languages by default)</label>
-      <textarea id="setLangs"></textarea>
-      <div class="btn-row"><button class="btn" onclick="saveLists()">Save Lists</button></div>
-    </div>
-
-    <div class="panel">
-      <h2>EGRA Benchmark Thresholds</h2>
-      <div class="sub"><strong>Important:</strong> these are starting reference values only, adapted from general early-grade reading research — EGRA does not have one universal, internationally fixed cut-score the way some commercial tools do. Recalibrate these using your own baseline data, DBE guidance, or a district norm-referencing exercise as soon as you have a term of local data.</div>
-      <div class="tablewrap bench-table" id="benchTableWrap"></div>
-      <div class="btn-row"><button class="btn" onclick="saveBenchmarks()">Save Benchmark Thresholds</button></div>
-    </div>
-
-    <div class="panel">
-      <h2>Data Management</h2>
-      <div class="sub">All data is stored locally in this browser via IndexedDB — nothing is sent anywhere. Back up regularly.</div>
-      <div class="btn-row">
-        <button class="btn secondary" onclick="exportJSON()">⬇ Full Backup (JSON)</button>
-        <label class="btn secondary" style="display:inline-block;cursor:pointer">⬆ Restore from Backup<input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreJSON(event)"></label>
-        <button class="btn danger" onclick="resetAllData()">⚠ Reset All Data</button>
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<div class="toast" id="toast"></div>
-
-<script>
-var SUBTESTS = [
-  {key:'initialSound', label:'Initial Sound Segmentation', unit:'/10', category:'decoding', order:1},
-  {key:'letterSound',  label:'Letter Sound Knowledge',     unit:'correct/min', category:'decoding', order:2},
-  {key:'nonwordDecoding', label:'Unfamiliar (Nonsense) Word Decoding', unit:'correct/min', category:'decoding', order:3},
-  {key:'familiarWords', label:'Familiar Word Reading',     unit:'correct/min', category:'decoding', order:4},
-  {key:'oralPassageWCPM', label:'Oral Passage Reading Fluency', unit:'wcpm', category:'decoding', order:5},
-  {key:'comprehension', label:'Reading Comprehension',     unit:'/5', category:'comprehension', order:6},
-  {key:'listeningComprehension', label:'Listening Comprehension', unit:'/5', category:'comprehension', order:7}
-];
-
-var DEFAULT_GRADES = ['R','1','2','3','4','5','6','7'];
-var DEFAULT_LANGS = ['isiZulu','isiXhosa','Afrikaans','English','Sepedi','Setswana','Sesotho','Xitsonga','siSwati','Tshivenda','isiNdebele'];
-
-function defaultBenchmarks() {
-  var d = {};
-  var table = {
-    'R':  {initialSound:[3,6], letterSound:[10,25], nonwordDecoding:[0,3], familiarWords:[0,3], oralPassageWCPM:[0,5], comprehension:[1,2], listeningComprehension:[1,3]},
-    '1':  {initialSound:[4,7], letterSound:[20,40], nonwordDecoding:[5,15], familiarWords:[10,20], oralPassageWCPM:[10,20], comprehension:[2,3], listeningComprehension:[2,3]},
-    '2':  {initialSound:[6,9], letterSound:[30,50], nonwordDecoding:[15,30], familiarWords:[20,40], oralPassageWCPM:[20,45], comprehension:[3,4], listeningComprehension:[3,4]},
-    '3':  {initialSound:[7,10], letterSound:[35,55], nonwordDecoding:[20,35], familiarWords:[30,50], oralPassageWCPM:[35,60], comprehension:[3,4], listeningComprehension:[3,4]},
-    '4':  {initialSound:[7,10], letterSound:[40,55], nonwordDecoding:[25,40], familiarWords:[40,60], oralPassageWCPM:[50,70], comprehension:[3,5], listeningComprehension:[3,5]},
-    '5':  {initialSound:[7,10], letterSound:[40,55], nonwordDecoding:[28,42], familiarWords:[45,65], oralPassageWCPM:[60,85], comprehension:[3,5], listeningComprehension:[3,5]},
-    '6':  {initialSound:[7,10], letterSound:[40,55], nonwordDecoding:[30,45], familiarWords:[50,70], oralPassageWCPM:[70,100], comprehension:[4,5], listeningComprehension:[4,5]},
-    '7':  {initialSound:[7,10], letterSound:[40,55], nonwordDecoding:[30,45], familiarWords:[55,75], oralPassageWCPM:[80,110], comprehension:[4,5], listeningComprehension:[4,5]}
-  };
-  DEFAULT_GRADES.forEach(function(g){ d[g] = table[g]; });
-  return d;
-}
-
-var DB_NAME = 'infiniteai_egra_mtss';
-var DB_VERSION = 1;
-var db = null;
-
-function openDB() {
-  return new Promise(function(resolve, reject){
-    var req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = function(e){
-      var d = e.target.result;
-      if (!d.objectStoreNames.contains('learners')) {
-        var s = d.createObjectStore('learners', {keyPath:'id', autoIncrement:true});
-        s.createIndex('grade', 'grade');
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INFINITE-AI | EGRA MTSS Data System</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --red: #e8273c;
+        --orange: #f47920;
+        --yellow: #ffd700;
+        --green: #2db24c;
+        --blue: #1565c0;
+        --purple: #7b2fbe;
+        --teal: #00897b;
+        --dark: #0e1117;
+        --mid: #3a3d4a;
+        --off-white: #f9f9fb;
+        --light-gray: #eaedf3;
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
       }
-      if (!d.objectStoreNames.contains('assessments')) {
-        var s2 = d.createObjectStore('assessments', {keyPath:'id', autoIncrement:true});
-        s2.createIndex('learnerId', 'learnerId');
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-      if (!d.objectStoreNames.contains('progress')) {
-        var s3 = d.createObjectStore('progress', {keyPath:'id', autoIncrement:true});
-        s3.createIndex('learnerId', 'learnerId');
+      body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--off-white);
+        color: var(--mid);
+        min-height: 100vh;
       }
-      if (!d.objectStoreNames.contains('interventions')) {
-        var s4 = d.createObjectStore('interventions', {keyPath:'id', autoIncrement:true});
-        s4.createIndex('learnerId', 'learnerId');
+      .rainbow-stripe {
+        height: 5px;
+        background: linear-gradient(
+          90deg,
+          var(--red),
+          var(--orange),
+          var(--yellow),
+          var(--green),
+          var(--blue),
+          var(--purple)
+        );
       }
-      if (!d.objectStoreNames.contains('settings')) {
-        d.createObjectStore('settings', {keyPath:'key'});
+
+      header.topbar {
+        background: linear-gradient(135deg, #0e1117, #1a2240);
+        color: #fff;
+        padding: 16px 26px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
       }
-    };
-    req.onsuccess = function(e){ resolve(e.target.result); };
-    req.onerror = function(e){ reject(e.target.error); };
-  });
-}
+      .brandblock {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--orange), var(--purple));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Playfair Display', serif;
+        font-weight: 900;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+      .brand-name {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.15rem;
+        font-weight: 700;
+        background: linear-gradient(
+          90deg,
+          var(--orange),
+          var(--yellow),
+          var(--green),
+          var(--blue),
+          var(--purple)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .app-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.75);
+        margin-left: 10px;
+        padding-left: 10px;
+        border-left: 1px solid rgba(255, 255, 255, 0.25);
+      }
+      .school-badge {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.72rem;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 6px 12px;
+        border-radius: 20px;
+        color: rgba(255, 255, 255, 0.85);
+      }
 
-function tx(storeNames, mode) { return db.transaction(storeNames, mode || 'readonly'); }
-function storeAll(storeName) {
-  return new Promise(function(resolve, reject){
-    var out = [];
-    var req = tx([storeName]).objectStore(storeName).openCursor();
-    req.onsuccess = function(e){
-      var cur = e.target.result;
-      if (cur) { out.push(cur.value); cur.continue(); } else { resolve(out); }
-    };
-    req.onerror = function(e){ reject(e.target.error); };
-  });
-}
-function storeAdd(storeName, obj) {
-  return new Promise(function(resolve, reject){
-    var req = tx([storeName], 'readwrite').objectStore(storeName).add(obj);
-    req.onsuccess = function(e){ resolve(e.target.result); };
-    req.onerror = function(e){ reject(e.target.error); };
-  });
-}
-function storePut(storeName, obj) {
-  return new Promise(function(resolve, reject){
-    var req = tx([storeName], 'readwrite').objectStore(storeName).put(obj);
-    req.onsuccess = function(e){ resolve(e.target.result); };
-    req.onerror = function(e){ reject(e.target.error); };
-  });
-}
-function storeDelete(storeName, key) {
-  return new Promise(function(resolve, reject){
-    var req = tx([storeName], 'readwrite').objectStore(storeName).delete(key);
-    req.onsuccess = function(){ resolve(); };
-    req.onerror = function(e){ reject(e.target.error); };
-  });
-}
-function storeClear(storeName) {
-  return new Promise(function(resolve, reject){
-    var req = tx([storeName], 'readwrite').objectStore(storeName).clear();
-    req.onsuccess = function(){ resolve(); };
-    req.onerror = function(e){ reject(e.target.error); };
-  });
-}
+      nav.tabs {
+        display: flex;
+        gap: 2px;
+        background: #fff;
+        border-bottom: 1px solid var(--light-gray);
+        padding: 0 20px;
+        overflow-x: auto;
+      }
+      nav.tabs button {
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 14px 16px;
+        border: none;
+        background: transparent;
+        color: #888;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+      }
+      nav.tabs button.active {
+        color: var(--dark);
+        border-bottom-color: var(--blue);
+      }
+      nav.tabs button:hover {
+        color: var(--dark);
+      }
 
-var STATE = { learners: [], assessments: [], progress: [], interventions: [], settings: {} };
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px 22px 80px;
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+      .panel {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 22px 24px;
+        margin-bottom: 22px;
+      }
+      .panel h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem;
+        color: var(--dark);
+        margin-bottom: 4px;
+      }
+      .panel .sub {
+        font-size: 0.82rem;
+        color: #888;
+        margin-bottom: 16px;
+      }
 
-async function loadAllState() {
-  STATE.learners = await storeAll('learners');
-  STATE.assessments = await storeAll('assessments');
-  STATE.progress = await storeAll('progress');
-  STATE.interventions = await storeAll('interventions');
-  var settingsArr = await storeAll('settings');
-  STATE.settings = {};
-  settingsArr.forEach(function(s){ STATE.settings[s.key] = s.value; });
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .grid-4 {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+      .grid-2 {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
 
-  if (!STATE.settings.grades) { STATE.settings.grades = DEFAULT_GRADES; await storePut('settings', {key:'grades', value:DEFAULT_GRADES}); }
-  if (!STATE.settings.langs) { STATE.settings.langs = DEFAULT_LANGS; await storePut('settings', {key:'langs', value:DEFAULT_LANGS}); }
-  if (!STATE.settings.benchmarks) { STATE.settings.benchmarks = defaultBenchmarks(); await storePut('settings', {key:'benchmarks', value:STATE.settings.benchmarks}); }
-  if (!STATE.settings.schoolName) { STATE.settings.schoolName = ''; }
-}
+      .kpi {
+        background: var(--off-white);
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        border: 1px solid var(--light-gray);
+      }
+      .kpi .num {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.9rem;
+        font-weight: 900;
+      }
+      .kpi .lbl {
+        font-size: 0.74rem;
+        color: #888;
+        margin-top: 4px;
+      }
 
-function toast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2200);
-}
-function fillSelect(el, arr, placeholder) {
-  el.innerHTML = (placeholder ? '<option value="">' + placeholder + '</option>' : '') +
-    arr.map(function(v){ return '<option value="' + v + '">' + v + '</option>'; }).join('');
-}
-function learnerById(id) { return STATE.learners.find(function(l){ return l.id === Number(id); }); }
-function latestAssessment(learnerId) {
-  var list = STATE.assessments.filter(function(a){ return a.learnerId === Number(learnerId); });
-  if (!list.length) return null;
-  list.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
-  return list[0];
-}
-function benchStatus(grade, subtestKey, score) {
-  var bt = STATE.settings.benchmarks[grade] && STATE.settings.benchmarks[grade][subtestKey];
-  if (!bt || score === undefined || score === null || score === '') return null;
-  score = Number(score);
-  if (score < bt[0]) return 'red';
-  if (score < bt[1]) return 'yellow';
-  return 'green';
-}
-function badgeHTML(status, label) {
-  var cls = status === 'green' ? 'b-green' : status === 'yellow' ? 'b-yellow' : status === 'red' ? 'b-red' : 'b-gray';
-  var text = label || (status === 'green' ? 'At/Above Benchmark' : status === 'yellow' ? 'Below Benchmark' : status === 'red' ? 'Well Below Benchmark' : 'No Data');
-  return '<span class="badge ' + cls + '">' + text + '</span>';
-}
-function compositeStatus(assessment, grade) {
-  if (!assessment) return null;
-  var statuses = SUBTESTS.map(function(st){ return benchStatus(grade, st.key, assessment.scores[st.key]); }).filter(Boolean);
-  if (!statuses.length) return null;
-  if (statuses.filter(function(s){ return s === 'red'; }).length >= 2) return 'red';
-  if (statuses.some(function(s){ return s === 'red'; })) return 'yellow';
-  if (statuses.some(function(s){ return s === 'yellow'; })) return 'yellow';
-  return 'green';
-}
-function lowestSkillGap(assessment, grade) {
-  if (!assessment) return null;
-  var sorted = SUBTESTS.slice().sort(function(a,b){ return a.order - b.order; });
-  for (var i = 0; i < sorted.length; i++) {
-    var st = sorted[i];
-    var s = benchStatus(grade, st.key, assessment.scores[st.key]);
-    if (s === 'red' || s === 'yellow') return st;
-  }
-  return null;
-}
-function activeIntervention(learnerId) {
-  return STATE.interventions.find(function(iv){ return iv.learnerId === Number(learnerId) && !iv.exitDate; });
-}
-function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-ZA') : '—'; }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      th {
+        background: var(--dark);
+        color: #fff;
+        text-align: left;
+        padding: 9px 10px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.63rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      td {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--light-gray);
+      }
+      tr:hover td {
+        background: rgba(21, 101, 192, 0.03);
+      }
+      .tablewrap {
+        overflow-x: auto;
+      }
 
-document.getElementById('tabNav').addEventListener('click', function(e){
-  if (e.target.tagName !== 'BUTTON') return;
-  document.querySelectorAll('nav.tabs button').forEach(function(b){ b.classList.remove('active'); });
-  e.target.classList.add('active');
-  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
-  document.getElementById('view-' + e.target.dataset.view).classList.add('active');
-  renderAll();
-});
+      .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.66rem;
+        font-weight: 700;
+        color: #fff;
+      }
+      .b-green {
+        background: var(--green);
+      }
+      .b-yellow {
+        background: #c99400;
+      }
+      .b-red {
+        background: var(--red);
+      }
+      .b-gray {
+        background: #999;
+      }
 
-function populateSharedDropdowns() {
-  var grades = STATE.settings.grades;
-  var langs = STATE.settings.langs;
-  fillSelect(document.getElementById('lnGrade'), grades);
-  fillSelect(document.getElementById('lnLang'), langs);
-  fillSelect(document.getElementById('repGrade'), grades, 'All Grades');
+      label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 5px;
+        margin-top: 12px;
+      }
+      label:first-child {
+        margin-top: 0;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 9px 11px;
+        border: 1.5px solid var(--light-gray);
+        border-radius: 8px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.87rem;
+        background: #fff;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
 
-  var learnerOptions = STATE.learners.map(function(l){ return {id:l.id, label:l.name + ' (Gr ' + l.grade + (l.className ? ', ' + l.className : '') + ')'}; });
-  [['scLearner'],['diagLearner'],['ivLearner'],['repLearner']].forEach(function(pair){
-    var el = document.getElementById(pair[0]);
-    var cur = el.value;
-    el.innerHTML = '<option value="">Select a learner…</option>' + learnerOptions.map(function(o){ return '<option value="' + o.id + '">' + o.label + '</option>'; }).join('');
-    if (cur) el.value = cur;
-  });
+      .btn {
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 700;
+        font-size: 0.83rem;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 24px;
+        cursor: pointer;
+        color: #fff;
+        background: linear-gradient(90deg, var(--blue), #0d47a1);
+      }
+      .btn:hover {
+        opacity: 0.9;
+      }
+      .btn.secondary {
+        background: var(--off-white);
+        color: var(--dark);
+        border: 1.5px solid var(--light-gray);
+      }
+      .btn.danger {
+        background: linear-gradient(90deg, var(--red), #9c1524);
+      }
+      .btn.small {
+        padding: 6px 14px;
+        font-size: 0.76rem;
+      }
+      .btn-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
 
-  var tierLearners = STATE.learners.filter(function(l){ return activeIntervention(l.id); })
-    .map(function(l){ return {id:l.id, label:l.name + ' (Tier ' + activeIntervention(l.id).tier + ')'}; });
-  var pmEl = document.getElementById('pmLearner');
-  var curPM = pmEl.value;
-  pmEl.innerHTML = '<option value="">Select a learner…</option>' + tierLearners.map(function(o){ return '<option value="' + o.id + '">' + o.label + '</option>'; }).join('');
-  if (curPM) pmEl.value = curPM;
+      .formgrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px 16px;
+      }
 
-  fillSelect(document.getElementById('pmSkill'), SUBTESTS.map(function(s){ return s.label; }));
-  fillSelect(document.getElementById('ivSkill'), SUBTESTS.map(function(s){ return s.label; }));
+      .pill-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .pill {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.72rem;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: var(--off-white);
+        border: 1.5px solid var(--light-gray);
+        cursor: pointer;
+        color: var(--mid);
+      }
+      .pill.active {
+        background: var(--dark);
+        color: #fff;
+        border-color: var(--dark);
+      }
 
-  document.getElementById('schoolBadge').textContent = STATE.settings.schoolName ? STATE.settings.schoolName : 'School not set — see Settings';
-}
+      .skillrow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--light-gray);
+      }
+      .skillrow:last-child {
+        border-bottom: none;
+      }
+      .skillrow .sname {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--dark);
+      }
+      .skillrow .sval {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.8rem;
+        color: #888;
+        margin-right: 10px;
+      }
 
-async function addLearner() {
-  var name = document.getElementById('lnName').value.trim();
-  var grade = document.getElementById('lnGrade').value;
-  var className = document.getElementById('lnClass').value.trim();
-  var lang = document.getElementById('lnLang').value;
-  if (!name || !grade) { toast('Please enter a name and select a grade.'); return; }
-  await storeAdd('learners', {name:name, grade:grade, className:className, homeLanguage:lang, dateAdded:new Date().toISOString()});
-  document.getElementById('lnName').value = '';
-  document.getElementById('lnClass').value = '';
-  await loadAllState();
-  renderAll();
-  toast('Learner added.');
-}
-async function deleteLearner(id) {
-  if (!confirm('Remove this learner and all their records? This cannot be undone.')) return;
-  await storeDelete('learners', id);
-  var toDeleteA = STATE.assessments.filter(function(a){ return a.learnerId === id; });
-  var toDeleteP = STATE.progress.filter(function(p){ return p.learnerId === id; });
-  var toDeleteI = STATE.interventions.filter(function(i){ return i.learnerId === id; });
-  for (var a of toDeleteA) await storeDelete('assessments', a.id);
-  for (var p of toDeleteP) await storeDelete('progress', p.id);
-  for (var iv of toDeleteI) await storeDelete('interventions', iv.id);
-  await loadAllState();
-  renderAll();
-  toast('Learner removed.');
-}
-var rosterFilter = 'All';
-function renderRoster() {
-  var wrap = document.getElementById('rosterGradeFilter');
-  var grades = ['All'].concat(STATE.settings.grades);
-  wrap.innerHTML = grades.map(function(g){ return '<span class="pill' + (g === rosterFilter ? ' active' : '') + '" onclick="setRosterFilter(\'' + g + '\')">Grade ' + g + '</span>'; }).join('');
+      .diag-callout {
+        background: #fff7e6;
+        border-left: 4px solid var(--orange);
+        border-radius: 0 10px 10px 0;
+        padding: 14px 18px;
+        margin-top: 16px;
+        font-size: 0.87rem;
+        line-height: 1.6;
+      }
+      .diag-callout strong {
+        color: var(--dark);
+      }
 
-  var tbody = document.querySelector('#rosterTable tbody');
-  var list = STATE.learners.filter(function(l){ return rosterFilter === 'All' || l.grade === rosterFilter; });
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty">No learners yet — add one above.</div></td></tr>'; return; }
-  tbody.innerHTML = list.map(function(l){
-    var latest = latestAssessment(l.id);
-    var status = latest ? compositeStatus(latest, l.grade) : null;
-    return '<tr><td>' + l.name + '</td><td>' + l.grade + '</td><td>' + (l.className || '—') + '</td><td>' + (l.homeLanguage || '—') + '</td><td>' + badgeHTML(status) + '</td>' +
-      '<td><button class="btn small danger" onclick="deleteLearner(' + l.id + ')">Remove</button></td></tr>';
-  }).join('');
-}
-function setRosterFilter(g) { rosterFilter = g; renderRoster(); }
+      .chart-wrap {
+        background: var(--off-white);
+        border-radius: 10px;
+        padding: 16px;
+        margin-top: 10px;
+      }
+      svg text {
+        font-family: 'DM Sans', sans-serif;
+      }
 
-function renderScreeningForm() {
-  var wrap = document.getElementById('scSubtestForm');
-  wrap.innerHTML = SUBTESTS.map(function(st){
-    return '<div><label>' + st.label + ' <span style="font-weight:400;color:#999">(' + st.unit + ')</span></label>' +
-      '<input type="number" step="0.1" id="sc_' + st.key + '" placeholder="score"></div>';
-  }).join('');
-}
-async function saveScreening() {
-  var learnerId = Number(document.getElementById('scLearner').value);
-  if (!learnerId) { toast('Select a learner first.'); return; }
-  var scores = {};
-  SUBTESTS.forEach(function(st){
-    var v = document.getElementById('sc_' + st.key).value;
-    if (v !== '') scores[st.key] = Number(v);
-  });
-  if (!Object.keys(scores).length) { toast('Enter at least one subtest score.'); return; }
-  var record = {
-    learnerId: learnerId,
-    window: document.getElementById('scWindow').value,
-    year: document.getElementById('scYear').value,
-    date: document.getElementById('scDate').value || new Date().toISOString().slice(0,10),
-    scores: scores,
-    notes: document.getElementById('scNotes').value.trim()
-  };
-  await storeAdd('assessments', record);
-  SUBTESTS.forEach(function(st){ document.getElementById('sc_' + st.key).value = ''; });
-  document.getElementById('scNotes').value = '';
-  await loadAllState();
-  renderAll();
-  toast('Screening saved.');
-}
-function renderScreeningLog() {
-  var tbody = document.querySelector('#screeningLog tbody');
-  var list = STATE.assessments.slice().sort(function(a,b){ return new Date(b.date) - new Date(a.date); }).slice(0,25);
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty">No screening records yet.</div></td></tr>'; return; }
-  tbody.innerHTML = list.map(function(a){
-    var l = learnerById(a.learnerId);
-    if (!l) return '';
-    var status = compositeStatus(a, l.grade);
-    return '<tr><td>' + l.name + '</td><td>' + a.window + ' ' + a.year + '</td><td>' + badgeHTML(status) + '</td><td>' + fmtDate(a.date) + '</td>' +
-      '<td><button class="btn small secondary" onclick="deleteAssessment(' + a.id + ')">Delete</button></td></tr>';
-  }).join('');
-}
-async function deleteAssessment(id) { await storeDelete('assessments', id); await loadAllState(); renderAll(); }
+      .empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: #aaa;
+        font-size: 0.9rem;
+      }
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--dark);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        box-shadow: var(--shadow);
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.3s;
+        z-index: 999;
+        pointer-events: none;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
-function renderDiagnostics() {
-  var id = document.getElementById('diagLearner').value;
-  var body = document.getElementById('diagBody');
-  if (!id) { body.innerHTML = ''; return; }
-  var l = learnerById(id);
-  var a = latestAssessment(id);
-  if (!a) { body.innerHTML = '<div class="empty">No screening data for this learner yet. Add one under Screening.</div>'; return; }
+      .bench-table input {
+        width: 70px;
+        padding: 5px 6px;
+        font-size: 0.8rem;
+      }
 
-  var status = compositeStatus(a, l.grade);
-  var gap = lowestSkillGap(a, l.grade);
-  var svrDecoding = SUBTESTS.filter(function(s){ return s.category === 'decoding'; });
-  var svrComp = SUBTESTS.filter(function(s){ return s.category === 'comprehension'; });
+      @media (max-width: 640px) {
+        main {
+          padding: 20px 14px 70px;
+        }
+        .panel {
+          padding: 18px;
+        }
+      }
+      @media print {
+        header.topbar,
+        nav.tabs,
+        .btn-row,
+        .no-print {
+          display: none !important;
+        }
+        .panel {
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="rainbow-stripe"></div>
+    <header class="topbar">
+      <div class="brandblock">
+        <div class="logo-mark">∞</div>
+        <div class="brand-name">INFINITE-AI</div>
+        <div class="app-title">EGRA MTSS Data System</div>
+      </div>
+      <div class="school-badge" id="schoolBadge">School not set — see Settings</div>
+    </header>
 
-  var rowsHTML = function(list) {
-    return list.map(function(st){
-      var score = a.scores[st.key];
-      var s = benchStatus(l.grade, st.key, score);
-      return '<div class="skillrow"><span class="sname">' + st.label + '</span><span><span class="sval">' + (score !== undefined ? score + ' ' + st.unit : '—') + '</span>' + badgeHTML(s) + '</span></div>';
-    }).join('');
-  };
+    <nav class="tabs" id="tabNav">
+      <button data-view="dashboard" class="active">Dashboard</button>
+      <button data-view="learners">Learners</button>
+      <button data-view="screening">Screening</button>
+      <button data-view="diagnostics">Diagnostics</button>
+      <button data-view="monitoring">Progress Monitoring</button>
+      <button data-view="intervention">Intervention</button>
+      <button data-view="reports">Reports</button>
+      <button data-view="settings">Settings</button>
+    </nav>
 
-  var svrNote = '';
-  var decodingWeak = svrDecoding.some(function(s){ var st = benchStatus(l.grade, s.key, a.scores[s.key]); return st === 'red' || st === 'yellow'; });
-  var compWeak = svrComp.some(function(s){ var st = benchStatus(l.grade, s.key, a.scores[s.key]); return st === 'red' || st === 'yellow'; });
-  if (decodingWeak && !compWeak) svrNote = 'Simple View flag: this looks like a <strong>decoding-side</strong> gap — word recognition and phonics are the priority, not comprehension strategy.';
-  else if (compWeak && !decodingWeak) svrNote = 'Simple View flag: decoding looks solid but comprehension is weak — possible <strong>"word calling"</strong> pattern. Prioritise vocabulary, background knowledge and comprehension strategy instruction over further phonics drilling.';
-  else if (decodingWeak && compWeak) svrNote = 'Simple View flag: both sides of the equation show gaps — decoding is still the higher-leverage starting point, since comprehension instruction is hard to access while decoding is not yet automatic.';
-  else svrNote = 'Both decoding and comprehension are at or above benchmark on the latest screening.';
+    <main>
+      <div class="view active" id="view-dashboard">
+        <div class="panel">
+          <h2>Whole-School Outcomes Dashboard</h2>
+          <div class="sub">
+            Composite risk status across all learners with a screening record, most recent
+            assessment window.
+          </div>
+          <div class="grid grid-4" id="dashKpis"></div>
+        </div>
+        <div class="panel">
+          <h2>Risk Distribution by Grade</h2>
+          <div class="sub">
+            Green = At/Above Benchmark · Yellow = Below Benchmark · Red = Well Below
+            Benchmark
+          </div>
+          <div id="gradeBars"></div>
+        </div>
+        <div class="panel">
+          <h2>Learners Currently in Tier 2 / Tier 3</h2>
+          <div id="dashTierList" class="tablewrap"></div>
+        </div>
+      </div>
 
-  body.innerHTML =
-    '<h2 style="font-size:1.05rem">' + l.name + ' — Grade ' + l.grade + (l.className ? ' (' + l.className + ')' : '') + '</h2>' +
-    '<div class="sub">Latest screening: ' + a.window + ' ' + a.year + ' (' + fmtDate(a.date) + ') · Composite status: ' + badgeHTML(status) + '</div>' +
-    '<div class="grid grid-2" style="margin-top:14px">' +
-      '<div><h3 style="font-size:0.9rem;margin-bottom:6px;color:var(--dark)">Decoding / Word Recognition</h3>' + rowsHTML(svrDecoding) + '</div>' +
-      '<div><h3 style="font-size:0.9rem;margin-bottom:6px;color:var(--dark)">Language Comprehension</h3>' + rowsHTML(svrComp) + '</div>' +
-    '</div>' +
-    (gap ? '<div class="diag-callout"><strong>Priority focus (lowest unmet skill in sequence):</strong> ' + gap.label + '. Target this first — later skills in the sequence build on it, so intervention time is most effective here.</div>' : '<div class="diag-callout"><strong>No flagged gaps</strong> — this learner is at or above benchmark on every recorded subtest.</div>') +
-    '<div class="diag-callout" style="border-left-color:var(--blue);background:#eef4fc;margin-top:10px">' + svrNote + '</div>' +
-    (a.notes ? '<div class="diag-callout" style="border-left-color:#999;background:#f5f5f5;margin-top:10px"><strong>Assessor notes:</strong> ' + a.notes + '</div>' : '');
-}
+      <div class="view" id="view-learners">
+        <div class="panel">
+          <h2>Add a Learner</h2>
+          <div class="sub">
+            Learners are the foundation record every assessment, intervention, and report
+            links to.
+          </div>
+          <div class="formgrid">
+            <div>
+              <label>Full Name</label
+              ><input id="lnName" placeholder="e.g. Thandeka Nkosi" />
+            </div>
+            <div>
+              <label>Grade</label
+              ><select id="lnGrade"></select>
+            </div>
+            <div><label>Class</label><input id="lnClass" placeholder="e.g. 3A" /></div>
+            <div>
+              <label>Home Language</label
+              ><select id="lnLang"></select>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn" onclick="addLearner()">+ Add Learner</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Learner Roster</h2>
+          <div class="pill-row" id="rosterGradeFilter"></div>
+          <div class="tablewrap">
+            <table id="rosterTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Grade</th>
+                  <th>Class</th>
+                  <th>Home Language</th>
+                  <th>Latest Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-async function savePM() {
-  var learnerId = Number(document.getElementById('pmLearner').value);
-  if (!learnerId) { toast('Select a learner in Tier 2/3 first.'); return; }
-  var skillLabel = document.getElementById('pmSkill').value;
-  var skillKey = SUBTESTS.find(function(s){ return s.label === skillLabel; }).key;
-  var score = document.getElementById('pmScore').value;
-  if (score === '') { toast('Enter a score.'); return; }
-  await storeAdd('progress', {
-    learnerId: learnerId,
-    date: document.getElementById('pmDate').value || new Date().toISOString().slice(0,10),
-    skillKey: skillKey,
-    skillLabel: skillLabel,
-    score: Number(score),
-    note: document.getElementById('pmNote').value.trim()
-  });
-  document.getElementById('pmScore').value = '';
-  document.getElementById('pmNote').value = '';
-  await loadAllState();
-  renderAll();
-  loadPMChart();
-  toast('Progress check logged.');
-}
-function loadPMChart() {
-  var id = document.getElementById('pmLearner').value;
-  var wrap = document.getElementById('pmChartWrap');
-  if (!id) { wrap.innerHTML = '<div class="empty">Select a learner above to view their progress-monitoring trend.</div>'; return; }
-  var l = learnerById(id);
-  var points = STATE.progress.filter(function(p){ return p.learnerId === Number(id); }).sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
-  if (!points.length) { wrap.innerHTML = '<div class="empty">No progress-monitoring checks logged yet for ' + l.name + '.</div>'; return; }
+      <div class="view" id="view-screening">
+        <div class="panel">
+          <h2>EGRA Screening / Benchmark Entry</h2>
+          <div class="sub">
+            Record a full EGRA administration for a learner. Use this at the start,
+            middle, and end of year for universal screening.
+          </div>
+          <div class="formgrid">
+            <div>
+              <label>Learner</label
+              ><select id="scLearner"></select>
+            </div>
+            <div>
+              <label>Assessment Window</label
+              ><select id="scWindow">
+                <option>Term 1</option>
+                <option>Term 2</option>
+                <option>Term 3</option>
+                <option>Term 4</option>
+              </select>
+            </div>
+            <div><label>Year</label><input id="scYear" type="number" value="2026" /></div>
+            <div><label>Date</label><input id="scDate" type="date" /></div>
+          </div>
+          <div id="scSubtestForm" class="formgrid" style="margin-top: 16px"></div>
+          <div>
+            <label>Notes (optional)</label
+            ><textarea
+              id="scNotes"
+              placeholder="Anything the assessor noticed — hesitations, fatigue, language switching, etc."
+            ></textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn" onclick="saveScreening()">✓ Save EGRA Screening</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Recent Screening Records</h2>
+          <div class="tablewrap">
+            <table id="screeningLog">
+              <thead>
+                <tr>
+                  <th>Learner</th>
+                  <th>Window</th>
+                  <th>Composite Status</th>
+                  <th>Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-  var skillKey = points[points.length - 1].skillKey;
-  var bt = STATE.settings.benchmarks[l.grade] && STATE.settings.benchmarks[l.grade][skillKey];
-  var goal = bt ? bt[1] : null;
-  var vals = points.map(function(p){ return p.score; });
-  var maxV = Math.max.apply(null, vals.concat(goal || 0)) * 1.15 || 10;
-  var W = 640, H = 220, padL = 40, padB = 30, padT = 15, padR = 15;
-  var plotW = W - padL - padR, plotH = H - padT - padB;
-  var stepX = points.length > 1 ? plotW / (points.length - 1) : 0;
+      <div class="view" id="view-diagnostics">
+        <div class="panel">
+          <h2>Diagnostic Breakdown</h2>
+          <div class="sub">
+            Select a learner to see their most recent EGRA subtest results, benchmark
+            status, and the single lowest skill to prioritise first.
+          </div>
+          <select id="diagLearner" onchange="renderDiagnostics()"></select>
+          <div id="diagBody" style="margin-top: 16px"></div>
+        </div>
+      </div>
 
-  function x(i){ return padL + i * stepX; }
-  function y(v){ return padT + plotH - (v / maxV) * plotH; }
+      <div class="view" id="view-monitoring">
+        <div class="panel">
+          <h2>Log a Progress-Monitoring Check</h2>
+          <div class="sub">
+            For learners already in Tier 2 or Tier 3. A quick, single-skill re-check — not
+            a full EGRA re-administration.
+          </div>
+          <div class="formgrid">
+            <div>
+              <label>Learner (Tier 2/3 only)</label
+              ><select id="pmLearner" onchange="loadPMChart()"></select>
+            </div>
+            <div><label>Date</label><input id="pmDate" type="date" /></div>
+            <div>
+              <label>Focus Skill</label
+              ><select id="pmSkill"></select>
+            </div>
+            <div>
+              <label>Score</label
+              ><input id="pmScore" type="number" placeholder="e.g. 22" />
+            </div>
+          </div>
+          <div>
+            <label>Note (optional — e.g. instructional change)</label
+            ><input
+              id="pmNote"
+              placeholder="e.g. Switched to daily 1:1 blending drills"
+            />
+          </div>
+          <div class="btn-row">
+            <button class="btn" onclick="savePM()">+ Log Check</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Progress Trend</h2>
+          <div id="pmChartWrap" class="chart-wrap">
+            <div class="empty">
+              Select a learner above to view their progress-monitoring trend.
+            </div>
+          </div>
+        </div>
+      </div>
 
-  var pathD = points.map(function(p,i){ return (i===0?'M':'L') + x(i) + ',' + y(p.score); }).join(' ');
-  var goalY = goal !== null ? y(goal) : null;
+      <div class="view" id="view-intervention">
+        <div class="panel">
+          <h2>Assign / Update Intervention</h2>
+          <div class="formgrid">
+            <div>
+              <label>Learner</label
+              ><select id="ivLearner"></select>
+            </div>
+            <div>
+              <label>Tier</label
+              ><select id="ivTier">
+                <option value="2">Tier 2 — Targeted</option>
+                <option value="3">Tier 3 — Intensive</option>
+              </select>
+            </div>
+            <div>
+              <label>Focus Skill</label
+              ><select id="ivSkill"></select>
+            </div>
+            <div><label>Start Date</label><input id="ivStart" type="date" /></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn" onclick="assignIntervention()">
+              + Start Intervention
+            </button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Active Interventions</h2>
+          <div class="tablewrap">
+            <table id="ivActiveTable">
+              <thead>
+                <tr>
+                  <th>Learner</th>
+                  <th>Tier</th>
+                  <th>Focus</th>
+                  <th>Started</th>
+                  <th>Latest Check</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Exited / Completed Interventions</h2>
+          <div class="tablewrap">
+            <table id="ivExitTable">
+              <thead>
+                <tr>
+                  <th>Learner</th>
+                  <th>Tier</th>
+                  <th>Focus</th>
+                  <th>Started</th>
+                  <th>Exited</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-  var dots = points.map(function(p,i){
-    return '<circle cx="' + x(i) + '" cy="' + y(p.score) + '" r="4" fill="#1565c0"></circle>' +
-      '<text x="' + x(i) + '" y="' + (y(p.score) - 10) + '" font-size="11" text-anchor="middle" fill="#3a3d4a">' + p.score + '</text>' +
-      '<text x="' + x(i) + '" y="' + (H - 8) + '" font-size="9" text-anchor="middle" fill="#999">' + new Date(p.date).toLocaleDateString('en-ZA',{day:'2-digit',month:'2-digit'}) + '</text>';
-  }).join('');
+      <div class="view" id="view-reports">
+        <div class="panel">
+          <h2>Class Composition Report</h2>
+          <div class="sub">
+            Every learner in a class, their latest composite status, and recommended focus
+            — for a grade-level or phase meeting.
+          </div>
+          <div class="formgrid">
+            <div>
+              <label>Grade</label
+              ><select id="repGrade" onchange="renderClassReport()"></select>
+            </div>
+            <div>
+              <label>Class</label
+              ><select id="repClass" onchange="renderClassReport()"></select>
+            </div>
+          </div>
+          <div class="tablewrap" id="classReportTable" style="margin-top: 16px"></div>
+          <div class="btn-row no-print">
+            <button class="btn secondary" onclick="window.print()">
+              🖨 Print This Report
+            </button>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Individual Learner Report</h2>
+          <select id="repLearner" onchange="renderLearnerReport()"></select>
+          <div id="learnerReportBody" style="margin-top: 16px"></div>
+          <div class="btn-row no-print">
+            <button class="btn secondary" onclick="window.print()">
+              🖨 Print This Report
+            </button>
+          </div>
+        </div>
+        <div class="panel no-print">
+          <h2>Data Export</h2>
+          <div class="sub">
+            Download all data as a spreadsheet-ready CSV, or a full JSON backup you can
+            re-import later.
+          </div>
+          <div class="btn-row">
+            <button class="btn secondary" onclick="exportCSV()">
+              ⬇ Export Assessments as CSV
+            </button>
+            <button class="btn secondary" onclick="exportJSON()">
+              ⬇ Export Full Backup (JSON)
+            </button>
+          </div>
+        </div>
+      </div>
 
-  var goalLine = goalY !== null ? '<line x1="' + padL + '" y1="' + goalY + '" x2="' + (W-padR) + '" y2="' + goalY + '" stroke="#2db24c" stroke-width="1.5" stroke-dasharray="5,4"></line><text x="' + (W-padR) + '" y="' + (goalY-4) + '" font-size="10" text-anchor="end" fill="#2db24c">Benchmark goal</text>' : '';
+      <div class="view" id="view-settings">
+        <div class="panel">
+          <h2>School Details</h2>
+          <div class="formgrid">
+            <div>
+              <label>School Name</label
+              ><input id="setSchool" placeholder="e.g. Benjamin Pine Primary School" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn" onclick="saveSchool()">Save</button>
+          </div>
+        </div>
 
-  wrap.innerHTML = '<div class="sub" style="margin-bottom:8px">' + l.name + ' — tracking: ' + points[points.length-1].skillLabel + '</div>' +
-    '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto">' +
-      '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (H-padB) + '" stroke="#ccc"></line>' +
-      '<line x1="' + padL + '" y1="' + (H-padB) + '" x2="' + (W-padR) + '" y2="' + (H-padB) + '" stroke="#ccc"></line>' +
-      goalLine +
-      '<path d="' + pathD + '" fill="none" stroke="#7b2fbe" stroke-width="2.5"></path>' +
-      dots +
-    '</svg>' +
-    (points.length >= 3 ? trendNote(points) : '');
-}
-function trendNote(points) {
-  var first = points[0].score, last = points[points.length-1].score;
-  var trend = last > first ? 'improving' : last < first ? 'declining' : 'flat';
-  var cls = trend === 'improving' ? 'b-green' : trend === 'declining' ? 'b-red' : 'b-yellow';
-  return '<div style="margin-top:10px"><span class="badge ' + cls + '">Trend: ' + trend + '</span> <span style="font-size:0.8rem;color:#888;margin-left:8px">from ' + first + ' to ' + last + ' across ' + points.length + ' checks</span></div>';
-}
+        <div class="panel">
+          <h2>Grades & Home Languages Offered</h2>
+          <div class="sub">
+            Comma-separated. These populate every dropdown in the system.
+          </div>
+          <label>Grades</label><input id="setGrades" placeholder="R,1,2,3,4,5,6,7" />
+          <label>Home Languages (South Africa's 11 official languages by default)</label>
+          <textarea id="setLangs"></textarea>
+          <div class="btn-row">
+            <button class="btn" onclick="saveLists()">Save Lists</button>
+          </div>
+        </div>
 
-async function assignIntervention() {
-  var learnerId = Number(document.getElementById('ivLearner').value);
-  if (!learnerId) { toast('Select a learner.'); return; }
-  var existing = activeIntervention(learnerId);
-  if (existing) { toast('This learner already has an active intervention. Exit it first from the table below.'); return; }
-  await storeAdd('interventions', {
-    learnerId: learnerId,
-    tier: document.getElementById('ivTier').value,
-    focus: document.getElementById('ivSkill').value,
-    startDate: document.getElementById('ivStart').value || new Date().toISOString().slice(0,10),
-    exitDate: null
-  });
-  await loadAllState();
-  renderAll();
-  toast('Intervention started.');
-}
-async function exitIntervention(id) {
-  var iv = STATE.interventions.find(function(i){ return i.id === id; });
-  iv.exitDate = new Date().toISOString().slice(0,10);
-  await storePut('interventions', iv);
-  await loadAllState();
-  renderAll();
-  toast('Intervention marked as exited.');
-}
-function renderInterventions() {
-  var activeTbody = document.querySelector('#ivActiveTable tbody');
-  var exitTbody = document.querySelector('#ivExitTable tbody');
-  var active = STATE.interventions.filter(function(i){ return !i.exitDate; });
-  var exited = STATE.interventions.filter(function(i){ return i.exitDate; });
+        <div class="panel">
+          <h2>EGRA Benchmark Thresholds</h2>
+          <div class="sub">
+            <strong>Important:</strong> these are starting reference values only, adapted
+            from general early-grade reading research — EGRA does not have one universal,
+            internationally fixed cut-score the way some commercial tools do. Recalibrate
+            these using your own baseline data, DBE guidance, or a district
+            norm-referencing exercise as soon as you have a term of local data.
+          </div>
+          <div class="tablewrap bench-table" id="benchTableWrap"></div>
+          <div class="btn-row">
+            <button class="btn" onclick="saveBenchmarks()">
+              Save Benchmark Thresholds
+            </button>
+          </div>
+        </div>
 
-  activeTbody.innerHTML = active.length ? active.map(function(iv){
-    var l = learnerById(iv.learnerId);
-    if (!l) return '';
-    var checks = STATE.progress.filter(function(p){ return p.learnerId === iv.learnerId; }).sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
-    var latest = checks[0];
-    return '<tr><td>' + l.name + '</td><td>Tier ' + iv.tier + '</td><td>' + iv.focus + '</td><td>' + fmtDate(iv.startDate) + '</td>' +
-      '<td>' + (latest ? latest.score + ' (' + fmtDate(latest.date) + ')' : '—') + '</td>' +
-      '<td><button class="btn small secondary" onclick="exitIntervention(' + iv.id + ')">Exit</button></td></tr>';
-  }).join('') : '<tr><td colspan="6"><div class="empty">No active interventions.</div></td></tr>';
+        <div class="panel">
+          <h2>Data Management</h2>
+          <div class="sub">
+            All data is stored locally in this browser via IndexedDB — nothing is sent
+            anywhere. Back up regularly.
+          </div>
+          <div class="btn-row">
+            <button class="btn secondary" onclick="exportJSON()">
+              ⬇ Full Backup (JSON)
+            </button>
+            <label class="btn secondary" style="display: inline-block; cursor: pointer"
+              >⬆ Restore from Backup<input
+                type="file"
+                id="restoreFile"
+                accept=".json"
+                style="display: none"
+                onchange="restoreJSON(event)"
+            /></label>
+            <button class="btn danger" onclick="resetAllData()">⚠ Reset All Data</button>
+          </div>
+        </div>
+      </div>
+    </main>
 
-  exitTbody.innerHTML = exited.length ? exited.map(function(iv){
-    var l = learnerById(iv.learnerId);
-    if (!l) return '';
-    return '<tr><td>' + l.name + '</td><td>Tier ' + iv.tier + '</td><td>' + iv.focus + '</td><td>' + fmtDate(iv.startDate) + '</td><td>' + fmtDate(iv.exitDate) + '</td></tr>';
-  }).join('') : '<tr><td colspan="5"><div class="empty">No exited interventions yet.</div></td></tr>';
-}
+    <div class="toast" id="toast"></div>
 
-function renderDashboard() {
-  var latestPerLearner = STATE.learners.map(function(l){
-    return { learner: l, assessment: latestAssessment(l.id) };
-  }).filter(function(x){ return x.assessment; });
+    <script>
+      var SUBTESTS = [
+        {
+          key: 'initialSound',
+          label: 'Initial Sound Segmentation',
+          unit: '/10',
+          category: 'decoding',
+          order: 1,
+        },
+        {
+          key: 'letterSound',
+          label: 'Letter Sound Knowledge',
+          unit: 'correct/min',
+          category: 'decoding',
+          order: 2,
+        },
+        {
+          key: 'nonwordDecoding',
+          label: 'Unfamiliar (Nonsense) Word Decoding',
+          unit: 'correct/min',
+          category: 'decoding',
+          order: 3,
+        },
+        {
+          key: 'familiarWords',
+          label: 'Familiar Word Reading',
+          unit: 'correct/min',
+          category: 'decoding',
+          order: 4,
+        },
+        {
+          key: 'oralPassageWCPM',
+          label: 'Oral Passage Reading Fluency',
+          unit: 'wcpm',
+          category: 'decoding',
+          order: 5,
+        },
+        {
+          key: 'comprehension',
+          label: 'Reading Comprehension',
+          unit: '/5',
+          category: 'comprehension',
+          order: 6,
+        },
+        {
+          key: 'listeningComprehension',
+          label: 'Listening Comprehension',
+          unit: '/5',
+          category: 'comprehension',
+          order: 7,
+        },
+      ];
 
-  var counts = {green:0, yellow:0, red:0};
-  latestPerLearner.forEach(function(x){
-    var s = compositeStatus(x.assessment, x.learner.grade);
-    if (s) counts[s]++;
-  });
+      var DEFAULT_GRADES = ['R', '1', '2', '3', '4', '5', '6', '7'];
+      var DEFAULT_LANGS = [
+        'isiZulu',
+        'isiXhosa',
+        'Afrikaans',
+        'English',
+        'Sepedi',
+        'Setswana',
+        'Sesotho',
+        'Xitsonga',
+        'siSwati',
+        'Tshivenda',
+        'isiNdebele',
+      ];
 
-  var kpis = document.getElementById('dashKpis');
-  kpis.innerHTML =
-    '<div class="kpi"><div class="num">' + STATE.learners.length + '</div><div class="lbl">Total Learners</div></div>' +
-    '<div class="kpi"><div class="num" style="color:#2db24c">' + counts.green + '</div><div class="lbl">At/Above Benchmark</div></div>' +
-    '<div class="kpi"><div class="num" style="color:#c99400">' + counts.yellow + '</div><div class="lbl">Below Benchmark</div></div>' +
-    '<div class="kpi"><div class="num" style="color:#e8273c">' + counts.red + '</div><div class="lbl">Well Below Benchmark</div></div>';
+      function defaultBenchmarks() {
+        var d = {};
+        var table = {
+          R: {
+            initialSound: [3, 6],
+            letterSound: [10, 25],
+            nonwordDecoding: [0, 3],
+            familiarWords: [0, 3],
+            oralPassageWCPM: [0, 5],
+            comprehension: [1, 2],
+            listeningComprehension: [1, 3],
+          },
+          1: {
+            initialSound: [4, 7],
+            letterSound: [20, 40],
+            nonwordDecoding: [5, 15],
+            familiarWords: [10, 20],
+            oralPassageWCPM: [10, 20],
+            comprehension: [2, 3],
+            listeningComprehension: [2, 3],
+          },
+          2: {
+            initialSound: [6, 9],
+            letterSound: [30, 50],
+            nonwordDecoding: [15, 30],
+            familiarWords: [20, 40],
+            oralPassageWCPM: [20, 45],
+            comprehension: [3, 4],
+            listeningComprehension: [3, 4],
+          },
+          3: {
+            initialSound: [7, 10],
+            letterSound: [35, 55],
+            nonwordDecoding: [20, 35],
+            familiarWords: [30, 50],
+            oralPassageWCPM: [35, 60],
+            comprehension: [3, 4],
+            listeningComprehension: [3, 4],
+          },
+          4: {
+            initialSound: [7, 10],
+            letterSound: [40, 55],
+            nonwordDecoding: [25, 40],
+            familiarWords: [40, 60],
+            oralPassageWCPM: [50, 70],
+            comprehension: [3, 5],
+            listeningComprehension: [3, 5],
+          },
+          5: {
+            initialSound: [7, 10],
+            letterSound: [40, 55],
+            nonwordDecoding: [28, 42],
+            familiarWords: [45, 65],
+            oralPassageWCPM: [60, 85],
+            comprehension: [3, 5],
+            listeningComprehension: [3, 5],
+          },
+          6: {
+            initialSound: [7, 10],
+            letterSound: [40, 55],
+            nonwordDecoding: [30, 45],
+            familiarWords: [50, 70],
+            oralPassageWCPM: [70, 100],
+            comprehension: [4, 5],
+            listeningComprehension: [4, 5],
+          },
+          7: {
+            initialSound: [7, 10],
+            letterSound: [40, 55],
+            nonwordDecoding: [30, 45],
+            familiarWords: [55, 75],
+            oralPassageWCPM: [80, 110],
+            comprehension: [4, 5],
+            listeningComprehension: [4, 5],
+          },
+        };
+        DEFAULT_GRADES.forEach(function (g) {
+          d[g] = table[g];
+        });
+        return d;
+      }
 
-  var byGrade = {};
-  STATE.settings.grades.forEach(function(g){ byGrade[g] = {green:0, yellow:0, red:0}; });
-  latestPerLearner.forEach(function(x){
-    var s = compositeStatus(x.assessment, x.learner.grade);
-    if (s && byGrade[x.learner.grade]) byGrade[x.learner.grade][s]++;
-  });
-  var barsHTML = STATE.settings.grades.map(function(g){
-    var c = byGrade[g];
-    var t = c.green + c.yellow + c.red;
-    if (!t) return '<div style="margin-bottom:10px"><div style="font-size:0.8rem;font-weight:600;margin-bottom:3px">Grade ' + g + '</div><div style="height:14px;background:#eee;border-radius:8px"></div></div>';
-    var gp = (c.green/t*100), yp = (c.yellow/t*100), rp = (c.red/t*100);
-    return '<div style="margin-bottom:10px"><div style="font-size:0.8rem;font-weight:600;margin-bottom:3px">Grade ' + g + ' (' + t + ')</div>' +
-      '<div style="height:14px;border-radius:8px;overflow:hidden;display:flex">' +
-        '<div style="width:' + gp + '%;background:#2db24c"></div>' +
-        '<div style="width:' + yp + '%;background:#c99400"></div>' +
-        '<div style="width:' + rp + '%;background:#e8273c"></div>' +
-      '</div></div>';
-  }).join('');
-  document.getElementById('gradeBars').innerHTML = barsHTML || '<div class="empty">No screening data yet.</div>';
+      var DB_NAME = 'infiniteai_egra_mtss';
+      var DB_VERSION = 1;
+      var db = null;
 
-  var tierLearners = STATE.learners.filter(function(l){ return activeIntervention(l.id); });
-  var tlWrap = document.getElementById('dashTierList');
-  tlWrap.innerHTML = tierLearners.length ? '<table><thead><tr><th>Learner</th><th>Grade</th><th>Tier</th><th>Focus</th><th>Started</th></tr></thead><tbody>' +
-    tierLearners.map(function(l){
-      var iv = activeIntervention(l.id);
-      return '<tr><td>' + l.name + '</td><td>' + l.grade + '</td><td>Tier ' + iv.tier + '</td><td>' + iv.focus + '</td><td>' + fmtDate(iv.startDate) + '</td></tr>';
-    }).join('') + '</tbody></table>' : '<div class="empty">No learners currently in Tier 2/3.</div>';
-}
+      function openDB() {
+        return new Promise(function (resolve, reject) {
+          var req = indexedDB.open(DB_NAME, DB_VERSION);
+          req.onupgradeneeded = function (e) {
+            var d = e.target.result;
+            if (!d.objectStoreNames.contains('learners')) {
+              var s = d.createObjectStore('learners', {
+                keyPath: 'id',
+                autoIncrement: true,
+              });
+              s.createIndex('grade', 'grade');
+            }
+            if (!d.objectStoreNames.contains('assessments')) {
+              var s2 = d.createObjectStore('assessments', {
+                keyPath: 'id',
+                autoIncrement: true,
+              });
+              s2.createIndex('learnerId', 'learnerId');
+            }
+            if (!d.objectStoreNames.contains('progress')) {
+              var s3 = d.createObjectStore('progress', {
+                keyPath: 'id',
+                autoIncrement: true,
+              });
+              s3.createIndex('learnerId', 'learnerId');
+            }
+            if (!d.objectStoreNames.contains('interventions')) {
+              var s4 = d.createObjectStore('interventions', {
+                keyPath: 'id',
+                autoIncrement: true,
+              });
+              s4.createIndex('learnerId', 'learnerId');
+            }
+            if (!d.objectStoreNames.contains('settings')) {
+              d.createObjectStore('settings', { keyPath: 'key' });
+            }
+          };
+          req.onsuccess = function (e) {
+            resolve(e.target.result);
+          };
+          req.onerror = function (e) {
+            reject(e.target.error);
+          };
+        });
+      }
 
-function renderClassReport() {
-  var grade = document.getElementById('repGrade').value;
-  var classSel = document.getElementById('repClass');
-  var classes = Array.from(new Set(STATE.learners.filter(function(l){ return !grade || l.grade === grade; }).map(function(l){ return l.className; }).filter(Boolean)));
-  var curClass = classSel.value;
-  fillSelect(classSel, classes, 'All Classes');
-  if (curClass) classSel.value = curClass;
-  var classFilter = classSel.value;
+      function tx(storeNames, mode) {
+        return db.transaction(storeNames, mode || 'readonly');
+      }
+      function storeAll(storeName) {
+        return new Promise(function (resolve, reject) {
+          var out = [];
+          var req = tx([storeName]).objectStore(storeName).openCursor();
+          req.onsuccess = function (e) {
+            var cur = e.target.result;
+            if (cur) {
+              out.push(cur.value);
+              cur.continue();
+            } else {
+              resolve(out);
+            }
+          };
+          req.onerror = function (e) {
+            reject(e.target.error);
+          };
+        });
+      }
+      function storeAdd(storeName, obj) {
+        return new Promise(function (resolve, reject) {
+          var req = tx([storeName], 'readwrite').objectStore(storeName).add(obj);
+          req.onsuccess = function (e) {
+            resolve(e.target.result);
+          };
+          req.onerror = function (e) {
+            reject(e.target.error);
+          };
+        });
+      }
+      function storePut(storeName, obj) {
+        return new Promise(function (resolve, reject) {
+          var req = tx([storeName], 'readwrite').objectStore(storeName).put(obj);
+          req.onsuccess = function (e) {
+            resolve(e.target.result);
+          };
+          req.onerror = function (e) {
+            reject(e.target.error);
+          };
+        });
+      }
+      function storeDelete(storeName, key) {
+        return new Promise(function (resolve, reject) {
+          var req = tx([storeName], 'readwrite').objectStore(storeName).delete(key);
+          req.onsuccess = function () {
+            resolve();
+          };
+          req.onerror = function (e) {
+            reject(e.target.error);
+          };
+        });
+      }
+      function storeClear(storeName) {
+        return new Promise(function (resolve, reject) {
+          var req = tx([storeName], 'readwrite').objectStore(storeName).clear();
+          req.onsuccess = function () {
+            resolve();
+          };
+          req.onerror = function (e) {
+            reject(e.target.error);
+          };
+        });
+      }
 
-  var list = STATE.learners.filter(function(l){ return (!grade || l.grade === grade) && (!classFilter || l.className === classFilter); });
-  var wrap = document.getElementById('classReportTable');
-  if (!list.length) { wrap.innerHTML = '<div class="empty">No learners match this selection.</div>'; return; }
-  wrap.innerHTML = '<table><thead><tr><th>Name</th><th>Grade/Class</th><th>Status</th><th>Priority Focus</th><th>Tier</th></tr></thead><tbody>' +
-    list.map(function(l){
-      var a = latestAssessment(l.id);
-      var status = a ? compositeStatus(a, l.grade) : null;
-      var gap = a ? lowestSkillGap(a, l.grade) : null;
-      var iv = activeIntervention(l.id);
-      return '<tr><td>' + l.name + '</td><td>' + l.grade + (l.className ? '/' + l.className : '') + '</td><td>' + badgeHTML(status) + '</td><td>' + (gap ? gap.label : '—') + '</td><td>' + (iv ? 'Tier ' + iv.tier : 'Tier 1') + '</td></tr>';
-    }).join('') + '</tbody></table>';
-}
-function renderLearnerReport() {
-  var id = document.getElementById('repLearner').value;
-  var body = document.getElementById('learnerReportBody');
-  if (!id) { body.innerHTML = ''; return; }
-  var l = learnerById(id);
-  var history = STATE.assessments.filter(function(a){ return a.learnerId === Number(id); }).sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
-  var iv = STATE.interventions.filter(function(i){ return i.learnerId === Number(id); });
+      var STATE = {
+        learners: [],
+        assessments: [],
+        progress: [],
+        interventions: [],
+        settings: {},
+      };
 
-  var histRows = history.map(function(a){
-    var status = compositeStatus(a, l.grade);
-    return '<tr><td>' + a.window + ' ' + a.year + '</td><td>' + fmtDate(a.date) + '</td><td>' + badgeHTML(status) + '</td>' +
-      SUBTESTS.map(function(st){ return '<td>' + (a.scores[st.key] !== undefined ? a.scores[st.key] : '—') + '</td>'; }).join('') + '</tr>';
-  }).join('');
+      async function loadAllState() {
+        STATE.learners = await storeAll('learners');
+        STATE.assessments = await storeAll('assessments');
+        STATE.progress = await storeAll('progress');
+        STATE.interventions = await storeAll('interventions');
+        var settingsArr = await storeAll('settings');
+        STATE.settings = {};
+        settingsArr.forEach(function (s) {
+          STATE.settings[s.key] = s.value;
+        });
 
-  body.innerHTML = '<h3 style="font-family:\'Playfair Display\',serif">' + l.name + ' — Grade ' + l.grade + (l.className ? ' (' + l.className + ')' : '') + '</h3>' +
-    '<div class="sub">Home Language: ' + (l.homeLanguage || '—') + ' · School: ' + (STATE.settings.schoolName || '—') + '</div>' +
-    '<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Window</th><th>Date</th><th>Status</th>' +
-    SUBTESTS.map(function(st){ return '<th>' + st.label + '</th>'; }).join('') + '</tr></thead><tbody>' +
-    (histRows || '<tr><td colspan="10"><div class="empty">No screening history.</div></td></tr>') + '</tbody></table></div>' +
-    '<h4 style="margin-top:16px;margin-bottom:6px">Intervention History</h4>' +
-    (iv.length ? '<table><thead><tr><th>Tier</th><th>Focus</th><th>Start</th><th>Exit</th></tr></thead><tbody>' +
-      iv.map(function(i){ return '<tr><td>Tier ' + i.tier + '</td><td>' + i.focus + '</td><td>' + fmtDate(i.startDate) + '</td><td>' + (i.exitDate ? fmtDate(i.exitDate) : 'Active') + '</td></tr>'; }).join('') + '</tbody></table>'
-      : '<div class="empty">No intervention history.</div>');
-}
+        if (!STATE.settings.grades) {
+          STATE.settings.grades = DEFAULT_GRADES;
+          await storePut('settings', { key: 'grades', value: DEFAULT_GRADES });
+        }
+        if (!STATE.settings.langs) {
+          STATE.settings.langs = DEFAULT_LANGS;
+          await storePut('settings', { key: 'langs', value: DEFAULT_LANGS });
+        }
+        if (!STATE.settings.benchmarks) {
+          STATE.settings.benchmarks = defaultBenchmarks();
+          await storePut('settings', {
+            key: 'benchmarks',
+            value: STATE.settings.benchmarks,
+          });
+        }
+        if (!STATE.settings.schoolName) {
+          STATE.settings.schoolName = '';
+        }
+      }
 
-function downloadBlob(content, filename, type) {
-  var blob = new Blob([content], {type: type});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-function exportCSV() {
-  var headers = ['Learner','Grade','Class','Window','Year','Date','Status'].concat(SUBTESTS.map(function(s){ return s.label; }));
-  var rows = [headers.join(',')];
-  STATE.assessments.forEach(function(a){
-    var l = learnerById(a.learnerId);
-    if (!l) return;
-    var status = compositeStatus(a, l.grade);
-    var row = [l.name, l.grade, l.className || '', a.window, a.year, a.date, status || ''].concat(
-      SUBTESTS.map(function(s){ return a.scores[s.key] !== undefined ? a.scores[s.key] : ''; })
-    );
-    rows.push(row.map(function(v){ return '"' + String(v).replace(/"/g,'""') + '"'; }).join(','));
-  });
-  downloadBlob(rows.join('\n'), 'egra_assessments_export.csv', 'text/csv');
-  toast('CSV exported.');
-}
-function exportJSON() {
-  var backup = { learners: STATE.learners, assessments: STATE.assessments, progress: STATE.progress, interventions: STATE.interventions, settings: STATE.settings, exportedAt: new Date().toISOString() };
-  downloadBlob(JSON.stringify(backup, null, 2), 'egra_mtss_backup.json', 'application/json');
-  toast('Backup downloaded.');
-}
-async function restoreJSON(evt) {
-  var file = evt.target.files[0];
-  if (!file) return;
-  var text = await file.text();
-  try {
-    var data = JSON.parse(text);
-    if (!confirm('This will REPLACE all current data with the backup file. Continue?')) return;
-    await storeClear('learners'); await storeClear('assessments'); await storeClear('progress'); await storeClear('interventions'); await storeClear('settings');
-    for (var l of (data.learners || [])) await storeAdd('learners', stripId(l));
-    for (var a of (data.assessments || [])) await storeAdd('assessments', stripId(a));
-    for (var p of (data.progress || [])) await storeAdd('progress', stripId(p));
-    for (var iv of (data.interventions || [])) await storeAdd('interventions', stripId(iv));
-    for (var k in (data.settings || {})) await storePut('settings', {key:k, value:data.settings[k]});
-    await loadAllState();
-    renderAll();
-    toast('Backup restored.');
-  } catch (err) {
-    alert('Could not read this backup file: ' + err.message);
-  }
-}
-function stripId(obj) { var c = Object.assign({}, obj); delete c.id; return c; }
-async function resetAllData() {
-  if (!confirm('This will permanently delete ALL learners, assessments, and intervention records. Are you sure?')) return;
-  if (!confirm('Really sure? This cannot be undone.')) return;
-  await storeClear('learners'); await storeClear('assessments'); await storeClear('progress'); await storeClear('interventions');
-  await loadAllState();
-  renderAll();
-  toast('All data cleared.');
-}
+      function toast(msg) {
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(function () {
+          t.classList.remove('show');
+        }, 2200);
+      }
+      function fillSelect(el, arr, placeholder) {
+        el.innerHTML =
+          (placeholder ? '<option value="">' + placeholder + '</option>' : '') +
+          arr
+            .map(function (v) {
+              return '<option value="' + v + '">' + v + '</option>';
+            })
+            .join('');
+      }
+      function learnerById(id) {
+        return STATE.learners.find(function (l) {
+          return l.id === Number(id);
+        });
+      }
+      function latestAssessment(learnerId) {
+        var list = STATE.assessments.filter(function (a) {
+          return a.learnerId === Number(learnerId);
+        });
+        if (!list.length) return null;
+        list.sort(function (a, b) {
+          return new Date(b.date) - new Date(a.date);
+        });
+        return list[0];
+      }
+      function benchStatus(grade, subtestKey, score) {
+        var bt =
+          STATE.settings.benchmarks[grade] &&
+          STATE.settings.benchmarks[grade][subtestKey];
+        if (!bt || score === undefined || score === null || score === '') return null;
+        score = Number(score);
+        if (score < bt[0]) return 'red';
+        if (score < bt[1]) return 'yellow';
+        return 'green';
+      }
+      function badgeHTML(status, label) {
+        var cls =
+          status === 'green'
+            ? 'b-green'
+            : status === 'yellow'
+              ? 'b-yellow'
+              : status === 'red'
+                ? 'b-red'
+                : 'b-gray';
+        var text =
+          label ||
+          (status === 'green'
+            ? 'At/Above Benchmark'
+            : status === 'yellow'
+              ? 'Below Benchmark'
+              : status === 'red'
+                ? 'Well Below Benchmark'
+                : 'No Data');
+        return '<span class="badge ' + cls + '">' + text + '</span>';
+      }
+      function compositeStatus(assessment, grade) {
+        if (!assessment) return null;
+        var statuses = SUBTESTS.map(function (st) {
+          return benchStatus(grade, st.key, assessment.scores[st.key]);
+        }).filter(Boolean);
+        if (!statuses.length) return null;
+        if (
+          statuses.filter(function (s) {
+            return s === 'red';
+          }).length >= 2
+        )
+          return 'red';
+        if (
+          statuses.some(function (s) {
+            return s === 'red';
+          })
+        )
+          return 'yellow';
+        if (
+          statuses.some(function (s) {
+            return s === 'yellow';
+          })
+        )
+          return 'yellow';
+        return 'green';
+      }
+      function lowestSkillGap(assessment, grade) {
+        if (!assessment) return null;
+        var sorted = SUBTESTS.slice().sort(function (a, b) {
+          return a.order - b.order;
+        });
+        for (var i = 0; i < sorted.length; i++) {
+          var st = sorted[i];
+          var s = benchStatus(grade, st.key, assessment.scores[st.key]);
+          if (s === 'red' || s === 'yellow') return st;
+        }
+        return null;
+      }
+      function activeIntervention(learnerId) {
+        return STATE.interventions.find(function (iv) {
+          return iv.learnerId === Number(learnerId) && !iv.exitDate;
+        });
+      }
+      function fmtDate(d) {
+        return d ? new Date(d).toLocaleDateString('en-ZA') : '—';
+      }
 
-function renderSettingsForm() {
-  document.getElementById('setSchool').value = STATE.settings.schoolName || '';
-  document.getElementById('setGrades').value = STATE.settings.grades.join(',');
-  document.getElementById('setLangs').value = STATE.settings.langs.join(', ');
-  renderBenchmarkTable();
-}
-async function saveSchool() {
-  var name = document.getElementById('setSchool').value.trim();
-  STATE.settings.schoolName = name;
-  await storePut('settings', {key:'schoolName', value:name});
-  populateSharedDropdowns();
-  toast('School name saved.');
-}
-async function saveLists() {
-  var grades = document.getElementById('setGrades').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-  var langs = document.getElementById('setLangs').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-  STATE.settings.grades = grades;
-  STATE.settings.langs = langs;
-  await storePut('settings', {key:'grades', value:grades});
-  await storePut('settings', {key:'langs', value:langs});
-  grades.forEach(function(g){ if (!STATE.settings.benchmarks[g]) STATE.settings.benchmarks[g] = defaultBenchmarks()['1'] || {}; });
-  await storePut('settings', {key:'benchmarks', value:STATE.settings.benchmarks});
-  await loadAllState();
-  renderAll();
-  toast('Grades and languages saved.');
-}
-function renderBenchmarkTable() {
-  var wrap = document.getElementById('benchTableWrap');
-  var grades = STATE.settings.grades;
-  var html = '<table><thead><tr><th>Subtest</th>' + grades.map(function(g){ return '<th colspan="2">Grade ' + g + '</th>'; }).join('') + '</tr>' +
-    '<tr><th></th>' + grades.map(function(){ return '<th>Below cut</th><th>At cut</th>'; }).join('') + '</tr></thead><tbody>';
-  SUBTESTS.forEach(function(st){
-    html += '<tr><td>' + st.label + '</td>' + grades.map(function(g){
-      var bt = (STATE.settings.benchmarks[g] && STATE.settings.benchmarks[g][st.key]) || [0,0];
-      return '<td><input type="number" id="bm_' + g + '_' + st.key + '_0" value="' + bt[0] + '"></td><td><input type="number" id="bm_' + g + '_' + st.key + '_1" value="' + bt[1] + '"></td>';
-    }).join('') + '</tr>';
-  });
-  html += '</tbody></table>';
-  wrap.innerHTML = html;
-}
-async function saveBenchmarks() {
-  var grades = STATE.settings.grades;
-  grades.forEach(function(g){
-    if (!STATE.settings.benchmarks[g]) STATE.settings.benchmarks[g] = {};
-    SUBTESTS.forEach(function(st){
-      var v0 = Number(document.getElementById('bm_' + g + '_' + st.key + '_0').value);
-      var v1 = Number(document.getElementById('bm_' + g + '_' + st.key + '_1').value);
-      STATE.settings.benchmarks[g][st.key] = [v0, v1];
-    });
-  });
-  await storePut('settings', {key:'benchmarks', value:STATE.settings.benchmarks});
-  toast('Benchmark thresholds saved.');
-  renderAll();
-}
+      document.getElementById('tabNav').addEventListener('click', function (e) {
+        if (e.target.tagName !== 'BUTTON') return;
+        document.querySelectorAll('nav.tabs button').forEach(function (b) {
+          b.classList.remove('active');
+        });
+        e.target.classList.add('active');
+        document.querySelectorAll('.view').forEach(function (v) {
+          v.classList.remove('active');
+        });
+        document.getElementById('view-' + e.target.dataset.view).classList.add('active');
+        renderAll();
+      });
 
-function renderAll() {
-  populateSharedDropdowns();
-  renderDashboard();
-  renderRoster();
-  renderScreeningForm();
-  renderScreeningLog();
-  renderDiagnostics();
-  loadPMChart();
-  renderInterventions();
-  renderClassReport();
-  renderLearnerReport();
-  renderSettingsForm();
-}
+      function populateSharedDropdowns() {
+        var grades = STATE.settings.grades;
+        var langs = STATE.settings.langs;
+        fillSelect(document.getElementById('lnGrade'), grades);
+        fillSelect(document.getElementById('lnLang'), langs);
+        fillSelect(document.getElementById('repGrade'), grades, 'All Grades');
 
-(async function init(){
-  try {
-    db = await openDB();
-    await loadAllState();
-    document.getElementById('scDate').value = new Date().toISOString().slice(0,10);
-    document.getElementById('pmDate').value = new Date().toISOString().slice(0,10);
-    document.getElementById('ivStart').value = new Date().toISOString().slice(0,10);
-    renderAll();
-  } catch (err) {
-    document.querySelector('main').innerHTML = '<div class="panel"><h2>Could not open local storage</h2><div class="sub">This tool needs a browser that supports IndexedDB. Error: ' + err.message + '</div></div>';
-  }
-})();
-</script>
-</body>
+        var learnerOptions = STATE.learners.map(function (l) {
+          return {
+            id: l.id,
+            label:
+              l.name + ' (Gr ' + l.grade + (l.className ? ', ' + l.className : '') + ')',
+          };
+        });
+        [['scLearner'], ['diagLearner'], ['ivLearner'], ['repLearner']].forEach(
+          function (pair) {
+            var el = document.getElementById(pair[0]);
+            var cur = el.value;
+            el.innerHTML =
+              '<option value="">Select a learner…</option>' +
+              learnerOptions
+                .map(function (o) {
+                  return '<option value="' + o.id + '">' + o.label + '</option>';
+                })
+                .join('');
+            if (cur) el.value = cur;
+          },
+        );
+
+        var tierLearners = STATE.learners
+          .filter(function (l) {
+            return activeIntervention(l.id);
+          })
+          .map(function (l) {
+            return {
+              id: l.id,
+              label: l.name + ' (Tier ' + activeIntervention(l.id).tier + ')',
+            };
+          });
+        var pmEl = document.getElementById('pmLearner');
+        var curPM = pmEl.value;
+        pmEl.innerHTML =
+          '<option value="">Select a learner…</option>' +
+          tierLearners
+            .map(function (o) {
+              return '<option value="' + o.id + '">' + o.label + '</option>';
+            })
+            .join('');
+        if (curPM) pmEl.value = curPM;
+
+        fillSelect(
+          document.getElementById('pmSkill'),
+          SUBTESTS.map(function (s) {
+            return s.label;
+          }),
+        );
+        fillSelect(
+          document.getElementById('ivSkill'),
+          SUBTESTS.map(function (s) {
+            return s.label;
+          }),
+        );
+
+        document.getElementById('schoolBadge').textContent = STATE.settings.schoolName
+          ? STATE.settings.schoolName
+          : 'School not set — see Settings';
+      }
+
+      async function addLearner() {
+        var name = document.getElementById('lnName').value.trim();
+        var grade = document.getElementById('lnGrade').value;
+        var className = document.getElementById('lnClass').value.trim();
+        var lang = document.getElementById('lnLang').value;
+        if (!name || !grade) {
+          toast('Please enter a name and select a grade.');
+          return;
+        }
+        await storeAdd('learners', {
+          name: name,
+          grade: grade,
+          className: className,
+          homeLanguage: lang,
+          dateAdded: new Date().toISOString(),
+        });
+        document.getElementById('lnName').value = '';
+        document.getElementById('lnClass').value = '';
+        await loadAllState();
+        renderAll();
+        toast('Learner added.');
+      }
+      async function deleteLearner(id) {
+        if (!confirm('Remove this learner and all their records? This cannot be undone.'))
+          return;
+        await storeDelete('learners', id);
+        var toDeleteA = STATE.assessments.filter(function (a) {
+          return a.learnerId === id;
+        });
+        var toDeleteP = STATE.progress.filter(function (p) {
+          return p.learnerId === id;
+        });
+        var toDeleteI = STATE.interventions.filter(function (i) {
+          return i.learnerId === id;
+        });
+        for (var a of toDeleteA) await storeDelete('assessments', a.id);
+        for (var p of toDeleteP) await storeDelete('progress', p.id);
+        for (var iv of toDeleteI) await storeDelete('interventions', iv.id);
+        await loadAllState();
+        renderAll();
+        toast('Learner removed.');
+      }
+      var rosterFilter = 'All';
+      function renderRoster() {
+        var wrap = document.getElementById('rosterGradeFilter');
+        var grades = ['All'].concat(STATE.settings.grades);
+        wrap.innerHTML = grades
+          .map(function (g) {
+            return (
+              '<span class="pill' +
+              (g === rosterFilter ? ' active' : '') +
+              '" onclick="setRosterFilter(\'' +
+              g +
+              '\')">Grade ' +
+              g +
+              '</span>'
+            );
+          })
+          .join('');
+
+        var tbody = document.querySelector('#rosterTable tbody');
+        var list = STATE.learners.filter(function (l) {
+          return rosterFilter === 'All' || l.grade === rosterFilter;
+        });
+        if (!list.length) {
+          tbody.innerHTML =
+            '<tr><td colspan="6"><div class="empty">No learners yet — add one above.</div></td></tr>';
+          return;
+        }
+        tbody.innerHTML = list
+          .map(function (l) {
+            var latest = latestAssessment(l.id);
+            var status = latest ? compositeStatus(latest, l.grade) : null;
+            return (
+              '<tr><td>' +
+              l.name +
+              '</td><td>' +
+              l.grade +
+              '</td><td>' +
+              (l.className || '—') +
+              '</td><td>' +
+              (l.homeLanguage || '—') +
+              '</td><td>' +
+              badgeHTML(status) +
+              '</td>' +
+              '<td><button class="btn small danger" onclick="deleteLearner(' +
+              l.id +
+              ')">Remove</button></td></tr>'
+            );
+          })
+          .join('');
+      }
+      function setRosterFilter(g) {
+        rosterFilter = g;
+        renderRoster();
+      }
+
+      function renderScreeningForm() {
+        var wrap = document.getElementById('scSubtestForm');
+        wrap.innerHTML = SUBTESTS.map(function (st) {
+          return (
+            '<div><label>' +
+            st.label +
+            ' <span style="font-weight:400;color:#999">(' +
+            st.unit +
+            ')</span></label>' +
+            '<input type="number" step="0.1" id="sc_' +
+            st.key +
+            '" placeholder="score"></div>'
+          );
+        }).join('');
+      }
+      async function saveScreening() {
+        var learnerId = Number(document.getElementById('scLearner').value);
+        if (!learnerId) {
+          toast('Select a learner first.');
+          return;
+        }
+        var scores = {};
+        SUBTESTS.forEach(function (st) {
+          var v = document.getElementById('sc_' + st.key).value;
+          if (v !== '') scores[st.key] = Number(v);
+        });
+        if (!Object.keys(scores).length) {
+          toast('Enter at least one subtest score.');
+          return;
+        }
+        var record = {
+          learnerId: learnerId,
+          window: document.getElementById('scWindow').value,
+          year: document.getElementById('scYear').value,
+          date:
+            document.getElementById('scDate').value ||
+            new Date().toISOString().slice(0, 10),
+          scores: scores,
+          notes: document.getElementById('scNotes').value.trim(),
+        };
+        await storeAdd('assessments', record);
+        SUBTESTS.forEach(function (st) {
+          document.getElementById('sc_' + st.key).value = '';
+        });
+        document.getElementById('scNotes').value = '';
+        await loadAllState();
+        renderAll();
+        toast('Screening saved.');
+      }
+      function renderScreeningLog() {
+        var tbody = document.querySelector('#screeningLog tbody');
+        var list = STATE.assessments
+          .slice()
+          .sort(function (a, b) {
+            return new Date(b.date) - new Date(a.date);
+          })
+          .slice(0, 25);
+        if (!list.length) {
+          tbody.innerHTML =
+            '<tr><td colspan="5"><div class="empty">No screening records yet.</div></td></tr>';
+          return;
+        }
+        tbody.innerHTML = list
+          .map(function (a) {
+            var l = learnerById(a.learnerId);
+            if (!l) return '';
+            var status = compositeStatus(a, l.grade);
+            return (
+              '<tr><td>' +
+              l.name +
+              '</td><td>' +
+              a.window +
+              ' ' +
+              a.year +
+              '</td><td>' +
+              badgeHTML(status) +
+              '</td><td>' +
+              fmtDate(a.date) +
+              '</td>' +
+              '<td><button class="btn small secondary" onclick="deleteAssessment(' +
+              a.id +
+              ')">Delete</button></td></tr>'
+            );
+          })
+          .join('');
+      }
+      async function deleteAssessment(id) {
+        await storeDelete('assessments', id);
+        await loadAllState();
+        renderAll();
+      }
+
+      function renderDiagnostics() {
+        var id = document.getElementById('diagLearner').value;
+        var body = document.getElementById('diagBody');
+        if (!id) {
+          body.innerHTML = '';
+          return;
+        }
+        var l = learnerById(id);
+        var a = latestAssessment(id);
+        if (!a) {
+          body.innerHTML =
+            '<div class="empty">No screening data for this learner yet. Add one under Screening.</div>';
+          return;
+        }
+
+        var status = compositeStatus(a, l.grade);
+        var gap = lowestSkillGap(a, l.grade);
+        var svrDecoding = SUBTESTS.filter(function (s) {
+          return s.category === 'decoding';
+        });
+        var svrComp = SUBTESTS.filter(function (s) {
+          return s.category === 'comprehension';
+        });
+
+        var rowsHTML = function (list) {
+          return list
+            .map(function (st) {
+              var score = a.scores[st.key];
+              var s = benchStatus(l.grade, st.key, score);
+              return (
+                '<div class="skillrow"><span class="sname">' +
+                st.label +
+                '</span><span><span class="sval">' +
+                (score !== undefined ? score + ' ' + st.unit : '—') +
+                '</span>' +
+                badgeHTML(s) +
+                '</span></div>'
+              );
+            })
+            .join('');
+        };
+
+        var svrNote = '';
+        var decodingWeak = svrDecoding.some(function (s) {
+          var st = benchStatus(l.grade, s.key, a.scores[s.key]);
+          return st === 'red' || st === 'yellow';
+        });
+        var compWeak = svrComp.some(function (s) {
+          var st = benchStatus(l.grade, s.key, a.scores[s.key]);
+          return st === 'red' || st === 'yellow';
+        });
+        if (decodingWeak && !compWeak)
+          svrNote =
+            'Simple View flag: this looks like a <strong>decoding-side</strong> gap — word recognition and phonics are the priority, not comprehension strategy.';
+        else if (compWeak && !decodingWeak)
+          svrNote =
+            'Simple View flag: decoding looks solid but comprehension is weak — possible <strong>"word calling"</strong> pattern. Prioritise vocabulary, background knowledge and comprehension strategy instruction over further phonics drilling.';
+        else if (decodingWeak && compWeak)
+          svrNote =
+            'Simple View flag: both sides of the equation show gaps — decoding is still the higher-leverage starting point, since comprehension instruction is hard to access while decoding is not yet automatic.';
+        else
+          svrNote =
+            'Both decoding and comprehension are at or above benchmark on the latest screening.';
+
+        body.innerHTML =
+          '<h2 style="font-size:1.05rem">' +
+          l.name +
+          ' — Grade ' +
+          l.grade +
+          (l.className ? ' (' + l.className + ')' : '') +
+          '</h2>' +
+          '<div class="sub">Latest screening: ' +
+          a.window +
+          ' ' +
+          a.year +
+          ' (' +
+          fmtDate(a.date) +
+          ') · Composite status: ' +
+          badgeHTML(status) +
+          '</div>' +
+          '<div class="grid grid-2" style="margin-top:14px">' +
+          '<div><h3 style="font-size:0.9rem;margin-bottom:6px;color:var(--dark)">Decoding / Word Recognition</h3>' +
+          rowsHTML(svrDecoding) +
+          '</div>' +
+          '<div><h3 style="font-size:0.9rem;margin-bottom:6px;color:var(--dark)">Language Comprehension</h3>' +
+          rowsHTML(svrComp) +
+          '</div>' +
+          '</div>' +
+          (gap
+            ? '<div class="diag-callout"><strong>Priority focus (lowest unmet skill in sequence):</strong> ' +
+              gap.label +
+              '. Target this first — later skills in the sequence build on it, so intervention time is most effective here.</div>'
+            : '<div class="diag-callout"><strong>No flagged gaps</strong> — this learner is at or above benchmark on every recorded subtest.</div>') +
+          '<div class="diag-callout" style="border-left-color:var(--blue);background:#eef4fc;margin-top:10px">' +
+          svrNote +
+          '</div>' +
+          (a.notes
+            ? '<div class="diag-callout" style="border-left-color:#999;background:#f5f5f5;margin-top:10px"><strong>Assessor notes:</strong> ' +
+              a.notes +
+              '</div>'
+            : '');
+      }
+
+      async function savePM() {
+        var learnerId = Number(document.getElementById('pmLearner').value);
+        if (!learnerId) {
+          toast('Select a learner in Tier 2/3 first.');
+          return;
+        }
+        var skillLabel = document.getElementById('pmSkill').value;
+        var skillKey = SUBTESTS.find(function (s) {
+          return s.label === skillLabel;
+        }).key;
+        var score = document.getElementById('pmScore').value;
+        if (score === '') {
+          toast('Enter a score.');
+          return;
+        }
+        await storeAdd('progress', {
+          learnerId: learnerId,
+          date:
+            document.getElementById('pmDate').value ||
+            new Date().toISOString().slice(0, 10),
+          skillKey: skillKey,
+          skillLabel: skillLabel,
+          score: Number(score),
+          note: document.getElementById('pmNote').value.trim(),
+        });
+        document.getElementById('pmScore').value = '';
+        document.getElementById('pmNote').value = '';
+        await loadAllState();
+        renderAll();
+        loadPMChart();
+        toast('Progress check logged.');
+      }
+      function loadPMChart() {
+        var id = document.getElementById('pmLearner').value;
+        var wrap = document.getElementById('pmChartWrap');
+        if (!id) {
+          wrap.innerHTML =
+            '<div class="empty">Select a learner above to view their progress-monitoring trend.</div>';
+          return;
+        }
+        var l = learnerById(id);
+        var points = STATE.progress
+          .filter(function (p) {
+            return p.learnerId === Number(id);
+          })
+          .sort(function (a, b) {
+            return new Date(a.date) - new Date(b.date);
+          });
+        if (!points.length) {
+          wrap.innerHTML =
+            '<div class="empty">No progress-monitoring checks logged yet for ' +
+            l.name +
+            '.</div>';
+          return;
+        }
+
+        var skillKey = points[points.length - 1].skillKey;
+        var bt =
+          STATE.settings.benchmarks[l.grade] &&
+          STATE.settings.benchmarks[l.grade][skillKey];
+        var goal = bt ? bt[1] : null;
+        var vals = points.map(function (p) {
+          return p.score;
+        });
+        var maxV = Math.max.apply(null, vals.concat(goal || 0)) * 1.15 || 10;
+        var W = 640,
+          H = 220,
+          padL = 40,
+          padB = 30,
+          padT = 15,
+          padR = 15;
+        var plotW = W - padL - padR,
+          plotH = H - padT - padB;
+        var stepX = points.length > 1 ? plotW / (points.length - 1) : 0;
+
+        function x(i) {
+          return padL + i * stepX;
+        }
+        function y(v) {
+          return padT + plotH - (v / maxV) * plotH;
+        }
+
+        var pathD = points
+          .map(function (p, i) {
+            return (i === 0 ? 'M' : 'L') + x(i) + ',' + y(p.score);
+          })
+          .join(' ');
+        var goalY = goal !== null ? y(goal) : null;
+
+        var dots = points
+          .map(function (p, i) {
+            return (
+              '<circle cx="' +
+              x(i) +
+              '" cy="' +
+              y(p.score) +
+              '" r="4" fill="#1565c0"></circle>' +
+              '<text x="' +
+              x(i) +
+              '" y="' +
+              (y(p.score) - 10) +
+              '" font-size="11" text-anchor="middle" fill="#3a3d4a">' +
+              p.score +
+              '</text>' +
+              '<text x="' +
+              x(i) +
+              '" y="' +
+              (H - 8) +
+              '" font-size="9" text-anchor="middle" fill="#999">' +
+              new Date(p.date).toLocaleDateString('en-ZA', {
+                day: '2-digit',
+                month: '2-digit',
+              }) +
+              '</text>'
+            );
+          })
+          .join('');
+
+        var goalLine =
+          goalY !== null
+            ? '<line x1="' +
+              padL +
+              '" y1="' +
+              goalY +
+              '" x2="' +
+              (W - padR) +
+              '" y2="' +
+              goalY +
+              '" stroke="#2db24c" stroke-width="1.5" stroke-dasharray="5,4"></line><text x="' +
+              (W - padR) +
+              '" y="' +
+              (goalY - 4) +
+              '" font-size="10" text-anchor="end" fill="#2db24c">Benchmark goal</text>'
+            : '';
+
+        wrap.innerHTML =
+          '<div class="sub" style="margin-bottom:8px">' +
+          l.name +
+          ' — tracking: ' +
+          points[points.length - 1].skillLabel +
+          '</div>' +
+          '<svg viewBox="0 0 ' +
+          W +
+          ' ' +
+          H +
+          '" style="width:100%;height:auto">' +
+          '<line x1="' +
+          padL +
+          '" y1="' +
+          padT +
+          '" x2="' +
+          padL +
+          '" y2="' +
+          (H - padB) +
+          '" stroke="#ccc"></line>' +
+          '<line x1="' +
+          padL +
+          '" y1="' +
+          (H - padB) +
+          '" x2="' +
+          (W - padR) +
+          '" y2="' +
+          (H - padB) +
+          '" stroke="#ccc"></line>' +
+          goalLine +
+          '<path d="' +
+          pathD +
+          '" fill="none" stroke="#7b2fbe" stroke-width="2.5"></path>' +
+          dots +
+          '</svg>' +
+          (points.length >= 3 ? trendNote(points) : '');
+      }
+      function trendNote(points) {
+        var first = points[0].score,
+          last = points[points.length - 1].score;
+        var trend = last > first ? 'improving' : last < first ? 'declining' : 'flat';
+        var cls =
+          trend === 'improving'
+            ? 'b-green'
+            : trend === 'declining'
+              ? 'b-red'
+              : 'b-yellow';
+        return (
+          '<div style="margin-top:10px"><span class="badge ' +
+          cls +
+          '">Trend: ' +
+          trend +
+          '</span> <span style="font-size:0.8rem;color:#888;margin-left:8px">from ' +
+          first +
+          ' to ' +
+          last +
+          ' across ' +
+          points.length +
+          ' checks</span></div>'
+        );
+      }
+
+      async function assignIntervention() {
+        var learnerId = Number(document.getElementById('ivLearner').value);
+        if (!learnerId) {
+          toast('Select a learner.');
+          return;
+        }
+        var existing = activeIntervention(learnerId);
+        if (existing) {
+          toast(
+            'This learner already has an active intervention. Exit it first from the table below.',
+          );
+          return;
+        }
+        await storeAdd('interventions', {
+          learnerId: learnerId,
+          tier: document.getElementById('ivTier').value,
+          focus: document.getElementById('ivSkill').value,
+          startDate:
+            document.getElementById('ivStart').value ||
+            new Date().toISOString().slice(0, 10),
+          exitDate: null,
+        });
+        await loadAllState();
+        renderAll();
+        toast('Intervention started.');
+      }
+      async function exitIntervention(id) {
+        var iv = STATE.interventions.find(function (i) {
+          return i.id === id;
+        });
+        iv.exitDate = new Date().toISOString().slice(0, 10);
+        await storePut('interventions', iv);
+        await loadAllState();
+        renderAll();
+        toast('Intervention marked as exited.');
+      }
+      function renderInterventions() {
+        var activeTbody = document.querySelector('#ivActiveTable tbody');
+        var exitTbody = document.querySelector('#ivExitTable tbody');
+        var active = STATE.interventions.filter(function (i) {
+          return !i.exitDate;
+        });
+        var exited = STATE.interventions.filter(function (i) {
+          return i.exitDate;
+        });
+
+        activeTbody.innerHTML = active.length
+          ? active
+              .map(function (iv) {
+                var l = learnerById(iv.learnerId);
+                if (!l) return '';
+                var checks = STATE.progress
+                  .filter(function (p) {
+                    return p.learnerId === iv.learnerId;
+                  })
+                  .sort(function (a, b) {
+                    return new Date(b.date) - new Date(a.date);
+                  });
+                var latest = checks[0];
+                return (
+                  '<tr><td>' +
+                  l.name +
+                  '</td><td>Tier ' +
+                  iv.tier +
+                  '</td><td>' +
+                  iv.focus +
+                  '</td><td>' +
+                  fmtDate(iv.startDate) +
+                  '</td>' +
+                  '<td>' +
+                  (latest ? latest.score + ' (' + fmtDate(latest.date) + ')' : '—') +
+                  '</td>' +
+                  '<td><button class="btn small secondary" onclick="exitIntervention(' +
+                  iv.id +
+                  ')">Exit</button></td></tr>'
+                );
+              })
+              .join('')
+          : '<tr><td colspan="6"><div class="empty">No active interventions.</div></td></tr>';
+
+        exitTbody.innerHTML = exited.length
+          ? exited
+              .map(function (iv) {
+                var l = learnerById(iv.learnerId);
+                if (!l) return '';
+                return (
+                  '<tr><td>' +
+                  l.name +
+                  '</td><td>Tier ' +
+                  iv.tier +
+                  '</td><td>' +
+                  iv.focus +
+                  '</td><td>' +
+                  fmtDate(iv.startDate) +
+                  '</td><td>' +
+                  fmtDate(iv.exitDate) +
+                  '</td></tr>'
+                );
+              })
+              .join('')
+          : '<tr><td colspan="5"><div class="empty">No exited interventions yet.</div></td></tr>';
+      }
+
+      function renderDashboard() {
+        var latestPerLearner = STATE.learners
+          .map(function (l) {
+            return { learner: l, assessment: latestAssessment(l.id) };
+          })
+          .filter(function (x) {
+            return x.assessment;
+          });
+
+        var counts = { green: 0, yellow: 0, red: 0 };
+        latestPerLearner.forEach(function (x) {
+          var s = compositeStatus(x.assessment, x.learner.grade);
+          if (s) counts[s]++;
+        });
+
+        var kpis = document.getElementById('dashKpis');
+        kpis.innerHTML =
+          '<div class="kpi"><div class="num">' +
+          STATE.learners.length +
+          '</div><div class="lbl">Total Learners</div></div>' +
+          '<div class="kpi"><div class="num" style="color:#2db24c">' +
+          counts.green +
+          '</div><div class="lbl">At/Above Benchmark</div></div>' +
+          '<div class="kpi"><div class="num" style="color:#c99400">' +
+          counts.yellow +
+          '</div><div class="lbl">Below Benchmark</div></div>' +
+          '<div class="kpi"><div class="num" style="color:#e8273c">' +
+          counts.red +
+          '</div><div class="lbl">Well Below Benchmark</div></div>';
+
+        var byGrade = {};
+        STATE.settings.grades.forEach(function (g) {
+          byGrade[g] = { green: 0, yellow: 0, red: 0 };
+        });
+        latestPerLearner.forEach(function (x) {
+          var s = compositeStatus(x.assessment, x.learner.grade);
+          if (s && byGrade[x.learner.grade]) byGrade[x.learner.grade][s]++;
+        });
+        var barsHTML = STATE.settings.grades
+          .map(function (g) {
+            var c = byGrade[g];
+            var t = c.green + c.yellow + c.red;
+            if (!t)
+              return (
+                '<div style="margin-bottom:10px"><div style="font-size:0.8rem;font-weight:600;margin-bottom:3px">Grade ' +
+                g +
+                '</div><div style="height:14px;background:#eee;border-radius:8px"></div></div>'
+              );
+            var gp = (c.green / t) * 100,
+              yp = (c.yellow / t) * 100,
+              rp = (c.red / t) * 100;
+            return (
+              '<div style="margin-bottom:10px"><div style="font-size:0.8rem;font-weight:600;margin-bottom:3px">Grade ' +
+              g +
+              ' (' +
+              t +
+              ')</div>' +
+              '<div style="height:14px;border-radius:8px;overflow:hidden;display:flex">' +
+              '<div style="width:' +
+              gp +
+              '%;background:#2db24c"></div>' +
+              '<div style="width:' +
+              yp +
+              '%;background:#c99400"></div>' +
+              '<div style="width:' +
+              rp +
+              '%;background:#e8273c"></div>' +
+              '</div></div>'
+            );
+          })
+          .join('');
+        document.getElementById('gradeBars').innerHTML =
+          barsHTML || '<div class="empty">No screening data yet.</div>';
+
+        var tierLearners = STATE.learners.filter(function (l) {
+          return activeIntervention(l.id);
+        });
+        var tlWrap = document.getElementById('dashTierList');
+        tlWrap.innerHTML = tierLearners.length
+          ? '<table><thead><tr><th>Learner</th><th>Grade</th><th>Tier</th><th>Focus</th><th>Started</th></tr></thead><tbody>' +
+            tierLearners
+              .map(function (l) {
+                var iv = activeIntervention(l.id);
+                return (
+                  '<tr><td>' +
+                  l.name +
+                  '</td><td>' +
+                  l.grade +
+                  '</td><td>Tier ' +
+                  iv.tier +
+                  '</td><td>' +
+                  iv.focus +
+                  '</td><td>' +
+                  fmtDate(iv.startDate) +
+                  '</td></tr>'
+                );
+              })
+              .join('') +
+            '</tbody></table>'
+          : '<div class="empty">No learners currently in Tier 2/3.</div>';
+      }
+
+      function renderClassReport() {
+        var grade = document.getElementById('repGrade').value;
+        var classSel = document.getElementById('repClass');
+        var classes = Array.from(
+          new Set(
+            STATE.learners
+              .filter(function (l) {
+                return !grade || l.grade === grade;
+              })
+              .map(function (l) {
+                return l.className;
+              })
+              .filter(Boolean),
+          ),
+        );
+        var curClass = classSel.value;
+        fillSelect(classSel, classes, 'All Classes');
+        if (curClass) classSel.value = curClass;
+        var classFilter = classSel.value;
+
+        var list = STATE.learners.filter(function (l) {
+          return (
+            (!grade || l.grade === grade) && (!classFilter || l.className === classFilter)
+          );
+        });
+        var wrap = document.getElementById('classReportTable');
+        if (!list.length) {
+          wrap.innerHTML = '<div class="empty">No learners match this selection.</div>';
+          return;
+        }
+        wrap.innerHTML =
+          '<table><thead><tr><th>Name</th><th>Grade/Class</th><th>Status</th><th>Priority Focus</th><th>Tier</th></tr></thead><tbody>' +
+          list
+            .map(function (l) {
+              var a = latestAssessment(l.id);
+              var status = a ? compositeStatus(a, l.grade) : null;
+              var gap = a ? lowestSkillGap(a, l.grade) : null;
+              var iv = activeIntervention(l.id);
+              return (
+                '<tr><td>' +
+                l.name +
+                '</td><td>' +
+                l.grade +
+                (l.className ? '/' + l.className : '') +
+                '</td><td>' +
+                badgeHTML(status) +
+                '</td><td>' +
+                (gap ? gap.label : '—') +
+                '</td><td>' +
+                (iv ? 'Tier ' + iv.tier : 'Tier 1') +
+                '</td></tr>'
+              );
+            })
+            .join('') +
+          '</tbody></table>';
+      }
+      function renderLearnerReport() {
+        var id = document.getElementById('repLearner').value;
+        var body = document.getElementById('learnerReportBody');
+        if (!id) {
+          body.innerHTML = '';
+          return;
+        }
+        var l = learnerById(id);
+        var history = STATE.assessments
+          .filter(function (a) {
+            return a.learnerId === Number(id);
+          })
+          .sort(function (a, b) {
+            return new Date(a.date) - new Date(b.date);
+          });
+        var iv = STATE.interventions.filter(function (i) {
+          return i.learnerId === Number(id);
+        });
+
+        var histRows = history
+          .map(function (a) {
+            var status = compositeStatus(a, l.grade);
+            return (
+              '<tr><td>' +
+              a.window +
+              ' ' +
+              a.year +
+              '</td><td>' +
+              fmtDate(a.date) +
+              '</td><td>' +
+              badgeHTML(status) +
+              '</td>' +
+              SUBTESTS.map(function (st) {
+                return (
+                  '<td>' +
+                  (a.scores[st.key] !== undefined ? a.scores[st.key] : '—') +
+                  '</td>'
+                );
+              }).join('') +
+              '</tr>'
+            );
+          })
+          .join('');
+
+        body.innerHTML =
+          '<h3 style="font-family:\'Playfair Display\',serif">' +
+          l.name +
+          ' — Grade ' +
+          l.grade +
+          (l.className ? ' (' + l.className + ')' : '') +
+          '</h3>' +
+          '<div class="sub">Home Language: ' +
+          (l.homeLanguage || '—') +
+          ' · School: ' +
+          (STATE.settings.schoolName || '—') +
+          '</div>' +
+          '<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Window</th><th>Date</th><th>Status</th>' +
+          SUBTESTS.map(function (st) {
+            return '<th>' + st.label + '</th>';
+          }).join('') +
+          '</tr></thead><tbody>' +
+          (histRows ||
+            '<tr><td colspan="10"><div class="empty">No screening history.</div></td></tr>') +
+          '</tbody></table></div>' +
+          '<h4 style="margin-top:16px;margin-bottom:6px">Intervention History</h4>' +
+          (iv.length
+            ? '<table><thead><tr><th>Tier</th><th>Focus</th><th>Start</th><th>Exit</th></tr></thead><tbody>' +
+              iv
+                .map(function (i) {
+                  return (
+                    '<tr><td>Tier ' +
+                    i.tier +
+                    '</td><td>' +
+                    i.focus +
+                    '</td><td>' +
+                    fmtDate(i.startDate) +
+                    '</td><td>' +
+                    (i.exitDate ? fmtDate(i.exitDate) : 'Active') +
+                    '</td></tr>'
+                  );
+                })
+                .join('') +
+              '</tbody></table>'
+            : '<div class="empty">No intervention history.</div>');
+      }
+
+      function downloadBlob(content, filename, type) {
+        var blob = new Blob([content], { type: type });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+      function exportCSV() {
+        var headers = [
+          'Learner',
+          'Grade',
+          'Class',
+          'Window',
+          'Year',
+          'Date',
+          'Status',
+        ].concat(
+          SUBTESTS.map(function (s) {
+            return s.label;
+          }),
+        );
+        var rows = [headers.join(',')];
+        STATE.assessments.forEach(function (a) {
+          var l = learnerById(a.learnerId);
+          if (!l) return;
+          var status = compositeStatus(a, l.grade);
+          var row = [
+            l.name,
+            l.grade,
+            l.className || '',
+            a.window,
+            a.year,
+            a.date,
+            status || '',
+          ].concat(
+            SUBTESTS.map(function (s) {
+              return a.scores[s.key] !== undefined ? a.scores[s.key] : '';
+            }),
+          );
+          rows.push(
+            row
+              .map(function (v) {
+                return '"' + String(v).replace(/"/g, '""') + '"';
+              })
+              .join(','),
+          );
+        });
+        downloadBlob(rows.join('\n'), 'egra_assessments_export.csv', 'text/csv');
+        toast('CSV exported.');
+      }
+      function exportJSON() {
+        var backup = {
+          learners: STATE.learners,
+          assessments: STATE.assessments,
+          progress: STATE.progress,
+          interventions: STATE.interventions,
+          settings: STATE.settings,
+          exportedAt: new Date().toISOString(),
+        };
+        downloadBlob(
+          JSON.stringify(backup, null, 2),
+          'egra_mtss_backup.json',
+          'application/json',
+        );
+        toast('Backup downloaded.');
+      }
+      async function restoreJSON(evt) {
+        var file = evt.target.files[0];
+        if (!file) return;
+        var text = await file.text();
+        try {
+          var data = JSON.parse(text);
+          if (
+            !confirm('This will REPLACE all current data with the backup file. Continue?')
+          )
+            return;
+          await storeClear('learners');
+          await storeClear('assessments');
+          await storeClear('progress');
+          await storeClear('interventions');
+          await storeClear('settings');
+          for (var l of data.learners || []) await storeAdd('learners', stripId(l));
+          for (var a of data.assessments || []) await storeAdd('assessments', stripId(a));
+          for (var p of data.progress || []) await storeAdd('progress', stripId(p));
+          for (var iv of data.interventions || [])
+            await storeAdd('interventions', stripId(iv));
+          for (var k in data.settings || {})
+            await storePut('settings', { key: k, value: data.settings[k] });
+          await loadAllState();
+          renderAll();
+          toast('Backup restored.');
+        } catch (err) {
+          alert('Could not read this backup file: ' + err.message);
+        }
+      }
+      function stripId(obj) {
+        var c = Object.assign({}, obj);
+        delete c.id;
+        return c;
+      }
+      async function resetAllData() {
+        if (
+          !confirm(
+            'This will permanently delete ALL learners, assessments, and intervention records. Are you sure?',
+          )
+        )
+          return;
+        if (!confirm('Really sure? This cannot be undone.')) return;
+        await storeClear('learners');
+        await storeClear('assessments');
+        await storeClear('progress');
+        await storeClear('interventions');
+        await loadAllState();
+        renderAll();
+        toast('All data cleared.');
+      }
+
+      function renderSettingsForm() {
+        document.getElementById('setSchool').value = STATE.settings.schoolName || '';
+        document.getElementById('setGrades').value = STATE.settings.grades.join(',');
+        document.getElementById('setLangs').value = STATE.settings.langs.join(', ');
+        renderBenchmarkTable();
+      }
+      async function saveSchool() {
+        var name = document.getElementById('setSchool').value.trim();
+        STATE.settings.schoolName = name;
+        await storePut('settings', { key: 'schoolName', value: name });
+        populateSharedDropdowns();
+        toast('School name saved.');
+      }
+      async function saveLists() {
+        var grades = document
+          .getElementById('setGrades')
+          .value.split(',')
+          .map(function (s) {
+            return s.trim();
+          })
+          .filter(Boolean);
+        var langs = document
+          .getElementById('setLangs')
+          .value.split(',')
+          .map(function (s) {
+            return s.trim();
+          })
+          .filter(Boolean);
+        STATE.settings.grades = grades;
+        STATE.settings.langs = langs;
+        await storePut('settings', { key: 'grades', value: grades });
+        await storePut('settings', { key: 'langs', value: langs });
+        grades.forEach(function (g) {
+          if (!STATE.settings.benchmarks[g])
+            STATE.settings.benchmarks[g] = defaultBenchmarks()['1'] || {};
+        });
+        await storePut('settings', {
+          key: 'benchmarks',
+          value: STATE.settings.benchmarks,
+        });
+        await loadAllState();
+        renderAll();
+        toast('Grades and languages saved.');
+      }
+      function renderBenchmarkTable() {
+        var wrap = document.getElementById('benchTableWrap');
+        var grades = STATE.settings.grades;
+        var html =
+          '<table><thead><tr><th>Subtest</th>' +
+          grades
+            .map(function (g) {
+              return '<th colspan="2">Grade ' + g + '</th>';
+            })
+            .join('') +
+          '</tr>' +
+          '<tr><th></th>' +
+          grades
+            .map(function () {
+              return '<th>Below cut</th><th>At cut</th>';
+            })
+            .join('') +
+          '</tr></thead><tbody>';
+        SUBTESTS.forEach(function (st) {
+          html +=
+            '<tr><td>' +
+            st.label +
+            '</td>' +
+            grades
+              .map(function (g) {
+                var bt = (STATE.settings.benchmarks[g] &&
+                  STATE.settings.benchmarks[g][st.key]) || [0, 0];
+                return (
+                  '<td><input type="number" id="bm_' +
+                  g +
+                  '_' +
+                  st.key +
+                  '_0" value="' +
+                  bt[0] +
+                  '"></td><td><input type="number" id="bm_' +
+                  g +
+                  '_' +
+                  st.key +
+                  '_1" value="' +
+                  bt[1] +
+                  '"></td>'
+                );
+              })
+              .join('') +
+            '</tr>';
+        });
+        html += '</tbody></table>';
+        wrap.innerHTML = html;
+      }
+      async function saveBenchmarks() {
+        var grades = STATE.settings.grades;
+        grades.forEach(function (g) {
+          if (!STATE.settings.benchmarks[g]) STATE.settings.benchmarks[g] = {};
+          SUBTESTS.forEach(function (st) {
+            var v0 = Number(
+              document.getElementById('bm_' + g + '_' + st.key + '_0').value,
+            );
+            var v1 = Number(
+              document.getElementById('bm_' + g + '_' + st.key + '_1').value,
+            );
+            STATE.settings.benchmarks[g][st.key] = [v0, v1];
+          });
+        });
+        await storePut('settings', {
+          key: 'benchmarks',
+          value: STATE.settings.benchmarks,
+        });
+        toast('Benchmark thresholds saved.');
+        renderAll();
+      }
+
+      function renderAll() {
+        populateSharedDropdowns();
+        renderDashboard();
+        renderRoster();
+        renderScreeningForm();
+        renderScreeningLog();
+        renderDiagnostics();
+        loadPMChart();
+        renderInterventions();
+        renderClassReport();
+        renderLearnerReport();
+        renderSettingsForm();
+      }
+
+      (async function init() {
+        try {
+          db = await openDB();
+          await loadAllState();
+          document.getElementById('scDate').value = new Date().toISOString().slice(0, 10);
+          document.getElementById('pmDate').value = new Date().toISOString().slice(0, 10);
+          document.getElementById('ivStart').value = new Date()
+            .toISOString()
+            .slice(0, 10);
+          renderAll();
+        } catch (err) {
+          document.querySelector('main').innerHTML =
+            '<div class="panel"><h2>Could not open local storage</h2><div class="sub">This tool needs a browser that supports IndexedDB. Error: ' +
+            err.message +
+            '</div></div>';
+        }
+      })();
+    </script>
+  </body>
 </html>
