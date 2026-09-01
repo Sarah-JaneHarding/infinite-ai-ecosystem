@@ -7920,3 +7920,47 @@ tests: new `step-executor.spec.ts` coverage — clean output passes, a diagnosti
 declared field is refused, and a contract without `"diagnosis_guard"` is never scanned).
 Full workspace `pnpm lint`/`typecheck`/`test`/`format:check` all green across all 51
 packages.
+
+## OQ-028 opened, partially resolved — `readability_guard` wired for AC-10
+
+While resolving OQ-026, the same "declared guardrail, no real caller" shape turned up three
+more times: `source_grounding_guard` and `grounding_check`/`template_fidelity` have zero
+real callers anywhere in `apps/worker`/`apps/gateway` (`checkGrounding` is only ever called
+from `packages/evals`' own scorer, grading eval cases, not the production runtime path).
+`readability_guard` itself is a half-instance: both AC-10 (MOD-02) and TB-03 (MOD-04)
+declare it, but neither agent's own self-reported readability claim was ever independently
+checked. Recorded as new OQ-028 rather than folded into OQ-026, since it is a distinct
+finding, not a loose end of the diagnosis-language fix.
+
+**Scope, asked rather than assumed.** AC-10 and TB-03 are genuinely different shapes: AC-10
+carries a one-sided ceiling already fully specified in its own schema comment
+(`estimatedReadabilityGrade <= targetReadabilityGrade + 1`, no floor — text simpler than the
+target grade is never a problem); TB-03 carries a genuine two-sided `GradeBand{minGrade,
+maxGrade}` in its own input, plus the English-only carve-out `packages/contracts/test/
+toolbox-readability-bands.spec.ts` already documents for the Flesch-Kincaid metric
+(`packages/guardrails/src/readability.ts`) applied to any of the other ten official
+languages. Asked which slice to build now (AC-10 only / AC-10 + TB-03 / record-only,
+matching how OQ-026's own shape decision was asked rather than picked). Chosen: AC-10 only.
+
+**What was built.** `apps/worker/src/step-executor.ts`'s `runAgentCall` independently
+re-measures AC-10's `reportText` with `@infinite-ai/guardrails`' real `checkReadability`,
+refusing when the measured grade exceeds `targetReadabilityGrade + 1` rather than trusting
+`readabilityAdequate` at face value — the same "verify a self-reported claim rather than
+trust it" shape `checkRefusalPolicy` already applies to a claimed refusal's own shape.
+Deliberately scoped to `agentId === 'AC-10'` explicitly rather than a new generic
+contract-level convention: with one real caller, a declared-field convention (the same
+shape `freeTextOutputFields` gave `diagnosis_guard`) would be built for a population of
+one — the same "no dependency added before anything needs it" reasoning `packages/brain/
+src/working-memory.ts`'s own header already gives for deferring a Redis backend until a
+second real caller exists. English only, matching the metric's documented limits: skipped
+whenever `AC10Input.homeLanguage !== 'en'`, trusting the agent's self-report for the other
+ten official languages — the same carve-out TB-03/TB-06 already established. TB-03,
+`source_grounding_guard`, `grounding_check` and `template_fidelity` remain open (OQ-028).
+
+### Verification
+
+`apps/worker` (42 tests — 4 new: a clean English letter passes; an over-grade English
+letter that self-reports `readabilityAdequate: true` is still refused by the independent
+re-measurement; a non-English letter at the same over-grade level is not checked at all;
+and a `needs_input` result with no `reportText` is not checked). Full workspace `pnpm
+lint`/`typecheck`/`test`/`format:check` all green across all 51 packages.

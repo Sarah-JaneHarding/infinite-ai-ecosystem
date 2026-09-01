@@ -5,7 +5,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { AC01Contract, CE01Contract } from '@infinite-ai/agents';
+import { AC01Contract, AC10Contract, CE01Contract } from '@infinite-ai/agents';
 import {
   GuardrailEscalationError,
   refuse,
@@ -461,6 +461,137 @@ describe('createStepExecutor', () => {
         input: {},
       });
       expect(result).toEqual({ status: 'ok', framework: { note: 'autism' } });
+    });
+  });
+
+  describe('agent_call readability_guard (AC-10 only)', () => {
+    const AC10_PIPELINE: PipelineDefinition = {
+      id: 'mod-02-parent-report-test',
+      version: '1.0.0',
+      entryStepId: 'write-report',
+      steps: {
+        'write-report': {
+          id: 'write-report',
+          kind: 'agent_call',
+          agentId: 'AC-10',
+          next: null,
+          timeoutMs: 10_000,
+          maxRetries: 0,
+          compensatesWith: null,
+        },
+      },
+    };
+
+    function makeAc10Deps(overrides?: Partial<StepExecutorDeps>): StepExecutorDeps {
+      return makeDeps({
+        pipeline: AC10_PIPELINE,
+        agentContracts: new Map([[AC10Contract.id, AC10Contract]]),
+        ...overrides,
+      });
+    }
+
+    function stubGatewayResponse(content: unknown): void {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({
+            ...FAKE_RESPONSE,
+            message: { role: 'assistant', content: JSON.stringify(content) },
+          }),
+        }),
+      );
+    }
+
+    const ADVANCED_TEXT =
+      'The extraordinarily sophisticated methodology employed by the ' +
+      'interdisciplinary research consortium necessitated a comprehensive ' +
+      'reevaluation of previously established administrative frameworks.';
+
+    it('passes when the letter is within targetReadabilityGrade + 1', async () => {
+      stubGatewayResponse({
+        status: 'written',
+        reportId: 'report-1',
+        learnerId: 'learner-1',
+        termId: 'term-1',
+        homeLanguage: 'en',
+        reportText: 'The cat sat on the mat.',
+        estimatedReadabilityGrade: 2,
+        readabilityAdequate: true,
+        evidenceIds: ['ev-1'],
+      });
+      const executor = createStepExecutor(makeAc10Deps());
+      const result = await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'write-report',
+        attempt: 1,
+        input: { homeLanguage: 'en', targetReadabilityGrade: 3 },
+      });
+      expect((result as { reportText: string }).reportText).toBe(
+        'The cat sat on the mat.',
+      );
+    });
+
+    it('throws GuardrailRefusalError when the measured grade exceeds targetReadabilityGrade + 1', async () => {
+      stubGatewayResponse({
+        status: 'written',
+        reportId: 'report-1',
+        learnerId: 'learner-1',
+        termId: 'term-1',
+        homeLanguage: 'en',
+        reportText: ADVANCED_TEXT,
+        // The agent's own self-report claims it's fine — the independent re-measurement
+        // is what actually catches this, not trusting readabilityAdequate at face value.
+        estimatedReadabilityGrade: 3,
+        readabilityAdequate: true,
+        evidenceIds: ['ev-1'],
+      });
+      const executor = createStepExecutor(makeAc10Deps());
+      await expect(
+        executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'write-report',
+          attempt: 1,
+          input: { homeLanguage: 'en', targetReadabilityGrade: 3 },
+        }),
+      ).rejects.toThrow(GuardrailRefusalError);
+    });
+
+    it('does not check a non-English letter — no validated metric for it', async () => {
+      stubGatewayResponse({
+        status: 'written',
+        reportId: 'report-1',
+        learnerId: 'learner-1',
+        termId: 'term-1',
+        homeLanguage: 'zu',
+        reportText: ADVANCED_TEXT,
+        estimatedReadabilityGrade: 3,
+        readabilityAdequate: true,
+        evidenceIds: ['ev-1'],
+      });
+      const executor = createStepExecutor(makeAc10Deps());
+      const result = await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'write-report',
+        attempt: 1,
+        input: { homeLanguage: 'zu', targetReadabilityGrade: 3 },
+      });
+      expect((result as { reportText: string }).reportText).toBe(ADVANCED_TEXT);
+    });
+
+    it('does not check a needs_input result — there is no reportText to measure', async () => {
+      stubGatewayResponse({ status: 'needs_input', detail: 'Missing progress summary.' });
+      const executor = createStepExecutor(makeAc10Deps());
+      const result = await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'write-report',
+        attempt: 1,
+        input: { homeLanguage: 'en', targetReadabilityGrade: 3 },
+      });
+      expect(result).toEqual({
+        status: 'needs_input',
+        detail: 'Missing progress summary.',
+      });
     });
   });
 });

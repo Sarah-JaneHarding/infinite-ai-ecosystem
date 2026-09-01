@@ -32,6 +32,7 @@ values.** If it is not in a supplied source document, it goes here.
 | OQ-025 | 2026-08-25 | 16 | RESOLVED (2026-08-25) | The per-request CSP nonce did not reach the client on `/sign-in`. **Answer:** root cause was `next-auth@4.24.15`'s `withAuth()` unconditionally short-circuiting before the wrapped handler for the sign-in page. See Resolved section below. |
 | OQ-026 | 2026-08-25 | 06/10 | RESOLVED (2026-09-01) | **`checkDiagnosticLanguage` has no caller.** Needed to know which of a MOD-02 agent's own output fields are free text before it could be wired in for real, without guessing. **Answer:** a field allow-list per agent contract, the human's own choice between two named options. See Resolved section below. |
 | OQ-027 | 2026-09-01 | 06/10 | OPEN | **`support.needs_referral`'s SIAS-status field has no ratified shape.** Found while resolving OQ-024: `mod-02.ts`'s `branch-on-referral` is narrated as evaluating "whether any monitored learner has reached REFERRAL_PENDING SIAS status," but its predecessor step (`check-fidelity`, a `map` over AC-07 fidelity checks) never produces that — `AC07Result` (`@infinite-ai/analytics`) has no `siasStatus` field, and no schema anywhere in `@infinite-ai/contracts` or `@infinite-ai/analytics` declares what an `activeInterventions` collection item carries. Whatever the real source is (each item carrying its own `siasStatus`, a separate collection alongside `activeInterventions` in the run's own input, or a fresh read from the SIAS state machine at branch time — a capability `evaluateCondition` does not have today), inventing a field name to unblock this one condition risks exactly the "silently read stale/absent fields" failure OQ-024 itself flagged. `apps/worker/src/condition-evaluator.ts`'s `evaluateCondition` implements the other four conditions for real (each reads a field a ratified Zod schema already fixes) and throws `UnresolvedConditionError` for this one rather than guessing. **Decision needed:** what shape carries a monitored learner's current SIAS status into the MOD-02 Monitoring pipeline, and where it is read from. Blocks real branching in MOD-02 Monitoring only; blocks nothing else, since MOD-02 RTI, MOD-05 PD Analysis and LE Commons are all resolved. |
+| OQ-028 | 2026-09-01 | 06/11 | OPEN | **Three more declared guardrail names have no real caller: `source_grounding_guard`, `grounding_check`, `template_fidelity`; `readability_guard` is now only half-wired.** Found while resolving OQ-026: `packages/agents/src/mod-04/TB-03.contract.ts` declares `readability_guard` and `source_grounding_guard`; neither was ever dispatched by name anywhere in `apps/worker`. `@infinite-ai/guardrails`' `checkGrounding` is only ever called from `packages/evals`' own scorer (grading eval cases, not the production runtime path); `checkTemplateFidelity`/`buildTemplateFidelityChecker` have no real caller anywhere. This build's `readability_guard` fix (same commit as OQ-026) covers **AC-10 only** — its own schema already states the exact tolerance rule (`estimatedReadabilityGrade <= targetReadabilityGrade + 1`, a ceiling with no floor), so there was no real judgement call left to make. TB-03 is a different shape: a genuine two-sided `GradeBand{minGrade,maxGrade}` already in its own input, plus the same English-only carve-out `packages/contracts/test/toolbox-readability-bands.spec.ts` already documents for the Flesch-Kincaid metric (`packages/guardrails/src/readability.ts`) — TB-03 may need a per-language `cannot_measure` path AC-10 doesn't have. Scoped deliberately narrow rather than guessed at wider: asked the human which of (AC-10 only / AC-10 + TB-03 / record-only) to build, and AC-10-only was chosen. **Decision needed:** whether and how to wire `readability_guard` for TB-03 (its own two-sided band plus the language carve-out), and what `source_grounding_guard`/`grounding_check`/`template_fidelity` should scan and where the data they need (a per-agent citation set, a ratified template) would come from — the same shape of question OQ-003/OQ-015 already raised for template-fidelity and age-appropriateness content policy. Blocks nothing already built; blocks trusting that TB-03's own readability/grounding claims are independently verified rather than self-reported. |
 
 ### Phase 4 — proposed extension (Stages 19-25), not in the original 18-stage manual
 
@@ -229,3 +230,39 @@ passing `validateAgentContract` with real field lists), and `apps/worker` (38 te
 including new `step-executor.spec.ts` coverage: clean output passes, a diagnostic term in a
 declared field is refused, and a contract without `"diagnosis_guard"` is never scanned).
 Full workspace `pnpm lint`/`typecheck`/`test`/`format:check` all green (51/51 packages).
+
+### OQ-028 (partial) — `readability_guard` wired for AC-10 · 2026-09-01
+
+While resolving OQ-026, found the same "declared guardrail, no real caller" shape three
+more times (`source_grounding_guard`, `grounding_check`, `template_fidelity`) plus a
+half-instance of `readability_guard` itself: AC-10 (MOD-02) and TB-03 (MOD-04) both declare
+it, but neither was ever independently checked — each agent's own self-reported readability
+claim (AC-10's `readabilityAdequate`; TB-03's `readabilityCheckResult`) was trusted at face
+value. Recorded as new OQ-028 above rather than folded into OQ-026, since it is a distinct
+finding, not a loose end of the diagnosis-language fix.
+
+Asked which slice to build now — AC-10 only, AC-10 + TB-03, or record-only — since AC-10 and
+TB-03 are genuinely different shapes (AC-10: a one-sided ceiling already fully specified in
+its own schema comment; TB-03: a two-sided `GradeBand` plus an English-only carve-out for
+the other ten official languages, needing its own design pass). **Chosen: AC-10 only.**
+
+`apps/worker/src/step-executor.ts`'s `runAgentCall` now independently re-measures AC-10's
+`reportText` with `@infinite-ai/guardrails`' real Flesch-Kincaid `checkReadability`,
+refusing when the measured grade exceeds `targetReadabilityGrade + 1` — the exact rule
+`AC10Result`'s own schema comment already stated — rather than trusting
+`readabilityAdequate`. Scoped to `agentId === 'AC-10'` explicitly (not a new generic
+contract-level convention): with only one real caller today, a declared-field convention
+like `freeTextOutputFields` would be built for a population of one, which is speculative
+the same way a Redis-backed `WorkingMemoryStore` would be (see `packages/brain/src/
+working-memory.ts`'s own header) — build the second real caller's needs into the shape once
+TB-03 is actually tackled (OQ-028), not before. English only, matching the metric's own
+documented limits: skipped whenever `AC10Input.homeLanguage !== 'en'`, trusting the agent's
+self-report for the other ten official languages, the same carve-out TB-03/TB-06 already
+established elsewhere. TB-03, `source_grounding_guard`, `grounding_check` and
+`template_fidelity` remain open — OQ-028, above.
+
+Verified: `apps/worker` (42 tests — 4 new: a clean English letter passes, an over-grade
+English letter that self-reports `readabilityAdequate: true` is still refused, a non-English
+letter at the same over-grade level is not checked at all, and a `needs_input` result with
+no `reportText` is not checked). Full workspace `pnpm lint`/`typecheck`/`test`/
+`format:check` all green (51/51 packages).
