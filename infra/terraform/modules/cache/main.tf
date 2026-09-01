@@ -87,5 +87,12 @@ resource "aws_secretsmanager_secret_version" "redis_url" {
   secret_id = aws_secretsmanager_secret.redis_url.id
   secret_string = jsonencode({
     url = "rediss://:${random_password.auth_token.result}@${aws_elasticache_replication_group.this.primary_endpoint_address}:6379"
+    # host/port/auth_token: the same connection, split into the fields a caller whose own
+    # env-var contract has no single connection-string field expects (Langfuse's
+    # REDIS_HOST/REDIS_PORT/REDIS_AUTH, e.g.) — additive, url unchanged for every existing
+    # caller reading it via ":url::" and no different from url's own information.
+    host       = aws_elasticache_replication_group.this.primary_endpoint_address
+    port       = "6379"
+    auth_token = random_password.auth_token.result
   })
 }

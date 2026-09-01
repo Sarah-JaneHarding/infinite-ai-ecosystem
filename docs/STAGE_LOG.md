@@ -7600,3 +7600,119 @@ status endpoint — is separately policy-denied regardless, the same class of re
 already documented in this repo for `quay.io` and `registry.terraform.io`. A real
 `docker compose up` against this file, by a developer or in CI with normal Docker and
 network access, is the next real verification step, not performed here.
+
+## Tier 1 (deployability) — Langfuse in staging/production Terraform
+
+The prior Tier 1 entry closed the dev half of the observability gap and named the
+staging/production half as a real, unresolved design fork rather than guessing at it:
+ClickHouse needs persistent disk, and this repo's whole compute layer is ECS Fargate,
+which has none. Asked; the human chose **EC2+EBS, keep everything self-hosted** —
+explicitly ruling out a managed ClickHouse service, which would have meant self-hosted
+Langfuse (`INFINITEAI_BUILD_MANUAL.md`'s own "LLM observability: Langfuse
+(self-hosted)" line) storing its data on a third-party platform, in tension with the
+same POPIA data-residency reasoning `af-south-1` and every other data store in this
+Terraform already exists for.
+
+**New module: `infra/terraform/modules/clickhouse`.** One EC2 instance (Amazon Linux
+2023, Graviton — `t4g.medium` default, matching this Terraform's existing `db.t4g.*`/
+`cache.t4g.*` preference), one EBS volume created and destroyed independently of the
+instance (`prevent_destroy`, so an instance replacement — a new AMI, an instance-type
+resize — detaches and reattaches the same volume rather than losing it), private
+subnet only, IMDSv2 required, SSM Session Manager for shell access instead of an SSH
+key (the same "no long-lived credential" posture `bootstrap-roles.sh`'s own header
+already prefers). User-data installs Docker and runs the exact image/version
+(`clickhouse/clickhouse-server:25.12`) `infra/docker/compose.dev.yml`'s own
+`langfuse-clickhouse` service already validates — dev and this environment run
+identical ClickHouse builds. The ClickHouse password is generated with
+`random_password`, stored in Secrets Manager, and **fetched by the user-data script at
+boot** via the instance's own scoped IAM permission — never rendered into user-data
+itself, since user-data is visible in the EC2 console to anyone with
+`ec2:DescribeInstanceAttribute`, which would have defeated generating the password in
+the first place. Explicitly not a ClickHouse cluster: one node, no replication, no
+Keeper — a real production deployment at a scale beyond a pilot is separate, future
+work, named as such in the module's own header, not assumed done here.
+
+**New module: `infra/terraform/modules/langfuse`.** Composes: `modules/clickhouse`
+(above); `modules/database` reused as-is with `app_role_names = []` — Langfuse manages
+its own schema against one connection, so it connects as the RDS-managed master user
+directly rather than through the migrator/app_rw split every other consumer of that
+module uses; `modules/cache` reused as-is; `modules/object-store` reused as-is for a
+second, Langfuse-owned bucket; its own dedicated ALB (host-based routing on the main
+app's shared ALB needs a real domain to route on, and this module has to work
+identically when `domain_name` is null, the same fallback the main ALB already uses —
+simplest to give it its own rather than teach the shared one a second hostname); and
+two ECS Fargate services, `langfuse-web`/`langfuse-worker`, pulling directly from
+`docker.langfuse.com` rather than through `modules/ecs-service` — that module always
+provisions and owns an ECR repository, the wrong shape for third-party images this
+repo's own CD pipeline never builds or pushes. A version bump is a deliberate
+`var.image_tag` change and `terraform apply`, the same as bumping Keycloak's own pinned
+version in `infra/docker/compose.dev.yml`, not a CD-pipeline deploy.
+
+Two small, additive, backward-compatible changes to existing modules, both needed to
+wire Langfuse without duplicating either module's own logic: `modules/database` gained
+a `master_user_secret_arn` output (the RDS-managed master credential was previously
+unexposed — nothing before this needed it, since every existing consumer used the
+migrator/app_rw role split instead); `modules/cache`'s own Secrets Manager secret
+gained `host`/`port`/`auth_token` fields alongside its existing `url` field, since
+Langfuse's own env-var contract (`REDIS_HOST`/`REDIS_PORT`/`REDIS_AUTH`) has no single
+connection-string field the way this repo's own apps' `REDIS_URL` does — every existing
+reader of the `url` field is unaffected.
+
+**Closing the loop, not just standing up infrastructure nobody points at:**
+`modules/stack` now generates a real OTLP public/secret key pair for each
+environment's own Langfuse project (`random_id`/`random_password`, not a human
+clicking "create API key" in the Langfuse UI), derives the Basic-auth header value
+Langfuse's OTLP endpoint expects (`base64encode("<public>:<secret>")`), and wires
+`OTEL_EXPORTER_OTLP_ENDPOINT`/`OTEL_EXPORTER_OTLP_HEADERS` into both `gateway` and
+`worker`'s own environment/secrets — the same public/secret key pair
+`LANGFUSE_INIT_PROJECT_PUBLIC_KEY`/`SECRET_KEY` bootstraps the project with on
+`langfuse-web`'s own first boot. One value, generated once, used in both places — the
+same shape `infra/docker/.env.example`'s own `KEYCLOAK_WEB_CLIENT_SECRET` note already
+holds to for dev.
+
+**A real, honest assumption, not independently verified:** Langfuse's own S3 storage
+client is configured with no explicit `LANGFUSE_S3_*_ACCESS_KEY_ID`/`SECRET_ACCESS_KEY`
+— real S3 access goes through the ECS task's own IAM role instead, the same pattern
+apps/gateway and apps/worker's own `OBJECT_STORE_ENDPOINT`/`OBJECT_STORE_BUCKET` already
+use with no access-key env var of their own. This assumes Langfuse's S3 client falls
+back to the AWS SDK's default credential provider chain when those two env vars are
+left unset, consistent with most `aws-sdk`-based S3 clients — not confirmed against
+Langfuse's own source in this pass. If that assumption is wrong, it surfaces immediately
+as an S3 authentication failure in `langfuse-worker`'s own logs the first time this is
+actually applied, not a silent failure — and the fix (an IAM user with long-lived
+access keys scoped to just this bucket) is a real, deliberate trade-off against this
+repo's own "no long-lived cloud credentials" standing constraint, not one to make by
+guessing here.
+
+**Environments:** `langfuse_init_user_email` is a new required variable (no default,
+same as production's own `domain_name`) on all three environments — who administers a
+given environment's own Langfuse instance is always a real decision. Production also
+sets `langfuse_db_multi_az`/`langfuse_cache_multi_az = true` and a larger ClickHouse
+instance type (`t4g.large`), the same Multi-AZ reasoning the app's own database/cache
+already carry — losing an AZ should not also take out LLM observability. ClickHouse
+itself stays single-node regardless, in every environment: Multi-AZ here covers
+Langfuse's own Postgres/Redis, not the one piece of this whole Terraform tree that
+cannot be Multi-AZ'd without a real cluster.
+
+**Deliberately not done, and why:** `modules/observability`'s CloudWatch alarms do not
+cover Langfuse's own two services or its ALB — that module is keyed on one ALB's
+`arn_suffix`, and Langfuse has a second, independent one; extending it is a real, scoped
+follow-up. Turning the trace data now actually flowing into Langfuse into the SLO
+burn-rate alarms `canary-deploy.md`/`region-loss.md` describe is a dashboard/alerting
+decision on Langfuse's own side (or a Grafana instance reading from it), not something
+this Terraform builds.
+
+### Verification
+
+`terraform fmt -recursive -check` passes across the whole tree, including every new
+file (exit 0). `terraform init -backend=false` in `environments/staging` resolved the
+**entire module graph** — every new module (`stack.langfuse`, `stack.langfuse.cache`,
+`stack.langfuse.clickhouse`, `stack.langfuse.database`, `stack.langfuse.object_store`)
+was discovered and its HCL parsed without error, failing only at the provider-download
+step (`registry.terraform.io` policy-denied, the same restriction already documented
+throughout this repo) — meaningfully stronger evidence of syntactic correctness than
+`fmt` alone, since a malformed block anywhere in this new tree would have failed parsing
+before init ever reached that step. Every `module.<name>.<output>` reference this new
+code uses was cross-checked by hand against the referenced module's own `outputs.tf`.
+`terraform validate`/`plan`/`apply` were not run — the same registry block, and no real
+AWS account exists to validate resource arguments against in any case.

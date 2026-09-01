@@ -17,3 +17,7 @@ output "web_ecr_repository_url" {
 output "bootstrap_roles_command" {
   value = module.stack.bootstrap_roles_command
 }
+
+output "langfuse_web_url" {
+  value = module.stack.langfuse_web_url
+}

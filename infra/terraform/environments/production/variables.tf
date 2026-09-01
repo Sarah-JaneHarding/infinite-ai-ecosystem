@@ -22,3 +22,8 @@ variable "worker_image_tag" {
 variable "web_image_tag" {
   type = string
 }
+
+variable "langfuse_init_user_email" {
+  description = "The first admin account for this environment's own self-hosted Langfuse instance. No default, same as domain_name above — pass explicitly at apply time."
+  type        = string
+}

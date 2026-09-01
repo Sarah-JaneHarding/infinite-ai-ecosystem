@@ -30,3 +30,7 @@ output "bootstrap_roles_command" {
   description = "The one manual step this stack cannot run itself — see modules/database/bootstrap-roles.sh's own header for why."
   value       = "./modules/database/bootstrap-roles.sh ${var.name}-db"
 }
+
+output "langfuse_web_url" {
+  value = module.langfuse.web_url
+}

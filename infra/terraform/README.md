@@ -43,6 +43,13 @@ terraform/
     ecs-service    one reusable Fargate service definition — ECR repo, task def,
                    service, autoscaling, optional ALB target group
     observability  CloudWatch alarms (see "What this does not do" below) + an SNS topic
+    clickhouse     one self-hosted ClickHouse node, EC2+EBS — the one piece of this
+                   tree that is not ECS Fargate or a managed AWS service; see its own
+                   README-equivalent (the module's own header comment) for why
+    langfuse       self-hosted Langfuse (LLM observability) — its own ALB, ECS services
+                   (pulling docker.langfuse.com directly, not this repo's own ECR/CD),
+                   and instances of modules/database, modules/cache, modules/object-store
+                   and modules/clickhouse dedicated to it, never shared with the app's own
     stack          composes all of the above into one environment; not itself in the
                    planned layout above, but the same wiring dev/staging/production would
                    otherwise each duplicate
@@ -92,6 +99,13 @@ terraform/
    the `gateway_ecr_repository_url` output), then re-`apply` with a real `-var
 gateway_image_tag=<sha>` (and the same for worker/web).
 
+   This same first `apply` also requires `-var langfuse_init_user_email=<a real email>`
+   — modules/langfuse's own required variable, no default (see its own doc comment).
+   Unlike gateway/worker/web, Langfuse's own `image_tag` defaults to a real, already-
+   published version (`4.25.0`, pulled directly from `docker.langfuse.com`, not this
+   repo's own ECR) — nothing "unreleased" to push first, since Langfuse is third-party
+   software this repo's CD pipeline never builds.
+
 3. **Bootstrap the database roles and extensions**, once per environment, after step 2's
    first `apply`:
 
@@ -134,10 +148,18 @@ configure-aws-credentials` step with an empty `role-to-assume` — a clear failu
 - **Compute the SLO metrics `canary-deploy.md` and `region-loss.md` name**
   (`gateway.error_rate`, `web_availability_burn_rate`). The `observability` module's
   alarms use the ALB's own native `HTTPCode_Target_5XX_Count`/`TargetResponseTime`
-  metrics against those runbooks' own numeric thresholds — a real signal today, not the
-  Langfuse/OTel-shaped metric those runbooks will eventually read from Stage 15's
-  observability stack, which is not deployed anywhere yet (a separate, larger follow-up
-  — Langfuse's self-hosted footprint alone is bigger than everything in this directory).
+  metrics against those runbooks' own numeric thresholds — a real signal today, not a
+  Langfuse-derived burn-rate metric. Langfuse itself is deployed now (`modules/langfuse`
+  — self-hosted, per `INFINITEAI_BUILD_MANUAL.md`'s own line), and gateway/worker both
+  ship every OTel span to it (`OTEL_EXPORTER_OTLP_ENDPOINT`/`_HEADERS`, wired in
+  `modules/stack`); what remains is turning that trace data into the SLO burn-rate
+  alarms these runbooks describe, which is a Langfuse-side (or a Grafana pulling from
+  it) dashboard/alerting decision, not something this Terraform's `observability`
+  module — keyed on the app's own single ALB — covers for a second, separate ALB.
+- **Alarm on Langfuse's own services.** `modules/observability` is keyed on one ALB's
+  `arn_suffix`; Langfuse has its own, dedicated ALB (`modules/langfuse`'s own header
+  explains why). Extending `observability` to a second, independent ALB is a real, scoped
+  follow-up, not attempted in this pass.
 - **Automate `region-loss.md`'s cross-region failover.** Production is single-region
   (`af-south-1`) with Multi-AZ, not multi-region — a promoted cross-region read replica
   is its own real decision (which region, cost, when) and its own module, not assumed

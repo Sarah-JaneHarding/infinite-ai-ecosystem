@@ -57,4 +57,14 @@ module "stack" {
   gateway_image_tag = var.gateway_image_tag
   worker_image_tag  = var.worker_image_tag
   web_image_tag     = var.web_image_tag
+
+  # Same Multi-AZ reasoning as the app's own database/cache above: losing this to a
+  # single AZ outage should not also take out LLM observability. ClickHouse itself
+  # stays single-node regardless (modules/clickhouse's own header explains why a real
+  # cluster is separate, future work) — Multi-AZ here covers Langfuse's own Postgres/
+  # Redis, not ClickHouse.
+  langfuse_db_multi_az              = true
+  langfuse_cache_multi_az           = true
+  langfuse_clickhouse_instance_type = "t4g.large"
+  langfuse_init_user_email          = var.langfuse_init_user_email
 }
