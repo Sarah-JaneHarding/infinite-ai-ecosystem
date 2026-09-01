@@ -10,7 +10,9 @@
 //
 // Scope, stated plainly: `agent_call`, `tool_call`, `human_gate`, `branch`, `map` and
 // `compensation` are all executed here. `branch` evaluates `step.condition` through the
-// caller-supplied `evaluateCondition` and routes to `onTrue`/`onFalse`. `map` fans
+// caller-supplied `evaluateCondition`, against its one predecessor step's own persisted
+// output (`resolveConditionInput`, OQ-024) rather than the run's static input, and routes
+// to `onTrue`/`onFalse`. `map` fans
 // `itemStepId` out once per item of the collection at `run.input[step.collectionField]` —
 // see `advanceMapStep`'s own header for why that fan-out is one internal loop inside a
 // single `advanceRun` call rather than one call per item, and why each item still gets its
@@ -68,6 +70,7 @@ import { z } from 'zod';
 
 import type { ConcurrencyLimiter, ConcurrencySlot } from './concurrency.js';
 import {
+  findPredecessorStepId,
   validatePipelineDag,
   validatePipelineGating,
   type IrreversibleToolCheck,
@@ -108,7 +111,28 @@ export interface StepExecutionContext {
  * there, never from this function's own return value. */
 export type StepExecutor = (context: StepExecutionContext) => Promise<unknown>;
 
-export type ConditionEvaluator = (condition: string, input: unknown) => boolean;
+/**
+ * What a `branch` step's condition can read (OQ-024). Not every condition needs the same
+ * half: `support.core_health_blocked`, `pd.is_suppressed`, `pd.needs_micro_course` and
+ * `learning.commons_publish_blocked` are each narrated against one specific prior agent's
+ * own output (`stepOutput`), but `support.needs_referral` reads each monitored learner's
+ * SIAS status — data no step in its pipeline computes, supplied by the caller when the
+ * run started (`runInput`) — even though its own predecessor is a `map` step whose items
+ * are AC-07 fidelity results, unrelated to SIAS state. A condition picks whichever field
+ * it actually needs; nothing here decides that for it.
+ */
+export interface ConditionInput {
+  /** The run's own static input — unchanged for the run's whole lifetime, and the only
+   * source for a condition that depends on data no pipeline step produces. */
+  readonly runInput: unknown;
+  /** The branch step's one predecessor's persisted, `SUCCEEDED` output — e.g. AC-02's own
+   * returned `{ status: ... }`. An array of every item's output, in collection order,
+   * when the predecessor is a `map` step, since a map step has no single output of its
+   * own to read (`branch-on-referral`'s predecessor, `check-fidelity`, is one). */
+  readonly stepOutput: unknown;
+}
+
+export type ConditionEvaluator = (condition: string, input: ConditionInput) => boolean;
 
 /** What a successful step reported using, retrieved, and was checked against — the Run
  * Inspector's own required fields (Stage 06 step 9). Called after `executeStep` resolves,
@@ -387,6 +411,61 @@ function latestAttempt(
   return attempts[attempts.length - 1];
 }
 
+/** Builds the `ConditionInput` a `branch` step's `evaluateCondition` call sees (OQ-024):
+ * `runInput` is always `run.input`; `stepOutput` is `findPredecessorStepId`'s single prior
+ * step's persisted output, or an array of every item's output, in order, when that
+ * predecessor is a `map` step (`readMapCollection`/`mapItemStepId` are the same
+ * primitives `advanceMapStep` itself uses to read and key item attempts). Throws if the
+ * predecessor — or any map item — has not actually succeeded: `advanceRun` only reaches a
+ * `branch` step by advancing forward from a successful predecessor, so anything else
+ * means a pipeline let a `branch` step's declared predecessor diverge from its own
+ * forward-graph edge.
+ */
+function resolveConditionInput(
+  pipeline: PipelineDefinition,
+  run: OrchestratorRunRow,
+  stepRuns: readonly OrchestratorStepRunRow[],
+  step: Extract<PipelineStep, { kind: 'branch' }>,
+): ConditionInput {
+  const predecessorId = findPredecessorStepId(pipeline, step.id);
+  if (predecessorId === null) {
+    throw new OrchestratorRunnerError(
+      `Run ${run.id}: branch step "${step.id}" has no predecessor step to read a ` +
+        'condition input from.',
+    );
+  }
+  const predecessor = stepFor(pipeline, predecessorId);
+
+  if (predecessor.kind === 'map') {
+    const collection = readMapCollection(
+      run.input,
+      predecessor.collectionField,
+      predecessor.id,
+    );
+    const stepOutput = collection.map((_, index) => {
+      const itemStepId = mapItemStepId(predecessor.id, index);
+      const latest = latestAttempt(stepRuns, itemStepId);
+      if (latest?.status !== 'SUCCEEDED') {
+        throw new OrchestratorRunnerError(
+          `Run ${run.id}: branch step "${step.id}" needs map item "${itemStepId}" to ` +
+            'have succeeded.',
+        );
+      }
+      return latest.output;
+    });
+    return { runInput: run.input, stepOutput };
+  }
+
+  const latest = latestAttempt(stepRuns, predecessorId);
+  if (latest?.status !== 'SUCCEEDED') {
+    throw new OrchestratorRunnerError(
+      `Run ${run.id}: branch step "${step.id}" needs predecessor step "${predecessorId}" ` +
+        'to have succeeded.',
+    );
+  }
+  return { runInput: run.input, stepOutput: latest.output };
+}
+
 /**
  * Does exactly one unit of work for `runId` and returns the run's state afterwards — a
  * single step's execution, a single retry-readiness check, or nothing (no progress
@@ -491,7 +570,8 @@ export async function advanceRun(
         `Run ${runId}: branch step "${step.id}" needs an evaluateCondition function.`,
       );
     }
-    const result = options.evaluateCondition(step.condition, run.input);
+    const conditionInput = resolveConditionInput(pipeline, run, stepRuns, step);
+    const result = options.evaluateCondition(step.condition, conditionInput);
     const nextId = nextStepAfterSuccess(step, result);
     return advanceToNextStep(tx, runId, step.id, nextId, now);
   }

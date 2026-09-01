@@ -31,6 +31,7 @@ import {
   runToCompletion,
   startRun,
   type ApprovalMaterialProvider,
+  type ConditionEvaluator,
   type StepExecutionContext,
   type StepTelemetryCollector,
 } from '../src/runner.js';
@@ -1474,5 +1475,216 @@ describe('map step fan-out (Stage 52)', () => {
     expect(finished.status).toBe('COMPENSATED');
     expect(finished.succeededStepIds).toEqual(['book-resource']);
     expect(callOrder).toEqual(['book-resource', 'screen-one', 'release-resource']);
+  });
+});
+
+describe('branch step condition evaluation (OQ-024)', () => {
+  function branchPipeline(): PipelineDefinition {
+    return {
+      id: 'branch-pipeline',
+      version: '1.0.0',
+      entryStepId: 'assess',
+      steps: {
+        assess: {
+          ...STEP_COMMON,
+          id: 'assess',
+          kind: 'agent_call',
+          agentId: 'AC-02',
+          next: 'gate',
+        },
+        gate: {
+          ...STEP_COMMON,
+          id: 'gate',
+          kind: 'branch',
+          condition: 'is_blocked',
+          onTrue: 'raise',
+          onFalse: 'proceed',
+        },
+        raise: {
+          ...STEP_COMMON,
+          id: 'raise',
+          kind: 'tool_call',
+          toolName: 'raise_task',
+          next: null,
+        },
+        proceed: {
+          ...STEP_COMMON,
+          id: 'proceed',
+          kind: 'tool_call',
+          toolName: 'recommend',
+          next: null,
+        },
+      },
+    };
+  }
+
+  it("evaluates the condition against the branch's predecessor output, not the run's static input", async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline = branchPipeline();
+    const seenInputs: unknown[] = [];
+    const evaluateCondition: ConditionEvaluator = (condition, input) => {
+      seenInputs.push(input);
+      const output = input.stepOutput as { status?: string };
+      return condition === 'is_blocked' && output.status === 'blocked';
+    };
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, { classId: 'C1' }, randomUUID(), actorId);
+      return runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({ status: 'blocked', detail: 'core health failed' }),
+        evaluateCondition,
+      });
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(finished.succeededStepIds).toEqual(['assess', 'gate', 'raise']);
+    expect(seenInputs).toEqual([
+      {
+        runInput: { classId: 'C1' },
+        stepOutput: { status: 'blocked', detail: 'core health failed' },
+      },
+    ]);
+  });
+
+  it('routes to onFalse when the condition evaluates false', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline = branchPipeline();
+    const evaluateCondition: ConditionEvaluator = (_condition, input) => {
+      const output = input.stepOutput as { status?: string };
+      return output.status === 'blocked';
+    };
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, { classId: 'C1' }, randomUUID(), actorId);
+      return runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({ status: 'healthy' }),
+        evaluateCondition,
+      });
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(finished.succeededStepIds).toEqual(['assess', 'gate', 'proceed']);
+  });
+
+  it("aggregates a map predecessor's item outputs, in order, when the branch follows a map step", async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'branch-after-map-pipeline',
+      version: '1.0.0',
+      entryStepId: 'check-all',
+      steps: {
+        'check-all': {
+          ...STEP_COMMON,
+          id: 'check-all',
+          kind: 'map',
+          itemStepId: 'check-one',
+          collectionField: 'items',
+          next: 'gate',
+        },
+        'check-one': {
+          ...STEP_COMMON,
+          id: 'check-one',
+          kind: 'agent_call',
+          agentId: 'AC-07',
+          next: null,
+        },
+        gate: {
+          ...STEP_COMMON,
+          id: 'gate',
+          kind: 'branch',
+          condition: 'any_flagged',
+          onTrue: 'raise',
+          onFalse: 'proceed',
+        },
+        raise: {
+          ...STEP_COMMON,
+          id: 'raise',
+          kind: 'tool_call',
+          toolName: 'raise_task',
+          next: null,
+        },
+        proceed: {
+          ...STEP_COMMON,
+          id: 'proceed',
+          kind: 'tool_call',
+          toolName: 'recommend',
+          next: null,
+        },
+      },
+    };
+
+    let capturedStepOutput: unknown;
+    const evaluateCondition: ConditionEvaluator = (_condition, input) => {
+      capturedStepOutput = input.stepOutput;
+      const items = input.stepOutput as Array<{ flagged: boolean }>;
+      return items.some((item) => item.flagged);
+    };
+
+    const finished = await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(
+        tx,
+        pipeline,
+        { items: ['A', 'B', 'C'] },
+        randomUUID(),
+        actorId,
+      );
+      return runToCompletion(tx, pipeline, run.id, {
+        executeStep: async (ctx) => ({ item: ctx.input, flagged: ctx.input === 'B' }),
+        evaluateCondition,
+      });
+    });
+
+    expect(finished.status).toBe('SUCCEEDED');
+    expect(finished.succeededStepIds).toEqual(['check-all', 'gate', 'raise']);
+    expect(capturedStepOutput).toEqual([
+      { item: 'A', flagged: false },
+      { item: 'B', flagged: true },
+      { item: 'C', flagged: false },
+    ]);
+  });
+
+  it('throws when a branch step has no evaluateCondition supplied', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline = branchPipeline();
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, { classId: 'C1' }, randomUUID(), actorId);
+      await expect(
+        runToCompletion(tx, pipeline, run.id, {
+          executeStep: async () => ({ status: 'blocked' }),
+        }),
+      ).rejects.toThrow(OrchestratorRunnerError);
+    });
+  });
+
+  it('throws when a branch step is the pipeline’s own entry step (no predecessor)', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const pipeline: PipelineDefinition = {
+      id: 'entry-branch-pipeline',
+      version: '1.0.0',
+      entryStepId: 'gate',
+      steps: {
+        gate: {
+          ...STEP_COMMON,
+          id: 'gate',
+          kind: 'branch',
+          condition: 'x',
+          onTrue: 'a',
+          onFalse: 'b',
+        },
+        a: { ...STEP_COMMON, id: 'a', kind: 'tool_call', toolName: 't', next: null },
+        b: { ...STEP_COMMON, id: 'b', kind: 'tool_call', toolName: 't', next: null },
+      },
+    };
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await expect(
+        runToCompletion(tx, pipeline, run.id, {
+          executeStep: async () => ({}),
+          evaluateCondition: () => true,
+        }),
+      ).rejects.toThrow(OrchestratorRunnerError);
+    });
   });
 });

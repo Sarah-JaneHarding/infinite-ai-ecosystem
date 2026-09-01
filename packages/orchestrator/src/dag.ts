@@ -187,6 +187,33 @@ export function validatePipelineDag(pipeline: PipelineDefinition): void {
   visit(entryStepId);
 }
 
+/**
+ * The step whose forward edge (`next`, or a `branch`'s `onTrue`/`onFalse`) points at
+ * `stepId` — what a `branch` step's condition reads its input from (OQ-024: a condition
+ * evaluates the specific prior step it is narrated against, e.g. "AC-02's
+ * output.status", never the run's own static input). Returns `null` for the pipeline's
+ * entry step, which has no predecessor. Throws if more than one step points at `stepId`:
+ * a condition needs exactly one unambiguous prior step to read output from, so an
+ * ambiguous target is a pipeline authoring error, not something for the runner to guess
+ * between.
+ */
+export function findPredecessorStepId(
+  pipeline: PipelineDefinition,
+  stepId: string,
+): string | null {
+  const predecessors = Object.values(pipeline.steps)
+    .filter((step) => forwardTargets(step).includes(stepId))
+    .map((step) => step.id);
+
+  if (predecessors.length > 1) {
+    throw new PipelineDagError(
+      `Pipeline "${pipeline.id}": step "${stepId}" has more than one predecessor ` +
+        `(${predecessors.join(', ')}) — a branch condition needs exactly one.`,
+    );
+  }
+  return predecessors[0] ?? null;
+}
+
 export type IrreversibleToolCheck = (toolName: string) => boolean;
 
 /**

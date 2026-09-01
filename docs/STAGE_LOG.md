@@ -7798,3 +7798,67 @@ only the three Docker-dependent failures every prior stage already documents as
 sandbox-only. `pnpm --filter @infinite-ai/db typecheck`/`test` re-verified directly
 against the `deepmerge-ts` override (clean, 220/220). Full workspace `pnpm lint`/
 `format:check`/`typecheck`/`test`/`build` all green.
+
+## OQ-024 resolved — `branch` step conditions now read a real prior step's output
+
+**What was wrong.** `RunnerOptions.evaluateCondition` — Stage 52's own real `branch`
+evaluation — only ever received `run.input`, the run's static starting payload, never an
+intervening agent's actual output, even though every `branch` step built so far is
+narrated in its own pipeline file as reading one specific prior step's output (`mod-02.ts`:
+"Condition support.core_health_blocked evaluates AC-02's output.status === 'blocked'";
+similarly in `mod-05.ts` and `le.ts`). `apps/worker/src/worker-host.ts` left
+`evaluateCondition` unwired entirely rather than wire one against the wrong data, so any
+run reaching a `branch` step failed loudly with `OrchestratorRunnerError` — recorded as
+OQ-024, decision needed: a mutable run-context column with a migration, an explicit
+"read the last N step outputs" parameter, or something else.
+
+**What was built.** The DAG already knows which step feeds a branch's condition — the
+runner just never looked. `packages/orchestrator/src/dag.ts` gained
+`findPredecessorStepId(pipeline, stepId)`: the one step whose forward edge (`next`, or a
+branch's own `onTrue`/`onFalse`) points at `stepId`, throwing `PipelineDagError` if more
+than one step does (an ambiguous target is a pipeline authoring error, not something for
+the runner to guess between). `runner.ts`'s new `resolveConditionInput` uses it to build a
+`ConditionInput` — `{ runInput, stepOutput }` — entirely from data the runner already
+persists, no schema change: `stepOutput` is the predecessor's own `SUCCEEDED`
+`OrchestratorStepRunRow.output` (read via the same `listStepRuns` call `advanceRun` already
+made for this step), or an array of every item's output, in collection order, when the
+predecessor is a `map` step (a map step has no output of its own to read —
+`branch-on-referral`'s predecessor, `check-fidelity`, is one). `runInput` stays `run.input`
+unchanged, because not every condition can be answered from a predecessor's output alone —
+see below. `ConditionEvaluator`'s signature changed from `(condition, input: unknown)` to
+`(condition, input: ConditionInput)`; zero blast radius, since nothing implemented it
+before this fix.
+
+`apps/worker/src/condition-evaluator.ts` is new: the first real `evaluateCondition`, wired
+into `worker-host.ts`'s `RunnerOptions` alongside `executeStep`/`prepareApproval`. It
+resolves four of the five conditions declared across MOD-02/MOD-05/LE for real, each
+against a field a ratified Zod schema already fixes (`AC02Result.status`,
+`PD04Result.status`, `PD05Result`'s `topPriorityGap.suggestedInterventionType`,
+`LE08Result.status`). Writing it surfaced a separate, pre-existing defect: `le.ts`'s own
+comment claimed `learning.commons_publish_blocked` checks `LE08Result.status === 'blocked'`
+— but `LE08Result` has no `'blocked'` literal at all; its real statuses are `'published'`,
+`'suppressed_below_threshold'`, `'suppressed_no_opt_in'` and `'needs_input'`. Fixed to
+`status !== 'published'` and the stale comment corrected in the same commit.
+
+**The fifth condition, deliberately not resolved.** `support.needs_referral`
+(`mod-02.ts`'s `branch-on-referral`) is narrated as reading whether any monitored learner
+has reached `REFERRAL_PENDING` SIAS status — but its predecessor, `check-fidelity`, only
+ever produces AC-07 fidelity results (`AC07Result` has no `siasStatus` field at all), and
+no schema anywhere declares what an `activeInterventions` collection item carries. Inventing
+a field name here to unblock this one condition would be exactly the "silently read
+stale/absent fields" failure mode OQ-024 itself warned a real evaluator risked — so
+`condition-evaluator.ts` throws `UnresolvedConditionError` for this one condition instead
+of guessing, and the gap is recorded as new OQ-027 rather than closed by assumption.
+
+### Verification
+
+`packages/orchestrator`'s full unit suite (189 tests, `dag.spec.ts` gained
+`findPredecessorStepId` coverage) and `apps/worker`'s full unit suite (35 tests, new
+`condition-evaluator.spec.ts`) pass. New integration coverage was added to
+`runner.integration.spec.ts` (a branch reading its predecessor's real output and routing
+both ways, a branch aggregating a map predecessor's item outputs in collection order, and
+the two error paths: no `evaluateCondition` supplied, and a `branch` step with no
+predecessor) — this could not be run in this authoring sandbox (no Docker daemon), the
+same documented limitation as every other Testcontainers-backed suite in this package;
+proven for real by `ci.yml`'s own `database` job. Full workspace `pnpm lint`/`typecheck`/
+`test` all green (51/51 packages).

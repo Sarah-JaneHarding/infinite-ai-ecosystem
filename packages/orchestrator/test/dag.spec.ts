@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   PipelineDagError,
   PipelineStep,
+  findPredecessorStepId,
   validatePipelineDag,
   validatePipelineGating,
   type PipelineDefinition,
@@ -387,6 +388,67 @@ describe('validatePipelineGating', () => {
       },
     };
     expect(() => validatePipelineGating(pipeline, isIrreversibleTool)).not.toThrow();
+  });
+});
+
+describe('findPredecessorStepId', () => {
+  it('returns null for the pipeline’s own entry step', () => {
+    const pipeline = linearPipeline();
+    expect(findPredecessorStepId(pipeline, 'step-1')).toBeNull();
+  });
+
+  it('finds the one step whose next points at the given step', () => {
+    const pipeline = linearPipeline();
+    expect(findPredecessorStepId(pipeline, 'step-2')).toBe('step-1');
+    expect(findPredecessorStepId(pipeline, 'step-3')).toBe('step-2');
+  });
+
+  it('finds a branch step’s predecessor via onTrue/onFalse', () => {
+    const pipeline: PipelineDefinition = {
+      id: 'p',
+      version: '1.0.0',
+      entryStepId: 'gate',
+      steps: {
+        gate: {
+          ...COMMON,
+          id: 'gate',
+          kind: 'branch',
+          condition: 'coverage_ok',
+          onTrue: 'publish',
+          onFalse: 'flag',
+        },
+        publish: {
+          ...COMMON,
+          id: 'publish',
+          kind: 'tool_call',
+          toolName: 'publish_pack',
+          next: null,
+        },
+        flag: {
+          ...COMMON,
+          id: 'flag',
+          kind: 'tool_call',
+          toolName: 'flag_for_review',
+          next: null,
+        },
+      },
+    };
+    expect(findPredecessorStepId(pipeline, 'publish')).toBe('gate');
+    expect(findPredecessorStepId(pipeline, 'flag')).toBe('gate');
+  });
+
+  it('throws when more than one step points at the same target', () => {
+    const pipeline: PipelineDefinition = {
+      id: 'p',
+      version: '1.0.0',
+      entryStepId: 'a',
+      steps: {
+        a: { ...COMMON, id: 'a', kind: 'tool_call', toolName: 't', next: 'c' },
+        b: { ...COMMON, id: 'b', kind: 'tool_call', toolName: 't', next: 'c' },
+        c: { ...COMMON, id: 'c', kind: 'tool_call', toolName: 't', next: null },
+      },
+    };
+    expect(() => findPredecessorStepId(pipeline, 'c')).toThrow(PipelineDagError);
   });
 });
 

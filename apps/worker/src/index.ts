@@ -117,6 +117,7 @@ export {
 } from './step-executor.js';
 export type { ToolHandler, ToolHandlerMap, StepExecutorDeps } from './step-executor.js';
 export { createToolHandlers } from './tool-handlers.js';
+export { evaluateCondition, UnresolvedConditionError } from './condition-evaluator.js';
 export {
   QUEUE_LE_COMMONS,
   QUEUE_LE_EVOLUTION,
