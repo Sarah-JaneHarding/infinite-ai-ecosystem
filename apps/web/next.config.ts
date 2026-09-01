@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
     '@infinite-ai/security',
     '@infinite-ai/school-setup',
   ],
+  // ESM workspace packages use .js import extensions (required for Node ESM);
+  // webpack must remap them to the actual .ts source files when transpiling.
+  webpack: (config) => {
+    config.resolve.extensionAlias = {
+      ...config.resolve.extensionAlias,
+      '.js': ['.ts', '.tsx', '.js', '.jsx'],
+      '.mjs': ['.mts', '.mjs'],
+    };
+    return config;
+  },
   // Stage 16: full security header hardening.
   // Values are inlined here because next.config.ts is loaded by Next.js's own config
   // loader which does not do .js→.ts extension remapping for workspace packages.
