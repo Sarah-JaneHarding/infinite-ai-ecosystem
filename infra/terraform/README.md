@@ -12,6 +12,12 @@ themselves are written against the AWS provider's documented schema but have not
 validated by the provider itself. Treat this as a real, reviewed starting point for a
 human with AWS credentials to actually run — not as infrastructure that has been proven.
 
+The CD pipeline this directory's own README used to name as its next Tier 1 item
+(`.github/workflows/cd.yml`, `scripts/cd/`) is in the same state: written and reviewed,
+never run — it deploys to the environments this Terraform provisions, so it cannot be
+exercised for real until that Terraform has been `apply`'d at least once by a human with
+real AWS credentials, and until step 5 below's GitHub configuration is done.
+
 ## Orchestrator: ECS Fargate, not Kubernetes
 
 `docs/RUNBOOKS/canary-deploy.md` used to describe a `kubectl`-based canary procedure
@@ -101,11 +107,30 @@ gateway_image_tag=<sha>` (and the same for worker/web).
    in Secrets Manager at `<environment>-db/db/migrator`), `pnpm --filter @infinite-ai/db
 db:migrate:deploy`.
 
+5. **Configure the CD pipeline** (`.github/workflows/cd.yml`), once per repository, not
+   once per environment:
+
+   - Create two GitHub **Environments** in the repository's Settings → Environments:
+     `staging` and `production`.
+   - On each, set an **Environment variable** named `AWS_DEPLOY_ROLE_ARN` to this
+     bootstrap's `github_deploy_role_arn` output (the same role for both today — one AWS
+     account; a separate account per environment would mean a separate role and OIDC
+     trust policy, not assumed here).
+   - On `production` **only**, add a **required reviewers** protection rule. This is the
+     entire production approval gate — the workflow itself has no bypass for it, by
+     design (see that job's own comment in `cd.yml`).
+
+   Until this is done, every run of `cd.yml` fails at its first `aws-actions/
+configure-aws-credentials` step with an empty `role-to-assume` — a clear failure, not a
+   silent no-op or a fallback credential.
+
 ## What this does not do
 
-- **Deploy code.** Nothing here builds or pushes a Docker image, or updates a running
-  service's `image_tag` on every commit — that is a CD pipeline, the next Tier 1 item
-  after this one, not built here.
+- **Apply itself.** Nothing here runs `terraform apply` unattended — see "Standing
+  constraints" below. `.github/workflows/cd.yml` (the CD pipeline, step 5 above) only
+  ever changes which already-provisioned task definition revision a service points at;
+  it never touches Terraform state, and it cannot create or resize anything this
+  directory defines.
 - **Compute the SLO metrics `canary-deploy.md` and `region-loss.md` name**
   (`gateway.error_rate`, `web_availability_burn_rate`). The `observability` module's
   alarms use the ALB's own native `HTTPCode_Target_5XX_Count`/`TargetResponseTime`
@@ -130,5 +155,6 @@ db:migrate:deploy`.
 - All learner data at rest in `af-south-1`.
 - Encrypted off-region backup copies only where residency rules allow it.
 - State is remote, locked, and versioned. A destructive plan needs explicit approval —
-  nothing in CI runs `terraform apply` unattended yet (there is no CD workflow); every
-  `apply` today is a human running the commands above.
+  nothing in CI or CD runs `terraform apply` unattended. `.github/workflows/cd.yml`
+  deploys code (a new image, a new task definition revision); every `apply` — creating
+  or resizing what that code runs on — is still a human running the commands above.

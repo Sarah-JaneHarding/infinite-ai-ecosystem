@@ -7419,3 +7419,184 @@ estimate, `reviewSchedule()` raises zero findings against the defaults). `pnpm -
 updated for `upsertRetentionRule`. `pnpm --filter @infinite-ai/provisioning typecheck`
 (clean) and `test` — 3 files, 63 tests, `wizard.spec.ts` and `readiness.spec.ts` both
 updated for the new step and check.
+
+## Tier 1 (deployability) — the CD pipeline
+
+The last named Tier 1 item: `infra/terraform/README.md`'s own "What this does not do"
+section named it directly — "Deploy code... that is a CD pipeline, the next Tier 1 item
+after this one, not built here." It's built now: `.github/workflows/cd.yml`, plus two
+reusable scripts, `scripts/cd/deploy-ecs-service.sh` and `scripts/cd/promote-image.sh`.
+
+**What it does, end to end, on every merge to `main`:**
+
+1. **Trigger.** `cd.yml` listens for the existing `CI` workflow's own `workflow_run`
+   completion, filtered to `conclusion == 'success' && event == 'push' && head_branch ==
+'main'` — not a `push` trigger of its own. A run that merged with red CI can never
+   reach a deploy step this way, without duplicating CI's own checks in a second
+   workflow file.
+2. **Build once.** `build-and-push` builds all three Dockerfiles (`apps/gateway`,
+   `apps/worker`, `apps/web` — each already builds from the whole workspace, see their
+   own headers) and pushes each, tagged with the full commit SHA, to **staging's** ECR
+   repositories only. Never `latest` — every ECR repository is `IMMUTABLE`-tagged
+   specifically so a tag can't be silently re-pointed
+   (`infra/terraform/modules/ecs-service/main.tf`).
+3. **Deploy to staging.** `deploy-staging` calls the new `scripts/cd/
+deploy-ecs-service.sh` once per service. That script: captures the service's current
+   task definition (the rollback target), registers a new revision with only the image
+   changed (the same `jq` transform `docs/RUNBOOKS/canary-deploy.md`'s own manual
+   commands already used), updates the service with the same
+   `minimumHealthyPercent=100,maximumPercent=200` configuration that runbook's "Step 2 —
+   Full rollout" uses, waits for it to stabilise, then — for gateway and web, which have
+   the ALB-backed error-rate/latency-p95 alarms `infra/terraform/modules/observability`
+   creates for them — polls those alarms by name every 60 seconds for 5 checks. Any
+   alarm in `ALARM` state during that window triggers an automatic rollback to the
+   captured task definition and fails the job. `apps/worker` has no ALB target group and
+   so nothing of that shape to poll; it gets the deploy and the wait, not the alarm
+   check.
+4. **Promote to production.** `promote-to-production` needs `deploy-staging` and runs
+   under a `production` GitHub Environment — the actual approval gate is that
+   Environment's own required-reviewers protection rule (configured in the repository's
+   settings, not in the workflow file); nothing in `cd.yml` can bypass it. Once approved,
+   the new `scripts/cd/promote-image.sh` pulls the **exact image staging just ran
+   through the checks above** from staging's ECR repository and pushes it, unchanged,
+   to production's — "build once, promote the same artefact," never a second build from
+   the same commit, which could in principle produce different bytes and would make
+   "tested in staging" mean nothing. The same `deploy-ecs-service.sh` then runs against
+   the production cluster and services.
+
+**What this closes, named directly by name in existing docs:**
+
+- `infra/terraform/README.md`'s own "Deploy code" gap (quoted above) — closed; that
+  section now describes what `cd.yml` does instead of what's missing.
+- `docs/RUNBOOKS/canary-deploy.md`'s own "Automatic rollback" section used to read
+  "there is no automatic one until something subscribes to `alerts` and calls `aws ecs
+update-service` back to the previous task definition itself." `deploy-ecs-service.sh`
+  is that something — but the runbook is now precise about the shape of what exists:
+  automatic rollback bounded to a few minutes around a deploy the pipeline itself made,
+  polling the named alarms directly, not a standing subscriber to the `alerts` SNS topic
+  that would also catch an alarm firing hours later from an unrelated cause (still a
+  page, once OQ-014's integration exists) or a manual deploy made outside the pipeline
+  (still the manual rollback procedure, unchanged).
+
+**What is deliberately not built here, named for the same reason every other honest gap
+in this repo is:**
+
+- **A true weighted canary.** Unchanged from `canary-deploy.md`'s own existing
+  "What this cannot do yet" section — still needs a second, paired target group and a
+  weighted listener rule or an AWS CodeDeploy blue/green controller. This pipeline
+  automates the _existing_ rolling-deploy procedure faithfully; it does not build the
+  traffic-splitting infrastructure that procedure never had either.
+- **Terraform `apply` from CI.** `cd.yml` never touches Terraform state. Creating or
+  resizing the infrastructure this pipeline deploys onto is still `infra/terraform/
+README.md`'s own human-run steps 1-4; this pipeline only ever changes which
+  already-registered task definition revision a service points at (step 5, newly added
+  to that README, documents exactly what a human must configure in GitHub — two
+  Environments, an `AWS_DEPLOY_ROLE_ARN` variable on each, required reviewers on
+  `production` only — before this workflow can authenticate at all).
+- **A live, continuous alarm subscriber.** See "What this closes" above — the bounded
+  polling window is a real, working automatic rollback for the case it targets (a bad
+  deploy), not a general-purpose alerting actor. That remains OQ-014's own gap.
+
+### Verification
+
+`bash -n` on both new scripts (syntax only — no AWS account exists in this sandbox to
+exercise them against, the same restriction already documented for every other
+AWS-dependent piece of this repo). The workflow YAML was parsed with `js-yaml` to
+confirm it is well-formed and resolves to the three expected jobs (`shellcheck` and
+`actionlint` are not installed in this sandbox, so neither ran). `docs/DEPENDENCIES.md`
+gained an entry for the two new GitHub Actions this workflow is the first to use
+(`aws-actions/configure-aws-credentials@v6.2.3`, `aws-actions/amazon-ecr-login@v2.1.7`,
+both MIT — verified against each repository's own `LICENSE` file, not assumed). Like
+every other AWS-account-dependent piece of this repository's Tier 1 work, this has never
+run for real: it deploys onto environments that have themselves never been `apply`'d,
+and needs the GitHub-side configuration named above before it can authenticate at all.
+
+## Tier 1 (deployability) — Langfuse actually running in the dev stack
+
+The last named Tier 1 gap, from the audit's own words: "Object storage now runs in dev;
+observability still doesn't" — `OBJECT_STORE_ENDPOINT` pointed at a real MinIO after the
+prior Tier 1 entry, but every gateway boot still logged `OTEL_EXPORTER_OTLP_ENDPOINT not
+set. No LLM traces will reach Langfuse.` because nothing served that endpoint anywhere,
+dev included. `packages/telemetry/src/tracing.ts`'s own header settles what "the
+observability backend" even means for this codebase before touching infrastructure:
+Langfuse ingests OTLP directly at `/api/public/otel`, so this repository's code was
+always going to target one OTLP endpoint, not two — the manual's separate "Telemetry:
+OpenTelemetry → Grafana (Tempo/Loki/Mimir)" row was never wired to anything, and standing
+up a second Tempo/Loki/Mimir stack for spans nothing sends there would be building
+infrastructure for a code path that does not exist. Getting Langfuse running is what
+makes `OTEL_EXPORTER_OTLP_ENDPOINT` point at something real.
+
+**`infra/docker/compose.dev.yml`** gains six new services: `langfuse-clickhouse`,
+`langfuse-postgres`, `langfuse-redis`, `langfuse-worker`, `langfuse-web`. Shape verified
+directly against Langfuse's own reference compose file
+(`github.com/langfuse/langfuse/docker-compose.yml`, fetched 2026-08-31, the current `v4`
+line — latest tagged release at the time, `v4.25.0`, confirmed via that repository's own
+releases page), not guessed at or reconstructed from memory. Two deliberate departures
+from that reference, both already this file's own established convention:
+
+1. **Every credential is required, with no default** (`${VAR:?set VAR in your local
+.env}`), where the upstream reference ships `:-` fallback passwords
+   (`REDIS_AUTH:-myredissecret` and similar) — rule 7 and this file's Postgres/Keycloak/
+   MinIO services already refuse a guessable default, and Langfuse's own six new
+   credentials (`LANGFUSE_POSTGRES_PASSWORD`, `LANGFUSE_REDIS_PASSWORD`,
+   `LANGFUSE_CLICKHOUSE_PASSWORD`, `LANGFUSE_SALT`, `LANGFUSE_ENCRYPTION_KEY`,
+   `LANGFUSE_NEXTAUTH_SECRET`) hold to the same rule.
+2. **Its own dedicated Postgres, Redis and ClickHouse — never the app's own.** The
+   upstream reference already does this (it is not itself sharing anything), but it was
+   worth deciding deliberately rather than by default: reusing the app's own `postgres`/
+   `redis` would have meant a second database and a second set of BullMQ-shaped queue
+   keys sharing one server/instance with no prior art in this file for whether that is
+   safe, and unlike Keycloak (which already does share the app's own Postgres
+   `POSTGRES_DB`, a pre-existing choice not revisited here), Langfuse's own internal
+   queue names were not something this session could verify never collide with the
+   app's own pipeline queue names. Only MinIO is shared — a second bucket
+   (`langfuse`, `minio-init` extended to create it) costs nothing extra, since S3
+   buckets are namespaced and carry no shared-keyspace risk the way a database or a
+   Redis instance would.
+
+`LANGFUSE_INIT_ORG_ID`/`LANGFUSE_INIT_PROJECT_ID`/`LANGFUSE_INIT_PROJECT_PUBLIC_KEY`/
+`LANGFUSE_INIT_PROJECT_SECRET_KEY`/`LANGFUSE_INIT_USER_EMAIL`/`LANGFUSE_INIT_USER_PASSWORD`
+bootstrap a real org, project, user and API-key pair on first boot — no manual "sign up
+in the Langfuse UI" step for a fresh clone. Published on `3001`, not Langfuse's own
+default `3000`, since `apps/web`'s own dev server already owns `3000` and the entire
+point of running this locally is having both up at once.
+
+`docs/DEV_SETUP.md` and `infra/docker/.env.example` updated in the same commit: what the
+new services need, how long first boot takes (ClickHouse's own migrations run before
+`langfuse-web`/`langfuse-worker` report healthy), and the exact
+`OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:3001/api/public/otel` /
+`OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <base64 of publicKey:secretKey>` values
+to put in the root `.env` — built from the same `LANGFUSE_INIT_PROJECT_PUBLIC_KEY`/
+`SECRET_KEY` pair a developer already chose, the same "same value, two files" shape
+`KEYCLOAK_WEB_CLIENT_SECRET` already has.
+
+**Deliberately not done here, and why.** A staging/production deployment of this same
+stack was not attempted in this pass. Unlike every other piece of Tier 1 infrastructure
+built so far, this one has a real, unresolved design fork: ClickHouse needs a real disk
+under it, and this repository's whole production Terraform is ECS Fargate, which has no
+persistent local disk — an EFS-backed volume works but is not what ClickHouse's own docs
+recommend for its data directory (meaningfully worse I/O latency than local NVMe); a
+separate EC2-plus-EBS instance is a different compute model than every other service
+this Terraform runs; a managed ClickHouse service would mean self-hosted Langfuse
+storing data on a third-party platform, in tension with the manual's own explicit "LLM
+observability: Langfuse (self-hosted)" line and this session's own read of what that
+constraint is for (POPIA data residency, §1.3 — the same reasoning `af-south-1` and
+`infra/terraform/README.md`'s own header already state for every other data store this
+Terraform provisions). This is the same shape of decision the ECS-vs-EKS orchestrator
+choice was earlier in this Tier 1 work — asked rather than guessed, for the same reason.
+
+### Verification
+
+`docker compose --env-file <test values> -f infra/docker/compose.dev.yml config --quiet`
+exits 0 with no errors — real schema validation and full variable-interpolation
+resolution (every `${VAR:?...}` reference, every environment/healthcheck/port/depends_on
+field checked against Compose's own schema), not merely `bash -n`-level syntax checking.
+Manually inspected the fully-resolved `config` output for `langfuse-worker`/`langfuse-web`/
+`langfuse-redis` against the values supplied — every URL, bucket name, and port matched
+what was intended. Not run end-to-end: this sandbox's own Docker daemon does not start
+cleanly here (`service docker start` fails on an `ulimit` permission error even with the
+sandbox's own override), and `docker.langfuse.com` — confirmed via the agent proxy's own
+status endpoint — is separately policy-denied regardless, the same class of restriction
+already documented in this repo for `quay.io` and `registry.terraform.io`. A real
+`docker compose up` against this file, by a developer or in CI with normal Docker and
+network access, is the next real verification step, not performed here.

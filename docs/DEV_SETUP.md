@@ -53,9 +53,22 @@ shown there into `apps/web/.env`'s `AUTH_KEYCLOAK_SECRET` instead of what you pu
 `infra/docker/.env`.
 
 `minio-init` runs once, creates the bucket named by `infra/docker/.env`'s
-`OBJECT_STORE_BUCKET`, and exits — `docker compose ps` will show it `Exited (0)`, which is
-success, not a crash. The MinIO console is at `http://localhost:9001`
-(`MINIO_ROOT_USER`/`MINIO_ROOT_PASSWORD`) if you want to look inside the bucket.
+`OBJECT_STORE_BUCKET` (plus a fixed `langfuse` bucket for the service below), and exits —
+`docker compose ps` will show it `Exited (0)`, which is success, not a crash. The MinIO
+console is at `http://localhost:9001` (`MINIO_ROOT_USER`/`MINIO_ROOT_PASSWORD`) if you
+want to look inside either bucket.
+
+**Langfuse** (self-hosted LLM observability — `packages/telemetry/src/tracing.ts`'s own
+header explains why this is the one OTLP endpoint this codebase targets) takes longer
+than the other services to report healthy on first boot: `langfuse-web`/`langfuse-worker`
+wait on their own dedicated Postgres, Redis and ClickHouse (`docker compose ps` will show
+those `starting` for up to a minute while ClickHouse's own migrations run). Once healthy,
+sign in at `http://localhost:3001` with `LANGFUSE_INIT_USER_EMAIL`/`LANGFUSE_INIT_USER_PASSWORD`
+— the `dev-project` project and its API key pair already exist, bootstrapped from
+`LANGFUSE_INIT_PROJECT_PUBLIC_KEY`/`LANGFUSE_INIT_PROJECT_SECRET_KEY` on first boot, no
+manual project-creation step needed. (Published on `3001`, not Langfuse's own default
+`3000` — `apps/web`'s dev server already uses `3000`, and the entire point of running
+Langfuse locally is having both up at once.)
 
 ## 3. Run migrations
 
@@ -97,9 +110,21 @@ OBJECT_STORE_ENDPOINT=http://localhost:9000
 OBJECT_STORE_BUCKET=<same value as infra/docker/.env's OBJECT_STORE_BUCKET>
 ```
 
-Leave `DB_ENCRYPTION_KEY` and `OTEL_*` unset for local dev unless you're specifically
-testing something that needs them — there's no self-hosted Langfuse in this compose file
-yet for `OTEL_EXPORTER_OTLP_ENDPOINT` to point at (see the file's own header comment).
+`OTEL_EXPORTER_OTLP_ENDPOINT`/`OTEL_EXPORTER_OTLP_HEADERS` now point at something real —
+the Langfuse instance step 2 brought up, using the same public/secret key pair you put in
+`infra/docker/.env`'s `LANGFUSE_INIT_PROJECT_PUBLIC_KEY`/`LANGFUSE_INIT_PROJECT_SECRET_KEY`:
+
+```bash
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:3001/api/public/otel
+OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <output of the command below>
+```
+
+```bash
+echo -n '<LANGFUSE_INIT_PROJECT_PUBLIC_KEY>:<LANGFUSE_INIT_PROJECT_SECRET_KEY>' | base64
+```
+
+(Same values, two files, same shape `KEYCLOAK_WEB_CLIENT_SECRET` already has.) Leave
+`DB_ENCRYPTION_KEY` unset unless you're specifically testing PII-at-rest encryption.
 
 **`apps/gateway/.env`** — real provider credentials only if you're testing an agent flow
 that actually calls a model. For everything else (pipeline wiring, RLS, most UI flows),
