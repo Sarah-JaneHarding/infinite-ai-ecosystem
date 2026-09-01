@@ -17,7 +17,11 @@ jobs:
   verify:
     name: install → lint → typecheck → unit → build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 15 minutes covered Stage 00 alone; the cumulative gate below now runs every
+    # declared stage through the repository's current one (Stage 52), including
+    # Docker-backed integration suites the `database` job already proves separately —
+    # a real, and known, `pnpm audit:supply-chain`-style step can also add real time.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -64,8 +68,12 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # Cumulative: this stage and every stage before it (Part 6 §6.2). The repository
+      # is at Stage 52 (docs/STAGE_LOG.md's own last numbered entry) — this was pinned
+      # at "00" since Stage 00 itself, meaning no PR's CI run had ever actually re-proven
+      # the cumulative gate for anything built since, until now.
       - name: Stage gate
-        run: pnpm verify:stage 00
+        run: pnpm verify:stage 52
 
   forbidden-patterns:
     name: forbidden patterns (Part 6 §6.1)
