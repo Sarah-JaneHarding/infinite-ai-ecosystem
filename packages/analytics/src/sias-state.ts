@@ -16,6 +16,22 @@
 //   3. Safeguarding disclosures bypass all queues, escalate immediately, and are never
 //      summarised into a report — `SAFEGUARDING_ESCALATED` is a terminal state.
 
+import { z } from 'zod';
+
+/** Zod schema for `SiasStatus` — the same values as the TypeScript union below. */
+export const SiasStatusSchema = z.enum([
+  'PENDING_SCREEN',
+  'SCREENED',
+  'CORE_HEALTH_BLOCKED',
+  'SBST_REVIEW',
+  'INTERVENTION_ACTIVE',
+  'MONITORING',
+  'REFERRAL_PENDING',
+  'REFERRED',
+  'EXITED',
+  'SAFEGUARDING_ESCALATED',
+]);
+
 /** Every state a learner's SIAS case may occupy. */
 export type SiasStatus =
   /** No universal screen has been run yet for this learner this term. */
