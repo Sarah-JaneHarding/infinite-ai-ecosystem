@@ -62,15 +62,6 @@ export const Scope = z.enum([
 ]);
 export type Scope = z.infer<typeof Scope>;
 
-const SCOPE_ORDER: readonly Scope[] = [
-  'OWN',
-  'OWN_CLASS',
-  'OWN_SUBJECT',
-  'OWN_SCHOOL',
-  'TENANT',
-  'PLATFORM',
-];
-
 // ---------------------------------------------------------------------------
 // Resources and actions
 // ---------------------------------------------------------------------------
@@ -265,10 +256,6 @@ function isActive(grant: RoleGrant, now: Date): boolean {
   return grant.expiresAt === null || grant.expiresAt.getTime() > now.getTime();
 }
 
-function scopeAtLeast(held: Scope, required: Scope): boolean {
-  return SCOPE_ORDER.indexOf(held) >= SCOPE_ORDER.indexOf(required);
-}
-
 /**
  * Does this grant, at this scope, actually reach this resource?
  *
@@ -357,7 +344,6 @@ export function authorize(
       if (permission.role !== g.role) continue;
       if (permission.resource !== resource.type) continue;
       if (permission.action !== action) continue;
-      if (!scopeAtLeast(permission.scope, 'OWN')) continue;
 
       const reach = reaches(actor, g, permission, resource);
       if (reach === true) return { allowed: true, matched: permission };

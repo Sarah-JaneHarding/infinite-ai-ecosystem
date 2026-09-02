@@ -237,14 +237,12 @@ The coverage gap was found and closed correctly — the §4.2 threshold did its 
 gap should have been caught at Stage 02's own exit gate. Future stages: apply `pnpm
 test:coverage` per package before recording PASS.
 
-**Known outstanding: dead guard in `authorize()`**
+**Dead guard in `authorize()` — CLOSED 2026-09-02**
 
-`if (!scopeAtLeast(permission.scope, 'OWN')) continue;` in `rbac.ts` line 360.
-`OWN` is index 0 of `SCOPE_ORDER`, so `scopeAtLeast(x, 'OWN')` is always true and the
-`continue` is unreachable. It reads as a filter and is not one. Left in place during the
-merge-resolution commit rather than edited silently inside an authorisation matrix change.
-Removing it is Stage 02's outstanding item; removing it is a one-line deletion with a
-corresponding test-name update, and the guard's removal should be reviewed explicitly.
+`if (!scopeAtLeast(permission.scope, 'OWN')) continue;` in `rbac.ts` line 360 removed.
+`OWN` is index 0 of `SCOPE_ORDER`, so the condition was always false and the `continue`
+unreachable. Deletion confirmed: branch coverage for `packages/policy` is now 100%;
+all 223 policy tests pass.
 
 ---
 
