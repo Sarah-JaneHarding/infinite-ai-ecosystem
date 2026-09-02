@@ -50,9 +50,16 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
+      - name: Ensure AWS role ARN is set
+        run: |
+          if [ -z "${{ vars.AWS_DEPLOY_ROLE_ARN }}" ] && [ -z "${{ secrets.AWS_DEPLOY_ROLE_ARN }}" ]; then
+            echo "ERROR: AWS role ARN is not set in repository variables or secrets (AWS_DEPLOY_ROLE_ARN)."
+            exit 1
+          fi
+
       - uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
-          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN || secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - uses: aws-actions/amazon-ecr-login@v2.1.7
@@ -92,9 +99,16 @@ jobs:
         with:
           ref: ${{ needs.build-and-push.outputs.image_tag }}
 
+      - name: Ensure AWS role ARN is set
+        run: |
+          if [ -z "${{ vars.AWS_DEPLOY_ROLE_ARN }}" ] && [ -z "${{ secrets.AWS_DEPLOY_ROLE_ARN }}" ]; then
+            echo "ERROR: AWS role ARN is not set in repository variables or secrets (AWS_DEPLOY_ROLE_ARN)."
+            exit 1
+          fi
+
       - uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
-          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN || secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - uses: aws-actions/amazon-ecr-login@v2.1.7
@@ -140,9 +154,16 @@ jobs:
         with:
           ref: ${{ needs.build-and-push.outputs.image_tag }}
 
+      - name: Ensure AWS role ARN is set
+        run: |
+          if [ -z "${{ vars.AWS_DEPLOY_ROLE_ARN }}" ] && [ -z "${{ secrets.AWS_DEPLOY_ROLE_ARN }}" ]; then
+            echo "ERROR: AWS role ARN is not set in repository variables or secrets (AWS_DEPLOY_ROLE_ARN)."
+            exit 1
+          fi
+
       - uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
-          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN || secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - uses: aws-actions/amazon-ecr-login@v2.1.7
