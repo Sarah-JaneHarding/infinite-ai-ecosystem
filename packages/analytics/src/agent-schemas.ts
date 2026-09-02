@@ -10,6 +10,7 @@
 
 import { z } from 'zod';
 
+import { SiasStatusSchema } from './sias-state.js';
 import { SCREENING_DOMAINS } from './tier-model.js';
 
 // ---------------------------------------------------------------------------
@@ -599,3 +600,23 @@ export const AC10Result = z.discriminatedUnion('status', [
   }),
 ]);
 export type AC10Result = z.infer<typeof AC10Result>;
+
+// ---------------------------------------------------------------------------
+// MOD-02 Monitoring pipeline input item — resolves OQ-027
+// ---------------------------------------------------------------------------
+//
+// The MOD-02 Monitoring pipeline fans out `monitor-progress` and `check-fidelity`
+// over this collection. The `branch-on-referral` condition evaluator reads each
+// item's `siasStatus` from `run.input.activeInterventions` to decide whether any
+// learner has reached REFERRAL_PENDING. The scheduler that builds the run input
+// reads the current SIAS status from the database; the condition evaluator has no
+// database access and depends on this field being present and accurate.
+
+export const ActiveInterventionItem = z.object({
+  learnerId: z.string().uuid(),
+  planId: z.string().uuid(),
+  termId: z.string().uuid(),
+  /** The learner's current SIAS status at the time this monitoring run was started. */
+  siasStatus: SiasStatusSchema,
+});
+export type ActiveInterventionItem = z.infer<typeof ActiveInterventionItem>;

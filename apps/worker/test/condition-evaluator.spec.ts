@@ -75,10 +75,61 @@ describe('evaluateCondition', () => {
     }
   });
 
-  it('support.needs_referral: throws rather than guessing an unratified field shape (OQ-027)', () => {
-    expect(() =>
-      evaluateCondition('support.needs_referral', input([{ flagged: true }])),
-    ).toThrow(UnresolvedConditionError);
+  describe('support.needs_referral (OQ-027)', () => {
+    it('true when any item in runInput.activeInterventions has siasStatus REFERRAL_PENDING', () => {
+      expect(
+        evaluateCondition(
+          'support.needs_referral',
+          input([], {
+            activeInterventions: [
+              { learnerId: 'a', planId: 'b', termId: 'c', siasStatus: 'MONITORING' },
+              {
+                learnerId: 'd',
+                planId: 'e',
+                termId: 'f',
+                siasStatus: 'REFERRAL_PENDING',
+              },
+            ],
+          }),
+        ),
+      ).toBe(true);
+    });
+
+    it('false when no item has siasStatus REFERRAL_PENDING', () => {
+      expect(
+        evaluateCondition(
+          'support.needs_referral',
+          input([], {
+            activeInterventions: [
+              { learnerId: 'a', planId: 'b', termId: 'c', siasStatus: 'MONITORING' },
+              {
+                learnerId: 'd',
+                planId: 'e',
+                termId: 'f',
+                siasStatus: 'INTERVENTION_ACTIVE',
+              },
+            ],
+          }),
+        ),
+      ).toBe(false);
+    });
+
+    it('false when activeInterventions is empty', () => {
+      expect(
+        evaluateCondition(
+          'support.needs_referral',
+          input([], { activeInterventions: [] }),
+        ),
+      ).toBe(false);
+    });
+
+    it('false when activeInterventions is absent — missing field, not a crash', () => {
+      expect(evaluateCondition('support.needs_referral', input([], {}))).toBe(false);
+    });
+
+    it('false when runInput is not an object', () => {
+      expect(evaluateCondition('support.needs_referral', input([], null))).toBe(false);
+    });
   });
 
   it('throws for a condition string with no registered evaluator', () => {

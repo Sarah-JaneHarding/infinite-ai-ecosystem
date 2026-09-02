@@ -2,25 +2,15 @@
 // actually checks, given the `ConditionInput` the runner now builds from a branch step's
 // one predecessor (`packages/orchestrator/src/runner.ts`'s `resolveConditionInput`).
 //
-// Four of the five conditions declared across MOD-02/MOD-05/LE are unambiguous: each is
-// narrated in its own pipeline file as reading one named prior agent's own `status` field,
-// and that field's real literal values are already fixed by a ratified Zod schema
-// (`@infinite-ai/analytics`'s `AC02Result`, `@infinite-ai/contracts`'s `PD04Result`,
-// `PD05Result`, `LE08Result`). Checks here read `stepOutput` by simple property access
-// rather than importing those schemas, since a condition only ever needs one already-typed
-// field, not full re-validation of an output the predecessor step already validated (or
-// will, once its own contract is enforced end-to-end) — the same lightweight-cast idiom
-// `readMapCollection` in runner.ts already uses for an opaque `unknown`.
+// Five conditions are declared across MOD-02/MOD-05/LE. Four read `stepOutput` (a single
+// prior agent's output or an array of map-step outputs); one reads `runInput` directly.
 //
-// `support.needs_referral` is the one condition this does NOT resolve (OQ-027): it is
-// narrated as reading each monitored learner's current SIAS status, but `activeInterventions`
-// — the collection `check-fidelity` (its predecessor) fans out over — has no ratified shape
-// carrying that field anywhere in `@infinite-ai/contracts` or `@infinite-ai/analytics`.
-// Guessing a field name here is exactly the failure mode OQ-024 itself warned wiring a real
-// evaluator would risk ("silently read stale/absent fields... or require inventing which
-// fields run.input is expected to carry") — so this throws instead of guessing, the same
-// "fail loud, not quietly wrong" choice `worker-host.ts` already made by leaving
-// `evaluateCondition` unwired entirely before this file existed.
+// `support.needs_referral` reads `runInput.activeInterventions[i].siasStatus` (OQ-027
+// resolved): the MOD-02 Monitoring pipeline's input carries each learner's current SIAS
+// status in the `ActiveInterventionItem` shape (`@infinite-ai/analytics`). The scheduler
+// that builds the run input reads the database; this evaluator has no database access and
+// depends on `siasStatus` being present and accurate in each item. The condition is true
+// when any item has reached REFERRAL_PENDING — the state that gates AC-09 (compile SIAS).
 
 import type { ConditionEvaluator, ConditionInput } from '@infinite-ai/orchestrator';
 
@@ -71,15 +61,15 @@ function commonsPublishBlocked(input: ConditionInput): boolean {
   return statusOf(input.stepOutput) !== 'published';
 }
 
-/** `mod-02.ts`'s `branch-on-referral`, reading `check-fidelity` (a `map` step over
- * AC-07 fidelity checks) — see this file's own header for why this one condition is not
- * resolved yet (OQ-027). */
-function needsReferral(): boolean {
-  throw new UnresolvedConditionError(
-    'support.needs_referral: no ratified schema defines a SIAS-status field on ' +
-      '`activeInterventions` items (OQ-027) — refusing to guess a field name rather than ' +
-      'silently branching on the wrong thing.',
-  );
+/** `mod-02.ts`'s `branch-on-referral`, reading `runInput.activeInterventions` (OQ-027).
+ * True when any item has `siasStatus === 'REFERRAL_PENDING'`. The scheduler populates
+ * `activeInterventions` from the database; this evaluator trusts the field is accurate. */
+function needsReferral(input: ConditionInput): boolean {
+  const runInput = input.runInput as
+    { activeInterventions?: readonly { siasStatus?: unknown }[] } | null | undefined;
+  const items = runInput?.activeInterventions;
+  if (!Array.isArray(items)) return false;
+  return items.some((item) => item?.siasStatus === 'REFERRAL_PENDING');
 }
 
 const CONDITIONS: ReadonlyMap<string, (input: ConditionInput) => boolean> = new Map([

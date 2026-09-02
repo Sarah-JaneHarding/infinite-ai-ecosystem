@@ -21,6 +21,7 @@ export {
 
 export {
   LEGAL_TRANSITIONS,
+  SiasStatusSchema,
   SiasTransitionError,
   isSiasTerminal,
   legalNextStates,
@@ -32,6 +33,7 @@ export {
 } from './sias-state.js';
 
 export {
+  ActiveInterventionItem,
   AC01Input,
   AC01Result,
   AC02Input,

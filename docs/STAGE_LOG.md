@@ -175,6 +175,79 @@ seeds are generic — but not formally closed.
 
 ---
 
+## Stage 02 — Identity, RBAC, audit ledger
+
+Started: 2026-07-29 Completed: 2026-07-29 (coverage gap found and closed during Stage 03 merge — see below)
+Exit gate: **PASS** — all items verified retrospectively against committed code and test evidence; one known deviation and one outstanding item recorded.
+
+**What this stage put in place**
+
+1. `packages/policy/src/rbac.ts` — complete RBAC matrix for all defined roles (PRINCIPAL,
+   SCHOOL_ADMIN, HOD, TEACHER, SUPPORT_TEACHER, COUNSELLOR, GUARDIAN, LEARNER, SYSTEM),
+   `authorize()`, `assertAuthorized()`, `AuthorizationError`, and all scope variants
+   (TENANT, OWN_SCHOOL, OWN_CLASS, OWN_SUBJECT, OWN).
+2. `packages/policy/src/access.ts` — `resolveAccess()` applying three gates in fixed order:
+   tombstone → purpose allow-list → lawful basis. Purpose before consent is deliberate;
+   consent cannot widen a use the school never declared.
+3. `packages/policy/src/impersonation.ts` — impersonation guard; a PRINCIPAL may act as any
+   non-PRINCIPAL role within the same tenant; the guard refuses cross-tenant impersonation
+   and self-impersonation by construction.
+4. `packages/policy/src/consent.ts` — consent ledger replay from append-only `consent_record`
+   rows; effective consent is derived at query time, making "were we permitted to do this on
+   the day we did it?" answerable without ever mutating a consent record.
+5. `packages/telemetry/src/audit.ts` — hash-chain pure functions (`canonicalise`, `hashEvent`,
+   `chainEvent`, `verifyChain`, `buildChain`). The `audit_event` table was made append-only
+   in Stage 01 by a database trigger. The hash chain closes the remaining gap: someone with
+   DDL rights could drop the trigger and rewrite history; the chain makes any alteration
+   detectable. Each event stores SHA-256 of the previous event for its tenant, serialised with
+   key-sorted JSON to survive Postgres `jsonb`'s internal key reordering on round-trip.
+
+**Exit gate, walked item by item**
+
+| Gate item                                                     | Result                                                                                                                                                                                     |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| RBAC matrix covers all defined roles and permissions          | PASS — `rbac.ts` is declarative and read top-to-bottom; each role's grant list was reviewed at commit time; `rbac.spec.ts` (160 tests) exercises every role-permission combination         |
+| `authorize()` and `assertAuthorized()` covered by tests       | PASS — closed during Stage 03 merge (see deviation below); `rbac-scopes.spec.ts` (14 tests) covers `assertAuthorized`, `AuthorizationError`, and all four scope variants that were missing |
+| Impersonation guard in place and tested                       | PASS — `impersonation.spec.ts` (14 tests); cross-tenant impersonation refused, self-impersonation refused, PRINCIPAL impersonating PRINCIPAL refused                                       |
+| Consent replay correct against ledger                         | PASS — `consent.spec.ts` (22 tests); evaluates the same ledger at different instants so an earlier consent cannot be backdated                                                             |
+| Audit event hash chain verified by test                       | PASS — `packages/telemetry/test/audit.spec.ts` (23 tests) written from the attacker's side: each test performs a specific ledger alteration and asserts the chain detects it               |
+| `packages/policy` line coverage ≥ 95% (§4.2)                  | PASS — **100%** statements, functions and lines; **99.29%** branches; one unreachable branch documented below                                                                              |
+| `packages/telemetry` audit module testable without a database | PASS — pure functions; no Prisma import; all 23 audit tests pass in the unit tier                                                                                                          |
+| Append-only trigger enforced at database level                | PASS — `audit_event` and `consent_record` listed in `APPEND_ONLY_TABLES`; trigger refuses UPDATE and DELETE; verified in `packages/db` integration suite                                   |
+
+**Deviation: coverage gate not applied at Stage 02 merge time**
+
+`packages/policy`'s `vitest.config.ts` coverage threshold was added on the Stage 03 branch;
+`rbac.ts` and `impersonation.ts` arrived from Stage 02 having never been measured against it.
+When Stages 02 and 03 merged, the package measured 96.4% statements but **93.65% branches
+and 90% functions** — not a merge artefact, a real gap:
+
+- `assertAuthorized` and `AuthorizationError` had zero coverage. The throwing entry point
+  most call sites will use, in the authorisation matrix, entirely unexercised.
+- Four scope branches never reached: `OWN_SCHOOL` grant with a null school (tenant-wide
+  appointment); `OWN_SUBJECT` reached by class rather than by subject; `OWN_CLASS` with a
+  null class (null is a _denial_ here, not the widening it is under `OWN_SCHOOL`); the
+  `OWN` fallthrough for roles that are neither guardian nor learner.
+
+`test/rbac-scopes.spec.ts` was written during Stage 03's merge resolution, covering these
+as sentences about who may see what. The package is now at 100% statements, functions and
+lines, 99.29% branches.
+
+The coverage gap was found and closed correctly — the §4.2 threshold did its job — but the
+gap should have been caught at Stage 02's own exit gate. Future stages: apply `pnpm
+test:coverage` per package before recording PASS.
+
+**Known outstanding: dead guard in `authorize()`**
+
+`if (!scopeAtLeast(permission.scope, 'OWN')) continue;` in `rbac.ts` line 360.
+`OWN` is index 0 of `SCOPE_ORDER`, so `scopeAtLeast(x, 'OWN')` is always true and the
+`continue` is unreachable. It reads as a filter and is not one. Left in place during the
+merge-resolution commit rather than edited silently inside an authorisation matrix change.
+Removing it is Stage 02's outstanding item; removing it is a one-line deletion with a
+corresponding test-name update, and the guard's removal should be reviewed explicitly.
+
+---
+
 ## Stage 03 — POPIA layer: purpose, de-identification, consent, retention
 
 Started: 2026-07-29 Completed: —
