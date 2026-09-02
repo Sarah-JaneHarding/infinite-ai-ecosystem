@@ -51,6 +51,8 @@
     "check:flags": "tsx scripts/check-feature-flags.ts",
     "curriculum:seed": "tsx scripts/seed-curriculum.ts",
     "curriculum:ratify": "tsx scripts/ratify-curriculum.ts",
+    "templates:seed": "tsx scripts/seed-templates.ts",
+    "templates:ratify": "tsx scripts/ratify-templates.ts",
     "age-appropriateness:seed": "tsx scripts/seed-age-appropriateness.ts",
     "age-appropriateness:ratify": "tsx scripts/ratify-age-appropriateness.ts",
     "load:peak": "k6 run scripts/load/k6-peak.js",
