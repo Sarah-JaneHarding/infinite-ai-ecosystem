@@ -60,7 +60,9 @@ for (const tenant of SEED_TENANTS) {
     },
     { timeoutMs: 60_000 },
   );
-  console.log(`[${tenant.name}] ratified: ${result.ratified} template constitution record(s)`);
+  console.log(
+    `[${tenant.name}] ratified: ${result.ratified} template constitution record(s)`,
+  );
 }
 
 console.log(

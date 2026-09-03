@@ -8035,3 +8035,24 @@ letter that self-reports `readabilityAdequate: true` is still refused by the ind
 re-measurement; a non-English letter at the same over-grade level is not checked at all;
 and a `needs_input` result with no `reportText` is not checked). Full workspace `pnpm
 lint`/`typecheck`/`test`/`format:check` all green across all 51 packages.
+
+---
+
+## OQ-028 — all guardrail gaps closed · 2026-09-03
+
+Completed the work begun in the OQ-026/OQ-028 discovery above. The three remaining
+guardrail dispatch gaps in `apps/worker/src/step-executor.ts` are now wired:
+
+**`source_grounding_guard`** — a local `checkGrounding(citedSourceIds, new Set(sourceDocumentIds))` call using the flat string arrays already on the step's own input/output (TB-03 is the first caller; the check is generic for any future agent with the same shape). Trivially passes when either array is empty: no cited IDs means no check to do; no valid IDs means the call site has nothing to check against.
+
+**`grounding_check` (injected)** — an optional `groundingChecker: (agentId, output, input) => GuardrailVerdict` field on `StepExecutorDeps`. CE/DW agents embed citations in nested output structures (e.g., `ATPTopicEntry.source`), and the valid-ID set comes from ratified constitution records not available at the step-executor call site, so the checker is injected by the orchestrator. `undefined` skips the check (the default — no ratified citation set is wired yet).
+
+**`template_fidelity` (injected)** — an optional `templateFidelityChecker: TemplateFidelityChecker` on `StepExecutorDeps`; built by the caller via `buildTemplateFidelityChecker` once a ratified `TemplateDefinition` is available. The same "mechanism now, policy wired in once ratified" pattern as `ageAppropriatenessChecker` (OQ-015). `undefined` skips the check (the default).
+
+**`readability_guard` for TB-03** — a separate `agentId === 'TB-03'` block, parallel to the existing AC-10 block. TB-03's input carries a two-sided `GradeBand{minGrade,maxGrade}` (not AC-10's ceiling-only `targetReadabilityGrade`), and the text to measure is `output.body` (not `output.reportText`). Same English-only carve-out as AC-10. Only fires when `output.status === 'ok'`.
+
+`extractStringArray(value, key)` helper added at module level to safely pull a string array from an unknown object without `any`.
+
+### Verification
+
+`apps/worker` (62 tests — 20 new: 5 source_grounding_guard cases, 3 injected grounding_check cases, 3 injected template_fidelity cases, 5 TB-03 readability_guard cases, 4 skip/isolation cases). OQ-028 marked RESOLVED in `docs/OPEN_QUESTIONS.md`.
