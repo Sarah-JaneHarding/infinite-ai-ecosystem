@@ -27,11 +27,16 @@
 //   guess which output fields are free text: it reads that list straight off the contract
 //   and lets `extractFreeText` do the walking.
 //
-//   `checkReadability` is wired in too, but only for AC-10 (`"readability_guard"` is also
-//   declared by TB-03, left for its own follow-up — see the call site's own comment for
-//   why): AC-10's own schema already states its exact tolerance rule, so this independently
-//   re-measures its self-reported `readabilityAdequate` claim rather than trusting it,
-//   English-only (the metric itself is), which AC-10's own `homeLanguage` may not be.
+//   `checkReadability` is wired in for AC-10 and TB-03 (OQ-028). AC-10's own schema states
+//   its exact tolerance rule (ceiling only), so this independently re-measures its
+//   self-reported `readabilityAdequate` claim rather than trusting it, English-only.
+//   TB-03 uses a two-sided `GradeBand` (`minGrade`/`maxGrade`) from `targetReadabilityBand`
+//   and measures `body`, the generated passage; same English-only carve-out.
+//   Also wired (OQ-028): `checkGrounding` for agents declaring `source_grounding_guard` (a
+//   local check from the step's own `citedSourceIds`/`sourceDocumentIds`), an optional
+//   injected `groundingChecker` for the `grounding_check` variant (CE/DW agents whose
+//   citations are nested), and an optional injected `templateFidelityChecker` for
+//   `template_fidelity` (CE-05 lesson plans checked against the ratified template).
 //
 // tool_call and compensation/tool: look up the handler by toolName and invoke it. The
 //   handlers are created by the caller within a withTenant transaction so they have a live
@@ -48,12 +53,16 @@ import { ChatCompletionRequest, ChatCompletionResponse } from '@infinite-ai/cont
 import {
   checkAgeAppropriateness,
   checkDiagnosticLanguage,
+  checkGrounding,
   checkReadability,
+  checkTemplateFidelity,
   defaultEscalationNotifier,
   extractFreeText,
   type AgeAppropriatenessChecker,
   type EscalationNotifier,
+  type GuardrailVerdict,
   type Refusal,
+  type TemplateFidelityChecker,
 } from '@infinite-ai/guardrails';
 import type {
   PipelineDefinition,
@@ -107,6 +116,24 @@ export interface StepExecutorDeps {
    * Supplying a real notifier, once one exists, takes effect here with no other code change.
    */
   readonly notify?: EscalationNotifier;
+  /**
+   * Injected for agents that declare `grounding_check` whose citations are embedded in
+   * nested output structures (CE/DW agents). `source_grounding_guard` is handled locally
+   * from `citedSourceIds`/`sourceDocumentIds` on the step's own input/output and does not
+   * need this. `undefined` (the default) skips the injected check — no ratified citation
+   * set is available yet (OQ-028).
+   */
+  readonly groundingChecker?: (
+    agentId: string,
+    output: unknown,
+    input: unknown,
+  ) => GuardrailVerdict;
+  /**
+   * Injected for CE-05 and other agents declaring `template_fidelity`. Built by the caller
+   * via `buildTemplateFidelityChecker` once a ratified `TemplateDefinition` is available.
+   * `undefined` (the default) skips the check — no ratified template is wired yet (OQ-028).
+   */
+  readonly templateFidelityChecker?: TemplateFidelityChecker;
 }
 
 export function createStepExecutor(deps: StepExecutorDeps): StepExecutor {
@@ -147,6 +174,13 @@ export function createStepExecutor(deps: StepExecutorDeps): StepExecutor {
         );
     }
   };
+}
+
+function extractStringArray(value: unknown, key: string): string[] {
+  if (typeof value !== 'object' || value === null) return [];
+  const arr = (value as Record<string, unknown>)[key];
+  if (!Array.isArray(arr)) return [];
+  return arr.filter((item): item is string => typeof item === 'string');
 }
 
 async function runAgentCall(
@@ -237,20 +271,68 @@ async function runAgentCall(
     }
   }
 
-  // A sibling gap to OQ-026, scoped to AC-10 only: "readability_guard" was declared on
-  // AC-10's own contract but never independently checked — only ever the agent's own
-  // self-reported `readabilityAdequate`, taken at face value. AC10Result's own comment
-  // already states the exact rule ("estimatedReadabilityGrade <= targetReadabilityGrade +
-  // 1" — a ceiling only, no floor: a guardian letter simpler than the target grade is
-  // never a problem), so this re-measures `reportText` with the guardrails package's real
-  // Flesch-Kincaid scorer instead of trusting the claim. English only: the metric is
-  // English-only (see `packages/contracts`' `toolbox-readability-bands.spec.ts`), and
-  // AC-10 may write in any of the eleven official languages (`AC10Input.homeLanguage`) —
-  // for anything else there is no validated metric to check against, so the agent's own
-  // claim is trusted, the same "no invented metric" carve-out TB-03/TB-06 already
-  // established for readability. TB-03 also declares `readability_guard` but is not
-  // covered here — a separate, larger piece of work (its own two-sided `GradeBand` and the
-  // same English-only carve-out) left for its own follow-up rather than guessed at now.
+  // OQ-028 — source_grounding_guard: flat citedSourceIds/sourceDocumentIds pairs on the
+  // step's own input/output. TB-03 is the first agent declaring this; the check is generic
+  // enough to cover any future agent with the same flat-array shape. Trivially passes when
+  // citedSourceIds is empty (the agent has not cited anything) or sourceDocumentIds is empty
+  // (the caller did not supply a valid-ID set, i.e. the check cannot be performed here).
+  if (contract.guardrails.includes('source_grounding_guard')) {
+    const citedSourceIds = extractStringArray(output, 'citedSourceIds');
+    const sourceDocumentIds = extractStringArray(input, 'sourceDocumentIds');
+    if (citedSourceIds.length > 0 && sourceDocumentIds.length > 0) {
+      const groundingVerdict = checkGrounding(citedSourceIds, new Set(sourceDocumentIds));
+      if (!groundingVerdict.passed) {
+        throw new GuardrailRefusalError(
+          `Agent "${agentId}" (step "${stepId}") output failed source_grounding_guard: ` +
+            groundingVerdict.refusal.explanation,
+          groundingVerdict.refusal,
+        );
+      }
+    }
+  }
+
+  // OQ-028 — grounding_check (injected): for CE/DW agents whose citations are embedded in
+  // nested output structures rather than a flat citedSourceIds array. The valid-ID set
+  // comes from ratified constitution records not available at this call site, so the checker
+  // is injected by the orchestrator once Brain retrieval is complete. Skipped when no
+  // checker is supplied (the default — no ratified citation set wired yet).
+  if (
+    contract.guardrails.includes('grounding_check') &&
+    deps.groundingChecker !== undefined
+  ) {
+    const groundingVerdict = deps.groundingChecker(agentId, output, input);
+    if (!groundingVerdict.passed) {
+      throw new GuardrailRefusalError(
+        `Agent "${agentId}" (step "${stepId}") output failed grounding_check: ` +
+          groundingVerdict.refusal.explanation,
+        groundingVerdict.refusal,
+      );
+    }
+  }
+
+  // OQ-028 — template_fidelity (injected): CE-05 and other agents whose structured output
+  // must conform to the ratified lesson-plan template. The checker is built by the caller
+  // via buildTemplateFidelityChecker once a ratified TemplateDefinition is available.
+  // Skipped when no checker is supplied (the default — no ratified template wired yet).
+  if (
+    contract.guardrails.includes('template_fidelity') &&
+    deps.templateFidelityChecker !== undefined
+  ) {
+    const fidelityVerdict = checkTemplateFidelity(output, deps.templateFidelityChecker);
+    if (!fidelityVerdict.passed) {
+      throw new GuardrailRefusalError(
+        `Agent "${agentId}" (step "${stepId}") output failed template_fidelity: ` +
+          fidelityVerdict.refusal.explanation,
+        fidelityVerdict.refusal,
+      );
+    }
+  }
+
+  // OQ-028 — readability_guard (AC-10): re-measures `reportText` with the real
+  // Flesch-Kincaid scorer instead of trusting the agent's self-reported
+  // `readabilityAdequate`. AC10Result's own comment states the exact rule: ceiling only
+  // (estimatedReadabilityGrade <= targetReadabilityGrade + 1; a simpler letter is never a
+  // problem). English-only: AC-10 may write in any of the eleven official languages.
   if (agentId === 'AC-10' && contract.guardrails.includes('readability_guard')) {
     const reportText = (output as { reportText?: unknown } | null)?.reportText;
     const homeLanguage = (input as { homeLanguage?: unknown } | null)?.homeLanguage;
@@ -271,6 +353,42 @@ async function runAgentCall(
             readabilityVerdict.refusal.explanation,
           readabilityVerdict.refusal,
         );
+      }
+    }
+  }
+
+  // OQ-028 — readability_guard (TB-03): two-sided GradeBand (`minGrade`/`maxGrade`) from
+  // `targetReadabilityBand`; measures `body`, the generated passage. English-only: same
+  // "no validated metric for other languages" carve-out as AC-10.
+  if (agentId === 'TB-03' && contract.guardrails.includes('readability_guard')) {
+    const typedOutput = output as { status?: unknown; body?: unknown } | null;
+    const typedInput = input as {
+      language?: unknown;
+      targetReadabilityBand?: unknown;
+    } | null;
+    if (
+      typedOutput?.status === 'ok' &&
+      typeof typedOutput.body === 'string' &&
+      typedInput?.language === 'en' &&
+      typeof typedInput.targetReadabilityBand === 'object' &&
+      typedInput.targetReadabilityBand !== null
+    ) {
+      const band = typedInput.targetReadabilityBand as {
+        minGrade?: unknown;
+        maxGrade?: unknown;
+      };
+      if (typeof band.minGrade === 'number' && typeof band.maxGrade === 'number') {
+        const readabilityVerdict = checkReadability(typedOutput.body, {
+          minGrade: band.minGrade,
+          maxGrade: band.maxGrade,
+        });
+        if (!readabilityVerdict.passed) {
+          throw new GuardrailRefusalError(
+            `Agent "${agentId}" (step "${stepId}") output failed readability_guard: ` +
+              readabilityVerdict.refusal.explanation,
+            readabilityVerdict.refusal,
+          );
+        }
       }
     }
   }

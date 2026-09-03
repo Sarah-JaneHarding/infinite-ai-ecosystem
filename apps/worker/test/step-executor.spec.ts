@@ -5,11 +5,19 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { AC01Contract, AC10Contract, CE01Contract } from '@infinite-ai/agents';
+import {
+  AC01Contract,
+  AC10Contract,
+  CE01Contract,
+  TB03Contract,
+} from '@infinite-ai/agents';
 import {
   GuardrailEscalationError,
+  PASSED,
   refuse,
   type AgeAppropriatenessChecker,
+  type GuardrailVerdict,
+  type TemplateFidelityChecker,
 } from '@infinite-ai/guardrails';
 import {
   MOD01_CURRICULUM_PIPELINE,
@@ -591,6 +599,467 @@ describe('createStepExecutor', () => {
       expect(result).toEqual({
         status: 'needs_input',
         detail: 'Missing progress summary.',
+      });
+    });
+  });
+
+  describe('agent_call OQ-028 guardrails', () => {
+    const TB03_PIPELINE: PipelineDefinition = {
+      id: 'mod-04-tb03-test',
+      version: '1.0.0',
+      entryStepId: 'generate-passage',
+      steps: {
+        'generate-passage': {
+          id: 'generate-passage',
+          kind: 'agent_call',
+          agentId: 'TB-03',
+          next: null,
+          timeoutMs: 10_000,
+          maxRetries: 0,
+          compensatesWith: null,
+        },
+      },
+    };
+
+    function makeTb03Deps(overrides?: Partial<StepExecutorDeps>): StepExecutorDeps {
+      return makeDeps({
+        pipeline: TB03_PIPELINE,
+        agentContracts: new Map([[TB03Contract.id, TB03Contract]]),
+        ...overrides,
+      });
+    }
+
+    function stubTb03Response(content: unknown): void {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({
+            ...FAKE_RESPONSE,
+            message: { role: 'assistant', content: JSON.stringify(content) },
+          }),
+        }),
+      );
+    }
+
+    const SIMPLE_PASSAGE = 'The dog ran fast. The cat sat. It was fun.';
+    const ADVANCED_PASSAGE =
+      'The extraordinarily sophisticated methodology employed by the ' +
+      'interdisciplinary research consortium necessitated a comprehensive ' +
+      'reevaluation of previously established administrative frameworks.';
+
+    // ── source_grounding_guard ────────────────────────────────────────────────
+
+    describe('source_grounding_guard', () => {
+      // These source_grounding tests use language 'zu' (non-English) to prevent the
+      // readability_guard block from firing — the simple passage scores grade -2.5, which
+      // is below most realistic minGrade values. Grounding is language-independent.
+      it('passes when all cited IDs are in the valid set', async () => {
+        stubTb03Response({
+          status: 'ok',
+          body: SIMPLE_PASSAGE,
+          citedSourceIds: ['doc-1', 'doc-2'],
+          readabilityCheckResult: { grade: 3, withinBand: true },
+        });
+        const executor = createStepExecutor(makeTb03Deps());
+        const result = await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'generate-passage',
+          attempt: 1,
+          input: {
+            language: 'zu',
+            targetReadabilityBand: { minGrade: 2, maxGrade: 5 },
+            sourceDocumentIds: ['doc-1', 'doc-2', 'doc-3'],
+          },
+        });
+        expect((result as { status: string }).status).toBe('ok');
+      });
+
+      it('throws GuardrailRefusalError when a cited ID is not in the valid set', async () => {
+        stubTb03Response({
+          status: 'ok',
+          body: SIMPLE_PASSAGE,
+          citedSourceIds: ['doc-1', 'doc-UNKNOWN'],
+          readabilityCheckResult: { grade: 3, withinBand: true },
+        });
+        const executor = createStepExecutor(makeTb03Deps());
+        await expect(
+          executor({
+            runId: MOCK_RUN_ID,
+            stepId: 'generate-passage',
+            attempt: 1,
+            input: {
+              language: 'zu',
+              targetReadabilityBand: { minGrade: 2, maxGrade: 5 },
+              sourceDocumentIds: ['doc-1', 'doc-2'],
+            },
+          }),
+        ).rejects.toThrow(GuardrailRefusalError);
+      });
+
+      it('trivially passes when citedSourceIds is empty', async () => {
+        stubTb03Response({
+          status: 'ok',
+          body: SIMPLE_PASSAGE,
+          citedSourceIds: [],
+          readabilityCheckResult: { grade: 3, withinBand: true },
+        });
+        const executor = createStepExecutor(makeTb03Deps());
+        const result = await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'generate-passage',
+          attempt: 1,
+          input: {
+            language: 'zu',
+            targetReadabilityBand: { minGrade: 2, maxGrade: 5 },
+            sourceDocumentIds: ['doc-1'],
+          },
+        });
+        expect((result as { status: string }).status).toBe('ok');
+      });
+
+      it('trivially passes when sourceDocumentIds is empty (check cannot be performed)', async () => {
+        stubTb03Response({
+          status: 'ok',
+          body: SIMPLE_PASSAGE,
+          citedSourceIds: ['doc-1'],
+          readabilityCheckResult: { grade: 3, withinBand: true },
+        });
+        const executor = createStepExecutor(makeTb03Deps());
+        const result = await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'generate-passage',
+          attempt: 1,
+          input: {
+            language: 'zu',
+            targetReadabilityBand: { minGrade: 2, maxGrade: 5 },
+            sourceDocumentIds: [],
+          },
+        });
+        expect((result as { status: string }).status).toBe('ok');
+      });
+
+      it('skips the check for an agent that does not declare source_grounding_guard', async () => {
+        // CE-01 has no source_grounding_guard — an "unknown" citation must not be refused.
+        vi.stubGlobal(
+          'fetch',
+          vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => ({
+              ...FAKE_RESPONSE,
+              message: {
+                role: 'assistant',
+                content: JSON.stringify({
+                  status: 'ok',
+                  framework: {},
+                  citedSourceIds: ['doc-PHANTOM'],
+                }),
+              },
+            }),
+          }),
+        );
+        const executor = createStepExecutor(
+          makeDeps({ agentContracts: new Map([[CE01Contract.id, CE01Contract]]) }),
+        );
+        const result = await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'build-topic-graph',
+          attempt: 1,
+          input: { sourceDocumentIds: ['doc-1'] },
+        });
+        expect((result as { citedSourceIds: string[] }).citedSourceIds).toEqual([
+          'doc-PHANTOM',
+        ]);
+      });
+    });
+
+    // ── grounding_check (injected) ────────────────────────────────────────────
+
+    describe('grounding_check (injected)', () => {
+      // Use CE-01 pipeline but add a synthetic contract that declares grounding_check, since
+      // this guardrail's injection pattern is independent of the specific agent.
+      const CE01_WITH_GROUNDING = new Map([
+        [
+          CE01Contract.id,
+          {
+            ...CE01Contract,
+            guardrails: [...CE01Contract.guardrails, 'grounding_check'],
+          },
+        ],
+      ]);
+
+      it('calls the injected checker and passes its PASSED verdict through', async () => {
+        vi.stubGlobal(
+          'fetch',
+          vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => FAKE_RESPONSE,
+          }),
+        );
+        const groundingChecker = vi.fn().mockReturnValue(PASSED) as (
+          agentId: string,
+          output: unknown,
+          input: unknown,
+        ) => GuardrailVerdict;
+        const executor = createStepExecutor(
+          makeDeps({ agentContracts: CE01_WITH_GROUNDING, groundingChecker }),
+        );
+        await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'build-topic-graph',
+          attempt: 1,
+          input: {},
+        });
+        expect(groundingChecker).toHaveBeenCalledOnce();
+      });
+
+      it('throws GuardrailRefusalError when the injected checker refuses', async () => {
+        vi.stubGlobal(
+          'fetch',
+          vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => FAKE_RESPONSE,
+          }),
+        );
+        const groundingChecker = vi
+          .fn()
+          .mockReturnValue(
+            refuse('ungrounded_claim', 'citation "X" not in ratified corpus'),
+          ) as (agentId: string, output: unknown, input: unknown) => GuardrailVerdict;
+        const executor = createStepExecutor(
+          makeDeps({ agentContracts: CE01_WITH_GROUNDING, groundingChecker }),
+        );
+        await expect(
+          executor({
+            runId: MOCK_RUN_ID,
+            stepId: 'build-topic-graph',
+            attempt: 1,
+            input: {},
+          }),
+        ).rejects.toThrow(GuardrailRefusalError);
+      });
+
+      it('skips the injected check when no groundingChecker is supplied', async () => {
+        vi.stubGlobal(
+          'fetch',
+          vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => FAKE_RESPONSE,
+          }),
+        );
+        const executor = createStepExecutor(
+          makeDeps({ agentContracts: CE01_WITH_GROUNDING }),
+        );
+        const result = await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'build-topic-graph',
+          attempt: 1,
+          input: {},
+        });
+        expect(result).toEqual({ status: 'ok', framework: {} });
+      });
+    });
+
+    // ── template_fidelity (injected) ──────────────────────────────────────────
+
+    describe('template_fidelity (injected)', () => {
+      const CE01_WITH_TEMPLATE_FIDELITY = new Map([
+        [
+          CE01Contract.id,
+          {
+            ...CE01Contract,
+            guardrails: [...CE01Contract.guardrails, 'template_fidelity'],
+          },
+        ],
+      ]);
+
+      it('calls the injected checker and passes its PASSED verdict through', async () => {
+        vi.stubGlobal(
+          'fetch',
+          vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => FAKE_RESPONSE,
+          }),
+        );
+        const templateFidelityChecker = vi
+          .fn()
+          .mockReturnValue(PASSED) as TemplateFidelityChecker;
+        const executor = createStepExecutor(
+          makeDeps({
+            agentContracts: CE01_WITH_TEMPLATE_FIDELITY,
+            templateFidelityChecker,
+          }),
+        );
+        await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'build-topic-graph',
+          attempt: 1,
+          input: {},
+        });
+        expect(templateFidelityChecker).toHaveBeenCalledOnce();
+      });
+
+      it('throws GuardrailRefusalError when the injected checker refuses', async () => {
+        vi.stubGlobal(
+          'fetch',
+          vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => FAKE_RESPONSE,
+          }),
+        );
+        const templateFidelityChecker = vi
+          .fn()
+          .mockReturnValue(
+            refuse(
+              'template_infidelity',
+              'missing required section "learning_objectives"',
+            ),
+          ) as TemplateFidelityChecker;
+        const executor = createStepExecutor(
+          makeDeps({
+            agentContracts: CE01_WITH_TEMPLATE_FIDELITY,
+            templateFidelityChecker,
+          }),
+        );
+        await expect(
+          executor({
+            runId: MOCK_RUN_ID,
+            stepId: 'build-topic-graph',
+            attempt: 1,
+            input: {},
+          }),
+        ).rejects.toThrow(GuardrailRefusalError);
+      });
+
+      it('skips the check when no templateFidelityChecker is supplied', async () => {
+        vi.stubGlobal(
+          'fetch',
+          vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => FAKE_RESPONSE,
+          }),
+        );
+        const executor = createStepExecutor(
+          makeDeps({ agentContracts: CE01_WITH_TEMPLATE_FIDELITY }),
+        );
+        const result = await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'build-topic-graph',
+          attempt: 1,
+          input: {},
+        });
+        expect(result).toEqual({ status: 'ok', framework: {} });
+      });
+    });
+
+    // ── readability_guard TB-03 ───────────────────────────────────────────────
+
+    describe('readability_guard (TB-03)', () => {
+      it('passes when the measured grade is within [minGrade, maxGrade]', async () => {
+        // SIMPLE_PASSAGE scores ~-2.5 by Flesch-Kincaid; use a band that includes it.
+        stubTb03Response({
+          status: 'ok',
+          body: SIMPLE_PASSAGE,
+          citedSourceIds: ['doc-1'],
+          readabilityCheckResult: { grade: -2, withinBand: true },
+        });
+        const executor = createStepExecutor(makeTb03Deps());
+        const result = await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'generate-passage',
+          attempt: 1,
+          input: {
+            language: 'en',
+            targetReadabilityBand: { minGrade: -5, maxGrade: 5 },
+            sourceDocumentIds: ['doc-1'],
+          },
+        });
+        expect((result as { status: string }).status).toBe('ok');
+      });
+
+      it('throws GuardrailRefusalError when the measured grade exceeds maxGrade', async () => {
+        stubTb03Response({
+          status: 'ok',
+          body: ADVANCED_PASSAGE,
+          citedSourceIds: ['doc-1'],
+          readabilityCheckResult: { grade: 12, withinBand: false },
+        });
+        const executor = createStepExecutor(makeTb03Deps());
+        await expect(
+          executor({
+            runId: MOCK_RUN_ID,
+            stepId: 'generate-passage',
+            attempt: 1,
+            input: {
+              language: 'en',
+              targetReadabilityBand: { minGrade: 1, maxGrade: 4 },
+              sourceDocumentIds: ['doc-1'],
+            },
+          }),
+        ).rejects.toThrow(GuardrailRefusalError);
+      });
+
+      it('throws GuardrailRefusalError when the measured grade is below minGrade', async () => {
+        stubTb03Response({
+          status: 'ok',
+          body: SIMPLE_PASSAGE,
+          citedSourceIds: ['doc-1'],
+          readabilityCheckResult: { grade: 2, withinBand: false },
+        });
+        const executor = createStepExecutor(makeTb03Deps());
+        await expect(
+          executor({
+            runId: MOCK_RUN_ID,
+            stepId: 'generate-passage',
+            attempt: 1,
+            input: {
+              language: 'en',
+              targetReadabilityBand: { minGrade: 8, maxGrade: 10 },
+              sourceDocumentIds: ['doc-1'],
+            },
+          }),
+        ).rejects.toThrow(GuardrailRefusalError);
+      });
+
+      it('does not check a non-English passage — no validated metric for it', async () => {
+        stubTb03Response({
+          status: 'ok',
+          body: ADVANCED_PASSAGE,
+          citedSourceIds: ['doc-1'],
+          readabilityCheckResult: { grade: 12, withinBand: false },
+        });
+        const executor = createStepExecutor(makeTb03Deps());
+        const result = await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'generate-passage',
+          attempt: 1,
+          input: {
+            language: 'zu',
+            targetReadabilityBand: { minGrade: 1, maxGrade: 4 },
+            sourceDocumentIds: ['doc-1'],
+          },
+        });
+        expect((result as { status: string }).status).toBe('ok');
+      });
+
+      it('does not check a non-ok status output', async () => {
+        stubTb03Response({
+          status: 'readability_out_of_band',
+          body: ADVANCED_PASSAGE,
+          readabilityCheckResult: { grade: 12, withinBand: false },
+        });
+        const executor = createStepExecutor(makeTb03Deps());
+        const result = await executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'generate-passage',
+          attempt: 1,
+          input: {
+            language: 'en',
+            targetReadabilityBand: { minGrade: 1, maxGrade: 4 },
+            sourceDocumentIds: ['doc-1'],
+          },
+        });
+        expect((result as { status: string }).status).toBe('readability_out_of_band');
       });
     });
   });
