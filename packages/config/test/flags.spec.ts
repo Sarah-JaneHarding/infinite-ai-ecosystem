@@ -123,21 +123,24 @@ describe('isEnabled — failure paths', () => {
 
 describe('expiredFlags — happy path', () => {
   it('returns no flags when checked before all expiry dates', () => {
-    // All three flags expire on 2026-11-01 or 2026-11-15.
+    // billing_dunning_emails: 2026-11-01, commons_pattern_sharing: 2026-11-15,
+    // pilot_school_onboarding_wizard: 2027-02-01 (extended for pilot evaluation).
     const beforeAll = new Date('2026-10-31');
     expect(expiredFlags(beforeAll)).toHaveLength(0);
   });
 
-  it('returns a flag once its expiry date has passed', () => {
-    const after = new Date('2026-11-02');
-    const expired = expiredFlags(after);
+  it('returns billing and commons flags once they expire, but not pilot', () => {
+    // pilot_school_onboarding_wizard does not expire until 2027-02-01.
+    const afterBillingCommons = new Date('2026-11-20');
+    const expired = expiredFlags(afterBillingCommons);
     const keys = expired.map((f) => f.key);
-    expect(keys).toContain('pilot_school_onboarding_wizard');
     expect(keys).toContain('billing_dunning_emails');
+    expect(keys).toContain('commons_pattern_sharing');
+    expect(keys).not.toContain('pilot_school_onboarding_wizard');
   });
 
-  it('returns all flags when checked after all expiry dates', () => {
-    const afterAll = new Date('2026-11-20');
+  it('returns all flags when checked after the last expiry date (2027-02-01)', () => {
+    const afterAll = new Date('2027-02-20');
     expect(expiredFlags(afterAll)).toHaveLength(FLAGS.length);
   });
 });
@@ -145,11 +148,11 @@ describe('expiredFlags — happy path', () => {
 describe('expiredFlags — failure paths', () => {
   it('does not return a flag on the day of its expiry (boundary — not yet expired)', () => {
     // expiresAt < today (strict less-than), so flags expiring today are not stale.
-    const onExpiry = new Date('2026-11-01');
-    const expired = expiredFlags(onExpiry);
+    const onBillingExpiry = new Date('2026-11-01');
+    const expired = expiredFlags(onBillingExpiry);
     const keys = expired.map((f) => f.key);
-    expect(keys).not.toContain('pilot_school_onboarding_wizard');
     expect(keys).not.toContain('billing_dunning_emails');
+    expect(keys).not.toContain('pilot_school_onboarding_wizard');
   });
 
   it('returns flags in a far-future check', () => {

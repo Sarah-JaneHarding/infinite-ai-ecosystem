@@ -23,7 +23,7 @@ values.** If it is not in a supplied source document, it goes here.
 | OQ-016 | 2026-08-06 | 07 | OPEN | **The LLM-as-judge scorer has no calibration data.** Stage 07 step 2's own text requires the judge to be "calibrated against at least 50 human-labelled cases, and re-calibrated whenever its own model changes" — this build has neither a labelled dataset nor a calibration workflow, and inventing either would be exactly the kind of unsourced process rule §0.3 forbids. `packages/evals/src/scorers.ts`'s `scoreLlmJudge` builds the mechanism (an injected `LlmJudge` function a real caller wires to an actual Model Gateway call) and stops there — it neither performs nor claims a calibrated judgement. Needs: 50+ human-labelled cases sourced per module, a calibration procedure, and a decision on which logical model the judge itself should call through the gateway. Blocks trusting `llm_judge` expectation results for real promotion decisions (step 4); blocks nothing already built. |
 | OQ-017 | 2026-08-12 | 18 | OPEN | **k6 load tests need a live environment.** Stage 18 step 2 requires load testing at 3× expected peak (450 concurrent learners, Starter tier) and a spike test for term-start ingest and Sunday-evening lesson-planning. `scripts/load/k6-peak.js` and `scripts/load/k6-spike.js` are ready to run but cannot run in the authoring sandbox — they need a running gateway and data plane with realistic seed data. Must be executed manually against the staging environment before GA. |
 | OQ-018 | 2026-08-12 | 18 | OPEN | **Cost model needs real gateway telemetry.** `docs/COST_MODEL.md` uses estimated token counts based on typical artefact types. Actual costs depend on real usage patterns. After the first pilot month, `tenant_metering_event` data should be used to recalibrate all per-artefact estimates and update the cost model. Blocks a precise pricing decision for post-pilot tiers. |
-| OQ-019 | 2026-08-12 | 18 | OPEN | **Pilot schools have not been identified.** `docs/PILOT_PROTOCOL.md` targets 3 schools (small primary, large primary, school group). None have been confirmed. The on-call rotation and PagerDuty integration (OQ-014) must both be resolved before pilot onboarding begins. Blocks the Stage 18 exit gate item "pilot protocol agreed with at least one school." |
+| OQ-019 | 2026-08-12 | 18 | RESOLVED (2026-09-09) | **Pilot schools have not been identified.** `docs/PILOT_PROTOCOL.md` targets 3 schools (small primary, large primary, school group). **Pilot school #1 confirmed: Benjamin Pine Primary School** (small primary, Starter tier, Grades R–7, English LoLT, Term 4 2026 start). Schools #2 and #3 are still to be identified. The on-call rotation and paging integration (OQ-014) remain prerequisites before go-live for all pilot schools. |
 | OQ-020 | 2026-08-12 | 18 | OPEN | **Architecture walkthrough recording.** Stage 18 step 7 requires a recorded architecture walkthrough (screen + audio) covering the nine-layer diagram, the four invariants, the test strategy, and the feature-flag procedure. This cannot be produced in the authoring environment (no recording capability). Must be done by a human using `docs/HOW_TO_ADD_AN_AGENT.md` as the worked example. |
 | OQ-021 | 2026-08-12 | 18 | OPEN | **Dunning emails need a transactional email provider.** The `billing_dunning_emails` feature flag gates automated OVERDUE/SUSPENDED notifications. No credentialed email provider (SendGrid, AWS SES, or similar) has been configured. OQ-014 (paging) and this question should be resolved together — the same provider likely serves both. |
 | OQ-022 | 2026-08-12 | 17 | OPEN | **POPIA erasure for append-only tables.** `audit_event`, `consent_record`, and `tenant_metering_event` carry BEFORE DELETE triggers that refuse all deletes, including CASCADE deletes from `tenant`. On tenant closure, only mutable tables are erased; append-only ledgers are retained under legal-obligation and POPIA compliance bases. Three decisions are needed: (1) Which data categories in these tables constitute "personal information" under POPIA §1? (2) Is pseudonymization (replacing `actor_id` and `subject_token` with a replacement token) the correct erasure technique, and if so what replaces them? (3) Which specific retention periods apply to audit and consent records for South African schools? Until resolved, append-only data is retained indefinitely on tenant closure. See `docs/POPIA.md` and `docs/COST_MODEL.md`. |
@@ -55,6 +55,32 @@ deliberately, not defaulted into, when that time comes.
 | OQ-013 | 2026-08-05 | 08    | OPEN                | Eight of South Africa's eleven official languages, and Grades 10-12 entirely, are still missing from the CAPS documents supplied so far (see OQ-002). Sepedi, Sesotho and Setswana would serve the largest remaining population. Prioritise sourcing these before Stage 08 is considered feature-complete, or launch with what's supplied and add the rest afterward?                                                                                                               |
 
 ## Resolved
+
+### OQ-019 — pilot school confirmation · resolved 2026-09-09
+
+**Question.** `docs/PILOT_PROTOCOL.md` targets 3 schools. None had been confirmed,
+blocking the Stage 18 exit gate item "pilot protocol agreed with at least one school."
+
+**Answer.** Benjamin Pine Primary School is confirmed as pilot school #1 (small
+primary, Starter tier, Grades R–7, English LoLT with Afrikaans FAL, Term 4 2026
+start, implementation partner `mrsharding@benjaminpine.co.za`).
+
+`packages/provisioning/src/pilot.ts`'s `PILOT_COHORT` holds the typed wizard
+configuration (tenant name, slug, school profile defaults) for each confirmed pilot
+school. Defaults in `schoolProfileInput` are reviewed and ratified by the principal or
+delegated HoD during the `configure_school_profile` wizard step — nothing is persisted
+until `readiness_check` passes.
+
+The `pilot_school_onboarding_wizard` feature flag expiry was extended from 2026-11-01
+to 2027-02-01 to accommodate the full 16-week pilot evaluation period (Week 16 falls
+2027-01-27 for a Term 4 2026 start). The flag is removed once the wizard ships to all
+tenants after that review.
+
+**Remaining gap:** Schools #2 (large primary) and #3 (school group) are still to be
+identified. OQ-014 (safeguarding paging) is also still required before any pilot school
+can go live. This OQ is recorded as partially resolved.
+
+---
 
 ### OQ-004 — tenant seed data shape · resolved 2026-08-13
 
