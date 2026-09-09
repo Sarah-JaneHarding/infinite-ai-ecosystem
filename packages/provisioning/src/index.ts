@@ -37,3 +37,5 @@ export {
   type ReadinessCheckResult,
   type TenantReadinessInput,
 } from './readiness';
+
+export { PILOT_COHORT, PilotTenantConfigSchema, type PilotTenantConfig } from './pilot';
