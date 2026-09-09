@@ -14,6 +14,7 @@ describe('package export surface', () => {
     expect(Object.keys(contracts).sort()).toEqual([
       'AGE_APPROPRIATENESS_ENTRIES',
       'ARTEFACT_TYPE_TO_AGENT',
+      'ASSESSMENT_TASK_TEMPLATE_BENJAMIN_PINE',
       'ATPNeedsInput',
       'ATPResult',
       'ATPSchedule',
@@ -381,6 +382,9 @@ describe('package export surface', () => {
       'SASA_1996_SECTIONS',
       'SASA_1996_VERSION',
       'SacePdActivityType',
+      'SbaBlueprint',
+      'SbaBlueprintRow',
+      'SbaCognitiveTier',
       'SchoolCalendarBlock',
       'SiasSupportLevel',
       'Slide',
