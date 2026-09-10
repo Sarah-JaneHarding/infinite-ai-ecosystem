@@ -1,0 +1,9 @@
+# Copy to backend.hcl (gitignored) and fill in the real values bootstrap/ created, then:
+#   terraform init -backend-config=backend.hcl
+#
+# Never commit backend.hcl — it names a real bucket, which is not a secret, but keeping
+# the pattern identical to every .env.example in this repo (names only, real values
+# supplied locally) means one fewer thing to remember differently for Terraform state.
+
+bucket         = "REPLACE_WITH_BOOTSTRAP_STATE_BUCKET_NAME"
+dynamodb_table = "REPLACE_WITH_BOOTSTRAP_LOCK_TABLE_NAME"
