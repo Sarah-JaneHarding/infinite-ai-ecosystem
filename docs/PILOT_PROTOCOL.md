@@ -3,25 +3,22 @@
 This document defines the success metrics, weekly review cadence, and escalation path
 for the INFINITE-AI pilot programme.
 
-**OQ-019 resolved 2026-09-09.** Benjamin Pine Primary School is confirmed as pilot
-school #1. See the confirmed cohort table below. Schools #2 and #3 are still to be
-identified before the full cohort target of three is met.
+**OQ-019:** Specific pilot schools have not yet been confirmed. This protocol applies
+once schools are identified and onboarded via the provisioning wizard.
 
 ---
 
 ## Pilot cohort
 
-Target: 3 schools in the first pilot cohort. Pilot start: **Term 4 2026 (2026-10-06).**
+Target: 3 schools in the first pilot cohort.
 
-| #   | School                       | Profile                                  | Tier         | LoLT | Implementation partner        | Status                   |
-| --- | ---------------------------- | ---------------------------------------- | ------------ | ---- | ----------------------------- | ------------------------ |
-| 1   | Benjamin Pine Primary School | Small primary, Grades R–7, Afrikaans FAL | Starter      | en   | mrsharding@benjaminpine.co.za | **Confirmed 2026-09-09** |
-| 2   | _(to be identified)_         | Large primary (≈ 500 learners)           | Professional | —    | —                             | Pending                  |
-| 3   | _(to be identified)_         | School group (≥ 2 campuses)              | Enterprise   | —    | —                             | Pending                  |
+| School profile                                    | Rationale                                                  |
+| ------------------------------------------------- | ---------------------------------------------------------- |
+| Small primary (< 150 learners, Starter tier)      | Validates the Starter pricing model and wizard flow.       |
+| Large primary (≈ 500 learners, Professional tier) | Validates Professional-tier capacity.                      |
+| School group (≥ 2 campuses, Enterprise tier)      | Validates multi-campus provisioning and shared curriculum. |
 
 Each pilot school is assigned an implementation partner contact and an on-call engineer.
-Tenant provisioning for confirmed schools uses `packages/provisioning`'s `PILOT_COHORT`
-configuration as the onboarding wizard's starting defaults.
 
 ---
 

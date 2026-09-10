@@ -31,37 +31,7 @@ export const GatewayEnvSchema = z.object({
   OPENAI_BASE_URL: z.string().url().default('https://api.openai.com/v1'),
   OPENAI_API_KEYS: commaSeparatedKeys.optional(),
 
-  /** Groq — ultra-fast LPU inference; OpenAI-compatible endpoint. */
-  GROQ_BASE_URL: z.string().url().default('https://api.groq.com/openai/v1'),
-  GROQ_API_KEYS: commaSeparatedKeys.optional(),
-
-  /** Google Gemini via the OpenAI-compatible REST shim. */
-  GEMINI_BASE_URL: z
-    .string()
-    .url()
-    .default('https://generativelanguage.googleapis.com/v1beta/openai/'),
-  GEMINI_API_KEYS: commaSeparatedKeys.optional(),
-
-  /** Alibaba Qwen via DashScope OpenAI-compatible endpoint — strong multilingual support. */
-  QWEN_BASE_URL: z
-    .string()
-    .url()
-    .default('https://dashscope.aliyuncs.com/compatible-mode/v1'),
-  QWEN_API_KEYS: commaSeparatedKeys.optional(),
-
-  /** LM Studio — local inference server (OpenAI-compatible). Placeholder key accepted. */
-  LMSTUDIO_BASE_URL: z.string().url().optional(),
-  LMSTUDIO_API_KEYS: commaSeparatedKeys.optional(),
-
-  /** Ollama — local inference server (OpenAI-compatible). Placeholder key accepted. */
-  OLLAMA_BASE_URL: z.string().url().optional(),
-  OLLAMA_API_KEYS: commaSeparatedKeys.optional(),
-
-  /** Microsoft Azure OpenAI / Copilot — OpenAI-compatible per-deployment endpoint. */
-  AZURE_OPENAI_BASE_URL: z.string().url().optional(),
-  AZURE_OPENAI_API_KEYS: commaSeparatedKeys.optional(),
-
-  /** A self-hosted, OpenAI-compatible inference server (vLLM, TGI) — generic fallback. */
+  /** A self-hosted, OpenAI-compatible inference server (vLLM, Ollama, TGI). */
   LOCAL_MODEL_BASE_URL: z.string().url().optional(),
   LOCAL_MODEL_API_KEYS: commaSeparatedKeys.optional(),
 

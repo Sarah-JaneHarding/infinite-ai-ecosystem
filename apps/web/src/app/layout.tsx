@@ -2,8 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: { default: 'INFINITE-AI', template: '%s | INFINITE-AI' },
-  description: 'AI-powered education platform for South African schools.',
+  title: { default: 'Infinite AI Ecosystem', template: '%s | Infinite AI Ecosystem' },
+  description:
+    'Multi-tenant, POPIA-safe education platform for South African schools, featuring role-based dashboards, curriculum planning, and learning analytics.',
   robots: 'noindex, nofollow',
   manifest: '/manifest.json',
 };

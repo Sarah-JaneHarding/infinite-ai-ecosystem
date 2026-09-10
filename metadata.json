@@ -1,0 +1,6 @@
+{
+  "name": "Infinite AI Ecosystem",
+  "description": "Multi-tenant, POPIA-safe education platform for South African schools, featuring role-based dashboards, curriculum planning, and learning analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

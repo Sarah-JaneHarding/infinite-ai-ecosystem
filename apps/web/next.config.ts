@@ -3,11 +3,14 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  output: 'standalone',
   // Transpile workspace packages so Next.js can process their TypeScript source.
   transpilePackages: [
     '@infinite-ai/design-system',
     '@infinite-ai/security',
     '@infinite-ai/school-setup',
+    '@infinite-ai/learner-client',
+    '@infinite-ai/policy',
   ],
   // Stage 16: full security header hardening.
   // Values are inlined here because next.config.ts is loaded by Next.js's own config

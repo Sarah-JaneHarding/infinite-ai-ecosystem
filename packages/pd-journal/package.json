@@ -13,11 +13,11 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/contracts": "*",
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@infinite-ai/compliance": "workspace:*",
+    "@infinite-ai/compliance": "*",
     "vitest": "^3.2.0"
   }
 }

@@ -22,7 +22,7 @@
     "vitest": "3.2.7"
   },
   "dependencies": {
-    "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/contracts": "*",
     "zod": "3.25.76"
   }
 }

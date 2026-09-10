@@ -75,57 +75,6 @@ export function buildAdapters(
       fetchImpl,
     });
   }
-  if (env.GROQ_API_KEYS !== undefined) {
-    credentialPools.groq = new CredentialPool('groq', env.GROQ_API_KEYS);
-    adapters.groq = createOpenAiCompatibleAdapter({
-      provider: 'groq',
-      baseUrl: env.GROQ_BASE_URL,
-      fetchImpl,
-    });
-  }
-  if (env.GEMINI_API_KEYS !== undefined) {
-    credentialPools.gemini = new CredentialPool('gemini', env.GEMINI_API_KEYS);
-    adapters.gemini = createOpenAiCompatibleAdapter({
-      provider: 'gemini',
-      baseUrl: env.GEMINI_BASE_URL,
-      fetchImpl,
-    });
-  }
-  if (env.QWEN_API_KEYS !== undefined) {
-    credentialPools.qwen = new CredentialPool('qwen', env.QWEN_API_KEYS);
-    adapters.qwen = createOpenAiCompatibleAdapter({
-      provider: 'qwen',
-      baseUrl: env.QWEN_BASE_URL,
-      fetchImpl,
-    });
-  }
-  if (env.LMSTUDIO_BASE_URL !== undefined && env.LMSTUDIO_API_KEYS !== undefined) {
-    credentialPools.lmstudio = new CredentialPool('lmstudio', env.LMSTUDIO_API_KEYS);
-    adapters.lmstudio = createOpenAiCompatibleAdapter({
-      provider: 'lmstudio',
-      baseUrl: env.LMSTUDIO_BASE_URL,
-      fetchImpl,
-    });
-  }
-  if (env.OLLAMA_BASE_URL !== undefined && env.OLLAMA_API_KEYS !== undefined) {
-    credentialPools.ollama = new CredentialPool('ollama', env.OLLAMA_API_KEYS);
-    adapters.ollama = createOpenAiCompatibleAdapter({
-      provider: 'ollama',
-      baseUrl: env.OLLAMA_BASE_URL,
-      fetchImpl,
-    });
-  }
-  if (
-    env.AZURE_OPENAI_BASE_URL !== undefined &&
-    env.AZURE_OPENAI_API_KEYS !== undefined
-  ) {
-    credentialPools.copilot = new CredentialPool('copilot', env.AZURE_OPENAI_API_KEYS);
-    adapters.copilot = createOpenAiCompatibleAdapter({
-      provider: 'copilot',
-      baseUrl: env.AZURE_OPENAI_BASE_URL,
-      fetchImpl,
-    });
-  }
   if (env.LOCAL_MODEL_BASE_URL !== undefined && env.LOCAL_MODEL_API_KEYS !== undefined) {
     credentialPools.local = new CredentialPool('local', env.LOCAL_MODEL_API_KEYS);
     adapters.local = createOpenAiCompatibleAdapter({

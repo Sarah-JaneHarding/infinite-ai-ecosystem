@@ -6,7 +6,7 @@
   "description": "Next.js app — every role surface.",
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev -p 3000 -H 0.0.0.0",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
@@ -17,11 +17,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@infinite-ai/design-system": "workspace:*",
-    "@infinite-ai/school-setup": "workspace:*",
-    "@infinite-ai/learner-client": "workspace:*",
-    "@infinite-ai/policy": "workspace:*",
-    "@infinite-ai/security": "workspace:*",
+    "@infinite-ai/design-system": "*",
+    "@infinite-ai/school-setup": "*",
+    "@infinite-ai/learner-client": "*",
+    "@infinite-ai/policy": "*",
+    "@infinite-ai/security": "*",
     "next": "16.3.0",
     "next-auth": "4.24.15",
     "react": "19.2.8",
@@ -34,7 +34,6 @@
     "@tailwindcss/postcss": "4.3.3",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
-    "autoprefixer": "10.5.4",
     "postcss": "8.5.26",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",

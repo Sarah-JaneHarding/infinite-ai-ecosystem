@@ -1,62 +1,38 @@
 {
   "curriculum.map": [
-    { "provider": "anthropic", "concreteModel": "claude-opus-5" },
-    { "provider": "gemini", "concreteModel": "gemini-2.5-pro" },
-    { "provider": "qwen", "concreteModel": "qwen-max" },
-    { "provider": "openai", "concreteModel": "gpt-4o" },
-    { "provider": "lmstudio", "concreteModel": "qwen2.5-14b-instruct" },
-    { "provider": "ollama", "concreteModel": "qwen2.5:14b" }
+    { "provider": "anthropic", "concreteModel": "claude-opus-4-5" },
+    { "provider": "openai", "concreteModel": "gpt-4o" }
   ],
   "embedding.encode": [
     { "provider": "openai", "concreteModel": "text-embedding-3-large" },
-    { "provider": "local", "concreteModel": "nomic-embed-text" },
-    { "provider": "ollama", "concreteModel": "nomic-embed-text" }
+    { "provider": "local", "concreteModel": "nomic-embed-text" }
   ],
   "analytics.screen": [
     { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" },
-    { "provider": "groq", "concreteModel": "llama-3.1-8b-instant" },
-    { "provider": "openai", "concreteModel": "gpt-4o-mini" },
-    { "provider": "gemini", "concreteModel": "gemini-2.0-flash" }
+    { "provider": "openai", "concreteModel": "gpt-4o-mini" }
   ],
   "analytics.report": [
     { "provider": "anthropic", "concreteModel": "claude-sonnet-5" },
-    { "provider": "openai", "concreteModel": "gpt-4o" },
-    { "provider": "gemini", "concreteModel": "gemini-2.5-pro" },
-    { "provider": "qwen", "concreteModel": "qwen-plus" }
+    { "provider": "openai", "concreteModel": "gpt-4o" }
   ],
   "warehouse.synthesise": [
     { "provider": "anthropic", "concreteModel": "claude-sonnet-5" },
-    { "provider": "qwen", "concreteModel": "qwen-max" },
-    { "provider": "openai", "concreteModel": "gpt-4o" },
-    { "provider": "gemini", "concreteModel": "gemini-2.5-pro" }
+    { "provider": "openai", "concreteModel": "gpt-4o" }
   ],
   "toolbox.generate": [
     { "provider": "anthropic", "concreteModel": "claude-sonnet-5" },
-    { "provider": "openai", "concreteModel": "gpt-4o" },
-    { "provider": "gemini", "concreteModel": "gemini-2.0-flash" },
-    { "provider": "groq", "concreteModel": "llama-3.3-70b-versatile" },
-    { "provider": "copilot", "concreteModel": "gpt-4o" },
-    { "provider": "lmstudio", "concreteModel": "gemma-3-12b-it" },
-    { "provider": "ollama", "concreteModel": "llama3.2:latest" }
+    { "provider": "openai", "concreteModel": "gpt-4o" }
   ],
   "toolbox.adapt": [
     { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" },
-    { "provider": "groq", "concreteModel": "llama-3.1-8b-instant" },
-    { "provider": "openai", "concreteModel": "gpt-4o-mini" },
-    { "provider": "gemini", "concreteModel": "gemini-2.0-flash" },
-    { "provider": "lmstudio", "concreteModel": "gemma-3-4b-it" },
-    { "provider": "ollama", "concreteModel": "gemma3:4b" }
+    { "provider": "openai", "concreteModel": "gpt-4o-mini" }
   ],
   "pd.analyse": [
     { "provider": "anthropic", "concreteModel": "claude-sonnet-5" },
-    { "provider": "openai", "concreteModel": "gpt-4o" },
-    { "provider": "copilot", "concreteModel": "gpt-4o" },
-    { "provider": "gemini", "concreteModel": "gemini-2.5-pro" }
+    { "provider": "openai", "concreteModel": "gpt-4o" }
   ],
   "pd.plan": [
     { "provider": "anthropic", "concreteModel": "claude-sonnet-5" },
-    { "provider": "openai", "concreteModel": "gpt-4o" },
-    { "provider": "copilot", "concreteModel": "gpt-4o" },
-    { "provider": "qwen", "concreteModel": "qwen-plus" }
+    { "provider": "openai", "concreteModel": "gpt-4o" }
   ]
 }

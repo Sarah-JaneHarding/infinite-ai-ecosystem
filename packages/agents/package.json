@@ -16,9 +16,9 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@infinite-ai/analytics": "workspace:*",
-    "@infinite-ai/contracts": "workspace:*",
-    "@infinite-ai/warehouse": "workspace:*",
+    "@infinite-ai/analytics": "*",
+    "@infinite-ai/contracts": "*",
+    "@infinite-ai/warehouse": "*",
     "zod": "3.25.76"
   },
   "devDependencies": {
