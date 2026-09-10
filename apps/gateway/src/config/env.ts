@@ -31,6 +31,12 @@ export const GatewayEnvSchema = z.object({
   OPENAI_BASE_URL: z.string().url().default('https://api.openai.com/v1'),
   OPENAI_API_KEYS: commaSeparatedKeys.optional(),
 
+  GOOGLE_BASE_URL: z
+    .string()
+    .url()
+    .default('https://generativelanguage.googleapis.com'),
+  GOOGLE_API_KEYS: commaSeparatedKeys.optional(),
+
   /** A self-hosted, OpenAI-compatible inference server (vLLM, Ollama, TGI). */
   LOCAL_MODEL_BASE_URL: z.string().url().optional(),
   LOCAL_MODEL_API_KEYS: commaSeparatedKeys.optional(),

@@ -8056,3 +8056,39 @@ guardrail dispatch gaps in `apps/worker/src/step-executor.ts` are now wired:
 ### Verification
 
 `apps/worker` (62 tests — 20 new: 5 source_grounding_guard cases, 3 injected grounding_check cases, 3 injected template_fidelity cases, 5 TB-03 readability_guard cases, 4 skip/isolation cases). OQ-028 marked RESOLVED in `docs/OPEN_QUESTIONS.md`.
+
+---
+
+## Google Gemini adapter — gateway third fallback · 2026-09-10
+
+Added a `google` provider adapter to the model gateway so every logical model has a
+third-link fallback to Google Gemini when both Anthropic and OpenAI are unavailable.
+
+**Changes**
+
+- `apps/gateway/src/adapters/google.ts` — `createGoogleAdapter`: translates the gateway's
+  internal `ChatCompletionRequest` / `EmbeddingsRequest` into Gemini's REST wire format
+  (system messages → `systemInstruction`, `assistant` role → `model`, auth via
+  `x-goog-api-key`). Supports `generateContent` (non-streaming), `streamGenerateContent?alt=sse`
+  (SSE streaming), `embedContent` (single), and `batchEmbedContents` (batch). Streaming
+  receives complete `functionCall` parts in one event, not streamed argument deltas.
+- `apps/gateway/src/config/env.ts` — `GOOGLE_BASE_URL` (defaults to
+  `https://generativelanguage.googleapis.com`) and `GOOGLE_API_KEYS` (comma-separated,
+  optional — absent means the provider is simply not registered).
+- `apps/gateway/src/index.ts` — `buildAdapters` wires the Google adapter when
+  `GOOGLE_API_KEYS` is present, following the same optional-credential pattern as the
+  existing Anthropic and OpenAI paths.
+- `apps/gateway/routing.json` — Gemini `gemini-2.0-flash` added as a third link in every
+  chat chain; `text-embedding-004` added as second link in `embedding.encode` (before the
+  local fallback).
+- `.env.example` — `GOOGLE_API_KEYS` and `GOOGLE_BASE_URL` added (empty, key-names only).
+
+**Tests added**
+
+`apps/gateway/test/adapters/google.spec.ts` — 14 cases covering the happy path (system
+instruction, role mapping, tool-call translation, embeddings single and batch), three
+failure classifications (429 → rate_limited, 401 → unauthorized, 503 → unavailable),
+wrong-shape 2xx body, and streaming (content deltas, tool_call event, pre-first-event
+rate-limit fallback, unparseable chunk). `test/index.spec.ts` — one new `buildAdapters`
+case confirming the Google adapter and credential pool are registered when `GOOGLE_API_KEYS`
+is set.
