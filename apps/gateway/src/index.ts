@@ -33,6 +33,7 @@ import {
 import type { TenantLexicon } from '@infinite-ai/deident';
 
 import { createAnthropicAdapter } from './adapters/anthropic.js';
+import { createGoogleAdapter } from './adapters/google.js';
 import { createOpenAiCompatibleAdapter } from './adapters/openai-compatible.js';
 import type { FetchLike, ProviderAdapter } from './adapters/types.js';
 import { BudgetTracker } from './budgets/budget.js';
@@ -72,6 +73,13 @@ export function buildAdapters(
     adapters.openai = createOpenAiCompatibleAdapter({
       provider: 'openai',
       baseUrl: env.OPENAI_BASE_URL,
+      fetchImpl,
+    });
+  }
+  if (env.GOOGLE_API_KEYS !== undefined) {
+    credentialPools.google = new CredentialPool('google', env.GOOGLE_API_KEYS);
+    adapters.google = createGoogleAdapter({
+      baseUrl: env.GOOGLE_BASE_URL,
       fetchImpl,
     });
   }

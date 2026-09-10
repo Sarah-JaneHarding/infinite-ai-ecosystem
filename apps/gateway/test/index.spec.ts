@@ -46,6 +46,13 @@ describe('buildAdapters', () => {
     expect(adapters.openai?.provider).toBe('openai');
   });
 
+  it('adds google when its keys are set', () => {
+    const env = parseGatewayEnv({ GOOGLE_API_KEYS: 'k1' });
+    const { adapters, credentialPools } = buildAdapters(env, noopFetch);
+    expect(adapters.google?.provider).toBe('google');
+    expect(credentialPools.google?.availableCount()).toBe(1);
+  });
+
   it('adds the local adapter only when both its base URL and its keys are set', () => {
     const missingKeys = buildAdapters(
       parseGatewayEnv({ LOCAL_MODEL_BASE_URL: 'http://localhost:9000' }),
