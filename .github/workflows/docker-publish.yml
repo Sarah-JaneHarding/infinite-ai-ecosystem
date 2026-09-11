@@ -1,0 +1,126 @@
+name: Docker Publish
+
+# Builds and pushes all three application images to Docker Hub.
+#
+# Triggers:
+#   - Manual dispatch (any branch, any tag): lets a developer push a named build
+#     without waiting for the ECR-backed CD pipeline.
+#   - Push of a semver tag (v*): publishes release images alongside the ECR flow.
+#
+# Images are tagged with both the Git ref (full SHA or semver tag) and `latest`
+# (for semver tags only), following Docker Hub convention. The ECR pipeline already
+# handles staging/production deployment — this workflow is for Docker Hub distribution
+# only and does not touch any AWS resource.
+#
+# Required repository secrets:
+#   DOCKERHUB_USERNAME — Docker Hub account or org name
+#   DOCKERHUB_TOKEN   — Docker Hub personal access token (read/write scope)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag (defaults to short SHA if omitted)'
+        required: false
+        default: ''
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: docker-publish-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-push:
+    name: Build and push to Docker Hub
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derive image tag
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            echo "value=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "value=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Semver-tagged pushes also receive the `latest` tag so `docker pull
+      # <org>/infinite-ai-gateway` works without specifying a version.
+      - name: Determine extra tags (latest for semver releases)
+        id: extra
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "gateway=,${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-gateway:latest" >> "$GITHUB_OUTPUT"
+            echo "worker=,${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-worker:latest" >> "$GITHUB_OUTPUT"
+            echo "web=,${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-web:latest" >> "$GITHUB_OUTPUT"
+          else
+            echo "gateway=" >> "$GITHUB_OUTPUT"
+            echo "worker=" >> "$GITHUB_OUTPUT"
+            echo "web=" >> "$GITHUB_OUTPUT"
+          fi
+
+      # All three images are built from the workspace root — every Dockerfile in this
+      # repo copies the full monorepo tree because pnpm's workspace:* protocol requires
+      # the full workspace to resolve @infinite-ai/* packages. See each Dockerfile's own
+      # header for why a pruned pnpm-deploy approach is the known follow-up, not done yet.
+      - name: Build and push gateway
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/gateway/Dockerfile
+          push: true
+          tags: >-
+            ${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-gateway:${{ steps.tag.outputs.value }}${{ steps.extra.outputs.gateway }}
+          cache-from: type=gha,scope=gateway
+          cache-to: type=gha,mode=max,scope=gateway
+
+      - name: Build and push worker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/worker/Dockerfile
+          push: true
+          tags: >-
+            ${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-worker:${{ steps.tag.outputs.value }}${{ steps.extra.outputs.worker }}
+          cache-from: type=gha,scope=worker
+          cache-to: type=gha,mode=max,scope=worker
+
+      - name: Build and push web
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: true
+          tags: >-
+            ${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-web:${{ steps.tag.outputs.value }}${{ steps.extra.outputs.web }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+      - name: Summary
+        run: |
+          echo "### Docker Hub publish complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Image | Tag |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-----|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-gateway\` | \`${{ steps.tag.outputs.value }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-worker\` | \`${{ steps.tag.outputs.value }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-web\` | \`${{ steps.tag.outputs.value }}\` |" >> "$GITHUB_STEP_SUMMARY"
