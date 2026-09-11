@@ -11,14 +11,14 @@ export {
   upsertRecord,
   allCompleted,
   countByStatus,
-} from './profile';
+} from './profile.js';
 
 export type {
   ActivityStatus as ActivityStatusValue,
   ActivityRecord as ActivityRecordShape,
   GamificationSnapshot as GamificationSnapshotShape,
   LearnerProfile as LearnerProfileShape,
-} from './profile';
+} from './profile.js';
 
 export {
   ActivityType,
@@ -28,13 +28,13 @@ export {
   nextActivities,
   unlockedActivities,
   courseProgress,
-} from './navigation';
+} from './navigation.js';
 
 export type {
   ActivityType as ActivityTypeValue,
   ActivityNode as ActivityNodeShape,
   CourseGraph as CourseGraphShape,
-} from './navigation';
+} from './navigation.js';
 
 export {
   QuizAnsweredPayload,
@@ -48,10 +48,10 @@ export {
   dequeue,
   pendingCount,
   peek,
-} from './offline';
+} from './offline.js';
 
 export type {
   OfflineEventPayload as OfflineEventPayloadShape,
   OfflineEvent as OfflineEventShape,
   OfflineQueue as OfflineQueueShape,
-} from './offline';
+} from './offline.js';

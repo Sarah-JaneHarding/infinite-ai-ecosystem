@@ -97,9 +97,12 @@ export {
   TermPlanResult,
   TermPlanSubject,
   TermPlanWeekEntry,
+  CoverageStatus,
   UnitBlueprint,
   UnitBlueprintResult,
   UnitNeedsInput,
+  UnitPlanDocument,
+  UnitPlanLessonRow,
 } from './curriculum/planning.js';
 
 export {
@@ -114,6 +117,7 @@ export {
   Lesson,
   LessonActivity,
   LessonPlan,
+  LessonPlanBlueprint,
   LessonPlanNeedsInput,
   LessonPlanResult,
 } from './curriculum/lesson.js';
@@ -128,12 +132,24 @@ export {
   CE06Input,
   CE07Input,
   CognitiveLevelSpread,
+  MarkingMemo,
+  MarkingMemoMatrix,
   Rubric,
   RubricCriterion,
   RubricDescriptors,
   RubricNeedsInput,
   RubricResult,
+  SbaBlueprint,
+  SbaBlueprintRow,
+  SbaCognitiveTier,
 } from './curriculum/assessment.js';
+
+export {
+  BehaviourRating,
+  BehaviourRow,
+  ParentProgressReport,
+  PerformanceRow,
+} from './curriculum/reporting.js';
 
 export {
   CE09Input,
@@ -665,7 +681,12 @@ export { ATP_FOUNDATION_SOURCES } from './curriculum/sources/atp-fp-gr-r3.js';
 export { ATP_INTERMEDIATE_SOURCES } from './curriculum/sources/atp-ip-gr-46.js';
 export { ATP_PENDING_REGISTRY } from './curriculum/sources/atp-pending-registry.js';
 export { ATP_SENIOR_SOURCES } from './curriculum/sources/atp-sp-gr-7.js';
+export { ASSESSMENT_TASK_TEMPLATE_BENJAMIN_PINE } from './curriculum/sources/template-assessment-task-benjamin-pine.js';
+export { LESSON_PLAN_BLUEPRINT_TEMPLATE_BENJAMIN_PINE } from './curriculum/sources/template-lesson-plan-blueprint-benjamin-pine.js';
 export { LESSON_PLAN_TEMPLATE_BENJAMIN_PINE } from './curriculum/sources/template-lesson-plan-benjamin-pine.js';
+export { MARKING_MEMO_TEMPLATE_BENJAMIN_PINE } from './curriculum/sources/template-marking-memo-benjamin-pine.js';
+export { PARENT_PROGRESS_REPORT_TEMPLATE_BENJAMIN_PINE } from './curriculum/sources/template-parent-progress-report-benjamin-pine.js';
+export { UNIT_PLAN_TEMPLATE_BENJAMIN_PINE } from './curriculum/sources/template-unit-plan-benjamin-pine.js';
 export {
   AGE_APPROPRIATENESS_ENTRIES,
   type AgeAppropriatenessSourceEntry,

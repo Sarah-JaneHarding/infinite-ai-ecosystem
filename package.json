@@ -4,33 +4,70 @@
   "private": true,
   "description": "INFINITE-AI Education Ecosystem — multi-tenant, POPIA-safe SaaS for South African schools.",
   "license": "UNLICENSED",
+  "packageManager": "pnpm@10.33.0",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "type": "module",
   "scripts": {
-    "dev": "npm run dev --workspace=@infinite-ai/web",
-    "build": "npm run build --workspace=@infinite-ai/web",
-    "start": "npm run start --workspace=@infinite-ai/web",
+    "build": "turbo run build",
+    "check:retention": "tsx scripts/check-retention-schedule.ts",
+    "evals:run": "tsx scripts/evals-run.ts",
+    "evals:gate": "tsx scripts/evals-gate.ts",
+    "evals:promote": "tsx scripts/evals-promote.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "turbo run typecheck"
+    "prepare": "node scripts/install-hooks.mjs",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "test:injection": "pnpm --filter @infinite-ai/guardrails test:injection",
+    "test:redteam:diagnosis": "pnpm --filter @infinite-ai/guardrails exec vitest run test/diagnosis-redteam.spec.ts",
+    "test:drill:safeguarding": "pnpm --filter @infinite-ai/analytics exec vitest run test/safeguarding-drill.spec.ts",
+    "test:bias-monitor": "pnpm --filter @infinite-ai/analytics exec vitest run test/bias-monitor.spec.ts",
+    "test:readability": "pnpm --filter @infinite-ai/contracts exec vitest run test/toolbox-readability-bands.spec.ts",
+    "test:answer-key-verification": "pnpm --filter @infinite-ai/contracts exec vitest run test/toolbox-answer-key-verification.spec.ts",
+    "test:accessibility": "pnpm --filter @infinite-ai/contracts exec vitest run test/toolbox-accessibility-validator.spec.ts",
+    "test:aggregation-thresholds": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-suppression.spec.ts",
+    "test:no-ranking-endpoints": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-no-ranking.spec.ts",
+    "test:course-structure": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-course-structure.spec.ts",
+    "test:cptd": "pnpm --filter @infinite-ai/contracts exec vitest run test/mod-05-cptd.spec.ts",
+    "typecheck": "turbo run typecheck",
+    "test:e2e": "pnpm --filter @infinite-ai/web test:e2e",
+    "test:a11y": "pnpm --filter @infinite-ai/web test:a11y",
+    "test:lighthouse": "pnpm --filter @infinite-ai/web test:lighthouse",
+    "test:telemetry-coverage": "pnpm --filter @infinite-ai/telemetry test:trace-coverage",
+    "test:log-scrubbing": "pnpm --filter @infinite-ai/telemetry test:log-scrub",
+    "drill:restore": "tsx scripts/drill-restore.ts",
+    "test:security": "pnpm --filter @infinite-ai/security test",
+    "test:rls:exhaustive": "pnpm --filter @infinite-ai/db exec vitest run test/rls-exhaustive.integration.spec.ts",
+    "test:tenant-abuse": "pnpm --filter @infinite-ai/security test:tenant-abuse",
+    "audit:supply-chain": "tsx scripts/audit-supply-chain.ts",
+    "test:provisioning": "pnpm --filter @infinite-ai/provisioning test",
+    "test:billing:reconcile": "pnpm --filter @infinite-ai/billing test:reconcile",
+    "test:tenant-deletion": "pnpm --filter @infinite-ai/db exec vitest run test/tenant-deletion.integration.spec.ts",
+    "check:flags": "tsx scripts/check-feature-flags.ts",
+    "curriculum:seed": "tsx scripts/seed-curriculum.ts",
+    "curriculum:ratify": "tsx scripts/ratify-curriculum.ts",
+    "templates:seed": "tsx scripts/seed-templates.ts",
+    "templates:ratify": "tsx scripts/ratify-templates.ts",
+    "age-appropriateness:seed": "tsx scripts/seed-age-appropriateness.ts",
+    "age-appropriateness:ratify": "tsx scripts/ratify-age-appropriateness.ts",
+    "load:peak": "k6 run scripts/load/k6-peak.js",
+    "load:spike": "k6 run scripts/load/k6-spike.js",
+    "verify:stage": "tsx scripts/verify-stage.ts"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
-    "@infinite-ai/analytics": "*",
-    "@infinite-ai/brain": "*",
-    "@infinite-ai/contracts": "*",
-    "@infinite-ai/curriculum-seed": "*",
-    "@infinite-ai/db": "*",
-    "@infinite-ai/evals": "*",
-    "@infinite-ai/warehouse": "*",
+    "@infinite-ai/brain": "workspace:*",
+    "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/curriculum-seed": "workspace:*",
+    "@infinite-ai/analytics": "workspace:*",
+    "@infinite-ai/warehouse": "workspace:*",
+    "@infinite-ai/db": "workspace:*",
+    "@infinite-ai/evals": "workspace:*",
     "@types/node": "22.20.1",
     "eslint": "9.39.5",
     "eslint-config-prettier": "10.1.8",
@@ -43,9 +80,16 @@
     "typescript-eslint": "8.65.0",
     "vitest": "3.2.7"
   },
-  "overrides": {
-    "electron-to-chromium": "1.5.420",
-    "nanoid": "3.3.18",
-    "deepmerge-ts": "8.0.2"
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild"
+    ],
+    "overrides": {
+      "nanoid": "3.3.18",
+      "deepmerge-ts": "8.0.2"
+    }
   }
 }

@@ -161,3 +161,83 @@ export const UnitBlueprintResult = z.discriminatedUnion('status', [
   UnitNeedsInput,
 ]);
 export type UnitBlueprintResult = z.infer<typeof UnitBlueprintResult>;
+
+// ---------------------------------------------------------------------------
+// Teacher-facing Unit Plan Document (Section 1–7 of the CAPS Unit Blueprint form)
+// ---------------------------------------------------------------------------
+// This is the domain type for the teacher-completed planning document — the form the
+// teacher fills in, stored per-unit per-term. It is distinct from `UnitBlueprint`, which
+// is the AI-generated backward-design artefact produced by CE-04. A teacher fills in a
+// UnitPlanDocument; CE-04 generates a UnitBlueprint. Both concern the same unit of work
+// but serve different consumers.
+
+/** One row of the Scope, Sequence and Learning Plan table (Section 5). */
+export const UnitPlanLessonRow = z.object({
+  lessonDay: z.string().min(1),
+  coreObjective: z.string().min(1),
+  teacherActivities: z.string().min(1),
+  learnerActivities: z.string().min(1),
+  resources: z.string(),
+});
+export type UnitPlanLessonRow = z.infer<typeof UnitPlanLessonRow>;
+
+/** Teacher's self-reported ATP coverage status (Section 7). */
+export const CoverageStatus = z.enum(['on_track', 'behind', 'ahead']);
+export type CoverageStatus = z.infer<typeof CoverageStatus>;
+
+/**
+ * The full teacher-completed CAPS Unit Blueprint document. All seven sections are
+ * represented; the reflection section is nullable because it is completed after teaching.
+ * `tenantId` is required because this document is a tenant-owned planning record stored in
+ * L3 under the RLS policy — a document without a tenant is not storable.
+ */
+export const UnitPlanDocument = z.object({
+  tenantId: z.string().uuid(),
+
+  // Section 1 — Administrative & Contextual Details
+  schoolName: z.string().min(1),
+  district: z.string().min(1),
+  subject: z.string().min(1),
+  grade: GradeLabel,
+  termNumber: z.number().int().min(1).max(4),
+  weekFrom: z.number().int().positive(),
+  weekTo: z.number().int().positive(),
+  unitTitle: z.string().min(1),
+  timeAllocation: z.string().min(1),
+
+  // Section 2 — Curriculum Alignment (CAPS)
+  capsTopicSubtopic: z.string().min(1),
+  coreConcepts: z.string().min(1),
+  skillsToDevelop: z.string().min(1),
+
+  // Section 3 — Learning Objectives (three cognitive tiers)
+  objectiveLow: z.string().min(1),
+  objectiveMedium: z.string().min(1),
+  objectiveHigh: z.string().min(1),
+
+  // Section 4 — Assessment Strategy
+  formativeAssessment: z.string().min(1),
+  formalAssessmentTask: z.string().min(1),
+  enrichment: z.string().nullable(),
+  remediation: z.string().nullable(),
+
+  // Section 5 — Scope, Sequence & Learning Plan
+  lessons: z.array(UnitPlanLessonRow).min(1),
+
+  // Section 6 — LTSM (nullable fields = unused resource type)
+  ltsmApprovedTextbooks: z.string().nullable(),
+  ltsmDbeWorkbooks: z.string().nullable(),
+  ltsmPosters: z.boolean(),
+  ltsmDigital: z.boolean(),
+
+  // Section 7 — Teacher Reflection (null until post-teaching)
+  coverageStatus: CoverageStatus.nullable(),
+  gapsIdentified: z.string().nullable(),
+  interventionPlan: z.string().nullable(),
+  successesAndImprovements: z.string().nullable(),
+
+  // Template traceability
+  templateId: z.string().min(1),
+  academicYear: z.number().int().min(2000).max(2100),
+});
+export type UnitPlanDocument = z.infer<typeof UnitPlanDocument>;

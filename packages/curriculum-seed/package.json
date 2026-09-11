@@ -14,9 +14,9 @@
     "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
-    "@infinite-ai/brain": "*",
-    "@infinite-ai/contracts": "*",
-    "@infinite-ai/db": "*",
+    "@infinite-ai/brain": "workspace:*",
+    "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/db": "workspace:*",
     "zod": "3.25.76"
   },
   "devDependencies": {

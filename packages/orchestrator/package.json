@@ -17,8 +17,8 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@infinite-ai/db": "*",
-    "@infinite-ai/telemetry": "*",
+    "@infinite-ai/db": "workspace:*",
+    "@infinite-ai/telemetry": "workspace:*",
     "zod": "3.25.76"
   },
   "devDependencies": {

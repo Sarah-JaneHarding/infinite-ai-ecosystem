@@ -150,3 +150,31 @@ export const DifferentiationResult = z.discriminatedUnion('status', [
   DifferentiationNeedsInput,
 ]);
 export type DifferentiationResult = z.infer<typeof DifferentiationResult>;
+
+// ---------------------------------------------------------------------------
+// Teacher-facing Lesson Plan Blueprint document (DBE CAPS-Aligned Lesson Plan Blueprint)
+// ---------------------------------------------------------------------------
+
+export const LessonPlanBlueprint = z.object({
+  tenantId: z.string().uuid(),
+  subject: z.string().min(1),
+  grade: GradeLabel,
+  date: z.string().min(1),
+  durationMinutes: z.number().int().positive(),
+  topicTheme: z.string().min(1),
+  aimsObjectives: z.string().min(1),
+  priorKnowledge: z.string().min(1),
+  resourcesLtsm: z.string().min(1),
+  introduction: z.string().min(1),
+  development: z.string().min(1),
+  classwork: z.string().min(1),
+  conclusionHomework: z.string().min(1),
+  assessmentType: z.string().min(1),
+  assessmentNotes: z.string().nullable(),
+  whatWorked: z.string().nullable(),
+  challenges: z.string().nullable(),
+  adjustmentsNextTime: z.string().nullable(),
+  templateId: z.string().min(1),
+  academicYear: z.number().int().min(2000).max(2100),
+});
+export type LessonPlanBlueprint = z.infer<typeof LessonPlanBlueprint>;

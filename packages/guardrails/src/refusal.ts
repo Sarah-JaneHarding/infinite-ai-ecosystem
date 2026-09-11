@@ -81,8 +81,7 @@ export const Refusal = z.object({
 export type Refusal = z.infer<typeof Refusal>;
 
 export type GuardrailVerdict =
-  | { readonly passed: true }
-  | { readonly passed: false; readonly refusal: Refusal };
+  { readonly passed: true } | { readonly passed: false; readonly refusal: Refusal };
 
 export function refuse(
   code: RefusalReasonCode,

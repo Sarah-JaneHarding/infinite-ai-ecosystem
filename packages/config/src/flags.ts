@@ -33,9 +33,11 @@ export const FLAGS = [
     key: 'pilot_school_onboarding_wizard',
     description:
       'Enables the new multi-step onboarding wizard UI (packages/provisioning). ' +
-      'Replaces the manual CSV import flow used during private beta.',
+      'Replaces the manual CSV import flow used during private beta. ' +
+      'Expiry extended to 2027-02-01: pilot starts Term 4 2026, Week-16 evaluation is ' +
+      '2027-01-27; remove this flag once the wizard ships to all tenants after that review.',
     owner: 'mrsharding@benjaminpine.co.za',
-    expiresAt: '2026-11-01',
+    expiresAt: '2027-02-01',
     defaultValue: false,
   },
   {

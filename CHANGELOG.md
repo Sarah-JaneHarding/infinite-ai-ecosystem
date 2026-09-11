@@ -16,7 +16,11 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
   - Feature-flag registry (`packages/config/src/flags.ts`) with typed keys, owner, expiry enforcement and env-override pattern.
   - `pnpm check:flags` CI guard (`scripts/check-feature-flags.ts`) that exits 1 on any expired flag.
   - `CHANGELOG.md` (this file), `OPERATOR_MANUAL.md`, `ONBOARDING_GUIDE.md`, `HOW_TO_ADD_AN_AGENT.md`, `COST_MODEL.md`, `PILOT_PROTOCOL.md`, `INCIDENT_PROCESS.md`, `RUNBOOKS/canary-deploy.md`.
-  - Flags: `pilot_school_onboarding_wizard`, `billing_dunning_emails`, `commons_pattern_sharing` (all off by default, expiring 2026-11-01 to 2026-11-15).
+  - Flags: `pilot_school_onboarding_wizard` (default off, expiry extended to 2027-02-01 for pilot evaluation period), `billing_dunning_emails`, `commons_pattern_sharing` (both default off, expiring 2026-11-01/15).
+
+- **OQ-019 — Benjamin Pine Primary School confirmed as pilot school #1 (2026-09-09)**
+  - `packages/provisioning/src/pilot.ts`: `PilotTenantConfig` interface, `PilotTenantConfigSchema`, and `PILOT_COHORT` with Benjamin Pine Primary School as the first confirmed entry (small primary, Starter tier, Grades R–7, English LoLT, Term 4 2026 start).
+  - `docs/PILOT_PROTOCOL.md` updated with the confirmed cohort table; two slots for schools #2 and #3 remain pending.
 
 - **Stage 17 — Tenant lifecycle, provisioning, billing**
   - Onboarding wizard (7 steps, readiness score).
