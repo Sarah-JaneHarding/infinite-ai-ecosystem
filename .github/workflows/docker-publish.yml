@@ -40,10 +40,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
-    env:
-      # Resolve the image tag: explicit input → semver tag → short SHA.
-      IMAGE_TAG: ${{ github.event.inputs.tag || github.ref_name || '' }}
-
     steps:
       - uses: actions/checkout@v4
 
