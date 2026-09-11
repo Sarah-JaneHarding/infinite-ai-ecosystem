@@ -375,7 +375,7 @@ components in the test environment; no React runtime ships with the package.
 
 | Package                | Version | Licence    | Why                                                                                                                                                                                                                                                                          | Replaces |
 | ---------------------- | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `next`                 | 16.3.0  | MIT        | The App Router framework. Server components by default; Turbopack for the dev server. Required by Stage 14 step 1.                                                                                                                                                           | —        |
+| `next`                 | 16.3.4  | MIT        | The App Router framework. Server components by default; Turbopack for the dev server. Required by Stage 14 step 1. Bumped from 16.3.0 — see the supply-chain audit note below.                                                                                               | —        |
 | `react`                | 19.2.8  | MIT        | React 19 — required by Next.js 16. Provides concurrent features, form actions and the compiler the framework depends on.                                                                                                                                                     | —        |
 | `react-dom`            | 19.2.8  | MIT        | The DOM renderer for React 19.                                                                                                                                                                                                                                               | —        |
 | `@types/react`         | 19.2.18 | MIT        | TypeScript types for React 19.                                                                                                                                                                                                                                               | —        |
@@ -423,6 +423,18 @@ Found while making the CI stage gate actually track the repository's current sta
 of this stage's own verification set since it was written) had ever been executed by
 CI, since `.github/workflows/ci.yml` had called `pnpm verify:stage 00` unconditionally
 since Stage 00 itself.
+
+### `next` 16.3.0 → 16.3.4 (2026-09-11)
+
+`pnpm audit:supply-chain` found two critical, unauthenticated RCE advisories in
+`next@16.3.0` (GHSA-p293-qw3h-jr36, Windows-hosted servers; a second Image
+Optimization API/AVIF advisory), both patched in `>=16.3.3`. This had gone
+uncaught for the same reason as the `nanoid`/`deepmerge-ts` overrides above: CI
+has not completed a run since 2026-09-02 (see `docs/OPEN_QUESTIONS.md` OQ-029),
+so no push since then had actually run the audit. Bumped the direct dependency
+in `apps/web/package.json` to `16.3.4` (latest patch on the 16.3.x line at the
+time of this fix) and regenerated `pnpm-lock.yaml`; `pnpm --filter @infinite-ai/web`
+typecheck/test/build all re-verified green after the bump.
 
 ## Stage 17 — Tenant lifecycle, provisioning, billing
 
