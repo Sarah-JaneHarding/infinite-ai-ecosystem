@@ -1,0 +1,304 @@
+name: Terraform
+
+# Runs on pull requests and pushes to main — only when infra/terraform changes
+# (or this file itself changes).  Code-only PRs skip this workflow entirely.
+#
+# Three jobs:
+#   lint   — format check + validate; no AWS credentials required (providers are
+#             downloaded for schema checks but never contact real infrastructure).
+#             Runs on every PR and every push to main.
+#   plan   — full `terraform plan` against production state.  Runs on PRs only;
+#             posts the plan diff as a PR comment, updated on subsequent pushes.
+#   apply  — `terraform apply -auto-approve`.  Runs on push to main or manual
+#             workflow_dispatch.  Gated by the `production` GitHub Environment's
+#             required-reviewer protection rule — nothing in this workflow can
+#             approve that gate.
+#
+# Variable convention (Settings → Secrets and variables → Actions → Variables):
+#
+#   AWS_DEPLOY_ROLE_ARN              bootstrap output: github_deploy_role_arn
+#   TF_STATE_BUCKET                  bootstrap output: state_bucket_name
+#   TF_LOCK_TABLE                    bootstrap output: lock_table_name
+#   TF_VAR_DOMAIN_NAME               e.g. infinite-ai.benjaminpine.co.za
+#   TF_VAR_DNS_ZONE_ID               Route 53 hosted zone ID
+#   TF_VAR_ALERT_EMAIL               ops@ address for CloudWatch alarms
+#   TF_VAR_LANGFUSE_INIT_USER_EMAIL  Langfuse first-admin email
+#   TF_VAR_GATEWAY_IMAGE_TAG \
+#   TF_VAR_WORKER_IMAGE_TAG  |  commit SHA for the initial deploy; afterwards
+#   TF_VAR_WEB_IMAGE_TAG     /  the running ECS task definition is the source of
+#                               truth and these vars are the fallback only.
+#
+# Actual credentials (DB passwords, signing keys, API keys) live in AWS Secrets
+# Manager.  None of the variables listed above are secrets — they are config.
+# Do not add raw credential values here.
+
+on:
+  pull_request:
+    paths:
+      - 'infra/terraform/**'
+      - '.github/workflows/terraform.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'infra/terraform/**'
+      - '.github/workflows/terraform.yml'
+  # Manual trigger from the Actions UI — useful for the initial production apply
+  # (before any infra change lands on main) and for re-running apply after an
+  # interrupted run without needing a dummy commit.  Always runs from main.
+  workflow_dispatch:
+
+# Serialize all Terraform runs on the same ref so a plan and an apply can never
+# race against the same state file.  cancel-in-progress:false because an
+# in-flight apply must not be interrupted — it holds a state lock.
+concurrency:
+  group: terraform-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  id-token: write        # GitHub Actions OIDC → bootstrap github_deploy_role_arn
+  contents: read
+  pull-requests: write   # post/update plan comment on the PR
+
+env:
+  AWS_REGION: af-south-1
+  TF_VERSION: '1.9.8'
+  TF_DIR: infra/terraform/environments/production
+
+jobs:
+  # ── Lint ──────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint (fmt + validate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      # Check every .tf file in the repo — a badly formatted module would not be
+      # caught by the environment-scoped jobs below.
+      - name: Terraform format check
+        run: terraform fmt -check -recursive infra/terraform
+
+      # -backend=false skips state access; providers are fetched from the
+      # HashiCorp registry to verify resource schemas but never used against
+      # live infrastructure.
+      - name: Terraform init (no backend)
+        run: terraform -chdir=${{ env.TF_DIR }} init -backend=false
+
+      - name: Terraform validate
+        run: terraform -chdir=${{ env.TF_DIR }} validate
+
+  # ── Plan ──────────────────────────────────────────────────────────────────
+  plan:
+    name: Terraform plan
+    if: github.event_name == 'pull_request'
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Terraform reads TF_VAR_* env vars automatically — no -var flags needed.
+      TF_VAR_domain_name: ${{ vars.TF_VAR_DOMAIN_NAME }}
+      TF_VAR_dns_zone_id: ${{ vars.TF_VAR_DNS_ZONE_ID }}
+      TF_VAR_alert_email: ${{ vars.TF_VAR_ALERT_EMAIL }}
+      TF_VAR_langfuse_init_user_email: ${{ vars.TF_VAR_LANGFUSE_INIT_USER_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify required repository variables
+        run: |
+          missing=()
+          [[ -z '${{ vars.AWS_DEPLOY_ROLE_ARN }}'             ]] && missing+=("AWS_DEPLOY_ROLE_ARN")
+          [[ -z '${{ vars.TF_STATE_BUCKET }}'                 ]] && missing+=("TF_STATE_BUCKET")
+          [[ -z '${{ vars.TF_LOCK_TABLE }}'                   ]] && missing+=("TF_LOCK_TABLE")
+          [[ -z '${{ vars.TF_VAR_DOMAIN_NAME }}'              ]] && missing+=("TF_VAR_DOMAIN_NAME")
+          [[ -z '${{ vars.TF_VAR_DNS_ZONE_ID }}'              ]] && missing+=("TF_VAR_DNS_ZONE_ID")
+          [[ -z '${{ vars.TF_VAR_ALERT_EMAIL }}'              ]] && missing+=("TF_VAR_ALERT_EMAIL")
+          [[ -z '${{ vars.TF_VAR_LANGFUSE_INIT_USER_EMAIL }}' ]] && missing+=("TF_VAR_LANGFUSE_INIT_USER_EMAIL")
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "ERROR: Missing repository variables: ${missing[*]}"
+            echo "Add them in Settings → Secrets and variables → Actions → Variables tab"
+            exit 1
+          fi
+
+      - uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      # Read the image tag from the running ECS task definition so a Terraform-only
+      # change (e.g. resizing RDS) never accidentally re-pins the image to whatever
+      # the repo var says today.  Falls back to the repo var for the first apply
+      # when no task definition exists yet.  Writes TF_VAR_* into GITHUB_ENV so
+      # subsequent steps see them as Terraform auto-vars.
+      - name: Resolve current image tags from ECS
+        run: |
+          resolve() {
+            local svc="$1" fallback="$2"
+            local tag
+            tag=$(aws ecs describe-task-definition \
+              --task-definition "infinite-ai-production-${svc}" \
+              --query 'taskDefinition.containerDefinitions[0].image' \
+              --output text 2>/dev/null | awk -F: '{print $NF}') || tag=""
+            echo "${tag:-${fallback}}"
+          }
+          echo "TF_VAR_gateway_image_tag=$(resolve gateway '${{ vars.TF_VAR_GATEWAY_IMAGE_TAG }}')" >> "$GITHUB_ENV"
+          echo "TF_VAR_worker_image_tag=$(resolve worker '${{ vars.TF_VAR_WORKER_IMAGE_TAG }}')"   >> "$GITHUB_ENV"
+          echo "TF_VAR_web_image_tag=$(resolve web '${{ vars.TF_VAR_WEB_IMAGE_TAG }}')"             >> "$GITHUB_ENV"
+
+      - name: Terraform init
+        run: |
+          terraform -chdir=${{ env.TF_DIR }} init \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="dynamodb_table=${{ vars.TF_LOCK_TABLE }}"
+
+      # -detailed-exitcode: 0=no changes, 1=error, 2=changes present.
+      # continue-on-error so the comment step always runs (even on error).
+      - name: Terraform plan
+        id: plan
+        run: |
+          set +e
+          terraform -chdir=${{ env.TF_DIR }} plan -no-color -detailed-exitcode \
+            2>&1 | tee /tmp/plan.txt
+          echo "exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
+      - name: Post plan as PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const raw = fs.readFileSync('/tmp/plan.txt', 'utf8');
+            // GitHub comment body limit is 65 536 bytes
+            const plan = raw.length > 60000
+              ? raw.slice(0, 60000) + '\n…(truncated — full output in Actions log)'
+              : raw;
+            const exit = '${{ steps.plan.outputs.exit_code }}';
+            const status = exit === '0' ? '✅ No changes'
+                         : exit === '2' ? '⚠️ Changes planned'
+                         : '❌ Plan failed';
+            const body = [
+              `## Terraform Plan (production) — ${status}`,
+              '',
+              '<details><summary>Plan output</summary>',
+              '',
+              '```hcl',
+              plan,
+              '```',
+              '',
+              '</details>',
+              '',
+              `*Commit: \`${ context.sha.slice(0, 7) }\`*`,
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c =>
+              c.user?.login === 'github-actions[bot]' &&
+              c.body?.includes('## Terraform Plan (production)')
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Fail if plan errored
+        if: steps.plan.outputs.exit_code != '0' && steps.plan.outputs.exit_code != '2'
+        run: |
+          echo "Terraform plan failed (exit code ${{ steps.plan.outputs.exit_code }})."
+          exit 1
+
+  # ── Apply ─────────────────────────────────────────────────────────────────
+  apply:
+    name: Terraform apply
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      github.event_name == 'workflow_dispatch'
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Human gate — the `production` GitHub Environment's required-reviewer
+    # protection rule (Settings → Environments → production) pauses this job
+    # until a designated reviewer clicks Approve.  Nothing in this file can
+    # grant or bypass that approval; it is enforced by GitHub itself.
+    environment: production
+    env:
+      TF_VAR_domain_name: ${{ vars.TF_VAR_DOMAIN_NAME }}
+      TF_VAR_dns_zone_id: ${{ vars.TF_VAR_DNS_ZONE_ID }}
+      TF_VAR_alert_email: ${{ vars.TF_VAR_ALERT_EMAIL }}
+      TF_VAR_langfuse_init_user_email: ${{ vars.TF_VAR_LANGFUSE_INIT_USER_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify required repository variables
+        run: |
+          missing=()
+          [[ -z '${{ vars.AWS_DEPLOY_ROLE_ARN }}'             ]] && missing+=("AWS_DEPLOY_ROLE_ARN")
+          [[ -z '${{ vars.TF_STATE_BUCKET }}'                 ]] && missing+=("TF_STATE_BUCKET")
+          [[ -z '${{ vars.TF_LOCK_TABLE }}'                   ]] && missing+=("TF_LOCK_TABLE")
+          [[ -z '${{ vars.TF_VAR_DOMAIN_NAME }}'              ]] && missing+=("TF_VAR_DOMAIN_NAME")
+          [[ -z '${{ vars.TF_VAR_DNS_ZONE_ID }}'              ]] && missing+=("TF_VAR_DNS_ZONE_ID")
+          [[ -z '${{ vars.TF_VAR_ALERT_EMAIL }}'              ]] && missing+=("TF_VAR_ALERT_EMAIL")
+          [[ -z '${{ vars.TF_VAR_LANGFUSE_INIT_USER_EMAIL }}' ]] && missing+=("TF_VAR_LANGFUSE_INIT_USER_EMAIL")
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "ERROR: Missing repository variables: ${missing[*]}"
+            exit 1
+          fi
+
+      - uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Resolve current image tags from ECS
+        run: |
+          resolve() {
+            local svc="$1" fallback="$2"
+            local tag
+            tag=$(aws ecs describe-task-definition \
+              --task-definition "infinite-ai-production-${svc}" \
+              --query 'taskDefinition.containerDefinitions[0].image' \
+              --output text 2>/dev/null | awk -F: '{print $NF}') || tag=""
+            local resolved="${tag:-${fallback}}"
+            if [[ -z "$resolved" ]]; then
+              echo "ERROR: no image tag for ${svc} — set TF_VAR_${svc^^}_IMAGE_TAG as a repo variable for the initial apply." >&2
+              exit 1
+            fi
+            echo "${resolved}"
+          }
+          echo "TF_VAR_gateway_image_tag=$(resolve gateway '${{ vars.TF_VAR_GATEWAY_IMAGE_TAG }}')" >> "$GITHUB_ENV"
+          echo "TF_VAR_worker_image_tag=$(resolve worker '${{ vars.TF_VAR_WORKER_IMAGE_TAG }}')"   >> "$GITHUB_ENV"
+          echo "TF_VAR_web_image_tag=$(resolve web '${{ vars.TF_VAR_WEB_IMAGE_TAG }}')"             >> "$GITHUB_ENV"
+
+      - name: Terraform init
+        run: |
+          terraform -chdir=${{ env.TF_DIR }} init \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="dynamodb_table=${{ vars.TF_LOCK_TABLE }}"
+
+      - name: Terraform apply
+        run: terraform -chdir=${{ env.TF_DIR }} apply -auto-approve
