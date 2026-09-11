@@ -1,14 +1,7 @@
 import type { ReactNode } from 'react';
 
 export type CardHue =
-  | 'red'
-  | 'orange'
-  | 'amber'
-  | 'green'
-  | 'teal'
-  | 'blue'
-  | 'indigo'
-  | 'violet';
+  'red' | 'orange' | 'amber' | 'green' | 'teal' | 'blue' | 'indigo' | 'violet';
 
 export interface ModularCardProps {
   readonly hue?: CardHue;

@@ -4,6 +4,10 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  nanoid: 3.3.18
+  deepmerge-ts: 8.0.2
+
 importers:
 
   .:
@@ -12,25 +16,25 @@ importers:
         specifier: 9.39.5
         version: 9.39.5
       '@infinite-ai/analytics':
-        specifier: '*'
+        specifier: workspace:*
         version: link:packages/analytics
       '@infinite-ai/brain':
-        specifier: '*'
+        specifier: workspace:*
         version: link:packages/brain
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:packages/contracts
       '@infinite-ai/curriculum-seed':
-        specifier: '*'
+        specifier: workspace:*
         version: link:packages/curriculum-seed
       '@infinite-ai/db':
-        specifier: '*'
+        specifier: workspace:*
         version: link:packages/db
       '@infinite-ai/evals':
-        specifier: '*'
+        specifier: workspace:*
         version: link:packages/evals
       '@infinite-ai/warehouse':
-        specifier: '*'
+        specifier: workspace:*
         version: link:packages/warehouse
       '@types/node':
         specifier: 22.20.1
@@ -69,22 +73,22 @@ importers:
   apps/gateway:
     dependencies:
       '@infinite-ai/config':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/config
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/contracts
       '@infinite-ai/db':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/db
       '@infinite-ai/deident':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/deident
       '@infinite-ai/guardrails':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/guardrails
       '@infinite-ai/telemetry':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/telemetry
       zod:
         specifier: 3.25.76
@@ -109,19 +113,19 @@ importers:
   apps/web:
     dependencies:
       '@infinite-ai/design-system':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/design-system
       '@infinite-ai/learner-client':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/learner-client
       '@infinite-ai/policy':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/policy
       '@infinite-ai/school-setup':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/school-setup
       '@infinite-ai/security':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/security
       next:
         specifier: 16.3.0
@@ -154,6 +158,9 @@ importers:
       '@types/react-dom':
         specifier: 19.2.4
         version: 19.2.4(@types/react@19.2.18)
+      autoprefixer:
+        specifier: 10.5.4
+        version: 10.5.4(postcss@8.5.26)
       postcss:
         specifier: 8.5.26
         version: 8.5.26
@@ -170,31 +177,31 @@ importers:
   apps/worker:
     dependencies:
       '@infinite-ai/agents':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/agents
       '@infinite-ai/brain':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/brain
       '@infinite-ai/config':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/config
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/contracts
       '@infinite-ai/db':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/db
       '@infinite-ai/guardrails':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/guardrails
       '@infinite-ai/orchestrator':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/orchestrator
       '@infinite-ai/prompts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/prompts
       '@infinite-ai/telemetry':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/telemetry
       bullmq:
         specifier: 6.1.2
@@ -235,13 +242,13 @@ importers:
   packages/agents:
     dependencies:
       '@infinite-ai/analytics':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../analytics
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../contracts
       '@infinite-ai/warehouse':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../warehouse
       zod:
         specifier: 3.25.76
@@ -257,7 +264,7 @@ importers:
   packages/analytics:
     dependencies:
       '@infinite-ai/guardrails':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../guardrails
       zod:
         specifier: 3.25.76
@@ -292,16 +299,16 @@ importers:
   packages/brain:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../contracts
       '@infinite-ai/db':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../db
       '@infinite-ai/policy':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../policy
       '@infinite-ai/telemetry':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../telemetry
       zod:
         specifier: 3.25.76
@@ -326,7 +333,7 @@ importers:
   packages/compliance:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../contracts
       zod:
         specifier: 3.25.76
@@ -374,13 +381,13 @@ importers:
   packages/curriculum-seed:
     dependencies:
       '@infinite-ai/brain':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../brain
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../contracts
       '@infinite-ai/db':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../db
       zod:
         specifier: 3.25.76
@@ -399,14 +406,14 @@ importers:
   packages/db:
     dependencies:
       '@infinite-ai/telemetry':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../telemetry
       '@prisma/client':
         specifier: 6.19.3
         version: 6.19.3(prisma@6.19.3(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
     devDependencies:
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../contracts
       '@testcontainers/postgresql':
         specifier: 12.0.4
@@ -467,7 +474,7 @@ importers:
         version: 3.25.76
     devDependencies:
       '@infinite-ai/config':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../config
       '@vitest/coverage-v8':
         specifier: ^3.2.7
@@ -482,10 +489,10 @@ importers:
   packages/evals:
     dependencies:
       '@infinite-ai/agents':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../agents
       '@infinite-ai/guardrails':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../guardrails
       zod:
         specifier: 3.25.76
@@ -517,22 +524,22 @@ importers:
   packages/guardrails:
     dependencies:
       '@infinite-ai/brain':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../brain
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../contracts
       '@infinite-ai/db':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../db
       '@infinite-ai/deident':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../deident
       '@infinite-ai/policy':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../policy
       '@infinite-ai/telemetry':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../telemetry
       zod:
         specifier: 3.25.76
@@ -564,7 +571,7 @@ importers:
         version: 3.25.76
     devDependencies:
       '@infinite-ai/config':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../config
       '@vitest/coverage-v8':
         specifier: ^3.2.7
@@ -579,7 +586,7 @@ importers:
   packages/learning:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../contracts
       zod:
         specifier: 3.25.76
@@ -614,10 +621,10 @@ importers:
   packages/orchestrator:
     dependencies:
       '@infinite-ai/db':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../db
       '@infinite-ai/telemetry':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../telemetry
       zod:
         specifier: 3.25.76
@@ -642,14 +649,14 @@ importers:
   packages/pd-journal:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../contracts
       zod:
         specifier: 3.25.76
         version: 3.25.76
     devDependencies:
       '@infinite-ai/compliance':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../compliance
       vitest:
         specifier: ^3.2.0
@@ -658,7 +665,7 @@ importers:
   packages/policy:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../contracts
       zod:
         specifier: 3.25.76
@@ -677,7 +684,7 @@ importers:
   packages/prompt-builder:
     dependencies:
       '@infinite-ai/prompts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../prompts
       zod:
         specifier: 3.25.76
@@ -696,7 +703,7 @@ importers:
   packages/prompts:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../contracts
       zod:
         specifier: 3.25.76
@@ -709,17 +716,121 @@ importers:
         specifier: 3.2.7
         version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0)
 
-  packages/school-setup: {}
+  packages/provisioning:
+    dependencies:
+      '@infinite-ai/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.2.7
+        version: 3.2.7(vitest@3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0))
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 3.2.7
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0)
 
-  packages/security: {}
-
-  packages/telemetry: {}
-
-  packages/warehouse:
+  packages/school-setup:
     dependencies:
       zod:
         specifier: 3.25.76
         version: 3.25.76
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.2.7
+        version: 3.2.7(vitest@3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0))
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 3.2.7
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/security:
+    devDependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 3.2.7
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/system-prompt-builder:
+    dependencies:
+      '@infinite-ai/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@infinite-ai/prompt-builder':
+        specifier: workspace:*
+        version: link:../prompt-builder
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.2.7
+        version: 3.2.7(vitest@3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0))
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 3.2.7
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/telemetry:
+    dependencies:
+      '@opentelemetry/api':
+        specifier: 1.9.1
+        version: 1.9.1
+      '@opentelemetry/exporter-trace-otlp-http':
+        specifier: 0.221.0
+        version: 0.221.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources':
+        specifier: 2.10.0
+        version: 2.10.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/sdk-trace-base':
+        specifier: 2.10.0
+        version: 2.10.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/semantic-conventions':
+        specifier: 1.43.0
+        version: 1.43.0
+    devDependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 3.2.7
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/testkit:
+    devDependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 3.2.7
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/warehouse:
+    dependencies:
+      '@infinite-ai/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 3.2.7
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.1)(yaml@2.9.0)
 
 packages:
 
@@ -1282,6 +1393,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@opentelemetry/api-logs@0.221.0':
+    resolution: {integrity: sha512-OlanaW1vv7ufTqQ3/fPLI4arGt5ZoM+P8abOMki6uEYnpRazepSWDwDnnw+la7kE26SHVC18//SMccrDvLKOXQ==}
+    engines: {node: '>=8.0.0'}
+
   '@opentelemetry/api@1.9.1':
     resolution: {integrity: sha512-gLyJlPHPZYdAk1JENA9LeHejZe1Ti77/pTeFm/nMXmQH/HFZlcS/O2XJB+L8fkbrNSqhdtlvjBVjxwUYanNH5Q==}
     engines: {node: '>=8.0.0'}
@@ -1292,11 +1407,41 @@ packages:
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
 
+  '@opentelemetry/exporter-trace-otlp-http@0.221.0':
+    resolution: {integrity: sha512-AySXiKoC+meiWm6zdVj5T2LnPDZuatveBby1cMOeQteIWsYXAUxs8Sru13G2pVSPrUXz6vF+og7QVBX6GdC/oQ==}
+    engines: {node: ^18.19.0 || >=20.6.0}
+    peerDependencies:
+      '@opentelemetry/api': ^1.3.0
+
+  '@opentelemetry/otlp-exporter-base@0.221.0':
+    resolution: {integrity: sha512-UFPIq80OH3Ns/oPFHRj14d4DTOxUo+MUFU8hUiCq5jTqFhdeJnfVSANHT+xp92409cA+oxzvlZCe6NM1wvCuBA==}
+    engines: {node: ^18.19.0 || >=20.6.0}
+    peerDependencies:
+      '@opentelemetry/api': ^1.3.0
+
+  '@opentelemetry/otlp-transformer@0.221.0':
+    resolution: {integrity: sha512-lg6lkOU08Az23jVcn/0Els9HP+V8PnR4Km6p0KgpTggS0n/WuhnmY64rSh83Of9iR9nD+dpWr6adlcX8KzAwjg==}
+    engines: {node: ^18.19.0 || >=20.6.0}
+    peerDependencies:
+      '@opentelemetry/api': ^1.3.0
+
   '@opentelemetry/resources@2.10.0':
     resolution: {integrity: sha512-q6MMm2zhggzsHVNbabYwut+a6nbuQQe3URUoxaojM/8K1IBfwwPzvxIjNi2/lI1TFe+fMHMW9MWhrtDLEXEnkA==}
     engines: {node: ^18.19.0 || >=20.6.0}
     peerDependencies:
       '@opentelemetry/api': '>=1.3.0 <1.10.0'
+
+  '@opentelemetry/sdk-logs@0.221.0':
+    resolution: {integrity: sha512-FaDcazjyMp7TZZZAsqbo4IkovP0UegoCu0EBkiNt+qCqvUf7FPAsfcrZ3+ZEkKgXZ/jHafop+JoGPDk3A0SmLg==}
+    engines: {node: ^18.19.0 || >=20.6.0}
+    peerDependencies:
+      '@opentelemetry/api': '>=1.4.0 <1.10.0'
+
+  '@opentelemetry/sdk-metrics@2.10.0':
+    resolution: {integrity: sha512-t6r1VSvXNtSDnPXU1FbZeetJb7yyovHmgu0wRSoftxtE0g2rSNhQZQUy69sRUCL+iioJpX8SN/S6wq6ZtvLySQ==}
+    engines: {node: ^18.19.0 || >=20.6.0}
+    peerDependencies:
+      '@opentelemetry/api': '>=1.9.0 <1.10.0'
 
   '@opentelemetry/sdk-trace-base@2.10.0':
     resolution: {integrity: sha512-GuYQQT7QD2EeO8lcZLRQzcbOyhqAzL+6WWTKTU9mSUBYBazkEDl+VrQcXQhbB08OWM9anD1aHleVadzulpOaUQ==}
@@ -1854,6 +1999,13 @@ packages:
   async@3.2.6:
     resolution: {integrity: sha512-htCUDlxyyCLMgaM3xXg0C0LW2xqfuQ6p05pCEIsXuyQ+a1koYKTuBMzRNwmybfLgvJDMd0r1LTn4+E0Ti6C2AA==}
 
+  autoprefixer@10.5.4:
+    resolution: {integrity: sha512-MaU0U/za7N3r6brxD4YB/l4NSrFzLPlANv6wEuQVaIPlD3L4W9rFcQPbL/EilY9BHhHvhfcz3gInDLrEtWT4EA==}
+    engines: {node: ^10 || ^12 || >=14}
+    hasBin: true
+    peerDependencies:
+      postcss: ^8.1.0
+
   axe-core@4.13.0:
     resolution: {integrity: sha512-UzGt8zg7Ny8djbYMhxl2zuEevVa7r2gJjYY5Lwr1xM7+XU2nd6CkIWFTVcCIbAP63vSz71NaVyyuSk9lHKcy0A==}
     engines: {node: '>=4'}
@@ -1933,6 +2085,11 @@ packages:
   brace-expansion@5.0.9:
     resolution: {integrity: sha512-ScQ4IuvIEF1TMlP7Zt+vjJ//9zlPb2SDcxWxM3bk8s6t6GGdJ7KO1dCcTidOPJKePW30LE/2cT7wCyPho9/Wxg==}
     engines: {node: 20 || >=22}
+
+  browserslist@4.28.9:
+    resolution: {integrity: sha512-EWazOblFYUvlGZcfGhPUPmYh3nikUxBVb+y9MJun5f3hBi812X+8MSQTujLBtgK3cf51fJWbWfOjyeO954d+Eg==}
+    engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
+    hasBin: true
 
   buffer-crc32@1.0.0:
     resolution: {integrity: sha512-Db1SbgBS/fg/392AblrMJk97KggmvYhr4pB5ZIMTWtaivCPMWLkmb7m21cJvpvgK+J3nsU2CmmixNBZx4vFj/w==}
@@ -2111,9 +2268,9 @@ packages:
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
-  deepmerge-ts@7.1.5:
-    resolution: {integrity: sha512-HOJkrhaYsweh+W+e74Yn7YStZOilkoPb6fycpwNLKzSPtruFs48nYis0zy5yJz1+ktUhHxoRDJ27RQAWLIJVJw==}
-    engines: {node: '>=16.0.0'}
+  deepmerge-ts@8.0.2:
+    resolution: {integrity: sha512-uqbvqLUMrc6p0MO+WBRtTxY55hmyh94WRwI5a++PZe54X+bfVh59FSN7uWCBCW1CCVjzjnrwzfI8zidE2obMMw==}
+    engines: {node: '>=16.9.0'}
 
   defu@6.1.7:
     resolution: {integrity: sha512-7z22QmUWiQ/2d0KkdYmANbRUVABpZ9SNYyH5vx6PZ+nE5bcC0l7uFvEfHlyld/HcGBFTL536ClDt3DEcSlEJAQ==}
@@ -2150,6 +2307,9 @@ packages:
 
   effect@3.21.0:
     resolution: {integrity: sha512-PPN80qRokCd1f015IANNhrwOnLO7GrrMQfk4/lnZRE/8j7UPWrNNjPV0uBrZutI/nHzernbW+J0hdqQysHiSnQ==}
+
+  electron-to-chromium@1.5.427:
+    resolution: {integrity: sha512-n14zb3FdsChZ2BNobqNHAJMcP3ifFv4paox2LvCrfVAQcqGiSURgbJl+PfMpHVCNFkStnNc+RRVtPBTVW5PDgw==}
 
   emoji-regex@10.6.0:
     resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
@@ -2311,6 +2471,9 @@ packages:
   foreground-child@3.3.1:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
     engines: {node: '>=14'}
+
+  fraction.js@5.3.4:
+    resolution: {integrity: sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==}
 
   fs-constants@1.0.0:
     resolution: {integrity: sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==}
@@ -2648,8 +2811,8 @@ packages:
   nan@2.28.0:
     resolution: {integrity: sha512-fTsDz99OTq2sVePhGdp4qQhggZFtKr64ZNVyVajRKtMOkJxYekplBh577PiJB12v/D3s2E5cGtOI45LWp6rnLQ==}
 
-  nanoid@3.3.19:
-    resolution: {integrity: sha512-Y2tUNy4ouw6tq5oDSKeQYGOyhkUBhNOcGV/02KC+6kd9eDGqdZd++mjMiIDilrBYvjEnCYvVtsuHCuP+okSfug==}
+  nanoid@3.3.18:
+    resolution: {integrity: sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -2700,6 +2863,10 @@ packages:
   node-gyp-build-optional-packages@5.2.2:
     resolution: {integrity: sha512-s+w+rBWnpTMwSFbaE0UXsRlg7hU4FjekKU4eyAih5T8nJuNZT1nNsskXpxmeqSK9UzkBl6UgRlnKc8hz8IEqOw==}
     hasBin: true
+
+  node-releases@2.0.55:
+    resolution: {integrity: sha512-mIrE/Cw9y+9Au6dS5vDKDhQza9YvG6w+ZrS6X+ZzA7yFW/soAeaups4Qzn1bL6g5FVy8WtP79+0j82oPIbqRjQ==}
+    engines: {node: '>=18'}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -2794,6 +2961,9 @@ packages:
     resolution: {integrity: sha512-0M+L3LAD8/nm554LOla9Ayx0j0tmFZ0FBcoQ7F1VuVHpM/XpiC8RcDzBQB8W5+hA8L22THxELzeF+2WcUzvcLg==}
     engines: {node: '>=20'}
     hasBin: true
+
+  postcss-value-parser@4.2.0:
+    resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
 
   postcss@8.5.23:
     resolution: {integrity: sha512-g50586zr4bZmwFiTlflMu8E0bDTb5I5gertgwAKmsdUlTQIhZtunzUlD1WSzwcVWPoAVpsrA6vlfCD7oXvRwgg==}
@@ -3169,6 +3339,12 @@ packages:
   undici@8.10.2:
     resolution: {integrity: sha512-/y4/bH9YNU5hi9NIrpOuvGXFcxrj3CMrV+/AYpowAYTpHn8gX/XPFjNy766FPoYY0miQhdW977JFWKGNhBdwyQ==}
     engines: {node: '>=22.19.0'}
+
+  update-browserslist-db@1.3.3:
+    resolution: {integrity: sha512-pJ2sYawQS0R/WI928Gj5GlPhTGzbMelq0+4INtSYNDV9ErKJcX6xjGWkoG/VnB3dpUm00zALaqkrUD77pO5TDQ==}
+    hasBin: true
+    peerDependencies:
+      browserslist: '>= 4.21.0'
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
@@ -3704,6 +3880,10 @@ snapshots:
   '@next/swc-win32-x64-msvc@16.3.0':
     optional: true
 
+  '@opentelemetry/api-logs@0.221.0':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+
   '@opentelemetry/api@1.9.1': {}
 
   '@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1)':
@@ -3711,11 +3891,48 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/semantic-conventions': 1.43.0
 
+  '@opentelemetry/exporter-trace-otlp-http@0.221.0(@opentelemetry/api@1.9.1)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/otlp-exporter-base': 0.221.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/otlp-transformer': 0.221.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/sdk-trace': 2.10.0(@opentelemetry/api@1.9.1)
+
+  '@opentelemetry/otlp-exporter-base@0.221.0(@opentelemetry/api@1.9.1)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/otlp-transformer': 0.221.0(@opentelemetry/api@1.9.1)
+
+  '@opentelemetry/otlp-transformer@0.221.0(@opentelemetry/api@1.9.1)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/api-logs': 0.221.0
+      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/sdk-logs': 0.221.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/sdk-metrics': 2.10.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/sdk-trace': 2.10.0(@opentelemetry/api@1.9.1)
+
   '@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/semantic-conventions': 1.43.0
+
+  '@opentelemetry/sdk-logs@0.221.0(@opentelemetry/api@1.9.1)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/api-logs': 0.221.0
+      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/semantic-conventions': 1.43.0
+
+  '@opentelemetry/sdk-metrics@2.10.0(@opentelemetry/api@1.9.1)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.1)
 
   '@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.1)':
     dependencies:
@@ -3751,7 +3968,7 @@ snapshots:
   '@prisma/config@6.19.3(magicast@0.3.5)':
     dependencies:
       c12: 3.1.0(magicast@0.3.5)
-      deepmerge-ts: 7.1.5
+      deepmerge-ts: 8.0.2
       effect: 3.21.0
       empathic: 2.0.0
     transitivePeerDependencies:
@@ -4251,6 +4468,15 @@ snapshots:
 
   async@3.2.6: {}
 
+  autoprefixer@10.5.4(postcss@8.5.26):
+    dependencies:
+      browserslist: 4.28.9
+      caniuse-lite: 1.0.30001810
+      fraction.js: 5.3.4
+      picocolors: 1.1.1
+      postcss: 8.5.26
+      postcss-value-parser: 4.2.0
+
   axe-core@4.13.0: {}
 
   b4a@1.8.1: {}
@@ -4314,6 +4540,14 @@ snapshots:
   brace-expansion@5.0.9:
     dependencies:
       balanced-match: 4.0.4
+
+  browserslist@4.28.9:
+    dependencies:
+      baseline-browser-mapping: 2.11.22
+      caniuse-lite: 1.0.30001810
+      electron-to-chromium: 1.5.427
+      node-releases: 2.0.55
+      update-browserslist-db: 1.3.3(browserslist@4.28.9)
 
   buffer-crc32@1.0.0: {}
 
@@ -4474,7 +4708,7 @@ snapshots:
 
   deep-is@0.1.4: {}
 
-  deepmerge-ts@7.1.5: {}
+  deepmerge-ts@8.0.2: {}
 
   defu@6.1.7: {}
 
@@ -4516,6 +4750,8 @@ snapshots:
     dependencies:
       '@standard-schema/spec': 1.1.0
       fast-check: 3.23.2
+
+  electron-to-chromium@1.5.427: {}
 
   emoji-regex@10.6.0: {}
 
@@ -4701,6 +4937,8 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
+
+  fraction.js@5.3.4: {}
 
   fs-constants@1.0.0: {}
 
@@ -5006,7 +5244,7 @@ snapshots:
   nan@2.28.0:
     optional: true
 
-  nanoid@3.3.19: {}
+  nanoid@3.3.18: {}
 
   natural-compare@1.4.0: {}
 
@@ -5060,6 +5298,8 @@ snapshots:
     dependencies:
       detect-libc: 2.1.2
     optional: true
+
+  node-releases@2.0.55: {}
 
   normalize-path@3.0.0: {}
 
@@ -5148,15 +5388,17 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.2
 
+  postcss-value-parser@4.2.0: {}
+
   postcss@8.5.23:
     dependencies:
-      nanoid: 3.3.19
+      nanoid: 3.3.18
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
   postcss@8.5.26:
     dependencies:
-      nanoid: 3.3.19
+      nanoid: 3.3.18
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
@@ -5615,6 +5857,12 @@ snapshots:
   undici-types@6.21.0: {}
 
   undici@8.10.2: {}
+
+  update-browserslist-db@1.3.3(browserslist@4.28.9):
+    dependencies:
+      browserslist: 4.28.9
+      escalade: 3.2.0
+      picocolors: 1.1.1
 
   uri-js@4.4.1:
     dependencies:

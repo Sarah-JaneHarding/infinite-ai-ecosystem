@@ -184,3 +184,74 @@ export const RubricResult = z.discriminatedUnion('status', [
   RubricNeedsInput,
 ]);
 export type RubricResult = z.infer<typeof RubricResult>;
+
+// ---------------------------------------------------------------------------
+// Teacher-facing SBA Blueprint document (DBE SBA Assessment Blueprint template)
+// ---------------------------------------------------------------------------
+
+export const SbaCognitiveTier = z.enum(['low', 'medium', 'high']);
+export type SbaCognitiveTier = z.infer<typeof SbaCognitiveTier>;
+
+export const SbaBlueprintRow = z.object({
+  questionNumber: z.number().int().positive(),
+  subQuestion: z.string().nullable(),
+  topicArea: z.string().min(1),
+  cognitiveTier: SbaCognitiveTier,
+  expectedMarks: z.number().int().positive(),
+  actualMarks: z.number().int().min(0).nullable(),
+  toolType: z.string().min(1),
+});
+export type SbaBlueprintRow = z.infer<typeof SbaBlueprintRow>;
+
+export const SbaBlueprint = z.object({
+  tenantId: z.string().uuid(),
+  subject: z.string().min(1),
+  grade: GradeLabel,
+  termNumber: z.number().int().min(1).max(4),
+  assessmentTaskName: z.string().min(1),
+  atpWeeksCovered: z.string().min(1),
+  totalTaskMarks: z.number().int().positive(),
+  rows: z.array(SbaBlueprintRow).min(1),
+  lowDemandPercent: z.number().min(0).max(100),
+  mediumDemandPercent: z.number().min(0).max(100),
+  highDemandPercent: z.number().min(0).max(100),
+  atpAlignmentConfirmed: z.boolean(),
+  explicitMarkAllocationConfirmed: z.boolean(),
+  correspondingToolsConfirmed: z.boolean(),
+  teacherSignatureDate: z.string().nullable(),
+  hodSignatureDate: z.string().nullable(),
+  templateId: z.string().min(1),
+  academicYear: z.number().int().min(2000).max(2100),
+});
+export type SbaBlueprint = z.infer<typeof SbaBlueprint>;
+
+// ---------------------------------------------------------------------------
+// Teacher-facing Marking Memo document (DBE Marking Guidelines / Memorandum template)
+// ---------------------------------------------------------------------------
+
+export const MarkingMemoMatrix = z.object({
+  questionNumber: z.number().int().positive(),
+  topicArea: z.string().min(1),
+  knowledgeRecallMarks: z.number().int().min(0),
+  applicationAnalysisMarks: z.number().int().min(0),
+  evaluationSynthesisMarks: z.number().int().min(0),
+  totalMarks: z.number().int().positive(),
+});
+export type MarkingMemoMatrix = z.infer<typeof MarkingMemoMatrix>;
+
+export const MarkingMemo = z.object({
+  tenantId: z.string().uuid(),
+  subject: z.string().min(1),
+  examinationName: z.string().min(1),
+  totalMarks: z.number().int().positive(),
+  timeAllocationMinutes: z.number().int().positive(),
+  matrix: z.array(MarkingMemoMatrix).min(1),
+  sectionAMemo: z.string().min(1),
+  sectionBMemo: z.string().min(1),
+  sectionCMemo: z.string().min(1),
+  subjectModeratorSignatureDate: z.string().nullable(),
+  hodSignatureDate: z.string().nullable(),
+  templateId: z.string().min(1),
+  academicYear: z.number().int().min(2000).max(2100),
+});
+export type MarkingMemo = z.infer<typeof MarkingMemo>;

@@ -45,9 +45,7 @@ export type TombstoneTargetTier = 'L1_NODE' | 'L1_EDGE';
  * `'pipeline_compensation'` is a non-POPIA rollback used when a step after
  * `brain.publish_curriculum_version` fails and the publish must be reversed. */
 export type TombstoneReason =
-  | 'retention_expired'
-  | 'consent_withdrawn'
-  | 'pipeline_compensation';
+  'retention_expired' | 'consent_withdrawn' | 'pipeline_compensation';
 
 export interface TombstoneInput {
   readonly targetTier: TombstoneTargetTier;

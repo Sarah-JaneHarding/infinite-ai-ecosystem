@@ -55,9 +55,9 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  id-token: write        # GitHub Actions OIDC → bootstrap github_deploy_role_arn
+  id-token: write # GitHub Actions OIDC → bootstrap github_deploy_role_arn
   contents: read
-  pull-requests: write   # post/update plan comment on the PR
+  pull-requests: write # post/update plan comment on the PR
 
 env:
   AWS_REGION: af-south-1

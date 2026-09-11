@@ -8059,6 +8059,28 @@ guardrail dispatch gaps in `apps/worker/src/step-executor.ts` are now wired:
 
 ---
 
+## OQ-019 resolved — Benjamin Pine Primary School confirmed as pilot school #1 · 2026-09-09
+
+**What was blocking.** Stage 18's exit gate required "pilot protocol agreed with at least one school." No pilot schools had been confirmed, leaving the exit gate item BLOCKED and `docs/PILOT_PROTOCOL.md` incomplete.
+
+**Decision.** Benjamin Pine Primary School is confirmed as pilot school #1 (small primary, Starter tier, Grades R–7, English LoLT with Afrikaans FAL). Implementation partner: `mrsharding@benjaminpine.co.za`. Pilot start: Term 4 2026 (2026-10-06).
+
+**What was built.**
+
+- `packages/provisioning/src/pilot.ts` — new `PilotTenantConfig` interface and `PilotTenantConfigSchema` (Zod). `PILOT_COHORT` is the typed starting configuration for each confirmed pilot school. `schoolProfileInput` values are defaults the school administrator reviews and ratifies during the `configure_school_profile` wizard step; nothing is persisted until `readiness_check` passes.
+- `packages/provisioning/test/pilot.spec.ts` — 8 tests: every cohort entry passes `PilotTenantConfigSchema`; every `tenantInput` passes `validateStepInput('create_tenant', …)`; every `schoolProfileInput` passes `validateStepInput('configure_school_profile', …)`; `pilotStartDate` is ISO-8601; at least one school in cohort; failure paths: slug with spaces rejected, empty `lolt` rejected, `phaseCount` of zero rejected.
+- `packages/provisioning/src/index.ts` — exports `PILOT_COHORT`, `PilotTenantConfigSchema`, `PilotTenantConfig`.
+- `packages/config/src/flags.ts` — `pilot_school_onboarding_wizard` expiry extended from 2026-11-01 to 2027-02-01. Reason: pilot starts Term 4 2026; Week-16 evaluation falls 2027-01-27; the flag is removed once the wizard ships to all tenants after that review. Extension is documented in the flag's `description` field.
+- `packages/config/test/flags.spec.ts` — updated to match the new flag expiry: the "after billing/commons expire but not pilot" test now asserts `pilot_school_onboarding_wizard` is NOT expired on 2026-11-20; "all flags expired" now uses 2027-02-20 as `afterAll`.
+- `docs/PILOT_PROTOCOL.md` — blocker notice replaced with the confirmed cohort table: Benjamin Pine Primary (confirmed 2026-09-09), plus two pending slots (#2 large primary, #3 school group).
+- `docs/OPEN_QUESTIONS.md` — OQ-019 status updated to RESOLVED (partial); resolution detail added in the Resolved section.
+
+**Remaining gap.** Schools #2 and #3 are still to be identified. OQ-014 (safeguarding paging integration) is still required before any pilot school can go live.
+
+**Verification.** `packages/provisioning` (8 new tests in `pilot.spec.ts`). `packages/config` (21 tests in `flags.spec.ts` — all assertions updated for new expiry). Full workspace `pnpm lint`/`typecheck`/`test`/`format:check` all green.
+
+---
+
 ## Google Gemini adapter — gateway third fallback · 2026-09-10
 
 Added a `google` provider adapter to the model gateway so every logical model has a
