@@ -620,3 +620,66 @@ export const ActiveInterventionItem = z.object({
   siasStatus: SiasStatusSchema,
 });
 export type ActiveInterventionItem = z.infer<typeof ActiveInterventionItem>;
+
+// ---------------------------------------------------------------------------
+// AC-11 Analytics Data Screener
+// ---------------------------------------------------------------------------
+//
+// Fast pre-screening of a class/grade/school rollup snapshot before it enters
+// the analytics.report pipeline. Checks cohort suppression, staleness, and
+// domain coverage — all deterministic rules, no generative prose. Returns
+// 'ready', 'suppressed', or 'needs_input'. Backed by analytics.screen (Flash).
+
+export const ReportScope = z.enum(['class', 'grade', 'school']);
+export type ReportScope = z.infer<typeof ReportScope>;
+
+export const AC11Input = z.object({
+  tenantId: z.string().uuid(),
+  reportScope: ReportScope,
+  /** classId, gradeId, or schoolId depending on scope. */
+  scopeId: z.string().uuid(),
+  termId: z.string().uuid(),
+  /** Total learners whose data has been ingested into the rollup for this term. */
+  learnerCount: z.number().int().min(0),
+  /** Screening domains for which at least one data point is present this term. */
+  coveredDomains: z.array(ScreeningDomainSchema).min(0),
+  /** Age in days of the most recently collected data point across all domains. */
+  mostRecentDataAgeInDays: z.number().int().min(0),
+  /**
+   * True when any sub-bucket in this scope was suppressed by MIN_COHORT_SIZE during
+   * rollup computation (see `packages/analytics/src/reporting.ts`).
+   */
+  hasSuppressionFlag: z.boolean(),
+  /** Evidence IDs backing this snapshot from the data plane. */
+  evidenceIds: z.array(z.string().min(1)).min(1),
+});
+export type AC11Input = z.infer<typeof AC11Input>;
+
+export const AC11Result = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('ready'),
+    screenId: z.string().uuid(),
+    reportScope: ReportScope,
+    scopeId: z.string().uuid(),
+    termId: z.string().uuid(),
+    learnerCount: z.number().int().min(1),
+    coveredDomainCount: z.number().int().min(1),
+    evidenceIds: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('suppressed'),
+    screenId: z.string().uuid(),
+    reportScope: ReportScope,
+    scopeId: z.string().uuid(),
+    termId: z.string().uuid(),
+    learnerCount: z.number().int().min(0),
+    /** Machine-readable reason: 'cohort_too_small' | 'sub_bucket_suppressed'. */
+    suppressionReason: z.string().min(1),
+    evidenceIds: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    status: z.literal('needs_input'),
+    detail: z.string().min(1),
+  }),
+]);
+export type AC11Result = z.infer<typeof AC11Result>;

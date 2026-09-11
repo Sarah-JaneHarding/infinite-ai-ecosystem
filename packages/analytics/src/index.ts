@@ -54,6 +54,8 @@ export {
   AC09Result,
   AC10Input,
   AC10Result,
+  AC11Input,
+  AC11Result,
   DataSufficiencyVerdictSchema,
   DeliveredSession,
   DomainReading,
@@ -76,6 +78,7 @@ export {
   ScreenHistoryEntry,
   ScreeningDomainSchema,
   SiasSection,
+  ReportScope,
   SupportTierSchema,
   TrendDirection,
 } from './agent-schemas.js';
