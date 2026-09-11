@@ -679,4 +679,20 @@ export {
   CurriculumTombstoneResult,
 } from './curriculum/brain-tools.js';
 
+export {
+  DBE_ALLOCATIONS,
+  DbePhaseSchema,
+  DbeSubjectCategorySchema,
+  assertRegistryIntegrity,
+  getDbeAllocation,
+  getDbeAllocationsByPhase,
+  type DbeAssessmentWeighting,
+  type DbeGradeAllocation,
+  type DbePhase,
+  type DbeSubjectCategory,
+  type DbeTimeAllocation,
+} from './curriculum/dbe-allocations.js';
+
+export { mapSubjectToCategory } from './curriculum/subject-mapper.js';
+
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;

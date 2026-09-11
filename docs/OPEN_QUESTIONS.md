@@ -27,7 +27,7 @@ values.** If it is not in a supplied source document, it goes here.
 | OQ-020 | 2026-08-12 | 18 | OPEN | **Architecture walkthrough recording.** Stage 18 step 7 requires a recorded architecture walkthrough (screen + audio) covering the nine-layer diagram, the four invariants, the test strategy, and the feature-flag procedure. This cannot be produced in the authoring environment (no recording capability). Must be done by a human using `docs/HOW_TO_ADD_AN_AGENT.md` as the worked example. |
 | OQ-021 | 2026-08-12 | 18 | OPEN | **Dunning emails need a transactional email provider.** The `billing_dunning_emails` feature flag gates automated OVERDUE/SUSPENDED notifications. No credentialed email provider (SendGrid, AWS SES, or similar) has been configured. OQ-014 (paging) and this question should be resolved together — the same provider likely serves both. |
 | OQ-022 | 2026-08-12 | 17 | OPEN | **POPIA erasure for append-only tables.** `audit_event`, `consent_record`, and `tenant_metering_event` carry BEFORE DELETE triggers that refuse all deletes, including CASCADE deletes from `tenant`. On tenant closure, only mutable tables are erased; append-only ledgers are retained under legal-obligation and POPIA compliance bases. Three decisions are needed: (1) Which data categories in these tables constitute "personal information" under POPIA §1? (2) Is pseudonymization (replacing `actor_id` and `subject_token` with a replacement token) the correct erasure technique, and if so what replaces them? (3) Which specific retention periods apply to audit and consent records for South African schools? Until resolved, append-only data is retained indefinitely on tenant closure. See `docs/POPIA.md` and `docs/COST_MODEL.md`. |
-| OQ-023 | 2026-08-20 | 29 | OPEN | **`GradeFramework` needs `hoursPerWeek` and `assessmentWeighting` data.** `GradeFramework` in `@infinite-ai/contracts` requires `time.hoursPerWeek` (a Sourced, required field) and `assessment` (SBA/exam splits per component, similarly Sourced). Neither field is present in any of the 21 CAPS source files ingested into L0 in Stage 29 — those files record topic-area names, content areas, and term-level weightings, but not per-subject time allocations or formal SBA/exam splits at the grade-level. CE-01 can populate `contentAreas` from L0 `CAPS_CANON` records but will continue to return `NEEDS_INPUT` for a complete `GradeFramework` until these fields are supplied. Source documents needed: CAPS Policy section-level time-allocation tables (typically an appendix per subject/phase document) and the CAPS Assessment Policy for each phase. These have not been supplied. |
+| OQ-023 | 2026-08-20 | 29 | RESOLVED (2026-09-11) | **`GradeFramework` needs `hoursPerWeek` and `assessmentWeighting` data.** **Answer:** statutory values are not LLM output — they are gazette facts. A deterministic DBE Allocation Registry (`packages/contracts/src/curriculum/dbe-allocations.ts`) encodes Government Gazette No. 36041 (Reg. 21, 28 Dec 2012) for Grades R–9 and Circular S8/2023 assessment weightings. A subject mapper (`packages/contracts/src/curriculum/subject-mapper.ts`) resolves free-text subject names to categories without guessing. `packages/curriculum-seed/src/apply-dbe-overlay.ts` applies the registry deterministically after `FrameworkResult.safeParse`; subjects that cannot be mapped cause CE-01 to return `needs_input` rather than ship an incomplete framework. FET (Grades 10–12) is intentionally unmapped — the pilot targets GET only. See Resolved section below. |
 | OQ-024 | 2026-08-24 | 06 | RESOLVED (2026-09-01) | **`branch` step conditions cannot see a prior step's actual output.** `evaluateCondition` only ever received `run.input`, never what an intervening agent produced, even though every `branch` step is narrated as reading one specific prior step's output. **Answer:** derive it structurally — no migration, no new field. See Resolved section below. |
 | OQ-025 | 2026-08-25 | 16 | RESOLVED (2026-08-25) | The per-request CSP nonce did not reach the client on `/sign-in`. **Answer:** root cause was `next-auth@4.24.15`'s `withAuth()` unconditionally short-circuiting before the wrapped handler for the sign-in page. See Resolved section below. |
 | OQ-026 | 2026-08-25 | 06/10 | RESOLVED (2026-09-01) | **`checkDiagnosticLanguage` has no caller.** Needed to know which of a MOD-02 agent's own output fields are free text before it could be wired in for real, without guessing. **Answer:** a field allow-list per agent contract, the human's own choice between two named options. See Resolved section below. |
@@ -55,6 +55,32 @@ deliberately, not defaulted into, when that time comes.
 | OQ-013 | 2026-08-05 | 08    | OPEN                | Eight of South Africa's eleven official languages, and Grades 10-12 entirely, are still missing from the CAPS documents supplied so far (see OQ-002). Sepedi, Sesotho and Setswana would serve the largest remaining population. Prioritise sourcing these before Stage 08 is considered feature-complete, or launch with what's supplied and add the rest afterward?                                                                                                               |
 
 ## Resolved
+
+### OQ-023 — DBE time allocations and assessment weightings · resolved 2026-09-11
+
+**Question.** `GradeFramework` requires `time.hoursPerWeek` and `assessment` (SBA/exam
+splits). Neither field is present in any of the 21 CAPS source files ingested into L0 —
+those files record topic-area names, content areas, and term-level weightings only. CE-01
+was returning `NEEDS_INPUT` for any complete `GradeFramework`.
+
+**Answer.** Statutory time allocations and assessment weightings are gazette facts, not
+LLM output. The solution is a deterministic post-processor layered after the model:
+
+- `packages/contracts/src/curriculum/dbe-allocations.ts` — append-only registry encoding
+  Government Gazette No. 36041 (Reg. 21, 28 Dec 2012) for Grades R–9 with phase-level
+  assessment weightings from Circular S8/2023 (FP 100% SBA; IP 80/20; SP 60/40). FET
+  (Grades 10–12) is intentionally absent — the pilot targets GET only.
+- `packages/contracts/src/curriculum/subject-mapper.ts` — pure deterministic regex lookup
+  that maps free-text subject names to `DbeSubjectCategory` values. Returns `null` if the
+  name is unrecognisable; never guesses.
+- `packages/curriculum-seed/src/apply-dbe-overlay.ts` — `applyDbeOverlay()` runs after
+  `FrameworkResult.safeParse` in CE-01. Subjects that map cleanly receive `hoursPerWeek`
+  and `assessmentWeighting` from the registry. Subjects that do not map set
+  `isComplete: false`; CE-01 returns `needs_input` naming each unmapped subject, rather
+  than shipping a framework with invented values.
+
+The LLM structures the curriculum (topics, sequencing, content descriptions). The
+registry supplies the legal facts. The two never cross responsibilities.
 
 ### OQ-004 — tenant seed data shape · resolved 2026-08-13
 
