@@ -76,6 +76,8 @@ export {
   type WithTombstoneTenantFn,
 } from './brain-tombstone-executor.js';
 export { seedCurriculumFromContracts } from './seed.js';
+export { applyDbeOverlay } from './apply-dbe-overlay.js';
+export type { OverlayReport, OverlayMappedSubject } from './apply-dbe-overlay.js';
 export {
   AtpCalendarContent,
   CapsCanonContent,

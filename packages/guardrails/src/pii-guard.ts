@@ -46,7 +46,9 @@ export type EgressVerdict =
   | { readonly allowed: false; readonly reason: EgressRefusal; readonly detail: string };
 
 export type EgressRefusal =
-  'missing_provenance' | 'detector_found_pii' | 'raw_identifier_present';
+  | 'missing_provenance'
+  | 'detector_found_pii'
+  | 'raw_identifier_present';
 
 export class PiiEgressError extends Error {
   public override readonly name = 'PiiEgressError';

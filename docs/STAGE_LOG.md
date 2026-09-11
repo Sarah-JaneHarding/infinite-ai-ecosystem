@@ -3195,7 +3195,7 @@ tenant-scoped, all RLS-covered.
 | `IngestSource`        | `ingest_source`         | No          | Connector config (kind, schedule, status)                 |
 | `IngestRun`           | `ingest_run`            | Yes         | Append-only audit of every connector run                  |
 | `RawIngestRecord`     | `raw_ingest_record`     | No          | Landing zone; updated when a record is conformed          |
-| `DomainEventLog`      | `domain_event_log`      | Yes         | Canonical conformed events (the "event\_log")             |
+| `DomainEventLog`      | `domain_event_log`      | Yes         | Canonical conformed events (the "event_log")              |
 | `SourceFieldMapping`  | `source_field_mapping`  | No          | DW-02 learned mappings; human-confirmed                   |
 | `IngestQualityReport` | `ingest_quality_report` | No          | DW-05 quality scores per run                              |
 | `Learner360`          | `learner_360`           | No          | DW-06 materialised profile; updated on re-materialisation |
@@ -3815,7 +3815,7 @@ into the GROUNDING section and the lock hash recomputed.
      `'diagnostic_language_detected'`.
 
 5. **New workspace dependency**: `@infinite-ai/analytics` now depends on
-   `@infinite-ai/guardrails` (workspace:*) so the safeguarding drill can invoke the
+   `@infinite-ai/guardrails` (workspace:\*) so the safeguarding drill can invoke the
    guardrail engine directly. Recorded in `docs/DEPENDENCIES.md`.
 
 **Tests**
@@ -4619,7 +4619,7 @@ Open questions raised: none.
 2. **apps/web converted from stub to Next.js 16 App Router.** Full replacement:
    - `next.config.ts`, `postcss.config.ts`, `playwright.config.ts`.
    - Tailwind v4 CSS-first config consuming the design token custom properties.
-   - `src/lib/env.ts` — Zod-validated web env loader (NEXTAUTH\_SECRET, Keycloak IDs, issuer); test-mode fallback so unit tests run without credentials.
+   - `src/lib/env.ts` — Zod-validated web env loader (NEXTAUTH_SECRET, Keycloak IDs, issuer); test-mode fallback so unit tests run without credentials.
    - `src/auth.ts` — next-auth v4 with Keycloak OIDC provider, JWT strategy, role claim extraction from `realm_access.roles`.
    - `src/middleware.ts` — `withAuth` protecting all routes except `/sign-in` and `/api/auth`.
    - `src/lib/roles.ts` — `ROLE_HOME`, `ROLE_LABEL`, `ROLE_NAV`, `ROLE_HUE` keyed on the 9 roles from `packages/policy`; `roleCanViewPath()` enforces path-level access without a database.
@@ -5291,7 +5291,7 @@ experience into `apps/web` rather than a separate PWA.
 | PWA manifest at `apps/web/public/manifest.json` and wired into Next.js metadata                     | PASS — `manifest: '/manifest.json'` in root layout metadata                                                                               |
 | OQ-010 resolved — learner experience integrated into `apps/web`                                     | PASS — no separate PWA repo required; the integrated approach shares the design system, auth, and shell without additional infrastructure |
 | No learner PII — `learnerId` is an opaque token; no names or SA IDs in any fixture                  | PASS                                                                                                                                      |
-| No DB access, no model calls, no new external dependencies beyond workspace package                 | PASS — only new dependency is `@infinite-ai/learner-client` (workspace:*)                                                                 |
+| No DB access, no model calls, no new external dependencies beyond workspace package                 | PASS — only new dependency is `@infinite-ai/learner-client` (workspace:\*)                                                                |
 | Unit tests — happy path + at least 2 failure paths per area                                         | PASS — `apps/web/tests/unit/learner.spec.ts` (12 tests, 0 failures); cumulative web suite 30 tests, 0 failures                            |
 | `pnpm lint` and `pnpm typecheck` clean                                                              | PASS                                                                                                                                      |
 

@@ -31,7 +31,11 @@ import type { TenantClient } from './client.js';
 export type { BrainConflictResolution };
 
 export type BrainTargetTier =
-  'L0_CONSTITUTION' | 'L1_NODE' | 'L1_EDGE' | 'L2_EPISODE' | 'L3_PROCEDURE';
+  | 'L0_CONSTITUTION'
+  | 'L1_NODE'
+  | 'L1_EDGE'
+  | 'L2_EPISODE'
+  | 'L3_PROCEDURE';
 
 export type BrainWriteStatus =
   | 'CANDIDATE'

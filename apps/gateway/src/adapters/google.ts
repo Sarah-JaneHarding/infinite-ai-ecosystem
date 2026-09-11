@@ -81,8 +81,10 @@ function classifyStatus(status: number): AdapterError | null {
   if (status === 401 || status === 403) {
     return new AdapterError('unauthorized', 'Provider rejected the credential.');
   }
-  if (status >= 500) return new AdapterError('unavailable', `Provider returned ${status}.`);
-  if (status >= 400) return new AdapterError('invalid_request', `Provider returned ${status}.`);
+  if (status >= 500)
+    return new AdapterError('unavailable', `Provider returned ${status}.`);
+  if (status >= 400)
+    return new AdapterError('invalid_request', `Provider returned ${status}.`);
   return null;
 }
 
@@ -326,7 +328,10 @@ export function createGoogleAdapter(config: GoogleConfig): ProviderAdapter {
 
       try {
         const raw = (await response.json()) as GeminiBatchEmbeddingResponse;
-        return { vectors: raw.embeddings.map((e) => e.values), usage: { promptTokens: 0 } };
+        return {
+          vectors: raw.embeddings.map((e) => e.values),
+          usage: { promptTokens: 0 },
+        };
       } catch (error) {
         if (error instanceof AdapterError) throw error;
         throw new AdapterError(

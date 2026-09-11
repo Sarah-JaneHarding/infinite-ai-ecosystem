@@ -21,6 +21,8 @@ import {
 import type { ConstitutionRow, TenantClient } from '@infinite-ai/db';
 
 import type { StepExecutionContext } from './l0-gate-executor.js';
+import { applyDbeOverlay } from './apply-dbe-overlay.js';
+import type { GradeFramework as OverlayFrame } from './apply-dbe-overlay.js';
 import { CurriculumSeedError } from './types.js';
 
 export type WithCE01TenantFn = (
@@ -109,6 +111,30 @@ export function makeCE01Executor(
           `CE-01: gateway response did not conform to FrameworkResult: ${result.error.message}`,
         );
       }
+
+      if (result.data.status === 'ok') {
+        const tempFrame: OverlayFrame = {
+          grade: result.data.framework.grade,
+          subjects: result.data.framework.subjects.map((s) => ({ name: s.subjectName })),
+        };
+        const [, report] = applyDbeOverlay(tempFrame);
+
+        if (!report.isComplete) {
+          return {
+            status: 'needs_input',
+            grade: result.data.framework.grade,
+            missing: report.unmappedSubjects.map((subjectName) => ({
+              documentKind: 'CAPS_SUBJECT_STATEMENT' as const,
+              subjectName,
+              why:
+                `'${subjectName}' could not be mapped to a DBE subject category. ` +
+                'Supply the subject name exactly as CAPS states it, or confirm ' +
+                'the grade is within GET (Grades R–9).',
+            })),
+          };
+        }
+      }
+
       return result.data;
     });
   };
