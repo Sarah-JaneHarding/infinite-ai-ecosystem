@@ -47,7 +47,9 @@ function pdIsSuppressed(input: ConditionInput): boolean {
  * routing to the coaching-plan path, the same as any other non-micro-course gap. */
 function pdNeedsMicroCourse(input: ConditionInput): boolean {
   const record = input.stepOutput as
-    { topPriorityGap?: { suggestedInterventionType?: unknown } } | null | undefined;
+    | { topPriorityGap?: { suggestedInterventionType?: unknown } }
+    | null
+    | undefined;
   return record?.topPriorityGap?.suggestedInterventionType === 'micro_course';
 }
 
@@ -66,7 +68,9 @@ function commonsPublishBlocked(input: ConditionInput): boolean {
  * `activeInterventions` from the database; this evaluator trusts the field is accurate. */
 function needsReferral(input: ConditionInput): boolean {
   const runInput = input.runInput as
-    { activeInterventions?: readonly { siasStatus?: unknown }[] } | null | undefined;
+    | { activeInterventions?: readonly { siasStatus?: unknown }[] }
+    | null
+    | undefined;
   const items = runInput?.activeInterventions;
   if (!Array.isArray(items)) return false;
   return items.some((item) => item?.siasStatus === 'REFERRAL_PENDING');

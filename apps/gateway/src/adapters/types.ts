@@ -14,7 +14,11 @@ import type { ChatCompletionRequest, EmbeddingsRequest } from '@infinite-ai/cont
  * returned 429 or 503, only whether trying the next link in the chain could help.
  */
 export type AdapterErrorKind =
-  'rate_limited' | 'unavailable' | 'timeout' | 'invalid_request' | 'unauthorized';
+  | 'rate_limited'
+  | 'unavailable'
+  | 'timeout'
+  | 'invalid_request'
+  | 'unauthorized';
 
 /** The only channel a provider's raw error may travel through — never a bare `Error`. */
 export class AdapterError extends Error {

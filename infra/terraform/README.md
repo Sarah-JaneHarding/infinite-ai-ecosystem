@@ -123,7 +123,6 @@ db:migrate:deploy`.
 
 5. **Configure the CD pipeline** (`.github/workflows/cd.yml`), once per repository, not
    once per environment:
-
    - Create two GitHub **Environments** in the repository's Settings → Environments:
      `staging` and `production`.
    - On each, set an **Environment variable** named `AWS_DEPLOY_ROLE_ARN` to this

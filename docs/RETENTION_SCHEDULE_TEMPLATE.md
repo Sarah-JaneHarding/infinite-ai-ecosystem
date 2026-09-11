@@ -1,6 +1,6 @@
 # Retention schedule — ratification template
 
-**For:** the governing body of ******\_\_\_\_******
+**For:** the governing body of **\*\***\_\_\_\_**\*\***
 **Prepared:** **\_\_\_\_** **Ratified:** **\_\_\_\_**
 
 ---
@@ -97,18 +97,18 @@ same record.
 Fill in one row per category. Leave a row blank if the school has not decided — blank is a
 safe state, and the system will keep reporting it.
 
-| #   | Category               | What it covers                                                      | Anchor | Retain (months) | Authority |
-| --- | ---------------------- | ------------------------------------------------------------------- | ------ | --------------- | --------- |
-| 1   | `IDENTIFIER_TOKEN`     | The pseudonym itself. Holds no personal information on its own.     | ______ | ______          | ________  |
-| 2   | `DIRECT_IDENTIFIER`    | Name, ID number, date of birth, address, contact details.           | ______ | ______          | ________  |
-| 3   | `ENROLMENT`            | Grade, class, subjects, enrolment status.                           | ______ | ______          | ________  |
-| 4   | `ACADEMIC_PERFORMANCE` | Marks, assessment results, academic progress.                       | ______ | ______          | ________  |
-| 5   | `ATTENDANCE`           | Presence, absence, punctuality.                                     | ______ | ______          | ________  |
-| 6   | `BEHAVIOUR`            | Conduct records, incidents.                                         | ______ | ______          | ________  |
-| 7   | `SUPPORT_NEED`         | Screening scores, tier decisions, intervention history.             | ______ | ______          | ________  |
-| 8   | `SPECIAL_PERSONAL`     | **POPIA §26** — health, disability, biometrics. Strictest handling. | ______ | ______          | ________  |
-| 9   | `FAMILY_CONTEXT`       | Home language, guardian relationships, communication preferences.   | ______ | ______          | ________  |
-| 10  | `STAFF_PRACTICE`       | Teacher-level practice data. Developmental only.                    | ______ | ______          | ________  |
+| #   | Category               | What it covers                                                      | Anchor   | Retain (months) | Authority    |
+| --- | ---------------------- | ------------------------------------------------------------------- | -------- | --------------- | ------------ |
+| 1   | `IDENTIFIER_TOKEN`     | The pseudonym itself. Holds no personal information on its own.     | **\_\_** | **\_\_**        | **\_\_\_\_** |
+| 2   | `DIRECT_IDENTIFIER`    | Name, ID number, date of birth, address, contact details.           | **\_\_** | **\_\_**        | **\_\_\_\_** |
+| 3   | `ENROLMENT`            | Grade, class, subjects, enrolment status.                           | **\_\_** | **\_\_**        | **\_\_\_\_** |
+| 4   | `ACADEMIC_PERFORMANCE` | Marks, assessment results, academic progress.                       | **\_\_** | **\_\_**        | **\_\_\_\_** |
+| 5   | `ATTENDANCE`           | Presence, absence, punctuality.                                     | **\_\_** | **\_\_**        | **\_\_\_\_** |
+| 6   | `BEHAVIOUR`            | Conduct records, incidents.                                         | **\_\_** | **\_\_**        | **\_\_\_\_** |
+| 7   | `SUPPORT_NEED`         | Screening scores, tier decisions, intervention history.             | **\_\_** | **\_\_**        | **\_\_\_\_** |
+| 8   | `SPECIAL_PERSONAL`     | **POPIA §26** — health, disability, biometrics. Strictest handling. | **\_\_** | **\_\_**        | **\_\_\_\_** |
+| 9   | `FAMILY_CONTEXT`       | Home language, guardian relationships, communication preferences.   | **\_\_** | **\_\_**        | **\_\_\_\_** |
+| 10  | `STAFF_PRACTICE`       | Teacher-level practice data. Developmental only.                    | **\_\_** | **\_\_**        | **\_\_\_\_** |
 
 ### Notes for whoever fills this in
 

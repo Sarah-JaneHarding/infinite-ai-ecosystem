@@ -137,7 +137,11 @@ describe('createGoogleAdapter — happy path', () => {
             },
           },
         ],
-        usageMetadata: { promptTokenCount: 1, candidatesTokenCount: 1, totalTokenCount: 2 },
+        usageMetadata: {
+          promptTokenCount: 1,
+          candidatesTokenCount: 1,
+          totalTokenCount: 2,
+        },
       },
     });
     const adapter = createGoogleAdapter({
@@ -186,7 +190,13 @@ describe('createGoogleAdapter — embeddings', () => {
     });
 
     const result = await adapter.embed(
-      { tenantId: 't', module: 'm', agent: 'a', model: 'embed.default', input: ['hello'] },
+      {
+        tenantId: 't',
+        module: 'm',
+        agent: 'a',
+        model: 'embed.default',
+        input: ['hello'],
+      },
       'text-embedding-004',
       'goog-key',
     );
@@ -270,7 +280,11 @@ describe('createGoogleAdapter — failure paths', () => {
         status: 200,
         body: {
           candidates: [],
-          usageMetadata: { promptTokenCount: 0, candidatesTokenCount: 0, totalTokenCount: 0 },
+          usageMetadata: {
+            promptTokenCount: 0,
+            candidatesTokenCount: 0,
+            totalTokenCount: 0,
+          },
         },
       }),
     });
@@ -334,7 +348,11 @@ describe('createGoogleAdapter — completeStream', () => {
       200,
       JSON.stringify({
         candidates: [{ content: { role: 'model', parts: [] } }],
-        usageMetadata: { promptTokenCount: 0, candidatesTokenCount: 0, totalTokenCount: 0 },
+        usageMetadata: {
+          promptTokenCount: 0,
+          candidatesTokenCount: 0,
+          totalTokenCount: 0,
+        },
       }),
     );
     const adapter = createGoogleAdapter({
@@ -358,11 +376,17 @@ describe('createGoogleAdapter — completeStream', () => {
             {
               content: {
                 role: 'model',
-                parts: [{ functionCall: { name: 'lookup', args: { topic: 'fractions' } } }],
+                parts: [
+                  { functionCall: { name: 'lookup', args: { topic: 'fractions' } } },
+                ],
               },
             },
           ],
-          usageMetadata: { promptTokenCount: 1, candidatesTokenCount: 1, totalTokenCount: 2 },
+          usageMetadata: {
+            promptTokenCount: 1,
+            candidatesTokenCount: 1,
+            totalTokenCount: 2,
+          },
         }),
       ),
     });

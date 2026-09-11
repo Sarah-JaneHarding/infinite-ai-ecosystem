@@ -25,15 +25,15 @@ calibrate artefact-generation costs. Figures below use conservative estimates.
 Artefact generation cost is driven by the model gateway. Claude Sonnet 4 is the default
 model for all CE, TB, PD, and LE agents. Estimated token usage per artefact type:
 
-| Artefact type                  | Avg input tokens | Avg output tokens | Est. cost (USD) | Est. cost (ZAR)* |
-| ------------------------------ | ---------------- | ----------------- | --------------- | ---------------- |
-| Lesson plan (CE-03)            | 2 500            | 1 500             | $ 0.022         | R 0.40           |
-| Unit blueprint (CE-02)         | 4 000            | 2 500             | $ 0.037         | R 0.67           |
-| Assessment task (CE-04)        | 3 000            | 2 000             | $ 0.029         | R 0.53           |
-| Rubric (CE-06)                 | 2 000            | 1 200             | $ 0.018         | R 0.33           |
-| Simplified explanation (TB-01) | 1 500            | 800               | $ 0.012         | R 0.22           |
-| Practice worksheet (TB-03)     | 2 000            | 1 500             | $ 0.018         | R 0.33           |
-| PD micro-course (PD-07)        | 5 000            | 3 000             | $ 0.047         | R 0.85           |
+| Artefact type                  | Avg input tokens | Avg output tokens | Est. cost (USD) | Est. cost (ZAR)\* |
+| ------------------------------ | ---------------- | ----------------- | --------------- | ----------------- |
+| Lesson plan (CE-03)            | 2 500            | 1 500             | $ 0.022         | R 0.40            |
+| Unit blueprint (CE-02)         | 4 000            | 2 500             | $ 0.037         | R 0.67            |
+| Assessment task (CE-04)        | 3 000            | 2 000             | $ 0.029         | R 0.53            |
+| Rubric (CE-06)                 | 2 000            | 1 200             | $ 0.018         | R 0.33            |
+| Simplified explanation (TB-01) | 1 500            | 800               | $ 0.012         | R 0.22            |
+| Practice worksheet (TB-03)     | 2 000            | 1 500             | $ 0.018         | R 0.33            |
+| PD micro-course (PD-07)        | 5 000            | 3 000             | $ 0.047         | R 0.85            |
 
 \* Exchange rate: 1 USD = R 18. This will vary.
 
