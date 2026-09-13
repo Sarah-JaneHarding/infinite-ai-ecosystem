@@ -15,6 +15,7 @@
 // in-flight jobs before the process exits. The default BullMQ close timeout is 5 s.
 
 import type { AgentContract } from '@infinite-ai/agents';
+import { remember } from '@infinite-ai/brain';
 import { loadEnv } from '@infinite-ai/config';
 import { withTenant } from '@infinite-ai/db';
 import type {
@@ -77,6 +78,32 @@ export class WorkerHost {
         await withTenant({ tenantId, actorId }, async (tx) => {
           const toolHandlers = createToolHandlers(tx);
 
+          // Closes over `tx` so the Brain write runs inside the same withTenant transaction
+          // as every other database operation in this job — rule 5.
+          const brainWriter = async (
+            agentId: string,
+            contractVersion: string,
+            output: unknown,
+            runId: string,
+          ): Promise<void> => {
+            await remember(tx, {
+              targetTier: 'L2_EPISODE',
+              rawPayload: {
+                eventType: 'agent_output',
+                subjectNodeId: null,
+                actorId: actorId,
+                occurredAt: new Date().toISOString(),
+                summary: `${agentId}@${contractVersion} persisted output to Brain`,
+                detail: { agentId, contractVersion, runId, agentOutput: output },
+                outcome: null,
+                supersedes: null,
+                dataCategory: null,
+              },
+              source: `${agentId}/${contractVersion}`,
+              derivationRunId: runId,
+            });
+          };
+
           // exactOptionalPropertyTypes (rule 8): only set these keys when this host was
           // actually given a checker/notifier, rather than assigning `undefined` to an
           // optional field explicitly.
@@ -87,6 +114,7 @@ export class WorkerHost {
             gatewayBaseUrl: env.GATEWAY_BASE_URL,
             tenantId,
             toolHandlers,
+            brainWriter,
             ...(this.deps.ageAppropriatenessChecker === undefined
               ? {}
               : { ageAppropriatenessChecker: this.deps.ageAppropriatenessChecker }),

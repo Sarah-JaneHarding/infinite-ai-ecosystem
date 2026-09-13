@@ -8114,3 +8114,43 @@ wrong-shape 2xx body, and streaming (content deltas, tool_call event, pre-first-
 rate-limit fallback, unparseable chunk). `test/index.spec.ts` — one new `buildAdapters`
 case confirming the Google adapter and credential pool are registered when `GOOGLE_API_KEYS`
 is set.
+
+---
+
+## Stage 53 — LE-01 / LE-02 Brain write mechanism · 2026-09-13
+
+**What was built.**
+
+Stage 53 wires the Brain write hook for agent_call steps that declare `writesToBrain: true`
+on their contract, resolving the mechanism gap identified while building Stage 50's
+`LE_SIGNAL_PIPELINE`. LE-01 (Signal Collector) and LE-02 (Correction Differ) are the first
+two agents that exercise the hook.
+
+- `apps/worker/src/step-executor.ts` — `StepExecutorDeps` gains an optional `brainWriter`
+  callback `(agentId, contractVersion, output, runId) => Promise<void>`. When a contract
+  declares `writesToBrain: true` and a writer is injected, it is called after all guardrail
+  checks pass (age-appropriateness, diagnosis_guard, grounding, readability). A missing
+  writer is a no-op — no error — matching the same "mechanism now, policy wired when ready"
+  pattern used for `ageAppropriatenessChecker` and `templateFidelityChecker`. The Brain
+  write is therefore always gated by all guardrails passing: a refused output is never
+  persisted.
+- `apps/worker/src/worker-host.ts` — builds and injects `brainWriter` inside the
+  `withTenant` callback, where the `TenantClient tx` is in scope. Writes an `L2_EPISODE`
+  via `remember(tx, ...)` with `eventType: 'agent_output'`, `source: agentId/version`,
+  `derivationRunId: runId`, and the full agent output in `detail.agentOutput`. Closes over
+  `actorId` from the job data so each episode is attributed to the actor that triggered the
+  run.
+
+**Tests added (apps/worker — step-executor.spec.ts, 4 new cases).**
+
+- Happy path: `brainWriter` called once with correct `(agentId, version, output, runId)` on
+  a successful LE-01 agent call.
+- `writesToBrain: false` skip: `brainWriter` not called for LE-07 (which declares
+  `writesToBrain: false`), even when a writer is injected.
+- No-op safety: step completes without error when `writesToBrain: true` but no
+  `brainWriter` is injected.
+- Security gate: `brainWriter` not called when a guardrail refuses — the Brain write is
+  gated by all guardrails passing; a refused output is never persisted.
+
+**Verification.** `pnpm --filter @infinite-ai/worker test` — 66 tests, all pass (4 new).
+`pnpm --filter @infinite-ai/worker exec tsc --noEmit` — clean. `eslint` — clean.

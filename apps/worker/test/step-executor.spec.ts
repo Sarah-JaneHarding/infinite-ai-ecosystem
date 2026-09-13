@@ -9,6 +9,8 @@ import {
   AC01Contract,
   AC10Contract,
   CE01Contract,
+  LE01Contract,
+  LE07Contract,
   TB03Contract,
 } from '@infinite-ai/agents';
 import {
@@ -1061,6 +1063,162 @@ describe('createStepExecutor', () => {
         });
         expect((result as { status: string }).status).toBe('readability_out_of_band');
       });
+    });
+  });
+
+  // ── writesToBrain — LE-01 / LE-02 Brain write hook ───────────────────────────
+
+  describe('agent_call writesToBrain (Stage 53)', () => {
+    const LE01_PIPELINE: PipelineDefinition = {
+      id: 'le-signal-test',
+      version: '1.0.0',
+      entryStepId: 'ingest-correction',
+      steps: {
+        'ingest-correction': {
+          id: 'ingest-correction',
+          kind: 'agent_call',
+          agentId: 'LE-01',
+          next: null,
+          timeoutMs: 10_000,
+          maxRetries: 0,
+          compensatesWith: null,
+        },
+      },
+    };
+
+    const LE07_PIPELINE: PipelineDefinition = {
+      id: 'le-evolution-test',
+      version: '1.0.0',
+      entryStepId: 'eval-gate',
+      steps: {
+        'eval-gate': {
+          id: 'eval-gate',
+          kind: 'agent_call',
+          agentId: 'LE-07',
+          next: null,
+          timeoutMs: 10_000,
+          maxRetries: 0,
+          compensatesWith: null,
+        },
+      },
+    };
+
+    function makeLE01Deps(overrides?: Partial<StepExecutorDeps>): StepExecutorDeps {
+      return makeDeps({
+        pipeline: LE01_PIPELINE,
+        agentContracts: new Map([[LE01Contract.id, LE01Contract]]),
+        ...overrides,
+      });
+    }
+
+    function makeLE07Deps(overrides?: Partial<StepExecutorDeps>): StepExecutorDeps {
+      return makeDeps({
+        pipeline: LE07_PIPELINE,
+        agentContracts: new Map([[LE07Contract.id, LE07Contract]]),
+        ...overrides,
+      });
+    }
+
+    const LE01_OUTPUT = {
+      status: 'ok',
+      event: {
+        eventId: '11111111-1111-1111-1111-111111111111',
+        tenantId: '22222222-2222-2222-2222-222222222222',
+        agentId: 'CE-01',
+        artefactId: '33333333-3333-3333-3333-333333333333',
+        artefactType: 'lesson_plan',
+        capsTopicId: 'GR4-MATH-01',
+        label: 'approved',
+        actorRef: 'teacher-001',
+        decidedAt: '2026-09-01T08:00:00.000Z',
+        collectedAt: '2026-09-01T08:00:00.001Z',
+      },
+    };
+
+    function stubResponse(content: unknown): void {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({
+            ...FAKE_RESPONSE,
+            message: { role: 'assistant', content: JSON.stringify(content) },
+          }),
+        }),
+      );
+    }
+
+    it('calls brainWriter with agentId, version, output and runId after all guardrails pass', async () => {
+      stubResponse(LE01_OUTPUT);
+      const brainWriter = vi.fn().mockResolvedValue(undefined);
+      const executor = createStepExecutor(makeLE01Deps({ brainWriter }));
+
+      const result = await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'ingest-correction',
+        attempt: 1,
+        input: {},
+      });
+
+      expect(result).toEqual(LE01_OUTPUT);
+      expect(brainWriter).toHaveBeenCalledOnce();
+      const [calledAgentId, calledVersion, calledOutput, calledRunId] = brainWriter.mock
+        .calls[0] as [string, string, unknown, string];
+      expect(calledAgentId).toBe('LE-01');
+      expect(calledVersion).toBe('1.0.0');
+      expect(calledOutput).toEqual(LE01_OUTPUT);
+      expect(calledRunId).toBe(MOCK_RUN_ID);
+    });
+
+    it('does not call brainWriter when the contract declares writesToBrain: false', async () => {
+      stubResponse({ status: 'ok', verdict: 'promote' });
+      const brainWriter = vi.fn().mockResolvedValue(undefined);
+      const executor = createStepExecutor(makeLE07Deps({ brainWriter }));
+
+      await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'eval-gate',
+        attempt: 1,
+        input: {},
+      });
+
+      expect(brainWriter).not.toHaveBeenCalled();
+    });
+
+    it('succeeds without error when writesToBrain: true but no brainWriter is injected', async () => {
+      stubResponse(LE01_OUTPUT);
+      const executor = createStepExecutor(makeLE01Deps());
+
+      const result = await executor({
+        runId: MOCK_RUN_ID,
+        stepId: 'ingest-correction',
+        attempt: 1,
+        input: {},
+      });
+
+      expect(result).toEqual(LE01_OUTPUT);
+    });
+
+    it('does not call brainWriter when a guardrail refuses — Brain write is gated by all guardrails passing', async () => {
+      stubResponse(LE01_OUTPUT);
+      const brainWriter = vi.fn().mockResolvedValue(undefined);
+      const checker: AgeAppropriatenessChecker = () =>
+        refuse('age_inappropriate', 'not suitable for this grade');
+      const notify = vi.fn();
+
+      const executor = createStepExecutor(
+        makeLE01Deps({ brainWriter, ageAppropriatenessChecker: checker, notify }),
+      );
+
+      await expect(
+        executor({
+          runId: MOCK_RUN_ID,
+          stepId: 'ingest-correction',
+          attempt: 1,
+          input: {},
+        }),
+      ).rejects.toThrow(GuardrailRefusalError);
+      expect(brainWriter).not.toHaveBeenCalled();
     });
   });
 });

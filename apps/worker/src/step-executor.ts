@@ -2,7 +2,9 @@
 // the real work each step does.
 //
 // agent_call: load the agent's prompt → POST to the Model Gateway →
-//   parse the JSON content of the assistant's reply → run the age-appropriateness check →
+//   parse the JSON content of the assistant's reply → run guardrails →
+//   if the contract declares `writesToBrain: true`, call `deps.brainWriter` so the caller
+//   can persist the output to the Brain within its own `withTenant` transaction →
 //   return the output as the step's result.
 //   The gateway enforces rule 3 (no direct provider access) and rule 4 (PII guard). Curriculum
 //   agents carry no learner data, so provenance stamps deidentified:true with an empty
@@ -134,6 +136,19 @@ export interface StepExecutorDeps {
    * `undefined` (the default) skips the check — no ratified template is wired yet (OQ-028).
    */
   readonly templateFidelityChecker?: TemplateFidelityChecker;
+  /**
+   * Called after a successful agent call when the contract declares `writesToBrain: true`.
+   * The Brain write itself runs inside the caller's `withTenant` transaction — this is a
+   * closure over that transaction created by `worker-host.ts` and injected here so the step
+   * executor never sees a raw database client (rule 5). `undefined` (the default) skips the
+   * write — no write path is configured until the worker host injects one.
+   */
+  readonly brainWriter?: (
+    agentId: string,
+    contractVersion: string,
+    output: unknown,
+    runId: string,
+  ) => Promise<void>;
 }
 
 export function createStepExecutor(deps: StepExecutorDeps): StepExecutor {
@@ -404,6 +419,10 @@ async function runAgentCall(
         verdict.refusal.explanation,
       verdict.refusal,
     );
+  }
+
+  if (contract.writesToBrain && deps.brainWriter !== undefined) {
+    await deps.brainWriter(agentId, contract.version, output, runId);
   }
 
   return output;
