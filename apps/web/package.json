@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Next.js app — every role surface.",
   "scripts": {
-    "build": "next build",
+    "build": "next build --webpack",
     "dev": "next dev",
     "start": "next start",
     "typecheck": "tsc --noEmit",
