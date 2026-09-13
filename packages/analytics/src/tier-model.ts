@@ -18,7 +18,11 @@ export type SupportTier = 'TIER_1' | 'TIER_2' | 'TIER_3' | 'REFERRAL';
 
 /** The five screening domains used by AC-01 (Universal Screener). */
 export type ScreeningDomain =
-  'LITERACY' | 'NUMERACY' | 'ATTENDANCE' | 'BEHAVIOUR' | 'WELLBEING';
+  | 'LITERACY'
+  | 'NUMERACY'
+  | 'ATTENDANCE'
+  | 'BEHAVIOUR'
+  | 'WELLBEING';
 
 export const SCREENING_DOMAINS: readonly ScreeningDomain[] = [
   'LITERACY',

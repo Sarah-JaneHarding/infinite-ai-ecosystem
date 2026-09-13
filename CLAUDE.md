@@ -222,6 +222,7 @@ query on identifiable data. If a request needs one of these, refuse it, escalate
 record the refusal in `docs/OPEN_QUESTIONS.md`.
 
 <!-- BEGIN AWS Agent Toolkit rules -->
+
 # AWS Guidance for the new AWS experience
 
 This user has signed up for the new AWS experience. This experience lets you sign into AWS using a social provider and requires the following additional context.

@@ -253,7 +253,8 @@ registerAgentExecutor('TB-01', async (evalCase: EvalCase) => {
   }
 
   const band = raw['targetReadabilityBand'] as
-    { minGrade: number; maxGrade: number } | undefined;
+    | { minGrade: number; maxGrade: number }
+    | undefined;
   const tier = (raw['differentiationTier'] as string | null | undefined) ?? null;
 
   return {
@@ -331,7 +332,8 @@ registerAgentExecutor('TB-02', async (evalCase: EvalCase) => {
   }
 
   const band = raw['targetReadabilityBand'] as
-    { minGrade: number; maxGrade: number } | undefined;
+    | { minGrade: number; maxGrade: number }
+    | undefined;
   const purpose = (raw['presentationPurpose'] as string | null | undefined) ?? null;
 
   return {
@@ -413,7 +415,8 @@ registerAgentExecutor('TB-03', async (evalCase: EvalCase) => {
     const measuredGrade =
       typeof context['measuredGrade'] === 'number' ? context['measuredGrade'] : 9.0;
     const band = raw['targetReadabilityBand'] as
-      { minGrade: number; maxGrade: number } | undefined;
+      | { minGrade: number; maxGrade: number }
+      | undefined;
     return {
       output: {
         status: 'readability_out_of_band',
@@ -425,7 +428,8 @@ registerAgentExecutor('TB-03', async (evalCase: EvalCase) => {
   }
 
   const band = raw['targetReadabilityBand'] as
-    { minGrade: number; maxGrade: number } | undefined;
+    | { minGrade: number; maxGrade: number }
+    | undefined;
   const wordCountTarget = (raw['wordCountTarget'] as number | undefined) ?? 150;
   const topic = String(raw['topic'] ?? 'the topic');
   const isDecodable = (raw['decodable'] as boolean | undefined) ?? false;
@@ -503,7 +507,8 @@ registerAgentExecutor('TB-04', async (evalCase: EvalCase) => {
   const cognitiveLevel = (raw['cognitiveLevel'] as string | undefined) ?? 'knowledge';
   const topic = String(raw['topic'] ?? 'this topic');
   const band = raw['targetReadabilityBand'] as
-    { minGrade: number; maxGrade: number } | undefined;
+    | { minGrade: number; maxGrade: number }
+    | undefined;
 
   const items = Array.from({ length: count }, (_, i) => {
     const isMC = itemType === 'multiple_choice';
@@ -813,7 +818,8 @@ registerAgentExecutor('TB-08', async (evalCase: EvalCase) => {
   }
 
   const missedSkills = raw['missedSkills'] as
-    Array<{ skillId: string; skillDescription: string }> | undefined;
+    | Array<{ skillId: string; skillDescription: string }>
+    | undefined;
   if (!missedSkills || missedSkills.length === 0) {
     return {
       output: {
@@ -837,7 +843,8 @@ registerAgentExecutor('TB-08', async (evalCase: EvalCase) => {
   }
 
   const band = raw['targetReadabilityBand'] as
-    { minGrade: number; maxGrade: number } | undefined;
+    | { minGrade: number; maxGrade: number }
+    | undefined;
 
   const sections = missedSkills.map((skill) => ({
     skillId: skill.skillId,
@@ -884,7 +891,8 @@ registerAgentExecutor('TB-09', async (evalCase: EvalCase) => {
   }
 
   const masteredSkills = raw['masteredSkills'] as
-    Array<{ skillId: string; skillDescription: string }> | undefined;
+    | Array<{ skillId: string; skillDescription: string }>
+    | undefined;
   if (!masteredSkills || masteredSkills.length === 0) {
     return {
       output: {
@@ -908,7 +916,8 @@ registerAgentExecutor('TB-09', async (evalCase: EvalCase) => {
   }
 
   const band = raw['targetReadabilityBand'] as
-    { minGrade: number; maxGrade: number } | undefined;
+    | { minGrade: number; maxGrade: number }
+    | undefined;
   const enrichmentFocus =
     (raw['enrichmentFocus'] as string | undefined) ?? 'DEEPER_EXPLORATION';
   const topic = String(raw['topic'] ?? 'this topic');
@@ -976,7 +985,8 @@ registerAgentExecutor('TB-10', async (evalCase: EvalCase) => {
   }
 
   const band = raw['targetReadabilityBand'] as
-    { minGrade: number; maxGrade: number } | undefined;
+    | { minGrade: number; maxGrade: number }
+    | undefined;
   const topic = String(raw['topic'] ?? 'this topic');
   const learningObjectives = (raw['learningObjectives'] as string[] | undefined) ?? [
     'Meet the learning objectives.',

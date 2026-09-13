@@ -167,7 +167,8 @@ registerAgentExecutor('LE-06', async (evalCase: EvalCase) => {
   const raw = evalCase.input as Record<string, unknown>;
 
   const patterns = raw['correctionPatterns'] as
-    Array<Record<string, unknown>> | undefined;
+    | Array<Record<string, unknown>>
+    | undefined;
 
   if (!patterns || patterns.length === 0) {
     return { output: { status: 'needs_input' } };
@@ -272,7 +273,8 @@ registerAgentExecutor('LE-09', async (evalCase: EvalCase) => {
   const currentCapsVersion = raw['currentCapsVersion'] as string | null | undefined;
   const patternCapsVersion = raw['patternCapsVersion'] as string | null | undefined;
   const revalResult = raw['revalidationResult'] as
-    { passRate: number; requiredPassRate: number } | undefined;
+    | { passRate: number; requiredPassRate: number }
+    | undefined;
   const lastValidatedAt = raw['lastValidatedAt'] as string | undefined;
   const ttlDays = raw['ttlDays'] as number | undefined;
   const today = raw['today'] as string | undefined;

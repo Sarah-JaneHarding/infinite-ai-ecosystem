@@ -4,7 +4,12 @@ import type { SourceRef } from '@infinite-ai/contracts';
 
 /** Broad area of policy compliance being checked. */
 export type ComplianceArea =
-  'ATTENDANCE' | 'SCHOOL_FEES' | 'CONDUCT' | 'SIAS_PROCESS' | 'PD_POINTS' | 'WSE_RATINGS';
+  | 'ATTENDANCE'
+  | 'SCHOOL_FEES'
+  | 'CONDUCT'
+  | 'SIAS_PROCESS'
+  | 'PD_POINTS'
+  | 'WSE_RATINGS';
 
 /** Severity of a compliance finding.
  *

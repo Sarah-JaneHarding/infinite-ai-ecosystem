@@ -37,7 +37,8 @@ type FetchResponse = Awaited<ReturnType<FetchLike>>;
 /** A `fetch` whose behaviour for each call is scripted in advance, in order. */
 function scriptedFetch(
   behaviours: readonly (
-    { readonly status: number; readonly body: unknown } | { readonly hang: true }
+    | { readonly status: number; readonly body: unknown }
+    | { readonly hang: true }
   )[],
 ): FetchLike {
   let call = 0;

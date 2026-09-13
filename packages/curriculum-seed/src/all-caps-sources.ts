@@ -121,12 +121,14 @@ const mathsFp: CapsSourceInfo = {
   phase: 'FOUNDATION',
   grades: PHASE_GRADES['FOUNDATION'],
   contentAreas: [...CAPS_MATHS_FP_CONTENT_AREAS],
-  weightings: CAPS_MATHS_FP_WEIGHTINGS.map((w): CapsWeightingEntry => ({
-    contentArea: w.contentArea,
-    grade: w.grade,
-    weightingPercent: w.weightingPercent,
-    clause: w.basis.clause,
-  })),
+  weightings: CAPS_MATHS_FP_WEIGHTINGS.map(
+    (w): CapsWeightingEntry => ({
+      contentArea: w.contentArea,
+      grade: w.grade,
+      weightingPercent: w.weightingPercent,
+      clause: w.basis.clause,
+    }),
+  ),
   topicCount: CAPS_MATHS_FP_TOPIC_PROGRESSIONS.length,
   source: sourceRef(
     CAPS_MATHS_FP_METADATA.documentId,
@@ -223,12 +225,14 @@ const mathsIp: CapsSourceInfo = {
   phase: 'INTERMEDIATE',
   grades: PHASE_GRADES['INTERMEDIATE'],
   contentAreas: [...CAPS_MATHS_IP_CONTENT_AREAS],
-  weightings: CAPS_MATHS_IP_WEIGHTINGS.map((w): CapsWeightingEntry => ({
-    contentArea: w.contentArea,
-    grade: w.grade,
-    weightingPercent: w.weightingPercent,
-    clause: w.basis.clause,
-  })),
+  weightings: CAPS_MATHS_IP_WEIGHTINGS.map(
+    (w): CapsWeightingEntry => ({
+      contentArea: w.contentArea,
+      grade: w.grade,
+      weightingPercent: w.weightingPercent,
+      clause: w.basis.clause,
+    }),
+  ),
   topicCount: CAPS_MATHS_IP_TOPIC_PROGRESSIONS.length,
   source: sourceRef(
     CAPS_MATHS_IP_METADATA.documentId,
@@ -325,12 +329,14 @@ const mathsSp: CapsSourceInfo = {
   phase: 'SENIOR',
   grades: PHASE_GRADES['SENIOR'],
   contentAreas: [...CAPS_MATHS_SP_CONTENT_AREAS],
-  weightings: CAPS_MATHS_SP_WEIGHTINGS.map((w): CapsWeightingEntry => ({
-    contentArea: w.contentArea,
-    grade: w.grade,
-    weightingPercent: w.weightingPercent,
-    clause: w.basis.clause,
-  })),
+  weightings: CAPS_MATHS_SP_WEIGHTINGS.map(
+    (w): CapsWeightingEntry => ({
+      contentArea: w.contentArea,
+      grade: w.grade,
+      weightingPercent: w.weightingPercent,
+      clause: w.basis.clause,
+    }),
+  ),
   topicCount: CAPS_MATHS_SP_TOPIC_PROGRESSIONS.length,
   source: sourceRef(
     CAPS_MATHS_SP_METADATA.documentId,
@@ -346,12 +352,14 @@ const emsSp: CapsSourceInfo = {
   phase: 'SENIOR',
   grades: PHASE_GRADES['SENIOR'],
   contentAreas: [...CAPS_EMS_SP_CONTENT_AREAS],
-  weightings: CAPS_EMS_SP_WEIGHTINGS.map((w): CapsWeightingEntry => ({
-    contentArea: w.contentArea,
-    grade: w.grade,
-    weightingPercent: w.weightingPercent,
-    clause: w.basis.clause,
-  })),
+  weightings: CAPS_EMS_SP_WEIGHTINGS.map(
+    (w): CapsWeightingEntry => ({
+      contentArea: w.contentArea,
+      grade: w.grade,
+      weightingPercent: w.weightingPercent,
+      clause: w.basis.clause,
+    }),
+  ),
   topicCount: CAPS_EMS_SP_TOPIC_PROGRESSIONS.length,
   source: sourceRef(
     CAPS_EMS_SP_METADATA.documentId,

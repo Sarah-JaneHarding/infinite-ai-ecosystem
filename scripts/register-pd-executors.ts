@@ -21,7 +21,8 @@ registerAgentExecutor('PD-01', async (evalCase: EvalCase) => {
   const raw = evalCase.input as Record<string, unknown>;
 
   const coverageSignals = raw['coverageSignals'] as
-    Array<Record<string, unknown>> | undefined;
+    | Array<Record<string, unknown>>
+    | undefined;
 
   if (!coverageSignals || coverageSignals.length === 0) {
     return { output: { status: 'needs_input' } };
@@ -85,7 +86,8 @@ registerAgentExecutor('PD-02', async (evalCase: EvalCase) => {
   const raw = evalCase.input as Record<string, unknown>;
 
   const assessmentSignals = raw['assessmentSignals'] as
-    Array<Record<string, unknown>> | undefined;
+    | Array<Record<string, unknown>>
+    | undefined;
 
   if (!assessmentSignals || assessmentSignals.length === 0) {
     return { output: { status: 'needs_input' } };
@@ -130,7 +132,8 @@ registerAgentExecutor('PD-03', async (evalCase: EvalCase) => {
   const raw = evalCase.input as Record<string, unknown>;
 
   const walkthroughNotes = raw['walkthroughNotes'] as
-    Array<Record<string, unknown>> | undefined;
+    | Array<Record<string, unknown>>
+    | undefined;
 
   if (!walkthroughNotes || walkthroughNotes.length === 0) {
     return { output: { status: 'needs_input' } };
