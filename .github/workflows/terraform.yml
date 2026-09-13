@@ -19,8 +19,8 @@ name: Terraform
 #   AWS_DEPLOY_ROLE_ARN              bootstrap output: github_deploy_role_arn
 #   TF_STATE_BUCKET                  bootstrap output: state_bucket_name
 #   TF_LOCK_TABLE                    bootstrap output: lock_table_name
-#   TF_VAR_DOMAIN_NAME               e.g. infinite-ai.benjaminpine.co.za
-#   TF_VAR_DNS_ZONE_ID               Route 53 hosted zone ID
+#   TF_VAR_DOMAIN_NAME               optional — e.g. infinite-ai.benjaminpine.co.za; null = plain HTTP
+#   TF_VAR_DNS_ZONE_ID               optional — Route 53 hosted zone ID; required only when DOMAIN_NAME is set
 #   TF_VAR_ALERT_EMAIL               ops@ address for CloudWatch alarms
 #   TF_VAR_LANGFUSE_INIT_USER_EMAIL  Langfuse first-admin email
 #   TF_VAR_GATEWAY_IMAGE_TAG \
@@ -113,10 +113,9 @@ jobs:
           [[ -z '${{ vars.AWS_DEPLOY_ROLE_ARN }}'             ]] && missing+=("AWS_DEPLOY_ROLE_ARN")
           [[ -z '${{ vars.TF_STATE_BUCKET }}'                 ]] && missing+=("TF_STATE_BUCKET")
           [[ -z '${{ vars.TF_LOCK_TABLE }}'                   ]] && missing+=("TF_LOCK_TABLE")
-          [[ -z '${{ vars.TF_VAR_DOMAIN_NAME }}'              ]] && missing+=("TF_VAR_DOMAIN_NAME")
-          [[ -z '${{ vars.TF_VAR_DNS_ZONE_ID }}'              ]] && missing+=("TF_VAR_DNS_ZONE_ID")
           [[ -z '${{ vars.TF_VAR_ALERT_EMAIL }}'              ]] && missing+=("TF_VAR_ALERT_EMAIL")
           [[ -z '${{ vars.TF_VAR_LANGFUSE_INIT_USER_EMAIL }}' ]] && missing+=("TF_VAR_LANGFUSE_INIT_USER_EMAIL")
+          # TF_VAR_DOMAIN_NAME and TF_VAR_DNS_ZONE_ID are optional — null means plain HTTP
           if [[ ${#missing[@]} -gt 0 ]]; then
             echo "ERROR: Missing repository variables: ${missing[*]}"
             echo "Add them in Settings → Secrets and variables → Actions → Variables tab"

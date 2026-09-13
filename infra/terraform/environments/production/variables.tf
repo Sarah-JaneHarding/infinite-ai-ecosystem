@@ -1,10 +1,13 @@
 variable "domain_name" {
-  description = "e.g. \"infinite-ai.benjaminpine.co.za\" — matches docs/RUNBOOKS/region-loss.md's own api.infinite-ai.benjaminpine.co.za reference. No default: production should not silently apply without a real domain decided, even though the stack module itself tolerates null (plain HTTP) for dev/staging."
-  type        = string
+  description = "e.g. \"infinite-ai.benjaminpine.co.za\" — when set, enables HTTPS, SES email, and the Route 53 DNS records. null = plain HTTP (ALB only); acceptable until a domain is procured."
+  type    = string
+  default = null
 }
 
 variable "dns_zone_id" {
-  type = string
+  description = "Route 53 hosted zone ID for domain_name. Required when domain_name is set; ignored otherwise."
+  type    = string
+  default = null
 }
 
 variable "alert_email" {
