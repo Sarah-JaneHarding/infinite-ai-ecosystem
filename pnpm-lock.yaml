@@ -112,12 +112,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@infinite-ai/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@infinite-ai/design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
       '@infinite-ai/learner-client':
         specifier: workspace:*
         version: link:../../packages/learner-client
+      '@infinite-ai/orchestrator':
+        specifier: workspace:*
+        version: link:../../packages/orchestrator
       '@infinite-ai/policy':
         specifier: workspace:*
         version: link:../../packages/policy

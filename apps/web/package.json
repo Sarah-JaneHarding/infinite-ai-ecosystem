@@ -17,7 +17,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@infinite-ai/db": "workspace:*",
     "@infinite-ai/design-system": "workspace:*",
+    "@infinite-ai/orchestrator": "workspace:*",
     "@infinite-ai/school-setup": "workspace:*",
     "@infinite-ai/learner-client": "workspace:*",
     "@infinite-ai/policy": "workspace:*",
