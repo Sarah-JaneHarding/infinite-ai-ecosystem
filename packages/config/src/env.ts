@@ -92,6 +92,13 @@ export const EnvSchema = z.object({
   // a narrower per-app schema built for exactly one field.
   WORKER_PORT: z.coerce.number().int().positive().default(8081),
 
+  // Safeguarding escalation — OQ-014. When set, the worker wires a real SNS notifier;
+  // when absent, `defaultEscalationNotifier` throws loudly rather than silently no-oping.
+  // The ARN names a single SNS topic whose subscriptions (SMS, email, PagerDuty, Lambda)
+  // are configured in AWS — not in this code. Must be present before any pipeline that
+  // can produce a safeguarding-relevant guardrail refusal goes live.
+  SAFEGUARDING_SNS_TOPIC_ARN: z.string().min(1).optional(),
+
   // Object storage — MinIO in dev, S3 af-south-1 in prod.
   OBJECT_STORE_ENDPOINT: z.string().url().optional(),
   OBJECT_STORE_BUCKET: nonEmpty('OBJECT_STORE_BUCKET').optional(),

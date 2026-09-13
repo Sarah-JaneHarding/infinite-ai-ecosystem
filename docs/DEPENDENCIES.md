@@ -545,3 +545,18 @@ relied on by every job in this repository's CI.
 No new npm dependency: `scripts/cd/deploy-ecs-service.sh` and `scripts/cd/promote-image.sh`
 are plain bash, using the `aws` and `docker`/`jq` CLIs already available on
 `ubuntu-latest` GitHub-hosted runners.
+
+## OQ-014 close — SNS-backed safeguarding escalation notifier
+
+`apps/worker` takes one new external runtime dependency to close OQ-014:
+
+| Package               | Version    | Licence    | Why                                                                                                                                                                                                                                                                                                    | Replaces                                                                                        |
+| --------------------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `@aws-sdk/client-sns` | `3.1131.0` | Apache-2.0 | Publishes structured JSON messages to an SNS topic when the guardrail engine produces a safeguarding-relevant refusal with a non-null `EscalationRoute`. Topic subscriptions (SMS, email, PagerDuty endpoint, Lambda) are configured in AWS, not in this code. OQ-014's "real paging integration" gap. | `defaultEscalationNotifier` (still used as fallback when `SAFEGUARDING_SNS_TOPIC_ARN` is unset) |
+
+No new runtime dependency is added to any other package. The notifier implementation
+lives in `apps/worker/src/sns-escalation-notifier.ts`; the topic ARN is configured via
+the new `SAFEGUARDING_SNS_TOPIC_ARN` environment variable in `packages/config/src/env.ts`
+(optional; unset means the throwing default is used, matching existing behaviour).
+
+AWS SDK v3 (`@aws-sdk/*`) follows Apache-2.0. No approval exception needed.
