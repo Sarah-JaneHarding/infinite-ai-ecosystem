@@ -510,8 +510,7 @@ registerAgentExecutor('DW-05', async (evalCase: EvalCase) => {
   const rawRecords = rawInput['sampleRecords'];
   if (typeof rawRecords === 'string') {
     const expansion = c.expandSampleRecords as
-      | { count: number; template: Record<string, unknown> }
-      | undefined;
+      { count: number; template: Record<string, unknown> } | undefined;
     const count = expansion?.count ?? 0;
     const template = expansion?.template ?? {};
     const expanded: Record<string, unknown>[] = [];
@@ -591,8 +590,7 @@ registerAgentExecutor('DW-05', async (evalCase: EvalCase) => {
 
   // Distribution drift from priorRunBaseline.
   const baseline = c.priorRunBaseline as
-    | { avgScorePercent?: number; stddev?: number }
-    | undefined;
+    { avgScorePercent?: number; stddev?: number } | undefined;
   if (baseline?.avgScorePercent !== undefined && domain === 'ASSESSMENT') {
     const scores = sampleRecords
       .map((r) => r['scorePercent'])

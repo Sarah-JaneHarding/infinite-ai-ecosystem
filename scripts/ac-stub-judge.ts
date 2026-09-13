@@ -316,8 +316,7 @@ export const acStubJudge: LlmJudge = async (
   if (key === 'tb07-accessibility-check-verdict-fail') {
     const o = output as Record<string, unknown>;
     const checkResult = o['accessibilityCheckResult'] as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
     if (checkResult?.['verdict'] !== 'fail') {
       return {
         score: 0,
