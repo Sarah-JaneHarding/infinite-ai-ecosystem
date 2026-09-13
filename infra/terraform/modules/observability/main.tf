@@ -33,7 +33,6 @@ resource "aws_cloudwatch_metric_alarm" "error_rate" {
   alarm_name          = "${var.name}-${each.key}-error-rate"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
-  period              = 60
   threshold           = var.error_rate_threshold_pct
   treat_missing_data  = "notBreaching"
   alarm_description   = "5xx rate for ${each.key} exceeded ${var.error_rate_threshold_pct}% for 2 consecutive minutes — canary-deploy.md's own rollback threshold."
