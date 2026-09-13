@@ -34,3 +34,18 @@ output "bootstrap_roles_command" {
 output "langfuse_web_url" {
   value = module.langfuse.web_url
 }
+
+output "safeguarding_sns_topic_arn" {
+  description = "ARN of the safeguarding escalation SNS topic. Use this to add subscriptions (SMS, email, PagerDuty) in the AWS console per pilot school. The worker's SAFEGUARDING_SNS_TOPIC_ARN env var is set to this value automatically."
+  value       = module.sns_escalation.topic_arn
+}
+
+output "db_encryption_key_secret_arn" {
+  description = "ARN of the empty DB_ENCRYPTION_KEY Secrets Manager secret. Populate it before processing real learner data: aws secretsmanager put-secret-value --secret-id <this ARN> --secret-string \"$(openssl rand -base64 32)\""
+  value       = module.encryption_key.secret_arn
+}
+
+output "ses_from_domain" {
+  description = "The SES-verified sending domain, or null when domain_name is not set. Set SES_FROM_ADDRESS to no-reply@<this value> in apps/gateway's own email configuration."
+  value       = var.domain_name == null ? null : module.ses[0].from_domain
+}
