@@ -193,6 +193,18 @@ export interface RunnerOptions {
   readonly retryMaxMs?: number;
   readonly random?: () => number;
   readonly tracer?: Tracer;
+  /** Fires after any `human_gate` decision (APPROVED, EDITED, or REJECTED) is read from
+   * the database during `advanceRun`, before the run is advanced to its next step or
+   * compensation. Called inside the same `withTenant` transaction, so callers can start
+   * downstream runs (e.g. an LE_SIGNAL_PIPELINE run) within that transaction and collect
+   * their IDs for BullMQ enqueueing after the transaction commits.
+   * Omitted means no downstream work is fired — every existing call site, unchanged. */
+  readonly onHumanGateResolved?: (
+    tx: TenantClient,
+    runId: string,
+    stepId: string,
+    task: ApprovalTaskRow,
+  ) => Promise<void>;
 }
 
 const TERMINAL_OR_PAUSED: readonly OrchestratorRunRow['status'][] = [
@@ -704,6 +716,12 @@ async function resumeFromHumanGate(
   const task = await getApprovalTaskForStep(tx, run.id, stepId);
   if (task === null || task.decision === null) {
     return run; // still pending — nothing more to do until a decision is recorded
+  }
+  // Fire for all outcomes (APPROVED, EDITED, REJECTED) — rejections are as valuable a
+  // learning signal as approvals. Fires inside the same transaction so the caller can
+  // start downstream runs atomically with the gate transition.
+  if (options.onHumanGateResolved !== undefined) {
+    await options.onHumanGateResolved(tx, run.id, stepId, task);
   }
   if (task.decision === 'REJECTED') {
     return runCompensation(tx, pipeline, run, options, now);

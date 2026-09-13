@@ -8,7 +8,20 @@ const nextConfig: NextConfig = {
     '@infinite-ai/design-system',
     '@infinite-ai/security',
     '@infinite-ai/school-setup',
+    '@infinite-ai/db',
+    '@infinite-ai/orchestrator',
   ],
+  // Stage 54: @infinite-ai/db and @infinite-ai/orchestrator use "type":"module" with
+  // explicit .js extensions in TypeScript source imports (ESM convention). webpack's
+  // extensionAlias rewrites .js → .ts when the .js file does not exist — exactly the
+  // pattern those packages follow. This option is unsupported in Turbopack, which is
+  // why the build script passes --webpack.
+  experimental: {
+    extensionAlias: {
+      '.js': ['.ts', '.tsx', '.js'],
+      '.mjs': ['.mts', '.mjs'],
+    },
+  },
   // Stage 16: full security header hardening.
   // Values are inlined here because next.config.ts is loaded by Next.js's own config
   // loader which does not do .js→.ts extension remapping for workspace packages.
