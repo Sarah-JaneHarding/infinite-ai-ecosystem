@@ -53,7 +53,7 @@ resource "aws_elasticache_cluster" "this" {
   engine               = "redis"
   engine_version       = "7.1"
   node_type            = var.node_type
-  num_cache_nodes      = 1  # single node for test; no failover needed here
+  num_cache_nodes      = 1 # single node for test; no failover needed here
   parameter_group_name = "default.redis7"
   subnet_group_name    = aws_elasticache_subnet_group.this.name
   security_group_ids   = [aws_security_group.redis.id]

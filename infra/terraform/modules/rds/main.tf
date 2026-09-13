@@ -111,7 +111,7 @@ resource "aws_db_instance" "this" {
 
   multi_az                = false
   publicly_accessible     = false
-  skip_final_snapshot     = true  # test env — no snapshot on teardown
+  skip_final_snapshot     = true # test env — no snapshot on teardown
   deletion_protection     = false
   backup_retention_period = 1
   apply_immediately       = true
