@@ -21,7 +21,12 @@ export {
   type ReconciliationStatus,
 } from './reconciliation.js';
 
-export { buildInvoice, VAT_RATE, type Invoice, type InvoiceLineItem } from './invoicing.js';
+export {
+  buildInvoice,
+  VAT_RATE,
+  type Invoice,
+  type InvoiceLineItem,
+} from './invoicing.js';
 
 export {
   applyDunningTrigger,
