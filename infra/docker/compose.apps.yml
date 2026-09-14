@@ -47,7 +47,14 @@ services:
       REDIS_URL: ${REDIS_URL:?set REDIS_URL in your local .env}
       # Keycloak JWKS endpoint — gateway validates bearer tokens here.
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER:?set KEYCLOAK_ISSUER in your local .env}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?set ANTHROPIC_API_KEY in your local .env}
+      # Comma-separated for credential pooling (Stage 04 step 3). Singular ANTHROPIC_API_KEY
+      # is the Anthropic SDK default name — the gateway's own schema uses the plural form
+      # so the pool can hold more than one key.
+      ANTHROPIC_API_KEYS: ${ANTHROPIC_API_KEYS:?set ANTHROPIC_API_KEYS in your local .env}
+      # Path to the model-routing JSON inside the container. The Dockerfile copies the full
+      # workspace to /repo, so this file is present in every locally-built and pushed image.
+      # Mount a replacement file (volumes:) to change routing without rebuilding.
+      ROUTING_CONFIG_PATH: /repo/apps/gateway/routing.json
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
       OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-}
       GATEWAY_PORT: 8080
@@ -77,7 +84,7 @@ services:
       DIRECT_DATABASE_URL: ${DIRECT_DATABASE_URL:?set DIRECT_DATABASE_URL in your local .env}
       REDIS_URL: ${REDIS_URL:?set REDIS_URL in your local .env}
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER:?set KEYCLOAK_ISSUER in your local .env}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?set ANTHROPIC_API_KEY in your local .env}
+      ANTHROPIC_API_KEYS: ${ANTHROPIC_API_KEYS:?set ANTHROPIC_API_KEYS in your local .env}
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
       OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-}
       WORKER_PORT: 8081
