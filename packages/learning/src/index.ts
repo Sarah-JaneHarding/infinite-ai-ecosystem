@@ -23,4 +23,12 @@ export { PromotionLog, type PromotionRecord } from './promotion-log.js';
 
 export { assignMaturityLevel, type MaturityMetrics } from './maturity-report.js';
 
+export {
+  attributeOutcomes,
+  OUTCOME_MIN_COHORT_SIZE,
+  type AttributionDecision,
+  type AttributionInput,
+  type OutcomeSignal,
+} from './outcome-attributor.js';
+
 export const PACKAGE_NAME = '@infinite-ai/learning' as const;

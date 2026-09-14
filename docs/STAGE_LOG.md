@@ -8245,3 +8245,53 @@ BullMQ queue — avoiding a phantom job in Redis if the DB transaction were to r
 `pnpm --filter @infinite-ai/orchestrator exec tsc --noEmit` — clean.
 `pnpm --filter @infinite-ai/web exec tsc --noEmit` — clean.
 `eslint src test` in apps/worker — clean.
+
+---
+
+## Stage 55 — LE-03 Outcome Attributor · 2026-09-14
+
+**What was built.**
+
+Stage 55 implements `packages/learning/src/outcome-attributor.ts` — the pure attribution logic for LE-03 (Outcome Attributor, Stage 13 step 2).
+
+The function `attributeOutcomes` receives a set of anonymised cohort outcome signals and the attribution window, selects the strongest available attribution method, and returns a confidence score plus a plain-language method note that explicitly states the method's limitations. It never presents correlation as proof (manual §13 step 2).
+
+**Attribution method selection (priority order):**
+
+1. `pre_post_assessment` — when ≥ `OUTCOME_MIN_COHORT_SIZE` (3) signals within the window have both a baseline and a post score. Confidence scales with coverage fraction (0.6 + 0.3 × coverage, capped at 0.9). Mean score delta computed from within-cohort deltas.
+2. `cohort_comparison` — when multiple distinct grade labels are present but insufficient pre/post pairs exist. Confidence 0.5; mean score delta null (no within-cohort baseline).
+3. `temporal_proximity` — fallback when no baseline and single grade. Confidence 0.3; mean score delta null. Method note: "Correlation only."
+
+`teacher_reported` requires an explicit teacher-feedback signal not present in the outcome pipeline; it is not selected automatically.
+
+Returns `insufficient_data` (not an error) when fewer than `OUTCOME_MIN_COHORT_SIZE` signals fall within the attribution window — an honest statement that the data is not yet sufficient.
+
+**Changes.**
+
+- `packages/learning/src/outcome-attributor.ts` (new) — `attributeOutcomes(input: AttributionInput): AttributionDecision`, `OUTCOME_MIN_COHORT_SIZE = 3`, `OutcomeSignal` and `AttributionInput` interfaces, `AttributionDecision` type.
+- `packages/learning/src/index.ts` — exports `attributeOutcomes`, `OUTCOME_MIN_COHORT_SIZE`, `AttributionDecision`, `AttributionInput`, `OutcomeSignal`.
+
+**Tests added (`packages/learning` — outcome-attributor.spec.ts, 12 new cases).**
+
+- Happy path — `pre_post_assessment`: ≥3 signals with both scores → correct method, meanScoreDelta computed.
+- Confidence 0.9 when all cohorts have both scores (full coverage).
+- Confidence < 0.9 (0.825) when one cohort lacks a baseline (partial coverage).
+- `methodNote` explicitly warns "association, not causation" for pre_post method.
+- Happy path — `cohort_comparison`: no baselines, multiple grade groups → method=cohort_comparison, confidence=0.5, meanScoreDelta=null.
+- `pre_post_assessment` wins over `cohort_comparison` when ≥ MIN have both scores, even with multiple grades.
+- Happy path — `temporal_proximity`: no baselines, single grade → confidence=0.3, methodNote matches "correlation only".
+- `insufficient_data`: zero signals within window → actualCohortSize=0.
+- `insufficient_data`: only 2 signals within window (one short of minimum).
+- `insufficient_data`: signals before delivery are excluded from windowed count.
+- Window boundary — includes signal on exact last day (floor days = window length).
+- Window boundary — excludes signal one day past the window (floor days > window length).
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 53 tests, all pass (12 new). `pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `eslint src test` — clean.
+
+| Exit gate item                                                                                              | Result |
+| ----------------------------------------------------------------------------------------------------------- | ------ |
+| Attribution method selected is strongest available given supplied signals                                   | PASS   |
+| Confidence stated explicitly; correlation never presented as causation                                      | PASS   |
+| `insufficient_data` returned honestly when cohort is too small                                              | PASS   |
+| Pre/post wins over cohort_comparison when sufficient data available                                         | PASS   |
+| Window boundary inclusion/exclusion correct (floor arithmetic verified)                                     | PASS   |
