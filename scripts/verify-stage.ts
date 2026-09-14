@@ -880,6 +880,22 @@ const STAGES: readonly Stage[] = [
       // their own Docker-dependent commands in this cumulative gate.
     ],
   },
+  {
+    id: '53',
+    name: 'LE-01 / LE-02 Brain write mechanism',
+    commands: [
+      'pnpm --filter @infinite-ai/worker test',
+    ],
+  },
+  {
+    id: '54',
+    name: 'LE signal pipeline trigger',
+    commands: [
+      'pnpm --filter @infinite-ai/orchestrator test',
+      'pnpm --filter @infinite-ai/worker test',
+      'pnpm --filter @infinite-ai/web exec tsc --noEmit',
+    ],
+  },
 ];
 
 function usage(): never {
