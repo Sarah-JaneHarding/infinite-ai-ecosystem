@@ -116,9 +116,9 @@ describe('curateExemplars — ok', () => {
 
   it('returns candidates sorted by compositeScore descending', () => {
     const candidates = [
-      makeCandidate('art-low', 0.5, 0.5, 0.5),  // composite = 0.5
+      makeCandidate('art-low', 0.5, 0.5, 0.5), // composite = 0.5
       makeCandidate('art-high', 0.9, 0.9, 0.9), // composite = 0.9
-      makeCandidate('art-mid', 0.7, 0.7, 0.7),  // composite = 0.7
+      makeCandidate('art-mid', 0.7, 0.7, 0.7), // composite = 0.7
     ];
     const result = curateExemplars(makeInput({ candidates }));
 

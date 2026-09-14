@@ -14,7 +14,8 @@ import {
 const AGENT_ID = 'LE-06-TEST';
 const NOW = '2026-09-14T10:00:00Z';
 const CHAMPION_VERSION = 'v1.0.0';
-const CHAMPION_CONTENT = 'You are an educational content generator for South African primary schools.';
+const CHAMPION_CONTENT =
+  'You are an educational content generator for South African primary schools.';
 
 let idCounter = 0;
 function makeId(): string {
@@ -60,10 +61,7 @@ describe('evolvePrompt — needs_input', () => {
 
 describe('evolvePrompt — no_improvement_found', () => {
   it('returns no_improvement_found when all patterns are below minimum frequency', () => {
-    const patterns = [
-      makePattern('factual', 1),
-      makePattern('tone', 1),
-    ];
+    const patterns = [makePattern('factual', 1), makePattern('tone', 1)];
     const result = evolvePrompt(makeInput({ correctionPatterns: patterns }));
 
     expect(result.status).toBe('no_improvement_found');
@@ -117,7 +115,9 @@ describe('evolvePrompt — ok', () => {
   });
 
   it('challenger content includes champion content and LE-06 enhancement block', () => {
-    const patterns = [makePattern('curriculum_alignment', 3, 'Content missed CAPS topic.')];
+    const patterns = [
+      makePattern('curriculum_alignment', 3, 'Content missed CAPS topic.'),
+    ];
     const result = evolvePrompt(makeInput({ correctionPatterns: patterns }));
 
     expect(result.status).toBe('ok');
@@ -131,9 +131,9 @@ describe('evolvePrompt — ok', () => {
 
   it('excludes patterns below threshold while including those at or above', () => {
     const patterns = [
-      makePattern('factual', 1),                               // excluded
-      makePattern('tone', EVOLVER_MIN_CORRECTION_FREQUENCY),  // included
-      makePattern('readability', 5),                           // included
+      makePattern('factual', 1), // excluded
+      makePattern('tone', EVOLVER_MIN_CORRECTION_FREQUENCY), // included
+      makePattern('readability', 5), // included
     ];
     const result = evolvePrompt(makeInput({ correctionPatterns: patterns }));
 
@@ -160,10 +160,7 @@ describe('evolvePrompt — ok', () => {
   });
 
   it('rationale names all addressed correction types', () => {
-    const patterns = [
-      makePattern('factual', 3),
-      makePattern('completeness', 4),
-    ];
+    const patterns = [makePattern('factual', 3), makePattern('completeness', 4)];
     const result = evolvePrompt(makeInput({ correctionPatterns: patterns }));
 
     expect(result.status).toBe('ok');

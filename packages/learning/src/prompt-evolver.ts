@@ -81,13 +81,12 @@ export function evolvePrompt(input: PromptEvolverInput): PromptEvolverDecision {
     };
   }
 
-  const addressedTypes: CorrectionType[] = [...new Set(recurring.map((p) => p.correctionType))];
+  const addressedTypes: CorrectionType[] = [
+    ...new Set(recurring.map((p) => p.correctionType)),
+  ];
 
   const guidanceLines = recurring
-    .map(
-      (p) =>
-        `- [${p.correctionType}] (×${p.frequency}): ${p.representativeExample}`,
-    )
+    .map((p) => `- [${p.correctionType}] (×${p.frequency}): ${p.representativeExample}`)
     .join('\n');
 
   const challengerContent =
