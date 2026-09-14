@@ -5,7 +5,7 @@ import {
   isDunningTerminal,
   DunningTransitionError,
   type DunningState,
-} from '../src/dunning';
+} from '../src/dunning.js';
 
 const BASE_STATE: DunningState = {
   status: 'PAYMENT_DUE',

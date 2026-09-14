@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SUBSCRIPTION_TIERS, getTier, type SubscriptionTier } from '../src/tiers';
+import { SUBSCRIPTION_TIERS, getTier, type SubscriptionTier } from '../src/tiers.js';
 
 describe('SUBSCRIPTION_TIERS', () => {
   it('defines starter, standard, and enterprise tiers', () => {
