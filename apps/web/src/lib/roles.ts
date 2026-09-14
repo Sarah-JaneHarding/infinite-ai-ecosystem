@@ -64,13 +64,18 @@ export const ROLE_NAV: Record<Role, readonly NavLink[]> = {
     { label: 'Casebook', href: '/sbst' },
     { label: 'Meetings', href: '/sbst/meetings' },
   ],
-  admin: [{ label: 'Prompts', href: '/admin/prompts' }],
+  admin: [
+    { label: 'Prompts', href: '/admin/prompts' },
+    { label: 'School Setup', href: '/admin/setup' },
+    { label: 'Environment Docs', href: '/admin/env' },
+  ],
   guardian: [{ label: 'Portal', href: '/guardian' }],
   learner: [{ label: 'Space', href: '/learner' }],
   platform_support: [{ label: 'Run Inspector', href: '/platform/runs' }],
   platform_admin: [
     { label: 'Run Inspector', href: '/platform/runs' },
     { label: 'Tenants', href: '/platform/tenants' },
+    { label: 'Environment Docs', href: '/admin/env' },
   ],
 };
 
