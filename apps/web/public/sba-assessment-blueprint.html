@@ -1,0 +1,1027 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SBA Assessment Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --navy: #0a1628;
+        --navy-soft: #132038;
+        --blue: #2563eb;
+        --blue-soft: #eff4ff;
+        --gold: #f59e0b;
+        --gold-soft: #fef3e2;
+        --green: #16a34a;
+        --green-soft: #ecfdf3;
+        --red: #dc2626;
+        --red-soft: #fef2f2;
+        --line: #d9e0ec;
+        --text: #1b2536;
+        --muted: #5b6b85;
+        --paper: #ffffff;
+        --canvas: #f3f5f9;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --line: #2a3855;
+          --text: #e7ecf7;
+          --muted: #9aa8c4;
+          --paper: #101b31;
+          --canvas: #0b1526;
+          --blue-soft: #152242;
+          --gold-soft: #2a2013;
+          --green-soft: #0f2a1c;
+          --red-soft: #2e1414;
+        }
+      }
+      :root[data-theme='dark'] {
+        --line: #2a3855;
+        --text: #e7ecf7;
+        --muted: #9aa8c4;
+        --paper: #101b31;
+        --canvas: #0b1526;
+        --blue-soft: #152242;
+        --gold-soft: #2a2013;
+        --green-soft: #0f2a1c;
+        --red-soft: #2e1414;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--canvas);
+        color: var(--text);
+        font-family: 'Lora', Georgia, serif;
+        line-height: 1.5;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      h1,
+      h2,
+      h3,
+      .brand-mark {
+        font-family: 'Montserrat', Arial, sans-serif;
+      }
+
+      .page {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 28px 20px 80px;
+      }
+
+      .masthead {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+        color: #fff;
+        border-radius: 16px;
+        padding: 28px 30px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 22px;
+      }
+      .masthead::after {
+        content: '∞';
+        position: absolute;
+        right: -10px;
+        bottom: -40px;
+        font-size: 180px;
+        color: rgba(255, 255, 255, 0.05);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        line-height: 1;
+        pointer-events: none;
+      }
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .masthead h1 {
+        font-size: 26px;
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .masthead .sub {
+        font-size: 13.5px;
+        color: #c9d3e8;
+        font-family: 'Lora', serif;
+      }
+      .brand-mark {
+        position: absolute;
+        top: 24px;
+        right: 28px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.65);
+        text-align: right;
+      }
+      .brand-mark span {
+        display: block;
+        color: var(--gold);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      button {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+        border-radius: 8px;
+        padding: 9px 16px;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        color: var(--text);
+        transition:
+          background 0.15s ease,
+          transform 0.1s ease;
+      }
+      button:hover {
+        background: var(--blue-soft);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      button.primary {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: #fff;
+      }
+      button.primary:hover {
+        background: #1d4fcb;
+      }
+      button.ghost {
+        color: var(--muted);
+      }
+
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 22px 24px 26px;
+        margin-bottom: 18px;
+        box-shadow: 0 1px 2px rgba(10, 22, 40, 0.04);
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--gold-soft);
+      }
+      .num {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--navy);
+        color: var(--gold);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .card-head h2 {
+        font-size: 16.5px;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+      }
+      :root[data-theme='dark'] .card-head h2 {
+        color: #eaf0ff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .card-head h2 {
+          color: #eaf0ff;
+        }
+      }
+      .card-head .tag {
+        margin-left: auto;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--blue);
+        background: var(--blue-soft);
+        padding: 4px 9px;
+        border-radius: 999px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      @media (max-width: 700px) {
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      label {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+      .fill {
+        width: 100%;
+        min-height: 38px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--canvas);
+        padding: 9px 11px;
+        font-family: 'Lora', serif;
+        font-size: 14px;
+        color: var(--text);
+        outline: none;
+      }
+      .fill:focus {
+        border-color: var(--blue);
+        border-style: solid;
+        background: var(--paper);
+      }
+      .note {
+        font-size: 12px;
+        color: var(--muted);
+        font-style: italic;
+        margin: 2px 0 10px;
+      }
+      .ref {
+        font-size: 10.5px;
+        color: var(--blue);
+        text-decoration: none;
+        vertical-align: super;
+      }
+      .ref:hover {
+        text-decoration: underline;
+      }
+
+      /* blueprint table */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      .bp-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 4px;
+        min-width: 920px;
+      }
+      .bp-table th {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: #fff;
+        background: var(--navy);
+        text-align: left;
+        padding: 10px 8px;
+      }
+      .bp-table th:first-child {
+        border-radius: 8px 0 0 0;
+      }
+      .bp-table th:last-child {
+        border-radius: 0 8px 0 0;
+      }
+      .bp-table td {
+        border: 1px solid var(--line);
+        padding: 5px;
+        vertical-align: middle;
+      }
+      .bp-table input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-family: 'Lora', serif;
+        font-size: 12.5px;
+        color: var(--text);
+        outline: none;
+        padding: 5px 4px;
+        text-align: left;
+      }
+      .bp-table input.num-in {
+        text-align: center;
+      }
+      .bp-table td.qno {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 12.5px;
+        color: var(--navy);
+        background: var(--blue-soft);
+        text-align: center;
+        width: 56px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .bp-table td.qno {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .bp-table td.qno {
+        color: #eaf0ff;
+      }
+      .bp-table td.qno input {
+        text-align: center;
+        font-weight: 700;
+        color: inherit;
+      }
+      .bp-table select {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-family: 'Lora', serif;
+        font-size: 12.5px;
+        color: var(--text);
+        outline: none;
+        padding: 5px 2px;
+      }
+      .bp-table tr.total-row td {
+        background: var(--gold-soft);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+        color: var(--navy);
+        border-top: 2px solid var(--gold);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .bp-table tr.total-row td {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .bp-table tr.total-row td {
+        color: #eaf0ff;
+      }
+      .bp-table tr.total-row input {
+        font-weight: 800;
+        color: inherit;
+        text-align: center;
+      }
+      .row-controls {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+      }
+      .weight-flag {
+        font-size: 10.5px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 6px;
+        margin-left: 6px;
+      }
+      .weight-ok {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+      .weight-bad {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      /* cognitive distribution */
+      .cog-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 700px) {
+        .cog-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .cog-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px;
+        background: var(--canvas);
+      }
+      .cog-card h3 {
+        font-size: 13px;
+        margin: 0 0 4px;
+        color: var(--navy);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .cog-card h3 {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .cog-card h3 {
+        color: #eaf0ff;
+      }
+      .cog-card .target {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .bar-track {
+        height: 10px;
+        border-radius: 6px;
+        background: var(--line);
+        overflow: hidden;
+        margin-bottom: 8px;
+        position: relative;
+      }
+      .bar-fill {
+        height: 100%;
+        border-radius: 6px;
+        transition: width 0.2s ease;
+      }
+      .bar-fill.l1 {
+        background: var(--blue);
+      }
+      .bar-fill.l2 {
+        background: var(--gold);
+      }
+      .bar-fill.l3 {
+        background: var(--navy);
+      }
+      :root[data-theme='dark'] .bar-fill.l3 {
+        background: #5b7fe0;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .bar-fill.l3 {
+          background: #5b7fe0;
+        }
+      }
+      .cog-actual {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 20px;
+        color: var(--text);
+      }
+      .cog-actual span {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .cog-status {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        margin-top: 6px;
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 999px;
+      }
+      .status-good {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+      .status-off {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      /* checklist */
+      .checklist {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .check-item {
+        display: flex;
+        gap: 12px;
+        padding: 14px 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--canvas);
+      }
+      .check-item input[type='checkbox'] {
+        width: 19px;
+        height: 19px;
+        accent-color: var(--blue);
+        flex: 0 0 auto;
+        margin-top: 2px;
+      }
+      .check-item .body strong {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 13px;
+        color: var(--navy);
+        margin-bottom: 3px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .check-item .body strong {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .check-item .body strong {
+        color: #eaf0ff;
+      }
+      .check-item .body p {
+        margin: 0;
+        font-size: 12.5px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 11.5px;
+        font-family: 'Montserrat', sans-serif;
+        margin-top: 26px;
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+        .toolbar {
+          display: none;
+        }
+        .masthead {
+          background: var(--navy) !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        button {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="masthead">
+        <div class="brand-mark">INFINITE-AI<span>CURRICULUM ENGINE</span></div>
+        <div class="eyebrow">
+          &#127466;&#127462; DBE &middot; SBA Assessment Blueprint
+        </div>
+        <h1>School-Based Assessment (SBA) Blueprint</h1>
+        <div class="sub">
+          Maps a formal assessment task to CAPS cognitive demand and mark weighting before
+          it goes to the HOD for moderation.
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="primary" onclick="window.print()">
+          &#128424; Print / Save as PDF
+        </button>
+        <button class="ghost" onclick="clearAll()">Clear all fields</button>
+        <span style="flex: 1"></span>
+        <button onclick="toggleTheme()" id="themeBtn">&#127763; Toggle theme</button>
+      </div>
+
+      <!-- Context strip -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">1</div>
+          <h2>Task Context &amp; ATP Alignment</h2>
+        </div>
+        <div class="grid grid-3">
+          <div class="field">
+            <label>Subject</label
+            ><input class="fill" placeholder="e.g. Natural Sciences" />
+          </div>
+          <div class="field">
+            <label>Grade</label><input class="fill" placeholder="e.g. Grade 6" />
+          </div>
+          <div class="field">
+            <label>Term</label><input class="fill" placeholder="Term ___" />
+          </div>
+        </div>
+        <div class="grid grid-3" style="margin-top: 14px">
+          <div class="field">
+            <label>Assessment Task Name</label
+            ><input class="fill" placeholder="e.g. Formal Test 2" />
+          </div>
+          <div class="field">
+            <label>ATP Week(s) Covered</label
+            ><input class="fill" placeholder="e.g. Weeks 4&ndash;6" />
+          </div>
+          <div class="field">
+            <label>Total Task Marks</label><input class="fill" placeholder="e.g. 50" />
+          </div>
+        </div>
+        <div class="note">
+          Confirm the specific weeks and content mapped from the current term&rsquo;s ATP
+          before completing the table below.
+        </div>
+      </div>
+
+      <!-- SBA Blueprint table -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">2</div>
+          <h2>Assessment Blueprint</h2>
+          <span class="tag">Mark &amp; weighting breakdown</span>
+        </div>
+        <div class="table-wrap">
+          <table class="bp-table" id="bpTable">
+            <thead>
+              <tr>
+                <th style="width: 60px">Question No.</th>
+                <th style="width: 80px">Sub-Q</th>
+                <th style="width: 170px">Topic / Content Area</th>
+                <th style="width: 190px">Cognitive Level Area</th>
+                <th style="width: 90px">Expected Marks</th>
+                <th style="width: 90px">Actual Marks</th>
+                <th style="width: 90px">% Weighting</th>
+                <th style="width: 130px">Type of Tool</th>
+              </tr>
+            </thead>
+            <tbody id="bpBody"></tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="4" style="text-align: right; padding-right: 12px">TOTAL</td>
+                <td><input id="sumExpected" class="num-in" readonly value="0" /></td>
+                <td><input id="sumActual" class="num-in" readonly value="0" /></td>
+                <td><input id="sumWeight" class="num-in" readonly value="0%" /></td>
+                <td style="text-align: center">100%</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="row-controls">
+          <button onclick="addQuestionRow()">+ Add question (Qn)</button>
+          <button onclick="addSubRow()">+ Add sub-question row</button>
+          <button class="ghost" onclick="removeRow()">&minus; Remove last row</button>
+        </div>
+        <div class="note" id="weightWarning" style="margin-top: 12px"></div>
+      </div>
+
+      <!-- Cognitive Demand Analysis -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">3</div>
+          <h2>Cognitive Demand Analysis Profile</h2>
+          <span class="tag">CAPS distribution</span>
+        </div>
+        <div class="note" style="margin-top: -4px">
+          DBE monitoring policies mandate that every blueprint tracks the cognitive
+          distribution of the assessment tool. Ensure distribution conforms to the general
+          CAPS criteria for your subject.
+        </div>
+
+        <div class="cog-grid">
+          <div class="cog-card">
+            <h3>Level 1 &amp; 2 &mdash; Low</h3>
+            <div class="target">Target: ~30% to 40%</div>
+            <div class="bar-track">
+              <div class="bar-fill l1" id="barLow" style="width: 0%"></div>
+            </div>
+            <div class="cog-actual" id="actualLow">0<span>%</span></div>
+            <span class="cog-status" id="statusLow"></span>
+          </div>
+          <div class="cog-card">
+            <h3>Level 3 &mdash; Medium</h3>
+            <div class="target">Target: ~40% to 50%</div>
+            <div class="bar-track">
+              <div class="bar-fill l2" id="barMed" style="width: 0%"></div>
+            </div>
+            <div class="cog-actual" id="actualMed">0<span>%</span></div>
+            <span class="cog-status" id="statusMed"></span>
+          </div>
+          <div class="cog-card">
+            <h3>Level 4 &mdash; High</h3>
+            <div class="target">Target: ~15% to 20%</div>
+            <div class="bar-track">
+              <div class="bar-fill l3" id="barHigh" style="width: 0%"></div>
+            </div>
+            <div class="cog-actual" id="actualHigh">0<span>%</span></div>
+            <span class="cog-status" id="statusHigh"></span>
+          </div>
+        </div>
+        <div class="note" style="margin-top: 14px">
+          Bars populate automatically from the &ldquo;Cognitive Level Area&rdquo; text
+          entered per row &mdash; tag each row with <b>Low</b>, <b>Medium</b>, or
+          <b>High</b> at the start of that field (e.g. &ldquo;Low &mdash;
+          Knowledge/Literal&rdquo;) for the profile to read it. Otherwise, set the split
+          manually below.
+        </div>
+        <div class="grid grid-3" style="margin-top: 8px">
+          <div class="field">
+            <label>Manual override &mdash; Low %</label
+            ><input class="fill" id="manLow" placeholder="auto" />
+          </div>
+          <div class="field">
+            <label>Manual override &mdash; Medium %</label
+            ><input class="fill" id="manMed" placeholder="auto" />
+          </div>
+          <div class="field">
+            <label>Manual override &mdash; High %</label
+            ><input class="fill" id="manHigh" placeholder="auto" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Pre-Moderation Checklist -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">4</div>
+          <h2>Pre-Moderation Verification Checklist</h2>
+        </div>
+        <div class="note" style="margin-top: -4px">
+          Before submitting this blueprint along with your formal assessment task to your
+          HOD, verify it includes the following structural pillars.
+        </div>
+        <div class="checklist">
+          <label class="check-item">
+            <input type="checkbox" />
+            <div class="body">
+              <strong>ATP Alignment</strong>
+              <p>
+                Clear indication of the specific weeks and content mapped out from the
+                current term&rsquo;s ATP.
+              </p>
+            </div>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" />
+            <div class="body">
+              <strong>Explicit Mark Allocation</strong>
+              <p>
+                Complete breakdown corresponding directly with the formal mark sheets and
+                the official CAPS weighting.
+              </p>
+            </div>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" />
+            <div class="body">
+              <strong>Corresponding Assessment Tools</strong>
+              <p>
+                Attached comprehensive memorandum, detailed analytical rubric, or matrix
+                checklists.
+              </p>
+            </div>
+          </label>
+        </div>
+
+        <div class="grid grid-2" style="margin-top: 18px">
+          <div>
+            <div
+              class="sig-line"
+              style="border-bottom: 1.5px solid var(--muted); min-height: 34px"
+            ></div>
+            <label style="margin-top: 6px; margin-bottom: 0"
+              >Teacher Signature &amp; Date</label
+            >
+          </div>
+          <div>
+            <div
+              class="sig-line"
+              style="border-bottom: 1.5px solid var(--muted); min-height: 34px"
+            ></div>
+            <label style="margin-top: 6px; margin-bottom: 0"
+              >HOD Signature &amp; Date (Pre-Moderation)</label
+            >
+          </div>
+        </div>
+      </div>
+
+      <footer>Infinite-AI Curriculum Engine &middot; DBE SBA Blueprint Suite</footer>
+    </div>
+
+    <script>
+      function themeIsDark() {
+        var attr = document.documentElement.getAttribute('data-theme');
+        if (attr === 'dark') return true;
+        if (attr === 'light') return false;
+        return (
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        );
+      }
+      function toggleTheme() {
+        document.documentElement.setAttribute(
+          'data-theme',
+          themeIsDark() ? 'light' : 'dark',
+        );
+      }
+
+      var qCounter = 0;
+
+      function makeRow(opts) {
+        var tr = document.createElement('tr');
+        var qCell;
+        if (opts.newQuestion) {
+          qCounter++;
+          qCell = '<input class="q-label" value="Q' + qCounter + '">';
+        } else {
+          qCell = '<input class="q-label" value="">';
+        }
+        tr.innerHTML =
+          '<td class="qno">' +
+          qCell +
+          '</td>' +
+          '<td><input placeholder="e.g. ' +
+          (opts.subLabel || '1.1') +
+          '"></td>' +
+          '<td><input placeholder="e.g. Topic A"></td>' +
+          '<td><input placeholder="e.g. Knowledge / Literal"></td>' +
+          '<td><input class="num-in exp" type="number" min="0" placeholder="0"></td>' +
+          '<td><input class="num-in act" type="number" min="0" placeholder="0"></td>' +
+          '<td><input class="num-in wt" readonly value="0%"></td>' +
+          '<td><input placeholder="e.g. Memorandum"></td>';
+        return tr;
+      }
+
+      function addQuestionRow() {
+        var body = document.getElementById('bpBody');
+        body.appendChild(makeRow({ newQuestion: true, subLabel: '1.1' }));
+        attachListeners();
+        recalc();
+      }
+      function addSubRow() {
+        var body = document.getElementById('bpBody');
+        body.appendChild(makeRow({ newQuestion: false, subLabel: '1.2' }));
+        attachListeners();
+        recalc();
+      }
+      function removeRow() {
+        var body = document.getElementById('bpBody');
+        if (body.children.length > 1) {
+          body.removeChild(body.lastElementChild);
+        }
+        recalc();
+      }
+
+      function attachListeners() {
+        document.querySelectorAll('#bpBody .exp, #bpBody .act').forEach(function (el) {
+          el.oninput = recalc;
+        });
+        document.querySelectorAll('#bpBody td:nth-child(4) input').forEach(function (el) {
+          el.oninput = recalc;
+        });
+      }
+
+      function classifyLevel(text) {
+        text = (text || '').toLowerCase();
+        if (
+          text.indexOf('low') === 0 ||
+          text.indexOf('knowledge') !== -1 ||
+          text.indexOf('literal') !== -1 ||
+          text.indexOf('routine') !== -1
+        )
+          return 'low';
+        if (
+          text.indexOf('high') === 0 ||
+          text.indexOf('problem solving') !== -1 ||
+          text.indexOf('appreciation') !== -1 ||
+          text.indexOf('complex') !== -1 ||
+          text.indexOf('evaluation') !== -1
+        )
+          return 'high';
+        if (
+          text.indexOf('medium') === 0 ||
+          text.indexOf('inference') !== -1 ||
+          text.indexOf('application') !== -1 ||
+          text.indexOf('procedure') !== -1
+        )
+          return 'medium';
+        return null;
+      }
+
+      function recalc() {
+        var rows = document.querySelectorAll('#bpBody tr');
+        var sumExp = 0,
+          sumAct = 0;
+        var expByLevel = { low: 0, medium: 0, high: 0 };
+        rows.forEach(function (tr) {
+          var exp = parseFloat(tr.querySelector('.exp').value) || 0;
+          var act = parseFloat(tr.querySelector('.act').value) || 0;
+          sumExp += exp;
+          sumAct += act;
+          var cogText = tr.children[3].querySelector('input').value;
+          var lvl = classifyLevel(cogText);
+          if (lvl) expByLevel[lvl] += exp;
+        });
+
+        rows.forEach(function (tr) {
+          var exp = parseFloat(tr.querySelector('.exp').value) || 0;
+          var wtCell = tr.querySelector('.wt');
+          wtCell.value = sumExp > 0 ? Math.round((exp / sumExp) * 1000) / 10 + '%' : '0%';
+        });
+
+        document.getElementById('sumExpected').value = sumExp;
+        document.getElementById('sumActual').value = sumAct;
+        document.getElementById('sumWeight').value = '100%';
+
+        var manLow = parseFloat(document.getElementById('manLow').value);
+        var manMed = parseFloat(document.getElementById('manMed').value);
+        var manHigh = parseFloat(document.getElementById('manHigh').value);
+
+        var pctLow, pctMed, pctHigh;
+        if (!isNaN(manLow) || !isNaN(manMed) || !isNaN(manHigh)) {
+          pctLow = isNaN(manLow) ? 0 : manLow;
+          pctMed = isNaN(manMed) ? 0 : manMed;
+          pctHigh = isNaN(manHigh) ? 0 : manHigh;
+        } else if (sumExp > 0) {
+          pctLow = Math.round((expByLevel.low / sumExp) * 1000) / 10;
+          pctMed = Math.round((expByLevel.medium / sumExp) * 1000) / 10;
+          pctHigh = Math.round((expByLevel.high / sumExp) * 1000) / 10;
+        } else {
+          pctLow = pctMed = pctHigh = 0;
+        }
+
+        setBar('barLow', 'actualLow', 'statusLow', pctLow, 30, 40);
+        setBar('barMed', 'actualMed', 'statusMed', pctMed, 40, 50);
+        setBar('barHigh', 'actualHigh', 'statusHigh', pctHigh, 15, 20);
+
+        var warn = document.getElementById('weightWarning');
+        if (Math.abs(sumExp - sumAct) > 0.01 && sumAct > 0) {
+          warn.innerHTML =
+            '<span class="weight-flag weight-bad">&#9888; Expected and Actual mark totals do not match</span>';
+        } else {
+          warn.innerHTML = '';
+        }
+      }
+
+      function setBar(barId, actualId, statusId, pct, lo, hi) {
+        var bar = document.getElementById(barId);
+        var actual = document.getElementById(actualId);
+        var status = document.getElementById(statusId);
+        bar.style.width = Math.min(pct, 100) + '%';
+        actual.innerHTML = pct + '<span>%</span>';
+        if (pct === 0) {
+          status.textContent = '';
+          status.className = 'cog-status';
+        } else if (pct >= lo && pct <= hi) {
+          status.textContent = 'Within CAPS target';
+          status.className = 'cog-status status-good';
+        } else {
+          status.textContent = pct < lo ? 'Below target' : 'Above target';
+          status.className = 'cog-status status-off';
+        }
+      }
+
+      function initRows() {
+        var body = document.getElementById('bpBody');
+        body.appendChild(makeRow({ newQuestion: true, subLabel: '1.1' }));
+        body.appendChild(makeRow({ newQuestion: false, subLabel: '1.2' }));
+        body.appendChild(makeRow({ newQuestion: true, subLabel: '2.1' }));
+        body.appendChild(makeRow({ newQuestion: false, subLabel: '2.2' }));
+        attachListeners();
+        recalc();
+      }
+
+      function clearAll() {
+        if (!confirm('Clear all entered text and marks on this blueprint?')) return;
+        document.querySelectorAll('.card input, .card textarea').forEach(function (el) {
+          if (el.readOnly) return;
+          el.value = '';
+        });
+        document.querySelectorAll('input[type=checkbox]').forEach(function (el) {
+          el.checked = false;
+        });
+        recalc();
+      }
+
+      document.getElementById('manLow').addEventListener('input', recalc);
+      document.getElementById('manMed').addEventListener('input', recalc);
+      document.getElementById('manHigh').addEventListener('input', recalc);
+
+      initRows();
+    </script>
+  </body>
+</html>

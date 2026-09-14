@@ -1,0 +1,885 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font:
+          14px -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: #faf9f5;
+        color: #141413;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden]:not([hidden='until-found' i]) {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <title>CAPS Unit Blueprint</title>
+    <style>
+      :root {
+        --navy: #0a1628;
+        --navy-soft: #132038;
+        --blue: #2563eb;
+        --blue-soft: #eff4ff;
+        --gold: #f59e0b;
+        --gold-soft: #fef3e2;
+        --line: #d9e0ec;
+        --text: #1b2536;
+        --muted: #5b6b85;
+        --paper: #ffffff;
+        --canvas: #f3f5f9;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --line: #2a3855;
+          --text: #e7ecf7;
+          --muted: #9aa8c4;
+          --paper: #101b31;
+          --canvas: #0b1526;
+          --blue-soft: #152242;
+          --gold-soft: #2a2013;
+        }
+      }
+      :root[data-theme='dark'] {
+        --line: #2a3855;
+        --text: #e7ecf7;
+        --muted: #9aa8c4;
+        --paper: #101b31;
+        --canvas: #0b1526;
+        --blue-soft: #152242;
+        --gold-soft: #2a2013;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--canvas);
+        color: var(--text);
+        font-family: 'Lora', Georgia, serif;
+        line-height: 1.5;
+      }
+      h1,
+      h2,
+      h3,
+      .brand-mark {
+        font-family: 'Montserrat', Arial, sans-serif;
+      }
+
+      .page {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 28px 20px 80px;
+      }
+
+      /* ===== Header / brand band ===== */
+      .masthead {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+        color: #fff;
+        border-radius: 16px;
+        padding: 28px 30px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 22px;
+      }
+      .masthead::after {
+        content: '∞';
+        position: absolute;
+        right: -10px;
+        bottom: -40px;
+        font-size: 180px;
+        color: rgba(255, 255, 255, 0.05);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        line-height: 1;
+        pointer-events: none;
+      }
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .masthead h1 {
+        font-size: 26px;
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .masthead .sub {
+        font-size: 13.5px;
+        color: #c9d3e8;
+        font-family: 'Lora', serif;
+      }
+      .brand-mark {
+        position: absolute;
+        top: 24px;
+        right: 28px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.65);
+        text-align: right;
+      }
+      .brand-mark span {
+        display: block;
+        color: var(--gold);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+      }
+
+      /* ===== toolbar ===== */
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      button {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+        border-radius: 8px;
+        padding: 9px 16px;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        color: var(--text);
+        transition:
+          background 0.15s ease,
+          transform 0.1s ease;
+      }
+      button:hover {
+        background: var(--blue-soft);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      button.primary {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: #fff;
+      }
+      button.primary:hover {
+        background: #1d4fcb;
+      }
+      button.ghost {
+        color: var(--muted);
+      }
+
+      /* ===== card / section ===== */
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 22px 24px 26px;
+        margin-bottom: 18px;
+        box-shadow: 0 1px 2px rgba(10, 22, 40, 0.04);
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--gold-soft);
+      }
+      .num {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--navy);
+        color: var(--gold);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .card-head h2 {
+        font-size: 16.5px;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+      }
+      :root[data-theme='dark'] .card-head h2 {
+        color: #eaf0ff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .card-head h2 {
+          color: #eaf0ff;
+        }
+      }
+
+      .card-head .tag {
+        margin-left: auto;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--blue);
+        background: var(--blue-soft);
+        padding: 4px 9px;
+        border-radius: 999px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .grid-4 {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+      @media (max-width: 700px) {
+        .grid-2,
+        .grid-3,
+        .grid-4 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      label {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+      .field {
+        margin-bottom: 2px;
+      }
+      .fill {
+        width: 100%;
+        min-height: 38px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--canvas);
+        padding: 9px 11px;
+        font-family: 'Lora', serif;
+        font-size: 14px;
+        color: var(--text);
+        outline: none;
+      }
+      .fill:focus {
+        border-color: var(--blue);
+        border-style: solid;
+        background: var(--paper);
+      }
+      .fill.tall {
+        min-height: 70px;
+      }
+      textarea.fill {
+        resize: vertical;
+      }
+
+      .note {
+        font-size: 12px;
+        color: var(--muted);
+        font-style: italic;
+        margin: 2px 0 10px;
+      }
+      .ref {
+        font-size: 10.5px;
+        color: var(--blue);
+        text-decoration: none;
+        vertical-align: super;
+      }
+      .ref:hover {
+        text-decoration: underline;
+      }
+
+      /* cognitive levels */
+      .levels {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .level-row {
+        display: grid;
+        grid-template-columns: 190px 1fr;
+        gap: 14px;
+        align-items: start;
+      }
+      @media (max-width: 640px) {
+        .level-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .level-chip {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 9px 12px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .lvl1 {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+      .lvl2 {
+        background: var(--gold-soft);
+        color: #b45309;
+      }
+      .lvl3 {
+        background: var(--navy);
+        color: var(--gold);
+      }
+      :root[data-theme='dark'] .lvl2 {
+        color: var(--gold);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .lvl2 {
+          color: var(--gold);
+        }
+      }
+
+      /* checklist */
+      .checklist {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .check-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--canvas);
+      }
+      .check-item input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--blue);
+        flex: 0 0 auto;
+      }
+      .check-item .fill {
+        border-style: solid;
+        background: var(--paper);
+        flex: 1;
+        min-height: auto;
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+
+      /* radio status */
+      .status-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .status-opt {
+        flex: 1;
+        min-width: 150px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 1.5px solid var(--line);
+        border-radius: 9px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .status-opt input {
+        accent-color: var(--blue);
+        width: 16px;
+        height: 16px;
+      }
+      .status-opt:has(input:checked) {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      /* table (Section 5) */
+      .scope-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 4px;
+      }
+      .scope-table th {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10.5px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: #fff;
+        background: var(--navy);
+        text-align: left;
+        padding: 10px 10px;
+      }
+      .scope-table th:first-child {
+        border-radius: 8px 0 0 0;
+      }
+      .scope-table th:last-child {
+        border-radius: 0 8px 0 0;
+      }
+      .scope-table td {
+        border: 1px solid var(--line);
+        padding: 6px;
+        vertical-align: top;
+        min-width: 110px;
+      }
+      .scope-table td:first-child {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 12.5px;
+        color: var(--navy);
+        background: var(--blue-soft);
+        text-align: center;
+        width: 80px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .scope-table td:first-child {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .scope-table td:first-child {
+        color: #eaf0ff;
+      }
+      .scope-table textarea {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-family: 'Lora', serif;
+        font-size: 12.5px;
+        color: var(--text);
+        resize: vertical;
+        min-height: 52px;
+        outline: none;
+        padding: 4px;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      .row-controls {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+      }
+
+      /* signatures */
+      .sig-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+        margin-top: 6px;
+      }
+      @media (max-width: 640px) {
+        .sig-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .sig-line {
+        border-bottom: 1.5px solid var(--muted);
+        min-height: 34px;
+      }
+      .sig-cap {
+        margin-top: 6px;
+      }
+
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 11.5px;
+        font-family: 'Montserrat', sans-serif;
+        margin-top: 26px;
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+        .toolbar {
+          display: none;
+        }
+        .masthead {
+          background: var(--navy) !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        button {
+          display: none;
+        }
+      }
+    </style>
+
+    <div class="page">
+      <div class="masthead">
+        <div class="brand-mark">INFINITE-AI<span>CURRICULUM ENGINE</span></div>
+        <div class="eyebrow">🇿🇦 DBE · CAPS-Aligned</div>
+        <h1>Unit Blueprint Template</h1>
+        <div class="sub">
+          A single planning document that carries one unit of work from ATP alignment
+          through to post-teaching reflection.
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        <button class="ghost" onclick="clearAll()">Clear all fields</button>
+        <span style="flex: 1"></span>
+        <button onclick="toggleTheme()" id="themeBtn">🌓 Toggle theme</button>
+      </div>
+
+      <!-- SECTION 1 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">1</div>
+          <h2>Administrative &amp; Contextual Details</h2>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label>School Name</label
+            ><input class="fill" placeholder="e.g. Benjamin Pine Primary School" />
+          </div>
+          <div class="field">
+            <label>District / Circuit</label
+            ><input class="fill" placeholder="e.g. Pinetown District" />
+          </div>
+        </div>
+        <div class="grid grid-2" style="margin-top: 14px">
+          <div class="field">
+            <label>Subject</label><input class="fill" placeholder="e.g. Life Skills" />
+          </div>
+          <div class="field">
+            <label>Grade</label><input class="fill" placeholder="e.g. Grade 3" />
+          </div>
+        </div>
+        <div class="grid grid-3" style="margin-top: 14px">
+          <div class="field">
+            <label>Term</label><input class="fill" placeholder="Term ___" />
+          </div>
+          <div class="field">
+            <label>Week (From)</label><input class="fill" placeholder="Week ___" />
+          </div>
+          <div class="field">
+            <label>Week (To)</label><input class="fill" placeholder="Week ___" />
+          </div>
+        </div>
+        <div class="note">As per ATP (Annual Teaching Plan)</div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Unit / Theme Title</label
+            ><input class="fill" placeholder="e.g. My Body, My Health" />
+          </div>
+          <div class="field">
+            <label>Total Time Allocation</label
+            ><input class="fill" placeholder="___ Hours / Lessons" />
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">2</div>
+          <h2>Curriculum Alignment (CAPS)</h2>
+          <span class="tag">ATP-linked</span>
+        </div>
+        <div class="field">
+          <label>CAPS Topic / Sub-topic</label>
+          <div class="note">
+            State the exact topic specified in the DBE Annual Teaching Plan
+          </div>
+          <textarea class="fill tall"></textarea>
+        </div>
+        <div class="field" style="margin-top: 14px">
+          <label>Core Concepts &amp; Content</label>
+          <div class="note">
+            List the fundamental knowledge pieces learners must acquire
+          </div>
+          <textarea class="fill tall"></textarea>
+        </div>
+        <div class="field" style="margin-top: 14px">
+          <label>Skills to be Developed</label>
+          <div class="note">e.g. Reading, calculating, analysing, critical thinking</div>
+          <textarea class="fill tall"></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION 3 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">3</div>
+          <h2>Learning Objectives &amp; Outcomes</h2>
+        </div>
+        <div class="note" style="margin-top: -4px">
+          By the end of this unit, learners should be able to:
+        </div>
+        <div class="levels">
+          <div class="level-row">
+            <div class="level-chip lvl1">● Level 1 — Low</div>
+            <textarea
+              class="fill"
+              placeholder="Knowledge / Recall objective(s)"
+            ></textarea>
+          </div>
+          <div class="level-row">
+            <div class="level-chip lvl2">● Level 2 — Medium</div>
+            <textarea
+              class="fill"
+              placeholder="Understanding / Application objective(s)"
+            ></textarea>
+          </div>
+          <div class="level-row">
+            <div class="level-chip lvl3">● Level 3 — High</div>
+            <textarea
+              class="fill"
+              placeholder="Analysis / Evaluation / Creation objective(s)"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">4</div>
+          <h2>Assessment Strategy (Taxonomy &amp; Weighting)</h2>
+        </div>
+
+        <div class="field">
+          <label>Formative Assessment — Assessment FOR Learning</label>
+          <div class="note">
+            e.g. Daily homework, classwork, oral questioning, DBE Workbook activities
+          </div>
+          <textarea class="fill tall"></textarea>
+        </div>
+
+        <div class="field" style="margin-top: 14px">
+          <label>Formal Assessment Task (FAT) — Assessment OF Learning</label>
+          <div class="note">
+            State if there is a formal test, project, or assignment scheduled for this
+            unit as per the DBE assessment programme
+          </div>
+          <textarea class="fill tall"></textarea>
+        </div>
+
+        <div class="grid grid-2" style="margin-top: 14px">
+          <div class="field">
+            <label>Enrichment (High Achievers)</label>
+            <textarea class="fill tall"></textarea>
+          </div>
+          <div class="field">
+            <label>Remediation (SIAS Policy Framework)</label>
+            <textarea class="fill tall"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 5 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">5</div>
+          <h2>Unit Scope, Sequence &amp; Learning Plan</h2>
+        </div>
+        <div class="note" style="margin-top: -4px">
+          Divide the unit into logical, sequential lessons
+        </div>
+        <div class="table-wrap">
+          <table class="scope-table" id="scopeTable">
+            <thead>
+              <tr>
+                <th>Lesson / Day</th>
+                <th>Core Lesson Objective</th>
+                <th>Teacher Activities (Methodology)</th>
+                <th>Learner Activities (Evidence)</th>
+                <th>Resources Needed (e.g. DBE Workbook Page #)</th>
+              </tr>
+            </thead>
+            <tbody id="scopeBody"></tbody>
+          </table>
+        </div>
+        <div class="row-controls">
+          <button onclick="addRow()">+ Add lesson row</button>
+          <button class="ghost" onclick="removeRow()">− Remove last row</button>
+        </div>
+      </div>
+
+      <!-- SECTION 6 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">6</div>
+          <h2>Learning &amp; Teaching Support Materials (LTSM)</h2>
+        </div>
+        <div class="note" style="margin-top: -4px">
+          Check all that apply for this unit
+        </div>
+        <div class="checklist">
+          <label class="check-item"
+            ><input type="checkbox" /> Approved Textbook(s) —
+            <input class="fill" placeholder="Title & pages"
+          /></label>
+          <label class="check-item"
+            ><input type="checkbox" /> DBE Rainbow Workbooks —
+            <input class="fill" placeholder="Volume & pages"
+          /></label>
+          <label class="check-item"
+            ><input type="checkbox" /> Posters / Charts / Manipulatives</label
+          >
+          <label class="check-item"
+            ><input type="checkbox" /> Digital Resources / Slides / Audio Clips</label
+          >
+        </div>
+      </div>
+
+      <!-- SECTION 7 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">7</div>
+          <h2>Teacher Reflection &amp; Curriculum Tracking</h2>
+        </div>
+        <div class="note" style="margin-top: -4px">
+          To be completed after the unit is taught to ensure alignment with the DBE
+          Learning Recovery Programme
+        </div>
+
+        <label style="margin-top: 6px">Curriculum Coverage Status</label>
+        <div class="status-row">
+          <label class="status-opt"
+            ><input type="radio" name="coverage" /> On Track with ATP</label
+          >
+          <label class="status-opt"
+            ><input type="radio" name="coverage" /> Behind ATP</label
+          >
+          <label class="status-opt"
+            ><input type="radio" name="coverage" /> Ahead of ATP</label
+          >
+        </div>
+
+        <div class="field" style="margin-top: 14px">
+          <label>Gaps Identified / Work Not Covered</label>
+          <textarea class="fill tall"></textarea>
+        </div>
+        <div class="field" style="margin-top: 14px">
+          <label>Intervention Plan to Catch Up</label>
+          <textarea class="fill tall"></textarea>
+        </div>
+        <div class="field" style="margin-top: 14px">
+          <label>Successes &amp; Areas for Improvement</label>
+          <textarea class="fill tall"></textarea>
+        </div>
+
+        <div class="sig-grid">
+          <div>
+            <div class="sig-line"></div>
+            <div class="sig-cap">
+              <label style="margin-bottom: 0">Teacher Signature &amp; Date</label>
+            </div>
+          </div>
+          <div>
+            <div class="sig-line"></div>
+            <div class="sig-cap">
+              <label style="margin-bottom: 0"
+                >HOD / Senior Teacher Signature &amp; Date</label
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>Infinite-AI Curriculum Engine · DBE CAPS-Aligned Planning Suite</footer>
+    </div>
+
+    <script>
+      function themeIsDark() {
+        var attr = document.documentElement.getAttribute('data-theme');
+        if (attr === 'dark') return true;
+        if (attr === 'light') return false;
+        return (
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        );
+      }
+      function toggleTheme() {
+        document.documentElement.setAttribute(
+          'data-theme',
+          themeIsDark() ? 'light' : 'dark',
+        );
+      }
+
+      function makeRow(n) {
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>Day ' +
+          n +
+          '</td>' +
+          '<td><textarea placeholder="Objective"></textarea></td>' +
+          '<td><textarea placeholder="Teacher activities"></textarea></td>' +
+          '<td><textarea placeholder="Learner activities"></textarea></td>' +
+          '<td><textarea placeholder="Resources"></textarea></td>';
+        return tr;
+      }
+      function addRow() {
+        var body = document.getElementById('scopeBody');
+        body.appendChild(makeRow(body.children.length + 1));
+      }
+      function removeRow() {
+        var body = document.getElementById('scopeBody');
+        if (body.children.length > 1) {
+          body.removeChild(body.lastElementChild);
+        }
+      }
+      function initRows() {
+        var body = document.getElementById('scopeBody');
+        for (var i = 1; i <= 5; i++) {
+          body.appendChild(makeRow(i));
+        }
+      }
+      function clearAll() {
+        if (!confirm('Clear all entered text on this blueprint?')) return;
+        document
+          .querySelectorAll('input.fill, textarea.fill, .scope-table textarea')
+          .forEach(function (el) {
+            el.value = '';
+          });
+        document
+          .querySelectorAll('input[type=checkbox], input[type=radio]')
+          .forEach(function (el) {
+            el.checked = false;
+          });
+      }
+      initRows();
+    </script>
+  </body>
+</html>
