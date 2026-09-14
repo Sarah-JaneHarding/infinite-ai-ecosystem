@@ -6,7 +6,7 @@
 // detects overages against the tenant's subscription tier.
 // ---------------------------------------------------------------------------
 
-import type { SubscriptionTier } from './tiers';
+import type { SubscriptionTier } from './tiers.js';
 
 export interface MeteringEvent {
   readonly tenantId: string;

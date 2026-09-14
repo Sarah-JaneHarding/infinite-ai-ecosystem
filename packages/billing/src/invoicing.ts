@@ -5,8 +5,8 @@
 // seat overages, and token overages. All amounts are in ZAR cents.
 // ---------------------------------------------------------------------------
 
-import type { PeriodUsage, OverageBreakdown } from './metering';
-import type { SubscriptionTier } from './tiers';
+import type { PeriodUsage, OverageBreakdown } from './metering.js';
+import type { SubscriptionTier } from './tiers.js';
 
 export interface InvoiceLineItem {
   readonly description: string;

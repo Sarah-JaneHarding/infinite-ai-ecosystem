@@ -39,7 +39,8 @@ export const FUNCTIONAL_GROUPS: readonly FunctionalGroupMeta[] = [
     category: 'Authentication',
     title: 'Authentication & Identity',
     icon: '🔐',
-    description: 'User authentication, NextAuth session token signing, and Keycloak OpenID Connect (OIDC) client secrets.',
+    description:
+      'User authentication, NextAuth session token signing, and Keycloak OpenID Connect (OIDC) client secrets.',
     keyServices: 'NextAuth, Keycloak, JWT & OIDC',
   },
   {
@@ -47,7 +48,8 @@ export const FUNCTIONAL_GROUPS: readonly FunctionalGroupMeta[] = [
     category: 'Database',
     title: 'Database & Persistence',
     icon: '🗄️',
-    description: 'PostgreSQL connection strings, role-separated credentials (app_rw, migrator, analytics), and Redis caching.',
+    description:
+      'PostgreSQL connection strings, role-separated credentials (app_rw, migrator, analytics), and Redis caching.',
     keyServices: 'PostgreSQL, RLS Roles, Redis',
   },
   {
@@ -55,7 +57,8 @@ export const FUNCTIONAL_GROUPS: readonly FunctionalGroupMeta[] = [
     category: 'API Keys',
     title: 'API Keys & AI Providers',
     icon: '🤖',
-    description: 'External LLM provider API credentials, base endpoints, and local on-premise model inference adapters.',
+    description:
+      'External LLM provider API credentials, base endpoints, and local on-premise model inference adapters.',
     keyServices: 'Anthropic Claude, OpenAI, Local Models (vLLM/Ollama)',
   },
   {
@@ -63,7 +66,8 @@ export const FUNCTIONAL_GROUPS: readonly FunctionalGroupMeta[] = [
     category: 'Object Storage',
     title: 'Object Storage',
     icon: '📦',
-    description: 'S3-compatible MinIO endpoint settings, bucket names, and storage administrator access credentials.',
+    description:
+      'S3-compatible MinIO endpoint settings, bucket names, and storage administrator access credentials.',
     keyServices: 'MinIO, S3 Assets, Lesson Files',
   },
   {
@@ -71,7 +75,8 @@ export const FUNCTIONAL_GROUPS: readonly FunctionalGroupMeta[] = [
     category: 'Observability',
     title: 'Observability & Monitoring',
     icon: '📊',
-    description: 'OpenTelemetry exporters, Langfuse tracing for prompt management, ClickHouse analytical telemetry, and audit logs.',
+    description:
+      'OpenTelemetry exporters, Langfuse tracing for prompt management, ClickHouse analytical telemetry, and audit logs.',
     keyServices: 'Langfuse, OpenTelemetry (OTLP), ClickHouse',
   },
   {
@@ -79,7 +84,8 @@ export const FUNCTIONAL_GROUPS: readonly FunctionalGroupMeta[] = [
     category: 'Core & Security',
     title: 'Core System & Security',
     icon: '🛡️',
-    description: 'Cloud hosting region (POPIA data sovereignty), AES-256 PII column encryption, network ports, and logging levels.',
+    description:
+      'Cloud hosting region (POPIA data sovereignty), AES-256 PII column encryption, network ports, and logging levels.',
     keyServices: 'POPIA Compliance, AES-256 Keys, Ports & Logging',
   },
 ] as const;
@@ -93,9 +99,12 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: true,
     isSecret: true,
     exampleValue: 'w7s9K... (32+ character random string)',
-    description: 'Cryptographic secret used by NextAuth to encrypt and sign JWT session tokens and cookie hashes.',
-    usage: 'Required by apps/web. Without this, user authentication and protected session cookies fail.',
-    source: 'Generate locally via `openssl rand -base64 32` or any secure random generator.',
+    description:
+      'Cryptographic secret used by NextAuth to encrypt and sign JWT session tokens and cookie hashes.',
+    usage:
+      'Required by apps/web. Without this, user authentication and protected session cookies fail.',
+    source:
+      'Generate locally via `openssl rand -base64 32` or any secure random generator.',
   },
   {
     name: 'NEXTAUTH_URL',
@@ -103,9 +112,12 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     scope: 'web',
     requiredForWeb: false,
     defaultValue: 'http://localhost:3000',
-    exampleValue: 'https://ais-dev-avoydgqvoyd7js6ezspmir-86278674869.europe-west2.run.app',
-    description: 'Canonical base URL of the Next.js application used for OAuth redirect callbacks.',
-    usage: 'Configured in apps/web. If omitted in development, NextAuth automatically infers it from request headers.',
+    exampleValue:
+      'https://ais-dev-avoydgqvoyd7js6ezspmir-86278674869.europe-west2.run.app',
+    description:
+      'Canonical base URL of the Next.js application used for OAuth redirect callbacks.',
+    usage:
+      'Configured in apps/web. If omitted in development, NextAuth automatically infers it from request headers.',
     source: 'The public preview URL provided by Google AI Studio or your custom domain.',
   },
   {
@@ -115,9 +127,12 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'infinite-ai-web',
     exampleValue: 'infinite-ai-web',
-    description: 'Keycloak OpenID Connect (OIDC) client identifier configured for web login.',
-    usage: 'Used by NextAuth Keycloak provider in apps/web/src/auth.ts to identify the client application.',
-    source: 'Keycloak Admin Console → Clients → infinite-ai-web (pre-seeded by infra/keycloak/realm.json).',
+    description:
+      'Keycloak OpenID Connect (OIDC) client identifier configured for web login.',
+    usage:
+      'Used by NextAuth Keycloak provider in apps/web/src/auth.ts to identify the client application.',
+    source:
+      'Keycloak Admin Console → Clients → infinite-ai-web (pre-seeded by infra/keycloak/realm.json).',
   },
   {
     name: 'AUTH_KEYCLOAK_SECRET',
@@ -126,8 +141,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     isSecret: true,
     exampleValue: 'c8f49b10-68be-4fc4-921c-32ec65b801a2',
-    description: 'OIDC client secret matching Keycloak’s infinite-ai-web client credentials.',
-    usage: 'Exchanged during the OAuth authorization code flow to obtain user session tokens and role claims.',
+    description:
+      'OIDC client secret matching Keycloak’s infinite-ai-web client credentials.',
+    usage:
+      'Exchanged during the OAuth authorization code flow to obtain user session tokens and role claims.',
     source: 'Keycloak Admin Console → Clients → infinite-ai-web → Credentials tab.',
   },
   {
@@ -138,7 +155,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     defaultValue: 'http://localhost:8080/realms/infinite-ai',
     exampleValue: 'http://localhost:8180/realms/infinite-ai',
     description: 'OIDC discovery URL endpoint for the infinite-ai realm.',
-    usage: 'NextAuth queries this issuer URL to fetch JSON Web Key Sets (JWKS) and OpenID discovery configuration.',
+    usage:
+      'NextAuth queries this issuer URL to fetch JSON Web Key Sets (JWKS) and OpenID discovery configuration.',
     source: 'Keycloak server realm URL.',
   },
   {
@@ -148,8 +166,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'admin',
     exampleValue: 'admin',
-    description: 'Master realm administrative username for the Keycloak identity container.',
-    usage: 'Used to bootstrap Keycloak and access the management console (http://localhost:8180).',
+    description:
+      'Master realm administrative username for the Keycloak identity container.',
+    usage:
+      'Used to bootstrap Keycloak and access the management console (http://localhost:8180).',
     source: 'Set in infra/docker/.env or container startup parameters.',
   },
   {
@@ -159,8 +179,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     isSecret: true,
     exampleValue: 'super-secret-admin-pass',
-    description: 'Master realm administrative password for Keycloak container management.',
-    usage: 'Provides root administrative privileges to configure realms, federated identities, and user pools.',
+    description:
+      'Master realm administrative password for Keycloak container management.',
+    usage:
+      'Provides root administrative privileges to configure realms, federated identities, and user pools.',
     source: 'Defined in infra/docker/.env.',
   },
   {
@@ -170,7 +192,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'infinite-ai-web',
     exampleValue: 'infinite-ai-web',
-    description: 'Default client identifier substituted into realm configuration templates.',
+    description:
+      'Default client identifier substituted into realm configuration templates.',
     usage: 'Referenced during realm provisioning scripts and integration test harnesses.',
     source: 'Defined in infra/docker/.env.',
   },
@@ -181,7 +204,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     exampleValue: 'http://localhost:8180/realms/infinite-ai',
     description: 'Base issuer URL injected into Keycloak container environment.',
-    usage: 'Used internally by Keycloak to construct identity tokens and redirect headers.',
+    usage:
+      'Used internally by Keycloak to construct identity tokens and redirect headers.',
     source: 'Configured in infra/docker/.env.',
   },
   {
@@ -191,7 +215,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     isSecret: true,
     exampleValue: 'web-secret-key-uuid',
-    description: 'Pre-shared client secret used to initialize the web client during Docker Compose realm import.',
+    description:
+      'Pre-shared client secret used to initialize the web client during Docker Compose realm import.',
     usage: 'Substituted into infra/keycloak/realm.json when the container starts.',
     source: 'Set in infra/docker/.env to match AUTH_KEYCLOAK_SECRET in apps/web.',
   },
@@ -203,7 +228,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     isSecret: true,
     exampleValue: 'worker-secret-key-uuid',
     description: 'Service account client secret for the background worker service.',
-    usage: 'Enables apps/worker to authenticate with Keycloak using Client Credentials Grant.',
+    usage:
+      'Enables apps/worker to authenticate with Keycloak using Client Credentials Grant.',
     source: 'Defined in infra/docker/.env and referenced by worker container.',
   },
 
@@ -216,8 +242,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     isSecret: true,
     exampleValue: 'postgresql://app_rw:password@localhost:5432/infinite_ai',
     description: 'PostgreSQL connection string for the application data layer.',
-    usage: 'Supplied to Prisma and packages/db. Must use the app_rw role with Row-Level Security (RLS) enforcement.',
-    source: 'Your PostgreSQL instance or docker-compose dev database (see docs/DEV_SETUP.md).',
+    usage:
+      'Supplied to Prisma and packages/db. Must use the app_rw role with Row-Level Security (RLS) enforcement.',
+    source:
+      'Your PostgreSQL instance or docker-compose dev database (see docs/DEV_SETUP.md).',
   },
   {
     name: 'POSTGRES_DB',
@@ -227,7 +255,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     defaultValue: 'infinite_ai',
     exampleValue: 'infinite_ai',
     description: 'Primary PostgreSQL database name for the school ecosystem.',
-    usage: 'Used by Docker Compose and database initialization scripts (01-init.sql, 02-roles.sh).',
+    usage:
+      'Used by Docker Compose and database initialization scripts (01-init.sql, 02-roles.sh).',
     source: 'Defined in infra/docker/.env or Cloud SQL / PostgreSQL configuration.',
   },
   {
@@ -237,7 +266,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'postgres',
     exampleValue: 'postgres',
-    description: 'PostgreSQL superuser username used for database bootstrap and schema provisioning.',
+    description:
+      'PostgreSQL superuser username used for database bootstrap and schema provisioning.',
     usage: 'Only used by container startup scripts to create unprivileged tenant roles.',
     source: 'Configured during initial database cluster setup.',
   },
@@ -249,7 +279,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     isSecret: true,
     exampleValue: 'db-superuser-master-password',
     description: 'Superuser password for PostgreSQL cluster bootstrapping.',
-    usage: 'Restricted to infrastructure provisioning; application code never connects as superuser.',
+    usage:
+      'Restricted to infrastructure provisioning; application code never connects as superuser.',
     source: 'Generated during PostgreSQL installation or set in infra/docker/.env.',
   },
   {
@@ -259,8 +290,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     isSecret: true,
     exampleValue: 'app-rw-secure-token',
-    description: 'Password for the application least-privilege read-write database role (app_rw).',
-    usage: 'The runtime credential embedded in DATABASE_URL. Bound by PostgreSQL Row-Level Security policies.',
+    description:
+      'Password for the application least-privilege read-write database role (app_rw).',
+    usage:
+      'The runtime credential embedded in DATABASE_URL. Bound by PostgreSQL Row-Level Security policies.',
     source: 'Configured in infra/docker/initdb/02-roles.sh and infra/docker/.env.',
   },
   {
@@ -271,7 +304,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     isSecret: true,
     exampleValue: 'migrator-secure-token',
     description: 'Password for the DDL migration database role (migrator).',
-    usage: 'The sole role authorized to alter database schemas and execute prisma migrate deploy.',
+    usage:
+      'The sole role authorized to alter database schemas and execute prisma migrate deploy.',
     source: 'Set in infra/docker/.env; used when running schema migration commands.',
   },
   {
@@ -281,8 +315,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     isSecret: true,
     exampleValue: 'analytics-ro-token',
-    description: 'Password for the read-only analytics database user role (analytics_ro).',
-    usage: 'Used by reporting workers and data warehouse extractors to guarantee read-only query isolation.',
+    description:
+      'Password for the read-only analytics database user role (analytics_ro).',
+    usage:
+      'Used by reporting workers and data warehouse extractors to guarantee read-only query isolation.',
     source: 'Configured in database role provisioning scripts.',
   },
   {
@@ -293,7 +329,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     isSecret: true,
     exampleValue: 'worker-rw-token',
     description: 'Password for the background worker database role (worker_rw).',
-    usage: 'Used by apps/worker for asynchronous batch processing, curriculum ingestion, and audit event writes.',
+    usage:
+      'Used by apps/worker for asynchronous batch processing, curriculum ingestion, and audit event writes.',
     source: 'Defined in infra/docker/.env.',
   },
   {
@@ -303,8 +340,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'redis://localhost:6379',
     exampleValue: 'redis://localhost:6379',
-    description: 'Redis connection URI for distributed caching, session tracking, and rate limits.',
-    usage: 'Powers the sliding-window rate limiter, session token caching, and background task queues.',
+    description:
+      'Redis connection URI for distributed caching, session tracking, and rate limits.',
+    usage:
+      'Powers the sliding-window rate limiter, session token caching, and background task queues.',
     source: 'Redis instance endpoint or Docker Compose service.',
   },
 
@@ -316,9 +355,12 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     isSecret: true,
     exampleValue: 'sk-ant-api03-...,sk-ant-api03-...',
-    description: 'Comma-separated API keys for Anthropic Claude models (Claude 3.5 Sonnet, Claude 3 Haiku).',
-    usage: 'Loaded into the credential pool in apps/gateway to handle curriculum planning and lesson design.',
-    source: 'Anthropic Console (https://console.anthropic.com). Optional in local UI development.',
+    description:
+      'Comma-separated API keys for Anthropic Claude models (Claude 3.5 Sonnet, Claude 3 Haiku).',
+    usage:
+      'Loaded into the credential pool in apps/gateway to handle curriculum planning and lesson design.',
+    source:
+      'Anthropic Console (https://console.anthropic.com). Optional in local UI development.',
   },
   {
     name: 'ANTHROPIC_BASE_URL',
@@ -328,7 +370,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     defaultValue: 'https://api.anthropic.com',
     exampleValue: 'https://api.anthropic.com',
     description: 'Base URL for Anthropic API requests.',
-    usage: 'Overridden when routing through an enterprise egress proxy or local mock adapter.',
+    usage:
+      'Overridden when routing through an enterprise egress proxy or local mock adapter.',
     source: 'Defaults to official Anthropic endpoint.',
   },
   {
@@ -340,7 +383,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     exampleValue: 'sk-proj-...,sk-proj-...',
     description: 'Comma-separated API keys for OpenAI models (GPT-4o, GPT-4o-mini).',
     usage: 'Used by apps/gateway for fallback circuits and secondary evaluations.',
-    source: 'OpenAI API Dashboard (https://platform.openai.com/api-keys). Optional in local dev.',
+    source:
+      'OpenAI API Dashboard (https://platform.openai.com/api-keys). Optional in local dev.',
   },
   {
     name: 'OPENAI_BASE_URL',
@@ -360,7 +404,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     isSecret: true,
     exampleValue: 'ollama-local-token',
-    description: 'Authorization tokens for self-hosted local model endpoints (e.g., vLLM, Ollama, TGI).',
+    description:
+      'Authorization tokens for self-hosted local model endpoints (e.g., vLLM, Ollama, TGI).',
     usage: 'Enables private on-premise model execution for zero external data egress.',
     source: 'Configured on your local inference server or cluster gateway.',
   },
@@ -385,8 +430,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     defaultValue: 'http://localhost:9000',
     exampleValue: 'http://localhost:9000',
     description: 'S3-compatible API endpoint URL for object storage.',
-    usage: 'Used by S3 client adapters to upload and retrieve learner artifacts and curriculum files.',
-    source: 'Local MinIO server (http://localhost:9000) or AWS S3 endpoint in production.',
+    usage:
+      'Used by S3 client adapters to upload and retrieve learner artifacts and curriculum files.',
+    source:
+      'Local MinIO server (http://localhost:9000) or AWS S3 endpoint in production.',
   },
   {
     name: 'OBJECT_STORE_BUCKET',
@@ -395,8 +442,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'infinite-ai-assets',
     exampleValue: 'infinite-ai-assets',
-    description: 'Name of the S3 bucket housing ecosystem documents and lesson resources.',
-    usage: 'Created automatically by minio-init on first boot; referenced by storage services.',
+    description:
+      'Name of the S3 bucket housing ecosystem documents and lesson resources.',
+    usage:
+      'Created automatically by minio-init on first boot; referenced by storage services.',
     source: 'Defined in infra/docker/.env.',
   },
   {
@@ -407,7 +456,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     defaultValue: 'minioadmin',
     exampleValue: 'minioadmin',
     description: 'Root access key username for the local MinIO storage server.',
-    usage: 'Used to log into the MinIO administration web console (http://localhost:9001).',
+    usage:
+      'Used to log into the MinIO administration web console (http://localhost:9001).',
     source: 'Set in infra/docker/.env.',
   },
   {
@@ -431,8 +481,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'http://localhost:3001/api/public/otel',
     exampleValue: 'http://localhost:3001/api/public/otel',
-    description: 'OpenTelemetry (OTLP) HTTP/gRPC endpoint for tracing and telemetry export.',
-    usage: 'Sends distributed trace spans, latency metrics, and audit entries to Langfuse or an OTel collector.',
+    description:
+      'OpenTelemetry (OTLP) HTTP/gRPC endpoint for tracing and telemetry export.',
+    usage:
+      'Sends distributed trace spans, latency metrics, and audit entries to Langfuse or an OTel collector.',
     source: 'Local Langfuse service port 3001 or cloud APM endpoint.',
   },
   {
@@ -442,9 +494,11 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     isSecret: true,
     exampleValue: 'Authorization=Basic cGstbGYt...==',
-    description: 'Authorization header containing base64-encoded Langfuse project keys (pk:sk).',
+    description:
+      'Authorization header containing base64-encoded Langfuse project keys (pk:sk).',
     usage: 'Authenticates trace spans sent to the Langfuse OpenTelemetry ingestion API.',
-    source: 'Constructed via `echo -n "PUBLIC_KEY:SECRET_KEY" | base64` (see docs/DEV_SETUP.md step 4).',
+    source:
+      'Constructed via `echo -n "PUBLIC_KEY:SECRET_KEY" | base64` (see docs/DEV_SETUP.md step 4).',
   },
   {
     name: 'LANGFUSE_INIT_PROJECT_PUBLIC_KEY',
@@ -454,7 +508,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     defaultValue: 'pk-lf-dev-project',
     exampleValue: 'pk-lf-dev-project',
     description: 'Pre-seeded public API key for Langfuse LLM observability.',
-    usage: 'Bootstrapped on first boot so services can emit traces without manual project creation.',
+    usage:
+      'Bootstrapped on first boot so services can emit traces without manual project creation.',
     source: 'Set in infra/docker/.env.',
   },
   {
@@ -477,7 +532,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     defaultValue: 'admin@infinite-ai.local',
     exampleValue: 'admin@infinite-ai.local',
     description: 'Initial administrator user email for the Langfuse UI.',
-    usage: 'Used to sign in to the Langfuse observability dashboard at http://localhost:3001.',
+    usage:
+      'Used to sign in to the Langfuse observability dashboard at http://localhost:3001.',
     source: 'Defined in infra/docker/.env.',
   },
   {
@@ -509,7 +565,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     isSecret: true,
     exampleValue: '64-hex-character-encryption-key',
-    description: '256-bit encryption key (64 hex characters) protecting credentials inside Langfuse.',
+    description:
+      '256-bit encryption key (64 hex characters) protecting credentials inside Langfuse.',
     usage: 'Encrypts provider keys stored within the Langfuse database.',
     source: 'Generated via `openssl rand -hex 32`.',
   },
@@ -532,7 +589,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     defaultValue: 'postgres',
     exampleValue: 'postgres',
     description: 'Username for Langfuse’s dedicated metadata PostgreSQL instance.',
-    usage: 'Used by langfuse-web to store user accounts, projects, and prompt management records.',
+    usage:
+      'Used by langfuse-web to store user accounts, projects, and prompt management records.',
     source: 'infra/docker/compose.dev.yml configuration.',
   },
   {
@@ -554,7 +612,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     defaultValue: 'default',
     exampleValue: 'default',
     description: 'User for Langfuse ClickHouse analytical database.',
-    usage: 'Used for high-volume ingest of model traces, token usages, and generation spans.',
+    usage:
+      'Used for high-volume ingest of model traces, token usages, and generation spans.',
     source: 'infra/docker/compose.dev.yml configuration.',
   },
   {
@@ -588,8 +647,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'af-south-1',
     exampleValue: 'af-south-1',
-    description: 'Geographic cloud region hosting the deployment (e.g., af-south-1 in Cape Town).',
-    usage: 'Enforces POPIA data sovereignty requirements ensuring learner and school data remains in South Africa.',
+    description:
+      'Geographic cloud region hosting the deployment (e.g., af-south-1 in Cape Town).',
+    usage:
+      'Enforces POPIA data sovereignty requirements ensuring learner and school data remains in South Africa.',
     source: 'Set to your hosting region or af-south-1 for South African compliance.',
   },
   {
@@ -599,9 +660,12 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     isSecret: true,
     exampleValue: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
-    description: '256-bit AES cryptographic key (64 hex characters) for application-level column encryption.',
-    usage: 'Encrypts sensitive learner PII (names, SIAS vulnerability notes) before persistence in PostgreSQL.',
-    source: 'Generated via `openssl rand -hex 32`. Leave empty in local dev if not testing PII encryption.',
+    description:
+      '256-bit AES cryptographic key (64 hex characters) for application-level column encryption.',
+    usage:
+      'Encrypts sensitive learner PII (names, SIAS vulnerability notes) before persistence in PostgreSQL.',
+    source:
+      'Generated via `openssl rand -hex 32`. Leave empty in local dev if not testing PII encryption.',
   },
   {
     name: 'DB_ENCRYPTION_KEY_VERSION',
@@ -611,7 +675,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     defaultValue: 'v1',
     exampleValue: 'v1',
     description: 'Key version tag associated with DB_ENCRYPTION_KEY.',
-    usage: 'Facilitates zero-downtime cryptographic key rotation by identifying which key version encrypted a row.',
+    usage:
+      'Facilitates zero-downtime cryptographic key rotation by identifying which key version encrypted a row.',
     source: 'Incremented when rotating database encryption keys.',
   },
   {
@@ -621,8 +686,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'http://localhost:8080',
     exampleValue: 'http://localhost:8080',
-    description: 'Base HTTP endpoint of the centralized AI routing gateway service (apps/gateway).',
-    usage: 'Web and worker services query this URL to dispatch LLM agent runs and verify token budgets.',
+    description:
+      'Base HTTP endpoint of the centralized AI routing gateway service (apps/gateway).',
+    usage:
+      'Web and worker services query this URL to dispatch LLM agent runs and verify token budgets.',
     source: 'Gateway service URL or internal cluster DNS.',
   },
   {
@@ -643,7 +710,8 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: '8081',
     exampleValue: '8081',
-    description: 'Network port for the background worker health check and status HTTP server.',
+    description:
+      'Network port for the background worker health check and status HTTP server.',
     usage: 'Used by container orchestrators to probe worker liveness and readiness.',
     source: 'Standard worker port configuration.',
   },
@@ -654,8 +722,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'info',
     exampleValue: 'info',
-    description: 'Application logging verbosity across all microservices (debug, info, warn, error).',
-    usage: 'Controls logger thresholds in packages/telemetry; use debug during development and info in production.',
+    description:
+      'Application logging verbosity across all microservices (debug, info, warn, error).',
+    usage:
+      'Controls logger thresholds in packages/telemetry; use debug during development and info in production.',
     source: 'Set in .env or container environment.',
   },
   {
@@ -665,8 +735,10 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     requiredForWeb: false,
     defaultValue: 'routing.json',
     exampleValue: 'apps/gateway/routing.json',
-    description: 'File path to the dynamic routing configuration file defining agent-to-model routes.',
-    usage: 'Loaded by apps/gateway to map agent IDs (CE-01, TB-01) to specific model families and providers.',
+    description:
+      'File path to the dynamic routing configuration file defining agent-to-model routes.',
+    usage:
+      'Loaded by apps/gateway to map agent IDs (CE-01, TB-01) to specific model families and providers.',
     source: 'Path to routing.json file within apps/gateway.',
   },
 ] as const;
@@ -822,13 +894,13 @@ function EnvRuntimeImpactTooltip({
               </span>
             </div>
 
-            <p className="text-xs text-[var(--iai-text)] leading-relaxed">
-              {impact}
-            </p>
+            <p className="text-xs text-[var(--iai-text)] leading-relaxed">{impact}</p>
 
             <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[var(--iai-border)]/60 text-[10px] text-[var(--iai-text-subtle)]">
               {requiredForWeb ? (
-                <span className="text-emerald-700 font-medium">● Required for Web Runtime</span>
+                <span className="text-emerald-700 font-medium">
+                  ● Required for Web Runtime
+                </span>
               ) : (
                 <span>○ Optional for Web</span>
               )}
@@ -868,7 +940,9 @@ function generateDotEnvContent(
   const timestamp = new Date().toISOString();
   const totalVars = groups.reduce((acc, g) => acc + g.variables.length, 0);
 
-  lines.push('# ==============================================================================');
+  lines.push(
+    '# ==============================================================================',
+  );
   lines.push('# Infinite AI Ecosystem - Environment Configuration (.env)');
   lines.push(`# Exported: ${timestamp}`);
   lines.push(`# Total Variables: ${totalVars}`);
@@ -881,20 +955,32 @@ function generateDotEnvContent(
   }
   lines.push('#');
   lines.push('# Security Notice:');
-  lines.push('#   - Never commit populated production secrets or API keys to version control.');
-  lines.push('#   - In Google AI Studio, configure values in Settings -> Environment Variables.');
-  lines.push('#   - For local development with Docker, save this file as .env at project root.');
-  lines.push('# ==============================================================================');
+  lines.push(
+    '#   - Never commit populated production secrets or API keys to version control.',
+  );
+  lines.push(
+    '#   - In Google AI Studio, configure values in Settings -> Environment Variables.',
+  );
+  lines.push(
+    '#   - For local development with Docker, save this file as .env at project root.',
+  );
+  lines.push(
+    '# ==============================================================================',
+  );
   lines.push('');
 
   for (const group of groups) {
     if (group.variables.length === 0) continue;
 
-    lines.push('# ------------------------------------------------------------------------------');
+    lines.push(
+      '# ------------------------------------------------------------------------------',
+    );
     lines.push(`# [${group.icon}] ${group.title} (${group.category})`);
     lines.push(`# Purpose: ${group.description}`);
     lines.push(`# Services: ${group.keyServices}`);
-    lines.push('# ------------------------------------------------------------------------------');
+    lines.push(
+      '# ------------------------------------------------------------------------------',
+    );
     lines.push('');
 
     for (const item of group.variables) {
@@ -1035,10 +1121,7 @@ export function EnvDocs() {
     [groupedData],
   );
 
-  const secretCount = useMemo(
-    () => ENV_VARIABLES.filter((v) => v.isSecret).length,
-    [],
-  );
+  const secretCount = useMemo(() => ENV_VARIABLES.filter((v) => v.isSecret).length, []);
 
   const handleExportDotEnv = () => {
     if (totalFilteredCount === 0) return;
@@ -1080,7 +1163,8 @@ export function EnvDocs() {
             Environment Variables
           </h1>
           <p className="text-sm text-[var(--iai-text-subtle)] mt-1 max-w-2xl">
-            Reference guide and specifications for all 52 configuration variables defined in{' '}
+            Reference guide and specifications for all 52 configuration variables defined
+            in{' '}
             <code className="px-1.5 py-0.5 rounded bg-[var(--iai-bg-subtle)] font-mono text-xs text-[var(--iai-text)]">
               .env.example
             </code>
@@ -1114,7 +1198,12 @@ export function EnvDocs() {
                   viewBox="0 0 24 24"
                   aria-hidden="true"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span className="text-emerald-700">Exported .env!</span>
               </>
@@ -1155,13 +1244,24 @@ export function EnvDocs() {
               How to configure variables in Google AI Studio
             </h2>
             <p className="text-[var(--iai-text-subtle)] leading-relaxed">
-              In Google AI Studio, sensitive credentials and keys are securely injected via the platform container. Click the{' '}
-              <strong className="text-[var(--iai-text)]">Settings (gear icon)</strong> in the top navigation bar, then select{' '}
-              <strong className="text-[var(--iai-text)]">Environment Variables</strong> to add or update key-value pairs.
-              For local development with Docker, copy{' '}
-              <code className="px-1 py-0.5 rounded bg-[var(--iai-bg)] font-mono text-xs">.env.example</code> to{' '}
-              <code className="px-1 py-0.5 rounded bg-[var(--iai-bg)] font-mono text-xs">.env</code> as documented in{' '}
-              <code className="px-1 py-0.5 rounded bg-[var(--iai-bg)] font-mono text-xs">docs/DEV_SETUP.md</code>.
+              In Google AI Studio, sensitive credentials and keys are securely injected
+              via the platform container. Click the{' '}
+              <strong className="text-[var(--iai-text)]">Settings (gear icon)</strong> in
+              the top navigation bar, then select{' '}
+              <strong className="text-[var(--iai-text)]">Environment Variables</strong> to
+              add or update key-value pairs. For local development with Docker, copy{' '}
+              <code className="px-1 py-0.5 rounded bg-[var(--iai-bg)] font-mono text-xs">
+                .env.example
+              </code>{' '}
+              to{' '}
+              <code className="px-1 py-0.5 rounded bg-[var(--iai-bg)] font-mono text-xs">
+                .env
+              </code>{' '}
+              as documented in{' '}
+              <code className="px-1 py-0.5 rounded bg-[var(--iai-bg)] font-mono text-xs">
+                docs/DEV_SETUP.md
+              </code>
+              .
             </p>
           </div>
         </div>
@@ -1171,23 +1271,35 @@ export function EnvDocs() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-3.5 rounded-[var(--iai-radius-md)] border border-[var(--iai-border)] bg-[var(--iai-bg)]">
           <p className="text-xs text-[var(--iai-text-subtle)]">Total Defined</p>
-          <p className="text-xl font-bold text-[var(--iai-text)] mt-0.5">{ENV_VARIABLES.length}</p>
-          <p className="text-[11px] text-[var(--iai-text-subtle)] mt-1">From root .env.example</p>
+          <p className="text-xl font-bold text-[var(--iai-text)] mt-0.5">
+            {ENV_VARIABLES.length}
+          </p>
+          <p className="text-[11px] text-[var(--iai-text-subtle)] mt-1">
+            From root .env.example
+          </p>
         </div>
         <div className="p-3.5 rounded-[var(--iai-radius-md)] border border-[var(--iai-border)] bg-[var(--iai-bg)]">
           <p className="text-xs text-[var(--iai-text-subtle)]">Secrets & Credentials</p>
           <p className="text-xl font-bold text-amber-600 mt-0.5">{secretCount}</p>
-          <p className="text-[11px] text-[var(--iai-text-subtle)] mt-1">Require secure storage</p>
+          <p className="text-[11px] text-[var(--iai-text-subtle)] mt-1">
+            Require secure storage
+          </p>
         </div>
         <div className="p-3.5 rounded-[var(--iai-radius-md)] border border-[var(--iai-border)] bg-[var(--iai-bg)]">
           <p className="text-xs text-[var(--iai-text-subtle)]">Functional Groups</p>
-          <p className="text-xl font-bold text-[var(--iai-primary)] mt-0.5">{FUNCTIONAL_GROUPS.length}</p>
-          <p className="text-[11px] text-[var(--iai-text-subtle)] mt-1">Auth, Database, API Keys, etc.</p>
+          <p className="text-xl font-bold text-[var(--iai-primary)] mt-0.5">
+            {FUNCTIONAL_GROUPS.length}
+          </p>
+          <p className="text-[11px] text-[var(--iai-text-subtle)] mt-1">
+            Auth, Database, API Keys, etc.
+          </p>
         </div>
         <div className="p-3.5 rounded-[var(--iai-radius-md)] border border-[var(--iai-border)] bg-[var(--iai-bg)]">
           <p className="text-xs text-[var(--iai-text-subtle)]">Web App Required</p>
           <p className="text-xl font-bold text-emerald-600 mt-0.5">NEXTAUTH_SECRET</p>
-          <p className="text-[11px] text-[var(--iai-text-subtle)] mt-1">Minimum for web auth</p>
+          <p className="text-[11px] text-[var(--iai-text-subtle)] mt-1">
+            Minimum for web auth
+          </p>
         </div>
       </div>
 
@@ -1261,7 +1373,10 @@ export function EnvDocs() {
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <div className="space-y-1.5">
-              <label htmlFor="scope-select" className="text-xs font-semibold text-[var(--iai-text)] block">
+              <label
+                htmlFor="scope-select"
+                className="text-xs font-semibold text-[var(--iai-text)] block"
+              >
                 Scope
               </label>
               <select
@@ -1282,8 +1397,14 @@ export function EnvDocs() {
         </div>
 
         {/* Functional Purpose Filter Pills */}
-        <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Filter by functional purpose">
-          <span className="text-xs font-semibold text-[var(--iai-text-subtle)] mr-1">Purpose:</span>
+        <div
+          className="flex flex-wrap items-center gap-1.5"
+          role="tablist"
+          aria-label="Filter by functional purpose"
+        >
+          <span className="text-xs font-semibold text-[var(--iai-text-subtle)] mr-1">
+            Purpose:
+          </span>
           <button
             id="cat-filter-all"
             type="button"
@@ -1319,7 +1440,13 @@ export function EnvDocs() {
               >
                 <span>{g.icon}</span>
                 <span>{g.title}</span>
-                <span className={isSelected ? 'text-white/80 text-[11px]' : 'text-[var(--iai-text-subtle)] text-[11px]'}>
+                <span
+                  className={
+                    isSelected
+                      ? 'text-white/80 text-[11px]'
+                      : 'text-[var(--iai-text-subtle)] text-[11px]'
+                  }
+                >
                   ({count})
                 </span>
               </button>
@@ -1331,15 +1458,31 @@ export function EnvDocs() {
       {/* Results Header and Quick Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--iai-text-subtle)] border-b border-[var(--iai-border)] pb-2.5">
         <p>
-          Showing <strong className="text-[var(--iai-text)]">{totalFilteredCount}</strong> {totalFilteredCount === 1 ? 'variable' : 'variables'} across{' '}
-          <strong className="text-[var(--iai-text)]">{groupedData.length}</strong> functional {groupedData.length === 1 ? 'group' : 'groups'}
+          Showing <strong className="text-[var(--iai-text)]">{totalFilteredCount}</strong>{' '}
+          {totalFilteredCount === 1 ? 'variable' : 'variables'} across{' '}
+          <strong className="text-[var(--iai-text)]">{groupedData.length}</strong>{' '}
+          functional {groupedData.length === 1 ? 'group' : 'groups'}
           {searchQuery.trim() && (
             <span>
-              {' '}matching name <strong className="text-[var(--iai-text)] font-mono">&ldquo;{searchQuery.trim()}&rdquo;</strong>
+              {' '}
+              matching name{' '}
+              <strong className="text-[var(--iai-text)] font-mono">
+                &ldquo;{searchQuery.trim()}&rdquo;
+              </strong>
             </span>
           )}
-          {selectedCategory !== 'All' && <span> in <em>{selectedCategory}</em></span>}
-          {selectedScope !== 'all' && <span> scoped to <em>{selectedScope}</em></span>}
+          {selectedCategory !== 'All' && (
+            <span>
+              {' '}
+              in <em>{selectedCategory}</em>
+            </span>
+          )}
+          {selectedScope !== 'all' && (
+            <span>
+              {' '}
+              scoped to <em>{selectedScope}</em>
+            </span>
+          )}
         </p>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -1367,7 +1510,12 @@ export function EnvDocs() {
                   viewBox="0 0 24 24"
                   aria-hidden="true"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span className="text-emerald-700">Exported .env!</span>
               </>
@@ -1410,7 +1558,9 @@ export function EnvDocs() {
             }}
             className="text-xs text-[var(--iai-primary)] hover:underline font-medium"
           >
-            {Object.values(collapsedGroups).some(Boolean) ? 'Expand All Groups' : 'Collapse All Groups'}
+            {Object.values(collapsedGroups).some(Boolean)
+              ? 'Expand All Groups'
+              : 'Collapse All Groups'}
           </button>
 
           <span className="text-[var(--iai-border)]">|</span>
@@ -1455,7 +1605,11 @@ export function EnvDocs() {
           </Button>
         </div>
       ) : (
-        <div className="space-y-8" role="feed" aria-label="Environment variables by functional purpose">
+        <div
+          className="space-y-8"
+          role="feed"
+          aria-label="Environment variables by functional purpose"
+        >
           {groupedData.map((group) => {
             const isGroupCollapsed = collapsedGroups[group.id] ?? false;
             const secretInGroupCount = group.variables.filter((v) => v.isSecret).length;
@@ -1471,7 +1625,9 @@ export function EnvDocs() {
                 <header className="p-4 sm:p-5 bg-[var(--iai-bg-subtle)] border-b border-[var(--iai-border)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2.5">
-                      <span className="text-xl" aria-hidden="true">{group.icon}</span>
+                      <span className="text-xl" aria-hidden="true">
+                        {group.icon}
+                      </span>
                       <h2
                         id={`heading-${group.id}`}
                         className="text-base font-bold text-[var(--iai-text)]"
@@ -1479,11 +1635,13 @@ export function EnvDocs() {
                         {group.title}
                       </h2>
                       <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-[var(--iai-bg)] border border-[var(--iai-border)] text-[var(--iai-text)]">
-                        {group.variables.length} {group.variables.length === 1 ? 'variable' : 'variables'}
+                        {group.variables.length}{' '}
+                        {group.variables.length === 1 ? 'variable' : 'variables'}
                       </span>
                       {secretInGroupCount > 0 && (
                         <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 border border-amber-500/20">
-                          {secretInGroupCount} {secretInGroupCount === 1 ? 'secret' : 'secrets'}
+                          {secretInGroupCount}{' '}
+                          {secretInGroupCount === 1 ? 'secret' : 'secrets'}
                         </span>
                       )}
                     </div>
@@ -1491,7 +1649,8 @@ export function EnvDocs() {
                       {group.description}
                     </p>
                     <p className="text-[11px] text-[var(--iai-text-subtle)] font-medium">
-                      Services: <span className="text-[var(--iai-text)]">{group.keyServices}</span>
+                      Services:{' '}
+                      <span className="text-[var(--iai-text)]">{group.keyServices}</span>
                     </p>
                   </div>
 
@@ -1515,7 +1674,12 @@ export function EnvDocs() {
                         viewBox="0 0 24 24"
                         aria-hidden="true"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -1528,7 +1692,8 @@ export function EnvDocs() {
                     className="p-3 sm:p-4 space-y-3 bg-[var(--iai-bg)]"
                   >
                     {group.variables.map((item) => {
-                      const isExpanded = expandedVar === 'ALL' || expandedVar === item.name;
+                      const isExpanded =
+                        expandedVar === 'ALL' || expandedVar === item.name;
                       const isCopied = copiedVar === item.name;
 
                       return (
@@ -1559,17 +1724,43 @@ export function EnvDocs() {
                                   >
                                     {isCopied ? (
                                       <>
-                                        <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        <svg
+                                          className="w-3.5 h-3.5 text-emerald-600"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          aria-hidden="true"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M5 13l4 4L19 7"
+                                          />
                                         </svg>
-                                        <span className="text-emerald-700 font-semibold text-[11px]">Copied!</span>
+                                        <span className="text-emerald-700 font-semibold text-[11px]">
+                                          Copied!
+                                        </span>
                                       </>
                                     ) : (
                                       <>
-                                        <svg className="w-3.5 h-3.5 text-[var(--iai-text-subtle)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        <svg
+                                          className="w-3.5 h-3.5 text-[var(--iai-text-subtle)]"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          aria-hidden="true"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                          />
                                         </svg>
-                                        <span className="text-[11px] whitespace-nowrap">Copy Key</span>
+                                        <span className="text-[11px] whitespace-nowrap">
+                                          Copy Key
+                                        </span>
                                       </>
                                     )}
                                   </button>
@@ -1581,8 +1772,10 @@ export function EnvDocs() {
                                   impact={item.usage}
                                   scope={item.scope}
                                   requiredForWeb={item.requiredForWeb}
-                                  isSecret={item.isSecret}
-                                  defaultValue={item.defaultValue}
+                                  isSecret={item.isSecret ?? false}
+                                  {...(item.defaultValue !== undefined
+                                    ? { defaultValue: item.defaultValue }
+                                    : {})}
                                   isOpen={activeTooltip === item.name}
                                   onOpen={() => setActiveTooltip(item.name)}
                                   onClose={() =>
@@ -1625,7 +1818,9 @@ export function EnvDocs() {
                               {/* Environment Variable Value Row with Copy Button */}
                               <div className="flex flex-wrap items-center gap-2 pt-0.5">
                                 <span className="text-[11px] font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide">
-                                  {item.defaultValue ? 'Default Value:' : 'Example Value:'}
+                                  {item.defaultValue
+                                    ? 'Default Value:'
+                                    : 'Example Value:'}
                                 </span>
                                 <div className="inline-flex items-center gap-1.5 bg-[var(--iai-bg-subtle)] px-2 py-0.5 rounded-[var(--iai-radius-sm)] border border-[var(--iai-border)] max-w-full">
                                   <code
@@ -1656,9 +1851,16 @@ export function EnvDocs() {
                                           viewBox="0 0 24 24"
                                           aria-hidden="true"
                                         >
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M5 13l4 4L19 7"
+                                          />
                                         </svg>
-                                        <span className="text-emerald-700 font-semibold text-[10px]">Copied!</span>
+                                        <span className="text-emerald-700 font-semibold text-[10px]">
+                                          Copied!
+                                        </span>
                                       </>
                                     ) : (
                                       <>
@@ -1676,7 +1878,9 @@ export function EnvDocs() {
                                             d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                                           />
                                         </svg>
-                                        <span className="text-[10px] font-medium">Copy</span>
+                                        <span className="text-[10px] font-medium">
+                                          Copy
+                                        </span>
                                       </>
                                     )}
                                   </button>
@@ -1729,24 +1933,41 @@ export function EnvDocs() {
 
                               <div className="pt-2 border-t border-[var(--iai-border)]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
                                 <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="text-[var(--iai-text-subtle)]">Example Value: </span>
+                                  <span className="text-[var(--iai-text-subtle)]">
+                                    Example Value:{' '}
+                                  </span>
                                   <code className="font-mono text-[var(--iai-text)] bg-[var(--iai-bg)] px-1.5 py-0.5 rounded border border-[var(--iai-border)]">
                                     {item.exampleValue}
                                   </code>
                                   <button
                                     type="button"
                                     id={`btn-copy-val-${item.name.toLowerCase()}`}
-                                    onClick={() => handleCopy(item.exampleValue, `val-${item.name}`)}
+                                    onClick={() =>
+                                      handleCopy(item.exampleValue, `val-${item.name}`)
+                                    }
                                     title={`Copy example value of ${item.name}`}
                                     aria-label={`Copy example value of ${item.name}`}
                                     className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--iai-bg)] border border-[var(--iai-border)] text-[10px] text-[var(--iai-text-subtle)] hover:text-[var(--iai-text)] transition-colors cursor-pointer"
                                   >
                                     {copiedVar === `val-${item.name}` ? (
-                                      <span className="text-emerald-700 font-semibold">Copied!</span>
+                                      <span className="text-emerald-700 font-semibold">
+                                        Copied!
+                                      </span>
                                     ) : (
                                       <>
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        <svg
+                                          className="w-3 h-3"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          aria-hidden="true"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                          />
                                         </svg>
                                         <span>Copy Value</span>
                                       </>
@@ -1755,24 +1976,41 @@ export function EnvDocs() {
                                 </div>
                                 {item.defaultValue && (
                                   <div className="flex items-center gap-1.5 flex-wrap">
-                                    <span className="text-[var(--iai-text-subtle)]">Default: </span>
+                                    <span className="text-[var(--iai-text-subtle)]">
+                                      Default:{' '}
+                                    </span>
                                     <code className="font-mono text-[var(--iai-text)] bg-[var(--iai-bg)] px-1.5 py-0.5 rounded border border-[var(--iai-border)]">
                                       {item.defaultValue}
                                     </code>
                                     <button
                                       type="button"
                                       id={`btn-copy-def-${item.name.toLowerCase()}`}
-                                      onClick={() => handleCopy(item.defaultValue!, `def-${item.name}`)}
+                                      onClick={() =>
+                                        handleCopy(item.defaultValue!, `def-${item.name}`)
+                                      }
                                       title={`Copy default value of ${item.name}`}
                                       aria-label={`Copy default value of ${item.name}`}
                                       className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--iai-bg)] border border-[var(--iai-border)] text-[10px] text-[var(--iai-text-subtle)] hover:text-[var(--iai-text)] transition-colors cursor-pointer"
                                     >
                                       {copiedVar === `def-${item.name}` ? (
-                                        <span className="text-emerald-700 font-semibold">Copied!</span>
+                                        <span className="text-emerald-700 font-semibold">
+                                          Copied!
+                                        </span>
                                       ) : (
                                         <>
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                          <svg
+                                            className="w-3 h-3"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            aria-hidden="true"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                            />
                                           </svg>
                                           <span>Copy Value</span>
                                         </>
