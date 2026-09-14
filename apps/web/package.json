@@ -17,6 +17,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@infinite-ai/brain": "workspace:*",
+    "@infinite-ai/curriculum-seed": "workspace:*",
     "@infinite-ai/db": "workspace:*",
     "@infinite-ai/design-system": "workspace:*",
     "@infinite-ai/orchestrator": "workspace:*",

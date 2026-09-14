@@ -442,6 +442,22 @@ No new external runtime dependencies were added. Both `packages/provisioning` an
 `packages/billing` use only `zod` (already in the tree, MIT) plus standard Node.js.
 Their `devDependencies` (`typescript`, `vitest`) are already present in the workspace.
 
+## Stage 08 — CAPS Canon Ingestion Console (`apps/web`)
+
+`apps/web` gains two new workspace dependencies for the CAPS Canon Ingestion Console
+admin page (`/admin/curriculum/caps-canon`):
+
+| Package                        | Version       | Licence | Why                                                                                                                                                                                                                                                                                           | Replaces |
+| ------------------------------ | ------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `@infinite-ai/brain`           | `workspace:*` | —       | `ratify()` (from `packages/brain/src/api.ts`) — called from the `/api/caps-canon/[id]/ratify` route handler to drive a Brain write candidate from `AWAITING_RATIFICATION` to `COMMITTED`; `BrainApiError` and `BrainWriteStatus` for error handling and type-safe status comparisons.         | —        |
+| `@infinite-ai/curriculum-seed` | `workspace:*` | —       | `submitCapsSource()`, `ALL_CAPS_SOURCES`, and `CurriculumSeedError` — called from the `/api/caps-canon/[id]/ingest` route handler to create a Brain L0 write candidate from a structured `CapsSourceInfo`; `findCapsSourceByBrainDocId()` to locate the matching source by Brain document ID. | —        |
+
+No new external dependencies. Both packages are already in the workspace tree (first
+recorded at their respective stages above). The CAPS Canon page calls only `withTenant()`
+(rule 5) and performs no model calls. The human-ratification gate (rule 6) is enforced in
+the ratify route: it checks the candidate's status and records the ratifiedBy actor before
+the response is returned.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.
