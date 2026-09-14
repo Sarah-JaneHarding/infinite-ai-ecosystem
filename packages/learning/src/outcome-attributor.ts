@@ -88,7 +88,9 @@ export function attributeOutcomes(input: AttributionInput): AttributionDecision 
   const distinctGrades = new Set(windowedSignals.map((s) => s.gradeLabel));
 
   if (withBoth.length >= OUTCOME_MIN_COHORT_SIZE) {
-    const deltas = withBoth.map((s) => (s.postScore as number) - (s.baselineScore as number));
+    const deltas = withBoth.map(
+      (s) => (s.postScore as number) - (s.baselineScore as number),
+    );
     const meanScoreDelta = mean(deltas);
     // Confidence: 0.6 base, scaled up by fraction of cohorts with complete data, capped 0.9.
     const coverage = withBoth.length / windowedSignals.length;

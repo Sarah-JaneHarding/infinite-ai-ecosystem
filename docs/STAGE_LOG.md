@@ -8288,10 +8288,10 @@ Returns `insufficient_data` (not an error) when fewer than `OUTCOME_MIN_COHORT_S
 
 **Verification.** `pnpm --filter @infinite-ai/learning test` — 53 tests, all pass (12 new). `pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `eslint src test` — clean.
 
-| Exit gate item                                                                                              | Result |
-| ----------------------------------------------------------------------------------------------------------- | ------ |
-| Attribution method selected is strongest available given supplied signals                                   | PASS   |
-| Confidence stated explicitly; correlation never presented as causation                                      | PASS   |
-| `insufficient_data` returned honestly when cohort is too small                                              | PASS   |
-| Pre/post wins over cohort_comparison when sufficient data available                                         | PASS   |
-| Window boundary inclusion/exclusion correct (floor arithmetic verified)                                     | PASS   |
+| Exit gate item                                                            | Result |
+| ------------------------------------------------------------------------- | ------ |
+| Attribution method selected is strongest available given supplied signals | PASS   |
+| Confidence stated explicitly; correlation never presented as causation    | PASS   |
+| `insufficient_data` returned honestly when cohort is too small            | PASS   |
+| Pre/post wins over cohort_comparison when sufficient data available       | PASS   |
+| Window boundary inclusion/exclusion correct (floor arithmetic verified)   | PASS   |
