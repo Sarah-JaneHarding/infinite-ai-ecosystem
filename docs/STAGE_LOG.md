@@ -8369,3 +8369,81 @@ The function `minePatterns` receives attributed outcome records and stratificati
 | `biasChecked` reflects whether stratification was declared                   | PASS   |
 | Divergent pattern blocked and counted; excluded from `patterns`              | PASS   |
 | No block when stratificationFields absent                                    | PASS   |
+
+---
+
+## Stage 57 — LE-05 Exemplar Curator + LE-06 Prompt Evolver · 2026-09-14
+
+**What was built.**
+
+Stage 57 implements two pure functions for Stage 13 step 4 of the build manual — LE-05 (Exemplar Curator) and LE-06 (Prompt Evolver). Both produce candidates only; neither promotes directly to L3 or makes a prompt live. Human ratification via LE-07 and the ratification surface is required.
+
+**LE-05 Exemplar Curator (`packages/learning/src/exemplar-curator.ts`).**
+
+`curateExemplars` selects artefacts whose composite score meets or exceeds `EXEMPLAR_MIN_COMPOSITE_SCORE = 0.5`.
+
+- `compositeScore = (evalScore + firstPassAcceptanceRate + attributionConfidence) / 3`.
+- `needs_input` when candidates array is empty.
+- `no_candidates` when no artefact meets the threshold.
+- `ok` with qualifying candidates sorted by compositeScore descending.
+- `promoted: false` on every returned candidate — never a direct L3 promotion.
+- `candidateId` and `proposedAt` injected for deterministic testing.
+
+**LE-06 Prompt Evolver (`packages/learning/src/prompt-evolver.ts`).**
+
+`evolvePrompt` builds a challenger prompt from recurring teacher-correction patterns.
+
+- `EVOLVER_MIN_CORRECTION_FREQUENCY = 2` — patterns below this frequency are ignored.
+- `needs_input` when correctionPatterns array is empty.
+- `no_improvement_found` when no pattern meets the minimum frequency.
+- `ok` with a `PromptChallenger` whose content is the champion content plus a `[LE-06 enhancement]` guidance block listing the recurring patterns sorted by frequency descending.
+- `challengerVersion = ${champion.version}+le06`.
+- `isLive: false` always — never a live champion.
+- `challengerId` and `proposedAt` injected for deterministic testing.
+
+**Changes.**
+
+- `packages/learning/src/exemplar-curator.ts` (new) — `curateExemplars`, `EXEMPLAR_MIN_COMPOSITE_SCORE`, `ExemplarCuratorCandidateInput`, `ExemplarCuratorInput`, `ExemplarCuratorDecision`.
+- `packages/learning/src/prompt-evolver.ts` (new) — `evolvePrompt`, `EVOLVER_MIN_CORRECTION_FREQUENCY`, `CorrectionPattern`, `PromptEvolverInput`, `PromptEvolverDecision`.
+- `packages/learning/src/index.ts` — exports both new modules.
+
+**Tests added (`packages/learning` — 20 new cases across two spec files).**
+
+LE-05 (exemplar-curator.spec.ts, 9 cases):
+- `needs_input` when candidates empty.
+- `no_candidates` when all scores below threshold.
+- `no_candidates` when score just below threshold.
+- `ok` at exactly the threshold composite score.
+- `promoted` is always false.
+- Candidates sorted by compositeScore descending.
+- Below-threshold candidates excluded from ok result.
+- Rationale encodes all three score components.
+- Each candidate gets a unique candidateId.
+
+LE-06 (prompt-evolver.spec.ts, 11 cases):
+- `needs_input` when correctionPatterns empty.
+- `no_improvement_found` when all patterns below minimum frequency.
+- `no_improvement_found` when frequency exactly one below threshold.
+- `ok` with correct addressedCorrectionTypes.
+- `isLive` is always false.
+- `challengerVersion` derived from champion version.
+- Content includes champion content and LE-06 block.
+- Patterns below threshold excluded from ok result.
+- Patterns listed by frequency descending.
+- Rationale names all addressed correction types.
+- `challengerId` populated from idGenerator.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 87 tests, all pass (20 new). `pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean.
+
+| Exit gate item                                                                        | Result |
+| ------------------------------------------------------------------------------------- | ------ |
+| `needs_input` returned when candidates/correctionPatterns empty                       | PASS   |
+| `no_candidates` returned when no composite score meets threshold                      | PASS   |
+| `compositeScore` computed as arithmetic mean of three input scores                    | PASS   |
+| Candidates sorted by compositeScore descending in ok result                           | PASS   |
+| `promoted: false` on every ExemplarCandidate                                          | PASS   |
+| `no_improvement_found` returned when no pattern meets EVOLVER_MIN_CORRECTION_FREQUENCY| PASS   |
+| Challenger content appends LE-06 guidance block to champion content                  | PASS   |
+| Patterns listed by frequency descending in guidance block                             | PASS   |
+| `isLive: false` on every PromptChallenger                                             | PASS   |
+| `challengerVersion` derived as `${champion.version}+le06`                            | PASS   |
