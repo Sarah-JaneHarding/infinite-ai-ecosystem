@@ -3,7 +3,7 @@ import {
   reconcilePeriod,
   DEFAULT_TOLERANCE_PCT,
   type TelemetryRecord,
-} from '../src/reconciliation';
+} from '../src/reconciliation.js';
 
 const TENANT = 'tenant-xyz';
 const PERIOD_START = new Date('2026-08-01T00:00:00Z');

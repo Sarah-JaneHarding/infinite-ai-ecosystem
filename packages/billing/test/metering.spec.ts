@@ -3,8 +3,8 @@ import {
   aggregateMeteringEvents,
   computeOverage,
   type MeteringEvent,
-} from '../src/metering';
-import { getTier } from '../src/tiers';
+} from '../src/metering.js';
+import { getTier } from '../src/tiers.js';
 
 const TENANT = 'tenant-abc';
 const START = new Date('2026-08-01T00:00:00Z');
