@@ -8245,3 +8245,207 @@ BullMQ queue — avoiding a phantom job in Redis if the DB transaction were to r
 `pnpm --filter @infinite-ai/orchestrator exec tsc --noEmit` — clean.
 `pnpm --filter @infinite-ai/web exec tsc --noEmit` — clean.
 `eslint src test` in apps/worker — clean.
+
+---
+
+## Stage 55 — LE-03 Outcome Attributor · 2026-09-14
+
+**What was built.**
+
+Stage 55 implements `packages/learning/src/outcome-attributor.ts` — the pure attribution logic for LE-03 (Outcome Attributor, Stage 13 step 2).
+
+The function `attributeOutcomes` receives a set of anonymised cohort outcome signals and the attribution window, selects the strongest available attribution method, and returns a confidence score plus a plain-language method note that explicitly states the method's limitations. It never presents correlation as proof (manual §13 step 2).
+
+**Attribution method selection (priority order):**
+
+1. `pre_post_assessment` — when ≥ `OUTCOME_MIN_COHORT_SIZE` (3) signals within the window have both a baseline and a post score. Confidence scales with coverage fraction (0.6 + 0.3 × coverage, capped at 0.9). Mean score delta computed from within-cohort deltas.
+2. `cohort_comparison` — when multiple distinct grade labels are present but insufficient pre/post pairs exist. Confidence 0.5; mean score delta null (no within-cohort baseline).
+3. `temporal_proximity` — fallback when no baseline and single grade. Confidence 0.3; mean score delta null. Method note: "Correlation only."
+
+`teacher_reported` requires an explicit teacher-feedback signal not present in the outcome pipeline; it is not selected automatically.
+
+Returns `insufficient_data` (not an error) when fewer than `OUTCOME_MIN_COHORT_SIZE` signals fall within the attribution window — an honest statement that the data is not yet sufficient.
+
+**Changes.**
+
+- `packages/learning/src/outcome-attributor.ts` (new) — `attributeOutcomes(input: AttributionInput): AttributionDecision`, `OUTCOME_MIN_COHORT_SIZE = 3`, `OutcomeSignal` and `AttributionInput` interfaces, `AttributionDecision` type.
+- `packages/learning/src/index.ts` — exports `attributeOutcomes`, `OUTCOME_MIN_COHORT_SIZE`, `AttributionDecision`, `AttributionInput`, `OutcomeSignal`.
+
+**Tests added (`packages/learning` — outcome-attributor.spec.ts, 12 new cases).**
+
+- Happy path — `pre_post_assessment`: ≥3 signals with both scores → correct method, meanScoreDelta computed.
+- Confidence 0.9 when all cohorts have both scores (full coverage).
+- Confidence < 0.9 (0.825) when one cohort lacks a baseline (partial coverage).
+- `methodNote` explicitly warns "association, not causation" for pre_post method.
+- Happy path — `cohort_comparison`: no baselines, multiple grade groups → method=cohort_comparison, confidence=0.5, meanScoreDelta=null.
+- `pre_post_assessment` wins over `cohort_comparison` when ≥ MIN have both scores, even with multiple grades.
+- Happy path — `temporal_proximity`: no baselines, single grade → confidence=0.3, methodNote matches "correlation only".
+- `insufficient_data`: zero signals within window → actualCohortSize=0.
+- `insufficient_data`: only 2 signals within window (one short of minimum).
+- `insufficient_data`: signals before delivery are excluded from windowed count.
+- Window boundary — includes signal on exact last day (floor days = window length).
+- Window boundary — excludes signal one day past the window (floor days > window length).
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 53 tests, all pass (12 new). `pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `eslint src test` — clean.
+
+| Exit gate item                                                            | Result |
+| ------------------------------------------------------------------------- | ------ |
+| Attribution method selected is strongest available given supplied signals | PASS   |
+| Confidence stated explicitly; correlation never presented as causation    | PASS   |
+| `insufficient_data` returned honestly when cohort is too small            | PASS   |
+| Pre/post wins over cohort_comparison when sufficient data available       | PASS   |
+| Window boundary inclusion/exclusion correct (floor arithmetic verified)   | PASS   |
+
+---
+
+## OQ-015 Gap 1 — gradePhase wiring · 2026-09-14
+
+**What was built.**
+
+Resolves Gap 1 of OQ-015: the generic agent-call path now threads the curriculum phase through to the age-appropriateness checker when a pipeline supplies it.
+
+**Changes.**
+
+- `apps/worker/src/queue-names.ts` — `PipelineJobData` gains optional `gradePhase?: 'FOUNDATION' | 'INTERMEDIATE' | 'SENIOR'`. Pipelines that know their phase (MOD-01, MOD-04) include it on the job payload; all others leave it absent with no behaviour change.
+- `apps/worker/src/worker-host.ts` — `WorkerHostDeps` gains `ageAppropriatenessCheckerFactory?: (tx, tenantId, phase) => AgeAppropriatenessChecker`. When the job carries `gradePhase` and the factory is set, `WorkerHost` constructs a phase-specific checker inside the `withTenant` transaction; otherwise falls back to the static `ageAppropriatenessChecker` or undefined. `JobDataSchema` updated to parse `gradePhase` optionally.
+- `apps/worker/src/index.ts` — wires `createBrainAgeAppropriatenessChecker` as `ageAppropriatenessCheckerFactory`. With no `AgeAppropriatenessJudge` supplied yet (OQ-016 gap 2 still open), the checker correctly passes every output — retrieving real clauses without a judge is not itself a reason to refuse.
+- `docs/OPEN_QUESTIONS.md` — OQ-015 updated to OPEN (Gap 2 remains); Gap 1 recorded as resolved.
+
+**Verification.** `pnpm --filter @infinite-ai/worker exec tsc --noEmit` — clean. `pnpm --filter @infinite-ai/worker test` — 87 tests, all pass. `eslint src` — clean.
+
+---
+
+## Stage 56 — LE-04 Pattern Miner · 2026-09-14
+
+**What was built.**
+
+Stage 56 implements `packages/learning/src/pattern-miner.ts` — the pure pattern-mining logic for LE-04 (Pattern Miner, Stage 13 step 3).
+
+The function `minePatterns` receives attributed outcome records and stratification declarations, groups them by agent, enforces the minimum sample threshold, computes effect sizes and 95% confidence intervals, and applies a structural bias check when stratification fields are declared. A pattern with detected divergence is counted and excluded from results — it must not be promoted (manual §13 step 3).
+
+**Method and statistics:**
+
+- `effectSize`: mean of non-null `meanScoreDelta` values in the agent's attribution group.
+- `confidenceInterval`: effectSize ± 1.96 × (sample stddev / √n), where n is the count of non-null delta values.
+- `biasChecked`: true when `stratificationFields.length > 0`.
+- Divergence detected (pattern blocked) when `biasChecked` and sample std > |effectSize| (high coefficient of variation) — a structural check honest about its limits (OQ-016's calibration pipeline will revisit with real group labels).
+- `idGenerator` and `now` are injected for deterministic testing.
+
+**Status outcomes:**
+
+- `needs_input` — attributions array is empty.
+- `below_threshold` — fewer than `PATTERN_MIN_SAMPLE_SIZE` (10) total attributions, or total ≥ 10 but no agent group individually meets the threshold.
+- `ok` — one pattern per agent group with ≥ 10 attributions that passes the bias check; `patternsBlockedForBiasDivergence` counts blocked groups.
+
+**Changes.**
+
+- `packages/learning/src/pattern-miner.ts` (new) — `minePatterns(input: PatternMinerInput): PatternMinerDecision`, `PatternMinerAttribution`, `PatternMinerInput`, `MinedPatternResult`, `PatternMinerDecision`.
+- `packages/learning/src/index.ts` — exports `minePatterns`, `MinedPatternResult`, `PatternMinerAttribution`, `PatternMinerDecision`, `PatternMinerInput`.
+
+**Tests added (`packages/learning` — pattern-miner.spec.ts, 14 new cases).**
+
+- `needs_input` when attributions array is empty.
+- `below_threshold` when total < 10.
+- `below_threshold` when total ≥ 10 but all per-agent groups are individually below threshold.
+- Happy path: single agent ≥ 10 attributions → ok, one pattern, correct sampleSize and minedAt.
+- `effectSize` is the mean of non-null deltas (null values excluded).
+- `confidenceInterval` centred on effectSize (zero-variance deltas give CI = [effectSize, effectSize]).
+- `biasChecked = false` when no stratificationFields.
+- `biasChecked = true` when stratificationFields declared.
+- Two agents each ≥ 10 → two patterns in result.
+- Per-agent below-threshold exclusion does not increment blocked count.
+- Bias divergence: high CV → pattern blocked, count incremented, pattern absent from results.
+- No block when stratificationFields empty even with high variance.
+- Partial block: one stable agent + one divergent → blocked=1, patterns has the stable one.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 67 tests, all pass (14 new). `pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `eslint src test` — clean.
+
+| Exit gate item                                                               | Result |
+| ---------------------------------------------------------------------------- | ------ |
+| `below_threshold` returned when total attributions < PATTERN_MIN_SAMPLE_SIZE | PASS   |
+| `needs_input` returned when no attributions supplied                         | PASS   |
+| Effect size computed as mean of non-null deltas                              | PASS   |
+| 95% CI centred on effectSize with correct margin                             | PASS   |
+| `biasChecked` reflects whether stratification was declared                   | PASS   |
+| Divergent pattern blocked and counted; excluded from `patterns`              | PASS   |
+| No block when stratificationFields absent                                    | PASS   |
+
+---
+
+## Stage 57 — LE-05 Exemplar Curator + LE-06 Prompt Evolver · 2026-09-14
+
+**What was built.**
+
+Stage 57 implements two pure functions for Stage 13 step 4 of the build manual — LE-05 (Exemplar Curator) and LE-06 (Prompt Evolver). Both produce candidates only; neither promotes directly to L3 or makes a prompt live. Human ratification via LE-07 and the ratification surface is required.
+
+**LE-05 Exemplar Curator (`packages/learning/src/exemplar-curator.ts`).**
+
+`curateExemplars` selects artefacts whose composite score meets or exceeds `EXEMPLAR_MIN_COMPOSITE_SCORE = 0.5`.
+
+- `compositeScore = (evalScore + firstPassAcceptanceRate + attributionConfidence) / 3`.
+- `needs_input` when candidates array is empty.
+- `no_candidates` when no artefact meets the threshold.
+- `ok` with qualifying candidates sorted by compositeScore descending.
+- `promoted: false` on every returned candidate — never a direct L3 promotion.
+- `candidateId` and `proposedAt` injected for deterministic testing.
+
+**LE-06 Prompt Evolver (`packages/learning/src/prompt-evolver.ts`).**
+
+`evolvePrompt` builds a challenger prompt from recurring teacher-correction patterns.
+
+- `EVOLVER_MIN_CORRECTION_FREQUENCY = 2` — patterns below this frequency are ignored.
+- `needs_input` when correctionPatterns array is empty.
+- `no_improvement_found` when no pattern meets the minimum frequency.
+- `ok` with a `PromptChallenger` whose content is the champion content plus a `[LE-06 enhancement]` guidance block listing the recurring patterns sorted by frequency descending.
+- `challengerVersion = ${champion.version}+le06`.
+- `isLive: false` always — never a live champion.
+- `challengerId` and `proposedAt` injected for deterministic testing.
+
+**Changes.**
+
+- `packages/learning/src/exemplar-curator.ts` (new) — `curateExemplars`, `EXEMPLAR_MIN_COMPOSITE_SCORE`, `ExemplarCuratorCandidateInput`, `ExemplarCuratorInput`, `ExemplarCuratorDecision`.
+- `packages/learning/src/prompt-evolver.ts` (new) — `evolvePrompt`, `EVOLVER_MIN_CORRECTION_FREQUENCY`, `CorrectionPattern`, `PromptEvolverInput`, `PromptEvolverDecision`.
+- `packages/learning/src/index.ts` — exports both new modules.
+
+**Tests added (`packages/learning` — 20 new cases across two spec files).**
+
+LE-05 (exemplar-curator.spec.ts, 9 cases):
+
+- `needs_input` when candidates empty.
+- `no_candidates` when all scores below threshold.
+- `no_candidates` when score just below threshold.
+- `ok` at exactly the threshold composite score.
+- `promoted` is always false.
+- Candidates sorted by compositeScore descending.
+- Below-threshold candidates excluded from ok result.
+- Rationale encodes all three score components.
+- Each candidate gets a unique candidateId.
+
+LE-06 (prompt-evolver.spec.ts, 11 cases):
+
+- `needs_input` when correctionPatterns empty.
+- `no_improvement_found` when all patterns below minimum frequency.
+- `no_improvement_found` when frequency exactly one below threshold.
+- `ok` with correct addressedCorrectionTypes.
+- `isLive` is always false.
+- `challengerVersion` derived from champion version.
+- Content includes champion content and LE-06 block.
+- Patterns below threshold excluded from ok result.
+- Patterns listed by frequency descending.
+- Rationale names all addressed correction types.
+- `challengerId` populated from idGenerator.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 87 tests, all pass (20 new). `pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| `needs_input` returned when candidates/correctionPatterns empty                        | PASS   |
+| `no_candidates` returned when no composite score meets threshold                       | PASS   |
+| `compositeScore` computed as arithmetic mean of three input scores                     | PASS   |
+| Candidates sorted by compositeScore descending in ok result                            | PASS   |
+| `promoted: false` on every ExemplarCandidate                                           | PASS   |
+| `no_improvement_found` returned when no pattern meets EVOLVER_MIN_CORRECTION_FREQUENCY | PASS   |
+| Challenger content appends LE-06 guidance block to champion content                    | PASS   |
+| Patterns listed by frequency descending in guidance block                              | PASS   |
+| `isLive: false` on every PromptChallenger                                              | PASS   |
+| `challengerVersion` derived as `${champion.version}+le06`                              | PASS   |

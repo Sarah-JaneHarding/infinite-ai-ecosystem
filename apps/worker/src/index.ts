@@ -72,6 +72,7 @@ import {
 } from '@infinite-ai/agents';
 import type { AgentContract } from '@infinite-ai/agents';
 import { loadEnv } from '@infinite-ai/config';
+import { createBrainAgeAppropriatenessChecker } from '@infinite-ai/guardrails';
 import {
   LE_COMMONS_PIPELINE,
   LE_EVOLUTION_PIPELINE,
@@ -266,6 +267,13 @@ export async function start(): Promise<void> {
     promptsRoot: resolvePromptsRoot(),
     redisUrl: env.REDIS_URL,
     logger,
+    // OQ-015 Gap 1: wire the per-job phase-aware age-appropriateness checker factory.
+    // MOD-01 and MOD-04 jobs that include gradePhase on the job payload will receive a
+    // phase-scoped checker built from the ratified Brain clauses. Jobs without gradePhase
+    // fall through to undefined (no checker), which is the correct behaviour until OQ-016
+    // provides a real AgeAppropriatenessJudge — the factory with no judge still passes every
+    // output honestly (see brain-age-appropriateness.ts's own header).
+    ageAppropriatenessCheckerFactory: createBrainAgeAppropriatenessChecker,
     // OQ-014: wire the real SNS notifier when the topic ARN is configured.
     // When absent, WorkerHost's default falls through to defaultEscalationNotifier
     // which throws loudly rather than silently no-oping on a safeguarding refusal.

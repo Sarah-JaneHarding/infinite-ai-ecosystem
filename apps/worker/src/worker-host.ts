@@ -17,11 +17,13 @@
 import type { AgentContract } from '@infinite-ai/agents';
 import { remember } from '@infinite-ai/brain';
 import { loadEnv } from '@infinite-ai/config';
+import type { TenantClient } from '@infinite-ai/db';
 import { withTenant } from '@infinite-ai/db';
 import type {
   AgeAppropriatenessChecker,
   EscalationNotifier,
 } from '@infinite-ai/guardrails';
+import type { CapsPhase } from '@infinite-ai/contracts';
 import type { PipelineDefinition, RunnerOptions } from '@infinite-ai/orchestrator';
 import { runToCompletion } from '@infinite-ai/orchestrator';
 import { createLogger, type Logger } from '@infinite-ai/telemetry';
@@ -36,10 +38,13 @@ import { QUEUE_LE_SIGNAL } from './queue-names.js';
 import { createStepExecutor } from './step-executor.js';
 import { createToolHandlers } from './tool-handlers.js';
 
+const CapsPhaseSchema = z.enum(['FOUNDATION', 'INTERMEDIATE', 'SENIOR']);
+
 const JobDataSchema = z.object({
   runId: z.string().min(1),
   tenantId: z.string().min(1),
   actorId: z.string().min(1),
+  gradePhase: CapsPhaseSchema.optional(),
 });
 
 export interface WorkerHostDeps {
@@ -51,6 +56,19 @@ export interface WorkerHostDeps {
   /** Forwarded to every StepExecutor this host creates — see step-executor.ts's own doc
    * comments (OQ-014, OQ-015) for what each one does and why it defaults to unset. */
   readonly ageAppropriatenessChecker?: AgeAppropriatenessChecker;
+  /**
+   * Per-job factory for phase-aware age-appropriateness checking (OQ-015 Gap 1).
+   * When a job carries `gradePhase`, the host calls this factory inside the `withTenant`
+   * transaction and uses the returned checker for that job in place of the static
+   * `ageAppropriatenessChecker`. Pipelines that do not carry a phase (or that supply
+   * no `gradePhase` on the job payload) fall back to `ageAppropriatenessChecker` as before.
+   * This is the injection point for `createBrainAgeAppropriatenessChecker`.
+   */
+  readonly ageAppropriatenessCheckerFactory?: (
+    tx: TenantClient,
+    tenantId: string,
+    phase: CapsPhase,
+  ) => AgeAppropriatenessChecker;
   readonly notify?: EscalationNotifier;
 }
 
@@ -80,6 +98,7 @@ export class WorkerHost {
       async (job) => {
         const jobData = JobDataSchema.parse(job.data);
         const { runId, tenantId, actorId } = jobData;
+        // gradePhase is read later inside withTenant to build the per-job checker
 
         // Collected inside the withTenant callback; flushed to BullMQ after the transaction
         // commits so a DB rollback never leaves a phantom LE signal job in Redis.
@@ -114,6 +133,16 @@ export class WorkerHost {
             });
           };
 
+          // Per-job phase-aware checker: when the job carries gradePhase and the host was
+          // given a factory, build a checker scoped to that phase inside this transaction
+          // (OQ-015 Gap 1). Falls back to the static checker or undefined when absent.
+          const jobPhase = jobData.gradePhase;
+          const jobAgeChecker: AgeAppropriatenessChecker | undefined =
+            jobPhase !== undefined &&
+            this.deps.ageAppropriatenessCheckerFactory !== undefined
+              ? this.deps.ageAppropriatenessCheckerFactory(tx, tenantId, jobPhase)
+              : this.deps.ageAppropriatenessChecker;
+
           // exactOptionalPropertyTypes (rule 8): only set these keys when this host was
           // actually given a checker/notifier, rather than assigning `undefined` to an
           // optional field explicitly.
@@ -125,9 +154,9 @@ export class WorkerHost {
             tenantId,
             toolHandlers,
             brainWriter,
-            ...(this.deps.ageAppropriatenessChecker === undefined
+            ...(jobAgeChecker === undefined
               ? {}
-              : { ageAppropriatenessChecker: this.deps.ageAppropriatenessChecker }),
+              : { ageAppropriatenessChecker: jobAgeChecker }),
             ...(this.deps.notify === undefined ? {} : { notify: this.deps.notify }),
           });
 
