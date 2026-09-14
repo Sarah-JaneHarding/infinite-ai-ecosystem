@@ -32,9 +32,15 @@ export type PipelineQueue =
 
 /** Job payload for every pipeline queue. The run is pre-created by the caller via
  * `startRun()`; the worker advances it to completion. `actorId` is the service account
- * performing the run — required by the audit ledger (rule 6). */
+ * performing the run — required by the audit ledger (rule 6).
+ *
+ * `gradePhase` is optional: pipelines that know their own curriculum phase (MOD-01, MOD-04)
+ * supply it so the worker can construct a phase-specific age-appropriateness checker for that
+ * job. Pipelines with no phase context leave it absent — the checker falls back to the
+ * host-level default (OQ-015 Gap 1). */
 export interface PipelineJobData {
   readonly runId: string;
   readonly tenantId: string;
   readonly actorId: string;
+  readonly gradePhase?: 'FOUNDATION' | 'INTERMEDIATE' | 'SENIOR';
 }

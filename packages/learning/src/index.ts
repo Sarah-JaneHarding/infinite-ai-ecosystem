@@ -31,4 +31,12 @@ export {
   type OutcomeSignal,
 } from './outcome-attributor.js';
 
+export {
+  minePatterns,
+  type MinedPatternResult,
+  type PatternMinerAttribution,
+  type PatternMinerDecision,
+  type PatternMinerInput,
+} from './pattern-miner.js';
+
 export const PACKAGE_NAME = '@infinite-ai/learning' as const;

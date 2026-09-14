@@ -8295,3 +8295,77 @@ Returns `insufficient_data` (not an error) when fewer than `OUTCOME_MIN_COHORT_S
 | `insufficient_data` returned honestly when cohort is too small            | PASS   |
 | Pre/post wins over cohort_comparison when sufficient data available       | PASS   |
 | Window boundary inclusion/exclusion correct (floor arithmetic verified)   | PASS   |
+
+---
+
+## OQ-015 Gap 1 — gradePhase wiring · 2026-09-14
+
+**What was built.**
+
+Resolves Gap 1 of OQ-015: the generic agent-call path now threads the curriculum phase through to the age-appropriateness checker when a pipeline supplies it.
+
+**Changes.**
+
+- `apps/worker/src/queue-names.ts` — `PipelineJobData` gains optional `gradePhase?: 'FOUNDATION' | 'INTERMEDIATE' | 'SENIOR'`. Pipelines that know their phase (MOD-01, MOD-04) include it on the job payload; all others leave it absent with no behaviour change.
+- `apps/worker/src/worker-host.ts` — `WorkerHostDeps` gains `ageAppropriatenessCheckerFactory?: (tx, tenantId, phase) => AgeAppropriatenessChecker`. When the job carries `gradePhase` and the factory is set, `WorkerHost` constructs a phase-specific checker inside the `withTenant` transaction; otherwise falls back to the static `ageAppropriatenessChecker` or undefined. `JobDataSchema` updated to parse `gradePhase` optionally.
+- `apps/worker/src/index.ts` — wires `createBrainAgeAppropriatenessChecker` as `ageAppropriatenessCheckerFactory`. With no `AgeAppropriatenessJudge` supplied yet (OQ-016 gap 2 still open), the checker correctly passes every output — retrieving real clauses without a judge is not itself a reason to refuse.
+- `docs/OPEN_QUESTIONS.md` — OQ-015 updated to OPEN (Gap 2 remains); Gap 1 recorded as resolved.
+
+**Verification.** `pnpm --filter @infinite-ai/worker exec tsc --noEmit` — clean. `pnpm --filter @infinite-ai/worker test` — 87 tests, all pass. `eslint src` — clean.
+
+---
+
+## Stage 56 — LE-04 Pattern Miner · 2026-09-14
+
+**What was built.**
+
+Stage 56 implements `packages/learning/src/pattern-miner.ts` — the pure pattern-mining logic for LE-04 (Pattern Miner, Stage 13 step 3).
+
+The function `minePatterns` receives attributed outcome records and stratification declarations, groups them by agent, enforces the minimum sample threshold, computes effect sizes and 95% confidence intervals, and applies a structural bias check when stratification fields are declared. A pattern with detected divergence is counted and excluded from results — it must not be promoted (manual §13 step 3).
+
+**Method and statistics:**
+
+- `effectSize`: mean of non-null `meanScoreDelta` values in the agent's attribution group.
+- `confidenceInterval`: effectSize ± 1.96 × (sample stddev / √n), where n is the count of non-null delta values.
+- `biasChecked`: true when `stratificationFields.length > 0`.
+- Divergence detected (pattern blocked) when `biasChecked` and sample std > |effectSize| (high coefficient of variation) — a structural check honest about its limits (OQ-016's calibration pipeline will revisit with real group labels).
+- `idGenerator` and `now` are injected for deterministic testing.
+
+**Status outcomes:**
+
+- `needs_input` — attributions array is empty.
+- `below_threshold` — fewer than `PATTERN_MIN_SAMPLE_SIZE` (10) total attributions, or total ≥ 10 but no agent group individually meets the threshold.
+- `ok` — one pattern per agent group with ≥ 10 attributions that passes the bias check; `patternsBlockedForBiasDivergence` counts blocked groups.
+
+**Changes.**
+
+- `packages/learning/src/pattern-miner.ts` (new) — `minePatterns(input: PatternMinerInput): PatternMinerDecision`, `PatternMinerAttribution`, `PatternMinerInput`, `MinedPatternResult`, `PatternMinerDecision`.
+- `packages/learning/src/index.ts` — exports `minePatterns`, `MinedPatternResult`, `PatternMinerAttribution`, `PatternMinerDecision`, `PatternMinerInput`.
+
+**Tests added (`packages/learning` — pattern-miner.spec.ts, 14 new cases).**
+
+- `needs_input` when attributions array is empty.
+- `below_threshold` when total < 10.
+- `below_threshold` when total ≥ 10 but all per-agent groups are individually below threshold.
+- Happy path: single agent ≥ 10 attributions → ok, one pattern, correct sampleSize and minedAt.
+- `effectSize` is the mean of non-null deltas (null values excluded).
+- `confidenceInterval` centred on effectSize (zero-variance deltas give CI = [effectSize, effectSize]).
+- `biasChecked = false` when no stratificationFields.
+- `biasChecked = true` when stratificationFields declared.
+- Two agents each ≥ 10 → two patterns in result.
+- Per-agent below-threshold exclusion does not increment blocked count.
+- Bias divergence: high CV → pattern blocked, count incremented, pattern absent from results.
+- No block when stratificationFields empty even with high variance.
+- Partial block: one stable agent + one divergent → blocked=1, patterns has the stable one.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 67 tests, all pass (14 new). `pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `eslint src test` — clean.
+
+| Exit gate item                                                               | Result |
+| ---------------------------------------------------------------------------- | ------ |
+| `below_threshold` returned when total attributions < PATTERN_MIN_SAMPLE_SIZE | PASS   |
+| `needs_input` returned when no attributions supplied                         | PASS   |
+| Effect size computed as mean of non-null deltas                              | PASS   |
+| 95% CI centred on effectSize with correct margin                             | PASS   |
+| `biasChecked` reflects whether stratification was declared                   | PASS   |
+| Divergent pattern blocked and counted; excluded from `patterns`              | PASS   |
+| No block when stratificationFields absent                                    | PASS   |
