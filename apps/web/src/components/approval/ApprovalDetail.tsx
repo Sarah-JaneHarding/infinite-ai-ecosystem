@@ -7,10 +7,12 @@ import type { Role } from '@infinite-ai/policy';
 
 interface Props {
   readonly id: string;
+  readonly runId: string;
   readonly role: Role;
 }
 
-type Decision = 'approved' | 'rejected' | null;
+type Outcome = 'APPROVED' | 'REJECTED' | 'EDITED';
+type UIState = 'pending' | 'submitting' | 'done' | 'error';
 
 const MOCK_ARTEFACT = {
   type: 'Lesson plan',
@@ -36,22 +38,54 @@ By the end of this lesson, learners will be able to:
   previousVersion: 'v6 — lacked worked examples for negative coefficients.',
 };
 
-export function ApprovalDetail({ id, role }: Props) {
-  const [decision, setDecision] = useState<Decision>(null);
+export function ApprovalDetail({ id, runId, role }: Props) {
+  const [uiState, setUiState] = useState<UIState>('pending');
+  const [confirmedOutcome, setConfirmedOutcome] = useState<Outcome | null>(null);
   const [reason, setReason] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const canDecide = ['hod', 'smt', 'admin'].includes(role);
 
-  if (decision) {
+  async function submitDecision(outcome: Outcome) {
+    if (reason.length === 0) return;
+    setUiState('submitting');
+    setErrorMsg('');
+
+    try {
+      const res = await fetch(`/api/approvals/${id}/decide`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ runId, outcome, reason }),
+      });
+
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(data.error ?? `HTTP ${res.status}`);
+      }
+
+      setConfirmedOutcome(outcome);
+      setUiState('done');
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Unexpected error');
+      setUiState('error');
+    }
+  }
+
+  if (uiState === 'done' && confirmedOutcome !== null) {
+    const approved = confirmedOutcome === 'APPROVED';
     return (
       <section aria-labelledby="approval-result-heading">
         <div
           role="status"
           aria-live="polite"
-          className={`p-6 rounded-[var(--iai-radius-xl)] border ${decision === 'approved' ? 'bg-[#dcfce7] border-[#bbf7d0] text-[#166534]' : 'bg-[#fee2e2] border-[#fecaca] text-[#991b1b]'}`}
+          className={`p-6 rounded-[var(--iai-radius-xl)] border ${approved ? 'bg-[#dcfce7] border-[#bbf7d0] text-[#166534]' : 'bg-[#fee2e2] border-[#fecaca] text-[#991b1b]'}`}
         >
           <h1 id="approval-result-heading" className="font-semibold text-lg">
-            {decision === 'approved' ? 'Artefact approved.' : 'Artefact rejected.'}
+            {approved
+              ? 'Artefact approved.'
+              : confirmedOutcome === 'EDITED'
+                ? 'Edit recorded.'
+                : 'Artefact rejected.'}
           </h1>
           {reason && <p className="text-sm mt-1">Reason: {reason}</p>}
           <a href="/approvals" className="mt-3 inline-block text-sm underline">
@@ -111,6 +145,16 @@ export function ApprovalDetail({ id, role }: Props) {
         </pre>
       </article>
 
+      {/* Error banner */}
+      {uiState === 'error' && (
+        <div
+          role="alert"
+          className="mb-4 p-3 rounded-[var(--iai-radius-md)] bg-[#fee2e2] border border-[#fecaca] text-[#991b1b] text-sm"
+        >
+          {errorMsg}
+        </div>
+      )}
+
       {/* Decision UI — only for roles that can approve */}
       {canDecide ? (
         <div className="rounded-[var(--iai-radius-xl)] bg-[var(--iai-bg)] border border-[var(--iai-border)] p-5">
@@ -121,47 +165,45 @@ export function ApprovalDetail({ id, role }: Props) {
             htmlFor="reason"
             className="block text-xs text-[var(--iai-text-subtle)] mb-1"
           >
-            Reason (required for rejection)
+            Reason (required)
           </label>
           <textarea
             id="reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={3}
-            className="w-full text-sm border border-[var(--iai-border)] rounded-[var(--iai-radius-md)] p-2.5 bg-[var(--iai-bg-subtle)] text-[var(--iai-text)] resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--iai-primary)]"
-            placeholder="Optional notes…"
+            disabled={uiState === 'submitting'}
+            className="w-full text-sm border border-[var(--iai-border)] rounded-[var(--iai-radius-md)] p-2.5 bg-[var(--iai-bg-subtle)] text-[var(--iai-text)] resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--iai-primary)] disabled:opacity-60"
+            placeholder="Notes or reason for your decision…"
           />
           <div className="flex gap-3 mt-4 flex-wrap">
             <button
               type="button"
-              onClick={() => setDecision('approved')}
-              className="px-4 py-2 rounded-[var(--iai-radius-md)] bg-[var(--iai-green)] text-white text-sm font-medium hover:bg-[var(--iai-green-deep)] transition-colors"
+              onClick={() => void submitDecision('APPROVED')}
+              disabled={!reason || uiState === 'submitting'}
+              className="px-4 py-2 rounded-[var(--iai-radius-md)] bg-[var(--iai-green)] text-white text-sm font-medium hover:bg-[var(--iai-green-deep)] transition-colors disabled:opacity-50"
             >
-              Approve
+              {uiState === 'submitting' ? 'Saving…' : 'Approve'}
             </button>
             <button
               type="button"
-              className="px-4 py-2 rounded-[var(--iai-radius-md)] border border-[var(--iai-border)] text-[var(--iai-text)] text-sm font-medium hover:bg-[var(--iai-bg-subtle)] transition-colors"
+              onClick={() => void submitDecision('EDITED')}
+              disabled={!reason || uiState === 'submitting'}
+              className="px-4 py-2 rounded-[var(--iai-radius-md)] border border-[var(--iai-border)] text-[var(--iai-text)] text-sm font-medium hover:bg-[var(--iai-bg-subtle)] transition-colors disabled:opacity-50"
             >
-              Edit
+              Edit &amp; approve
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (!reason) {
-                  return;
-                }
-                setDecision('rejected');
-              }}
-              disabled={!reason}
+              onClick={() => void submitDecision('REJECTED')}
+              disabled={!reason || uiState === 'submitting'}
               className="px-4 py-2 rounded-[var(--iai-radius-md)] text-[var(--iai-red)] text-sm font-medium hover:bg-[#fee2e2] transition-colors disabled:opacity-50"
             >
               Reject
             </button>
           </div>
           <p className="text-xs text-[var(--iai-text-subtle)] mt-2">
-            A reason is required to reject. The record is append-only and cannot be
-            undone.
+            A reason is required. The record is append-only and cannot be undone.
           </p>
         </div>
       ) : (

@@ -12,6 +12,7 @@
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
+import { SNSClient } from '@aws-sdk/client-sns';
 import {
   CE01Contract,
   CE02Contract,
@@ -105,6 +106,7 @@ import {
   QUEUE_MOD05_PD,
 } from './queue-names.js';
 import { createWorkerHealthServer } from './health-server.js';
+import { createSnsEscalationNotifier } from './sns-escalation-notifier.js';
 import { WorkerHost } from './worker-host.js';
 
 export { WorkerHost } from './worker-host.js';
@@ -118,6 +120,10 @@ export {
 export type { ToolHandler, ToolHandlerMap, StepExecutorDeps } from './step-executor.js';
 export { createToolHandlers } from './tool-handlers.js';
 export { evaluateCondition, UnresolvedConditionError } from './condition-evaluator.js';
+export {
+  SnsEscalationError,
+  createSnsEscalationNotifier,
+} from './sns-escalation-notifier.js';
 export {
   QUEUE_LE_COMMONS,
   QUEUE_LE_EVOLUTION,
@@ -260,6 +266,17 @@ export async function start(): Promise<void> {
     promptsRoot: resolvePromptsRoot(),
     redisUrl: env.REDIS_URL,
     logger,
+    // OQ-014: wire the real SNS notifier when the topic ARN is configured.
+    // When absent, WorkerHost's default falls through to defaultEscalationNotifier
+    // which throws loudly rather than silently no-oping on a safeguarding refusal.
+    ...(env.SAFEGUARDING_SNS_TOPIC_ARN === undefined
+      ? {}
+      : {
+          notify: createSnsEscalationNotifier(
+            new SNSClient({}),
+            env.SAFEGUARDING_SNS_TOPIC_ARN,
+          ),
+        }),
   });
 
   host

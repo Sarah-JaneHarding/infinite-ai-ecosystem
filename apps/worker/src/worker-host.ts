@@ -15,6 +15,7 @@
 // in-flight jobs before the process exits. The default BullMQ close timeout is 5 s.
 
 import type { AgentContract } from '@infinite-ai/agents';
+import { remember } from '@infinite-ai/brain';
 import { loadEnv } from '@infinite-ai/config';
 import { withTenant } from '@infinite-ai/db';
 import type {
@@ -24,12 +25,14 @@ import type {
 import type { PipelineDefinition, RunnerOptions } from '@infinite-ai/orchestrator';
 import { runToCompletion } from '@infinite-ai/orchestrator';
 import { createLogger, type Logger } from '@infinite-ai/telemetry';
-import { Worker } from 'bullmq';
+import { Queue, Worker } from 'bullmq';
 import { z } from 'zod';
 
 import { prepareApproval } from './approval.js';
 import { evaluateCondition } from './condition-evaluator.js';
+import { buildPendingLeSignalJob, type PendingLeSignalJob } from './le-signal-trigger.js';
 import type { PipelineJobData } from './queue-names.js';
+import { QUEUE_LE_SIGNAL } from './queue-names.js';
 import { createStepExecutor } from './step-executor.js';
 import { createToolHandlers } from './tool-handlers.js';
 
@@ -53,10 +56,14 @@ export interface WorkerHostDeps {
 
 export class WorkerHost {
   private readonly workers: Worker[] = [];
+  private readonly leSignalQueue: Queue<PipelineJobData>;
   private readonly logger: Logger;
 
   constructor(private readonly deps: WorkerHostDeps) {
     this.logger = deps.logger ?? createLogger();
+    this.leSignalQueue = new Queue<PipelineJobData>(QUEUE_LE_SIGNAL, {
+      connection: { url: deps.redisUrl },
+    });
   }
 
   /** Registers one BullMQ Worker for the given queue, wired to the pipeline. */
@@ -74,8 +81,38 @@ export class WorkerHost {
         const jobData = JobDataSchema.parse(job.data);
         const { runId, tenantId, actorId } = jobData;
 
+        // Collected inside the withTenant callback; flushed to BullMQ after the transaction
+        // commits so a DB rollback never leaves a phantom LE signal job in Redis.
+        const pendingLeSignalJobs: PendingLeSignalJob[] = [];
+
         await withTenant({ tenantId, actorId }, async (tx) => {
           const toolHandlers = createToolHandlers(tx);
+
+          // Closes over `tx` so the Brain write runs inside the same withTenant transaction
+          // as every other database operation in this job — rule 5.
+          const brainWriter = async (
+            agentId: string,
+            contractVersion: string,
+            output: unknown,
+            runId: string,
+          ): Promise<void> => {
+            await remember(tx, {
+              targetTier: 'L2_EPISODE',
+              rawPayload: {
+                eventType: 'agent_output',
+                subjectNodeId: null,
+                actorId: actorId,
+                occurredAt: new Date().toISOString(),
+                summary: `${agentId}@${contractVersion} persisted output to Brain`,
+                detail: { agentId, contractVersion, runId, agentOutput: output },
+                outcome: null,
+                supersedes: null,
+                dataCategory: null,
+              },
+              source: `${agentId}/${contractVersion}`,
+              derivationRunId: runId,
+            });
+          };
 
           // exactOptionalPropertyTypes (rule 8): only set these keys when this host was
           // actually given a checker/notifier, rather than assigning `undefined` to an
@@ -87,6 +124,7 @@ export class WorkerHost {
             gatewayBaseUrl: env.GATEWAY_BASE_URL,
             tenantId,
             toolHandlers,
+            brainWriter,
             ...(this.deps.ageAppropriatenessChecker === undefined
               ? {}
               : { ageAppropriatenessChecker: this.deps.ageAppropriatenessChecker }),
@@ -97,10 +135,24 @@ export class WorkerHost {
             executeStep,
             prepareApproval,
             evaluateCondition,
+            onHumanGateResolved: async (tx, _runId, _stepId, task) => {
+              // decidedBy is always set at this point — decideHumanGate requires it —
+              // but guard defensively to avoid a runtime throw.
+              if (task.decidedBy === null) return;
+              const job = await buildPendingLeSignalJob(tx, task, task.decidedBy);
+              if (job !== null) {
+                pendingLeSignalJobs.push(job);
+              }
+            },
           };
 
           await runToCompletion(tx, pipeline, runId, runnerOptions);
         });
+
+        // Flush LE signal jobs after the DB transaction commits — safe to enqueue now.
+        for (const leJob of pendingLeSignalJobs) {
+          await this.leSignalQueue.add('le-signal', leJob);
+        }
       },
       {
         connection: { url: this.deps.redisUrl },
@@ -122,6 +174,9 @@ export class WorkerHost {
 
   /** Gracefully drains all workers (waits for in-flight jobs, then closes). */
   async close(): Promise<void> {
-    await Promise.all(this.workers.map((w) => w.close()));
+    await Promise.all([
+      ...this.workers.map((w) => w.close()),
+      this.leSignalQueue.close(),
+    ]);
   }
 }

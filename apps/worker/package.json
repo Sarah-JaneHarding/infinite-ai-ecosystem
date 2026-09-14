@@ -17,6 +17,7 @@
     "start": "tsx src/main.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-sns": "3.1131.0",
     "@infinite-ai/agents": "workspace:*",
     "@infinite-ai/brain": "workspace:*",
     "@infinite-ai/config": "workspace:*",

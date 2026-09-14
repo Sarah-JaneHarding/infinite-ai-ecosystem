@@ -8114,3 +8114,134 @@ wrong-shape 2xx body, and streaming (content deltas, tool_call event, pre-first-
 rate-limit fallback, unparseable chunk). `test/index.spec.ts` — one new `buildAdapters`
 case confirming the Google adapter and credential pool are registered when `GOOGLE_API_KEYS`
 is set.
+
+---
+
+## Stage 53 — LE-01 / LE-02 Brain write mechanism · 2026-09-13
+
+**What was built.**
+
+Stage 53 wires the Brain write hook for agent_call steps that declare `writesToBrain: true`
+on their contract, resolving the mechanism gap identified while building Stage 50's
+`LE_SIGNAL_PIPELINE`. LE-01 (Signal Collector) and LE-02 (Correction Differ) are the first
+two agents that exercise the hook.
+
+- `apps/worker/src/step-executor.ts` — `StepExecutorDeps` gains an optional `brainWriter`
+  callback `(agentId, contractVersion, output, runId) => Promise<void>`. When a contract
+  declares `writesToBrain: true` and a writer is injected, it is called after all guardrail
+  checks pass (age-appropriateness, diagnosis_guard, grounding, readability). A missing
+  writer is a no-op — no error — matching the same "mechanism now, policy wired when ready"
+  pattern used for `ageAppropriatenessChecker` and `templateFidelityChecker`. The Brain
+  write is therefore always gated by all guardrails passing: a refused output is never
+  persisted.
+- `apps/worker/src/worker-host.ts` — builds and injects `brainWriter` inside the
+  `withTenant` callback, where the `TenantClient tx` is in scope. Writes an `L2_EPISODE`
+  via `remember(tx, ...)` with `eventType: 'agent_output'`, `source: agentId/version`,
+  `derivationRunId: runId`, and the full agent output in `detail.agentOutput`. Closes over
+  `actorId` from the job data so each episode is attributed to the actor that triggered the
+  run.
+
+**Tests added (apps/worker — step-executor.spec.ts, 4 new cases).**
+
+- Happy path: `brainWriter` called once with correct `(agentId, version, output, runId)` on
+  a successful LE-01 agent call.
+- `writesToBrain: false` skip: `brainWriter` not called for LE-07 (which declares
+  `writesToBrain: false`), even when a writer is injected.
+- No-op safety: step completes without error when `writesToBrain: true` but no
+  `brainWriter` is injected.
+- Security gate: `brainWriter` not called when a guardrail refuses — the Brain write is
+  gated by all guardrails passing; a refused output is never persisted.
+
+**Verification.** `pnpm --filter @infinite-ai/worker test` — 66 tests, all pass (4 new).
+`pnpm --filter @infinite-ai/worker exec tsc --noEmit` — clean. `eslint` — clean.
+
+---
+
+## Stage 54 — LE signal pipeline trigger · 2026-09-13
+
+**What was built.**
+
+Stage 54 wires the seam between a teacher's human-gate decision and the Learning Engine's
+signal pipeline, closing the last runtime gap preventing "a real correction captured in
+Stage 11 flows through to a ratified, versioned exemplar promotion" (Stage 13 exit gate).
+
+**Core mechanism.**
+
+When `runToCompletion()` calls `resumeFromHumanGate()` (all outcomes: APPROVED, EDITED,
+REJECTED — rejections are as valuable a learning signal as approvals), the new
+`onHumanGateResolved` hook fires inside the active `withTenant` transaction. The hook calls
+`buildPendingLeSignalJob()`, which opens a `LE_SIGNAL_PIPELINE` run in the same transaction
+and returns job data. After `withTenant` commits, the job is flushed to the `le-signal`
+BullMQ queue — avoiding a phantom job in Redis if the DB transaction were to roll back.
+
+**Changes.**
+
+- `packages/orchestrator/src/runner.ts` — `RunnerOptions` gains an optional
+  `onHumanGateResolved?: (tx, runId, stepId, task) => Promise<void>` hook. The hook is
+  called inside `resumeFromHumanGate()` after the null-check, before the REJECTED branch,
+  and fires for all three outcomes (APPROVED, EDITED, REJECTED).
+
+- `apps/worker/src/le-signal-trigger.ts` (new) — pure mapping layer:
+  - `LeSignalContextSchema` — Zod `.passthrough()` schema extracting the four LE context
+    fields (`artefactId`, `artefactType`, `capsTopicId`, `agentId`) from `task.artefact`.
+    Non-TB gates (LE promotion, MOD-02 SBST) lack these fields → `safeParse` fails → `null`
+    returned, so LE-01 is never triggered for gates where it makes no sense.
+  - `buildLeSignalInput(task, actorRef): LE01Input | null` — maps a decided
+    `ApprovalTaskRow` to a `LE01Input`. Returns `null` when `task.decision` or
+    `task.decidedAt` is null, or when the artefact lacks LE context.
+  - `startLeSignalRun(tx, task, actorRef): Promise<string | null>` — calls `startRun()`
+    inside the caller's transaction, re-using `task.traceId` so the LE signal run is
+    traceable back to the gate event that triggered it.
+  - `PendingLeSignalJob` interface + `buildPendingLeSignalJob(tx, task, actorRef)` —
+    assembles the BullMQ job data (`runId`, `tenantId`, `actorId`) the caller needs to
+    enqueue after the transaction commits.
+
+- `apps/worker/src/worker-host.ts` — adds a private `leSignalQueue: Queue<PipelineJobData>`
+  (connected at construction time), wires `onHumanGateResolved` into each pipeline's
+  `RunnerOptions` (collects `PendingLeSignalJob` entries during the transaction), and flushes
+  them to BullMQ after `withTenant` commits. `close()` now closes the LE signal queue
+  alongside the worker pool.
+
+- `apps/web/src/app/api/approvals/[id]/decide/route.ts` (new) — `POST /api/approvals/[id]/decide`
+  Route Handler. Validates the request body (`runId`, `outcome`, `reason`, optional `editDiff`),
+  extracts the actor UUID from the JWT `sub` via `getToken()`, opens a `withTenant` transaction,
+  and calls `decideHumanGate()`. Returns 200 on success, 401/403/400 on auth/input failures,
+  422 on `OrchestratorRunnerError` (already decided, wrong role, run not waiting). Rule 5 and
+  Rule 6 are both satisfied: every DB operation has a tenant context; the approval record is
+  written before any response is returned.
+
+- `apps/web/src/components/approval/ApprovalDetail.tsx` — decision buttons now call the real
+  `POST /api/approvals/[id]/decide` endpoint. Added `runId` prop (supplied from search param
+  on the approval page URL), `UIState` machine (`pending → submitting → done | error`),
+  a wired "Edit & approve" button (`outcome: 'EDITED'`), and an error banner. All three
+  outcomes require a non-empty reason before the buttons are enabled — consistent with
+  `decideHumanGate()`'s own `reason: z.string().min(1)` validation.
+
+- `apps/web/src/app/(shell)/approvals/[id]/page.tsx` — reads `runId` from URL search
+  params and passes it to `ApprovalDetail`; returns 404 when absent (approval URLs must
+  include the run ID, supplied by the notification path).
+
+- `apps/web/package.json` — adds `@infinite-ai/db` and `@infinite-ai/orchestrator` as
+  workspace dependencies (internal workspace packages; no `docs/DEPENDENCIES.md` entry
+  required).
+
+- `docs/OPEN_QUESTIONS.md` — OQ-029 marked RESOLVED (2026-09-13).
+
+**Tests added (apps/worker — le-signal-trigger.spec.ts, 11 new cases).**
+
+- Happy path: valid `LE01Input` built for a decided TB gate (APPROVED, correct field mapping).
+- REJECTED and EDITED outcome mappings.
+- `reasonCode` propagated when `task.reason` is set; absent from output when null.
+- `null` returned when `task.decision` is null (not yet decided).
+- `null` returned when `task.decidedAt` is null even if `decision` is set.
+- `null` returned for a non-TB gate (artefact lacks LE context fields).
+- `null` returned when `artefactId` is present but not a UUID.
+- `null` returned when `artefact` is null.
+- `.passthrough()` on `LeSignalContextSchema` — extra fields on the artefact don't block
+  the happy path.
+
+**Verification.** `pnpm --filter @infinite-ai/worker test` — 77 tests, all pass (11 new).
+`pnpm --filter @infinite-ai/worker exec tsc --noEmit` — clean.
+`pnpm --filter @infinite-ai/orchestrator exec tsc --noEmit` — clean.
+`pnpm --filter @infinite-ai/web exec tsc --noEmit` — clean.
+`eslint src test` in apps/worker — clean.

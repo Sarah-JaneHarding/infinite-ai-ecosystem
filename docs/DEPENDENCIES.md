@@ -442,6 +442,22 @@ No new external runtime dependencies were added. Both `packages/provisioning` an
 `packages/billing` use only `zod` (already in the tree, MIT) plus standard Node.js.
 Their `devDependencies` (`typescript`, `vitest`) are already present in the workspace.
 
+## Stage 08 — CAPS Canon Ingestion Console (`apps/web`)
+
+`apps/web` gains two new workspace dependencies for the CAPS Canon Ingestion Console
+admin page (`/admin/curriculum/caps-canon`):
+
+| Package                        | Version       | Licence | Why                                                                                                                                                                                                                                                                                           | Replaces |
+| ------------------------------ | ------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `@infinite-ai/brain`           | `workspace:*` | —       | `ratify()` (from `packages/brain/src/api.ts`) — called from the `/api/caps-canon/[id]/ratify` route handler to drive a Brain write candidate from `AWAITING_RATIFICATION` to `COMMITTED`; `BrainApiError` and `BrainWriteStatus` for error handling and type-safe status comparisons.         | —        |
+| `@infinite-ai/curriculum-seed` | `workspace:*` | —       | `submitCapsSource()`, `ALL_CAPS_SOURCES`, and `CurriculumSeedError` — called from the `/api/caps-canon/[id]/ingest` route handler to create a Brain L0 write candidate from a structured `CapsSourceInfo`; `findCapsSourceByBrainDocId()` to locate the matching source by Brain document ID. | —        |
+
+No new external dependencies. Both packages are already in the workspace tree (first
+recorded at their respective stages above). The CAPS Canon page calls only `withTenant()`
+(rule 5) and performs no model calls. The human-ratification gate (rule 6) is enforced in
+the ratify route: it checks the candidate's status and records the ratifiedBy actor before
+the response is returned.
+
 ## Adding a dependency
 
 1. Check whether something already in the tree does the job.
@@ -545,3 +561,18 @@ relied on by every job in this repository's CI.
 No new npm dependency: `scripts/cd/deploy-ecs-service.sh` and `scripts/cd/promote-image.sh`
 are plain bash, using the `aws` and `docker`/`jq` CLIs already available on
 `ubuntu-latest` GitHub-hosted runners.
+
+## OQ-014 close — SNS-backed safeguarding escalation notifier
+
+`apps/worker` takes one new external runtime dependency to close OQ-014:
+
+| Package               | Version    | Licence    | Why                                                                                                                                                                                                                                                                                                    | Replaces                                                                                        |
+| --------------------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `@aws-sdk/client-sns` | `3.1131.0` | Apache-2.0 | Publishes structured JSON messages to an SNS topic when the guardrail engine produces a safeguarding-relevant refusal with a non-null `EscalationRoute`. Topic subscriptions (SMS, email, PagerDuty endpoint, Lambda) are configured in AWS, not in this code. OQ-014's "real paging integration" gap. | `defaultEscalationNotifier` (still used as fallback when `SAFEGUARDING_SNS_TOPIC_ARN` is unset) |
+
+No new runtime dependency is added to any other package. The notifier implementation
+lives in `apps/worker/src/sns-escalation-notifier.ts`; the topic ARN is configured via
+the new `SAFEGUARDING_SNS_TOPIC_ARN` environment variable in `packages/config/src/env.ts`
+(optional; unset means the throwing default is used, matching existing behaviour).
+
+AWS SDK v3 (`@aws-sdk/*`) follows Apache-2.0. No approval exception needed.

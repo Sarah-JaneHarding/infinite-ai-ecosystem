@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Next.js app — every role surface.",
   "scripts": {
-    "build": "next build",
+    "build": "next build --webpack",
     "dev": "next dev",
     "start": "next start",
     "typecheck": "tsc --noEmit",
@@ -17,7 +17,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@infinite-ai/brain": "workspace:*",
+    "@infinite-ai/curriculum-seed": "workspace:*",
+    "@infinite-ai/db": "workspace:*",
     "@infinite-ai/design-system": "workspace:*",
+    "@infinite-ai/orchestrator": "workspace:*",
     "@infinite-ai/school-setup": "workspace:*",
     "@infinite-ai/learner-client": "workspace:*",
     "@infinite-ai/policy": "workspace:*",

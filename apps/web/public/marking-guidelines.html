@@ -1,0 +1,1152 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font:
+          14px -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: #faf9f5;
+        color: #141413;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden]:not([hidden='until-found' i]) {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <title>Marking Guidelines / Memorandum</title>
+    <style>
+      :root {
+        --navy: #0a1628;
+        --navy-soft: #132038;
+        --blue: #2563eb;
+        --blue-soft: #eff4ff;
+        --gold: #f59e0b;
+        --gold-soft: #fef3e2;
+        --green: #16a34a;
+        --green-soft: #ecfdf3;
+        --line: #d9e0ec;
+        --text: #1b2536;
+        --muted: #5b6b85;
+        --paper: #ffffff;
+        --canvas: #f3f5f9;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --line: #2a3855;
+          --text: #e7ecf7;
+          --muted: #9aa8c4;
+          --paper: #101b31;
+          --canvas: #0b1526;
+          --blue-soft: #152242;
+          --gold-soft: #2a2013;
+          --green-soft: #0f2a1c;
+        }
+      }
+      :root[data-theme='dark'] {
+        --line: #2a3855;
+        --text: #e7ecf7;
+        --muted: #9aa8c4;
+        --paper: #101b31;
+        --canvas: #0b1526;
+        --blue-soft: #152242;
+        --gold-soft: #2a2013;
+        --green-soft: #0f2a1c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--canvas);
+        color: var(--text);
+        font-family: 'Lora', Georgia, serif;
+        line-height: 1.5;
+      }
+      h1,
+      h2,
+      h3,
+      .brand-mark {
+        font-family: 'Montserrat', Arial, sans-serif;
+      }
+      .page {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 28px 20px 80px;
+      }
+
+      .masthead {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+        color: #fff;
+        border-radius: 16px;
+        padding: 28px 30px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 22px;
+      }
+      .masthead::after {
+        content: '∞';
+        position: absolute;
+        right: -10px;
+        bottom: -40px;
+        font-size: 180px;
+        color: rgba(255, 255, 255, 0.05);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        line-height: 1;
+        pointer-events: none;
+      }
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .masthead h1 {
+        font-size: 24px;
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .masthead .sub {
+        font-size: 13.5px;
+        color: #c9d3e8;
+        font-family: 'Lora', serif;
+      }
+      .brand-mark {
+        position: absolute;
+        top: 24px;
+        right: 28px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.65);
+        text-align: right;
+      }
+      .brand-mark span {
+        display: block;
+        color: var(--gold);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      button {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+        border-radius: 8px;
+        padding: 9px 16px;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        color: var(--text);
+      }
+      button:hover {
+        background: var(--blue-soft);
+      }
+      button.primary {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: #fff;
+      }
+      button.primary:hover {
+        background: #1d4fcb;
+      }
+      button.ghost {
+        color: var(--muted);
+      }
+
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 22px 24px 26px;
+        margin-bottom: 18px;
+        box-shadow: 0 1px 2px rgba(10, 22, 40, 0.04);
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--gold-soft);
+      }
+      .num {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--navy);
+        color: var(--gold);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .card-head h2 {
+        font-size: 16.5px;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+      }
+      :root[data-theme='dark'] .card-head h2 {
+        color: #eaf0ff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .card-head h2 {
+          color: #eaf0ff;
+        }
+      }
+      .card-head .tag {
+        margin-left: auto;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--blue);
+        background: var(--blue-soft);
+        padding: 4px 9px;
+        border-radius: 999px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-4 {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+      @media (max-width: 760px) {
+        .grid-2,
+        .grid-4 {
+          grid-template-columns: 1fr;
+        }
+      }
+      label {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+      .fill {
+        width: 100%;
+        min-height: 38px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--canvas);
+        padding: 9px 11px;
+        font-family: 'Lora', serif;
+        font-size: 14px;
+        color: var(--text);
+        outline: none;
+      }
+      .fill:focus {
+        border-color: var(--blue);
+        border-style: solid;
+        background: var(--paper);
+      }
+      .note {
+        font-size: 12px;
+        color: var(--muted);
+        font-style: italic;
+        margin: 2px 0 10px;
+      }
+
+      /* markers guideline list */
+      .guide-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .guide-item {
+        display: flex;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--canvas);
+      }
+      .guide-item .bullet {
+        flex: 0 0 auto;
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        background: var(--navy);
+        color: var(--gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+      }
+      .guide-item strong {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12.5px;
+        color: var(--navy);
+        margin-bottom: 2px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .guide-item strong {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .guide-item strong {
+        color: #eaf0ff;
+      }
+      .guide-item p {
+        margin: 0;
+        font-size: 12.5px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* cognitive matrix table */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      .mx-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 4px;
+        min-width: 760px;
+      }
+      .mx-table th {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: #fff;
+        background: var(--navy);
+        text-align: center;
+        padding: 10px 8px;
+      }
+      .mx-table th:first-child {
+        border-radius: 8px 0 0 0;
+        text-align: left;
+      }
+      .mx-table th:last-child {
+        border-radius: 0 8px 0 0;
+      }
+      .mx-table td {
+        border: 1px solid var(--line);
+        padding: 6px;
+        vertical-align: middle;
+        text-align: center;
+      }
+      .mx-table td:nth-child(2) {
+        text-align: left;
+      }
+      .mx-table input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-family: 'Lora', serif;
+        font-size: 12.5px;
+        color: var(--text);
+        outline: none;
+        padding: 5px 4px;
+        text-align: center;
+      }
+      .mx-table td:nth-child(2) input {
+        text-align: left;
+      }
+      .mx-table td.qno {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 12.5px;
+        color: var(--navy);
+        background: var(--blue-soft);
+        width: 56px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .mx-table td.qno {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .mx-table td.qno {
+        color: #eaf0ff;
+      }
+      .mx-table tr.total-row td {
+        background: var(--gold-soft);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+        color: var(--navy);
+        border-top: 2px solid var(--gold);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .mx-table tr.total-row td {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .mx-table tr.total-row td {
+        color: #eaf0ff;
+      }
+      .mx-table tr.total-row input {
+        font-weight: 800;
+        color: inherit;
+      }
+      .row-controls {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+      }
+
+      /* memo sections */
+      .memo-section {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-bottom: 14px;
+        background: var(--canvas);
+      }
+      .memo-section h3 {
+        font-size: 14px;
+        color: var(--navy);
+        margin: 0 0 12px;
+        font-family: 'Montserrat', sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .memo-section h3 {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .memo-section h3 {
+        color: #eaf0ff;
+      }
+      .q-block {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+      }
+      .q-block-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .q-block-head .qtag {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 12.5px;
+        color: var(--blue);
+        background: var(--blue-soft);
+        padding: 4px 10px;
+        border-radius: 7px;
+      }
+      .q-block-head input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--text);
+        outline: none;
+      }
+      .sub-row {
+        display: grid;
+        grid-template-columns: 56px 1fr 90px;
+        gap: 10px;
+        align-items: start;
+        margin-bottom: 8px;
+      }
+      @media (max-width: 640px) {
+        .sub-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .sub-row .subno {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 12.5px;
+        color: var(--muted);
+        padding-top: 9px;
+      }
+      .sub-row textarea {
+        width: 100%;
+        min-height: 56px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--canvas);
+        padding: 8px 10px;
+        font-family: 'Lora', serif;
+        font-size: 13px;
+        color: var(--text);
+        resize: vertical;
+        outline: none;
+      }
+      .sub-row textarea:focus {
+        border-color: var(--blue);
+        border-style: solid;
+        background: var(--paper);
+      }
+      .sub-row .marks {
+        width: 100%;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--canvas);
+        padding: 8px 8px;
+        font-family: 'Lora', serif;
+        font-size: 13px;
+        color: var(--text);
+        text-align: center;
+        outline: none;
+        height: 38px;
+        margin-top: 1px;
+      }
+      .sub-row .marks:focus {
+        border-color: var(--blue);
+        border-style: solid;
+        background: var(--paper);
+      }
+      .tick {
+        color: var(--green);
+        font-weight: 800;
+        margin-left: 4px;
+      }
+      .qb-controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .qb-controls button {
+        font-size: 11.5px;
+        padding: 6px 11px;
+      }
+
+      /* rubric table */
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 4px;
+        min-width: 820px;
+      }
+      .rubric-table th {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: #fff;
+        background: var(--navy);
+        text-align: left;
+        padding: 10px 10px;
+      }
+      .rubric-table th:first-child {
+        border-radius: 8px 0 0 0;
+      }
+      .rubric-table th:last-child {
+        border-radius: 0 8px 0 0;
+      }
+      .rubric-table td {
+        border: 1px solid var(--line);
+        padding: 8px;
+        vertical-align: top;
+        font-size: 12px;
+      }
+      .rubric-table td.level-cell {
+        width: 150px;
+      }
+      .rubric-table .level-name {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 12.5px;
+        color: var(--navy);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .rubric-table .level-name {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .rubric-table .level-name {
+        color: #eaf0ff;
+      }
+      .rubric-table .level-code {
+        font-size: 11px;
+        color: var(--muted);
+        font-family: 'Montserrat', sans-serif;
+      }
+      .rubric-table textarea {
+        width: 100%;
+        min-height: 70px;
+        border: none;
+        background: transparent;
+        font-family: 'Lora', serif;
+        font-size: 12px;
+        color: var(--text);
+        resize: vertical;
+        outline: none;
+        padding: 2px;
+      }
+      .rubric-row-outstanding {
+        background: var(--green-soft);
+      }
+      .rubric-table .crit-head {
+        text-align: center;
+      }
+
+      .sig-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+        margin-top: 6px;
+      }
+      @media (max-width: 640px) {
+        .sig-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .sig-line {
+        border-bottom: 1.5px solid var(--muted);
+        min-height: 34px;
+      }
+
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 11.5px;
+        font-family: 'Montserrat', sans-serif;
+        margin-top: 26px;
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+        .toolbar {
+          display: none;
+        }
+        .masthead {
+          background: var(--navy) !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        button {
+          display: none;
+        }
+      }
+    </style>
+
+    <div class="page">
+      <div class="masthead">
+        <div class="brand-mark">INFINITE-AI<span>CURRICULUM ENGINE</span></div>
+        <div class="eyebrow">🇿🇦 DBE · Marking Guidelines</div>
+        <h1>
+          <span id="subjectTitle">[Subject Name]</span> Marking Guidelines / Memorandum
+        </h1>
+        <div class="sub">
+          Objective marking guidance, cognitive weighting matrix, question-by-question
+          memo, and a generic DBE rubric — in one blueprint.
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        <button class="ghost" onclick="clearAll()">Clear all fields</button>
+        <span style="flex: 1"></span>
+        <button onclick="toggleTheme()" id="themeBtn">🌓 Toggle theme</button>
+      </div>
+
+      <!-- Header details -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">•</div>
+          <h2>Assessment Details</h2>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Subject Name</label
+            ><input
+              class="fill"
+              id="subjectInput"
+              placeholder="e.g. Life Sciences"
+              oninput="
+                document.getElementById('subjectTitle').textContent =
+                  this.value || '[Subject Name]'
+              "
+            />
+          </div>
+          <div class="field">
+            <label>Examination / Assessment</label
+            ><input
+              class="fill"
+              placeholder="e.g. Grade 12 June Exemplar / NSC Trial Examination"
+            />
+          </div>
+        </div>
+        <div class="grid grid-2" style="margin-top: 14px">
+          <div class="field">
+            <label>Total Marks</label
+            ><input class="fill" placeholder="e.g. 100 / 150 / 300" />
+          </div>
+          <div class="field">
+            <label>Time Allocation</label
+            ><input class="fill" placeholder="e.g. 2 hours / 3 hours" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 1 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">1</div>
+          <h2>Instructions and Information for Markers</h2>
+        </div>
+        <div class="guide-list">
+          <div class="guide-item">
+            <div class="bullet">1</div>
+            <div>
+              <strong>Objective Marking</strong>
+              <p>
+                Marking must be strictly objective. Give full credit for any alternative,
+                relevant, and well-motivated insight that fits the context of the
+                question.
+              </p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="bullet">2</div>
+            <div>
+              <strong>No Double Penalties</strong>
+              <p>
+                Avoid penalising a learner twice for the exact same systematic error (e.g.
+                an early calculation error followed by correct subsequent methods).
+              </p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="bullet">3</div>
+            <div>
+              <strong>Exceeding Word / Length Constraints</strong>
+              <p>
+                Do not penalise candidates simply for exceeding suggested lengths (e.g. in
+                essays or open-ended responses) unless the active assessment rubric
+                specifically requires it.
+              </p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="bullet">4</div>
+            <div>
+              <strong>Language and Spelling</strong>
+              <p>
+                Focus on the core content and understanding. Minor spelling mistakes
+                should not cost marks unless they change the grammatical meaning or impact
+                specific language-testing outcomes.
+              </p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="bullet">5</div>
+            <div>
+              <strong>Tick Allocation</strong>
+              <p>
+                Place a clear, visible tick (✓) next to every factual point, method step,
+                or cognitive skill that earns a mark.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">2</div>
+          <h2>Assessment Blueprint &amp; Cognitive Weighting Matrix</h2>
+          <span class="tag">CAPS / Bloom's aligned</span>
+        </div>
+        <div class="note" style="margin-top: -4px">
+          Aligns with CAPS requirements across Bloom's / DBE cognitive levels.
+        </div>
+        <div class="table-wrap">
+          <table class="mx-table" id="mxTable">
+            <thead>
+              <tr>
+                <th style="width: 60px">Question</th>
+                <th style="width: 220px">Topic / Content Area</th>
+                <th>Level 1 &amp; 2<br />(Knowledge &amp; Recall: 40%)</th>
+                <th>Level 3<br />(Application &amp; Analysis: 40%)</th>
+                <th>Level 4 &amp; 5<br />(Evaluation &amp; Synthesis: 20%)</th>
+                <th style="width: 90px">Total Marks</th>
+              </tr>
+            </thead>
+            <tbody id="mxBody"></tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="2">TOTAL</td>
+                <td><input id="sumL12" readonly value="0" /></td>
+                <td><input id="sumL3" readonly value="0" /></td>
+                <td><input id="sumL45" readonly value="0" /></td>
+                <td><input id="sumTotal" readonly value="0" /></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="row-controls">
+          <button onclick="addMxRow()">+ Add question row</button>
+          <button class="ghost" onclick="removeMxRow()">− Remove last row</button>
+        </div>
+      </div>
+
+      <!-- Section 3 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">3</div>
+          <h2>Question-by-Question Marking Memo</h2>
+        </div>
+
+        <div class="memo-section">
+          <h3>Section A — Short / Objective Questions</h3>
+          <div id="sectionA"></div>
+          <div class="qb-controls">
+            <button onclick="addQuestion('sectionA', 'Q')">+ Add question</button>
+          </div>
+        </div>
+
+        <div class="memo-section">
+          <h3>Section B — Structured / Paragraph Questions</h3>
+          <div id="sectionB"></div>
+          <div class="qb-controls">
+            <button onclick="addQuestion('sectionB', 'Q')">+ Add question</button>
+          </div>
+        </div>
+
+        <div class="memo-section">
+          <h3>Section C — Essay / Extended Responses (Rubric-Based)</h3>
+          <div class="field">
+            <label>Suggested Approach to Content</label>
+            <textarea
+              class="fill"
+              style="min-height: 70px"
+              placeholder="Candidates should touch upon key aspects such as [Aspect A, Aspect B], and [Aspect C]."
+            ></textarea>
+          </div>
+          <div class="note">
+            Marker must read the entire output holistically before committing to final
+            marks on the attached rubric (Section 4).
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4 -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">4</div>
+          <h2>Generic DBE Assessment Rubric Template</h2>
+          <span class="tag">Editable descriptors</span>
+        </div>
+        <div class="note" style="margin-top: -4px">
+          Typically used for open-ended tasks, paragraphs, performance tasks, or creative
+          writing. Edit weightings and descriptors to match your subject rubric.
+        </div>
+        <div class="table-wrap">
+          <table class="rubric-table">
+            <thead>
+              <tr>
+                <th style="width: 150px">Performance Level</th>
+                <th class="crit-head">
+                  <input
+                    class="fill"
+                    style="text-align: center; font-weight: 700"
+                    value="Criteria 1: Content &amp; Planning (60% Weighting)"
+                  />
+                </th>
+                <th class="crit-head">
+                  <input
+                    class="fill"
+                    style="text-align: center; font-weight: 700"
+                    value="Criteria 2: Language, Style &amp; Editing (30% Weighting)"
+                  />
+                </th>
+                <th class="crit-head">
+                  <input
+                    class="fill"
+                    style="text-align: center; font-weight: 700"
+                    value="Criteria 3: Structure &amp; Presentation (10% Weighting)"
+                  />
+                </th>
+              </tr>
+            </thead>
+            <tbody id="rubricBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="num">•</div>
+          <h2>Sign-Off</h2>
+        </div>
+        <div class="sig-grid">
+          <div>
+            <div class="sig-line"></div>
+            <label style="margin-top: 6px; margin-bottom: 0"
+              >Subject Head / Moderator Signature &amp; Date</label
+            >
+          </div>
+          <div>
+            <div class="sig-line"></div>
+            <label style="margin-top: 6px; margin-bottom: 0"
+              >HOD Signature &amp; Date</label
+            >
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        Infinite-AI Curriculum Engine · DBE Marking Guidelines &amp; Memorandum Suite
+      </footer>
+    </div>
+
+    <script>
+      function themeIsDark() {
+        var attr = document.documentElement.getAttribute('data-theme');
+        if (attr === 'dark') return true;
+        if (attr === 'light') return false;
+        return (
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        );
+      }
+      function toggleTheme() {
+        document.documentElement.setAttribute(
+          'data-theme',
+          themeIsDark() ? 'light' : 'dark',
+        );
+      }
+
+      /* ===== Cognitive matrix ===== */
+      var mxCounter = 0;
+      function makeMxRow() {
+        mxCounter++;
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td class="qno">Q' +
+          mxCounter +
+          '</td>' +
+          '<td><input placeholder="e.g. Short Questions / Multiple Choice"></td>' +
+          '<td><input class="l12" type="number" min="0" placeholder="0"></td>' +
+          '<td><input class="l3" type="number" min="0" placeholder="0"></td>' +
+          '<td><input class="l45" type="number" min="0" placeholder="0"></td>' +
+          '<td><input class="rowtotal" readonly value="0"></td>';
+        return tr;
+      }
+      function addMxRow() {
+        document.getElementById('mxBody').appendChild(makeMxRow());
+        attachMxListeners();
+        recalcMx();
+      }
+      function removeMxRow() {
+        var body = document.getElementById('mxBody');
+        if (body.children.length > 1) {
+          body.removeChild(body.lastElementChild);
+        }
+        recalcMx();
+      }
+      function attachMxListeners() {
+        document
+          .querySelectorAll('#mxBody .l12, #mxBody .l3, #mxBody .l45')
+          .forEach(function (el) {
+            el.oninput = recalcMx;
+          });
+      }
+      function recalcMx() {
+        var rows = document.querySelectorAll('#mxBody tr');
+        var s12 = 0,
+          s3 = 0,
+          s45 = 0;
+        rows.forEach(function (tr) {
+          var v12 = parseFloat(tr.querySelector('.l12').value) || 0;
+          var v3 = parseFloat(tr.querySelector('.l3').value) || 0;
+          var v45 = parseFloat(tr.querySelector('.l45').value) || 0;
+          tr.querySelector('.rowtotal').value = v12 + v3 + v45;
+          s12 += v12;
+          s3 += v3;
+          s45 += v45;
+        });
+        document.getElementById('sumL12').value = s12;
+        document.getElementById('sumL3').value = s3;
+        document.getElementById('sumL45').value = s45;
+        document.getElementById('sumTotal').value = s12 + s3 + s45;
+      }
+      function initMx() {
+        var body = document.getElementById('mxBody');
+        for (var i = 0; i < 4; i++) {
+          body.appendChild(makeMxRow());
+        }
+        attachMxListeners();
+        recalcMx();
+      }
+
+      /* ===== Question-by-question memo ===== */
+      var qCounters = { sectionA: 0, sectionB: 0 };
+      function addQuestion(sectionId, prefix) {
+        qCounters[sectionId] = (qCounters[sectionId] || 0) + 1;
+        var qnum = qCounters[sectionId];
+        var block = document.createElement('div');
+        block.className = 'q-block';
+        block.innerHTML =
+          '<div class="q-block-head"><span class="qtag">Q' +
+          qnum +
+          '</span><input value="Question ' +
+          qnum +
+          '"></div>' +
+          '<div class="subrows"></div>' +
+          '<div class="qb-controls"><button onclick="addSubQ(this)">+ Add sub-question</button><button class="ghost" onclick="this.closest(\'.q-block\').remove()">Remove question</button></div>';
+        document.getElementById(sectionId).appendChild(block);
+        addSubQ(block.querySelector('.qb-controls button'));
+      }
+      function addSubQ(btn) {
+        var block = btn.closest('.q-block');
+        var subrows = block.querySelector('.subrows');
+        var n = subrows.children.length + 1;
+        var row = document.createElement('div');
+        row.className = 'sub-row';
+        row.innerHTML =
+          '<div class="subno">' +
+          n +
+          '.' +
+          n +
+          '</div>' +
+          '<textarea placeholder="Expected response / key fact, definition, or formula required. Note to marker: accept synonyms or contextually accurate phrasing. ✓"></textarea>' +
+          '<input class="marks" placeholder="e.g. 2 Marks">';
+        subrows.appendChild(row);
+      }
+
+      /* ===== Rubric table (fixed 7-level DBE scale, editable descriptors) ===== */
+      var rubricLevels = [
+        {
+          name: 'Outstanding',
+          code: '7 (80%–100%)',
+          c1: 'Comprehensive, deeply insightful content. Planning reflects exceptional organisation.',
+          c2: 'Flawless register and vocabulary. Errors are practically non-existent.',
+          c3: 'Excellent, highly structured layout following all procedural constraints.',
+          top: true,
+        },
+        {
+          name: 'Meritorious',
+          code: '6 (70%–79%)',
+          c1: 'Strong, detailed content showing well-supported insights and clear planning.',
+          c2: 'Well-developed register and vocabulary. Very minimal language errors.',
+          c3: 'Clear structure with a logical flow of ideas and paragraphs.',
+        },
+        {
+          name: 'Substantial',
+          code: '5 (60%–69%)',
+          c1: 'Content is secure and covers all basic expectations adequately. Clear evidence of planning.',
+          c2: 'Sound vocabulary choice. Mistakes do not impede overall meaning.',
+          c3: 'Structure is mostly coherent with clear starting and ending points.',
+        },
+        {
+          name: 'Adequate',
+          code: '4 (50%–59%)',
+          c1: 'Basic content coverage; lacks deeper analysis. Basic planning is present.',
+          c2: 'Adequate language usage; simple sentence construction with visible errors.',
+          c3: 'Structure is visible but could be improved for better readability.',
+        },
+        {
+          name: 'Moderate',
+          code: '3 (40%–49%)',
+          c1: 'Content is superficial or occasionally drifts off-topic. Disorganised planning.',
+          c2: 'Basic vocabulary used incorrectly at times. Mistakes impede reading flow.',
+          c3: 'Poorly structured; lacks coherent transitions or sequencing.',
+        },
+        {
+          name: 'Elementary',
+          code: '2 (30%–39%)',
+          c1: 'Very little relevant content. Planning is chaotic or missing entirely.',
+          c2: 'Extremely limited language usage. Heavy grammatical flaws persist.',
+          c3: 'Lacks format entirely; responses are fragmented.',
+        },
+        {
+          name: 'Not Achieved',
+          code: '1 (0%–29%)',
+          c1: 'Completely irrelevant response or no content offered.',
+          c2: 'Serious language barriers make interpretation impossible.',
+          c3: 'No structural organisation or presentation format observed.',
+        },
+      ];
+      function initRubric() {
+        var body = document.getElementById('rubricBody');
+        rubricLevels.forEach(function (lvl) {
+          var tr = document.createElement('tr');
+          if (lvl.top) tr.className = 'rubric-row-outstanding';
+          tr.innerHTML =
+            '<td class="level-cell"><div class="level-name">' +
+            lvl.name +
+            '</div><div class="level-code">Code ' +
+            lvl.code +
+            '</div></td>' +
+            '<td><textarea>' +
+            lvl.c1 +
+            '</textarea></td>' +
+            '<td><textarea>' +
+            lvl.c2 +
+            '</textarea></td>' +
+            '<td><textarea>' +
+            lvl.c3 +
+            '</textarea></td>';
+          body.appendChild(tr);
+        });
+      }
+
+      function clearAll() {
+        if (!confirm('Clear all entered text on this memo blueprint?')) return;
+        document.querySelectorAll('.card input, .card textarea').forEach(function (el) {
+          if (el.readOnly) return;
+          el.value = '';
+        });
+        document.getElementById('subjectTitle').textContent = '[Subject Name]';
+        recalcMx();
+      }
+
+      initMx();
+      addQuestion('sectionA', 'Q');
+      addQuestion('sectionA', 'Q');
+      addQuestion('sectionB', 'Q');
+      initRubric();
+    </script>
+  </body>
+</html>

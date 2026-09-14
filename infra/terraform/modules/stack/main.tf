@@ -262,6 +262,52 @@ module "object_store" {
   tags = var.tags
 }
 
+# --- Safeguarding escalation (OQ-014) --------------------------------------------
+# SNS topic that apps/worker publishes to when a safeguarding guardrail fires.
+# Subscriptions (SMS, email, PagerDuty HTTP endpoint, Lambda) are added in the AWS
+# console by each pilot school — routing is outside this code so schools can update
+# it without a redeployment. The topic ARN is passed to the worker as an env var so
+# the real SnsEscalationNotifier is wired at startup.
+
+module "sns_escalation" {
+  source = "../sns-escalation"
+
+  name = "${var.name}-safeguarding"
+  tags = var.tags
+}
+
+# --- Application encryption key (DB_ENCRYPTION_KEY) ------------------------------
+# Secrets Manager placeholder for the AES key used by apps/worker and apps/web to
+# encrypt learner identifiers in the Infinite Brain. The secret is empty after `apply`
+# — an operator must populate it with `aws secretsmanager put-secret-value` before any
+# pipeline that processes real learner data is started. See the encryption-key module's
+# own header for the exact command and the reasoning behind the 30-day recovery window.
+
+module "encryption_key" {
+  source = "../encryption-key"
+
+  name = "${var.name}-db-enc"
+  tags = var.tags
+}
+
+# --- SES transactional email (OQ-021) -------------------------------------------
+# Domain identity, DKIM CNAME records, and IAM send policy for apps/gateway's dunning
+# emails (billing OVERDUE / SUSPENDED notifications). Only provisioned when a real
+# domain is configured — DKIM and MAIL FROM DNS records require a Route53 zone, and
+# SES domain verification is meaningless without one. See the ses module's own header
+# for the SES sandbox caveat: the AWS support case to move out of sandbox must be
+# raised manually before sending to arbitrary school addresses.
+
+module "ses" {
+  count  = var.domain_name == null ? 0 : 1
+  source = "../ses"
+
+  name        = "${var.name}-ses"
+  domain_name = var.domain_name
+  dns_zone_id = var.dns_zone_id
+  tags        = var.tags
+}
+
 # --- Compute -----------------------------------------------------------------------
 
 resource "aws_ecs_cluster" "this" {
@@ -296,7 +342,12 @@ module "ecs_service_gateway" {
   attach_to_alb         = true
   alb_security_group_id = aws_security_group.alb.id
 
-  iam_policy_arns = [module.object_store.read_write_policy_arn]
+  iam_policy_arns = concat(
+    [module.object_store.read_write_policy_arn],
+    # SES send policy — only exists when a real domain is configured (module.ses is
+    # count=0 when domain_name is null). The gateway sends dunning emails (OQ-021).
+    var.domain_name == null ? [] : [module.ses[0].send_policy_arn],
+  )
 
   environment = merge(
     {
@@ -308,6 +359,9 @@ module "ecs_service_gateway" {
     # Ship LLM traces to Langfuse (packages/telemetry/src/tracing.ts's own header) —
     # plain, not secret: it's a URL, no credential in it.
     { OTEL_EXPORTER_OTLP_ENDPOINT = module.langfuse.otlp_endpoint },
+    # SES_FROM_ADDRESS is a plain env var (no credential) — apps/gateway reads it to
+    # build the From: header of dunning emails. Only set when SES is provisioned.
+    var.domain_name == null ? {} : { SES_FROM_ADDRESS = "no-reply@${var.domain_name}" },
   )
 
   secrets = {
@@ -340,7 +394,12 @@ module "ecs_service_worker" {
 
   attach_to_alb = false # a queue consumer, nothing for the ALB to route to
 
-  iam_policy_arns = [module.object_store.read_write_policy_arn]
+  iam_policy_arns = [
+    module.object_store.read_write_policy_arn,
+    # SNS publish policy — grants sns:Publish plus the KMS actions SNS needs to
+    # encrypt messages. The worker calls this when a safeguarding guardrail fires.
+    module.sns_escalation.publish_policy_arn,
+  ]
 
   environment = merge(
     {
@@ -351,6 +410,10 @@ module "ecs_service_worker" {
       GATEWAY_BASE_URL      = "http://${aws_lb.this.dns_name}"
       OBJECT_STORE_ENDPOINT = module.object_store.endpoint
       OBJECT_STORE_BUCKET   = module.object_store.bucket_name
+      # OQ-014: topic ARN is plain env (not secret) — it's a resource identifier,
+      # not a credential. apps/worker/src/index.ts wires the real SnsEscalationNotifier
+      # when this is set; defaultEscalationNotifier (throws loudly) is used when absent.
+      SAFEGUARDING_SNS_TOPIC_ARN = module.sns_escalation.topic_arn
     },
     { OTEL_EXPORTER_OTLP_ENDPOINT = module.langfuse.otlp_endpoint },
   )
@@ -359,6 +422,10 @@ module "ecs_service_worker" {
     DATABASE_URL               = "${module.database.app_role_secret_arns["worker_rw"]}:url::"
     REDIS_URL                  = "${module.cache.redis_url_secret_arn}:url::"
     OTEL_EXPORTER_OTLP_HEADERS = "${module.langfuse.otlp_header_secret_arn}:header::"
+    # DB_ENCRYPTION_KEY is a plain-text secret (not JSON): ECS reads the whole secret
+    # value into the env var. The execution role's secretsmanager:GetSecretValue grant
+    # is built automatically by the ecs-service module from this ARN.
+    DB_ENCRYPTION_KEY = module.encryption_key.secret_arn
   }
 
   tags = var.tags
@@ -392,6 +459,10 @@ module "ecs_service_web" {
     },
     var.keycloak_issuer_url == null ? {} : { AUTH_KEYCLOAK_ISSUER = var.keycloak_issuer_url },
   )
+
+  secrets = {
+    DB_ENCRYPTION_KEY = module.encryption_key.secret_arn
+  }
 
   tags = var.tags
 }
