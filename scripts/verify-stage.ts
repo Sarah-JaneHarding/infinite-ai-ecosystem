@@ -883,9 +883,7 @@ const STAGES: readonly Stage[] = [
   {
     id: '53',
     name: 'LE-01 / LE-02 Brain write mechanism',
-    commands: [
-      'pnpm --filter @infinite-ai/worker test',
-    ],
+    commands: ['pnpm --filter @infinite-ai/worker test'],
   },
   {
     id: '54',
