@@ -1,0 +1,952 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font:
+          14px -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: #faf9f5;
+        color: #141413;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden]:not([hidden='until-found' i]) {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <title>Lesson Plan Blueprint</title>
+    <style>
+      :root {
+        --navy: #0a1628;
+        --navy-soft: #132038;
+        --blue: #2563eb;
+        --blue-soft: #eff4ff;
+        --gold: #f59e0b;
+        --gold-soft: #fef3e2;
+        --green: #16a34a;
+        --green-soft: #ecfdf3;
+        --line: #d9e0ec;
+        --text: #1b2536;
+        --muted: #5b6b85;
+        --paper: #ffffff;
+        --canvas: #f3f5f9;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --line: #2a3855;
+          --text: #e7ecf7;
+          --muted: #9aa8c4;
+          --paper: #101b31;
+          --canvas: #0b1526;
+          --blue-soft: #152242;
+          --gold-soft: #2a2013;
+          --green-soft: #0f2a1c;
+        }
+      }
+      :root[data-theme='dark'] {
+        --line: #2a3855;
+        --text: #e7ecf7;
+        --muted: #9aa8c4;
+        --paper: #101b31;
+        --canvas: #0b1526;
+        --blue-soft: #152242;
+        --gold-soft: #2a2013;
+        --green-soft: #0f2a1c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--canvas);
+        color: var(--text);
+        font-family: 'Lora', Georgia, serif;
+        line-height: 1.5;
+      }
+      h1,
+      h2,
+      h3,
+      .brand-mark {
+        font-family: 'Montserrat', Arial, sans-serif;
+      }
+      .page {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 28px 20px 80px;
+      }
+
+      .masthead {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+        color: #fff;
+        border-radius: 16px;
+        padding: 28px 30px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 22px;
+      }
+      .masthead::after {
+        content: '∞';
+        position: absolute;
+        right: -10px;
+        bottom: -40px;
+        font-size: 180px;
+        color: rgba(255, 255, 255, 0.05);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        line-height: 1;
+        pointer-events: none;
+      }
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .masthead h1 {
+        font-size: 26px;
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .masthead .sub {
+        font-size: 13.5px;
+        color: #c9d3e8;
+        font-family: 'Lora', serif;
+      }
+      .brand-mark {
+        position: absolute;
+        top: 24px;
+        right: 28px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.65);
+        text-align: right;
+      }
+      .brand-mark span {
+        display: block;
+        color: var(--gold);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      button {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+        border-radius: 8px;
+        padding: 9px 16px;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        color: var(--text);
+        transition:
+          background 0.15s ease,
+          transform 0.1s ease;
+      }
+      button:hover {
+        background: var(--blue-soft);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      button.primary {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: #fff;
+      }
+      button.primary:hover {
+        background: #1d4fcb;
+      }
+      button.ghost {
+        color: var(--muted);
+      }
+
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 22px 24px 26px;
+        margin-bottom: 18px;
+        box-shadow: 0 1px 2px rgba(10, 22, 40, 0.04);
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--gold-soft);
+      }
+      .num {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--navy);
+        color: var(--gold);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .card-head h2 {
+        font-size: 16.5px;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+      }
+      :root[data-theme='dark'] .card-head h2 {
+        color: #eaf0ff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .card-head h2 {
+          color: #eaf0ff;
+        }
+      }
+      .card-head .tag {
+        margin-left: auto;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--blue);
+        background: var(--blue-soft);
+        padding: 4px 9px;
+        border-radius: 999px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .grid-4 {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+      @media (max-width: 700px) {
+        .grid-2,
+        .grid-3,
+        .grid-4 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      label {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+      .fill {
+        width: 100%;
+        min-height: 38px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--canvas);
+        padding: 9px 11px;
+        font-family: 'Lora', serif;
+        font-size: 14px;
+        color: var(--text);
+        outline: none;
+      }
+      .fill:focus {
+        border-color: var(--blue);
+        border-style: solid;
+        background: var(--paper);
+      }
+      .fill.tall {
+        min-height: 70px;
+      }
+      textarea.fill {
+        resize: vertical;
+      }
+      .note {
+        font-size: 12px;
+        color: var(--muted);
+        font-style: italic;
+        margin: 2px 0 10px;
+      }
+
+      /* duration bar */
+      .duration-wrap {
+        margin-bottom: 18px;
+      }
+      .duration-bar {
+        display: flex;
+        height: 16px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        margin-top: 6px;
+      }
+      .dseg {
+        height: 100%;
+      }
+      .dseg.intro {
+        background: var(--gold);
+      }
+      .dseg.dev {
+        background: var(--blue);
+      }
+      .dseg.classwork {
+        background: #16a34a;
+      }
+      .dseg.conclusion {
+        background: var(--navy);
+      }
+      :root[data-theme='dark'] .dseg.conclusion {
+        background: #5b7fe0;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .dseg.conclusion {
+          background: #5b7fe0;
+        }
+      }
+      .duration-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 8px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .duration-legend .lg {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .lg .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 3px;
+      }
+      .dot.intro {
+        background: var(--gold);
+      }
+      .dot.dev {
+        background: var(--blue);
+      }
+      .dot.classwork {
+        background: #16a34a;
+      }
+      .dot.conclusion {
+        background: var(--navy);
+      }
+      :root[data-theme='dark'] .dot.conclusion {
+        background: #5b7fe0;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .dot.conclusion {
+          background: #5b7fe0;
+        }
+      }
+      .total-badge {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: var(--blue-soft);
+        color: var(--blue);
+        margin-left: 8px;
+      }
+      .total-badge.warn {
+        background: var(--gold-soft);
+        color: #b45309;
+      }
+
+      /* stage cards */
+      .stage {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        margin-bottom: 14px;
+        overflow: hidden;
+        background: var(--canvas);
+      }
+      .stage-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-left: 5px solid var(--gold);
+      }
+      .stage.intro .stage-head {
+        border-left-color: var(--gold);
+      }
+      .stage.dev .stage-head {
+        border-left-color: var(--blue);
+      }
+      .stage.classwork .stage-head {
+        border-left-color: #16a34a;
+      }
+      .stage.conclusion .stage-head {
+        border-left-color: var(--navy);
+      }
+      :root[data-theme='dark'] .stage.conclusion .stage-head {
+        border-left-color: #5b7fe0;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .stage.conclusion .stage-head {
+          border-left-color: #5b7fe0;
+        }
+      }
+      .stage-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 13.5px;
+        color: var(--navy);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .stage-title {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .stage-title {
+        color: #eaf0ff;
+      }
+      .stage-sub {
+        font-size: 11.5px;
+        color: var(--muted);
+        font-family: 'Montserrat', sans-serif;
+      }
+      .stage-time {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .stage-time input {
+        width: 52px;
+        border: 1px dashed var(--line);
+        border-radius: 6px;
+        background: var(--paper);
+        text-align: center;
+        padding: 5px 4px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 12px;
+        color: var(--text);
+        outline: none;
+      }
+      .stage-time input:focus {
+        border-color: var(--blue);
+        border-style: solid;
+      }
+      .stage-body {
+        padding: 14px 16px 18px;
+        background: var(--paper);
+      }
+      .stage-body textarea {
+        width: 100%;
+        min-height: 80px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--canvas);
+        padding: 10px 12px;
+        font-family: 'Lora', serif;
+        font-size: 13.5px;
+        color: var(--text);
+        resize: vertical;
+        outline: none;
+      }
+      .stage-body textarea:focus {
+        border-color: var(--blue);
+        border-style: solid;
+        background: var(--paper);
+      }
+
+      /* reflection */
+      .reflect-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 700px) {
+        .reflect-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .reflect-card {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 14px 16px;
+        background: var(--canvas);
+      }
+      .reflect-card h3 {
+        font-size: 13px;
+        margin: 0 0 8px;
+        color: var(--navy);
+        font-family: 'Montserrat', sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .reflect-card h3 {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .reflect-card h3 {
+        color: #eaf0ff;
+      }
+      .reflect-card textarea {
+        width: 100%;
+        min-height: 70px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        padding: 8px 10px;
+        font-family: 'Lora', serif;
+        font-size: 12.5px;
+        color: var(--text);
+        resize: vertical;
+        outline: none;
+      }
+      .reflect-card textarea:focus {
+        border-color: var(--blue);
+        border-style: solid;
+      }
+
+      .assess-toggle {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .assess-opt {
+        flex: 1;
+        min-width: 150px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 1.5px solid var(--line);
+        border-radius: 9px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .assess-opt input {
+        accent-color: var(--blue);
+        width: 16px;
+        height: 16px;
+      }
+      .assess-opt:has(input:checked) {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 11.5px;
+        font-family: 'Montserrat', sans-serif;
+        margin-top: 26px;
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+        .toolbar {
+          display: none;
+        }
+        .masthead {
+          background: var(--navy) !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .stage {
+          break-inside: avoid;
+        }
+        button {
+          display: none;
+        }
+      }
+    </style>
+
+    <div class="page">
+      <div class="masthead">
+        <div class="brand-mark">INFINITE-AI<span>CURRICULUM ENGINE</span></div>
+        <div class="eyebrow">🇿🇦 DBE · CAPS-Aligned</div>
+        <h1>Lesson Plan Blueprint</h1>
+        <div class="sub">
+          A single lesson, timed and sequenced — from administrative detail through to
+          post-lesson reflection.
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        <button class="ghost" onclick="clearAll()">Clear all fields</button>
+        <span style="flex: 1"></span>
+        <button onclick="toggleTheme()" id="themeBtn">🌓 Toggle theme</button>
+      </div>
+
+      <!-- SECTION 1: Administrative Details -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">1</div>
+          <h2>Administrative Details</h2>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Subject</label
+            ><input class="fill" placeholder="e.g. Mathematics, English HL" />
+          </div>
+          <div class="field">
+            <label>Grade / Class</label
+            ><input class="fill" placeholder="e.g. Grade 3-B" />
+          </div>
+        </div>
+        <div class="grid grid-2" style="margin-top: 14px">
+          <div class="field"><label>Date</label><input class="fill" type="date" /></div>
+          <div class="field">
+            <label>Duration (minutes)</label
+            ><input
+              class="fill"
+              id="totalDuration"
+              type="number"
+              min="1"
+              placeholder="e.g. 60"
+              oninput="recalcDuration()"
+            />
+          </div>
+        </div>
+        <div class="field" style="margin-top: 14px">
+          <label>Topic / Theme</label>
+          <div class="note">Specific concept from the Annual Teaching Plan (ATP)</div>
+          <input class="fill" placeholder="e.g. Addition with regrouping" />
+        </div>
+      </div>
+
+      <!-- SECTION 2: Core Planning Elements -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">2</div>
+          <h2>Core Planning Elements</h2>
+        </div>
+        <div class="field">
+          <label>Aims / Objectives</label>
+          <div class="note">
+            What learners should know or be able to do by the end of the lesson
+          </div>
+          <textarea class="fill tall"></textarea>
+        </div>
+        <div class="field" style="margin-top: 14px">
+          <label>Prior Knowledge</label>
+          <div class="note">
+            What students already know that connects to this new lesson
+          </div>
+          <textarea class="fill tall"></textarea>
+        </div>
+        <div class="field" style="margin-top: 14px">
+          <label>Resources / LTSM</label>
+          <div class="note">
+            Materials needed, such as DBE workbooks, approved textbooks, or chalkboards
+          </div>
+          <textarea class="fill tall"></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Lesson Structure -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">3</div>
+          <h2>Lesson Structure</h2>
+          <span class="tag" id="durationTag">0 / 0 min</span>
+        </div>
+
+        <div class="duration-wrap">
+          <label style="margin-bottom: 0">Time Allocation Overview</label>
+          <div class="duration-bar">
+            <div class="dseg intro" id="segIntro" style="width: 25%"></div>
+            <div class="dseg dev" id="segDev" style="width: 41.6%"></div>
+            <div class="dseg classwork" id="segClasswork" style="width: 25%"></div>
+            <div class="dseg conclusion" id="segConclusion" style="width: 8.4%"></div>
+          </div>
+          <div class="duration-legend">
+            <div class="lg"><span class="dot intro"></span>Introduction</div>
+            <div class="lg"><span class="dot dev"></span>Development</div>
+            <div class="lg"><span class="dot classwork"></span>Classwork</div>
+            <div class="lg">
+              <span class="dot conclusion"></span>Conclusion &amp; Homework
+            </div>
+          </div>
+        </div>
+
+        <div class="stage intro">
+          <div class="stage-head">
+            <div>
+              <div class="stage-title">Introduction (Warm-Up)</div>
+              <div class="stage-sub">
+                Review homework or introduce the new concept and spark interest
+              </div>
+            </div>
+            <div class="stage-time">
+              <input
+                id="tIntro"
+                type="number"
+                min="0"
+                value="7"
+                oninput="recalcDuration()"
+              />
+              min
+            </div>
+          </div>
+          <div class="stage-body">
+            <textarea
+              placeholder="e.g. Recap previous lesson via 3 quick oral questions; introduce today's concept with a real-world hook."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="stage dev">
+          <div class="stage-head">
+            <div>
+              <div class="stage-title">Development (Core Lesson)</div>
+              <div class="stage-sub">
+                Direct teaching, teacher-guided activities, and learner practice
+              </div>
+            </div>
+            <div class="stage-time">
+              <input
+                id="tDev"
+                type="number"
+                min="0"
+                value="25"
+                oninput="recalcDuration()"
+              />
+              min
+            </div>
+          </div>
+          <div class="stage-body">
+            <textarea
+              placeholder="e.g. Model the method on the board; guided practice with 2 worked examples; learners attempt 1 example with support."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="stage classwork">
+          <div class="stage-head">
+            <div>
+              <div class="stage-title">Classwork</div>
+              <div class="stage-sub">Independent or group tasks to apply new skills</div>
+            </div>
+            <div class="stage-time">
+              <input
+                id="tClasswork"
+                type="number"
+                min="0"
+                value="15"
+                oninput="recalcDuration()"
+              />
+              min
+            </div>
+          </div>
+          <div class="stage-body">
+            <textarea
+              placeholder="e.g. Workbook page ___, questions 1–10, individually; teacher circulates to check understanding."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="stage conclusion">
+          <div class="stage-head">
+            <div>
+              <div class="stage-title">Conclusion &amp; Homework</div>
+              <div class="stage-sub">
+                Wrap up key takeaways and assign take-home tasks
+              </div>
+            </div>
+            <div class="stage-time">
+              <input
+                id="tConclusion"
+                type="number"
+                min="0"
+                value="5"
+                oninput="recalcDuration()"
+              />
+              min
+            </div>
+          </div>
+          <div class="stage-body">
+            <textarea
+              placeholder="e.g. Recap the key rule learnt today; assign homework — Workbook page ___, questions 1–5."
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: Reflection and Assessment -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">4</div>
+          <h2>Reflection and Assessment</h2>
+        </div>
+
+        <label>Assessment Type</label>
+        <div class="assess-toggle">
+          <label class="assess-opt"
+            ><input type="checkbox" /> Informal (class observation)</label
+          >
+          <label class="assess-opt"
+            ><input type="checkbox" /> Informal (marking workbooks)</label
+          >
+          <label class="assess-opt"><input type="checkbox" /> Formal task</label>
+        </div>
+        <div class="field" style="margin-top: 4px">
+          <label>Assessment Notes</label>
+          <textarea
+            class="fill"
+            style="min-height: 60px"
+            placeholder="Describe the specific assessment activity and what evidence it produces."
+          ></textarea>
+        </div>
+
+        <div class="reflect-grid" style="margin-top: 16px">
+          <div class="reflect-card">
+            <h3>What Worked</h3>
+            <textarea
+              placeholder="Observations on what went well in this lesson."
+            ></textarea>
+          </div>
+          <div class="reflect-card">
+            <h3>What Didn't / Challenges</h3>
+            <textarea
+              placeholder="Observations on what fell short or caused difficulty."
+            ></textarea>
+          </div>
+        </div>
+        <div class="field" style="margin-top: 14px">
+          <label>Adjustments for Next Time</label>
+          <textarea
+            class="fill tall"
+            placeholder="Changes to pacing, method, grouping, or resources for the next lesson or cycle."
+          ></textarea>
+        </div>
+      </div>
+
+      <footer>
+        Infinite-AI Curriculum Engine · DBE CAPS-Aligned Lesson Planning Suite
+      </footer>
+    </div>
+
+    <script>
+      function themeIsDark() {
+        var attr = document.documentElement.getAttribute('data-theme');
+        if (attr === 'dark') return true;
+        if (attr === 'light') return false;
+        return (
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        );
+      }
+      function toggleTheme() {
+        document.documentElement.setAttribute(
+          'data-theme',
+          themeIsDark() ? 'light' : 'dark',
+        );
+      }
+
+      function recalcDuration() {
+        var intro = parseFloat(document.getElementById('tIntro').value) || 0;
+        var dev = parseFloat(document.getElementById('tDev').value) || 0;
+        var classwork = parseFloat(document.getElementById('tClasswork').value) || 0;
+        var conclusion = parseFloat(document.getElementById('tConclusion').value) || 0;
+        var sum = intro + dev + classwork + conclusion;
+        var target = parseFloat(document.getElementById('totalDuration').value) || sum;
+
+        var tag = document.getElementById('durationTag');
+        tag.textContent =
+          sum + ' / ' + (document.getElementById('totalDuration').value || sum) + ' min';
+        tag.classList.toggle(
+          'warn',
+          document.getElementById('totalDuration').value && sum !== target,
+        );
+
+        if (sum > 0) {
+          document.getElementById('segIntro').style.width = (intro / sum) * 100 + '%';
+          document.getElementById('segDev').style.width = (dev / sum) * 100 + '%';
+          document.getElementById('segClasswork').style.width =
+            (classwork / sum) * 100 + '%';
+          document.getElementById('segConclusion').style.width =
+            (conclusion / sum) * 100 + '%';
+        }
+      }
+
+      function clearAll() {
+        if (!confirm('Clear all entered text on this lesson plan?')) return;
+        document.querySelectorAll('.card input, .card textarea').forEach(function (el) {
+          if (el.id === 'tIntro') {
+            el.value = 7;
+            return;
+          }
+          if (el.id === 'tDev') {
+            el.value = 25;
+            return;
+          }
+          if (el.id === 'tClasswork') {
+            el.value = 15;
+            return;
+          }
+          if (el.id === 'tConclusion') {
+            el.value = 5;
+            return;
+          }
+          el.value = '';
+        });
+        document.querySelectorAll('input[type=checkbox]').forEach(function (el) {
+          el.checked = false;
+        });
+        recalcDuration();
+      }
+
+      recalcDuration();
+    </script>
+  </body>
+</html>

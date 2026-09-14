@@ -1,0 +1,995 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font:
+          14px -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: #faf9f5;
+        color: #141413;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden]:not([hidden='until-found' i]) {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <title>Parent Progress Report</title>
+    <style>
+      :root {
+        --navy: #0a1628;
+        --navy-soft: #132038;
+        --blue: #2563eb;
+        --blue-soft: #eff4ff;
+        --gold: #f59e0b;
+        --gold-soft: #fef3e2;
+        --green: #16a34a;
+        --green-soft: #ecfdf3;
+        --line: #d9e0ec;
+        --text: #1b2536;
+        --muted: #5b6b85;
+        --paper: #ffffff;
+        --canvas: #f3f5f9;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --line: #2a3855;
+          --text: #e7ecf7;
+          --muted: #9aa8c4;
+          --paper: #101b31;
+          --canvas: #0b1526;
+          --blue-soft: #152242;
+          --gold-soft: #2a2013;
+          --green-soft: #0f2a1c;
+        }
+      }
+      :root[data-theme='dark'] {
+        --line: #2a3855;
+        --text: #e7ecf7;
+        --muted: #9aa8c4;
+        --paper: #101b31;
+        --canvas: #0b1526;
+        --blue-soft: #152242;
+        --gold-soft: #2a2013;
+        --green-soft: #0f2a1c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--canvas);
+        color: var(--text);
+        font-family: 'Lora', Georgia, serif;
+        line-height: 1.5;
+      }
+      h1,
+      h2,
+      h3,
+      .brand-mark {
+        font-family: 'Montserrat', Arial, sans-serif;
+      }
+      .page {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 28px 20px 80px;
+      }
+
+      .masthead {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+        color: #fff;
+        border-radius: 16px;
+        padding: 26px 30px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 22px;
+      }
+      .masthead::after {
+        content: '∞';
+        position: absolute;
+        right: -10px;
+        bottom: -40px;
+        font-size: 170px;
+        color: rgba(255, 255, 255, 0.05);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        line-height: 1;
+        pointer-events: none;
+      }
+      .school-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+      }
+      .school-emoji {
+        font-size: 34px;
+        line-height: 1;
+      }
+      .school-name {
+        font-size: 21px;
+        font-weight: 800;
+        border: none;
+        background: transparent;
+        color: #fff;
+        font-family: 'Montserrat', sans-serif;
+        outline: none;
+        width: 100%;
+        padding: 0;
+      }
+      .school-name::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .school-meta {
+        margin-top: 8px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+      }
+      @media (max-width: 700px) {
+        .school-meta {
+          grid-template-columns: 1fr;
+        }
+      }
+      .school-meta .mfield {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .school-meta label {
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--gold);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+      }
+      .school-meta input {
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        background: transparent;
+        color: #fff;
+        font-family: 'Lora', serif;
+        font-size: 12.5px;
+        padding: 3px 0;
+        outline: none;
+      }
+      .school-meta input::placeholder {
+        color: rgba(255, 255, 255, 0.45);
+      }
+      .brand-mark {
+        position: absolute;
+        top: 22px;
+        right: 26px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: right;
+      }
+      .brand-mark span {
+        display: block;
+        color: var(--gold);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      button {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+        border-radius: 8px;
+        padding: 9px 16px;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        color: var(--text);
+      }
+      button:hover {
+        background: var(--blue-soft);
+      }
+      button.primary {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: #fff;
+      }
+      button.primary:hover {
+        background: #1d4fcb;
+      }
+      button.ghost {
+        color: var(--muted);
+      }
+
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px 22px 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 2px rgba(10, 22, 40, 0.04);
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--gold-soft);
+      }
+      .icon {
+        font-size: 16px;
+      }
+      .card-head h2 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+      }
+      :root[data-theme='dark'] .card-head h2 {
+        color: #eaf0ff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .card-head h2 {
+          color: #eaf0ff;
+        }
+      }
+
+      .grid {
+        display: grid;
+        gap: 12px;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .grid-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      @media (max-width: 700px) {
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+      label {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+      .fill {
+        width: 100%;
+        min-height: 36px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--canvas);
+        padding: 8px 10px;
+        font-family: 'Lora', serif;
+        font-size: 13.5px;
+        color: var(--text);
+        outline: none;
+      }
+      .fill:focus {
+        border-color: var(--blue);
+        border-style: solid;
+        background: var(--paper);
+      }
+
+      /* attendance strip */
+      .att-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 700px) {
+        .att-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .att-tile {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+        background: var(--canvas);
+        text-align: center;
+      }
+      .att-tile label {
+        margin-bottom: 6px;
+      }
+      .att-tile input {
+        text-align: center;
+        font-weight: 700;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        width: 100%;
+        padding: 6px;
+        outline: none;
+      }
+      .att-tile input:focus {
+        border-color: var(--blue);
+        border-style: solid;
+      }
+
+      /* performance table */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      .perf-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 4px;
+        min-width: 600px;
+      }
+      .perf-table th {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: #fff;
+        background: var(--navy);
+        text-align: left;
+        padding: 9px 10px;
+      }
+      .perf-table th:first-child {
+        border-radius: 8px 0 0 0;
+      }
+      .perf-table th:last-child {
+        border-radius: 0 8px 0 0;
+      }
+      .perf-table td {
+        border: 1px solid var(--line);
+        padding: 6px 8px;
+        vertical-align: middle;
+        font-size: 12.5px;
+      }
+      .perf-table td.subj {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        color: var(--navy);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .perf-table td.subj {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .perf-table td.subj {
+        color: #eaf0ff;
+      }
+      .perf-table input,
+      .perf-table select {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-family: 'Lora', serif;
+        font-size: 12.5px;
+        color: var(--text);
+        outline: none;
+        text-align: center;
+        padding: 4px;
+      }
+      .perf-table td.subj input {
+        text-align: left;
+        font-weight: 600;
+        font-family: 'Montserrat', sans-serif;
+      }
+
+      /* achievement scale */
+      .scale-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      @media (max-width: 700px) {
+        .scale-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .scale-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--canvas);
+        font-size: 12px;
+      }
+      .scale-code {
+        flex: 0 0 auto;
+        width: 32px;
+        height: 32px;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        color: #fff;
+      }
+      .lvl-7 {
+        background: #166534;
+      }
+      .lvl-6 {
+        background: #16a34a;
+      }
+      .lvl-5 {
+        background: #2563eb;
+      }
+      .lvl-4 {
+        background: #f59e0b;
+      }
+      .lvl-3 {
+        background: #ea580c;
+      }
+      .lvl-2 {
+        background: #dc2626;
+      }
+      .lvl-1 {
+        background: #7f1d1d;
+      }
+      .scale-item strong {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12px;
+        color: var(--navy);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .scale-item strong {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .scale-item strong {
+        color: #eaf0ff;
+      }
+      .scale-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .fp-note {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: var(--gold-soft);
+        font-size: 12px;
+        color: var(--text);
+      }
+
+      /* behaviour */
+      .beh-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .beh-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 12px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--canvas);
+      }
+      .beh-row .lbl {
+        font-size: 13px;
+      }
+      .beh-opts {
+        display: flex;
+        gap: 6px;
+      }
+      .beh-opt {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 11.5px;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        border: 1.5px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--muted);
+      }
+      .beh-opt input {
+        display: none;
+      }
+      .beh-opt:has(input:checked) {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+      .beh-key {
+        font-size: 11.5px;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+
+      /* comments */
+      .comment-block {
+        margin-bottom: 16px;
+      }
+      .comment-block h3 {
+        font-size: 13px;
+        color: var(--navy);
+        margin: 0 0 8px;
+        font-family: 'Montserrat', sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) .comment-block h3 {
+          color: #eaf0ff;
+        }
+      }
+      :root[data-theme='dark'] .comment-block h3 {
+        color: #eaf0ff;
+      }
+      .comment-block textarea {
+        width: 100%;
+        min-height: 70px;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        background: var(--canvas);
+        padding: 10px 12px;
+        font-family: 'Lora', serif;
+        font-size: 13px;
+        color: var(--text);
+        resize: vertical;
+        outline: none;
+      }
+      .comment-block textarea:focus {
+        border-color: var(--blue);
+        border-style: solid;
+        background: var(--paper);
+      }
+
+      .sig-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 10px;
+      }
+      @media (max-width: 640px) {
+        .sig-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .sig-block {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .sig-line {
+        border-bottom: 1.5px solid var(--muted);
+        min-height: 26px;
+        flex: 1;
+        min-width: 140px;
+      }
+      .sig-date {
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .sig-date input {
+        border: none;
+        border-bottom: 1px solid var(--line);
+        background: transparent;
+        width: 36px;
+        text-align: center;
+        font-family: 'Lora', serif;
+        font-size: 12px;
+        color: var(--text);
+        outline: none;
+      }
+
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 11px;
+        font-family: 'Montserrat', sans-serif;
+        margin-top: 24px;
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+        .toolbar {
+          display: none;
+        }
+        .masthead {
+          background: var(--navy) !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        button {
+          display: none;
+        }
+      }
+    </style>
+
+    <div class="page">
+      <div class="masthead">
+        <div class="brand-mark">INFINITE-AI<span>CURRICULUM ENGINE</span></div>
+        <div class="school-row">
+          <div class="school-emoji">🏫</div>
+          <div style="flex: 1">
+            <input class="school-name" placeholder="[School Name Goes Here]" />
+            <div class="school-meta">
+              <div class="mfield">
+                <label>DBE Registration No.</label><input placeholder="00000000" />
+              </div>
+              <div class="mfield">
+                <label>Contact Details</label><input placeholder="Phone | Email" />
+              </div>
+              <div class="mfield">
+                <label>Postal Address</label><input placeholder="School Address" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        <button class="ghost" onclick="clearAll()">Clear all fields</button>
+        <span style="flex: 1"></span>
+        <button onclick="toggleTheme()" id="themeBtn">🌓 Toggle theme</button>
+      </div>
+
+      <!-- Learner & Term Info -->
+      <div class="card">
+        <div class="card-head">
+          <span class="icon">📋</span>
+          <h2>Learner &amp; Term Information</h2>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Surname</label><input class="fill" placeholder="Insert Surname" />
+          </div>
+          <div class="field">
+            <label>First Name(s)</label
+            ><input class="fill" placeholder="Insert First Name" />
+          </div>
+        </div>
+        <div class="grid grid-3" style="margin-top: 12px">
+          <div class="field">
+            <label>Grade &amp; Section</label
+            ><input class="fill" placeholder="e.g. Grade 4-A" />
+          </div>
+          <div class="field">
+            <label>SA-SAMS Learner ID</label
+            ><input class="fill" placeholder="Insert ID Number" />
+          </div>
+          <div class="field">
+            <label>Academic Year</label><input class="fill" value="2026" />
+          </div>
+        </div>
+        <div class="grid grid-2" style="margin-top: 12px">
+          <div class="field">
+            <label>Reporting Period</label>
+            <select class="fill">
+              <option value="">Select term…</option>
+              <option>Term 1</option>
+              <option>Term 2</option>
+              <option>Term 3</option>
+              <option>Term 4</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance -->
+      <div class="card">
+        <div class="card-head">
+          <span class="icon">📅</span>
+          <h2>Attendance Record</h2>
+        </div>
+        <div class="att-row">
+          <div class="att-tile">
+            <label>Days Possible</label><input placeholder="e.g. 52" />
+          </div>
+          <div class="att-tile"><label>Days Absent</label><input placeholder="0" /></div>
+          <div class="att-tile">
+            <label>Late Arrivals</label><input placeholder="0" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Academic Performance -->
+      <div class="card">
+        <div class="card-head">
+          <span class="icon">📊</span>
+          <h2>Academic Performance Dashboard</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="perf-table" id="perfTable">
+            <thead>
+              <tr>
+                <th>Subject / Learning Area</th>
+                <th style="width: 100px">Term Mark (%)</th>
+                <th style="width: 130px">Achievement Level (1–7)</th>
+                <th style="width: 110px">Teacher Initial</th>
+              </tr>
+            </thead>
+            <tbody id="perfBody"></tbody>
+          </table>
+        </div>
+        <div class="row-controls" style="margin-top: 10px; display: flex; gap: 8px">
+          <button onclick="addPerfRow()">+ Add subject row</button>
+          <button class="ghost" onclick="removePerfRow()">− Remove last row</button>
+        </div>
+      </div>
+
+      <!-- Achievement scale -->
+      <div class="card">
+        <div class="card-head">
+          <span class="icon">🔑</span>
+          <h2>Official DBE Achievement Scale (Grades 1–12)</h2>
+        </div>
+        <div class="scale-grid">
+          <div class="scale-item">
+            <div class="scale-code lvl-7">7</div>
+            <div><strong>80%–100%</strong><span>Outstanding Achievement</span></div>
+          </div>
+          <div class="scale-item">
+            <div class="scale-code lvl-6">6</div>
+            <div><strong>70%–79%</strong><span>Meritorious Achievement</span></div>
+          </div>
+          <div class="scale-item">
+            <div class="scale-code lvl-5">5</div>
+            <div><strong>60%–69%</strong><span>Substantial Achievement</span></div>
+          </div>
+          <div class="scale-item">
+            <div class="scale-code lvl-4">4</div>
+            <div><strong>50%–59%</strong><span>Adequate Achievement</span></div>
+          </div>
+          <div class="scale-item">
+            <div class="scale-code lvl-3">3</div>
+            <div><strong>40%–49%</strong><span>Moderate Achievement</span></div>
+          </div>
+          <div class="scale-item">
+            <div class="scale-code lvl-2">2</div>
+            <div><strong>30%–39%</strong><span>Elementary Achievement</span></div>
+          </div>
+          <div class="scale-item">
+            <div class="scale-code lvl-1">1</div>
+            <div><strong>0%–29%</strong><span>Not Achieved</span></div>
+          </div>
+        </div>
+        <div class="fp-note">
+          Note: For Foundation Phase / Grade R, schools often use a 4-point scale — 4 =
+          Exceeds Expectations, 3 = Meets Expectations, 2 = Partially Meets, 1 = Not Yet
+          Met.
+        </div>
+      </div>
+
+      <!-- Behaviour -->
+      <div class="card">
+        <div class="card-head">
+          <span class="icon">🤝</span>
+          <h2>Behavioural &amp; Personal Development</h2>
+        </div>
+        <div class="beh-key">
+          Rating Key: Excellent (E) · Satisfactory (S) · Needs Improvement (N)
+        </div>
+        <div class="beh-list" id="behList"></div>
+      </div>
+
+      <!-- Comments & Sign-off -->
+      <div class="card">
+        <div class="card-head">
+          <span class="icon">✍️</span>
+          <h2>Official Comments &amp; Sign-Off</h2>
+        </div>
+
+        <div class="comment-block">
+          <h3>Class Teacher's Comments</h3>
+          <textarea
+            placeholder="Insert personalised comment detailing academic strengths, areas needing home support, and behavioural observations."
+          ></textarea>
+          <div class="sig-grid">
+            <div class="sig-block">
+              <label style="margin-bottom: 0; white-space: nowrap"
+                >Teacher Signature:</label
+              >
+              <div class="sig-line"></div>
+            </div>
+            <div class="sig-block">
+              <label style="margin-bottom: 0; white-space: nowrap">Date:</label
+              ><span class="sig-date"
+                >2026/<input maxlength="2" placeholder="__" />/<input
+                  maxlength="2"
+                  placeholder="__"
+              /></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="comment-block">
+          <h3>School Principal's Comments</h3>
+          <textarea
+            placeholder="Insert administrative sign-off or overarching school progress remark."
+          ></textarea>
+          <div class="sig-grid">
+            <div class="sig-block">
+              <label style="margin-bottom: 0; white-space: nowrap"
+                >Principal Signature:</label
+              >
+              <div class="sig-line"></div>
+            </div>
+            <div class="sig-block">
+              <label style="margin-bottom: 0; white-space: nowrap">Date:</label
+              ><span class="sig-date"
+                >2026/<input maxlength="2" placeholder="__" />/<input
+                  maxlength="2"
+                  placeholder="__"
+              /></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="comment-block" style="margin-bottom: 0">
+          <h3>Parent / Guardian Acknowledgement</h3>
+          <div class="sig-grid" style="margin-top: 0">
+            <div class="sig-block">
+              <label style="margin-bottom: 0; white-space: nowrap"
+                >Parent Signature:</label
+              >
+              <div class="sig-line"></div>
+            </div>
+            <div class="sig-block">
+              <label style="margin-bottom: 0; white-space: nowrap">Date:</label
+              ><span class="sig-date"
+                >2026/<input maxlength="2" placeholder="__" />/<input
+                  maxlength="2"
+                  placeholder="__"
+              /></span>
+            </div>
+          </div>
+          <textarea
+            placeholder="Space for parents to reply if required."
+            style="margin-top: 10px"
+          ></textarea>
+        </div>
+      </div>
+
+      <footer>Infinite-AI Curriculum Engine · Official Term Progress Report</footer>
+    </div>
+
+    <script>
+      function themeIsDark() {
+        var attr = document.documentElement.getAttribute('data-theme');
+        if (attr === 'dark') return true;
+        if (attr === 'light') return false;
+        return (
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        );
+      }
+      function toggleTheme() {
+        document.documentElement.setAttribute(
+          'data-theme',
+          themeIsDark() ? 'light' : 'dark',
+        );
+      }
+
+      var defaultSubjects = [
+        'Home Language: [Language Name]',
+        'First Additional Language: [Language Name]',
+        'Mathematics',
+        'Natural Sciences & Technology (Gr 4-6) / NS & MS (Gr 7-9)',
+        'Social Sciences (History & Geography)',
+        'Life Skills (Gr R-6) / Life Orientation (Gr 7-12)',
+        'Economic Management Sciences (EMS) (Gr 7-9)',
+        'Creative Arts (Gr 7-9)',
+      ];
+
+      function makePerfRow(subjectText) {
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td class="subj"><input value="' +
+          (subjectText || '') +
+          '" placeholder="Subject / Learning Area"></td>' +
+          '<td><input placeholder="0%"></td>' +
+          '<td><input placeholder="1–7"></td>' +
+          '<td><input placeholder="Initial"></td>';
+        return tr;
+      }
+      function addPerfRow() {
+        document.getElementById('perfBody').appendChild(makePerfRow(''));
+      }
+      function removePerfRow() {
+        var body = document.getElementById('perfBody');
+        if (body.children.length > 1) {
+          body.removeChild(body.lastElementChild);
+        }
+      }
+      function initPerf() {
+        var body = document.getElementById('perfBody');
+        defaultSubjects.forEach(function (s) {
+          body.appendChild(makePerfRow(s));
+        });
+      }
+
+      var behaviours = [
+        'Classroom Behaviour & Discipline',
+        'Effort and Diligence',
+        'Social Skills & Peer Relations',
+        'Neatness of Work & Uniform',
+        'Participation in Extra-Murals',
+      ];
+      function initBehaviour() {
+        var list = document.getElementById('behList');
+        behaviours.forEach(function (name, i) {
+          var row = document.createElement('div');
+          row.className = 'beh-row';
+          row.innerHTML =
+            '<div class="lbl">' +
+            name +
+            '</div>' +
+            '<div class="beh-opts">' +
+            '<label class="beh-opt"><input type="radio" name="beh' +
+            i +
+            '">E</label>' +
+            '<label class="beh-opt"><input type="radio" name="beh' +
+            i +
+            '">S</label>' +
+            '<label class="beh-opt"><input type="radio" name="beh' +
+            i +
+            '">N</label>' +
+            '</div>';
+          list.appendChild(row);
+        });
+      }
+
+      function clearAll() {
+        if (!confirm('Clear all entered text on this report?')) return;
+        document
+          .querySelectorAll('.card input, .card textarea, .card select, .masthead input')
+          .forEach(function (el) {
+            if (el.readOnly) return;
+            if (el.type === 'radio' || el.type === 'checkbox') {
+              el.checked = false;
+              return;
+            }
+            if (el.tagName === 'SELECT') {
+              el.selectedIndex = 0;
+              return;
+            }
+            el.value = '';
+          });
+      }
+
+      initPerf();
+      initBehaviour();
+    </script>
+  </body>
+</html>
