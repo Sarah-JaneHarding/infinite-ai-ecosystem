@@ -85,6 +85,9 @@ export const EnvSchema = z.object({
 
   // Model gateway — Stage 04. Application code talks to the gateway, never a provider.
   GATEWAY_BASE_URL: z.string().url().default('http://localhost:8080'),
+  // Comma-separated Anthropic API keys; read only by apps/gateway. Declared here so
+  // .env.example and EnvSchema stay in sync (the config package's own test enforces it).
+  ANTHROPIC_API_KEYS: z.string().optional(),
 
   // apps/worker has no other HTTP surface — a queue consumer, not a request handler —
   // so this exists solely for a liveness/readiness probe. Not a secret, and every
