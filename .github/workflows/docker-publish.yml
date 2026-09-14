@@ -23,6 +23,16 @@ on:
         description: 'Image tag (defaults to short SHA if omitted)'
         required: false
         default: ''
+      service:
+        description: 'Which image(s) to build and push'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - gateway
+          - worker
+          - web
   push:
     tags:
       - 'v*'
@@ -82,7 +92,14 @@ jobs:
       # repo copies the full monorepo tree because pnpm's workspace:* protocol requires
       # the full workspace to resolve @infinite-ai/* packages. See each Dockerfile's own
       # header for why a pruned pnpm-deploy approach is the known follow-up, not done yet.
+      #
+      # `service` input (workflow_dispatch only) selects which images to build.
+      # Semver tag pushes always build all three regardless of the input.
       - name: Build and push gateway
+        if: >-
+          github.event_name == 'push' ||
+          github.event.inputs.service == 'all' ||
+          github.event.inputs.service == 'gateway'
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -94,6 +111,10 @@ jobs:
           cache-to: type=gha,mode=max,scope=gateway
 
       - name: Build and push worker
+        if: >-
+          github.event_name == 'push' ||
+          github.event.inputs.service == 'all' ||
+          github.event.inputs.service == 'worker'
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -105,6 +126,10 @@ jobs:
           cache-to: type=gha,mode=max,scope=worker
 
       - name: Build and push web
+        if: >-
+          github.event_name == 'push' ||
+          github.event.inputs.service == 'all' ||
+          github.event.inputs.service == 'web'
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -117,10 +142,17 @@ jobs:
 
       - name: Summary
         run: |
+          svc="${{ github.event.inputs.service || 'all' }}"
           echo "### Docker Hub publish complete" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Image | Tag |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|-------|-----|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-gateway\` | \`${{ steps.tag.outputs.value }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-worker\` | \`${{ steps.tag.outputs.value }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-web\` | \`${{ steps.tag.outputs.value }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Image | Tag | Built |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-----|-------|" >> "$GITHUB_STEP_SUMMARY"
+          [[ "$svc" == "all" || "$svc" == "gateway" || "${{ github.event_name }}" == "push" ]] && \
+            echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-gateway\` | \`${{ steps.tag.outputs.value }}\` | ✓ |" >> "$GITHUB_STEP_SUMMARY" || \
+            echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-gateway\` | — | skipped |" >> "$GITHUB_STEP_SUMMARY"
+          [[ "$svc" == "all" || "$svc" == "worker" || "${{ github.event_name }}" == "push" ]] && \
+            echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-worker\` | \`${{ steps.tag.outputs.value }}\` | ✓ |" >> "$GITHUB_STEP_SUMMARY" || \
+            echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-worker\` | — | skipped |" >> "$GITHUB_STEP_SUMMARY"
+          [[ "$svc" == "all" || "$svc" == "web" || "${{ github.event_name }}" == "push" ]] && \
+            echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-web\` | \`${{ steps.tag.outputs.value }}\` | ✓ |" >> "$GITHUB_STEP_SUMMARY" || \
+            echo "| \`${{ secrets.DOCKERHUB_USERNAME }}/infinite-ai-web\` | — | skipped |" >> "$GITHUB_STEP_SUMMARY"
