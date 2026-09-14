@@ -1772,8 +1772,10 @@ export function EnvDocs() {
                                   impact={item.usage}
                                   scope={item.scope}
                                   requiredForWeb={item.requiredForWeb}
-                                  isSecret={item.isSecret}
-                                  defaultValue={item.defaultValue}
+                                  isSecret={item.isSecret ?? false}
+                                  {...(item.defaultValue !== undefined
+                                    ? { defaultValue: item.defaultValue }
+                                    : {})}
                                   isOpen={activeTooltip === item.name}
                                   onOpen={() => setActiveTooltip(item.name)}
                                   onClose={() =>
