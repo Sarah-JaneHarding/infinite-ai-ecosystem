@@ -3,7 +3,7 @@ export {
   getTier,
   type SubscriptionTier,
   type TierName,
-} from './tiers';
+} from './tiers.js';
 
 export {
   aggregateMeteringEvents,
@@ -11,7 +11,7 @@ export {
   type MeteringEvent,
   type PeriodUsage,
   type OverageBreakdown,
-} from './metering';
+} from './metering.js';
 
 export {
   reconcilePeriod,
@@ -19,9 +19,9 @@ export {
   type TelemetryRecord,
   type ReconciliationReport,
   type ReconciliationStatus,
-} from './reconciliation';
+} from './reconciliation.js';
 
-export { buildInvoice, VAT_RATE, type Invoice, type InvoiceLineItem } from './invoicing';
+export { buildInvoice, VAT_RATE, type Invoice, type InvoiceLineItem } from './invoicing.js';
 
 export {
   applyDunningTrigger,
@@ -33,4 +33,4 @@ export {
   type DunningState,
   type DunningStatus,
   type DunningTrigger,
-} from './dunning';
+} from './dunning.js';

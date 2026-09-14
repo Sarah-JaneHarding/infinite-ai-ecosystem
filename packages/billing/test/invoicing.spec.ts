@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { buildInvoice, VAT_RATE } from '../src/invoicing';
+import { buildInvoice, VAT_RATE } from '../src/invoicing.js';
 import {
   aggregateMeteringEvents,
   computeOverage,
   type PeriodUsage,
-} from '../src/metering';
-import { getTier } from '../src/tiers';
+} from '../src/metering.js';
+import { getTier } from '../src/tiers.js';
 
 const TENANT = 'tenant-abc';
 const START = new Date('2026-08-01T00:00:00Z');

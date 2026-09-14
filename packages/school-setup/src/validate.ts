@@ -1,5 +1,5 @@
-import { SchoolConfig } from './types';
-import type { LanguageSettings, TermWeeks } from './types';
+import { SchoolConfig } from './types.js';
+import type { LanguageSettings, TermWeeks, SaLanguage } from './types.js';
 
 /** Returns periods per week (each period = 30 min; 2 periods per hour). */
 export function periodsFromHours(hoursPerWeek: number): number {
@@ -25,7 +25,7 @@ export function validateLanguageConflicts(settings: LanguageSettings): string | 
   if (sal.includes(settings.lolt)) {
     return `${settings.lolt} cannot be both LOLT and SAL`;
   }
-  const overlap = fal.filter((l) => sal.includes(l));
+  const overlap = fal.filter((l: SaLanguage) => sal.includes(l));
   if (overlap.length > 0) {
     return `${overlap.join(', ')} cannot appear in both FAL and SAL`;
   }
