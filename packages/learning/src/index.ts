@@ -74,4 +74,10 @@ export {
   type PublishToCommonsInput,
 } from './commons-registry.js';
 
+export {
+  runDecayCheck,
+  type DecayCheckDecision,
+  type DecayCheckInput,
+} from './decay-revalidation.js';
+
 export const PACKAGE_NAME = '@infinite-ai/learning' as const;

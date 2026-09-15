@@ -8621,3 +8621,61 @@ two needs_input variants, detail string content, and all four registry methods.
 | Registry: findByPublishedId returns correct entry or null                              | PASS   |
 | TypeScript strict mode — no errors                                                     | PASS   |
 | Prettier format — no diffs                                                             | PASS   |
+
+---
+
+## Stage 61 — LE-09 Decay & Revalidation outer function · 2026-09-15
+
+Started: 2026-09-15 Completed: 2026-09-15
+Exit gate: PASS
+Tests: 135 passing, 0 skipped.
+Deviations from manual: None.
+Open questions raised: None.
+
+### What was built
+
+Stage 13 step 8 — LE-09 outer decay-check function.
+
+The lower-level `assessPatternDecay` (pure TTL/CAPS-version/revalidation rules) already
+existed in `decay-agent.ts`. Stage 61 added the outer LE-09 function in
+`packages/learning/src/decay-revalidation.ts`:
+
+- **`DecayCheckInput`**: tenantId, pattern? (optional for needs_input detection),
+  lastValidatedAt, ttlDays, currentCapsVersion (nullable), patternCapsVersion (nullable),
+  revalidationResult? (passRate + requiredPassRate), injected today (YYYY-MM-DD) and now
+  (ISO-8601 datetime for processedAt / invalidatedAt).
+- **`DecayCheckDecision`** — four-way discriminated union extending every variant with
+  tenantId, processedAt, and patternId:
+  - `valid` — daysUntilExpiry (integer ≥ 0).
+  - `invalidated` — reason (DecayReason), detail, plus invalidatedAt = injected now.
+  - `revalidation_required` — reason (DecayReason), detail.
+  - `needs_input` — detail, missingFields (pattern absent, lastValidatedAt empty, today empty).
+- `revalidationResult` conditional-spread (`...(x !== undefined ? {revalidationResult: x} : {})`)
+  satisfies `exactOptionalPropertyTypes`.
+- Exported `runDecayCheck`, `DecayCheckDecision`, `DecayCheckInput` from index.ts.
+
+12 new unit tests cover: valid happy path, daysUntilExpiry arithmetic, valid on passing
+revalidation, invalidated by caps_version_change, invalidatedAt = injected now, invalidated
+by revalidation_failed, revalidation_required by ttl_exceeded, detail string content, three
+needs_input variants (pattern absent, lastValidatedAt empty, today empty) and processedAt
+on needs_input.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 135 tests, all pass (12 new).
+`pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. Prettier — no diffs.
+
+| Exit gate item                                                                           | Result |
+| ---------------------------------------------------------------------------------------- | ------ |
+| `valid` returned when TTL not exceeded; tenantId, processedAt, patternId all present     | PASS   |
+| `daysUntilExpiry` arithmetic correct (ttlDays minus elapsed days)                        | PASS   |
+| `valid` returned with daysUntilExpiry = ttlDays when revalidation result passes          | PASS   |
+| `invalidated` returned for caps_version_change; patternId and tenantId carried through   | PASS   |
+| `invalidatedAt` equals the injected now timestamp                                        | PASS   |
+| `invalidated` returned for revalidation_failed; detail names the pass rates              | PASS   |
+| `revalidation_required` returned when TTL exceeded; reason = ttl_exceeded                | PASS   |
+| `revalidation_required` detail names elapsed days and TTL                                | PASS   |
+| `needs_input` returned when pattern is absent                                            | PASS   |
+| `needs_input` returned when lastValidatedAt is empty                                     | PASS   |
+| `needs_input` returned when today is empty                                               | PASS   |
+| `needs_input` carries processedAt from injected now                                      | PASS   |
+| TypeScript strict mode — no errors                                                       | PASS   |
+| Prettier format — no diffs                                                               | PASS   |
