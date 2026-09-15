@@ -55,4 +55,10 @@ export {
   type PromptEvolverInput,
 } from './prompt-evolver.js';
 
+export {
+  gateChallenger,
+  type EvalGatekeeperDecision,
+  type EvalGatekeeperInput,
+} from './eval-gatekeeper.js';
+
 export const PACKAGE_NAME = '@infinite-ai/learning' as const;

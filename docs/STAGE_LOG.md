@@ -8449,3 +8449,62 @@ LE-06 (prompt-evolver.spec.ts, 11 cases):
 | Patterns listed by frequency descending in guidance block                              | PASS   |
 | `isLive: false` on every PromptChallenger                                              | PASS   |
 | `challengerVersion` derived as `${champion.version}+le06`                              | PASS   |
+
+---
+
+## Stage 58 — LE-07 Eval Gatekeeper · 2026-09-15
+
+Started: 2026-09-15 Completed: 2026-09-15
+Exit gate: PASS
+Tests: 99 passing, 0 skipped.
+Deviations from manual: None.
+Open questions raised: None.
+
+### What was built
+
+Stage 13 step 5 — LE-07 Eval Gatekeeper outer function.
+
+The lower-level `applyPromotionGate` (pure verdict logic with no input validation or
+summary generation) already existed from the original Stage 13 session (2026-08-11).
+Stage 58 built the outer `gateChallenger` function in
+`packages/learning/src/eval-gatekeeper.ts` that wraps it with:
+
+- **`EvalGatekeeperInput`** — flexible internal input type with optional `championEvalResult`
+  and `challengerEvalResult` fields, injected `now` timestamp, `biasCheckPassed?` forwarded
+  via conditional spread to respect `exactOptionalPropertyTypes`.
+- **`EvalGatekeeperDecision`** — discriminated union mirroring the `LE07Result` contract shape:
+  - `ok` — includes `tenantId`, `processedAt`, `verdict`, `scoreDelta`, `mustNotRegressDelta`,
+    `evalDeltaSummary` (human-readable one-liner with champion/challenger scores and deltas),
+    `evaluatedAt`.
+  - `needs_input` — returned when either eval result is absent; lists `missingFields` and a
+    `detail` message naming them.
+- Verdict delegation to `applyPromotionGate` with priority order unchanged:
+  1. `biasCheckPassed === false` → `reject_bias_divergence`
+  2. `mustNotRegressPassRate` drops → `reject_regression`
+  3. `overallPassRate` ≤ champion → `reject_no_improvement`
+  4. Otherwise → `promote`
+- **`buildEvalDeltaSummary`** formats the verdict and both score pairs with four decimal places
+  and signed deltas, giving the ratification surface a human-readable audit trail.
+- Exported from `packages/learning/src/index.ts` as `gateChallenger`, `EvalGatekeeperDecision`,
+  `EvalGatekeeperInput`.
+
+12 new unit tests cover all four verdict paths, both `needs_input` variants (one field absent,
+both fields absent), `evalDeltaSummary` content, and deterministic timestamp injection.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 99 tests, all pass (12 new).
+`pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `pnpm lint` — clean.
+
+| Exit gate item                                                                   | Result |
+| -------------------------------------------------------------------------------- | ------ |
+| `needs_input` returned when `championEvalResult` absent                          | PASS   |
+| `needs_input` returned when `challengerEvalResult` absent                        | PASS   |
+| Both fields listed in `missingFields` when both absent                           | PASS   |
+| `reject_bias_divergence` returned when `biasCheckPassed` is false                | PASS   |
+| Absent `biasCheckPassed` treated as "not run" (no rejection)                     | PASS   |
+| `reject_regression` returned when `mustNotRegressPassRate` drops                 | PASS   |
+| `reject_no_improvement` returned when `overallPassRate` equal or decreases       | PASS   |
+| `promote` returned when challenger strictly beats champion on all dimensions     | PASS   |
+| `evalDeltaSummary` encodes verdict, overallPassRate, and mustNotRegress sections | PASS   |
+| `evaluatedAt` and `processedAt` both reflect injected `now` timestamp            | PASS   |
+| TypeScript strict mode (`exactOptionalPropertyTypes`) — no errors                | PASS   |
+| Prettier format — no diffs                                                       | PASS   |
