@@ -8679,3 +8679,66 @@ on needs_input.
 | `needs_input` carries processedAt from injected now                                    | PASS   |
 | TypeScript strict mode — no errors                                                     | PASS   |
 | Prettier format — no diffs                                                             | PASS   |
+
+---
+
+## Stage 62 — LE Maturity Report (Stage 13 step 9 + step 10 tests) · 2026-09-15
+
+Started: 2026-09-15 Completed: 2026-09-15
+Exit gate: PASS (unit tier)
+Tests: 135 passing, 0 skipped.
+Deviations from manual: pnpm verify:stage 13 fails on 4 Docker-dependent
+integration suites (db/coverage:merged, brain/test:temporal,
+brain/test:integration, orchestrator/test:integration). These require a
+Testcontainers daemon; per CLAUDE.md "the integration tier needs a Docker daemon,
+which the authoring sandbox does not have. Those suites are written blind and
+proven in CI." All unit gates PASS.
+Open questions raised: None.
+
+### What was built
+
+Stage 13 step 9 — maturity report. This was built as part of the original Stage 13
+work (2026-08-11). Verified complete and passing in Stage 62 gate walk.
+
+`packages/learning/src/maturity-report.ts` — `assignMaturityLevel(metrics)`:
+
+- `cold_start` — no validated patterns yet (validatedPatternCount === 0).
+- `locally_calibrated` — ≥1 validated pattern, no outcome evidence.
+- `evidence_led` — meanOutcomeDelta is not null.
+- `institutional` — ≥3 promoted exemplars AND outcome evidence AND
+  firstPassAcceptanceRate ≥ 0.7.
+
+Stage 13 step 10 — pipeline integration assertions. Verified covered by existing
+test files:
+
+- Promotion fails eval → rejected: `promotion-gate.spec.ts` (reject_regression,
+  reject_no_improvement, reject_bias_divergence).
+- Rollback restores champion: `promotion-log.spec.ts` (rollback command in record).
+- Below-threshold pattern blocked: `commons-kanonymity.spec.ts` (below threshold
+  suppression) + `commons-registry.spec.ts`.
+- CAPS version change invalidates: `decay-agent.spec.ts` (caps_version_change →
+  invalidated) + `decay-revalidation.spec.ts`.
+- Bias-divergent pattern blocked: `promotion-gate.spec.ts` (reject_bias_divergence).
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 135 tests, all pass.
+`pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean.
+`pnpm lint` — clean. `pnpm format:check` — clean.
+
+| Exit gate item                                                                | Result                          |
+| ----------------------------------------------------------------------------- | ------------------------------- |
+| cold_start returned when no patterns validated                                | PASS                            |
+| locally_calibrated returned when patterns exist but no outcome evidence       | PASS                            |
+| evidence_led returned when outcome evidence present but not yet institutional | PASS                            |
+| institutional requires ≥3 exemplars AND outcome evidence AND acceptance ≥ 0.7 | PASS                            |
+| cold_start takes precedence over all other conditions                         | PASS                            |
+| Institutional boundary: < 3 exemplars → evidence_led                          | PASS                            |
+| Institutional boundary: firstPassAcceptanceRate < 0.7 → evidence_led          | PASS                            |
+| Institutional boundary: meanOutcomeDelta null → locally_calibrated            | PASS                            |
+| promotion-gate rejects eval failures (regression / no-improvement / bias)     | PASS                            |
+| below-threshold pattern blocked from commons                                  | PASS                            |
+| CAPS version change invalidates pattern                                       | PASS                            |
+| bias-divergent pattern blocked by gate                                        | PASS                            |
+| pnpm verify:stage 13 unit checks                                              | PASS                            |
+| pnpm verify:stage 13 Docker-dependent integration suites                      | SKIP (no Docker in sandbox, CI) |
+| TypeScript strict mode — no errors                                            | PASS                            |
+| Prettier format — no diffs                                                    | PASS                            |
