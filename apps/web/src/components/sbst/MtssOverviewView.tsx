@@ -5,9 +5,27 @@
 // Tier 3 = intensive intervention (~5 %).
 
 const TIER_COLOUR = {
-  1: { bg: '#dcfce7', text: '#166534', border: '#bbf7d0', label: 'Tier 1 — On track' },
-  2: { bg: '#fef9c3', text: '#854d0e', border: '#fde68a', label: 'Tier 2 — Strategic' },
-  3: { bg: '#fee2e2', text: '#991b1b', border: '#fecaca', label: 'Tier 3 — Intensive' },
+  1: {
+    bg: 'var(--iai-success-bg)',
+    text: 'var(--iai-success-text)',
+    border: 'var(--iai-success-border)',
+    dot: 'var(--iai-success-dot)',
+    label: 'Tier 1 — On track',
+  },
+  2: {
+    bg: 'var(--iai-warning-bg)',
+    text: 'var(--iai-warning-text)',
+    border: 'var(--iai-warning-border)',
+    dot: 'var(--iai-warning-dot)',
+    label: 'Tier 2 — Strategic',
+  },
+  3: {
+    bg: 'var(--iai-error-bg)',
+    text: 'var(--iai-error-text)',
+    border: 'var(--iai-error-border)',
+    dot: 'var(--iai-error-dot)',
+    label: 'Tier 3 — Intensive',
+  },
 } as const;
 
 interface LearnerRow {
@@ -131,9 +149,17 @@ export function MtssOverviewView() {
       {/* KPI tiles */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KpiTile value={total} label="Learners screened" colour="var(--iai-bg-subtle)" />
-        <KpiTile value={atRisk} label="At risk (any flag)" colour="#fef9c3" />
-        <KpiTile value={tier2} label="Tier 2 — strategic" colour="#fef3c7" />
-        <KpiTile value={tier3} label="Tier 3 — intensive" colour="#fee2e2" />
+        <KpiTile
+          value={atRisk}
+          label="At risk (any flag)"
+          colour="var(--iai-warning-bg)"
+        />
+        <KpiTile
+          value={tier2}
+          label="Tier 2 — strategic"
+          colour="var(--iai-warning-bg)"
+        />
+        <KpiTile value={tier3} label="Tier 3 — intensive" colour="var(--iai-error-bg)" />
       </div>
 
       {/* Tier funnel bar */}
@@ -147,21 +173,21 @@ export function MtssOverviewView() {
         <div className="flex rounded-full overflow-hidden h-7 text-xs font-bold text-white select-none">
           <div
             className="flex items-center justify-center"
-            style={{ width: `${tier1Pct}%`, background: '#2db24c' }}
+            style={{ width: `${tier1Pct}%`, background: 'var(--iai-success-dot)' }}
             title={`Tier 1 — ${tier1Pct}%`}
           >
             {tier1Pct >= 12 ? `T1 ${tier1Pct}%` : ''}
           </div>
           <div
             className="flex items-center justify-center"
-            style={{ width: `${tier2Pct}%`, background: '#c99400' }}
+            style={{ width: `${tier2Pct}%`, background: 'var(--iai-warning-dot)' }}
             title={`Tier 2 — ${tier2Pct}%`}
           >
             {tier2Pct >= 8 ? `T2 ${tier2Pct}%` : ''}
           </div>
           <div
             className="flex items-center justify-center"
-            style={{ width: `${tier3Pct}%`, background: '#e8273c' }}
+            style={{ width: `${tier3Pct}%`, background: 'var(--iai-error-dot)' }}
             title={`Tier 3 — ${tier3Pct}%`}
           >
             {tier3Pct >= 8 ? `T3 ${tier3Pct}%` : ''}
@@ -178,9 +204,7 @@ export function MtssOverviewView() {
               >
                 <span
                   className="inline-block w-2.5 h-2.5 rounded-full"
-                  style={{
-                    background: t === 1 ? '#2db24c' : t === 2 ? '#c99400' : '#e8273c',
-                  }}
+                  style={{ background: TIER_COLOUR[t].dot }}
                 />
                 {c.label}
               </span>
@@ -272,8 +296,8 @@ export function MtssOverviewView() {
                               key={f}
                               className="px-1.5 py-0.5 rounded text-xs font-bold"
                               style={{
-                                background: '#fee2e2',
-                                color: '#991b1b',
+                                background: 'var(--iai-error-bg)',
+                                color: 'var(--iai-error-text)',
                                 fontFamily: 'var(--iai-font-mono)',
                               }}
                             >

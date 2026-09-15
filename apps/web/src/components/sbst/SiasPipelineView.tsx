@@ -69,18 +69,26 @@ const MOCK_CASES: SiasCase[] = [
 ];
 
 const PHASE_META: Record<SiasPhase, { colour: string; description: string }> = {
-  'Phase 1': { colour: '#3b82f6', description: 'School screening' },
-  'Phase 2': { colour: '#f59e0b', description: 'Assessment' },
-  'Phase 3': { colour: '#8b5cf6', description: 'Intervention' },
-  'Phase 4': { colour: '#ef4444', description: 'ILST / Review' },
+  'Phase 1': { colour: 'var(--iai-blue)', description: 'School screening' },
+  'Phase 2': { colour: 'var(--iai-amber)', description: 'Assessment' },
+  'Phase 3': { colour: 'var(--iai-violet)', description: 'Intervention' },
+  'Phase 4': { colour: 'var(--iai-red)', description: 'ILST / Review' },
 };
 
 const STATUS_STYLES: Record<CaseStatus, { bg: string; text: string; label: string }> = {
-  draft: { bg: '#e5e7eb', text: '#374151', label: 'Draft' },
-  pending: { bg: '#fef3c7', text: '#92400e', label: 'Pending' },
-  active: { bg: '#d1fae5', text: '#065f46', label: 'Active' },
-  review: { bg: '#ede9fe', text: '#5b21b6', label: 'In review' },
-  closed: { bg: '#f3f4f6', text: '#9ca3af', label: 'Closed' },
+  draft: { bg: 'var(--iai-border)', text: 'var(--iai-text)', label: 'Draft' },
+  pending: {
+    bg: 'var(--iai-warning-bg)',
+    text: 'var(--iai-warning-text)',
+    label: 'Pending',
+  },
+  active: {
+    bg: 'var(--iai-success-bg)',
+    text: 'var(--iai-success-text)',
+    label: 'Active',
+  },
+  review: { bg: 'var(--iai-info-bg)', text: 'var(--iai-info-text)', label: 'In review' },
+  closed: { bg: 'var(--iai-bg-subtle)', text: 'var(--iai-text-subtle)', label: 'Closed' },
 };
 
 const ALL_PHASES: SiasPhase[] = ['Phase 1', 'Phase 2', 'Phase 3', 'Phase 4'];
@@ -120,7 +128,9 @@ function CaseCard({ c }: CaseCardProps) {
       <div className="flex items-center gap-1 flex-wrap">
         <span
           className="text-xs px-1.5 py-0.5 rounded font-bold text-white"
-          style={{ background: c.tier === 3 ? '#e8273c' : '#c99400' }}
+          style={{
+            background: c.tier === 3 ? 'var(--iai-red)' : 'var(--iai-warning-dot)',
+          }}
         >
           T{c.tier}
         </span>
@@ -129,8 +139,8 @@ function CaseCard({ c }: CaseCardProps) {
             key={f}
             className="text-xs px-1.5 py-0.5 rounded"
             style={{
-              background: '#fee2e2',
-              color: '#991b1b',
+              background: 'var(--iai-error-bg)',
+              color: 'var(--iai-error-text)',
               fontFamily: 'var(--iai-font-mono)',
             }}
           >

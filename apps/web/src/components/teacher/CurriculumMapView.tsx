@@ -22,10 +22,10 @@ interface CurriculumMapViewProps {
 }
 
 const TERM_COLOURS: Record<number, string> = {
-  1: '#1565c0',
-  2: '#2db24c',
-  3: '#f47920',
-  4: '#7b2fbe',
+  1: 'var(--iai-blue)',
+  2: 'var(--iai-green)',
+  3: 'var(--iai-orange)',
+  4: 'var(--iai-violet)',
 };
 
 export function CurriculumMapView({
@@ -61,13 +61,13 @@ export function CurriculumMapView({
                 activeTerm === t && t !== 'all'
                   ? {
                       background: TERM_COLOURS[t as number],
-                      color: '#fff',
+                      color: 'white',
                       borderColor: TERM_COLOURS[t as number],
                     }
                   : activeTerm === t
                     ? {
                         background: 'var(--iai-text)',
-                        color: '#fff',
+                        color: 'white',
                         borderColor: 'var(--iai-text)',
                       }
                     : {}

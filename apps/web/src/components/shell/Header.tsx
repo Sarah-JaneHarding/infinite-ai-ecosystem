@@ -37,7 +37,7 @@ export function Header({ role, tenantName, userName, approvalCount = 0 }: Header
         {approvalCount > 0 && (
           <a
             href="/approvals"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--iai-amber)] text-[#854d0e]"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--iai-amber)] text-[var(--iai-warning-text)]"
             aria-label={`${approvalCount} pending approval${approvalCount === 1 ? '' : 's'}`}
           >
             <span aria-hidden>⏳</span>

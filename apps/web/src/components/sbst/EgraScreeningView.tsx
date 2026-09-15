@@ -129,12 +129,20 @@ function tierFromFlags(flags: number): 1 | 2 | 3 {
 }
 
 const TIER_LABEL: Record<1 | 2 | 3, { label: string; bg: string; text: string }> = {
-  1: { label: 'Tier 1 — On track', bg: '#dcfce7', text: '#166534' },
-  2: { label: 'Tier 2 — Strategic support recommended', bg: '#fef9c3', text: '#854d0e' },
+  1: {
+    label: 'Tier 1 — On track',
+    bg: 'var(--iai-success-bg)',
+    text: 'var(--iai-success-text)',
+  },
+  2: {
+    label: 'Tier 2 — Strategic support recommended',
+    bg: 'var(--iai-warning-bg)',
+    text: 'var(--iai-warning-text)',
+  },
   3: {
     label: 'Tier 3 — Intensive intervention recommended',
-    bg: '#fee2e2',
-    text: '#991b1b',
+    bg: 'var(--iai-error-bg)',
+    text: 'var(--iai-error-text)',
   },
 };
 

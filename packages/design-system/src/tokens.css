@@ -71,6 +71,24 @@
   --iai-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
   --iai-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
 
+  /* ── Semantic status ─────────────────────────────────────────────────────── */
+  --iai-success-bg: #dcfce7;
+  --iai-success-text: #166534;
+  --iai-success-border: #bbf7d0;
+  --iai-success-dot: #16a34a;
+  --iai-warning-bg: #fef9c3;
+  --iai-warning-text: #854d0e;
+  --iai-warning-border: #fef08a;
+  --iai-warning-dot: #ca8a04;
+  --iai-error-bg: #fee2e2;
+  --iai-error-text: #991b1b;
+  --iai-error-border: #fecaca;
+  --iai-error-dot: #dc2626;
+  --iai-info-bg: #dbeafe;
+  --iai-info-text: #1e40af;
+  --iai-info-border: #bfdbfe;
+  --iai-info-dot: #2563eb;
+
   /* ── Motion ─────────────────────────────────────────────────────────────── */
   --iai-duration-fast: 140ms;
   --iai-duration-base: 200ms;

@@ -8742,3 +8742,52 @@ test files:
 | pnpm verify:stage 13 Docker-dependent integration suites                      | SKIP (no Docker in sandbox, CI) |
 | TypeScript strict mode — no errors                                            | PASS                            |
 | Prettier format — no diffs                                                    | PASS                            |
+
+---
+
+## Stage 63 — Design System: semantic status tokens & ad-hoc hex elimination
+
+**Goal.** Stage 14 step 1: the design-system package becomes the single source of colour,
+type, space and shape. Zero ad-hoc hex values remain in `apps/web`.
+
+**What changed.**
+
+- `packages/design-system/src/tokens.css` — added 16 semantic status custom properties
+  (success/warning/error/info × bg/text/border/dot).
+- `packages/design-system/src/tokens.ts` — added `STATUS_COLORS` constant mirroring the
+  CSS vars.
+- `packages/design-system/src/index.ts` — `STATUS_COLORS` added to barrel export.
+- `packages/design-system/src/components/Badge.tsx` — hardcoded hex replaced with CSS var
+  references.
+- `packages/design-system/src/components/StatusPill.tsx` — hardcoded hex replaced.
+- `packages/design-system/test/tokens.spec.ts` — three new tests for STATUS_COLORS.
+- `packages/design-system/test/exports.spec.ts` — STATUS_COLORS presence asserted.
+- `apps/web/src/components/shell/Header.tsx` — ad-hoc hex → token vars.
+- `apps/web/src/components/shell/ImpersonationBanner.tsx` — ad-hoc hex → token vars.
+- `apps/web/src/components/teacher/TeacherStudio.tsx` — all hex → token vars.
+- `apps/web/src/components/teacher/CurriculumMapView.tsx` — TERM_COLOURS hex → token vars.
+- `apps/web/src/components/sbst/SiasPipelineView.tsx` — all hex → token vars.
+- `apps/web/src/components/sbst/MtssOverviewView.tsx` — all hex → token vars.
+- `apps/web/src/components/sbst/EgraScreeningView.tsx` — TIER_LABEL hex → token vars.
+- `apps/web/src/components/approval/ApprovalDetail.tsx` — all three hex occurrences →
+  token vars.
+- `apps/web/src/app/sign-in/page.tsx` — SVG `stopColor` hex → `COLORS` constants
+  (SVG presentation attributes do not support CSS vars; JS interpolation used instead).
+
+**Verification.** `pnpm --filter @infinite-ai/design-system test` — 20 tests, all pass.
+`pnpm --filter @infinite-ai/design-system exec tsc --noEmit` — clean.
+`pnpm --filter web exec tsc --noEmit` — clean.
+`pnpm lint` — clean. `pnpm format:check` — clean.
+`grep -r '#[0-9a-fA-F]' apps/web/src --include='*.tsx'` — no matches.
+
+| Exit gate item                                                   | Result |
+| ---------------------------------------------------------------- | ------ |
+| 16 semantic status CSS custom properties added to tokens.css     | PASS   |
+| STATUS_COLORS constant exported from design-system               | PASS   |
+| Badge and StatusPill reference CSS vars, not hex literals        | PASS   |
+| No ad-hoc hex values in any apps/web .tsx file                   | PASS   |
+| SVG stopColor uses COLORS constants (JS interpolation, not vars) | PASS   |
+| design-system test suite: 20 tests, all pass                     | PASS   |
+| TypeScript strict mode — no errors (design-system + web)         | PASS   |
+| ESLint — no errors                                               | PASS   |
+| Prettier format — no diffs                                       | PASS   |

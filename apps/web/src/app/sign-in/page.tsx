@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { COLORS } from '@infinite-ai/design-system';
 import { SignInForm } from '@/components/auth/SignInForm';
 
 export const metadata: Metadata = { title: 'Sign in' };
@@ -24,9 +25,9 @@ export default function SignInPage() {
             >
               <defs>
                 <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#e4483f" />
-                  <stop offset="50%" stopColor="#1565c0" />
-                  <stop offset="100%" stopColor="#7b2fbe" />
+                  <stop offset="0%" stopColor={COLORS.red} />
+                  <stop offset="50%" stopColor={COLORS.blue} />
+                  <stop offset="100%" stopColor={COLORS.violet} />
                 </linearGradient>
               </defs>
               <circle

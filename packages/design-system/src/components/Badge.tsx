@@ -11,10 +11,13 @@ export interface BadgeProps {
 const VARIANTS: Record<BadgeVariant, string> = {
   default:
     'bg-[var(--iai-bg-subtle)] text-[var(--iai-text-subtle)] border-[var(--iai-border)]',
-  success: 'bg-[#dcfce7] text-[#166534] border-[#bbf7d0]',
-  warning: 'bg-[#fef9c3] text-[#854d0e] border-[#fef08a]',
-  error: 'bg-[#fee2e2] text-[#991b1b] border-[#fecaca]',
-  info: 'bg-[#dbeafe] text-[#1e40af] border-[#bfdbfe]',
+  success:
+    'bg-[var(--iai-success-bg)] text-[var(--iai-success-text)] border-[var(--iai-success-border)]',
+  warning:
+    'bg-[var(--iai-warning-bg)] text-[var(--iai-warning-text)] border-[var(--iai-warning-border)]',
+  error:
+    'bg-[var(--iai-error-bg)] text-[var(--iai-error-text)] border-[var(--iai-error-border)]',
+  info: 'bg-[var(--iai-info-bg)] text-[var(--iai-info-text)] border-[var(--iai-info-border)]',
 };
 
 export function Badge({ variant = 'default', children, className = '' }: BadgeProps) {

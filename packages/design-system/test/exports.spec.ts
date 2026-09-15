@@ -10,6 +10,7 @@ describe('design-system barrel export', () => {
     expect(DS.RADIUS).toBeDefined();
     expect(DS.MOTION).toBeDefined();
     expect(DS.CARD_GRADIENT).toBeTypeOf('function');
+    expect(DS.STATUS_COLORS).toBeDefined();
   });
 
   it('exports React components as functions', () => {

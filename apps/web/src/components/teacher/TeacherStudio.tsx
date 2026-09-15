@@ -300,7 +300,7 @@ export function TeacherStudio() {
                 className="rounded-[var(--iai-radius-xl)] border border-[var(--iai-border)] bg-[var(--iai-bg)] shadow-[var(--iai-shadow-md)] overflow-hidden"
                 aria-label="AI-drafted lesson plan"
               >
-                <div className="bg-gradient-to-br from-[#1565c0] to-[#0d47a1] p-5 text-white">
+                <div className="bg-gradient-to-br from-[var(--iai-blue)] to-[var(--iai-blue-deep)] p-5 text-white">
                   <p
                     className="text-xs uppercase tracking-widest opacity-80"
                     style={{ fontFamily: 'var(--iai-font-mono)' }}
@@ -345,7 +345,7 @@ export function TeacherStudio() {
                     <button
                       type="button"
                       onClick={() => setApproved(false)}
-                      className="px-4 py-2 rounded-[var(--iai-radius-md)] text-[var(--iai-red)] text-sm font-medium hover:bg-[#fee2e2] transition-colors"
+                      className="px-4 py-2 rounded-[var(--iai-radius-md)] text-[var(--iai-red)] text-sm font-medium hover:bg-[var(--iai-error-bg)] transition-colors"
                     >
                       Reject
                     </button>
@@ -358,7 +358,7 @@ export function TeacherStudio() {
               <div
                 role="status"
                 aria-live="polite"
-                className="p-6 rounded-[var(--iai-radius-xl)] bg-[#dcfce7] border border-[#bbf7d0] text-[#166534]"
+                className="p-6 rounded-[var(--iai-radius-xl)] bg-[var(--iai-success-bg)] border border-[var(--iai-success-border)] text-[var(--iai-success-text)]"
               >
                 <p className="font-medium">Lesson plan approved and saved.</p>
                 <p className="text-sm mt-1">
@@ -371,7 +371,7 @@ export function TeacherStudio() {
               <div
                 role="status"
                 aria-live="polite"
-                className="p-6 rounded-[var(--iai-radius-xl)] bg-[#fee2e2] border border-[#fecaca] text-[#991b1b]"
+                className="p-6 rounded-[var(--iai-radius-xl)] bg-[var(--iai-error-bg)] border border-[var(--iai-error-border)] text-[var(--iai-error-text)]"
               >
                 <p className="font-medium">Draft rejected.</p>
                 <p className="text-sm mt-1">
@@ -400,7 +400,7 @@ export function TeacherStudio() {
               className="rounded-[var(--iai-radius-xl)] border border-[var(--iai-border)] bg-[var(--iai-bg)] shadow-[var(--iai-shadow-md)] overflow-hidden"
               aria-label="Learner intervention suggestions"
             >
-              <div className="bg-gradient-to-br from-[#2fae66] to-[#1e7845] p-5 text-white">
+              <div className="bg-gradient-to-br from-[var(--iai-green)] to-[var(--iai-green-deep)] p-5 text-white">
                 <p
                   className="text-xs uppercase tracking-widest opacity-80"
                   style={{ fontFamily: 'var(--iai-font-mono)' }}
