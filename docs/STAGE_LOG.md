@@ -8663,19 +8663,19 @@ on needs_input.
 **Verification.** `pnpm --filter @infinite-ai/learning test` — 135 tests, all pass (12 new).
 `pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. Prettier — no diffs.
 
-| Exit gate item                                                                           | Result |
-| ---------------------------------------------------------------------------------------- | ------ |
-| `valid` returned when TTL not exceeded; tenantId, processedAt, patternId all present     | PASS   |
-| `daysUntilExpiry` arithmetic correct (ttlDays minus elapsed days)                        | PASS   |
-| `valid` returned with daysUntilExpiry = ttlDays when revalidation result passes          | PASS   |
-| `invalidated` returned for caps_version_change; patternId and tenantId carried through   | PASS   |
-| `invalidatedAt` equals the injected now timestamp                                        | PASS   |
-| `invalidated` returned for revalidation_failed; detail names the pass rates              | PASS   |
-| `revalidation_required` returned when TTL exceeded; reason = ttl_exceeded                | PASS   |
-| `revalidation_required` detail names elapsed days and TTL                                | PASS   |
-| `needs_input` returned when pattern is absent                                            | PASS   |
-| `needs_input` returned when lastValidatedAt is empty                                     | PASS   |
-| `needs_input` returned when today is empty                                               | PASS   |
-| `needs_input` carries processedAt from injected now                                      | PASS   |
-| TypeScript strict mode — no errors                                                       | PASS   |
-| Prettier format — no diffs                                                               | PASS   |
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| `valid` returned when TTL not exceeded; tenantId, processedAt, patternId all present   | PASS   |
+| `daysUntilExpiry` arithmetic correct (ttlDays minus elapsed days)                      | PASS   |
+| `valid` returned with daysUntilExpiry = ttlDays when revalidation result passes        | PASS   |
+| `invalidated` returned for caps_version_change; patternId and tenantId carried through | PASS   |
+| `invalidatedAt` equals the injected now timestamp                                      | PASS   |
+| `invalidated` returned for revalidation_failed; detail names the pass rates            | PASS   |
+| `revalidation_required` returned when TTL exceeded; reason = ttl_exceeded              | PASS   |
+| `revalidation_required` detail names elapsed days and TTL                              | PASS   |
+| `needs_input` returned when pattern is absent                                          | PASS   |
+| `needs_input` returned when lastValidatedAt is empty                                   | PASS   |
+| `needs_input` returned when today is empty                                             | PASS   |
+| `needs_input` carries processedAt from injected now                                    | PASS   |
+| TypeScript strict mode — no errors                                                     | PASS   |
+| Prettier format — no diffs                                                             | PASS   |
