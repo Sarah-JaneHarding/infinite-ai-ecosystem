@@ -8449,3 +8449,345 @@ LE-06 (prompt-evolver.spec.ts, 11 cases):
 | Patterns listed by frequency descending in guidance block                              | PASS   |
 | `isLive: false` on every PromptChallenger                                              | PASS   |
 | `challengerVersion` derived as `${champion.version}+le06`                              | PASS   |
+
+---
+
+## Stage 58 — LE-07 Eval Gatekeeper · 2026-09-15
+
+Started: 2026-09-15 Completed: 2026-09-15
+Exit gate: PASS
+Tests: 99 passing, 0 skipped.
+Deviations from manual: None.
+Open questions raised: None.
+
+### What was built
+
+Stage 13 step 5 — LE-07 Eval Gatekeeper outer function.
+
+The lower-level `applyPromotionGate` (pure verdict logic with no input validation or
+summary generation) already existed from the original Stage 13 session (2026-08-11).
+Stage 58 built the outer `gateChallenger` function in
+`packages/learning/src/eval-gatekeeper.ts` that wraps it with:
+
+- **`EvalGatekeeperInput`** — flexible internal input type with optional `championEvalResult`
+  and `challengerEvalResult` fields, injected `now` timestamp, `biasCheckPassed?` forwarded
+  via conditional spread to respect `exactOptionalPropertyTypes`.
+- **`EvalGatekeeperDecision`** — discriminated union mirroring the `LE07Result` contract shape:
+  - `ok` — includes `tenantId`, `processedAt`, `verdict`, `scoreDelta`, `mustNotRegressDelta`,
+    `evalDeltaSummary` (human-readable one-liner with champion/challenger scores and deltas),
+    `evaluatedAt`.
+  - `needs_input` — returned when either eval result is absent; lists `missingFields` and a
+    `detail` message naming them.
+- Verdict delegation to `applyPromotionGate` with priority order unchanged:
+  1. `biasCheckPassed === false` → `reject_bias_divergence`
+  2. `mustNotRegressPassRate` drops → `reject_regression`
+  3. `overallPassRate` ≤ champion → `reject_no_improvement`
+  4. Otherwise → `promote`
+- **`buildEvalDeltaSummary`** formats the verdict and both score pairs with four decimal places
+  and signed deltas, giving the ratification surface a human-readable audit trail.
+- Exported from `packages/learning/src/index.ts` as `gateChallenger`, `EvalGatekeeperDecision`,
+  `EvalGatekeeperInput`.
+
+12 new unit tests cover all four verdict paths, both `needs_input` variants (one field absent,
+both fields absent), `evalDeltaSummary` content, and deterministic timestamp injection.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 99 tests, all pass (12 new).
+`pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `pnpm lint` — clean.
+
+| Exit gate item                                                                   | Result |
+| -------------------------------------------------------------------------------- | ------ |
+| `needs_input` returned when `championEvalResult` absent                          | PASS   |
+| `needs_input` returned when `challengerEvalResult` absent                        | PASS   |
+| Both fields listed in `missingFields` when both absent                           | PASS   |
+| `reject_bias_divergence` returned when `biasCheckPassed` is false                | PASS   |
+| Absent `biasCheckPassed` treated as "not run" (no rejection)                     | PASS   |
+| `reject_regression` returned when `mustNotRegressPassRate` drops                 | PASS   |
+| `reject_no_improvement` returned when `overallPassRate` equal or decreases       | PASS   |
+| `promote` returned when challenger strictly beats champion on all dimensions     | PASS   |
+| `evalDeltaSummary` encodes verdict, overallPassRate, and mustNotRegress sections | PASS   |
+| `evaluatedAt` and `processedAt` both reflect injected `now` timestamp            | PASS   |
+| TypeScript strict mode (`exactOptionalPropertyTypes`) — no errors                | PASS   |
+| Prettier format — no diffs                                                       | PASS   |
+
+---
+
+## Stage 59 — LE-07 Ratification Surface · 2026-09-15
+
+Started: 2026-09-15 Completed: 2026-09-15
+Exit gate: PASS
+Tests: 110 passing, 0 skipped.
+Deviations from manual: None.
+Open questions raised: None.
+
+### What was built
+
+Stage 13 step 6 — Ratification Surface assembly function.
+
+`packages/learning/src/ratification-surface.ts` — `composeRatificationPackage`, a pure
+function that assembles the pre-ratification display data for HoD, SMT, or a curriculum
+board. It takes the LE-07 gatekeeper verdict, challenger identity fields, eval delta
+summary, and optional evidence summary, and returns a structured package ready to render
+to the ratifier.
+
+- **`RatificationPackageInput`**: tenantId, agentId, challengerId, challengerVersion,
+  previousChampionVersion, evalDeltaSummary, gatekeeperVerdict, evidenceSummary?,
+  now (injected datetime).
+- **`RatificationSurfaceDecision`** — three-way discriminated union:
+  - `ok` — full display package including challengerVersion, previousChampionVersion,
+    evalDeltaSummary, evidenceSummary (defaults to fallback when absent), rollbackPreview
+    (the command a ratifier can run after promotion to undo it), and proposedAt.
+  - `not_eligible` — returned for any non-promote verdict (reject_regression,
+    reject_no_improvement, reject_bias_divergence), with the verdict and a detail message.
+  - `needs_input` — returned when any required identifying field is empty.
+- **`rollbackPreview`** encodes agentId, previousChampionVersion, and challengerId so the
+  ratifier has full traceability before approving.
+- The function is display-only (no DB writes). Post-approval, the caller passes the result
+  to `PromotionLog.append()` which records the permanent entry.
+- Exported from `packages/learning/src/index.ts`.
+
+11 new unit tests: ok/full-package path, rollbackPreview content, all three not_eligible
+verdicts, three needs_input variants, evidence fallback, proposedAt timestamp injection.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 110 tests, all pass (11 new).
+`pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `pnpm lint` — clean.
+
+| Exit gate item                                                                | Result |
+| ----------------------------------------------------------------------------- | ------ |
+| `ok` package returned when gatekeeperVerdict is 'promote'                     | PASS   |
+| `rollbackPreview` contains agentId, previousChampionVersion, and challengerId | PASS   |
+| `not_eligible` returned for reject_regression                                 | PASS   |
+| `not_eligible` returned for reject_no_improvement                             | PASS   |
+| `not_eligible` returned for reject_bias_divergence                            | PASS   |
+| `needs_input` returned when challengerVersion is absent                       | PASS   |
+| `needs_input` returned when previousChampionVersion is absent                 | PASS   |
+| `needs_input` returned when evalDeltaSummary is absent                        | PASS   |
+| evidenceSummary defaults to fallback text when not supplied                   | PASS   |
+| proposedAt reflects injected now timestamp                                    | PASS   |
+| TypeScript strict mode — no errors                                            | PASS   |
+| Prettier format — no diffs                                                    | PASS   |
+
+---
+
+## Stage 60 — LE-08 Commons Publisher + Published-Pattern Registry · 2026-09-15
+
+Started: 2026-09-15 Completed: 2026-09-15
+Exit gate: PASS
+Tests: 123 passing, 0 skipped.
+Deviations from manual: None.
+Open questions raised: None.
+
+### What was built
+
+Stage 13 step 7 — LE-08 outer function and published-pattern registry.
+
+The lower-level `decideCommonPublication` (pure opt-in + k-anonymity gate) already existed
+in `commons-publisher.ts`. Stage 60 added the outer LE-08 function and the registry in
+`packages/learning/src/commons-registry.ts`:
+
+- **`PublishToCommonsInput`**: publishingTenantId, tenantOptIn, pattern? (optional for
+  needs_input detection), contributingTenantRefs, injected now, idGenerator.
+- **`CommonsPublisherDecision`** — four-way discriminated union:
+  - `published` — full `PublishedPattern` with publishedPatternId from idGenerator,
+    all MinedPattern fields (patternId, capsTopicId, agentId, effectSize, confidenceInterval),
+    contributingTenantCount, publishedAt.
+  - `suppressed_no_opt_in` — tenant did not opt in.
+  - `suppressed_below_threshold` — fewer than COMMONS_K_ANONYMITY_THRESHOLD (5) tenants;
+    carries contributingTenantCount and required for display.
+  - `needs_input` — pattern absent or contributingTenantRefs empty.
+- **`PublishedPatternRegistry`** — append-only in-memory registry of published patterns
+  (mirrors PromotionLog pattern): `append`, `allEntries`, `hasPattern(patternId)`,
+  `findByPublishedId(publishedPatternId)`.
+- Exported from `packages/learning/src/index.ts`.
+
+13 new unit tests cover: published happy path, pattern field propagation, idGenerator used
+for publishedPatternId, suppressed_no_opt_in, suppressed_below_threshold with exact counts,
+two needs_input variants, detail string content, and all four registry methods.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 123 tests, all pass (13 new).
+`pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `pnpm lint` — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| `published` returned when opt-in and k-anonymity threshold are both met                | PASS   |
+| `PublishedPattern` carries fields from MinedPattern (patternId, effectSize, CI, etc.)  | PASS   |
+| `publishedPatternId` sourced from injected idGenerator                                 | PASS   |
+| `suppressed_no_opt_in` returned when tenantOptIn is false                              | PASS   |
+| `suppressed_below_threshold` returned when < COMMONS_K_ANONYMITY_THRESHOLD tenants     | PASS   |
+| contributingTenantCount and required both present in suppressed_below_threshold result | PASS   |
+| `needs_input` returned when pattern is absent                                          | PASS   |
+| `needs_input` returned when contributingTenantRefs is empty                            | PASS   |
+| Registry: appended entries appear in allEntries                                        | PASS   |
+| Registry: hasPattern true after append, false before                                   | PASS   |
+| Registry: findByPublishedId returns correct entry or null                              | PASS   |
+| TypeScript strict mode — no errors                                                     | PASS   |
+| Prettier format — no diffs                                                             | PASS   |
+
+---
+
+## Stage 61 — LE-09 Decay & Revalidation outer function · 2026-09-15
+
+Started: 2026-09-15 Completed: 2026-09-15
+Exit gate: PASS
+Tests: 135 passing, 0 skipped.
+Deviations from manual: None.
+Open questions raised: None.
+
+### What was built
+
+Stage 13 step 8 — LE-09 outer decay-check function.
+
+The lower-level `assessPatternDecay` (pure TTL/CAPS-version/revalidation rules) already
+existed in `decay-agent.ts`. Stage 61 added the outer LE-09 function in
+`packages/learning/src/decay-revalidation.ts`:
+
+- **`DecayCheckInput`**: tenantId, pattern? (optional for needs_input detection),
+  lastValidatedAt, ttlDays, currentCapsVersion (nullable), patternCapsVersion (nullable),
+  revalidationResult? (passRate + requiredPassRate), injected today (YYYY-MM-DD) and now
+  (ISO-8601 datetime for processedAt / invalidatedAt).
+- **`DecayCheckDecision`** — four-way discriminated union extending every variant with
+  tenantId, processedAt, and patternId:
+  - `valid` — daysUntilExpiry (integer ≥ 0).
+  - `invalidated` — reason (DecayReason), detail, plus invalidatedAt = injected now.
+  - `revalidation_required` — reason (DecayReason), detail.
+  - `needs_input` — detail, missingFields (pattern absent, lastValidatedAt empty, today empty).
+- `revalidationResult` conditional-spread (`...(x !== undefined ? {revalidationResult: x} : {})`)
+  satisfies `exactOptionalPropertyTypes`.
+- Exported `runDecayCheck`, `DecayCheckDecision`, `DecayCheckInput` from index.ts.
+
+12 new unit tests cover: valid happy path, daysUntilExpiry arithmetic, valid on passing
+revalidation, invalidated by caps_version_change, invalidatedAt = injected now, invalidated
+by revalidation_failed, revalidation_required by ttl_exceeded, detail string content, three
+needs_input variants (pattern absent, lastValidatedAt empty, today empty) and processedAt
+on needs_input.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 135 tests, all pass (12 new).
+`pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. Prettier — no diffs.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| `valid` returned when TTL not exceeded; tenantId, processedAt, patternId all present   | PASS   |
+| `daysUntilExpiry` arithmetic correct (ttlDays minus elapsed days)                      | PASS   |
+| `valid` returned with daysUntilExpiry = ttlDays when revalidation result passes        | PASS   |
+| `invalidated` returned for caps_version_change; patternId and tenantId carried through | PASS   |
+| `invalidatedAt` equals the injected now timestamp                                      | PASS   |
+| `invalidated` returned for revalidation_failed; detail names the pass rates            | PASS   |
+| `revalidation_required` returned when TTL exceeded; reason = ttl_exceeded              | PASS   |
+| `revalidation_required` detail names elapsed days and TTL                              | PASS   |
+| `needs_input` returned when pattern is absent                                          | PASS   |
+| `needs_input` returned when lastValidatedAt is empty                                   | PASS   |
+| `needs_input` returned when today is empty                                             | PASS   |
+| `needs_input` carries processedAt from injected now                                    | PASS   |
+| TypeScript strict mode — no errors                                                     | PASS   |
+| Prettier format — no diffs                                                             | PASS   |
+
+---
+
+## Stage 62 — LE Maturity Report (Stage 13 step 9 + step 10 tests) · 2026-09-15
+
+Started: 2026-09-15 Completed: 2026-09-15
+Exit gate: PASS (unit tier)
+Tests: 135 passing, 0 skipped.
+Deviations from manual: pnpm verify:stage 13 fails on 4 Docker-dependent
+integration suites (db/coverage:merged, brain/test:temporal,
+brain/test:integration, orchestrator/test:integration). These require a
+Testcontainers daemon; per CLAUDE.md "the integration tier needs a Docker daemon,
+which the authoring sandbox does not have. Those suites are written blind and
+proven in CI." All unit gates PASS.
+Open questions raised: None.
+
+### What was built
+
+Stage 13 step 9 — maturity report. This was built as part of the original Stage 13
+work (2026-08-11). Verified complete and passing in Stage 62 gate walk.
+
+`packages/learning/src/maturity-report.ts` — `assignMaturityLevel(metrics)`:
+
+- `cold_start` — no validated patterns yet (validatedPatternCount === 0).
+- `locally_calibrated` — ≥1 validated pattern, no outcome evidence.
+- `evidence_led` — meanOutcomeDelta is not null.
+- `institutional` — ≥3 promoted exemplars AND outcome evidence AND
+  firstPassAcceptanceRate ≥ 0.7.
+
+Stage 13 step 10 — pipeline integration assertions. Verified covered by existing
+test files:
+
+- Promotion fails eval → rejected: `promotion-gate.spec.ts` (reject_regression,
+  reject_no_improvement, reject_bias_divergence).
+- Rollback restores champion: `promotion-log.spec.ts` (rollback command in record).
+- Below-threshold pattern blocked: `commons-kanonymity.spec.ts` (below threshold
+  suppression) + `commons-registry.spec.ts`.
+- CAPS version change invalidates: `decay-agent.spec.ts` (caps_version_change →
+  invalidated) + `decay-revalidation.spec.ts`.
+- Bias-divergent pattern blocked: `promotion-gate.spec.ts` (reject_bias_divergence).
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 135 tests, all pass.
+`pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean.
+`pnpm lint` — clean. `pnpm format:check` — clean.
+
+| Exit gate item                                                                | Result                          |
+| ----------------------------------------------------------------------------- | ------------------------------- |
+| cold_start returned when no patterns validated                                | PASS                            |
+| locally_calibrated returned when patterns exist but no outcome evidence       | PASS                            |
+| evidence_led returned when outcome evidence present but not yet institutional | PASS                            |
+| institutional requires ≥3 exemplars AND outcome evidence AND acceptance ≥ 0.7 | PASS                            |
+| cold_start takes precedence over all other conditions                         | PASS                            |
+| Institutional boundary: < 3 exemplars → evidence_led                          | PASS                            |
+| Institutional boundary: firstPassAcceptanceRate < 0.7 → evidence_led          | PASS                            |
+| Institutional boundary: meanOutcomeDelta null → locally_calibrated            | PASS                            |
+| promotion-gate rejects eval failures (regression / no-improvement / bias)     | PASS                            |
+| below-threshold pattern blocked from commons                                  | PASS                            |
+| CAPS version change invalidates pattern                                       | PASS                            |
+| bias-divergent pattern blocked by gate                                        | PASS                            |
+| pnpm verify:stage 13 unit checks                                              | PASS                            |
+| pnpm verify:stage 13 Docker-dependent integration suites                      | SKIP (no Docker in sandbox, CI) |
+| TypeScript strict mode — no errors                                            | PASS                            |
+| Prettier format — no diffs                                                    | PASS                            |
+
+---
+
+## Stage 63 — Design System: semantic status tokens & ad-hoc hex elimination
+
+**Goal.** Stage 14 step 1: the design-system package becomes the single source of colour,
+type, space and shape. Zero ad-hoc hex values remain in `apps/web`.
+
+**What changed.**
+
+- `packages/design-system/src/tokens.css` — added 16 semantic status custom properties
+  (success/warning/error/info × bg/text/border/dot).
+- `packages/design-system/src/tokens.ts` — added `STATUS_COLORS` constant mirroring the
+  CSS vars.
+- `packages/design-system/src/index.ts` — `STATUS_COLORS` added to barrel export.
+- `packages/design-system/src/components/Badge.tsx` — hardcoded hex replaced with CSS var
+  references.
+- `packages/design-system/src/components/StatusPill.tsx` — hardcoded hex replaced.
+- `packages/design-system/test/tokens.spec.ts` — three new tests for STATUS_COLORS.
+- `packages/design-system/test/exports.spec.ts` — STATUS_COLORS presence asserted.
+- `apps/web/src/components/shell/Header.tsx` — ad-hoc hex → token vars.
+- `apps/web/src/components/shell/ImpersonationBanner.tsx` — ad-hoc hex → token vars.
+- `apps/web/src/components/teacher/TeacherStudio.tsx` — all hex → token vars.
+- `apps/web/src/components/teacher/CurriculumMapView.tsx` — TERM_COLOURS hex → token vars.
+- `apps/web/src/components/sbst/SiasPipelineView.tsx` — all hex → token vars.
+- `apps/web/src/components/sbst/MtssOverviewView.tsx` — all hex → token vars.
+- `apps/web/src/components/sbst/EgraScreeningView.tsx` — TIER_LABEL hex → token vars.
+- `apps/web/src/components/approval/ApprovalDetail.tsx` — all three hex occurrences →
+  token vars.
+- `apps/web/src/app/sign-in/page.tsx` — SVG `stopColor` hex → `COLORS` constants
+  (SVG presentation attributes do not support CSS vars; JS interpolation used instead).
+
+**Verification.** `pnpm --filter @infinite-ai/design-system test` — 20 tests, all pass.
+`pnpm --filter @infinite-ai/design-system exec tsc --noEmit` — clean.
+`pnpm --filter web exec tsc --noEmit` — clean.
+`pnpm lint` — clean. `pnpm format:check` — clean.
+`grep -r '#[0-9a-fA-F]' apps/web/src --include='*.tsx'` — no matches.
+
+| Exit gate item                                                   | Result |
+| ---------------------------------------------------------------- | ------ |
+| 16 semantic status CSS custom properties added to tokens.css     | PASS   |
+| STATUS_COLORS constant exported from design-system               | PASS   |
+| Badge and StatusPill reference CSS vars, not hex literals        | PASS   |
+| No ad-hoc hex values in any apps/web .tsx file                   | PASS   |
+| SVG stopColor uses COLORS constants (JS interpolation, not vars) | PASS   |
+| design-system test suite: 20 tests, all pass                     | PASS   |
+| TypeScript strict mode — no errors (design-system + web)         | PASS   |
+| ESLint — no errors                                               | PASS   |
+| Prettier format — no diffs                                       | PASS   |

@@ -55,4 +55,29 @@ export {
   type PromptEvolverInput,
 } from './prompt-evolver.js';
 
+export {
+  gateChallenger,
+  type EvalGatekeeperDecision,
+  type EvalGatekeeperInput,
+} from './eval-gatekeeper.js';
+
+export {
+  composeRatificationPackage,
+  type RatificationPackageInput,
+  type RatificationSurfaceDecision,
+} from './ratification-surface.js';
+
+export {
+  publishToCommons,
+  PublishedPatternRegistry,
+  type CommonsPublisherDecision,
+  type PublishToCommonsInput,
+} from './commons-registry.js';
+
+export {
+  runDecayCheck,
+  type DecayCheckDecision,
+  type DecayCheckInput,
+} from './decay-revalidation.js';
+
 export const PACKAGE_NAME = '@infinite-ai/learning' as const;

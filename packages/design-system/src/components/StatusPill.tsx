@@ -16,20 +16,23 @@ const LABELS: Record<PillStatus, string> = {
 };
 
 const STYLES: Record<PillStatus, string> = {
-  pending: 'bg-[#fef9c3] text-[#854d0e] border-[#fef08a]',
-  approved: 'bg-[#dcfce7] text-[#166534] border-[#bbf7d0]',
-  rejected: 'bg-[#fee2e2] text-[#991b1b] border-[#fecaca]',
+  pending:
+    'bg-[var(--iai-warning-bg)] text-[var(--iai-warning-text)] border-[var(--iai-warning-border)]',
+  approved:
+    'bg-[var(--iai-success-bg)] text-[var(--iai-success-text)] border-[var(--iai-success-border)]',
+  rejected:
+    'bg-[var(--iai-error-bg)] text-[var(--iai-error-text)] border-[var(--iai-error-border)]',
   draft:
     'bg-[var(--iai-bg-subtle)] text-[var(--iai-text-subtle)] border-[var(--iai-border)]',
-  live: 'bg-[#dbeafe] text-[#1e40af] border-[#bfdbfe]',
+  live: 'bg-[var(--iai-info-bg)] text-[var(--iai-info-text)] border-[var(--iai-info-border)]',
 };
 
 const DOTS: Record<PillStatus, string> = {
-  pending: 'bg-[#ca8a04]',
-  approved: 'bg-[#16a34a]',
-  rejected: 'bg-[#dc2626]',
+  pending: 'bg-[var(--iai-warning-dot)]',
+  approved: 'bg-[var(--iai-success-dot)]',
+  rejected: 'bg-[var(--iai-error-dot)]',
   draft: 'bg-[var(--iai-text-subtle)]',
-  live: 'bg-[#2563eb]',
+  live: 'bg-[var(--iai-info-dot)]',
 };
 
 export function StatusPill({ status, className = '' }: StatusPillProps): ReactNode {

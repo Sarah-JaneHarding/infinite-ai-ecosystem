@@ -48,6 +48,14 @@ export const MOTION = {
   drift: 9000,
 } as const;
 
+/** Semantic status palette — matches --iai-*-{bg,text,border,dot} tokens in tokens.css. */
+export const STATUS_COLORS = {
+  success: { bg: '#dcfce7', text: '#166534', border: '#bbf7d0', dot: '#16a34a' },
+  warning: { bg: '#fef9c3', text: '#854d0e', border: '#fef08a', dot: '#ca8a04' },
+  error: { bg: '#fee2e2', text: '#991b1b', border: '#fecaca', dot: '#dc2626' },
+  info: { bg: '#dbeafe', text: '#1e40af', border: '#bfdbfe', dot: '#2563eb' },
+} as const;
+
 /** Gradient stop string for the 135° spectrum (Modular Card header). */
 export const CARD_GRADIENT = (hue: keyof typeof COLORS) =>
   `linear-gradient(135deg, ${COLORS[hue]} 0%, ${COLORS[(hue + 'Deep') as keyof typeof COLORS] ?? COLORS[hue]} 100%)`;

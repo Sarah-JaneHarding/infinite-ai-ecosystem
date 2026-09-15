@@ -7,6 +7,7 @@ import {
   RADIUS,
   MOTION,
   CARD_GRADIENT,
+  STATUS_COLORS,
 } from '../src/tokens.js';
 
 describe('COLORS', () => {
@@ -95,6 +96,29 @@ describe('MOTION', () => {
   });
   it('drift matches brand spec (9000ms)', () => {
     expect(MOTION.drift).toBe(9000);
+  });
+});
+
+describe('STATUS_COLORS', () => {
+  it('defines all four status categories', () => {
+    for (const key of ['success', 'warning', 'error', 'info'] as const) {
+      expect(STATUS_COLORS[key].bg).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(STATUS_COLORS[key].text).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(STATUS_COLORS[key].border).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(STATUS_COLORS[key].dot).toMatch(/^#[0-9a-f]{6}$/i);
+    }
+  });
+
+  it('success bg is lighter than success text (surface over ink)', () => {
+    const bg = parseInt(STATUS_COLORS.success.bg.slice(1), 16);
+    const text = parseInt(STATUS_COLORS.success.text.slice(1), 16);
+    expect(bg).toBeGreaterThan(text);
+  });
+
+  it('error bg is lighter than error text', () => {
+    const bg = parseInt(STATUS_COLORS.error.bg.slice(1), 16);
+    const text = parseInt(STATUS_COLORS.error.text.slice(1), 16);
+    expect(bg).toBeGreaterThan(text);
   });
 });
 

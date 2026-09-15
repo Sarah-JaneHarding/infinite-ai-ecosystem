@@ -1,7 +1,16 @@
 // @infinite-ai/design-system — Design tokens, components and the infinity mark.
 // Stage 14: full implementation.
 
-export { COLORS, SPECTRUM, FONTS, SPACE, RADIUS, MOTION, CARD_GRADIENT } from './tokens';
+export {
+  COLORS,
+  SPECTRUM,
+  FONTS,
+  SPACE,
+  RADIUS,
+  MOTION,
+  CARD_GRADIENT,
+  STATUS_COLORS,
+} from './tokens';
 export { InfinityMark } from './components/InfinityMark';
 export { Button } from './components/Button';
 export { Card, ModularCard } from './components/Card';

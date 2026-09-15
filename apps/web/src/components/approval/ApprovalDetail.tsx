@@ -78,7 +78,7 @@ export function ApprovalDetail({ id, runId, role }: Props) {
         <div
           role="status"
           aria-live="polite"
-          className={`p-6 rounded-[var(--iai-radius-xl)] border ${approved ? 'bg-[#dcfce7] border-[#bbf7d0] text-[#166534]' : 'bg-[#fee2e2] border-[#fecaca] text-[#991b1b]'}`}
+          className={`p-6 rounded-[var(--iai-radius-xl)] border ${approved ? 'bg-[var(--iai-success-bg)] border-[var(--iai-success-border)] text-[var(--iai-success-text)]' : 'bg-[var(--iai-error-bg)] border-[var(--iai-error-border)] text-[var(--iai-error-text)]'}`}
         >
           <h1 id="approval-result-heading" className="font-semibold text-lg">
             {approved
@@ -149,7 +149,7 @@ export function ApprovalDetail({ id, runId, role }: Props) {
       {uiState === 'error' && (
         <div
           role="alert"
-          className="mb-4 p-3 rounded-[var(--iai-radius-md)] bg-[#fee2e2] border border-[#fecaca] text-[#991b1b] text-sm"
+          className="mb-4 p-3 rounded-[var(--iai-radius-md)] bg-[var(--iai-error-bg)] border border-[var(--iai-error-border)] text-[var(--iai-error-text)] text-sm"
         >
           {errorMsg}
         </div>
@@ -197,7 +197,7 @@ export function ApprovalDetail({ id, runId, role }: Props) {
               type="button"
               onClick={() => void submitDecision('REJECTED')}
               disabled={!reason || uiState === 'submitting'}
-              className="px-4 py-2 rounded-[var(--iai-radius-md)] text-[var(--iai-red)] text-sm font-medium hover:bg-[#fee2e2] transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-[var(--iai-radius-md)] text-[var(--iai-red)] text-sm font-medium hover:bg-[var(--iai-error-bg)] transition-colors disabled:opacity-50"
             >
               Reject
             </button>
