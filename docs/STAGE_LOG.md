@@ -8508,3 +8508,60 @@ both fields absent), `evalDeltaSummary` content, and deterministic timestamp inj
 | `evaluatedAt` and `processedAt` both reflect injected `now` timestamp            | PASS   |
 | TypeScript strict mode (`exactOptionalPropertyTypes`) — no errors                | PASS   |
 | Prettier format — no diffs                                                       | PASS   |
+
+---
+
+## Stage 59 — LE-07 Ratification Surface · 2026-09-15
+
+Started: 2026-09-15 Completed: 2026-09-15
+Exit gate: PASS
+Tests: 110 passing, 0 skipped.
+Deviations from manual: None.
+Open questions raised: None.
+
+### What was built
+
+Stage 13 step 6 — Ratification Surface assembly function.
+
+`packages/learning/src/ratification-surface.ts` — `composeRatificationPackage`, a pure
+function that assembles the pre-ratification display data for HoD, SMT, or a curriculum
+board. It takes the LE-07 gatekeeper verdict, challenger identity fields, eval delta
+summary, and optional evidence summary, and returns a structured package ready to render
+to the ratifier.
+
+- **`RatificationPackageInput`**: tenantId, agentId, challengerId, challengerVersion,
+  previousChampionVersion, evalDeltaSummary, gatekeeperVerdict, evidenceSummary?,
+  now (injected datetime).
+- **`RatificationSurfaceDecision`** — three-way discriminated union:
+  - `ok` — full display package including challengerVersion, previousChampionVersion,
+    evalDeltaSummary, evidenceSummary (defaults to fallback when absent), rollbackPreview
+    (the command a ratifier can run after promotion to undo it), and proposedAt.
+  - `not_eligible` — returned for any non-promote verdict (reject_regression,
+    reject_no_improvement, reject_bias_divergence), with the verdict and a detail message.
+  - `needs_input` — returned when any required identifying field is empty.
+- **`rollbackPreview`** encodes agentId, previousChampionVersion, and challengerId so the
+  ratifier has full traceability before approving.
+- The function is display-only (no DB writes). Post-approval, the caller passes the result
+  to `PromotionLog.append()` which records the permanent entry.
+- Exported from `packages/learning/src/index.ts`.
+
+11 new unit tests: ok/full-package path, rollbackPreview content, all three not_eligible
+verdicts, three needs_input variants, evidence fallback, proposedAt timestamp injection.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 110 tests, all pass (11 new).
+`pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `pnpm lint` — clean.
+
+| Exit gate item                                                                | Result |
+| ----------------------------------------------------------------------------- | ------ |
+| `ok` package returned when gatekeeperVerdict is 'promote'                     | PASS   |
+| `rollbackPreview` contains agentId, previousChampionVersion, and challengerId | PASS   |
+| `not_eligible` returned for reject_regression                                 | PASS   |
+| `not_eligible` returned for reject_no_improvement                             | PASS   |
+| `not_eligible` returned for reject_bias_divergence                            | PASS   |
+| `needs_input` returned when challengerVersion is absent                       | PASS   |
+| `needs_input` returned when previousChampionVersion is absent                 | PASS   |
+| `needs_input` returned when evalDeltaSummary is absent                        | PASS   |
+| evidenceSummary defaults to fallback text when not supplied                   | PASS   |
+| proposedAt reflects injected now timestamp                                    | PASS   |
+| TypeScript strict mode — no errors                                            | PASS   |
+| Prettier format — no diffs                                                    | PASS   |

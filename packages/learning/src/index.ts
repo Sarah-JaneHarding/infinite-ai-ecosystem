@@ -61,4 +61,10 @@ export {
   type EvalGatekeeperInput,
 } from './eval-gatekeeper.js';
 
+export {
+  composeRatificationPackage,
+  type RatificationPackageInput,
+  type RatificationSurfaceDecision,
+} from './ratification-surface.js';
+
 export const PACKAGE_NAME = '@infinite-ai/learning' as const;
