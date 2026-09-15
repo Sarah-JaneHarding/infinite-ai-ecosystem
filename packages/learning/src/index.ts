@@ -67,4 +67,11 @@ export {
   type RatificationSurfaceDecision,
 } from './ratification-surface.js';
 
+export {
+  publishToCommons,
+  PublishedPatternRegistry,
+  type CommonsPublisherDecision,
+  type PublishToCommonsInput,
+} from './commons-registry.js';
+
 export const PACKAGE_NAME = '@infinite-ai/learning' as const;

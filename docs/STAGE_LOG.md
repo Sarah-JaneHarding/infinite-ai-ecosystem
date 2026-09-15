@@ -8565,3 +8565,59 @@ verdicts, three needs_input variants, evidence fallback, proposedAt timestamp in
 | proposedAt reflects injected now timestamp                                    | PASS   |
 | TypeScript strict mode — no errors                                            | PASS   |
 | Prettier format — no diffs                                                    | PASS   |
+
+---
+
+## Stage 60 — LE-08 Commons Publisher + Published-Pattern Registry · 2026-09-15
+
+Started: 2026-09-15 Completed: 2026-09-15
+Exit gate: PASS
+Tests: 123 passing, 0 skipped.
+Deviations from manual: None.
+Open questions raised: None.
+
+### What was built
+
+Stage 13 step 7 — LE-08 outer function and published-pattern registry.
+
+The lower-level `decideCommonPublication` (pure opt-in + k-anonymity gate) already existed
+in `commons-publisher.ts`. Stage 60 added the outer LE-08 function and the registry in
+`packages/learning/src/commons-registry.ts`:
+
+- **`PublishToCommonsInput`**: publishingTenantId, tenantOptIn, pattern? (optional for
+  needs_input detection), contributingTenantRefs, injected now, idGenerator.
+- **`CommonsPublisherDecision`** — four-way discriminated union:
+  - `published` — full `PublishedPattern` with publishedPatternId from idGenerator,
+    all MinedPattern fields (patternId, capsTopicId, agentId, effectSize, confidenceInterval),
+    contributingTenantCount, publishedAt.
+  - `suppressed_no_opt_in` — tenant did not opt in.
+  - `suppressed_below_threshold` — fewer than COMMONS_K_ANONYMITY_THRESHOLD (5) tenants;
+    carries contributingTenantCount and required for display.
+  - `needs_input` — pattern absent or contributingTenantRefs empty.
+- **`PublishedPatternRegistry`** — append-only in-memory registry of published patterns
+  (mirrors PromotionLog pattern): `append`, `allEntries`, `hasPattern(patternId)`,
+  `findByPublishedId(publishedPatternId)`.
+- Exported from `packages/learning/src/index.ts`.
+
+13 new unit tests cover: published happy path, pattern field propagation, idGenerator used
+for publishedPatternId, suppressed_no_opt_in, suppressed_below_threshold with exact counts,
+two needs_input variants, detail string content, and all four registry methods.
+
+**Verification.** `pnpm --filter @infinite-ai/learning test` — 123 tests, all pass (13 new).
+`pnpm --filter @infinite-ai/learning exec tsc --noEmit` — clean. `pnpm lint` — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| `published` returned when opt-in and k-anonymity threshold are both met                | PASS   |
+| `PublishedPattern` carries fields from MinedPattern (patternId, effectSize, CI, etc.)  | PASS   |
+| `publishedPatternId` sourced from injected idGenerator                                 | PASS   |
+| `suppressed_no_opt_in` returned when tenantOptIn is false                              | PASS   |
+| `suppressed_below_threshold` returned when < COMMONS_K_ANONYMITY_THRESHOLD tenants     | PASS   |
+| contributingTenantCount and required both present in suppressed_below_threshold result | PASS   |
+| `needs_input` returned when pattern is absent                                          | PASS   |
+| `needs_input` returned when contributingTenantRefs is empty                            | PASS   |
+| Registry: appended entries appear in allEntries                                        | PASS   |
+| Registry: hasPattern true after append, false before                                   | PASS   |
+| Registry: findByPublishedId returns correct entry or null                              | PASS   |
+| TypeScript strict mode — no errors                                                     | PASS   |
+| Prettier format — no diffs                                                             | PASS   |
