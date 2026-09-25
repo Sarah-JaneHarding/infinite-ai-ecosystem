@@ -10,6 +10,19 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ## [Unreleased]
 
+### Added
+
+- **Stage 68 — CODEOWNERS and Dependabot**
+  - `.github/CODEOWNERS`: path-scoped ownership covering every CLAUDE.md-named
+    invariant-enforcing area (`packages/db`, `packages/guardrails`/`packages/deident`,
+    `apps/gateway`, `packages/policy`/`packages/contracts/src/popia`), plus
+    `packages/security`, `infra/`, `.github/workflows/`, and
+    `scripts/verify-stage.ts`. Every handle is a real collaborator (checked via the
+    GitHub API first) — no invented teams.
+  - `.github/dependabot.yml`: weekly version updates for the whole pnpm workspace (one
+    `npm` ecosystem entry, patch/minor grouped) and for third-party GitHub Actions used
+    in `.github/workflows/*.yml`.
+
 ### Removed
 
 - **Stage 67 — Dead CodeDeploy-to-EC2 scaffolding**

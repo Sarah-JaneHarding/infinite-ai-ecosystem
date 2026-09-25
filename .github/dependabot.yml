@@ -1,0 +1,56 @@
+# Dependabot version updates — Stage 68 (repository audit follow-through, Task 5).
+#
+# Complements, not replaces, CLAUDE.md rule 9's manual docs/DEPENDENCIES.md tracking:
+# that rule is about a NEW dependency (name, version, licence, why, what it replaces);
+# this is about an EXISTING, already-recorded one drifting out of date or picking up a
+# CVE. Neither makes the other unnecessary — a Dependabot PR bumping an existing
+# dependency's version doesn't need a new docs/DEPENDENCIES.md entry, but does still go
+# through the same PR review and CI gate every other change does. Nothing here auto-merges.
+#
+# One "npm" ecosystem entry at the workspace root: Dependabot detects pnpm-lock.yaml and
+# pnpm-workspace.yaml (packages: apps/*, packages/*) automatically and resolves updates
+# across the whole workspace from a single directory entry — one entry per app/package
+# would mean 36 near-duplicate blocks for no real benefit, since they all share one
+# lockfile.
+#
+# Grouped into patch/minor (usually safe, low-review-cost) vs. major (more likely to need
+# a real look) so a solo maintainer isn't drowned in individually-opened PRs for routine
+# bumps, while a major version bump still arrives as its own PR asking for real attention.
+
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Africa/Johannesburg'
+    open-pull-requests-limit: 10
+    groups:
+      patch-and-minor:
+        update-types:
+          - 'patch'
+          - 'minor'
+    labels:
+      - 'dependencies'
+    commit-message:
+      prefix: 'chore(deps)'
+
+  # Third-party GitHub Actions used across .github/workflows/{ci,cd,terraform,
+  # docker-publish}.yml (actions/checkout, pnpm/action-setup, hashicorp/setup-terraform,
+  # aws-actions/configure-aws-credentials, actions/github-script, etc.) — the same
+  # supply-chain hygiene rule 9 asks for applies to what CI runs, not only what ships.
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Africa/Johannesburg'
+    open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+      - 'ci'
+    commit-message:
+      prefix: 'chore(ci)'

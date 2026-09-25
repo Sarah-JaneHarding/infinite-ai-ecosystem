@@ -9042,3 +9042,57 @@ except this entry and the audit report that found them.
 | `pnpm lint` — clean                                                                | PASS   |
 | `pnpm format:check` — clean                                                        | PASS   |
 | `pnpm typecheck` — 53/53 packages pass                                             | PASS   |
+
+---
+
+## Stage 68 — CODEOWNERS and Dependabot · 2026-09-25
+
+**Goal.** A fresh repository audit found two governance gaps: no enforced review
+ownership per area of the codebase, and no automated check for an already-recorded
+dependency drifting out of date or picking up a CVE (rule 9's `docs/DEPENDENCIES.md`
+tracking is for _new_ dependencies; nothing watched _existing_ ones).
+
+**What changed.**
+
+- `.github/CODEOWNERS` — new. Checked the repository's actual collaborators first
+  (`list_repository_collaborators`) rather than guessing: this repo has exactly one,
+  `@Sarah-JaneHarding`, so every path resolves to the same owner today. Structured by
+  path anyway, not to route review differently yet but to document which areas this
+  codebase already treats as most sensitive — the same split CLAUDE.md's own "Four
+  invariants, each enforced in a specific file" section draws (`packages/db`,
+  `packages/guardrails` + `packages/deident`, `apps/gateway`, `packages/policy` +
+  `packages/contracts/src/popia`), plus `packages/security`, `infra/`,
+  `.github/workflows/`, and `scripts/verify-stage.ts` itself. No fabricated team names —
+  every handle in the file is the one real collaborator this repository has.
+- `.github/dependabot.yml` — new. One `npm` ecosystem entry at the workspace root
+  (Dependabot resolves the whole pnpm workspace — `apps/*`, `packages/*` — from a single
+  `directory: "/"` entry via `pnpm-lock.yaml`/`pnpm-workspace.yaml`, not one block per
+  package), weekly on Mondays, patch/minor updates grouped into one PR so a solo
+  maintainer isn't drowned in routine bumps while a major version still arrives as its
+  own PR asking for real attention. A second `github-actions` ecosystem entry covers the
+  third-party actions `.github/workflows/*.yml` already depend on (`actions/checkout`,
+  `pnpm/action-setup`, `hashicorp/setup-terraform`,
+  `aws-actions/configure-aws-credentials`, `actions/github-script`) — the same
+  supply-chain hygiene rule 9 already asks for applied to what CI runs, not only what
+  ships. Nothing here auto-merges; every PR still goes through the same review and CI
+  gate as any other change.
+
+**Verification.** `python3 -c "import yaml; yaml.safe_load(...)"` — both new YAML
+structures parse and match Dependabot's documented schema (ecosystem, directory,
+schedule, groups, labels, commit-message keys). `pnpm lint` — clean. `pnpm format:check`
+— clean (Prettier does format `.yml`; `.github/CODEOWNERS` has no extension Prettier
+recognises, left unformatted by design, matching how GitHub itself reads the file).
+`pnpm typecheck` — 53/53 packages pass (two new files outside any package's source tree
+cannot regress a package build).
+
+| Exit gate item                                                                  | Result |
+| ------------------------------------------------------------------------------- | ------ |
+| Repository's real collaborators checked before writing CODEOWNERS (not guessed) | PASS   |
+| CODEOWNERS covers every CLAUDE.md-named invariant-enforcing path                | PASS   |
+| No fabricated team/user handles in CODEOWNERS                                   | PASS   |
+| dependabot.yml covers the whole pnpm workspace from one npm-ecosystem entry     | PASS   |
+| dependabot.yml also covers third-party GitHub Actions                           | PASS   |
+| Both new YAML files parse and match their documented schema                     | PASS   |
+| `pnpm lint` — clean                                                             | PASS   |
+| `pnpm format:check` — clean                                                     | PASS   |
+| `pnpm typecheck` — 53/53 packages pass                                          | PASS   |
