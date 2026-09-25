@@ -12,6 +12,13 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 71 — Failure-path tests for `packages/compliance`**
+  - `packages/compliance/test/schemas.spec.ts` (new): 23 tests proving the package's
+    seven exported Zod input schemas actually reject invalid data (out-of-range
+    percentages/quintiles/stages/cycle-years, empty identifier strings) — the package's
+    real input-validation boundary, previously untested despite 35 existing tests
+    thoroughly covering its business logic.
+
 - **Stage 70 — Mirrored `SECURITY.md` to the repository root**
   - `SECURITY.md` (new, root): a short pointer GitHub's Security tab can find, with the
     "report to the repository owner, not a public issue" instruction stated directly and

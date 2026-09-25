@@ -9210,3 +9210,53 @@ hyphenate algorithm.
 | `INFINITEAI_BUILD_MANUAL.md`'s own directives left untouched                        | PASS   |
 | Link anchor to `docs/SECURITY.md` §10 verified against GitHub's slug algorithm      | PASS   |
 | `pnpm format:check` — clean                                                         | PASS   |
+
+---
+
+## Stage 71 — Failure-path tests for `packages/compliance` · 2026-09-25
+
+**Goal.** A fresh repository audit flagged `packages/compliance` as thin on tests
+relative to its source-file count (9 src / 1 test file) — the highest-production-exposure
+package on that list, since every finding it produces is a compliance claim a school
+acts on. Task: add failure-path tests per CLAUDE.md's Definition of Done, targeting the
+riskiest branches first (malformed input, policy-check rejection).
+
+**What the gap actually was.** Reading the existing `compliance.spec.ts` (35 tests)
+first, rather than assuming the file-count ratio meant thin coverage: it's genuinely
+thorough on business logic — every VIOLATION/WARNING/INFO path across all six check
+areas has a happy-path-and-adjacent test. What it never touched: the package's own input
+schemas (`AttendanceInput`, `FeesInput`, etc., all exported from `index.ts` specifically
+so a real caller validates untrusted data before it ever reaches a check function —
+`engine.ts`'s and `index.ts`'s own headers both say the check functions themselves do no
+runtime validation). Zero tests proved those schemas actually reject invalid data — the
+package's real input-validation boundary had no failure-path coverage at all.
+
+**What changed.**
+
+- `packages/compliance/test/schemas.spec.ts` (new) — 23 tests across all seven exported
+  schemas. Genuine constraint violations for each: `attendanceRatePct` outside 0–100,
+  `academicYear` before 2020, `quintile` outside 1–5 or non-integer, `stageCompleted`
+  outside 0–6, `cycleYear` outside {1,2,3}, negative `pdPointsAccumulated`, and an empty
+  string on every `min(1)` identifier field (`tenantId`, `learnerId`, `educatorToken`,
+  `referralId`, WSE `area`). One test documents a deliberate design choice rather than an
+  oversight: `WseInput`'s `rating` has no schema-level range — `checks/wse.ts`'s
+  `WSE_INVALID_RATING` enforces it as a business-logic finding instead, so a school
+  submitting a bad rating gets something to act on rather than a silent parse failure —
+  a regression test now catches a future edit that "fixes" the schema and quietly loses
+  that path. `ComplianceInput` gets its own three tests: accepts tenant-only input with
+  every check area omitted, rejects an empty `tenantId`, and rejects when a nested
+  sub-schema (e.g. `attendance`) itself fails validation.
+
+**Verification.** `pnpm --filter @infinite-ai/compliance test` — 58 tests, all pass (23
+new). `eslint packages/compliance/test/schemas.spec.ts` — clean. `prettier --check` —
+clean. `pnpm --filter @infinite-ai/compliance exec tsc --noEmit` — clean. `pnpm lint` /
+`pnpm format:check` (whole repo) — clean.
+
+| Exit gate item                                                                        | Result |
+| ------------------------------------------------------------------------------------- | ------ |
+| Read the existing test file before assuming the gap, rather than padding blindly      | PASS   |
+| All seven exported schemas have a genuine constraint-violation test                   | PASS   |
+| `WseInput`'s deliberate unconstrained-rating design documented with a regression test | PASS   |
+| `ComplianceInput`'s top-level and nested-failure paths covered                        | PASS   |
+| `pnpm --filter @infinite-ai/compliance test` — 58/58 pass                             | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                             | PASS   |
