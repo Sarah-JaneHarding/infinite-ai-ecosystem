@@ -10,6 +10,13 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ## [Unreleased]
 
+### Added
+
+- **Stage 70 — Mirrored `SECURITY.md` to the repository root**
+  - `SECURITY.md` (new, root): a short pointer GitHub's Security tab can find, with the
+    "report to the repository owner, not a public issue" instruction stated directly and
+    a link to `docs/SECURITY.md` — the single canonical copy — for the full policy.
+
 ### Fixed
 
 - **Stage 69 — Approved pnpm native build scripts**

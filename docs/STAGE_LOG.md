@@ -9162,3 +9162,51 @@ analytics`/`@infinite-ai/warehouse` moved to their correct alphabetical position
 | `pnpm install` no longer warns about ignored build scripts                  | PASS   |
 | Approval state committed in `package.json`, not left as local machine state | PASS   |
 | `pnpm lint` / `format:check` / `typecheck` / `test` all still pass          | PASS   |
+
+---
+
+## Stage 70 — Mirror `SECURITY.md` to the repository root · 2026-09-25
+
+**Goal.** A fresh repository audit found the real security policy living only at
+`docs/SECURITY.md` — GitHub's own Security tab only auto-surfaces a policy at the
+repository root (or `.github/`), so it was never actually finding this repo's policy.
+
+**Move vs. mirror.** `INFINITEAI_BUILD_MANUAL.md` (the authoritative manual per
+`CLAUDE.md`) explicitly directs security work to `docs/SECURITY.md` by that exact path
+("Record it in `docs/SECURITY.md`", "Security questionnaire in `docs/SECURITY.md`"), and
+`docs/STAGE_LOG.md`'s own history already describes a real, substantial document there
+(30+ STRIDE threats with mitigations and test references). Moving the file would mean
+editing the manual's own directives — a bigger, more sensitive change than this stage
+intends. Mirroring instead: a short root `SECURITY.md` for GitHub's Security tab to find,
+pointing at `docs/SECURITY.md` as the one canonical copy, rather than duplicating its
+content into two places that could drift apart.
+
+**What changed.**
+
+- `SECURITY.md` (new, repository root) — states the "do not open a public issue, report
+  to the repository owner directly" instruction plainly (so it's useful even without
+  clicking through), then links to `docs/SECURITY.md` for the full policy and its own
+  §10 for current reporting details.
+
+**A finding, not fixed here (scope discipline).** While reading `docs/SECURITY.md` §10
+to write this file's pointer, found that it reads "Until the disclosure address is
+provisioned (tracked in `OPEN_QUESTIONS.md`)..." — but `docs/OPEN_QUESTIONS.md` currently
+has no entry tracking a disclosure address (checked: no `disclosure`, `vulnerability`, or
+`security contact` match). Left `docs/SECURITY.md` itself untouched rather than widen
+this stage's diff to fix a second, unrelated small inaccuracy — worth a follow-up
+(either drop the stale parenthetical or add the OQ it claims exists), flagged to the
+repo owner rather than guessed at.
+
+**Verification.** `pnpm format:check` — clean. GitHub heading-anchor slug for
+`docs/SECURITY.md`'s `## 10. Reporting a vulnerability` confirmed by hand
+(`#10-reporting-a-vulnerability`) against GitHub's own lowercase/strip-punctuation/
+hyphenate algorithm.
+
+| Exit gate item                                                                      | Result |
+| ----------------------------------------------------------------------------------- | ------ |
+| Root `SECURITY.md` exists for GitHub's Security tab to find                         | PASS   |
+| Reporting instruction usable without clicking through                               | PASS   |
+| `docs/SECURITY.md` remains the single canonical copy (no content duplicated/forked) | PASS   |
+| `INFINITEAI_BUILD_MANUAL.md`'s own directives left untouched                        | PASS   |
+| Link anchor to `docs/SECURITY.md` §10 verified against GitHub's slug algorithm      | PASS   |
+| `pnpm format:check` — clean                                                         | PASS   |
