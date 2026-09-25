@@ -32,6 +32,7 @@ describe('package export surface', () => {
       'checkTemplateFidelity',
       'checkTokenBudget',
       'createBrainAgeAppropriatenessChecker',
+      'createGatewayAgeAppropriatenessJudge',
       'defaultEscalationNotifier',
       'extractFreeText',
       'inspectEgress',

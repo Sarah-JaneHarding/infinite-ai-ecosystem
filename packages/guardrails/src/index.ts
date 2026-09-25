@@ -56,6 +56,11 @@ export {
 } from './brain-age-appropriateness.js';
 
 export {
+  createGatewayAgeAppropriatenessJudge,
+  type JudgeGatewayCallFn,
+} from './age-appropriateness-judge.js';
+
+export {
   GuardrailEscalationError,
   defaultEscalationNotifier,
   runInputGuardrails,

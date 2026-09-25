@@ -8791,3 +8791,80 @@ type, space and shape. Zero ad-hoc hex values remain in `apps/web`.
 | TypeScript strict mode — no errors (design-system + web)         | PASS   |
 | ESLint — no errors                                               | PASS   |
 | Prettier format — no diffs                                       | PASS   |
+
+---
+
+## Stage 64 — Age-Appropriateness Judge (OQ-015 Gap 2, model-call half) · 2026-09-25
+
+**Goal.** Close the model-call half of OQ-015 Gap 2: `AgeAppropriatenessJudge` — the
+injected function `brain-age-appropriateness.ts` documents as needing a real Model
+Gateway call — had no implementation, so `apps/worker`'s default
+`ageAppropriatenessCheckerFactory` wiring passed every output unconditionally. A real,
+fail-closed judge now renders an actual verdict, grounded only in the ratified clauses
+retrieved for each call.
+
+**What changed.**
+
+- `packages/prompts/src/AGE-APPROPRIATENESS-JUDGE/1.0.0.prompt.md` — new Prompt Registry
+  entry (all 8 mandatory sections). Instructed to judge only against the `clauses` it is
+  given for each call, never an outside rule; returns `appropriate: true` with an honest
+  rationale when `clauses` is empty rather than inventing a standard to fill the gap.
+- `packages/prompts/prompt-lock.json` — hash entry added for the new prompt.
+- `apps/gateway/routing.json` — new `guardrail.age_appropriateness` logical model,
+  routed to the same screening-tier provider order as `support.screen`.
+- `packages/guardrails/src/age-appropriateness-judge.ts` — new file.
+  `createGatewayAgeAppropriatenessJudge(gatewayCall, tenantId, promptBody, provenance)`
+  builds a `ChatCompletionRequest`, calls the gateway, and parses the reply against a
+  `{ appropriate: boolean, rationale: string }` Zod schema. Fails closed
+  (`appropriate: false`) on a thrown gateway call, a non-JSON reply, or a reply that does
+  not match the schema — never throws out of the judge itself. `provenance` is a required
+  parameter, not defaulted, since it is only honestly `deidentified: true` for the
+  curriculum-planning-pipeline scope `createBrainAgeAppropriatenessChecker` already
+  documents itself as built for.
+- `packages/guardrails/src/index.ts` — exports `createGatewayAgeAppropriatenessJudge` and
+  `JudgeGatewayCallFn`.
+- `packages/guardrails/test/age-appropriateness-judge.spec.ts` — 7 new tests: appropriate
+  verdict, inappropriate verdict with rationale, and 5 dedicated fail-closed tests (thrown
+  network error, non-JSON reply, schema mismatch, wrong-typed field, non-`Error`
+  rejection).
+- `packages/guardrails/test/exports.spec.ts` — new export added to the allow-list.
+- `apps/worker/src/index.ts` — loads the judge's prompt body once at startup, builds a
+  `fetch`-based `JudgeGatewayCallFn` (same "POST, throw on non-2xx" shape
+  `step-executor.ts`'s own gateway call already uses), and wires
+  `ageAppropriatenessCheckerFactory` to construct the real judge for every phase-aware
+  checker it builds, using the same curriculum-only provenance stamp CE-01 already uses.
+- `docs/OPEN_QUESTIONS.md` — OQ-015 updated: status changed to reflect Gap 2's model-call
+  half resolved, with calibration (OQ-016) and the provenance-scope caveat both recorded
+  as the remaining gap.
+- `CHANGELOG.md` — entry added under `[Unreleased] → Added`.
+
+**What deliberately was not done.** No eval set of human-labelled cases was added for
+this judge, and it is not registered as a `packages/agents` `AgentContract` — it is a
+guardrail-plane mechanism, the same category as `packages/evals`' own `LlmJudge`, not a
+MOD-0X pipeline agent. Calibrating it against real human judgements (OQ-016's own
+requirement for any LLM-as-judge mechanism) needs a labelled dataset this build does not
+have and rule 0.3 forbids fabricating.
+
+**Verification.** `pnpm --filter @infinite-ai/prompts test` — 25 tests, all pass (lock
+file matches the new prompt file). `pnpm --filter @infinite-ai/guardrails test` — 201
+tests, all pass. `pnpm --filter @infinite-ai/worker test` — 87 tests, all pass.
+`pnpm --filter @infinite-ai/gateway test` — 142 tests, all pass (routing config still
+validates with the new entry). `pnpm typecheck` — 53/53 packages pass. `pnpm lint` —
+clean. `pnpm format:check` — clean.
+
+| Exit gate item                                                                  | Result |
+| ------------------------------------------------------------------------------- | ------ |
+| New prompt file passes Prompt Registry section/front-matter validation          | PASS   |
+| Prompt lockfile has no drift against the real prompt tree                       | PASS   |
+| Judge returns `appropriate: true` when the gateway finds the output appropriate | PASS   |
+| Judge returns `appropriate: false` with the gateway's rationale on a refusal    | PASS   |
+| Judge fails closed on a thrown gateway call (network error)                     | PASS   |
+| Judge fails closed on a non-JSON gateway reply                                  | PASS   |
+| Judge fails closed on a reply that does not match the verdict schema            | PASS   |
+| Judge fails closed on a wrong-typed `appropriate` field                         | PASS   |
+| Judge never throws out of itself, even on a non-`Error` rejection               | PASS   |
+| `apps/worker` wires the real judge into the default checker factory             | PASS   |
+| Gateway routing config still validates with the new logical model               | PASS   |
+| TypeScript strict mode — no errors (53/53 packages)                             | PASS   |
+| ESLint — no errors                                                              | PASS   |
+| Prettier format — no diffs                                                      | PASS   |

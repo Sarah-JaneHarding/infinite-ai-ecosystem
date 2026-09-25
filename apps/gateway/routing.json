@@ -237,5 +237,11 @@
     { "provider": "openai", "concreteModel": "text-embedding-3-large" },
     { "provider": "google", "concreteModel": "text-embedding-004" },
     { "provider": "local", "concreteModel": "nomic-embed-text" }
+  ],
+
+  "guardrail.age_appropriateness": [
+    { "provider": "google", "concreteModel": "gemini-2.0-flash" },
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" },
+    { "provider": "openai", "concreteModel": "gpt-4o-mini" }
   ]
 }

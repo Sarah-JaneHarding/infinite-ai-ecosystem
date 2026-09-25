@@ -12,6 +12,22 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 64 — Age-Appropriateness Judge (OQ-015 Gap 2, model-call half)**
+  - `packages/prompts/src/AGE-APPROPRIATENESS-JUDGE/1.0.0.prompt.md`: a new Prompt Registry
+    entry instructing the judge to render a verdict grounded only in the ratified DBE
+    developmental-readiness clauses supplied for each call.
+  - `packages/guardrails/src/age-appropriateness-judge.ts`:
+    `createGatewayAgeAppropriatenessJudge`, a real `AgeAppropriatenessJudge` that calls the
+    Model Gateway and fails closed (`appropriate: false`) on any network error, non-2xx
+    response, non-JSON reply, or schema mismatch.
+  - `apps/gateway/routing.json`: new `guardrail.age_appropriateness` logical model route.
+  - `apps/worker/src/index.ts`: wires the real judge into `ageAppropriatenessCheckerFactory`
+    by default for MOD-01/MOD-04 pipeline jobs carrying `gradePhase`.
+  - 7 new tests (`packages/guardrails/test/age-appropriateness-judge.spec.ts`) covering the
+    happy path, a genuine refusal, and every fail-closed path.
+  - Still open: calibration (OQ-016) and the judge's PII-provenance scope — see
+    `docs/OPEN_QUESTIONS.md` OQ-015's 2026-09-25 update.
+
 - **Stage 18 — Launch readiness and handover**
   - Feature-flag registry (`packages/config/src/flags.ts`) with typed keys, owner, expiry enforcement and env-override pattern.
   - `pnpm check:flags` CI guard (`scripts/check-feature-flags.ts`) that exits 1 on any expired flag.
