@@ -37,16 +37,16 @@ and two how-to guides (local Docker, AWS staging).
 
 ### 2.1 Architecture layers (per `CLAUDE.md`'s L0–L8 stack)
 
-| Layer | Package(s) | Status |
-|---|---|---|
-| L0/L1 integrations | curriculum-seed, contracts/popia | CAPS/ATP/POPIA source material ingested from real DBE documents; partial coverage (see §3.5) |
-| L2 Model Gateway | `apps/gateway` | **Mature.** 16 src files / 15 tests. Sole egress point to model providers — Anthropic, Google, OpenAI-compatible adapters, SSE streaming, credential pooling, budget enforcement, circuit breaker, response caching. |
-| L3 data plane | `packages/db` | **Mature.** 17 src / 23 tests. `withTenant()` tenant-scoped client, RLS on every tenant table, append-only audit/consent ledgers via DB trigger, erasure/provenance/conflict-queue tables. Implements 3 of CLAUDE.md's 4 named invariants directly. |
-| L4 Infinite Brain | `packages/brain` | **Mature.** 15 src / 17 tests. Five memory tiers, retrieval (assembly/rerank/policy-gate/intent-router), write-path state machine, working memory, age-appropriateness/forgetting logic. Testcontainers-backed integration suite (not runnable in this sandbox, runs in CI). |
-| L5 guardrail plane | `guardrails`, `policy`, `deident` | **Mature.** guardrails: 10 src/11 tests (PII egress guard, prompt-injection detection, refusal policy). policy: 5 src/6 tests (RBAC, consent replay, tombstone→purpose→lawful-basis access gate). deident: 3 src/3 tests (tokenisation/scrubbing behind the `deidentified: true` stamp). |
-| L6 agent runtime | `agents`, `orchestrator`, `prompts`, `evals` | **Mature and dense.** `agents`: 63 src files, ~56 agent contracts (CE/AC/DW/TB/PD/LE), 38 tests. `prompts`: one versioned `.prompt.md` per agent (~56 files) + loader/lock. `orchestrator`: DAG runner, human-gate enforcement, per-module pipelines, 13 src/12 tests. `evals`: golden-set runner, champion/challenger promotion gate, 13 src/12 tests. |
-| L7 modules (MOD-01…05) | see §2.2 | Built out with executor + agent-contract coverage for every module; some support packages (billing, provisioning, compliance) still shallow. |
-| L8 experience surfaces | `apps/web` | **Broad but test-light.** 53 src files across 10+ role-scoped UI areas (teacher, learner, guardian, HOD, SMT, SBST, district, admin, platform, auth) but only 7 test files (Playwright/axe-core devDeps suggest supplementary E2E/a11y coverage exists at a different tier). |
+| Layer                  | Package(s)                                   | Status                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| L0/L1 integrations     | curriculum-seed, contracts/popia             | CAPS/ATP/POPIA source material ingested from real DBE documents; partial coverage (see §3.5)                                                                                                                                                                                                                                                            |
+| L2 Model Gateway       | `apps/gateway`                               | **Mature.** 16 src files / 15 tests. Sole egress point to model providers — Anthropic, Google, OpenAI-compatible adapters, SSE streaming, credential pooling, budget enforcement, circuit breaker, response caching.                                                                                                                                    |
+| L3 data plane          | `packages/db`                                | **Mature.** 17 src / 23 tests. `withTenant()` tenant-scoped client, RLS on every tenant table, append-only audit/consent ledgers via DB trigger, erasure/provenance/conflict-queue tables. Implements 3 of CLAUDE.md's 4 named invariants directly.                                                                                                     |
+| L4 Infinite Brain      | `packages/brain`                             | **Mature.** 15 src / 17 tests. Five memory tiers, retrieval (assembly/rerank/policy-gate/intent-router), write-path state machine, working memory, age-appropriateness/forgetting logic. Testcontainers-backed integration suite (not runnable in this sandbox, runs in CI).                                                                            |
+| L5 guardrail plane     | `guardrails`, `policy`, `deident`            | **Mature.** guardrails: 10 src/11 tests (PII egress guard, prompt-injection detection, refusal policy). policy: 5 src/6 tests (RBAC, consent replay, tombstone→purpose→lawful-basis access gate). deident: 3 src/3 tests (tokenisation/scrubbing behind the `deidentified: true` stamp).                                                                |
+| L6 agent runtime       | `agents`, `orchestrator`, `prompts`, `evals` | **Mature and dense.** `agents`: 63 src files, ~56 agent contracts (CE/AC/DW/TB/PD/LE), 38 tests. `prompts`: one versioned `.prompt.md` per agent (~56 files) + loader/lock. `orchestrator`: DAG runner, human-gate enforcement, per-module pipelines, 13 src/12 tests. `evals`: golden-set runner, champion/challenger promotion gate, 13 src/12 tests. |
+| L7 modules (MOD-01…05) | see §2.2                                     | Built out with executor + agent-contract coverage for every module; some support packages (billing, provisioning, compliance) still shallow.                                                                                                                                                                                                            |
+| L8 experience surfaces | `apps/web`                                   | **Broad but test-light.** 53 src files across 10+ role-scoped UI areas (teacher, learner, guardian, HOD, SMT, SBST, district, admin, platform, auth) but only 7 test files (Playwright/axe-core devDeps suggest supplementary E2E/a11y coverage exists at a different tier).                                                                            |
 
 ### 2.2 The five product modules + Learning Engine
 
@@ -235,6 +235,7 @@ it's done.
 ### P0 — Safety and infrastructure blockers (do before any real learner touches this)
 
 **Task 1 — Implement the Age-Appropriateness Judge (closes OQ-015)**
+
 1. Read the current guardrail scaffolding in `packages/guardrails/src/` and the retrieval helper
    already used by other L5 checks against the 206 ingested DBE readiness clauses in the Brain.
 2. Add an `AgeAppropriatenessJudge` module that: takes `(candidateOutput, learnerGradeContext)`,
@@ -252,6 +253,7 @@ it's done.
    owns the guardrail plane) still exits 0.
 
 **Task 2 — Resolve Terraform module duplication before first apply**
+
 1. Diff `infra/terraform/modules/vpc` vs `modules/network`, `modules/database` vs `modules/rds`,
    `modules/cache` vs `modules/elasticache`.
 2. Grep `infra/terraform/modules/stack/main.tf` and each `environments/*/main.tf` for which
@@ -281,6 +283,7 @@ traffic), pull real gateway token-usage telemetry (Langfuse) and reconcile again
 ### P1 — Engineering hygiene
 
 **Task 6 — Extend `verify:stage` to cover Stages 55–63**
+
 1. Open `scripts/verify-stage.ts`, find the `stages` array's last entry (id `'54'`).
 2. For each of Stages 55–63, look up its `STAGE_LOG.md` entry to see which package(s) and
    commands it verified, and add a matching `{id: '55', name: '...', commands: [...]}` entry
@@ -361,11 +364,13 @@ The documented process (`docs/DEV_SETUP.md`) in full, condensed to the commands 
 run:
 
 ### 5.1 Prerequisites
+
 - Node 22+, pnpm 10+
 - A running Docker daemon — confirm with `docker info`
 - `pnpm install --frozen-lockfile` from repo root
 
 ### 5.2 Bring up the data plane
+
 ```bash
 cp infra/docker/.env.example infra/docker/.env
 # Fill in every value. For passwords/secrets, generate with:
@@ -375,21 +380,23 @@ openssl rand -base64 24
 
 docker compose --env-file infra/docker/.env -f infra/docker/compose.dev.yml up -d
 ```
+
 This starts 9 containers:
 
-| Service | Image | Port | Purpose |
-|---|---|---|---|
-| `postgres` | `pgvector/pgvector:pg16` | 5432 | App DB + pgvector (Brain L1 embeddings) |
-| `redis` | `redis:7-alpine` | 6379 | Queues/cache (AOF persistence) |
-| `keycloak` | `quay.io/keycloak/keycloak:26.0` | 8180→8080 | Auth (OIDC), realm auto-imported from `infra/keycloak/realm.json` |
-| `minio` | `minio/minio` | 9000 (API) / 9001 (console) | S3-compatible object storage (dev stand-in for real S3) |
-| `minio-init` | `minio/mc` | — | One-shot: creates app bucket + `langfuse` bucket, then exits |
-| `langfuse-clickhouse` | `clickhouse/clickhouse-server:25.12` | — | Langfuse's analytics store |
-| `langfuse-postgres` | `postgres:17-alpine` | — | Langfuse's own metadata DB |
-| `langfuse-redis` | `redis:7-alpine` | — | Langfuse's own queue |
-| `langfuse-worker` / `langfuse-web` | `docker.langfuse.com/langfuse/langfuse-*` | 3001→3000 (web) | Self-hosted LLM observability (traces, evals) |
+| Service                            | Image                                     | Port                        | Purpose                                                           |
+| ---------------------------------- | ----------------------------------------- | --------------------------- | ----------------------------------------------------------------- |
+| `postgres`                         | `pgvector/pgvector:pg16`                  | 5432                        | App DB + pgvector (Brain L1 embeddings)                           |
+| `redis`                            | `redis:7-alpine`                          | 6379                        | Queues/cache (AOF persistence)                                    |
+| `keycloak`                         | `quay.io/keycloak/keycloak:26.0`          | 8180→8080                   | Auth (OIDC), realm auto-imported from `infra/keycloak/realm.json` |
+| `minio`                            | `minio/minio`                             | 9000 (API) / 9001 (console) | S3-compatible object storage (dev stand-in for real S3)           |
+| `minio-init`                       | `minio/mc`                                | —                           | One-shot: creates app bucket + `langfuse` bucket, then exits      |
+| `langfuse-clickhouse`              | `clickhouse/clickhouse-server:25.12`      | —                           | Langfuse's analytics store                                        |
+| `langfuse-postgres`                | `postgres:17-alpine`                      | —                           | Langfuse's own metadata DB                                        |
+| `langfuse-redis`                   | `redis:7-alpine`                          | —                           | Langfuse's own queue                                              |
+| `langfuse-worker` / `langfuse-web` | `docker.langfuse.com/langfuse/langfuse-*` | 3001→3000 (web)             | Self-hosted LLM observability (traces, evals)                     |
 
 Notes:
+
 - Keycloak realm import takes 20–30s. If client-secret substitution fails, open
   `http://localhost:8180` (admin console), copy the real client secret, and paste it into
   `apps/web/.env` manually.
@@ -397,14 +404,17 @@ Notes:
   server owns 3000).
 
 ### 5.3 Run migrations
+
 ```bash
 # DATABASE_URL here must use the migrator role (DDL-only, per infra/docker/initdb/02-roles.sh)
 pnpm --filter @infinite-ai/db db:migrate:deploy
 ```
 
 ### 5.4 Configure per-app `.env` files
+
 Three separate `.env` files, each scoped differently — **do not reuse the same `DATABASE_URL`
 across them**, the roles have different privileges:
+
 - Root `.env` — `DATABASE_URL` using the `app_rw` role (least-privilege, RLS-enforced — this is
   what most local scripts/tests use).
 - `apps/gateway/.env` — provider API keys (`ANTHROPIC_API_KEYS`). Optional if you're not doing
@@ -416,13 +426,16 @@ header built from the Langfuse public/secret key pair (visible in the Langfuse U
 boot — `LANGFUSE_INIT_*` env vars auto-create an org/project/user/API key on startup).
 
 ### 5.5 (Optional) seed curriculum data
+
 ```bash
 pnpm curriculum:seed
 pnpm curriculum:ratify
 ```
+
 Writes into three fixed dev tenant UUIDs (`10000000-…001/002/003`).
 
 ### 5.6 Start the three apps (three terminals — env is not auto-loaded)
+
 ```bash
 # terminal 1
 source .env && pnpm --filter @infinite-ai/gateway start
@@ -433,14 +446,17 @@ source .env && pnpm --filter @infinite-ai/worker start
 # terminal 3
 pnpm --filter @infinite-ai/web dev   # http://localhost:3000
 ```
+
 No users ship in the imported Keycloak realm — create one via the Keycloak admin console
 (`http://localhost:8180`) before signing in to `apps/web`.
 
 ### 5.7 Running the app containers themselves (instead of `pnpm dev`)
+
 ```bash
 docker compose --env-file infra/docker/.env \
   -f infra/docker/compose.dev.yml -f infra/docker/compose.apps.yml up -d --build
 ```
+
 `compose.apps.yml` builds `gateway` (port 8080), `worker` (port 127.0.0.1:8081, not publicly
 exposed), and `web` (port 3000) from their respective Dockerfiles, on the same Docker network as
 the data plane. Each app's Dockerfile builds from the repo root (pnpm workspace needs the full
@@ -448,6 +464,7 @@ monorepo tree — no pruned/multi-stage slim build exists yet, worth a future op
 urgent for local testing).
 
 ### 5.8 Running tests against Docker
+
 ```bash
 # Unit tier — no Docker needed
 pnpm test
@@ -459,9 +476,11 @@ pnpm --filter @infinite-ai/db coverage:merged   # unit + integration merged, the
 ```
 
 ### 5.9 Tearing down
+
 ```bash
 docker compose -f infra/docker/compose.dev.yml -f infra/docker/compose.apps.yml down -v
 ```
+
 `-v` removes the named volumes (`postgres-data`, `redis-data`, `minio-data`,
 `langfuse-*-data/logs`) — omit `-v` if you want to keep local data between sessions.
 
@@ -475,33 +494,39 @@ against a real AWS account. Do Task 2 (§4, module-duplication cleanup) before s
 below.
 
 ### 6.1 Account structure
+
 Set up (or confirm) AWS Organizations with at least 3 accounts: `dev`, `staging`/`production`
 management, and a shared services/logging account. All resources go in **`af-south-1`**
 (Cape Town) — this is a hard requirement, not a default, because of POPIA data-residency (rule:
 learner data must stay in-region).
 
 ### 6.2 Bootstrap Terraform remote state
+
 ```bash
 cd infra/terraform/bootstrap
 terraform init
 terraform apply   # creates the S3 bucket + DynamoDB lock table for remote state
 ```
+
 Each environment (`dev`/`staging`/`production`/`test`) has a `backend.hcl.example` — copy it to
 `backend.hcl` and fill in the bucket/table names the bootstrap step just created.
 
 ### 6.3 Set up GitHub OIDC → AWS role (for CI/CD, no long-lived AWS keys in GitHub)
+
 Create an IAM role trusted by GitHub's OIDC provider, scoped to this repo, with permissions to
 assume the deploy role Terraform and the `cd.yml`/`terraform.yml` workflows need. Record its ARN
 as the `AWS_DEPLOY_ROLE_ARN` repository variable, alongside `TF_STATE_BUCKET`, `TF_LOCK_TABLE`,
 and `TF_VAR_ALERT_EMAIL` (all already referenced by `.github/workflows/terraform.yml`).
 
 ### 6.4 Apply the staging environment
+
 ```bash
 cd infra/terraform/environments/staging
 terraform init -backend-config=backend.hcl
 terraform plan    # review carefully — first real apply
 terraform apply
 ```
+
 This provisions, per the module inventory in this audit (§3.3, after resolving duplicates):
 VPC + subnets + NAT + route tables, RDS Postgres 16 Multi-AZ with pgvector + KMS encryption,
 ElastiCache Redis, S3 (SSE-KMS, versioned, lifecycle-managed), ECR repositories, ECS cluster +
@@ -517,6 +542,7 @@ Alternatively, let CI do it: pushing to `main` with changes under `infra/terrafo
 rule, so a human approves before anything real is provisioned.
 
 ### 6.5 Bootstrap database roles and run migrations
+
 Connect as the RDS master user and run `infra/docker/initdb/01-extensions.sql` (installs
 `vector`, `pg_trgm`, `pgcrypto`) and `02-roles.sh`'s equivalent (create `migrator`, `app_rw`,
 `worker_rw`, `analytics_ro` roles — all `NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS`) against
@@ -529,7 +555,9 @@ DATABASE_URL=<migrator-role-url-from-secrets-manager> \
 ```
 
 ### 6.6 Build and push images, then deploy
+
 This is what `.github/workflows/cd.yml` automates on every successful CI run on `main`:
+
 1. `build-and-push` — Docker builds `apps/gateway`, `apps/worker`, `apps/web`, tags each with the
    commit SHA, pushes to ECR.
 2. `deploy-staging` — assumes the OIDC role from §6.3, runs `scripts/cd/deploy-ecs-service.sh`
@@ -543,6 +571,7 @@ Docker-Hub-targeted `docker-publish.yml` (manual dispatch or `v*` tag push) if y
 published outside of AWS ECR for some other reason.
 
 ### 6.7 Provision the first tenant and verify
+
 1. Provision Keycloak on the real environment (realm import, first admin user).
 2. Run the onboarding wizard (`docs/ONBOARDING_GUIDE.md`'s 7 steps) to create the first real
    tenant — school profile, phases/grades, staff/roles, POPIA consent + retention-schedule
@@ -559,6 +588,7 @@ published outside of AWS ECR for some other reason.
    ```
 
 ### 6.8 Cost expectations
+
 Per `docs/AWS_MIGRATION_AUDIT.md` (dated 2026-09-09, `af-south-1`, R18.50/USD): a 5-school pilot
 staging environment runs roughly **$823/mo** in AWS infra (~R15,226/mo), growing to ~$1,070/mo at
 25 schools, ~$1,756/mo at 100, ~$3,518/mo at 500. This is infra only — total OpEx including
@@ -568,6 +598,7 @@ estimated around 12–16 paying schools at the documented pricing tiers (Starter
 Professional R3,500/mo, Enterprise R8,500/mo).
 
 ### 6.9 Before going live: two "⚠" items from the AWS audit that are not yet done
+
 The AWS_MIGRATION_AUDIT's own POPIA-controls table marks **breach notification runbook** and
 **per-school retention-schedule ratification tooling** as "⚠ needed" even in the Terraform
 design. Confirm `docs/RUNBOOKS/` has a breach-notification procedure and that every pilot school
@@ -578,25 +609,25 @@ production-ready.
 
 ## 7. Summary Table
 
-| Area | Status |
-|---|---|
-| Core platform code (Stages 00–18) | ✅ Built, tested, passing |
-| Learning Engine (Stage 13, LE-01…09) | ✅ Built, tested, passing |
-| Unit test suite | ✅ 4,402/4,402 passing |
-| Typecheck / lint | ✅ Clean, strict mode |
-| Integration test suite | ⚠️ Written, runs in CI only (needs Docker, not run in this sandbox) |
-| Age-appropriateness guardrail | 🔴 Stub — fails open, top priority fix |
-| Real AWS environment | 🔴 Terraform written, never applied — nothing is live |
-| `verify:stage` gate coverage | 🟡 9 stages behind the actual log |
-| Curriculum content coverage | 🟡 Partial by design, pending real source docs |
-| Governance (CODEOWNERS, dep scanning) | 🟡 Missing |
-| Load testing, cost model calibration | ⏸️ Blocked on staging existing (§6) |
-| Phase 4 extension | ⏸️ Scope decision deferred, not blocking |
+| Area                                  | Status                                                              |
+| ------------------------------------- | ------------------------------------------------------------------- |
+| Core platform code (Stages 00–18)     | ✅ Built, tested, passing                                           |
+| Learning Engine (Stage 13, LE-01…09)  | ✅ Built, tested, passing                                           |
+| Unit test suite                       | ✅ 4,402/4,402 passing                                              |
+| Typecheck / lint                      | ✅ Clean, strict mode                                               |
+| Integration test suite                | ⚠️ Written, runs in CI only (needs Docker, not run in this sandbox) |
+| Age-appropriateness guardrail         | 🔴 Stub — fails open, top priority fix                              |
+| Real AWS environment                  | 🔴 Terraform written, never applied — nothing is live               |
+| `verify:stage` gate coverage          | 🟡 9 stages behind the actual log                                   |
+| Curriculum content coverage           | 🟡 Partial by design, pending real source docs                      |
+| Governance (CODEOWNERS, dep scanning) | 🟡 Missing                                                          |
+| Load testing, cost model calibration  | ⏸️ Blocked on staging existing (§6)                                 |
+| Phase 4 extension                     | ⏸️ Scope decision deferred, not blocking                            |
 
 ---
 
-*Generated by a fresh audit of the repository as of 2026-09-25. Sourced directly from
+_Generated by a fresh audit of the repository as of 2026-09-25. Sourced directly from
 `INFINITEAI_BUILD_MANUAL.md`, `docs/STAGE_LOG.md`, `docs/OPEN_QUESTIONS.md`,
 `docs/AWS_MIGRATION_AUDIT.md`, `docs/DEV_SETUP.md`, `infra/docker/`, `infra/terraform/`,
 `.github/workflows/`, and a full package-by-package source/test inventory — plus live
-`pnpm install`/`typecheck`/`lint`/`test` runs against the current branch.*
+`pnpm install`/`typecheck`/`lint`/`test` runs against the current branch._
