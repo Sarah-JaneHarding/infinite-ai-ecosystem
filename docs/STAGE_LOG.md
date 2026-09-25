@@ -8995,3 +8995,50 @@ files — clean.
 | Full cumulative run — blocked by the pre-existing Stage 01 Docker requirement   | N/A    |
 | ESLint — no errors                                                              | PASS   |
 | Prettier format — no diffs                                                      | PASS   |
+
+---
+
+## Stage 67 — Remove dead CodeDeploy-to-EC2 scaffolding · 2026-09-25
+
+**Goal.** A fresh repository audit flagged root-level `appspec.yml`/`buildspec.yml` as
+inconsistent with the real deployment pipeline (Docker → ECR → ECS Fargate, via
+`.github/workflows/cd.yml` and `infra/terraform`). Investigation confirmed both files —
+and `scripts/restart_server.sh`, which `appspec.yml` invokes — were never adapted from
+their generator's own placeholder template: literal comments reading "your app directory
+on EC2," "change to your runtime (python, java, etc.)," "your build output folder," and
+a restart hook reading `systemctl restart nginx   # or your app server (node, gunicorn,
+etc.)`. Node 18/`npm` throughout, against a repo that has run Node 22/pnpm since Stage 00.
+
+**Confirmed dead, not just outdated.** A repo-wide grep found nothing outside these three
+files referencing any of them by name. The only other CodeDeploy mentions in the repo
+(`docs/RUNBOOKS/canary-deploy.md`) are about a different thing entirely — CodeDeploy's
+_ECS_ deployment controller as a possible future alternative to weighted ALB listener
+rules for canary traffic-shifting, which is EC2/on-premises CodeDeploy's opposite compute
+platform and would need an ECS task-definition-shaped `appspec.yml`, nothing like the
+file this stage removes. No stage in this log ever recorded building or adapting any of
+the three files — they predate every documented stage, most likely repo-template
+scaffolding from before Stage 00. The human user confirmed removal over rewriting: this
+codebase runs one deployment path (ECS Fargate), not two.
+
+**What changed.**
+
+- `appspec.yml` — deleted.
+- `buildspec.yml` — deleted.
+- `scripts/restart_server.sh` — deleted (appspec.yml's own `AfterInstall` hook, equally
+  unadapted, and with no other caller).
+
+**Verification.** `pnpm lint` — clean. `pnpm format:check` — clean. `pnpm typecheck` —
+53/53 packages pass (deleting three files outside any package's source tree cannot
+regress a package build, confirmed rather than assumed). Repo-wide grep for
+`restart_server`, `appspec.yml`, `buildspec.yml` — zero references remaining anywhere,
+including `.github/workflows/*.yml`, `infra/terraform/**`, and every `docs/**` file
+except this entry and the audit report that found them.
+
+| Exit gate item                                                                     | Result |
+| ---------------------------------------------------------------------------------- | ------ |
+| Confirmed no CI/CD workflow or script references any of the three files            | PASS   |
+| Confirmed the one other CodeDeploy mention in the repo is unrelated (ECS, not EC2) | PASS   |
+| Human confirmed deletion over rewriting a second deployment path                   | PASS   |
+| `pnpm lint` — clean                                                                | PASS   |
+| `pnpm format:check` — clean                                                        | PASS   |
+| `pnpm typecheck` — 53/53 packages pass                                             | PASS   |

@@ -10,6 +10,15 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ## [Unreleased]
 
+### Removed
+
+- **Stage 67 — Dead CodeDeploy-to-EC2 scaffolding**
+  - `appspec.yml`, `buildspec.yml`, `scripts/restart_server.sh`: deleted. Unmodified
+    placeholder boilerplate (Node 18/npm, `/var/www/html`, `systemctl restart nginx`)
+    from before this repo settled on its real, single deployment path — Docker → ECR →
+    ECS Fargate via `.github/workflows/cd.yml` and `infra/terraform`. Nothing referenced
+    any of the three files.
+
 ### Fixed
 
 - **Stage 66 — `verify:stage` gate extended through Stage 65**
