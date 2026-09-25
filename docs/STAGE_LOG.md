@@ -8868,3 +8868,58 @@ clean. `pnpm format:check` — clean.
 | TypeScript strict mode — no errors (53/53 packages)                             | PASS   |
 | ESLint — no errors                                                              | PASS   |
 | Prettier format — no diffs                                                      | PASS   |
+
+---
+
+## Stage 65 — Terraform module de-duplication (`vpc`/`rds`/`elasticache`) · 2026-09-25
+
+**Goal.** A fresh repository audit found `infra/terraform/modules/{vpc,database,cache}`
+and `{vpc,rds,elasticache}` looking like duplicate pairs. Investigation found they were
+not dead code on either side — `environments/{dev,staging,production}` (via
+`modules/stack`) used `network`/`database`/`cache`, while `environments/test` used
+`vpc`/`rds`/`elasticache` directly, contradicting that file's own header comment ("Uses
+the same modules as staging/production"). Worse than a maintenance duplicate: `rds` had
+no role-based access model at all (one master credential, no `migrator`/`app_rw`/
+`worker_rw`/`analytics_ro` split), so `test` was not actually proving the tenant-isolation
+role model rule 5 requires everywhere else — a real correctness gap, not just duplicated
+code.
+
+**What changed.**
+
+- `infra/terraform/environments/test/main.tf` — rewired onto `network`/`database`/`cache`
+  (the same modules `modules/stack` uses for dev/staging/production), composed directly
+  rather than through `modules/stack` itself — `test`'s own purpose (cheaply prove the
+  leaf modules) does not need `modules/stack`'s ALB, Langfuse, SES, observability, or SNS
+  escalation topic. `DATABASE_URL`/`REDIS_URL` moved from a plain shared env var to
+  per-service `secrets` entries (`"<arn>:url::"`), matching `modules/stack`'s own
+  gateway/worker pattern exactly — the old plain `REDIS_URL` pointed at an unauthenticated
+  endpoint the new `cache` module's TLS+AUTH-token Redis cannot serve that way. Outputs
+  renamed `rds_endpoint`/`redis_endpoint` → `database_endpoint`/`cache_endpoint` (grepped
+  first: nothing outside this file referenced the old names).
+- `infra/terraform/modules/{vpc,rds,elasticache}/` — deleted. Nothing references them
+  after the rewire above (`git rm`, confirmed with a repo-wide grep first).
+- `infra/terraform/README.md` — added the `test` environment to the layout list (it was
+  previously undocumented there).
+
+**Verification.** `terraform fmt -check -recursive -diff` — clean, whole tree.
+`terraform init -backend=false` from `environments/test` — resolves the full module graph
+(all 7 child modules) with no source-path or provider-requirement errors; fails only on
+the provider _plugin_ download, which needs `registry.terraform.io` — blocked by this
+sandbox's own network policy, the same constraint `infra/terraform/README.md`'s own
+"Status" section already documents, so `terraform validate` itself could not run here.
+Every variable passed to `network`/`database`/`cache`/`ecs-cluster`/`ecs-service` was
+cross-checked by hand against each module's own `variable` blocks (required vs. has a
+default) before writing this file, and the `"<arn>:url::"` secret-reference syntax is
+copied verbatim from `modules/stack/main.tf`'s own already-existing usage, not invented
+here.
+
+| Exit gate item                                                                     | Result |
+| ---------------------------------------------------------------------------------- | ------ |
+| `vpc`/`database`/`cache` duplication resolved — one implementation each            | PASS   |
+| `environments/test` now uses the same leaf modules as dev/staging/production       | PASS   |
+| `test`'s header comment claim is now true (was false before this stage)            | PASS   |
+| Deleted modules confirmed unreferenced before removal (repo-wide grep)             | PASS   |
+| `terraform fmt -check -recursive` — clean                                          | PASS   |
+| `terraform init -backend=false` — full module graph resolves                       | PASS   |
+| `terraform validate` — blocked by sandbox network policy (documented, not skipped) | N/A    |
+| Every module call's required variables present, verified by hand against schema    | PASS   |

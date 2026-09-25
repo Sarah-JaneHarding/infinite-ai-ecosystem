@@ -10,6 +10,19 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Stage 65 — Terraform module de-duplication (`vpc`/`rds`/`elasticache`)**
+  - `infra/terraform/environments/test/main.tf`: rewired onto the same `network`/
+    `database`/`cache` modules `modules/stack` uses for dev/staging/production, composed
+    directly (no ALB/Langfuse/SES/observability/SNS — not needed for this environment's
+    purpose). Fixes a real gap, not just duplicated code: the old `rds` module had no
+    role-based access model, so `test` was not proving the tenant-isolation role split
+    (`migrator`/`app_rw`/`worker_rw`/`analytics_ro`) rule 5 requires everywhere else.
+  - `infra/terraform/modules/{vpc,rds,elasticache}/`: deleted — unreferenced after the
+    rewire above.
+  - `infra/terraform/README.md`: `test` environment added to the layout list.
+
 ### Added
 
 - **Stage 64 — Age-Appropriateness Judge (OQ-015 Gap 2, model-call half)**
