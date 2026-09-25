@@ -9096,3 +9096,69 @@ cannot regress a package build).
 | `pnpm lint` — clean                                                             | PASS   |
 | `pnpm format:check` — clean                                                     | PASS   |
 | `pnpm typecheck` — 53/53 packages pass                                          | PASS   |
+
+---
+
+## Stage 69 — Review and approve pnpm native build scripts · 2026-09-25
+
+**Goal.** A fresh repository audit found `pnpm install` warning "Ignored build scripts:
+cpu-features@0.0.10, msgpackr-extract@3.0.4, protobufjs@7.6.6, ssh2@1.17.0" on every
+install — pnpm's build-script allowlist blocking four packages' native install scripts
+rather than either running or explicitly denying them. The goal was to actually verify
+each one before approving, not rubber-stamp `pnpm approve-builds --all` — approving a
+package's install-time script is granting it arbitrary code execution during every
+future `pnpm install`, on every machine and in CI.
+
+**Investigation, before approving anything.**
+
+`pnpm why <pkg>` traced all four to two legitimate, already-deliberately-adopted
+dependency chains — none of them a surprise:
+
+- `cpu-features` and `ssh2` — both required by `docker-modem`/`ssh-remote-port-forward` →
+  `dockerode` → `testcontainers` (a devDependency of `brain`, `curriculum-seed`, `db`,
+  `guardrails` — the Docker-backed integration-test tooling this whole codebase already
+  depends on throughout, e.g. Stages 01/05/06's own gate commands). `ssh2` is what lets
+  `dockerode` connect to a Docker daemon over `DOCKER_HOST=ssh://...`; `cpu-features` is
+  its own tiny companion package for SSH crypto-algorithm negotiation.
+- `protobufjs` — required by `@grpc/proto-loader` → `dockerode` → `testcontainers`, same
+  chain. Protocol Buffers support for the Docker Engine API's gRPC-based endpoints.
+- `msgpackr-extract` — a different chain entirely: `msgpackr`'s own optional native fast
+  path, required by `bullmq` (`apps/worker`'s real, production job-queue library, not a
+  devDependency). `pnpm why msgpackr-extract` returned nothing at first because pnpm's
+  dependency graph resolves it under `msgpackr`'s own optionalDependencies, not as a
+  direct devDependency anywhere — traced instead via the lockfile.
+
+Cross-checked every package's registry metadata (`registry.npmjs.org/<pkg>`) against the
+version actually pinned in `pnpm-lock.yaml`: `cpu-features` and `ssh2` are both
+maintained by `mscdex` (a long-standing, widely-trusted maintainer of the Node.js SSH
+ecosystem — `ssh2` itself is the SSH client library essentially all Node SSH tooling is
+built on), `msgpackr-extract` by `kriszyp` (the `msgpackr`/`lmdb-js` author), and
+`protobufjs` by `dcode`/`fenster`/`google-wombot`. All four installed versions matched
+(`ssh2`, `cpu-features`, `msgpackr-extract`) or were a deliberately-pinned older major of
+(`protobufjs`, held back by `@grpc/proto-loader`'s own range) the package's actual latest
+published version — no stale, abandoned, or suspiciously-versioned package in the set.
+
+**What changed.**
+
+- `pnpm approve-builds --all` — approved all four, recorded in root `package.json`'s
+  `pnpm.onlyBuiltDependencies` alongside the two entries already there
+  (`@prisma/client`/`@prisma/engines`/`prisma`, `esbuild`). pnpm also alphabetically
+  re-sorted the `devDependencies` block it rewrote in the same pass (`@infinite-ai/
+analytics`/`@infinite-ai/warehouse` moved to their correct alphabetical position) — a
+  mechanical side effect of pnpm's own save behaviour, not a manual edit; same
+  dependencies, same versions, key order only.
+
+**Verification.** `rm -rf node_modules && pnpm install --frozen-lockfile` — clean, no
+"Ignored build scripts" warning; `ssh2`'s native crypto binding actually builds now
+("Succeeded in building optional crypto binding"). `pnpm lint` — clean.
+`pnpm format:check` — clean. `pnpm typecheck` — 53/53 packages pass.
+`pnpm test` — every package's suite passes, unchanged.
+
+| Exit gate item                                                              | Result |
+| --------------------------------------------------------------------------- | ------ |
+| Each package's dependency chain traced before approving (not blind `--all`) | PASS   |
+| Registry metadata (maintainer, version) cross-checked for all four          | PASS   |
+| No unexplained, stale, or suspicious package found in the set               | PASS   |
+| `pnpm install` no longer warns about ignored build scripts                  | PASS   |
+| Approval state committed in `package.json`, not left as local machine state | PASS   |
+| `pnpm lint` / `format:check` / `typecheck` / `test` all still pass          | PASS   |

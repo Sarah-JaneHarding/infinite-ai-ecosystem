@@ -61,13 +61,13 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
+    "@infinite-ai/analytics": "workspace:*",
     "@infinite-ai/brain": "workspace:*",
     "@infinite-ai/contracts": "workspace:*",
     "@infinite-ai/curriculum-seed": "workspace:*",
-    "@infinite-ai/analytics": "workspace:*",
-    "@infinite-ai/warehouse": "workspace:*",
     "@infinite-ai/db": "workspace:*",
     "@infinite-ai/evals": "workspace:*",
+    "@infinite-ai/warehouse": "workspace:*",
     "@types/node": "22.20.1",
     "eslint": "9.39.5",
     "eslint-config-prettier": "10.1.8",
@@ -84,8 +84,12 @@
     "onlyBuiltDependencies": [
       "@prisma/client",
       "@prisma/engines",
+      "cpu-features",
+      "esbuild",
+      "msgpackr-extract",
       "prisma",
-      "esbuild"
+      "protobufjs",
+      "ssh2"
     ],
     "overrides": {
       "nanoid": "3.3.18",

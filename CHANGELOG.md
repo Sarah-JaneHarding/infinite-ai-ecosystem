@@ -10,6 +10,17 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Stage 69 — Approved pnpm native build scripts**
+  - `package.json`'s `pnpm.onlyBuiltDependencies`: added `cpu-features`, `ssh2`,
+    `protobufjs` (all three transitively required by `testcontainers`, the Docker-backed
+    integration-test tooling), and `msgpackr-extract` (required by `bullmq`,
+    `apps/worker`'s real job-queue library). Each traced to its actual dependency chain
+    and cross-checked against npm registry maintainer metadata before approving — not a
+    blind `pnpm approve-builds --all`. Removes the "Ignored build scripts" warning every
+    `pnpm install` printed.
+
 ### Added
 
 - **Stage 68 — CODEOWNERS and Dependabot**
