@@ -12,6 +12,14 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Fixed
 
+- **Stage 66 — `verify:stage` gate extended through Stage 65**
+  - `scripts/verify-stage.ts`: eleven new stage entries (`55`–`65`) closing a gap where
+    the cumulative gate script had stopped at id `54` while eleven real stages had
+    already shipped — `pnpm verify:stage <NN>` was silently not covering any of them.
+  - `.github/workflows/ci.yml`: `Stage gate` step bumped from `pnpm verify:stage 52` to
+    `pnpm verify:stage 65` (it had drifted three stages further behind even the script's
+    own array).
+
 - **Stage 65 — Terraform module de-duplication (`vpc`/`rds`/`elasticache`)**
   - `infra/terraform/environments/test/main.tf`: rewired onto the same `network`/
     `database`/`cache` modules `modules/stack` uses for dev/staging/production, composed

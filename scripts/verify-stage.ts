@@ -894,6 +894,134 @@ const STAGES: readonly Stage[] = [
       'pnpm --filter @infinite-ai/web exec tsc --noEmit',
     ],
   },
+  {
+    id: '55',
+    name: 'LE-03 Outcome Attributor',
+    commands: [
+      // attributeOutcomes: pre_post_assessment / cohort_comparison / temporal_proximity
+      // method selection, confidence scoring, insufficient_data honesty. 12 new tests
+      // (53 total in the package).
+      'pnpm --filter @infinite-ai/learning test',
+    ],
+  },
+  {
+    id: '56',
+    name: 'LE-04 Pattern Miner',
+    commands: [
+      // minePatterns: per-agent grouping, PATTERN_MIN_SAMPLE_SIZE threshold, effect size
+      // + 95% CI, structural bias check with divergent-pattern exclusion. 14 new tests
+      // (67 total).
+      'pnpm --filter @infinite-ai/learning test',
+    ],
+  },
+  {
+    id: '57',
+    name: 'LE-05 Exemplar Curator + LE-06 Prompt Evolver',
+    commands: [
+      // curateExemplars (composite-score threshold, promoted: false always) and
+      // evolvePrompt (correction-frequency threshold, isLive: false always) — both
+      // candidates-only, never a direct promotion. 20 new tests (87 total).
+      'pnpm --filter @infinite-ai/learning test',
+    ],
+  },
+  {
+    id: '58',
+    name: 'LE-07 Eval Gatekeeper',
+    commands: [
+      // gateChallenger: wraps the pre-existing applyPromotionGate with input validation
+      // and buildEvalDeltaSummary. All four verdict paths covered. 12 new tests (99 total).
+      'pnpm --filter @infinite-ai/learning test',
+    ],
+  },
+  {
+    id: '59',
+    name: 'LE-07 Ratification Surface',
+    commands: [
+      // composeRatificationPackage: pre-ratification display package for HoD/SMT,
+      // including rollbackPreview. Display-only — no DB writes. 11 new tests (110 total).
+      'pnpm --filter @infinite-ai/learning test',
+    ],
+  },
+  {
+    id: '60',
+    name: 'LE-08 Commons Publisher + Published-Pattern Registry',
+    commands: [
+      // Outer LE-08 function over the pre-existing decideCommonPublication (opt-in +
+      // k-anonymity gate) plus PublishedPatternRegistry (append/allEntries/hasPattern/
+      // findByPublishedId). 13 new tests (123 total).
+      'pnpm --filter @infinite-ai/learning test',
+    ],
+  },
+  {
+    id: '61',
+    name: 'LE-09 Decay & Revalidation outer function',
+    commands: [
+      // runDecayCheck: outer function over the pre-existing assessPatternDecay
+      // (TTL/CAPS-version/revalidation rules) — valid/invalidated/revalidation_required/
+      // needs_input. 12 new tests (135 total).
+      'pnpm --filter @infinite-ai/learning test',
+    ],
+  },
+  {
+    id: '62',
+    name: 'LE Maturity Report (Stage 13 step 9 + step 10 tests)',
+    commands: [
+      // assignMaturityLevel (cold_start/locally_calibrated/evidence_led/institutional) was
+      // built in the original Stage 13 session and verified complete here — no new tests
+      // added (135 total, unchanged from Stage 61). Re-listed rather than left empty, the
+      // same "same command, now covering this stage too" shape Stage 50 already uses.
+      // 4 Docker-dependent integration suites (db/brain/orchestrator) could not run in the
+      // authoring sandbox — they are already covered for real by Stages 01/05/06's own
+      // commands above, which this cumulative gate re-runs regardless.
+      'pnpm --filter @infinite-ai/learning test',
+    ],
+  },
+  {
+    id: '63',
+    name: 'Design System: semantic status tokens & ad-hoc hex elimination',
+    commands: [
+      // 16 semantic status CSS custom properties + STATUS_COLORS; Badge/StatusPill/
+      // sign-in SVG migrated off hex. 20 tests.
+      'pnpm --filter @infinite-ai/design-system test',
+      // Regression guard: zero ad-hoc hex literals left in apps/web's own .tsx files —
+      // the exact check this stage's own exit gate ran by hand, now enforced on every
+      // later stage's gate instead of trusted to stay true.
+      '! grep -rE "#[0-9a-fA-F]{3,6}" apps/web/src --include=*.tsx',
+    ],
+  },
+  {
+    id: '64',
+    name: 'Age-Appropriateness Judge (OQ-015 Gap 2, model-call half)',
+    commands: [
+      // Prompt Registry: new AGE-APPROPRIATENESS-JUDGE/1.0.0.prompt.md, lockfile matches.
+      'pnpm --filter @infinite-ai/prompts test',
+      // createGatewayAgeAppropriatenessJudge: real gateway call + fail-closed on every
+      // error path. 7 new tests (201 total in the package).
+      'pnpm --filter @infinite-ai/guardrails test',
+      // ageAppropriatenessCheckerFactory now wires the real judge by default.
+      'pnpm --filter @infinite-ai/worker test',
+      // guardrail.age_appropriateness logical model route added to routing.json.
+      'pnpm --filter @infinite-ai/gateway test',
+    ],
+  },
+  {
+    id: '65',
+    name: 'Terraform module de-duplication (vpc/rds/elasticache)',
+    commands: [
+      // No TypeScript changed — this stage's own verification is `terraform fmt` and
+      // `terraform init -backend=false`, which run for real in .github/workflows/
+      // terraform.yml's own Lint job on every PR touching infra/terraform/** (this
+      // sandbox's own network policy blocks registry.terraform.io, so that job cannot
+      // be duplicated here — see infra/terraform/README.md's own Status section, same
+      // constraint Stages 01/05/06's Docker-dependent commands already work around).
+      // What CAN run anywhere, with no extra tooling: confirm the superseded modules
+      // are actually gone, not just unreferenced-but-still-present.
+      '! test -d infra/terraform/modules/vpc && ! test -d infra/terraform/modules/rds && ! test -d infra/terraform/modules/elasticache',
+      // And confirm environments/test was actually rewired onto the real modules, not
+      // just pointed somewhere else.
+      'grep -q "../../modules/network" infra/terraform/environments/test/main.tf && grep -q "../../modules/database" infra/terraform/environments/test/main.tf && grep -q "../../modules/cache" infra/terraform/environments/test/main.tf',
+    ],
+  },
 ];
 
 function usage(): never {

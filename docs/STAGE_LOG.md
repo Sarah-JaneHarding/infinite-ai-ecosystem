@@ -8923,3 +8923,75 @@ here.
 | `terraform init -backend=false` — full module graph resolves                       | PASS   |
 | `terraform validate` — blocked by sandbox network policy (documented, not skipped) | N/A    |
 | Every module call's required variables present, verified by hand against schema    | PASS   |
+
+---
+
+## Stage 66 — `verify:stage` gate extended through Stage 65 · 2026-09-25
+
+**Goal.** A fresh repository audit found `scripts/verify-stage.ts`'s `STAGES` array
+stopping at id `'54'` while this log's own most recent entry was Stage 65 — eleven real
+stages (55–65) had shipped without a corresponding gate entry, and
+`.github/workflows/ci.yml`'s own `Stage gate` step was still pinned to
+`pnpm verify:stage 52`, three stages further behind even that. The cumulative gate this
+script exists to enforce ("§0.4 requires the cumulative test command still passes") had
+not actually covered anything built since Stage 52 on any PR's CI run.
+
+**What changed.**
+
+- `scripts/verify-stage.ts` — eleven new entries, ids `'55'` through `'65'`, one per
+  `docs/STAGE_LOG.md` entry in that range:
+  - `55`–`62` (LE-03 through the LE Maturity Report): each re-states
+    `pnpm --filter @infinite-ai/learning test`, the package's own cumulative test count
+    growing stage to stage (53 → 67 → 87 → 99 → 110 → 123 → 135 → 135, the last
+    unchanged since Stage 62 added no new tests of its own) — the same "same command,
+    now covering this stage too" shape Stage 50 already established for a stage whose
+    work landed in a package an earlier stage already gates.
+  - `63` (Design System) adds `pnpm --filter @infinite-ai/design-system test` and a new
+    regression guard — `! grep -rE "#[0-9a-fA-F]{3,6}" apps/web/src --include=*.tsx` —
+    enforcing on every later stage's gate the "zero ad-hoc hex in apps/web" property that
+    stage's own exit gate previously only checked by hand, once.
+  - `64` (Age-Appropriateness Judge) re-states the four package test commands its own PR
+    already verified with (`prompts`, `guardrails`, `worker`, `gateway`).
+  - `65` (Terraform de-duplication) needed a different shape: it changed no TypeScript,
+    so its own real verification (`terraform fmt`, `terraform init`) runs in
+    `.github/workflows/terraform.yml`'s own `Lint` job instead, for the same reason
+    Stages 01/05/06's Docker-dependent commands aren't repeated in this script — it
+    cannot be duplicated in a job with no Terraform installed. What this stage's own
+    entry runs instead: two tooling-free shell checks confirming the fix actually landed
+    — the three superseded module directories are gone, and `environments/test` is
+    actually wired onto the real ones — rather than leaving the id with an empty
+    `commands` array (which `main()`'s own `stage.commands.length === 0` check would
+    fail the gate on, were 65 ever the highest id — which, until Stage 67 exists, it is).
+- `.github/workflows/ci.yml` — `Stage gate` step bumped from `pnpm verify:stage 52` to
+  `pnpm verify:stage 65`; both of its own explanatory comments (the job's `timeout-minutes`
+  note and the step's own) updated to match, the second one now naming the gap explicitly
+  so it does not silently recur the same way for another eleven stages.
+
+**Verification.** Every new stage's own command(s) run directly and standalone, matching
+`docs/STAGE_LOG.md`'s own recorded test counts exactly: `@infinite-ai/learning` — 135
+tests. `@infinite-ai/design-system` — 20 tests; hex regression grep — no matches.
+`@infinite-ai/prompts` — 25, `@infinite-ai/guardrails` — 201, `@infinite-ai/worker` — 87,
+`@infinite-ai/gateway` — 142. Both Stage 65 shell checks — pass. `pnpm verify:stage 65`
+invoked directly: parses the new array entries without error (a TypeScript syntax error
+in any new entry would have failed immediately, before Stage 00's own commands even
+start) and correctly resolves id `65`, then begins running the cumulative chain from
+Stage 00 — confirmed reaching Stage 00's `pnpm typecheck` step cleanly before being
+stopped by a local timeout. The full cumulative run cannot complete in this sandbox: it
+reaches Stage 01's `pnpm --filter @infinite-ai/db coverage:merged` (Testcontainers,
+real Postgres) within a few commands, the same Docker requirement that has made
+`pnpm verify:stage <NN>` for any `NN >= 1` non-runnable end-to-end in this authoring
+sandbox since Stage 01 itself — not a gap this stage introduces, and not something to
+route around. `eslint scripts/verify-stage.ts` and `prettier --check` on both changed
+files — clean.
+
+| Exit gate item                                                                  | Result |
+| ------------------------------------------------------------------------------- | ------ |
+| Stages 55–65 each have a `STAGES` entry with non-empty `commands`               | PASS   |
+| Every new entry's command(s) run standalone and match the log's own test counts | PASS   |
+| Stage 63's ad-hoc-hex regression check passes against the current tree          | PASS   |
+| Stage 65's two shell checks pass against the current tree                       | PASS   |
+| `ci.yml`'s `Stage gate` step bumped to `pnpm verify:stage 65`                   | PASS   |
+| `pnpm verify:stage 65` parses and begins the cumulative run without error       | PASS   |
+| Full cumulative run — blocked by the pre-existing Stage 01 Docker requirement   | N/A    |
+| ESLint — no errors                                                              | PASS   |
+| Prettier format — no diffs                                                      | PASS   |
