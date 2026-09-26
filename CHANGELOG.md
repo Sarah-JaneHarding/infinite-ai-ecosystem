@@ -12,6 +12,13 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 86 — Task 16, batch 6: READMEs for the remaining thin modules and curriculum-seed**
+  - `README.md` for `packages/learner-client`, `packages/low-tech-assessment`,
+    `packages/prompt-builder`, `packages/system-prompt-builder`,
+    `packages/curriculum-seed`. Corrected a first-draft overclaim that
+    `MOD01_CURRICULUM_PIPELINE` "calls" `curriculum-seed`'s executors directly — the
+    pipeline file only declares step shape; `apps/worker` does the real wiring.
+
 - **Stage 85 — Task 16, batch 5: READMEs for five L7 module packages**
   - `README.md` for `packages/compliance`, `packages/gamification`,
     `packages/pd-journal`, `packages/school-setup`, `packages/document-annotation`.

@@ -9799,3 +9799,30 @@ claim before writing it.
 | `school-setup`'s onboarding-wizard link verified against the real import           | PASS   |
 | `document-annotation`'s consumer claim checked against a repo-wide grep, corrected | PASS   |
 | `pnpm format:check` (whole repo) — clean                                           | PASS   |
+
+## Stage 86 — Task 16, batch 6: READMEs for the remaining thin modules and curriculum-seed · 2026-09-26
+
+**Goal.** Batch 6 of the Task 16 README sweep: `packages/learner-client`,
+`packages/low-tech-assessment`, `packages/prompt-builder`,
+`packages/system-prompt-builder` — the last four Task 15 packages — plus
+`packages/curriculum-seed`, read fresh for this batch.
+
+**What changed.** New `README.md` for all five packages.
+
+**One real gap found and corrected.** A first draft of `curriculum-seed`'s README
+claimed `@infinite-ai/orchestrator`'s `MOD01_CURRICULUM_PIPELINE` "actually calls" this
+package's executors at each step. A grep of `pipelines/mod-01.ts` for any reference to
+`curriculum-seed` or its executor names found none — the pipeline file only declares the
+DAG's step _shape_. A follow-up grep across the repo found the real wiring:
+`apps/worker` (via `scripts/register-ce-executors.ts`) binds each step to its executor,
+and `apps/web`'s `/api/caps-canon` routes call into this package directly for the
+CAPS-canon admin surface. Corrected before committing.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                                                   | Result |
+| ---------------------------------------------------------------------------------------------------------------- | ------ |
+| Read `curriculum-seed`'s full `index.ts` plus three previously-unread source files                               | PASS   |
+| `curriculum-seed`'s pipeline-wiring claim checked against `pipelines/mod-01.ts` directly, found wrong, corrected | PASS   |
+| Real wiring (`apps/worker`, `apps/web`'s `/api/caps-canon`) confirmed via repo-wide grep                         | PASS   |
+| `pnpm format:check` (whole repo) — clean                                                                         | PASS   |
