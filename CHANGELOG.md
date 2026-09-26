@@ -12,6 +12,18 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 72 — Failure-path tests for `apps/web`**
+  - `apps/web/tests/unit/env.spec.ts` (9 new tests): proves `WebEnvSchema` actually
+    rejects an under-length `NEXTAUTH_SECRET`, a malformed `NEXTAUTH_URL` or
+    `AUTH_KEYCLOAK_ISSUER`, and an out-of-enum `NODE_ENV` — the schema's own validation
+    boundary, previously unreached by any test because `getWebEnv()` short-circuits to a
+    fixed test object whenever `NODE_ENV==='test'`. Also exercises `getWebEnv()`'s
+    production throw-on-invalid-env path directly, via `vi.stubEnv`.
+  - `apps/web/tests/unit/roles.spec.ts` (3 new tests): proves `roleCanViewPath` — the
+    RBAC gate behind this app's page routing — denies same-prefix path-name collisions
+    (`/teacherx` against the allowed `/teacher`, `/approvalsx` against the allowed
+    `/approvals`) rather than treating them as nested/allowed paths.
+
 - **Stage 71 — Failure-path tests for `packages/compliance`**
   - `packages/compliance/test/schemas.spec.ts` (new): 23 tests proving the package's
     seven exported Zod input schemas actually reject invalid data (out-of-range

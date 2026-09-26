@@ -9260,3 +9260,60 @@ clean. `pnpm --filter @infinite-ai/compliance exec tsc --noEmit` — clean. `pnp
 | `ComplianceInput`'s top-level and nested-failure paths covered                        | PASS   |
 | `pnpm --filter @infinite-ai/compliance test` — 58/58 pass                             | PASS   |
 | `pnpm lint` / `pnpm format:check` — clean                                             | PASS   |
+
+## Stage 72 — Failure-path tests for `apps/web` · 2026-09-26
+
+**Goal.** Second package on the audit's Task 15 list. Same method as Stage 71: read the
+existing five `tests/unit/*.spec.ts` files (the only ones `pnpm test` actually runs —
+`vitest.config.ts` excludes `tests/e2e/**` and `tests/a11y/**`) before assuming anything
+about coverage, then close only the boundaries that genuinely had none.
+
+**What the gap actually was.** `roles.spec.ts`, `proxy.spec.ts`, `learner.spec.ts`, and
+`caps-canon-docs.spec.ts` were all reasonably thorough already, several with real
+negative-access-control cases. Two genuine gaps remained:
+
+- `src/lib/env.ts`'s `WebEnvSchema` — every existing `env.spec.ts` test goes through
+  `getWebEnv()`, which short-circuits to a fixed `TEST_ENV` object whenever
+  `NODE_ENV==='test'` (true for every test run), so no test ever reached
+  `WebEnvSchema.safeParse(process.env)`. The schema's own constraints
+  (`NEXTAUTH_SECRET`'s `min(32)`, the two `.url()` fields, the `NODE_ENV` enum) had zero
+  coverage — the same "business logic tested, validation boundary untested" shape as
+  `packages/compliance`. Worse, `getWebEnv()`'s production throw-on-invalid-env branch
+  (the fail-closed behaviour that stops the app booting with a bad environment) was
+  structurally unreachable by any test as written.
+- `src/lib/roles.ts`'s `roleCanViewPath` — the RBAC gate this app's routing relies on.
+  It matches `pathname === prefix || pathname.startsWith(`${prefix}/`)`; nothing proved
+  that guard resists a same-prefix path-name collision (e.g. an unrelated route that
+  happens to start with the same characters as an allowed one, like `/teacherx` against
+  the allowed `/teacher`). Security-relevant per the Definition of Done's "touches
+  auth → a dedicated security test exists" rule.
+
+**What changed.**
+
+- `apps/web/tests/unit/env.spec.ts`: 9 new tests — a `WebEnvSchema` `describe` block
+  (rejects an under-length secret, a malformed `NEXTAUTH_URL`, a malformed
+  `AUTH_KEYCLOAK_ISSUER`, an out-of-enum `NODE_ENV`; accepts the minimum valid input) and
+  a `getWebEnv` block that uses `vi.stubEnv('NODE_ENV', 'production')` plus a deleted
+  `NEXTAUTH_SECRET` to genuinely exercise and assert the production throw path, restoring
+  both via `vi.unstubAllEnvs()` in `afterEach` so no other test in the file is affected.
+- `apps/web/tests/unit/roles.spec.ts`: 3 new tests proving `roleCanViewPath` denies a
+  same-prefix collision against a role's home path (`/teacherx`), a same-prefix collision
+  against a shared route (`/approvalsx`), and a completely unrelated top-level path.
+
+**Verification.** `pnpm --filter web test` — 63 tests, all pass (12 new). `pnpm --filter
+web typecheck` — clean (first attempt used direct `process.env['NODE_ENV'] = ...`
+assignment, which fails `tsc --noEmit` with TS2540 since `NODE_ENV` is a read-only
+property on this repo's `ProcessEnv` typing; switched to `vi.stubEnv`/`vi.unstubAllEnvs`,
+which both types correctly and auto-restores). `eslint` on both edited files — clean.
+`prettier --check` on both — clean. `pnpm lint` / `pnpm format:check` (whole repo) —
+clean.
+
+| Exit gate item                                                                    | Result |
+| --------------------------------------------------------------------------------- | ------ |
+| Read all five existing unit spec files before assuming the gap                    | PASS   |
+| `WebEnvSchema`'s constraints (secret length, both URLs, NODE_ENV enum) tested     | PASS   |
+| `getWebEnv()`'s production fail-closed throw path genuinely exercised             | PASS   |
+| `roleCanViewPath`'s prefix-collision guard covered (security-relevant, RBAC gate) | PASS   |
+| `pnpm --filter web test` — 63/63 pass                                             | PASS   |
+| `pnpm --filter web typecheck` — clean                                             | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                         | PASS   |
