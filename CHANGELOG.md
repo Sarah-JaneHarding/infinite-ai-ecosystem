@@ -12,6 +12,16 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 84 — Task 16, batch 4: READMEs for the agent runtime and eval harness**
+  - `README.md` for `packages/agents`, `packages/orchestrator`, `packages/prompts`,
+    `packages/agent-builder`, `packages/evals`. Found and wrote up two real gaps
+    honestly rather than glossing over them: `agent-builder`'s `workflow.ts` comment
+    references a `compile()` to `PipelineDefinition` that doesn't exist anywhere in the
+    package's source, and `bootAgentRegistry()`'s existence checks default to
+    always-true and have no real application caller (`apps/worker`/`apps/gateway`) —
+    corrected an earlier draft's overclaim that the registry enforces the full
+    Definition-of-Done agent checklist.
+
 - **Stage 83 — Task 16, batch 3: READMEs for the guardrail plane**
   - `README.md` for `packages/guardrails`, `packages/policy`, `packages/deident`.
     Caught and corrected a real inaccuracy before committing: a first draft claimed

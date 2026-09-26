@@ -9736,3 +9736,40 @@ false claim in a README a future contributor would read as documentation of fact
 | `deident`'s stamp-attachment claim verified against real usage, corrected once wrong | PASS   |
 | `policy`'s `NEVER_GRANTED_VIA_RBAC` claim verified against `rbac.ts` directly        | PASS   |
 | `pnpm format:check` (whole repo) — clean                                             | PASS   |
+
+## Stage 84 — Task 16, batch 4: READMEs for the agent runtime and eval harness · 2026-09-26
+
+**Goal.** Batch 4 of the Task 16 README sweep: `packages/agents`, `packages/orchestrator`,
+`packages/prompts`, `packages/agent-builder`, `packages/evals` — L6 (the agent runtime)
+plus the design-time builder and Stage 07's eval harness. Read each `index.ts` in full,
+and grepped for several specific claims before writing them, rather than assuming a
+comment or a package description told the whole story.
+
+**Two real gaps found and written up honestly instead of glossed over.**
+
+- `agent-builder/src/workflow.ts`'s own header comment says "see `compile()` in
+  `index.ts` for the translation" from a design-time `WorkflowGraph` to an
+  `@infinite-ai/orchestrator` `PipelineDefinition` — a repo-wide grep for `compile` inside
+  the package found no such function anywhere. The comment describes intended, not
+  built, behaviour. The README says so directly rather than repeating the comment's
+  implied claim as fact.
+- `bootAgentRegistry()`'s `PromptExistenceCheck`/`EvalSetExistenceCheck` parameters
+  default to assuming every reference exists when a caller doesn't supply a real one —
+  and a repo-wide grep for `bootAgentRegistry` found no application code (`apps/worker`,
+  `apps/gateway`) calling it at all. The registered/prompt-versioned/eval-set/cost-budget
+  checklist in the Definition of Done is real, but only the duplicate-id check is
+  currently enforced by running code; the rest are reviewer-checked conventions today.
+  Both the `agents` and `evals` READMEs were corrected to say this precisely, after an
+  earlier draft of each overclaimed that the registry enforces the whole checklist.
+
+**What changed.** New `README.md` for all five packages.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                                                     | Result |
+| ------------------------------------------------------------------------------------------------------------------ | ------ |
+| Read all five packages' full `index.ts` before writing any README                                                  | PASS   |
+| `validatePipelineGating`'s human-gate-reachability claim verified against `dag.ts`                                 | PASS   |
+| `agent-builder`'s `compile()` claim checked against the real source — found missing, written up honestly           | PASS   |
+| `bootAgentRegistry()`'s actual enforcement scope verified — found no real caller, corrected two READMEs' overclaim | PASS   |
+| `pnpm format:check` (whole repo) — clean                                                                           | PASS   |
