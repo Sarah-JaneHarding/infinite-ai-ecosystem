@@ -12,6 +12,13 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 83 — Task 16, batch 3: READMEs for the guardrail plane**
+  - `README.md` for `packages/guardrails`, `packages/policy`, `packages/deident`.
+    Caught and corrected a real inaccuracy before committing: a first draft claimed
+    `deident` itself attaches the `deidentified: true` provenance stamp — a repo-wide
+    search showed callers set that stamp, and this package only supplies the
+    tokenisation/scrubbing primitives that make it true.
+
 - **Stage 82 — Task 16, batch 2: READMEs for the data plane and the Brain**
   - `README.md` for `packages/db` (L3) and `packages/brain` (L4), each tying its files
     back to the specific rule or manual concept they satisfy (rule 5's tenant-scoped

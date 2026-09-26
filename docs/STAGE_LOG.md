@@ -9710,3 +9710,29 @@ supersede-don't-update invariant and the manual's fixed retrieval-stage order fo
 | Read `db`'s and `brain`'s full `index.ts` before writing either README                 | PASS   |
 | Each file's role tied to the specific rule/manual concept it satisfies, not just named | PASS   |
 | `pnpm format:check` (whole repo) — clean                                               | PASS   |
+
+## Stage 83 — Task 16, batch 3: READMEs for the guardrail plane · 2026-09-26
+
+**Goal.** Batch 3 of the Task 16 README sweep: `packages/guardrails`, `packages/policy`,
+`packages/deident` — the L5 guardrail plane. Read each `index.ts` in full before writing.
+
+**What changed.** New `README.md` for all three packages. Caught and corrected one
+real inaccuracy before it shipped: a first draft of `deident`'s README claimed the
+package itself attaches the `deidentified: true` provenance stamp
+`packages/guardrails`'s PII egress guard checks for. A repo-wide search
+(`grep -rln "deidentified: true"`) showed the stamp is actually set by callers
+(the MOD-01 curriculum agent executors in `packages/curriculum-seed`, and others) — this
+package provides the tokenisation/scrubbing primitives that make the stamp true, but
+does not set it itself. Corrected before committing rather than leaving a plausible but
+false claim in a README a future contributor would read as documentation of fact.
+`policy`'s `NEVER_GRANTED_VIA_RBAC` claim was checked the same way, against
+`rbac.ts`'s actual `authorize()` implementation, and confirmed accurate.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                       | Result |
+| ------------------------------------------------------------------------------------ | ------ |
+| Read all three packages' full `index.ts` before writing any README                   | PASS   |
+| `deident`'s stamp-attachment claim verified against real usage, corrected once wrong | PASS   |
+| `policy`'s `NEVER_GRANTED_VIA_RBAC` claim verified against `rbac.ts` directly        | PASS   |
+| `pnpm format:check` (whole repo) — clean                                             | PASS   |
