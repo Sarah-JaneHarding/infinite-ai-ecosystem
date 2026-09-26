@@ -9826,3 +9826,45 @@ CAPS-canon admin surface. Corrected before committing.
 | `curriculum-seed`'s pipeline-wiring claim checked against `pipelines/mod-01.ts` directly, found wrong, corrected | PASS   |
 | Real wiring (`apps/worker`, `apps/web`'s `/api/caps-canon`) confirmed via repo-wide grep                         | PASS   |
 | `pnpm format:check` (whole repo) — clean                                                                         | PASS   |
+
+## Stage 87 — Task 16, batch 7: READMEs for provisioning, billing, warehouse, analytics, learning · 2026-09-26
+
+**Goal.** Batch 7 of the Task 16 README sweep: `packages/provisioning`,
+`packages/billing`, `packages/warehouse`, `packages/analytics`, `packages/learning` — all
+five read fresh for this batch. After finding and correcting three separate overclaims in
+this session's earlier batches, adopted a stricter rule for the remaining two packages in
+this batch: grep every cross-package integration claim's real imports _before_ drafting
+the "Where it fits" section, not after.
+
+**Three real cross-package gaps found and written up, not glossed over.**
+
+- `provisioning`'s onboarding wizard has its own `SchoolProfileInputSchema` (lolt,
+  additional languages, term weeks, phase count) that does **not** reuse
+  `@infinite-ai/school-setup`'s `LanguageSettings`/`TermWeeks` for the same concept — two
+  independent schemas for "school profile" data, confirmed via a grep of
+  `wizard.ts` finding no import from `school-setup` at all. Flagged in both this stage
+  entry and the README as worth resolving, not treated as intentional duplication.
+- `billing`'s `DunningState` machine and `provisioning`'s `TenantStatus` machine share
+  status names (`SUSPENDED`, `CLOSED`) and are clearly designed to work together, but
+  neither package imports the other — nothing in code drives a lifecycle transition from
+  a dunning escalation yet.
+- `warehouse`'s first-draft README claimed conformed data "flows... into
+  `@infinite-ai/analytics`" — a grep found the only real importers of `warehouse` are
+  `packages/agents/src/mod-03/`'s `DW-*.contract.ts` files and
+  `scripts/register-dw-executors.ts`; no cross-import to `analytics` exists.
+  `analytics`'s own README was written the disciplined way from the start:
+  `apps/worker/src/condition-evaluator.ts` was checked and found to reference this
+  package's shapes only in comments (duck-typed), not via a real `import`, and the
+  README says so precisely rather than claiming an import that isn't there.
+
+**What changed.** New `README.md` for all five packages.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                          | Result |
+| --------------------------------------------------------------------------------------- | ------ |
+| `provisioning`/`school-setup` schema-duplication finding verified and flagged           | PASS   |
+| `billing`/`provisioning` non-wiring finding verified and flagged                        | PASS   |
+| `warehouse`'s overclaimed `analytics` data flow checked, found wrong, corrected         | PASS   |
+| `analytics`'s `condition-evaluator.ts` reference checked precisely (comment vs. import) | PASS   |
+| `pnpm format:check` (whole repo) — clean                                                | PASS   |

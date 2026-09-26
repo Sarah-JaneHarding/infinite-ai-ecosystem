@@ -12,6 +12,16 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 87 — Task 16, batch 7: READMEs for provisioning, billing, warehouse, analytics, learning**
+  - `README.md` for `packages/provisioning`, `packages/billing`, `packages/warehouse`,
+    `packages/analytics`, `packages/learning`. Found and flagged three real
+    cross-package gaps rather than glossing over them: `provisioning` and
+    `school-setup` have two independent, non-shared schemas for the same "school
+    profile" concept; `billing`'s dunning state machine and `provisioning`'s tenant
+    lifecycle share status names but neither package imports the other; and a
+    first-draft `warehouse` README overclaimed a data-flow link to `analytics` that a
+    grep found doesn't exist in code.
+
 - **Stage 86 — Task 16, batch 6: READMEs for the remaining thin modules and curriculum-seed**
   - `README.md` for `packages/learner-client`, `packages/low-tech-assessment`,
     `packages/prompt-builder`, `packages/system-prompt-builder`,
