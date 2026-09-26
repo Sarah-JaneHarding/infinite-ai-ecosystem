@@ -9498,3 +9498,44 @@ pass (10 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. 
 | `Annotation` envelope and `AnnotationReply` schemas' own constraints now tested        | PASS   |
 | `pnpm --filter @infinite-ai/document-annotation test` — 47/47 pass                     | PASS   |
 | `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
+
+## Stage 77 — Failure-path tests for `packages/learner-client` · 2026-09-26
+
+**Goal.** Seventh package on the audit's Task 15 list. Same method as Stages 71–76: read
+`test/learner-client.spec.ts` (28 tests) and all three source files in full before
+assuming anything about the gap.
+
+**What the gap actually was.** Thorough on the navigation engine (`isUnlocked`,
+`nextActivities`, `courseProgress`) and on `ActivityRecord`/`GamificationSnapshot`'s own
+constraints. Four real gaps remained, all the same shape: a fixture helper (`makeProfile`,
+`makeEvent`) always builds valid data, and every test that touches the schema it feeds
+goes through that fixture — so the schema's own constraints were never exercised failing:
+
+- `LearnerProfile` — empty `learnerId`/`enrolmentId`/`courseId` never rejected.
+- `ActivityNode` — only `estimatedMinutes`'s positivity was tested; empty `title` and
+  empty `activityId` were not.
+- The three offline-event payload schemas (`QuizAnsweredPayload`,
+  `ActivityCompletedPayload`, `AssessmentSubmittedPayload`) had zero rejection tests
+  despite real constraints — `selectedSide`'s A–D enum, `score`'s 0–100 bounds (and its
+  deliberate `nullable()` for an ungraded completion), `min(1)` on every identifier field.
+- `OfflineEvent` — the envelope itself was never tested for an empty `eventId` or a
+  malformed `occurredAt`.
+
+**What changed.** `packages/learner-client/test/learner-client.spec.ts`: 14 new tests —
+`LearnerProfile` (3), `ActivityNode` (2), `QuizAnsweredPayload` (2),
+`ActivityCompletedPayload` (3, including one confirming `score: null` is a deliberate
+accept), `AssessmentSubmittedPayload` (1), `OfflineEvent` (2, plus one already counted
+above under `ActivityCompletedPayload`'s null case — 14 total).
+
+**Verification.** `pnpm --filter @infinite-ai/learner-client test` — 51 tests, all pass
+(14 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` /
+`pnpm format:check` (whole repo) — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read the existing 28-test spec file and all three source files before assuming the gap | PASS   |
+| `LearnerProfile`'s and `ActivityNode`'s remaining constraints now proven to reject     | PASS   |
+| All three offline-event payload schemas now have genuine rejection tests               | PASS   |
+| `OfflineEvent` envelope's own constraints now tested independent of its fixture        | PASS   |
+| `pnpm --filter @infinite-ai/learner-client test` — 51/51 pass                          | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |

@@ -4,14 +4,17 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  ActivityCompletedPayload,
   ActivityNode,
   ActivityRecord,
   ActivityStatus,
+  AssessmentSubmittedPayload,
   CourseGraph,
   GamificationSnapshot,
   LearnerProfile,
   OfflineEvent,
   OfflineQueue,
+  QuizAnsweredPayload,
   allCompleted,
   countByStatus,
   courseProgress,
@@ -194,6 +197,35 @@ describe('GamificationSnapshot schema', () => {
   });
 });
 
+// ─── LearnerProfile schema ────────────────────────────────────────────────────
+//
+// makeProfile always builds a valid profile — nothing previously proved the schema
+// itself rejects an empty learnerId/enrolmentId/courseId rather than only being
+// exercised through a fixture that's already known-good.
+
+describe('LearnerProfile schema', () => {
+  const base = {
+    learnerId: LEARNER,
+    enrolmentId: 'enrol-001',
+    courseId: 'course-001',
+    activityRecords: [],
+    gamification: { xp: 0, level: 1, streakDays: 0, earnedBadgeCount: 0 },
+    lastActiveAt: NOW,
+  };
+
+  it('rejects an empty learnerId', () => {
+    expect(LearnerProfile.safeParse({ ...base, learnerId: '' }).success).toBe(false);
+  });
+
+  it('rejects an empty enrolmentId', () => {
+    expect(LearnerProfile.safeParse({ ...base, enrolmentId: '' }).success).toBe(false);
+  });
+
+  it('rejects an empty courseId', () => {
+    expect(LearnerProfile.safeParse({ ...base, courseId: '' }).success).toBe(false);
+  });
+});
+
 // ─── getRecord / upsertRecord ─────────────────────────────────────────────────
 
 describe('getRecord', () => {
@@ -347,6 +379,128 @@ describe('CourseGraph schema', () => {
         type: 'lesson',
         prerequisites: [],
         estimatedMinutes: 0,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects an empty title', () => {
+    expect(
+      ActivityNode.safeParse({
+        activityId: 'a1',
+        title: '',
+        type: 'lesson',
+        prerequisites: [],
+        estimatedMinutes: 10,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects an empty activityId', () => {
+    expect(
+      ActivityNode.safeParse({
+        activityId: '',
+        title: 'X',
+        type: 'lesson',
+        prerequisites: [],
+        estimatedMinutes: 10,
+      }).success,
+    ).toBe(false);
+  });
+});
+
+// ─── Offline event payload schemas ────────────────────────────────────────────
+//
+// makeEvent's three payload branches were only ever built valid — none of
+// QuizAnsweredPayload/ActivityCompletedPayload/AssessmentSubmittedPayload's own
+// constraints had a rejection test, nor did the OfflineEvent envelope itself.
+
+describe('QuizAnsweredPayload schema', () => {
+  it('rejects a selectedSide outside A–D', () => {
+    expect(
+      QuizAnsweredPayload.safeParse({
+        type: 'quiz_answered',
+        activityId: 'a1',
+        questionId: 'q1',
+        selectedSide: 'E',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects an empty questionId', () => {
+    expect(
+      QuizAnsweredPayload.safeParse({
+        type: 'quiz_answered',
+        activityId: 'a1',
+        questionId: '',
+        selectedSide: 'A',
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe('ActivityCompletedPayload schema', () => {
+  it('rejects a score above 100', () => {
+    expect(
+      ActivityCompletedPayload.safeParse({
+        type: 'activity_completed',
+        activityId: 'a1',
+        score: 101,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a negative score', () => {
+    expect(
+      ActivityCompletedPayload.safeParse({
+        type: 'activity_completed',
+        activityId: 'a1',
+        score: -1,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('accepts a null score (activity completed without a graded score)', () => {
+    expect(
+      ActivityCompletedPayload.safeParse({
+        type: 'activity_completed',
+        activityId: 'a1',
+        score: null,
+      }).success,
+    ).toBe(true);
+  });
+});
+
+describe('AssessmentSubmittedPayload schema', () => {
+  it('rejects an empty sessionRef', () => {
+    expect(
+      AssessmentSubmittedPayload.safeParse({
+        type: 'assessment_submitted',
+        activityId: 'a4',
+        sessionRef: '',
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe('OfflineEvent schema', () => {
+  it('rejects an empty eventId', () => {
+    expect(
+      OfflineEvent.safeParse({
+        eventId: '',
+        learnerId: LEARNER,
+        occurredAt: NOW,
+        payload: { type: 'activity_completed', activityId: 'a1', score: 80 },
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a malformed occurredAt', () => {
+    expect(
+      OfflineEvent.safeParse({
+        eventId: 'e1',
+        learnerId: LEARNER,
+        occurredAt: 'not-a-date',
+        payload: { type: 'activity_completed', activityId: 'a1', score: 80 },
       }).success,
     ).toBe(false);
   });

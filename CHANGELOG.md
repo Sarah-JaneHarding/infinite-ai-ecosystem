@@ -12,6 +12,15 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 77 — Failure-path tests for `packages/learner-client`**
+  - `packages/learner-client/test/learner-client.spec.ts` (14 new tests):
+    `LearnerProfile`'s empty-identifier constraints, `ActivityNode`'s empty
+    `title`/`activityId`, and all three offline-event payload schemas
+    (`QuizAnsweredPayload`, `ActivityCompletedPayload`, `AssessmentSubmittedPayload`)
+    had zero rejection tests — every prior test built payloads through a fixture
+    helper that was always already valid. Also closes `OfflineEvent`'s own
+    envelope constraints (empty `eventId`, malformed `occurredAt`).
+
 - **Stage 76 — Failure-path tests for `packages/document-annotation`**
   - `packages/document-annotation/test/document-annotation.spec.ts` (10 new tests):
     `CommentPayload`, `TextBoxPayload`, and `StampPayload` had zero rejection tests
