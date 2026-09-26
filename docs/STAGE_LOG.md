@@ -9613,3 +9613,46 @@ format:check` (whole repo) — clean.
 | `PromptBudget`'s int/positive constraints now proven to reject on all three fields     | PASS   |
 | `pnpm --filter @infinite-ai/prompt-builder test` — 32/32 pass                          | PASS   |
 | `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
+
+## Stage 80 — Failure-path tests for `packages/system-prompt-builder` (closes Task 15) · 2026-09-26
+
+**Goal.** Tenth and final package on the audit's Task 15 list — "Add failure-path tests
+to thin packages." Same method as Stages 71–79: read `test/system-prompt-builder.spec.ts`
+(28 tests) and all three source files in full before assuming anything about the gap.
+
+**What the gap actually was.** Thorough on the two composition functions
+(`buildSystemMessage`, `buildChatRequest`) and on most of `TenantContext`'s constraints.
+Two real gaps:
+
+- `TenantContext`'s `locale` (`min(2)`) and `province` (`min(2).max(3)`) constraints had
+  never been proven to reject.
+- `RequestMeta` — exported so a caller can validate untrusted per-call metadata before it
+  reaches `buildChatRequest` — had zero tests of its own; `buildChatRequest` takes it as
+  a plain TypeScript type with no runtime `.parse()` call. This matters more than the
+  usual missing-schema-test gap: `RequestMeta.provenance.deidentified` is typed
+  `z.literal(true)`, which is this package's own encoding of rule 4's PII-provenance
+  invariant ("a payload without a `deidentified: true` stamp is refused") — and nothing
+  had ever proven that a `false` value is actually rejected rather than merely
+  type-checked away at compile time.
+
+**What changed.** `packages/system-prompt-builder/test/system-prompt-builder.spec.ts`: 8
+new tests — `TenantContext` (locale too short, province too short, province too long)
+and `RequestMeta` (accepts minimal valid metadata; rejects empty `module`; rejects an
+empty `idempotencyKey` when supplied; rejects `provenance.deidentified: false`; rejects a
+negative `provenance.saltVersion`).
+
+**Verification.** `pnpm --filter @infinite-ai/system-prompt-builder test` — 36 tests, all
+pass (8 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` /
+`pnpm format:check` (whole repo) — clean. With Task 15 now closed across all ten
+packages, ran the full monorepo suite as a final check: `pnpm typecheck` — 53/53 packages
+pass; `pnpm test` — 53/53 packages pass.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read the existing 28-test spec file and all three source files before assuming the gap | PASS   |
+| `TenantContext`'s `locale`/`province` length bounds now proven to reject               | PASS   |
+| `RequestMeta`'s own constraints tested, including the rule-4 provenance literal        | PASS   |
+| `pnpm --filter @infinite-ai/system-prompt-builder test` — 36/36 pass                   | PASS   |
+| Full monorepo `pnpm typecheck` and `pnpm test` — 53/53 packages pass                   | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
+| **Task 15 (failure-path tests for thin packages) closed** — all ten packages done      | PASS   |

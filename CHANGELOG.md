@@ -12,6 +12,19 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 80 — Failure-path tests for `packages/system-prompt-builder` (closes Task 15)**
+  - `packages/system-prompt-builder/test/system-prompt-builder.spec.ts` (8 new tests):
+    `TenantContext`'s `locale`/`province` length bounds, and `RequestMeta` — exported
+    for validating untrusted per-call metadata but never `.parse()`d internally,
+    including its `provenance.deidentified: z.literal(true)` field, this package's own
+    encoding of rule 4's PII-provenance invariant, now proven to actually reject
+    `false` rather than being enforced only at compile time.
+  - This closes audit Task 15 ("Add failure-path tests to thin packages") across all
+    ten packages: `compliance`, `apps/web`, `gamification`, `pd-journal`,
+    `school-setup`, `document-annotation`, `learner-client`, `low-tech-assessment`,
+    `prompt-builder`, `system-prompt-builder`. Final check: `pnpm typecheck` and
+    `pnpm test` both pass across all 53 packages in the monorepo.
+
 - **Stage 79 — Failure-path tests for `packages/prompt-builder`**
   - `packages/prompt-builder/test/prompt-builder.spec.ts` (9 new tests): `VariableName`
     and `PromptBudget` are both exported specifically so a caller can validate untrusted

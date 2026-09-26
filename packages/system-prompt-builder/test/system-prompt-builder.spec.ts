@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import type { BuiltPrompt } from '@infinite-ai/prompt-builder';
 
 import {
+  RequestMeta,
   TenantContext,
   buildChatRequest,
   buildPlatformFooter,
@@ -63,6 +64,69 @@ describe('TenantContext schema', () => {
 
   it('rejects a context with a missing tenantId', () => {
     const result = TenantContext.safeParse({ ...makeTenant(), tenantId: '' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a locale shorter than 2 characters', () => {
+    const result = TenantContext.safeParse({ ...makeTenant(), locale: 'e' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a province code shorter than 2 characters', () => {
+    const result = TenantContext.safeParse({ ...makeTenant(), province: 'G' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a province code longer than 3 characters', () => {
+    const result = TenantContext.safeParse({ ...makeTenant(), province: 'GAUT' });
+    expect(result.success).toBe(false);
+  });
+});
+
+// ─── builder.ts — RequestMeta schema ─────────────────────────────────────────
+//
+// RequestMeta is exported so a caller can validate untrusted per-call metadata
+// before it reaches buildChatRequest — but buildChatRequest takes it as a plain
+// TypeScript type with no runtime .parse() call, so nothing in this file ever
+// exercised the schema's own constraints, including the provenance field that
+// directly encodes rule 4's PII-provenance invariant: `deidentified` must be the
+// literal `true`, not merely boolean-typed.
+
+describe('RequestMeta schema', () => {
+  it('accepts valid metadata with no optional fields', () => {
+    const result = RequestMeta.safeParse({ module: 'mod-01', stream: false });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects an empty module', () => {
+    const result = RequestMeta.safeParse({ module: '', stream: false });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects an empty idempotencyKey when supplied', () => {
+    const result = RequestMeta.safeParse({
+      module: 'mod-01',
+      stream: false,
+      idempotencyKey: '',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects provenance.deidentified: false — only the literal true satisfies rule 4', () => {
+    const result = RequestMeta.safeParse({
+      module: 'mod-01',
+      stream: false,
+      provenance: { deidentified: false, saltVersion: 1, dropped: [] },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a negative provenance.saltVersion', () => {
+    const result = RequestMeta.safeParse({
+      module: 'mod-01',
+      stream: false,
+      provenance: { deidentified: true, saltVersion: -1, dropped: [] },
+    });
     expect(result.success).toBe(false);
   });
 });
