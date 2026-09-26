@@ -12,6 +12,14 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 78 — Failure-path tests for `packages/low-tech-assessment`**
+  - `packages/low-tech-assessment/test/low-tech-assessment.spec.ts` (8 new tests):
+    `ScanResult` and `AssessmentSession` were only ever built through always-valid
+    fixture helpers (`makeScan`/`makeSession`) — neither schema had a rejection
+    test of its own. Closed: `ScanResult`'s `cardNumber` bound and `CardSide` enum;
+    `AssessmentSession`'s empty `sessionId`/`title`, out-of-range `classSize`, and
+    empty `questions` array.
+
 - **Stage 77 — Failure-path tests for `packages/learner-client`**
   - `packages/learner-client/test/learner-client.spec.ts` (14 new tests):
     `LearnerProfile`'s empty-identifier constraints, `ActivityNode`'s empty

@@ -9539,3 +9539,37 @@ above under `ActivityCompletedPayload`'s null case — 14 total).
 | `OfflineEvent` envelope's own constraints now tested independent of its fixture        | PASS   |
 | `pnpm --filter @infinite-ai/learner-client test` — 51/51 pass                          | PASS   |
 | `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
+
+## Stage 78 — Failure-path tests for `packages/low-tech-assessment` · 2026-09-26
+
+**Goal.** Eighth package on the audit's Task 15 list. Same method as Stages 71–77: read
+`test/low-tech-assessment.spec.ts` (40 tests) and all three source files in full before
+assuming anything about the gap.
+
+**What the gap actually was.** Already thorough on `generateCardSet`'s bounds, the
+`Question` schema's two `.refine()`s (correctSide membership, distinct sides), the full
+session lifecycle state machine, and the tally engine's dedup/rate math. Two schemas were
+only ever exercised through an always-valid fixture helper (`makeScan`, `makeSession`),
+so neither had a genuine rejection test of its own:
+
+- `ScanResult` — `cardNumber`'s 1–`MAX_CARDS` bound and the `CardSide` enum were never
+  proven to reject.
+- `AssessmentSession` — empty `sessionId`/`title`, an out-of-range `classSize`, and an
+  empty `questions` array were never proven to reject.
+
+**What changed.** `packages/low-tech-assessment/test/low-tech-assessment.spec.ts`: 8 new
+tests — `ScanResult` (cardNumber = 0, cardNumber > MAX_CARDS, invalid side) and
+`AssessmentSession` (empty sessionId, empty title, classSize = 0, classSize >
+MAX_CARDS, empty questions array).
+
+**Verification.** `pnpm --filter @infinite-ai/low-tech-assessment test` — 48 tests, all
+pass (8 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` /
+`pnpm format:check` (whole repo) — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read the existing 40-test spec file and all three source files before assuming the gap | PASS   |
+| `ScanResult`'s cardNumber bound and side enum now proven to reject                     | PASS   |
+| `AssessmentSession`'s identifier, classSize, and questions-array constraints tested    | PASS   |
+| `pnpm --filter @infinite-ai/low-tech-assessment test` — 48/48 pass                     | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
