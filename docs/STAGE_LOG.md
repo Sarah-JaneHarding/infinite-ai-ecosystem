@@ -9656,3 +9656,35 @@ pass; `pnpm test` — 53/53 packages pass.
 | Full monorepo `pnpm typecheck` and `pnpm test` — 53/53 packages pass                   | PASS   |
 | `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
 | **Task 15 (failure-path tests for thin packages) closed** — all ten packages done      | PASS   |
+
+## Stage 81 — Task 16 (per-package READMEs), batch 1: cross-cutting foundations · 2026-09-26
+
+**Goal.** Task 16 ("Add a `README.md` per package") — the audit's own text recommends
+doing this incrementally rather than as a standalone sweep, but the user asked for a full
+sweep split into several small, reviewable commits by architecture layer instead. 34
+packages/apps had no `README.md` at all. This is batch 1 of that sweep: the six
+cross-cutting foundation packages nothing else in the stack can do without.
+
+**What changed.** New `README.md` for `packages/{config,contracts,security,telemetry,testkit,design-system}`,
+each following the audit's suggested template ("what this package does, how it fits the
+L0–L8 stack, how to run its tests"), grounded in each package's real `package.json`
+description and actual exports (read in full before writing) rather than a generic
+template filled in from the package name:
+
+- `config` — corrected a first-draft overclaim: `apps/web` is not the only other place
+  `process.env` is read outside this package: `apps/gateway/src/config/env.ts` has its
+  own mirrored loader too, confirmed with a `process.env` search across the repo before
+  writing the final wording.
+- `design-system` — read both test files before describing test coverage, rather than
+  guessing from the file names.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed, so no test
+run was needed; each README's factual claims were checked against the package's actual
+`package.json`/source rather than assumed.
+
+| Exit gate item                                                                   | Result |
+| -------------------------------------------------------------------------------- | ------ |
+| Read each package's `package.json` and full `index.ts` before writing its README | PASS   |
+| Verified the `process.env` claim in `config`'s README against a repo-wide search | PASS   |
+| Verified `design-system`'s test-coverage claim against its actual test files     | PASS   |
+| `pnpm format:check` (whole repo) — clean                                         | PASS   |

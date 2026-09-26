@@ -12,6 +12,11 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 81 — Task 16, batch 1: READMEs for cross-cutting foundation packages**
+  - `README.md` for `packages/{config,contracts,security,telemetry,testkit,design-system}`
+    — what each package does, where it fits the L0–L8 stack, and how to run its tests.
+    First of several batches covering all 34 packages/apps that had none.
+
 - **Stage 80 — Failure-path tests for `packages/system-prompt-builder` (closes Task 15)**
   - `packages/system-prompt-builder/test/system-prompt-builder.spec.ts` (8 new tests):
     `TenantContext`'s `locale`/`province` length bounds, and `RequestMeta` — exported
