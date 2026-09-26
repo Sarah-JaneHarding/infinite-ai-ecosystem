@@ -23,7 +23,7 @@ jobs:
     # a real, and known, `pnpm audit:supply-chain`-style step can also add real time.
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v4
         with:
@@ -83,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Rule 2: a skipped or focused test is never committed. ESLint covers the common
       # forms; this is the belt-and-braces check that also catches them in untyped files.
@@ -119,7 +119,7 @@ jobs:
     # Testcontainers starts its own pgvector/pgvector:pg16 container using the real
     # infra/docker/initdb scripts, so no `services:` block is needed here.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v4
         with:
