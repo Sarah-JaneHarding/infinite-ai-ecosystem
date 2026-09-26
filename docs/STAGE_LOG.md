@@ -9773,3 +9773,29 @@ comment or a package description told the whole story.
 | `agent-builder`'s `compile()` claim checked against the real source — found missing, written up honestly           | PASS   |
 | `bootAgentRegistry()`'s actual enforcement scope verified — found no real caller, corrected two READMEs' overclaim | PASS   |
 | `pnpm format:check` (whole repo) — clean                                                                           | PASS   |
+
+## Stage 85 — Task 16, batch 5: READMEs for five L7 module packages · 2026-09-26
+
+**Goal.** Batch 5 of the Task 16 README sweep: `packages/compliance`,
+`packages/gamification`, `packages/pd-journal`, `packages/school-setup`,
+`packages/document-annotation` — five of the ten L7 module packages already read in full
+during Task 15's failure-path-test work, so this batch reused that existing familiarity
+rather than re-reading from scratch, while still verifying every specific cross-package
+claim before writing it.
+
+**What changed.** New `README.md` for all five packages. Verified rather than assumed:
+
+- `school-setup`'s claim that the onboarding wizard actually imports it — confirmed via
+  `apps/web/src/components/admin/setup/SchoolOnboardingWizard.tsx`.
+- `document-annotation`'s first draft guessed at a consumer ("an `apps/web` API route,
+  most likely") — a repo-wide grep for `@infinite-ai/document-annotation` found no real
+  consumer at all, only `scripts/verify-stage.ts` running its tests. Corrected to state
+  that plainly instead of presenting a guess as near-fact.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                     | Result |
+| ---------------------------------------------------------------------------------- | ------ |
+| `school-setup`'s onboarding-wizard link verified against the real import           | PASS   |
+| `document-annotation`'s consumer claim checked against a repo-wide grep, corrected | PASS   |
+| `pnpm format:check` (whole repo) — clean                                           | PASS   |

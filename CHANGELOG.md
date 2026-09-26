@@ -12,6 +12,13 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 85 — Task 16, batch 5: READMEs for five L7 module packages**
+  - `README.md` for `packages/compliance`, `packages/gamification`,
+    `packages/pd-journal`, `packages/school-setup`, `packages/document-annotation`.
+    Verified `school-setup`'s onboarding-wizard link and corrected
+    `document-annotation`'s first-draft guess at a consumer (a repo-wide grep found
+    none exists yet) before committing either.
+
 - **Stage 84 — Task 16, batch 4: READMEs for the agent runtime and eval harness**
   - `README.md` for `packages/agents`, `packages/orchestrator`, `packages/prompts`,
     `packages/agent-builder`, `packages/evals`. Found and wrote up two real gaps
