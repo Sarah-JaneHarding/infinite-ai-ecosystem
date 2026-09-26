@@ -12,6 +12,240 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 88 — Task 16, batch 8: READMEs for the three apps (closes Task 16)**
+  - `README.md` for `apps/web`, `apps/gateway`, `apps/worker`. Verified two claims
+    against real source before writing rather than after: `apps/gateway`'s adapters are
+    genuinely the only files in the repo allowed to import a provider SDK (confirmed
+    against `eslint.config.mjs` and a repo-wide grep); `apps/worker`'s `step-executor.ts`
+    wires in only two specific guardrail checks directly
+    (`checkAgeAppropriateness`, `checkDiagnosticLanguage`), not the full
+    `runInputGuardrails`/`runOutputGuardrails` engine — a real, already-documented gap
+    in the source (OQ-015/OQ-026), stated precisely rather than implied away.
+  - **Closes Task 16** ("Add a `README.md` per package"): all 34 packages/apps that had
+    none at the start of this sweep now have one, across eight batches (Stages 81–88).
+
+- **Stage 87 — Task 16, batch 7: READMEs for provisioning, billing, warehouse, analytics, learning**
+  - `README.md` for `packages/provisioning`, `packages/billing`, `packages/warehouse`,
+    `packages/analytics`, `packages/learning`. Found and flagged three real
+    cross-package gaps rather than glossing over them: `provisioning` and
+    `school-setup` have two independent, non-shared schemas for the same "school
+    profile" concept; `billing`'s dunning state machine and `provisioning`'s tenant
+    lifecycle share status names but neither package imports the other; and a
+    first-draft `warehouse` README overclaimed a data-flow link to `analytics` that a
+    grep found doesn't exist in code.
+
+- **Stage 86 — Task 16, batch 6: READMEs for the remaining thin modules and curriculum-seed**
+  - `README.md` for `packages/learner-client`, `packages/low-tech-assessment`,
+    `packages/prompt-builder`, `packages/system-prompt-builder`,
+    `packages/curriculum-seed`. Corrected a first-draft overclaim that
+    `MOD01_CURRICULUM_PIPELINE` "calls" `curriculum-seed`'s executors directly — the
+    pipeline file only declares step shape; `apps/worker` does the real wiring.
+
+- **Stage 85 — Task 16, batch 5: READMEs for five L7 module packages**
+  - `README.md` for `packages/compliance`, `packages/gamification`,
+    `packages/pd-journal`, `packages/school-setup`, `packages/document-annotation`.
+    Verified `school-setup`'s onboarding-wizard link and corrected
+    `document-annotation`'s first-draft guess at a consumer (a repo-wide grep found
+    none exists yet) before committing either.
+
+- **Stage 84 — Task 16, batch 4: READMEs for the agent runtime and eval harness**
+  - `README.md` for `packages/agents`, `packages/orchestrator`, `packages/prompts`,
+    `packages/agent-builder`, `packages/evals`. Found and wrote up two real gaps
+    honestly rather than glossing over them: `agent-builder`'s `workflow.ts` comment
+    references a `compile()` to `PipelineDefinition` that doesn't exist anywhere in the
+    package's source, and `bootAgentRegistry()`'s existence checks default to
+    always-true and have no real application caller (`apps/worker`/`apps/gateway`) —
+    corrected an earlier draft's overclaim that the registry enforces the full
+    Definition-of-Done agent checklist.
+
+- **Stage 83 — Task 16, batch 3: READMEs for the guardrail plane**
+  - `README.md` for `packages/guardrails`, `packages/policy`, `packages/deident`.
+    Caught and corrected a real inaccuracy before committing: a first draft claimed
+    `deident` itself attaches the `deidentified: true` provenance stamp — a repo-wide
+    search showed callers set that stamp, and this package only supplies the
+    tokenisation/scrubbing primitives that make it true.
+
+- **Stage 82 — Task 16, batch 2: READMEs for the data plane and the Brain**
+  - `README.md` for `packages/db` (L3) and `packages/brain` (L4), each tying its files
+    back to the specific rule or manual concept they satisfy (rule 5's tenant-scoped
+    client, rule 11's supersede-don't-update invariant, the fixed retrieval-stage order).
+
+- **Stage 81 — Task 16, batch 1: READMEs for cross-cutting foundation packages**
+  - `README.md` for `packages/{config,contracts,security,telemetry,testkit,design-system}`
+    — what each package does, where it fits the L0–L8 stack, and how to run its tests.
+    First of several batches covering all 34 packages/apps that had none.
+
+- **Stage 80 — Failure-path tests for `packages/system-prompt-builder` (closes Task 15)**
+  - `packages/system-prompt-builder/test/system-prompt-builder.spec.ts` (8 new tests):
+    `TenantContext`'s `locale`/`province` length bounds, and `RequestMeta` — exported
+    for validating untrusted per-call metadata but never `.parse()`d internally,
+    including its `provenance.deidentified: z.literal(true)` field, this package's own
+    encoding of rule 4's PII-provenance invariant, now proven to actually reject
+    `false` rather than being enforced only at compile time.
+  - This closes audit Task 15 ("Add failure-path tests to thin packages") across all
+    ten packages: `compliance`, `apps/web`, `gamification`, `pd-journal`,
+    `school-setup`, `document-annotation`, `learner-client`, `low-tech-assessment`,
+    `prompt-builder`, `system-prompt-builder`. Final check: `pnpm typecheck` and
+    `pnpm test` both pass across all 53 packages in the monorepo.
+
+- **Stage 79 — Failure-path tests for `packages/prompt-builder`**
+  - `packages/prompt-builder/test/prompt-builder.spec.ts` (9 new tests): `VariableName`
+    and `PromptBudget` are both exported specifically so a caller can validate untrusted
+    input before it reaches the builder, but nothing internal calls `.parse()` on
+    either — so neither had a test of its own. Closed: `VariableName`'s lower-snake-case
+    regex, and `PromptBudget`'s `int().positive()` constraints on all three fields.
+
+- **Stage 78 — Failure-path tests for `packages/low-tech-assessment`**
+  - `packages/low-tech-assessment/test/low-tech-assessment.spec.ts` (8 new tests):
+    `ScanResult` and `AssessmentSession` were only ever built through always-valid
+    fixture helpers (`makeScan`/`makeSession`) — neither schema had a rejection
+    test of its own. Closed: `ScanResult`'s `cardNumber` bound and `CardSide` enum;
+    `AssessmentSession`'s empty `sessionId`/`title`, out-of-range `classSize`, and
+    empty `questions` array.
+
+- **Stage 77 — Failure-path tests for `packages/learner-client`**
+  - `packages/learner-client/test/learner-client.spec.ts` (14 new tests):
+    `LearnerProfile`'s empty-identifier constraints, `ActivityNode`'s empty
+    `title`/`activityId`, and all three offline-event payload schemas
+    (`QuizAnsweredPayload`, `ActivityCompletedPayload`, `AssessmentSubmittedPayload`)
+    had zero rejection tests — every prior test built payloads through a fixture
+    helper that was always already valid. Also closes `OfflineEvent`'s own
+    envelope constraints (empty `eventId`, malformed `occurredAt`).
+
+- **Stage 76 — Failure-path tests for `packages/document-annotation`**
+  - `packages/document-annotation/test/document-annotation.spec.ts` (10 new tests):
+    `CommentPayload`, `TextBoxPayload`, and `StampPayload` had zero rejection tests
+    despite real constraints of their own (`min(1)` body/label, `.positive()`
+    width/height) — closed, including a regression test documenting that
+    `TextBoxPayload.body` deliberately has no `min(1)` (an empty text box is a valid
+    in-progress state). The `Annotation` envelope and `AnnotationReply` schemas'
+    own constraints (empty identifiers, malformed `createdAt`) were also untested —
+    every prior test exercised business-logic checks instead of the schemas.
+
+- **Stage 75 — Failure-path tests for `packages/school-setup`**
+  - `packages/school-setup/src/__tests__/types.spec.ts` (5 new tests): `validateSchoolConfig`
+    — `validate.ts`'s one exported function whose whole purpose is safely parsing a raw
+    `unknown` value — had zero tests of its own; every existing test called
+    `SchoolConfig.parse` directly instead. Now proven to accept valid raw input, reject an
+    empty object, `null`, a plain string, and input with a nested schema violation.
+
+- **Stage 74 — Failure-path tests for `packages/pd-journal`**
+  - `packages/pd-journal/test/pd-journal.spec.ts` (6 new tests): `resolveCycleYear`'s
+    documented clamp to cycle year 3 for a date years past the cycle end — previously
+    unreached, since every existing test's `asOf` stopped exactly at the year-3 boundary
+    and never went further out. `buildPdCycleSummary`'s re-tagging of each entry's
+    `educatorToken` to its journal `Map` key, rather than trusting whatever token the
+    entry itself carries, is now proven to correctly override a mismatch — a
+    data-attribution-integrity path with no prior test.
+
+- **Stage 73 — Failure-path tests for `packages/gamification`**
+  - `packages/gamification/test/schemas.spec.ts` (new, 12 tests): `LearnerGamificationProfile`
+    — the input state `processEvent` trusts completely — now has its own constraints
+    (non-negative/integer `xp` and `streakDays`, `level` ≥ 1, non-empty `profileId`) proven
+    to reject bad data, plus the same for `AssessmentCompletedEvent`, `ModuleCompletedEvent`,
+    `GateApprovedEvent`, and the `GamificationEvent` discriminated union (unknown `type`,
+    malformed `occurredAt`).
+  - `packages/gamification/test/gamification.spec.ts` (4 new tests): `assessment_completed`
+    — a real event type and switch case with zero prior coverage — now exercised end-to-end
+    through `processEvent`; `streak_30`'s `minLevel: 2` badge gate now proven enforced
+    (previously only the self-gating `level_5`/`level_10` badges were tested).
+
+- **Stage 72 — Failure-path tests for `apps/web`**
+  - `apps/web/tests/unit/env.spec.ts` (9 new tests): proves `WebEnvSchema` actually
+    rejects an under-length `NEXTAUTH_SECRET`, a malformed `NEXTAUTH_URL` or
+    `AUTH_KEYCLOAK_ISSUER`, and an out-of-enum `NODE_ENV` — the schema's own validation
+    boundary, previously unreached by any test because `getWebEnv()` short-circuits to a
+    fixed test object whenever `NODE_ENV==='test'`. Also exercises `getWebEnv()`'s
+    production throw-on-invalid-env path directly, via `vi.stubEnv`.
+  - `apps/web/tests/unit/roles.spec.ts` (3 new tests): proves `roleCanViewPath` — the
+    RBAC gate behind this app's page routing — denies same-prefix path-name collisions
+    (`/teacherx` against the allowed `/teacher`, `/approvalsx` against the allowed
+    `/approvals`) rather than treating them as nested/allowed paths.
+
+- **Stage 71 — Failure-path tests for `packages/compliance`**
+  - `packages/compliance/test/schemas.spec.ts` (new): 23 tests proving the package's
+    seven exported Zod input schemas actually reject invalid data (out-of-range
+    percentages/quintiles/stages/cycle-years, empty identifier strings) — the package's
+    real input-validation boundary, previously untested despite 35 existing tests
+    thoroughly covering its business logic.
+
+- **Stage 70 — Mirrored `SECURITY.md` to the repository root**
+  - `SECURITY.md` (new, root): a short pointer GitHub's Security tab can find, with the
+    "report to the repository owner, not a public issue" instruction stated directly and
+    a link to `docs/SECURITY.md` — the single canonical copy — for the full policy.
+
+### Fixed
+
+- **Stage 69 — Approved pnpm native build scripts**
+  - `package.json`'s `pnpm.onlyBuiltDependencies`: added `cpu-features`, `ssh2`,
+    `protobufjs` (all three transitively required by `testcontainers`, the Docker-backed
+    integration-test tooling), and `msgpackr-extract` (required by `bullmq`,
+    `apps/worker`'s real job-queue library). Each traced to its actual dependency chain
+    and cross-checked against npm registry maintainer metadata before approving — not a
+    blind `pnpm approve-builds --all`. Removes the "Ignored build scripts" warning every
+    `pnpm install` printed.
+
+### Added
+
+- **Stage 68 — CODEOWNERS and Dependabot**
+  - `.github/CODEOWNERS`: path-scoped ownership covering every CLAUDE.md-named
+    invariant-enforcing area (`packages/db`, `packages/guardrails`/`packages/deident`,
+    `apps/gateway`, `packages/policy`/`packages/contracts/src/popia`), plus
+    `packages/security`, `infra/`, `.github/workflows/`, and
+    `scripts/verify-stage.ts`. Every handle is a real collaborator (checked via the
+    GitHub API first) — no invented teams.
+  - `.github/dependabot.yml`: weekly version updates for the whole pnpm workspace (one
+    `npm` ecosystem entry, patch/minor grouped) and for third-party GitHub Actions used
+    in `.github/workflows/*.yml`.
+
+### Removed
+
+- **Stage 67 — Dead CodeDeploy-to-EC2 scaffolding**
+  - `appspec.yml`, `buildspec.yml`, `scripts/restart_server.sh`: deleted. Unmodified
+    placeholder boilerplate (Node 18/npm, `/var/www/html`, `systemctl restart nginx`)
+    from before this repo settled on its real, single deployment path — Docker → ECR →
+    ECS Fargate via `.github/workflows/cd.yml` and `infra/terraform`. Nothing referenced
+    any of the three files.
+
+### Fixed
+
+- **Stage 66 — `verify:stage` gate extended through Stage 65**
+  - `scripts/verify-stage.ts`: eleven new stage entries (`55`–`65`) closing a gap where
+    the cumulative gate script had stopped at id `54` while eleven real stages had
+    already shipped — `pnpm verify:stage <NN>` was silently not covering any of them.
+  - `.github/workflows/ci.yml`: `Stage gate` step bumped from `pnpm verify:stage 52` to
+    `pnpm verify:stage 65` (it had drifted three stages further behind even the script's
+    own array).
+
+- **Stage 65 — Terraform module de-duplication (`vpc`/`rds`/`elasticache`)**
+  - `infra/terraform/environments/test/main.tf`: rewired onto the same `network`/
+    `database`/`cache` modules `modules/stack` uses for dev/staging/production, composed
+    directly (no ALB/Langfuse/SES/observability/SNS — not needed for this environment's
+    purpose). Fixes a real gap, not just duplicated code: the old `rds` module had no
+    role-based access model, so `test` was not proving the tenant-isolation role split
+    (`migrator`/`app_rw`/`worker_rw`/`analytics_ro`) rule 5 requires everywhere else.
+  - `infra/terraform/modules/{vpc,rds,elasticache}/`: deleted — unreferenced after the
+    rewire above.
+  - `infra/terraform/README.md`: `test` environment added to the layout list.
+
+### Added
+
+- **Stage 64 — Age-Appropriateness Judge (OQ-015 Gap 2, model-call half)**
+  - `packages/prompts/src/AGE-APPROPRIATENESS-JUDGE/1.0.0.prompt.md`: a new Prompt Registry
+    entry instructing the judge to render a verdict grounded only in the ratified DBE
+    developmental-readiness clauses supplied for each call.
+  - `packages/guardrails/src/age-appropriateness-judge.ts`:
+    `createGatewayAgeAppropriatenessJudge`, a real `AgeAppropriatenessJudge` that calls the
+    Model Gateway and fails closed (`appropriate: false`) on any network error, non-2xx
+    response, non-JSON reply, or schema mismatch.
+  - `apps/gateway/routing.json`: new `guardrail.age_appropriateness` logical model route.
+  - `apps/worker/src/index.ts`: wires the real judge into `ageAppropriatenessCheckerFactory`
+    by default for MOD-01/MOD-04 pipeline jobs carrying `gradePhase`.
+  - 7 new tests (`packages/guardrails/test/age-appropriateness-judge.spec.ts`) covering the
+    happy path, a genuine refusal, and every fail-closed path.
+  - Still open: calibration (OQ-016) and the judge's PII-provenance scope — see
+    `docs/OPEN_QUESTIONS.md` OQ-015's 2026-09-25 update.
+
 - **Stage 18 — Launch readiness and handover**
   - Feature-flag registry (`packages/config/src/flags.ts`) with typed keys, owner, expiry enforcement and env-override pattern.
   - `pnpm check:flags` CI guard (`scripts/check-feature-flags.ts`) that exits 1 on any expired flag.

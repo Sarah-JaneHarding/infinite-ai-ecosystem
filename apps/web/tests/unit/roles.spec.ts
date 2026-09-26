@@ -90,4 +90,21 @@ describe('roleCanViewPath', () => {
   it('allows nested paths under a permitted root', () => {
     expect(roleCanViewPath('hod', '/approvals/a1b2c3')).toBe(true);
   });
+
+  // Security-relevant: roleCanViewPath is the RBAC gate this app's routing relies on
+  // (rule 5's "every read and write" spirit applied to page access). It matches an
+  // allowed prefix with `pathname === prefix || pathname.startsWith(`${prefix}/`)` —
+  // nothing previously proved that check resists a same-prefix path-name collision,
+  // where a different route happens to start with the same characters as an allowed one.
+  it('does not allow a same-prefix path that is not actually nested (name collision)', () => {
+    expect(roleCanViewPath('teacher', '/teacherx')).toBe(false);
+  });
+
+  it('does not allow a same-prefix collision on a shared route like /approvals', () => {
+    expect(roleCanViewPath('teacher', '/approvalsx')).toBe(false);
+  });
+
+  it('denies a role access to a completely unrelated top-level path', () => {
+    expect(roleCanViewPath('guardian', '/billing')).toBe(false);
+  });
 });

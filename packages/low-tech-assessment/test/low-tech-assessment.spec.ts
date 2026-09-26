@@ -145,6 +145,27 @@ describe('Card schema', () => {
   });
 });
 
+// ─── cards.ts — ScanResult schema ──────────────────────────────────────────────
+//
+// makeScan always builds a valid ScanResult — nothing previously proved the schema
+// itself rejects an out-of-range cardNumber or an invalid side.
+
+describe('ScanResult schema', () => {
+  it('rejects cardNumber = 0', () => {
+    expect(ScanResult.safeParse({ cardNumber: 0, side: 'A' }).success).toBe(false);
+  });
+
+  it('rejects cardNumber > MAX_CARDS', () => {
+    expect(ScanResult.safeParse({ cardNumber: MAX_CARDS + 1, side: 'A' }).success).toBe(
+      false,
+    );
+  });
+
+  it('rejects an invalid side', () => {
+    expect(ScanResult.safeParse({ cardNumber: 1, side: 'E' }).success).toBe(false);
+  });
+});
+
 // ─── session.ts — Question schema ─────────────────────────────────────────────
 
 describe('Question schema', () => {
@@ -210,6 +231,52 @@ describe('Question schema', () => {
       correctSide: 'A',
     });
     expect(result.success).toBe(false);
+  });
+});
+
+// ─── session.ts — AssessmentSession schema ────────────────────────────────────
+//
+// makeSession always builds a valid session — nothing previously proved the schema
+// itself rejects an empty sessionId/title, an out-of-range classSize, or an empty
+// questions array.
+
+describe('AssessmentSession schema', () => {
+  const validBase = {
+    sessionId: 'sess-001',
+    title: 'Grade 5 Maths – Term 2',
+    classSize: 5,
+    questions: [makeQuestion('q1', 'A')],
+    status: 'pending' as const,
+    currentQuestionIndex: null,
+    createdAt: NOW,
+  };
+
+  it('rejects an empty sessionId', () => {
+    expect(AssessmentSession.safeParse({ ...validBase, sessionId: '' }).success).toBe(
+      false,
+    );
+  });
+
+  it('rejects an empty title', () => {
+    expect(AssessmentSession.safeParse({ ...validBase, title: '' }).success).toBe(false);
+  });
+
+  it('rejects a classSize of 0', () => {
+    expect(AssessmentSession.safeParse({ ...validBase, classSize: 0 }).success).toBe(
+      false,
+    );
+  });
+
+  it('rejects a classSize above MAX_CARDS', () => {
+    expect(
+      AssessmentSession.safeParse({ ...validBase, classSize: MAX_CARDS + 1 }).success,
+    ).toBe(false);
+  });
+
+  it('rejects an empty questions array', () => {
+    expect(AssessmentSession.safeParse({ ...validBase, questions: [] }).success).toBe(
+      false,
+    );
   });
 });
 

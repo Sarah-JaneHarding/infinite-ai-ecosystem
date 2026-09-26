@@ -1,7 +1,11 @@
 # The test environment — a lightweight AWS environment for validating infrastructure
-# changes before they reach staging. Uses the same modules as staging/production but
-# with cost-optimised defaults: Fargate SPOT, t4g.micro instances, single NAT gateway,
-# 7-day log retention, no Multi-AZ, no alarms.
+# changes before they reach staging. Uses the same network/database/cache modules as
+# staging/production (via modules/stack), composed directly rather than through
+# modules/stack itself — no ALB, Langfuse, SES, observability, or safeguarding SNS topic,
+# none of which this environment's own purpose (prove the network/data-plane modules
+# work) needs. Cost-optimised defaults: Fargate SPOT (ecs-cluster module), single NAT
+# gateway, t4g.micro instances, no Multi-AZ, 7-day log retention, no alarms — every one
+# of those is simply each module's own default, not a value overridden here.
 #
 # NOT a replacement for the docker-compose dev stack (infra/docker/compose.dev.yml) that
 # local development uses. This exists to prove the infrastructure modules themselves,
@@ -9,7 +13,10 @@
 #
 # Run `scripts/cd/build-and-push-test.sh <aws-account-id>` to push :test images to the
 # ECR repositories the ecs-service modules create here, then re-apply to point the
-# running services at the new images.
+# running services at the new images. After the first `apply`, run
+# `../../modules/database/bootstrap-roles.sh infinite-ai-test` once to create the
+# migrator/app_rw/worker_rw/analytics_ro Postgres roles and extensions — see that
+# script's own header.
 
 terraform {
   required_version = ">= 1.7"
@@ -50,43 +57,50 @@ provider "aws" {
 
 locals {
   environment = "test"
+  name        = "infinite-ai-test"
   # The :test tag is pushed by scripts/cd/build-and-push-test.sh; update this and
   # re-apply to roll a new image into the running services.
   image_tag = "test"
 }
 
-module "vpc" {
-  source      = "../../modules/vpc"
-  environment = local.environment
+module "network" {
+  source = "../../modules/network"
+
+  name               = local.name
+  single_nat_gateway = true
 }
 
 module "ecs_cluster" {
   source      = "../../modules/ecs-cluster"
   environment = local.environment
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = module.network.vpc_id
 }
 
-module "rds" {
-  source                = "../../modules/rds"
-  environment           = local.environment
-  vpc_id                = module.vpc.vpc_id
-  private_subnet_ids    = module.vpc.private_subnet_ids
-  ecs_security_group_id = module.ecs_cluster.ecs_security_group_id
+module "database" {
+  source = "../../modules/database"
+
+  name                       = "${local.name}-db"
+  vpc_id                     = module.network.vpc_id
+  private_subnet_ids         = module.network.private_subnet_ids
+  allowed_security_group_ids = [module.ecs_cluster.ecs_security_group_id]
 }
 
-module "redis" {
-  source                = "../../modules/elasticache"
-  environment           = local.environment
-  vpc_id                = module.vpc.vpc_id
-  private_subnet_ids    = module.vpc.private_subnet_ids
-  ecs_security_group_id = module.ecs_cluster.ecs_security_group_id
+module "cache" {
+  source = "../../modules/cache"
+
+  name                       = "${local.name}-cache"
+  vpc_id                     = module.network.vpc_id
+  private_subnet_ids         = module.network.private_subnet_ids
+  allowed_security_group_ids = [module.ecs_cluster.ecs_security_group_id]
 }
 
-# Shared plain environment variables injected into all three services
+# Shared plain environment variables injected into all three services. DATABASE_URL and
+# REDIS_URL are NOT here — both carry credentials (a generated app-role password, a
+# Redis AUTH token) and are injected as `secrets` on the services that need them instead,
+# matching modules/stack's own ecs_service_gateway/ecs_service_worker pattern exactly.
 locals {
   shared_env = {
     NODE_ENV   = "test"
-    REDIS_URL  = "redis://${module.redis.primary_endpoint}:6379"
     AWS_REGION = "af-south-1"
   }
 }
@@ -96,16 +110,18 @@ module "gateway" {
   name               = "infinite-ai-test-gateway"
   cluster_id         = module.ecs_cluster.cluster_id
   cluster_name       = module.ecs_cluster.cluster_name
-  vpc_id             = module.vpc.vpc_id
+  vpc_id             = module.network.vpc_id
   security_group_id  = module.ecs_cluster.ecs_security_group_id
-  private_subnet_ids = module.vpc.private_subnet_ids
+  private_subnet_ids = module.network.private_subnet_ids
   container_port     = 8080
   image_tag          = local.image_tag
   cpu                = 512
   memory             = 1024
   environment        = local.shared_env
   secrets = {
-    DATABASE_URL = module.rds.connection_url_secret_arn
+    # ":url::" reads the app_rw role's own JSON secret's url field — see the database
+    # module's own header for the four-role shape this matches from infra/docker/initdb.
+    DATABASE_URL = "${module.database.app_role_secret_arns["app_rw"]}:url::"
   }
   log_retention_days = 7
 }
@@ -115,9 +131,9 @@ module "web" {
   name               = "infinite-ai-test-web"
   cluster_id         = module.ecs_cluster.cluster_id
   cluster_name       = module.ecs_cluster.cluster_name
-  vpc_id             = module.vpc.vpc_id
+  vpc_id             = module.network.vpc_id
   security_group_id  = module.ecs_cluster.ecs_security_group_id
-  private_subnet_ids = module.vpc.private_subnet_ids
+  private_subnet_ids = module.network.private_subnet_ids
   container_port     = 3000
   image_tag          = local.image_tag
   cpu                = 512
@@ -134,26 +150,27 @@ module "worker" {
   name               = "infinite-ai-test-worker"
   cluster_id         = module.ecs_cluster.cluster_id
   cluster_name       = module.ecs_cluster.cluster_name
-  vpc_id             = module.vpc.vpc_id
+  vpc_id             = module.network.vpc_id
   security_group_id  = module.ecs_cluster.ecs_security_group_id
-  private_subnet_ids = module.vpc.private_subnet_ids
+  private_subnet_ids = module.network.private_subnet_ids
   container_port     = 8081
   image_tag          = local.image_tag
   cpu                = 512
   memory             = 1024
   environment        = local.shared_env
   secrets = {
-    DATABASE_URL = module.rds.connection_url_secret_arn
+    DATABASE_URL = "${module.database.app_role_secret_arns["worker_rw"]}:url::"
+    REDIS_URL    = "${module.cache.redis_url_secret_arn}:url::"
   }
   log_retention_days = 7
 }
 
-output "rds_endpoint" {
-  value = module.rds.endpoint
+output "database_endpoint" {
+  value = module.database.endpoint
 }
 
-output "redis_endpoint" {
-  value = module.redis.primary_endpoint
+output "cache_endpoint" {
+  value = module.cache.primary_endpoint_address
 }
 
 output "ecs_cluster_name" {

@@ -60,6 +60,10 @@ terraform/
                    before production
     production     Multi-AZ database + cache, one NAT per AZ, deletion protection on,
                    >=2 tasks per service, a real domain required
+    test           network/database/cache/ecs-cluster/ecs-service composed directly
+                   (no ALB, Langfuse, SES, observability, or SNS escalation topic) —
+                   proves the leaf modules cheaply, not a staging/production replica;
+                   see its own main.tf header
 ```
 
 ## Applying this for real

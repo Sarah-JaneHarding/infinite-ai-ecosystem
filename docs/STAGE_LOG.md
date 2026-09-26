@@ -8791,3 +8791,1121 @@ type, space and shape. Zero ad-hoc hex values remain in `apps/web`.
 | TypeScript strict mode — no errors (design-system + web)         | PASS   |
 | ESLint — no errors                                               | PASS   |
 | Prettier format — no diffs                                       | PASS   |
+
+---
+
+## Stage 64 — Age-Appropriateness Judge (OQ-015 Gap 2, model-call half) · 2026-09-25
+
+**Goal.** Close the model-call half of OQ-015 Gap 2: `AgeAppropriatenessJudge` — the
+injected function `brain-age-appropriateness.ts` documents as needing a real Model
+Gateway call — had no implementation, so `apps/worker`'s default
+`ageAppropriatenessCheckerFactory` wiring passed every output unconditionally. A real,
+fail-closed judge now renders an actual verdict, grounded only in the ratified clauses
+retrieved for each call.
+
+**What changed.**
+
+- `packages/prompts/src/AGE-APPROPRIATENESS-JUDGE/1.0.0.prompt.md` — new Prompt Registry
+  entry (all 8 mandatory sections). Instructed to judge only against the `clauses` it is
+  given for each call, never an outside rule; returns `appropriate: true` with an honest
+  rationale when `clauses` is empty rather than inventing a standard to fill the gap.
+- `packages/prompts/prompt-lock.json` — hash entry added for the new prompt.
+- `apps/gateway/routing.json` — new `guardrail.age_appropriateness` logical model,
+  routed to the same screening-tier provider order as `support.screen`.
+- `packages/guardrails/src/age-appropriateness-judge.ts` — new file.
+  `createGatewayAgeAppropriatenessJudge(gatewayCall, tenantId, promptBody, provenance)`
+  builds a `ChatCompletionRequest`, calls the gateway, and parses the reply against a
+  `{ appropriate: boolean, rationale: string }` Zod schema. Fails closed
+  (`appropriate: false`) on a thrown gateway call, a non-JSON reply, or a reply that does
+  not match the schema — never throws out of the judge itself. `provenance` is a required
+  parameter, not defaulted, since it is only honestly `deidentified: true` for the
+  curriculum-planning-pipeline scope `createBrainAgeAppropriatenessChecker` already
+  documents itself as built for.
+- `packages/guardrails/src/index.ts` — exports `createGatewayAgeAppropriatenessJudge` and
+  `JudgeGatewayCallFn`.
+- `packages/guardrails/test/age-appropriateness-judge.spec.ts` — 7 new tests: appropriate
+  verdict, inappropriate verdict with rationale, and 5 dedicated fail-closed tests (thrown
+  network error, non-JSON reply, schema mismatch, wrong-typed field, non-`Error`
+  rejection).
+- `packages/guardrails/test/exports.spec.ts` — new export added to the allow-list.
+- `apps/worker/src/index.ts` — loads the judge's prompt body once at startup, builds a
+  `fetch`-based `JudgeGatewayCallFn` (same "POST, throw on non-2xx" shape
+  `step-executor.ts`'s own gateway call already uses), and wires
+  `ageAppropriatenessCheckerFactory` to construct the real judge for every phase-aware
+  checker it builds, using the same curriculum-only provenance stamp CE-01 already uses.
+- `docs/OPEN_QUESTIONS.md` — OQ-015 updated: status changed to reflect Gap 2's model-call
+  half resolved, with calibration (OQ-016) and the provenance-scope caveat both recorded
+  as the remaining gap.
+- `CHANGELOG.md` — entry added under `[Unreleased] → Added`.
+
+**What deliberately was not done.** No eval set of human-labelled cases was added for
+this judge, and it is not registered as a `packages/agents` `AgentContract` — it is a
+guardrail-plane mechanism, the same category as `packages/evals`' own `LlmJudge`, not a
+MOD-0X pipeline agent. Calibrating it against real human judgements (OQ-016's own
+requirement for any LLM-as-judge mechanism) needs a labelled dataset this build does not
+have and rule 0.3 forbids fabricating.
+
+**Verification.** `pnpm --filter @infinite-ai/prompts test` — 25 tests, all pass (lock
+file matches the new prompt file). `pnpm --filter @infinite-ai/guardrails test` — 201
+tests, all pass. `pnpm --filter @infinite-ai/worker test` — 87 tests, all pass.
+`pnpm --filter @infinite-ai/gateway test` — 142 tests, all pass (routing config still
+validates with the new entry). `pnpm typecheck` — 53/53 packages pass. `pnpm lint` —
+clean. `pnpm format:check` — clean.
+
+| Exit gate item                                                                  | Result |
+| ------------------------------------------------------------------------------- | ------ |
+| New prompt file passes Prompt Registry section/front-matter validation          | PASS   |
+| Prompt lockfile has no drift against the real prompt tree                       | PASS   |
+| Judge returns `appropriate: true` when the gateway finds the output appropriate | PASS   |
+| Judge returns `appropriate: false` with the gateway's rationale on a refusal    | PASS   |
+| Judge fails closed on a thrown gateway call (network error)                     | PASS   |
+| Judge fails closed on a non-JSON gateway reply                                  | PASS   |
+| Judge fails closed on a reply that does not match the verdict schema            | PASS   |
+| Judge fails closed on a wrong-typed `appropriate` field                         | PASS   |
+| Judge never throws out of itself, even on a non-`Error` rejection               | PASS   |
+| `apps/worker` wires the real judge into the default checker factory             | PASS   |
+| Gateway routing config still validates with the new logical model               | PASS   |
+| TypeScript strict mode — no errors (53/53 packages)                             | PASS   |
+| ESLint — no errors                                                              | PASS   |
+| Prettier format — no diffs                                                      | PASS   |
+
+---
+
+## Stage 65 — Terraform module de-duplication (`vpc`/`rds`/`elasticache`) · 2026-09-25
+
+**Goal.** A fresh repository audit found `infra/terraform/modules/{vpc,database,cache}`
+and `{vpc,rds,elasticache}` looking like duplicate pairs. Investigation found they were
+not dead code on either side — `environments/{dev,staging,production}` (via
+`modules/stack`) used `network`/`database`/`cache`, while `environments/test` used
+`vpc`/`rds`/`elasticache` directly, contradicting that file's own header comment ("Uses
+the same modules as staging/production"). Worse than a maintenance duplicate: `rds` had
+no role-based access model at all (one master credential, no `migrator`/`app_rw`/
+`worker_rw`/`analytics_ro` split), so `test` was not actually proving the tenant-isolation
+role model rule 5 requires everywhere else — a real correctness gap, not just duplicated
+code.
+
+**What changed.**
+
+- `infra/terraform/environments/test/main.tf` — rewired onto `network`/`database`/`cache`
+  (the same modules `modules/stack` uses for dev/staging/production), composed directly
+  rather than through `modules/stack` itself — `test`'s own purpose (cheaply prove the
+  leaf modules) does not need `modules/stack`'s ALB, Langfuse, SES, observability, or SNS
+  escalation topic. `DATABASE_URL`/`REDIS_URL` moved from a plain shared env var to
+  per-service `secrets` entries (`"<arn>:url::"`), matching `modules/stack`'s own
+  gateway/worker pattern exactly — the old plain `REDIS_URL` pointed at an unauthenticated
+  endpoint the new `cache` module's TLS+AUTH-token Redis cannot serve that way. Outputs
+  renamed `rds_endpoint`/`redis_endpoint` → `database_endpoint`/`cache_endpoint` (grepped
+  first: nothing outside this file referenced the old names).
+- `infra/terraform/modules/{vpc,rds,elasticache}/` — deleted. Nothing references them
+  after the rewire above (`git rm`, confirmed with a repo-wide grep first).
+- `infra/terraform/README.md` — added the `test` environment to the layout list (it was
+  previously undocumented there).
+
+**Verification.** `terraform fmt -check -recursive -diff` — clean, whole tree.
+`terraform init -backend=false` from `environments/test` — resolves the full module graph
+(all 7 child modules) with no source-path or provider-requirement errors; fails only on
+the provider _plugin_ download, which needs `registry.terraform.io` — blocked by this
+sandbox's own network policy, the same constraint `infra/terraform/README.md`'s own
+"Status" section already documents, so `terraform validate` itself could not run here.
+Every variable passed to `network`/`database`/`cache`/`ecs-cluster`/`ecs-service` was
+cross-checked by hand against each module's own `variable` blocks (required vs. has a
+default) before writing this file, and the `"<arn>:url::"` secret-reference syntax is
+copied verbatim from `modules/stack/main.tf`'s own already-existing usage, not invented
+here.
+
+| Exit gate item                                                                     | Result |
+| ---------------------------------------------------------------------------------- | ------ |
+| `vpc`/`database`/`cache` duplication resolved — one implementation each            | PASS   |
+| `environments/test` now uses the same leaf modules as dev/staging/production       | PASS   |
+| `test`'s header comment claim is now true (was false before this stage)            | PASS   |
+| Deleted modules confirmed unreferenced before removal (repo-wide grep)             | PASS   |
+| `terraform fmt -check -recursive` — clean                                          | PASS   |
+| `terraform init -backend=false` — full module graph resolves                       | PASS   |
+| `terraform validate` — blocked by sandbox network policy (documented, not skipped) | N/A    |
+| Every module call's required variables present, verified by hand against schema    | PASS   |
+
+---
+
+## Stage 66 — `verify:stage` gate extended through Stage 65 · 2026-09-25
+
+**Goal.** A fresh repository audit found `scripts/verify-stage.ts`'s `STAGES` array
+stopping at id `'54'` while this log's own most recent entry was Stage 65 — eleven real
+stages (55–65) had shipped without a corresponding gate entry, and
+`.github/workflows/ci.yml`'s own `Stage gate` step was still pinned to
+`pnpm verify:stage 52`, three stages further behind even that. The cumulative gate this
+script exists to enforce ("§0.4 requires the cumulative test command still passes") had
+not actually covered anything built since Stage 52 on any PR's CI run.
+
+**What changed.**
+
+- `scripts/verify-stage.ts` — eleven new entries, ids `'55'` through `'65'`, one per
+  `docs/STAGE_LOG.md` entry in that range:
+  - `55`–`62` (LE-03 through the LE Maturity Report): each re-states
+    `pnpm --filter @infinite-ai/learning test`, the package's own cumulative test count
+    growing stage to stage (53 → 67 → 87 → 99 → 110 → 123 → 135 → 135, the last
+    unchanged since Stage 62 added no new tests of its own) — the same "same command,
+    now covering this stage too" shape Stage 50 already established for a stage whose
+    work landed in a package an earlier stage already gates.
+  - `63` (Design System) adds `pnpm --filter @infinite-ai/design-system test` and a new
+    regression guard — `! grep -rE "#[0-9a-fA-F]{3,6}" apps/web/src --include=*.tsx` —
+    enforcing on every later stage's gate the "zero ad-hoc hex in apps/web" property that
+    stage's own exit gate previously only checked by hand, once.
+  - `64` (Age-Appropriateness Judge) re-states the four package test commands its own PR
+    already verified with (`prompts`, `guardrails`, `worker`, `gateway`).
+  - `65` (Terraform de-duplication) needed a different shape: it changed no TypeScript,
+    so its own real verification (`terraform fmt`, `terraform init`) runs in
+    `.github/workflows/terraform.yml`'s own `Lint` job instead, for the same reason
+    Stages 01/05/06's Docker-dependent commands aren't repeated in this script — it
+    cannot be duplicated in a job with no Terraform installed. What this stage's own
+    entry runs instead: two tooling-free shell checks confirming the fix actually landed
+    — the three superseded module directories are gone, and `environments/test` is
+    actually wired onto the real ones — rather than leaving the id with an empty
+    `commands` array (which `main()`'s own `stage.commands.length === 0` check would
+    fail the gate on, were 65 ever the highest id — which, until Stage 67 exists, it is).
+- `.github/workflows/ci.yml` — `Stage gate` step bumped from `pnpm verify:stage 52` to
+  `pnpm verify:stage 65`; both of its own explanatory comments (the job's `timeout-minutes`
+  note and the step's own) updated to match, the second one now naming the gap explicitly
+  so it does not silently recur the same way for another eleven stages.
+
+**Verification.** Every new stage's own command(s) run directly and standalone, matching
+`docs/STAGE_LOG.md`'s own recorded test counts exactly: `@infinite-ai/learning` — 135
+tests. `@infinite-ai/design-system` — 20 tests; hex regression grep — no matches.
+`@infinite-ai/prompts` — 25, `@infinite-ai/guardrails` — 201, `@infinite-ai/worker` — 87,
+`@infinite-ai/gateway` — 142. Both Stage 65 shell checks — pass. `pnpm verify:stage 65`
+invoked directly: parses the new array entries without error (a TypeScript syntax error
+in any new entry would have failed immediately, before Stage 00's own commands even
+start) and correctly resolves id `65`, then begins running the cumulative chain from
+Stage 00 — confirmed reaching Stage 00's `pnpm typecheck` step cleanly before being
+stopped by a local timeout. The full cumulative run cannot complete in this sandbox: it
+reaches Stage 01's `pnpm --filter @infinite-ai/db coverage:merged` (Testcontainers,
+real Postgres) within a few commands, the same Docker requirement that has made
+`pnpm verify:stage <NN>` for any `NN >= 1` non-runnable end-to-end in this authoring
+sandbox since Stage 01 itself — not a gap this stage introduces, and not something to
+route around. `eslint scripts/verify-stage.ts` and `prettier --check` on both changed
+files — clean.
+
+| Exit gate item                                                                  | Result |
+| ------------------------------------------------------------------------------- | ------ |
+| Stages 55–65 each have a `STAGES` entry with non-empty `commands`               | PASS   |
+| Every new entry's command(s) run standalone and match the log's own test counts | PASS   |
+| Stage 63's ad-hoc-hex regression check passes against the current tree          | PASS   |
+| Stage 65's two shell checks pass against the current tree                       | PASS   |
+| `ci.yml`'s `Stage gate` step bumped to `pnpm verify:stage 65`                   | PASS   |
+| `pnpm verify:stage 65` parses and begins the cumulative run without error       | PASS   |
+| Full cumulative run — blocked by the pre-existing Stage 01 Docker requirement   | N/A    |
+| ESLint — no errors                                                              | PASS   |
+| Prettier format — no diffs                                                      | PASS   |
+
+---
+
+## Stage 67 — Remove dead CodeDeploy-to-EC2 scaffolding · 2026-09-25
+
+**Goal.** A fresh repository audit flagged root-level `appspec.yml`/`buildspec.yml` as
+inconsistent with the real deployment pipeline (Docker → ECR → ECS Fargate, via
+`.github/workflows/cd.yml` and `infra/terraform`). Investigation confirmed both files —
+and `scripts/restart_server.sh`, which `appspec.yml` invokes — were never adapted from
+their generator's own placeholder template: literal comments reading "your app directory
+on EC2," "change to your runtime (python, java, etc.)," "your build output folder," and
+a restart hook reading `systemctl restart nginx   # or your app server (node, gunicorn,
+etc.)`. Node 18/`npm` throughout, against a repo that has run Node 22/pnpm since Stage 00.
+
+**Confirmed dead, not just outdated.** A repo-wide grep found nothing outside these three
+files referencing any of them by name. The only other CodeDeploy mentions in the repo
+(`docs/RUNBOOKS/canary-deploy.md`) are about a different thing entirely — CodeDeploy's
+_ECS_ deployment controller as a possible future alternative to weighted ALB listener
+rules for canary traffic-shifting, which is EC2/on-premises CodeDeploy's opposite compute
+platform and would need an ECS task-definition-shaped `appspec.yml`, nothing like the
+file this stage removes. No stage in this log ever recorded building or adapting any of
+the three files — they predate every documented stage, most likely repo-template
+scaffolding from before Stage 00. The human user confirmed removal over rewriting: this
+codebase runs one deployment path (ECS Fargate), not two.
+
+**What changed.**
+
+- `appspec.yml` — deleted.
+- `buildspec.yml` — deleted.
+- `scripts/restart_server.sh` — deleted (appspec.yml's own `AfterInstall` hook, equally
+  unadapted, and with no other caller).
+
+**Verification.** `pnpm lint` — clean. `pnpm format:check` — clean. `pnpm typecheck` —
+53/53 packages pass (deleting three files outside any package's source tree cannot
+regress a package build, confirmed rather than assumed). Repo-wide grep for
+`restart_server`, `appspec.yml`, `buildspec.yml` — zero references remaining anywhere,
+including `.github/workflows/*.yml`, `infra/terraform/**`, and every `docs/**` file
+except this entry and the audit report that found them.
+
+| Exit gate item                                                                     | Result |
+| ---------------------------------------------------------------------------------- | ------ |
+| Confirmed no CI/CD workflow or script references any of the three files            | PASS   |
+| Confirmed the one other CodeDeploy mention in the repo is unrelated (ECS, not EC2) | PASS   |
+| Human confirmed deletion over rewriting a second deployment path                   | PASS   |
+| `pnpm lint` — clean                                                                | PASS   |
+| `pnpm format:check` — clean                                                        | PASS   |
+| `pnpm typecheck` — 53/53 packages pass                                             | PASS   |
+
+---
+
+## Stage 68 — CODEOWNERS and Dependabot · 2026-09-25
+
+**Goal.** A fresh repository audit found two governance gaps: no enforced review
+ownership per area of the codebase, and no automated check for an already-recorded
+dependency drifting out of date or picking up a CVE (rule 9's `docs/DEPENDENCIES.md`
+tracking is for _new_ dependencies; nothing watched _existing_ ones).
+
+**What changed.**
+
+- `.github/CODEOWNERS` — new. Checked the repository's actual collaborators first
+  (`list_repository_collaborators`) rather than guessing: this repo has exactly one,
+  `@Sarah-JaneHarding`, so every path resolves to the same owner today. Structured by
+  path anyway, not to route review differently yet but to document which areas this
+  codebase already treats as most sensitive — the same split CLAUDE.md's own "Four
+  invariants, each enforced in a specific file" section draws (`packages/db`,
+  `packages/guardrails` + `packages/deident`, `apps/gateway`, `packages/policy` +
+  `packages/contracts/src/popia`), plus `packages/security`, `infra/`,
+  `.github/workflows/`, and `scripts/verify-stage.ts` itself. No fabricated team names —
+  every handle in the file is the one real collaborator this repository has.
+- `.github/dependabot.yml` — new. One `npm` ecosystem entry at the workspace root
+  (Dependabot resolves the whole pnpm workspace — `apps/*`, `packages/*` — from a single
+  `directory: "/"` entry via `pnpm-lock.yaml`/`pnpm-workspace.yaml`, not one block per
+  package), weekly on Mondays, patch/minor updates grouped into one PR so a solo
+  maintainer isn't drowned in routine bumps while a major version still arrives as its
+  own PR asking for real attention. A second `github-actions` ecosystem entry covers the
+  third-party actions `.github/workflows/*.yml` already depend on (`actions/checkout`,
+  `pnpm/action-setup`, `hashicorp/setup-terraform`,
+  `aws-actions/configure-aws-credentials`, `actions/github-script`) — the same
+  supply-chain hygiene rule 9 already asks for applied to what CI runs, not only what
+  ships. Nothing here auto-merges; every PR still goes through the same review and CI
+  gate as any other change.
+
+**Verification.** `python3 -c "import yaml; yaml.safe_load(...)"` — both new YAML
+structures parse and match Dependabot's documented schema (ecosystem, directory,
+schedule, groups, labels, commit-message keys). `pnpm lint` — clean. `pnpm format:check`
+— clean (Prettier does format `.yml`; `.github/CODEOWNERS` has no extension Prettier
+recognises, left unformatted by design, matching how GitHub itself reads the file).
+`pnpm typecheck` — 53/53 packages pass (two new files outside any package's source tree
+cannot regress a package build).
+
+| Exit gate item                                                                  | Result |
+| ------------------------------------------------------------------------------- | ------ |
+| Repository's real collaborators checked before writing CODEOWNERS (not guessed) | PASS   |
+| CODEOWNERS covers every CLAUDE.md-named invariant-enforcing path                | PASS   |
+| No fabricated team/user handles in CODEOWNERS                                   | PASS   |
+| dependabot.yml covers the whole pnpm workspace from one npm-ecosystem entry     | PASS   |
+| dependabot.yml also covers third-party GitHub Actions                           | PASS   |
+| Both new YAML files parse and match their documented schema                     | PASS   |
+| `pnpm lint` — clean                                                             | PASS   |
+| `pnpm format:check` — clean                                                     | PASS   |
+| `pnpm typecheck` — 53/53 packages pass                                          | PASS   |
+
+---
+
+## Stage 69 — Review and approve pnpm native build scripts · 2026-09-25
+
+**Goal.** A fresh repository audit found `pnpm install` warning "Ignored build scripts:
+cpu-features@0.0.10, msgpackr-extract@3.0.4, protobufjs@7.6.6, ssh2@1.17.0" on every
+install — pnpm's build-script allowlist blocking four packages' native install scripts
+rather than either running or explicitly denying them. The goal was to actually verify
+each one before approving, not rubber-stamp `pnpm approve-builds --all` — approving a
+package's install-time script is granting it arbitrary code execution during every
+future `pnpm install`, on every machine and in CI.
+
+**Investigation, before approving anything.**
+
+`pnpm why <pkg>` traced all four to two legitimate, already-deliberately-adopted
+dependency chains — none of them a surprise:
+
+- `cpu-features` and `ssh2` — both required by `docker-modem`/`ssh-remote-port-forward` →
+  `dockerode` → `testcontainers` (a devDependency of `brain`, `curriculum-seed`, `db`,
+  `guardrails` — the Docker-backed integration-test tooling this whole codebase already
+  depends on throughout, e.g. Stages 01/05/06's own gate commands). `ssh2` is what lets
+  `dockerode` connect to a Docker daemon over `DOCKER_HOST=ssh://...`; `cpu-features` is
+  its own tiny companion package for SSH crypto-algorithm negotiation.
+- `protobufjs` — required by `@grpc/proto-loader` → `dockerode` → `testcontainers`, same
+  chain. Protocol Buffers support for the Docker Engine API's gRPC-based endpoints.
+- `msgpackr-extract` — a different chain entirely: `msgpackr`'s own optional native fast
+  path, required by `bullmq` (`apps/worker`'s real, production job-queue library, not a
+  devDependency). `pnpm why msgpackr-extract` returned nothing at first because pnpm's
+  dependency graph resolves it under `msgpackr`'s own optionalDependencies, not as a
+  direct devDependency anywhere — traced instead via the lockfile.
+
+Cross-checked every package's registry metadata (`registry.npmjs.org/<pkg>`) against the
+version actually pinned in `pnpm-lock.yaml`: `cpu-features` and `ssh2` are both
+maintained by `mscdex` (a long-standing, widely-trusted maintainer of the Node.js SSH
+ecosystem — `ssh2` itself is the SSH client library essentially all Node SSH tooling is
+built on), `msgpackr-extract` by `kriszyp` (the `msgpackr`/`lmdb-js` author), and
+`protobufjs` by `dcode`/`fenster`/`google-wombot`. All four installed versions matched
+(`ssh2`, `cpu-features`, `msgpackr-extract`) or were a deliberately-pinned older major of
+(`protobufjs`, held back by `@grpc/proto-loader`'s own range) the package's actual latest
+published version — no stale, abandoned, or suspiciously-versioned package in the set.
+
+**What changed.**
+
+- `pnpm approve-builds --all` — approved all four, recorded in root `package.json`'s
+  `pnpm.onlyBuiltDependencies` alongside the two entries already there
+  (`@prisma/client`/`@prisma/engines`/`prisma`, `esbuild`). pnpm also alphabetically
+  re-sorted the `devDependencies` block it rewrote in the same pass (`@infinite-ai/
+analytics`/`@infinite-ai/warehouse` moved to their correct alphabetical position) — a
+  mechanical side effect of pnpm's own save behaviour, not a manual edit; same
+  dependencies, same versions, key order only.
+
+**Verification.** `rm -rf node_modules && pnpm install --frozen-lockfile` — clean, no
+"Ignored build scripts" warning; `ssh2`'s native crypto binding actually builds now
+("Succeeded in building optional crypto binding"). `pnpm lint` — clean.
+`pnpm format:check` — clean. `pnpm typecheck` — 53/53 packages pass.
+`pnpm test` — every package's suite passes, unchanged.
+
+| Exit gate item                                                              | Result |
+| --------------------------------------------------------------------------- | ------ |
+| Each package's dependency chain traced before approving (not blind `--all`) | PASS   |
+| Registry metadata (maintainer, version) cross-checked for all four          | PASS   |
+| No unexplained, stale, or suspicious package found in the set               | PASS   |
+| `pnpm install` no longer warns about ignored build scripts                  | PASS   |
+| Approval state committed in `package.json`, not left as local machine state | PASS   |
+| `pnpm lint` / `format:check` / `typecheck` / `test` all still pass          | PASS   |
+
+---
+
+## Stage 70 — Mirror `SECURITY.md` to the repository root · 2026-09-25
+
+**Goal.** A fresh repository audit found the real security policy living only at
+`docs/SECURITY.md` — GitHub's own Security tab only auto-surfaces a policy at the
+repository root (or `.github/`), so it was never actually finding this repo's policy.
+
+**Move vs. mirror.** `INFINITEAI_BUILD_MANUAL.md` (the authoritative manual per
+`CLAUDE.md`) explicitly directs security work to `docs/SECURITY.md` by that exact path
+("Record it in `docs/SECURITY.md`", "Security questionnaire in `docs/SECURITY.md`"), and
+`docs/STAGE_LOG.md`'s own history already describes a real, substantial document there
+(30+ STRIDE threats with mitigations and test references). Moving the file would mean
+editing the manual's own directives — a bigger, more sensitive change than this stage
+intends. Mirroring instead: a short root `SECURITY.md` for GitHub's Security tab to find,
+pointing at `docs/SECURITY.md` as the one canonical copy, rather than duplicating its
+content into two places that could drift apart.
+
+**What changed.**
+
+- `SECURITY.md` (new, repository root) — states the "do not open a public issue, report
+  to the repository owner directly" instruction plainly (so it's useful even without
+  clicking through), then links to `docs/SECURITY.md` for the full policy and its own
+  §10 for current reporting details.
+
+**A finding, not fixed here (scope discipline).** While reading `docs/SECURITY.md` §10
+to write this file's pointer, found that it reads "Until the disclosure address is
+provisioned (tracked in `OPEN_QUESTIONS.md`)..." — but `docs/OPEN_QUESTIONS.md` currently
+has no entry tracking a disclosure address (checked: no `disclosure`, `vulnerability`, or
+`security contact` match). Left `docs/SECURITY.md` itself untouched rather than widen
+this stage's diff to fix a second, unrelated small inaccuracy — worth a follow-up
+(either drop the stale parenthetical or add the OQ it claims exists), flagged to the
+repo owner rather than guessed at.
+
+**Verification.** `pnpm format:check` — clean. GitHub heading-anchor slug for
+`docs/SECURITY.md`'s `## 10. Reporting a vulnerability` confirmed by hand
+(`#10-reporting-a-vulnerability`) against GitHub's own lowercase/strip-punctuation/
+hyphenate algorithm.
+
+| Exit gate item                                                                      | Result |
+| ----------------------------------------------------------------------------------- | ------ |
+| Root `SECURITY.md` exists for GitHub's Security tab to find                         | PASS   |
+| Reporting instruction usable without clicking through                               | PASS   |
+| `docs/SECURITY.md` remains the single canonical copy (no content duplicated/forked) | PASS   |
+| `INFINITEAI_BUILD_MANUAL.md`'s own directives left untouched                        | PASS   |
+| Link anchor to `docs/SECURITY.md` §10 verified against GitHub's slug algorithm      | PASS   |
+| `pnpm format:check` — clean                                                         | PASS   |
+
+---
+
+## Stage 71 — Failure-path tests for `packages/compliance` · 2026-09-25
+
+**Goal.** A fresh repository audit flagged `packages/compliance` as thin on tests
+relative to its source-file count (9 src / 1 test file) — the highest-production-exposure
+package on that list, since every finding it produces is a compliance claim a school
+acts on. Task: add failure-path tests per CLAUDE.md's Definition of Done, targeting the
+riskiest branches first (malformed input, policy-check rejection).
+
+**What the gap actually was.** Reading the existing `compliance.spec.ts` (35 tests)
+first, rather than assuming the file-count ratio meant thin coverage: it's genuinely
+thorough on business logic — every VIOLATION/WARNING/INFO path across all six check
+areas has a happy-path-and-adjacent test. What it never touched: the package's own input
+schemas (`AttendanceInput`, `FeesInput`, etc., all exported from `index.ts` specifically
+so a real caller validates untrusted data before it ever reaches a check function —
+`engine.ts`'s and `index.ts`'s own headers both say the check functions themselves do no
+runtime validation). Zero tests proved those schemas actually reject invalid data — the
+package's real input-validation boundary had no failure-path coverage at all.
+
+**What changed.**
+
+- `packages/compliance/test/schemas.spec.ts` (new) — 23 tests across all seven exported
+  schemas. Genuine constraint violations for each: `attendanceRatePct` outside 0–100,
+  `academicYear` before 2020, `quintile` outside 1–5 or non-integer, `stageCompleted`
+  outside 0–6, `cycleYear` outside {1,2,3}, negative `pdPointsAccumulated`, and an empty
+  string on every `min(1)` identifier field (`tenantId`, `learnerId`, `educatorToken`,
+  `referralId`, WSE `area`). One test documents a deliberate design choice rather than an
+  oversight: `WseInput`'s `rating` has no schema-level range — `checks/wse.ts`'s
+  `WSE_INVALID_RATING` enforces it as a business-logic finding instead, so a school
+  submitting a bad rating gets something to act on rather than a silent parse failure —
+  a regression test now catches a future edit that "fixes" the schema and quietly loses
+  that path. `ComplianceInput` gets its own three tests: accepts tenant-only input with
+  every check area omitted, rejects an empty `tenantId`, and rejects when a nested
+  sub-schema (e.g. `attendance`) itself fails validation.
+
+**Verification.** `pnpm --filter @infinite-ai/compliance test` — 58 tests, all pass (23
+new). `eslint packages/compliance/test/schemas.spec.ts` — clean. `prettier --check` —
+clean. `pnpm --filter @infinite-ai/compliance exec tsc --noEmit` — clean. `pnpm lint` /
+`pnpm format:check` (whole repo) — clean.
+
+| Exit gate item                                                                        | Result |
+| ------------------------------------------------------------------------------------- | ------ |
+| Read the existing test file before assuming the gap, rather than padding blindly      | PASS   |
+| All seven exported schemas have a genuine constraint-violation test                   | PASS   |
+| `WseInput`'s deliberate unconstrained-rating design documented with a regression test | PASS   |
+| `ComplianceInput`'s top-level and nested-failure paths covered                        | PASS   |
+| `pnpm --filter @infinite-ai/compliance test` — 58/58 pass                             | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                             | PASS   |
+
+## Stage 72 — Failure-path tests for `apps/web` · 2026-09-26
+
+**Goal.** Second package on the audit's Task 15 list. Same method as Stage 71: read the
+existing five `tests/unit/*.spec.ts` files (the only ones `pnpm test` actually runs —
+`vitest.config.ts` excludes `tests/e2e/**` and `tests/a11y/**`) before assuming anything
+about coverage, then close only the boundaries that genuinely had none.
+
+**What the gap actually was.** `roles.spec.ts`, `proxy.spec.ts`, `learner.spec.ts`, and
+`caps-canon-docs.spec.ts` were all reasonably thorough already, several with real
+negative-access-control cases. Two genuine gaps remained:
+
+- `src/lib/env.ts`'s `WebEnvSchema` — every existing `env.spec.ts` test goes through
+  `getWebEnv()`, which short-circuits to a fixed `TEST_ENV` object whenever
+  `NODE_ENV==='test'` (true for every test run), so no test ever reached
+  `WebEnvSchema.safeParse(process.env)`. The schema's own constraints
+  (`NEXTAUTH_SECRET`'s `min(32)`, the two `.url()` fields, the `NODE_ENV` enum) had zero
+  coverage — the same "business logic tested, validation boundary untested" shape as
+  `packages/compliance`. Worse, `getWebEnv()`'s production throw-on-invalid-env branch
+  (the fail-closed behaviour that stops the app booting with a bad environment) was
+  structurally unreachable by any test as written.
+- `src/lib/roles.ts`'s `roleCanViewPath` — the RBAC gate this app's routing relies on.
+  It matches `pathname === prefix || pathname.startsWith(`${prefix}/`)`; nothing proved
+  that guard resists a same-prefix path-name collision (e.g. an unrelated route that
+  happens to start with the same characters as an allowed one, like `/teacherx` against
+  the allowed `/teacher`). Security-relevant per the Definition of Done's "touches
+  auth → a dedicated security test exists" rule.
+
+**What changed.**
+
+- `apps/web/tests/unit/env.spec.ts`: 9 new tests — a `WebEnvSchema` `describe` block
+  (rejects an under-length secret, a malformed `NEXTAUTH_URL`, a malformed
+  `AUTH_KEYCLOAK_ISSUER`, an out-of-enum `NODE_ENV`; accepts the minimum valid input) and
+  a `getWebEnv` block that uses `vi.stubEnv('NODE_ENV', 'production')` plus a deleted
+  `NEXTAUTH_SECRET` to genuinely exercise and assert the production throw path, restoring
+  both via `vi.unstubAllEnvs()` in `afterEach` so no other test in the file is affected.
+- `apps/web/tests/unit/roles.spec.ts`: 3 new tests proving `roleCanViewPath` denies a
+  same-prefix collision against a role's home path (`/teacherx`), a same-prefix collision
+  against a shared route (`/approvalsx`), and a completely unrelated top-level path.
+
+**Verification.** `pnpm --filter web test` — 63 tests, all pass (12 new). `pnpm --filter
+web typecheck` — clean (first attempt used direct `process.env['NODE_ENV'] = ...`
+assignment, which fails `tsc --noEmit` with TS2540 since `NODE_ENV` is a read-only
+property on this repo's `ProcessEnv` typing; switched to `vi.stubEnv`/`vi.unstubAllEnvs`,
+which both types correctly and auto-restores). `eslint` on both edited files — clean.
+`prettier --check` on both — clean. `pnpm lint` / `pnpm format:check` (whole repo) —
+clean.
+
+| Exit gate item                                                                    | Result |
+| --------------------------------------------------------------------------------- | ------ |
+| Read all five existing unit spec files before assuming the gap                    | PASS   |
+| `WebEnvSchema`'s constraints (secret length, both URLs, NODE_ENV enum) tested     | PASS   |
+| `getWebEnv()`'s production fail-closed throw path genuinely exercised             | PASS   |
+| `roleCanViewPath`'s prefix-collision guard covered (security-relevant, RBAC gate) | PASS   |
+| `pnpm --filter web test` — 63/63 pass                                             | PASS   |
+| `pnpm --filter web typecheck` — clean                                             | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                         | PASS   |
+
+## Stage 73 — Failure-path tests for `packages/gamification` · 2026-09-26
+
+**Goal.** Third package on the audit's Task 15 list. Same method as Stages 71–72: read
+`test/gamification.spec.ts` (45 tests) in full, and every source file it exercises, before
+assuming anything about the gap.
+
+**What the gap actually was.** The existing suite is thorough on the paths it does cover —
+XP math, level thresholds, most badge triggers, and even a few schema-rejection tests for
+`LessonCompletedEvent`/`AssessmentPassedEvent`/`LearningStreakDayEvent`. Three genuine
+gaps remained:
+
+- `LearnerGamificationProfile` — the input state `processEvent` trusts completely
+  (`engine.ts` takes it as already-typed) — had zero tests proving its own constraints
+  (`xp`/`streakDays` non-negative integers, `level` ≥ 1, non-empty `profileId`) actually
+  reject bad data. Same shape as `packages/compliance`'s Zod-schema boundary gap.
+  `AssessmentCompletedEvent`, `ModuleCompletedEvent`, and `GateApprovedEvent` had the same
+  hole for their own `min(1)`/range constraints, and the `GamificationEvent` discriminated
+  union had no test proving it rejects an unknown `type` or a malformed `occurredAt`.
+- `assessment_completed` is a real `GamificationEventType` member and a real switch case
+  in `engine.ts`'s `computeXpEarned`, but no test ever called `processEvent` with one —
+  only `assessment_passed` (the graded, badge-earning variant) was exercised end-to-end.
+- `badges.ts`'s `evaluateBadges` gates every badge behind its own `minLevel` from
+  `BADGE_CATALOGUE`. The existing tests proved `level_5`/`level_10` gate themselves, but
+  nothing proved a _different_ badge's `minLevel` gate is enforced — `streak_30` requires
+  `minLevel: 2`, and a learner at level 1 with a 30-day streak had never been tested to
+  confirm the badge is correctly withheld until they actually reach level 2.
+
+**What changed.**
+
+- `packages/gamification/test/schemas.spec.ts` (new) — 12 tests: `LearnerGamificationProfile`
+  rejects negative/non-integer `xp`, `level` below 1, negative `streakDays`, and an empty
+  `profileId` (plus one happy-path accept); `AssessmentCompletedEvent` rejects score > 100
+  and an empty `assessmentId`; `ModuleCompletedEvent` and `GateApprovedEvent` each reject
+  their empty identifier; `GamificationEvent` rejects an unknown `type` and a malformed
+  `occurredAt`.
+- `packages/gamification/test/gamification.spec.ts`: 4 new tests — a
+  `processEvent — assessment_completed` block (base XP with no badge; no high-score bonus
+  even at a perfect score, since only `assessment_passed` grants that) and two
+  `evaluateBadges` tests proving `streak_30` is withheld at level 1 and awarded once level
+  reaches 2.
+
+**Verification.** `pnpm --filter @infinite-ai/gamification test` — 57 tests, all pass (16
+new). `eslint`/`tsc --noEmit` on the package — clean. `prettier --check` on both edited
+files — clean. `pnpm lint` / `pnpm format:check` (whole repo) — clean.
+
+| Exit gate item                                                                       | Result |
+| ------------------------------------------------------------------------------------ | ------ |
+| Read the existing 45-test spec file in full before assuming the gap                  | PASS   |
+| `LearnerGamificationProfile`'s constraints (xp, level, streakDays, profileId) tested | PASS   |
+| Remaining event schemas' own constraints tested; union rejects unknown type          | PASS   |
+| `assessment_completed` exercised end-to-end through `processEvent`                   | PASS   |
+| A non-self-gating badge's `minLevel` (`streak_30`) proven enforced                   | PASS   |
+| `pnpm --filter @infinite-ai/gamification test` — 57/57 pass                          | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                            | PASS   |
+
+## Stage 74 — Failure-path tests for `packages/pd-journal` · 2026-09-26
+
+**Goal.** Fourth package on the audit's Task 15 list. Same method as Stages 71–73: read
+`test/pd-journal.spec.ts` (33 tests) and both source files in full before assuming
+anything about the gap.
+
+**What the gap actually was.** This package was already the most thoroughly tested of
+the four so far — schema rejections, cycle-window boundary inclusion/exclusion, per-type
+breakdown accumulation, multi-educator independence, and even a dedicated
+`checkPdPoints` integration block with its own boundary case (exactly 150 points produces
+no VIOLATION). Two genuine gaps remained, both narrow:
+
+- `resolveCycleYear` (exported directly alongside `computeCycleProgress`) has a
+  documented clamp — "Clamps to SACE_CPTD_CYCLE_YEARS (3) if beyond the cycle end" — that
+  no test ever reached: every existing test's `asOf` stopped at exactly `YEAR_3_DATE`
+  (2026-06-15, precisely 2.5 calendar years after the 2024-01-01 cycle start), never
+  further out. `PdCycleSummary.educators[].cycleYear` is typed `1 | 2 | 3`, which only
+  guards a literal at compile time — nothing proved the runtime clamp actually fires for
+  a date years past the cycle end.
+- `buildPdCycleSummary`'s `tagged` step rewrites every entry's `educatorToken` to the
+  journal `Map`'s own key before calling `computeCycleProgress` — nothing proved that
+  override actually happens rather than trusting whatever `educatorToken` the entry
+  itself carries. A caller passing a mistagged entry (a bug elsewhere, or a stale record)
+  must not have its points misattributed to the wrong educator — a data-integrity
+  concern in the same family as the tenant-isolation invariant, even though this package
+  has no tenant/RLS boundary of its own to test.
+
+**What changed.** `packages/pd-journal/test/pd-journal.spec.ts`: 6 new tests — a
+`resolveCycleYear` block (clamps to 3 for a date 5+ years past cycle start; returns 1 for
+a date exactly on or before cycle start) and one `buildPdCycleSummary` test proving an
+entry mistagged with a different educator's token is still correctly attributed to the
+journal `Map`'s own key.
+
+**Verification.** `pnpm --filter @infinite-ai/pd-journal test` — 39 tests, all pass (6
+new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` / `pnpm
+format:check` (whole repo) — clean.
+
+| Exit gate item                                                                    | Result |
+| --------------------------------------------------------------------------------- | ------ |
+| Read the existing 33-test spec file and both source files before assuming the gap | PASS   |
+| `resolveCycleYear`'s documented year-3+ clamp proven to actually fire             | PASS   |
+| `buildPdCycleSummary`'s educator-token re-tagging proven to override a mismatch   | PASS   |
+| `pnpm --filter @infinite-ai/pd-journal test` — 39/39 pass                         | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                         | PASS   |
+
+## Stage 75 — Failure-path tests for `packages/school-setup` · 2026-09-26
+
+**Goal.** Fifth package on the audit's Task 15 list. Same method as Stages 71–74: read
+`src/__tests__/types.spec.ts` (28 tests) and both source files in full before assuming
+anything about the gap.
+
+**What the gap actually was.** The package's Zod schemas (`LanguageSettings`,
+`TermWeeks`, `SubjectGradePeriods`, `StaffMember`, `SchoolConfig`) already had thorough
+rejection tests, and `validateLanguageConflicts` had all three overlap cases covered.
+What every single existing test did, though, was call `SchoolConfig.parse` (or one of the
+other schemas' `.parse`) directly — never `validateSchoolConfig`, `validate.ts`'s one
+exported function whose entire purpose is stated in its own docstring: "Parse and
+validate a raw **unknown** value... throws ZodError on failure." The package's real
+untrusted-input boundary — the function a real caller (an onboarding-wizard API route,
+say) would actually call — had zero tests of its own, including no proof that a
+completely empty object, `null`, or a bare string is rejected rather than throwing
+something unexpected.
+
+**What changed.** `packages/school-setup/src/__tests__/types.spec.ts`: 5 new tests under
+a `validateSchoolConfig` block — accepts valid raw input and returns a typed
+`SchoolConfig`; rejects an empty object; rejects `null`; rejects a plain string; rejects
+input with a nested schema violation (an invalid language code).
+
+**Verification.** `pnpm --filter @infinite-ai/school-setup test` — 33 tests, all pass (5
+new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` / `pnpm
+format:check` (whole repo) — clean.
+
+| Exit gate item                                                                        | Result |
+| ------------------------------------------------------------------------------------- | ------ |
+| Read the existing 28-test spec file and both source files before assuming the gap     | PASS   |
+| `validateSchoolConfig` — the real untrusted-input entry point — now has its own tests | PASS   |
+| Non-object inputs (`{}`, `null`, a string) proven rejected                            | PASS   |
+| A nested schema violation inside otherwise-valid raw input proven rejected            | PASS   |
+| `pnpm --filter @infinite-ai/school-setup test` — 33/33 pass                           | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                             | PASS   |
+
+## Stage 76 — Failure-path tests for `packages/document-annotation` · 2026-09-26
+
+**Goal.** Sixth package on the audit's Task 15 list. Same method as Stages 71–75: read
+`test/document-annotation.spec.ts` (37 tests) and all three source files in full before
+assuming anything about the gap.
+
+**What the gap actually was.** Thorough on business logic (thread lifecycle, page
+bounds, export shape, an idempotent resolve) and on two of the five annotation payload
+schemas (`HighlightPayload`'s offset ordering, `FreehandPayload`'s point-count and
+stroke-width constraints). Three real gaps remained:
+
+- `CommentPayload`, `TextBoxPayload`, and `StampPayload` had zero rejection tests despite
+  real constraints of their own — `CommentPayload.body` and `StampPayload.label` are both
+  `min(1)`, `TextBoxPayload`'s `width`/`height` are both `.positive()`. Along the way,
+  found that `TextBoxPayload.body` deliberately has **no** `min(1)` (unlike its two
+  siblings) — a freshly placed, still-empty text box is a valid state a collaborator is
+  actively typing into — so a regression test now documents that as intentional rather
+  than letting a future "fix" silently change the behaviour.
+- The `Annotation` envelope schema itself had no test of its own constraints (empty
+  `annotationId`/`authorId`, malformed `createdAt`) — every existing `Annotation`-related
+  test went through `addAnnotation`'s business-logic checks (documentId mismatch, page
+  bounds) rather than the schema.
+- `AnnotationReply` had the same gap — `makeReply` always builds a valid reply, so
+  nothing ever exercised its `min(1)`/`datetime` constraints failing.
+
+**What changed.** `packages/document-annotation/test/document-annotation.spec.ts`: 10 new
+tests — `CommentPayload` (valid parse, empty body, page < 1), `TextBoxPayload`
+(non-positive width, non-positive height, the deliberate empty-body accept),
+`StampPayload` (empty label), `Annotation` (empty `annotationId`, empty `authorId`,
+malformed `createdAt`), `AnnotationReply` (empty `body`, empty `replyId`, malformed
+`createdAt`).
+
+**Verification.** `pnpm --filter @infinite-ai/document-annotation test` — 47 tests, all
+pass (10 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` /
+`pnpm format:check` (whole repo) — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read the existing 37-test spec file and all three source files before assuming the gap | PASS   |
+| `CommentPayload`/`TextBoxPayload`/`StampPayload` constraints now proven to reject      | PASS   |
+| `TextBoxPayload`'s deliberate no-`min(1)`-on-body design documented with a test        | PASS   |
+| `Annotation` envelope and `AnnotationReply` schemas' own constraints now tested        | PASS   |
+| `pnpm --filter @infinite-ai/document-annotation test` — 47/47 pass                     | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
+
+## Stage 77 — Failure-path tests for `packages/learner-client` · 2026-09-26
+
+**Goal.** Seventh package on the audit's Task 15 list. Same method as Stages 71–76: read
+`test/learner-client.spec.ts` (28 tests) and all three source files in full before
+assuming anything about the gap.
+
+**What the gap actually was.** Thorough on the navigation engine (`isUnlocked`,
+`nextActivities`, `courseProgress`) and on `ActivityRecord`/`GamificationSnapshot`'s own
+constraints. Four real gaps remained, all the same shape: a fixture helper (`makeProfile`,
+`makeEvent`) always builds valid data, and every test that touches the schema it feeds
+goes through that fixture — so the schema's own constraints were never exercised failing:
+
+- `LearnerProfile` — empty `learnerId`/`enrolmentId`/`courseId` never rejected.
+- `ActivityNode` — only `estimatedMinutes`'s positivity was tested; empty `title` and
+  empty `activityId` were not.
+- The three offline-event payload schemas (`QuizAnsweredPayload`,
+  `ActivityCompletedPayload`, `AssessmentSubmittedPayload`) had zero rejection tests
+  despite real constraints — `selectedSide`'s A–D enum, `score`'s 0–100 bounds (and its
+  deliberate `nullable()` for an ungraded completion), `min(1)` on every identifier field.
+- `OfflineEvent` — the envelope itself was never tested for an empty `eventId` or a
+  malformed `occurredAt`.
+
+**What changed.** `packages/learner-client/test/learner-client.spec.ts`: 14 new tests —
+`LearnerProfile` (3), `ActivityNode` (2), `QuizAnsweredPayload` (2),
+`ActivityCompletedPayload` (3, including one confirming `score: null` is a deliberate
+accept), `AssessmentSubmittedPayload` (1), `OfflineEvent` (2, plus one already counted
+above under `ActivityCompletedPayload`'s null case — 14 total).
+
+**Verification.** `pnpm --filter @infinite-ai/learner-client test` — 51 tests, all pass
+(14 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` /
+`pnpm format:check` (whole repo) — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read the existing 28-test spec file and all three source files before assuming the gap | PASS   |
+| `LearnerProfile`'s and `ActivityNode`'s remaining constraints now proven to reject     | PASS   |
+| All three offline-event payload schemas now have genuine rejection tests               | PASS   |
+| `OfflineEvent` envelope's own constraints now tested independent of its fixture        | PASS   |
+| `pnpm --filter @infinite-ai/learner-client test` — 51/51 pass                          | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
+
+## Stage 78 — Failure-path tests for `packages/low-tech-assessment` · 2026-09-26
+
+**Goal.** Eighth package on the audit's Task 15 list. Same method as Stages 71–77: read
+`test/low-tech-assessment.spec.ts` (40 tests) and all three source files in full before
+assuming anything about the gap.
+
+**What the gap actually was.** Already thorough on `generateCardSet`'s bounds, the
+`Question` schema's two `.refine()`s (correctSide membership, distinct sides), the full
+session lifecycle state machine, and the tally engine's dedup/rate math. Two schemas were
+only ever exercised through an always-valid fixture helper (`makeScan`, `makeSession`),
+so neither had a genuine rejection test of its own:
+
+- `ScanResult` — `cardNumber`'s 1–`MAX_CARDS` bound and the `CardSide` enum were never
+  proven to reject.
+- `AssessmentSession` — empty `sessionId`/`title`, an out-of-range `classSize`, and an
+  empty `questions` array were never proven to reject.
+
+**What changed.** `packages/low-tech-assessment/test/low-tech-assessment.spec.ts`: 8 new
+tests — `ScanResult` (cardNumber = 0, cardNumber > MAX_CARDS, invalid side) and
+`AssessmentSession` (empty sessionId, empty title, classSize = 0, classSize >
+MAX_CARDS, empty questions array).
+
+**Verification.** `pnpm --filter @infinite-ai/low-tech-assessment test` — 48 tests, all
+pass (8 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` /
+`pnpm format:check` (whole repo) — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read the existing 40-test spec file and all three source files before assuming the gap | PASS   |
+| `ScanResult`'s cardNumber bound and side enum now proven to reject                     | PASS   |
+| `AssessmentSession`'s identifier, classSize, and questions-array constraints tested    | PASS   |
+| `pnpm --filter @infinite-ai/low-tech-assessment test` — 48/48 pass                     | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
+
+## Stage 79 — Failure-path tests for `packages/prompt-builder` · 2026-09-26
+
+**Goal.** Ninth package on the audit's Task 15 list. Same method as Stages 71–78: read
+`test/prompt-builder.spec.ts` (23 tests) and all three source files in full before
+assuming anything about the gap.
+
+**What the gap actually was.** Already thorough on business logic and real error paths
+— variable substitution (missing/unknown), token-budget enforcement on both sides, and
+the section-parser's mandatory-section check, each asserted via the thrown error's own
+fields (`.missing`, `.unknown`, `.section`), not just `.toThrow()`. Two schemas were the
+gap, and both share the same shape: each is exported specifically so a caller can
+validate untrusted input before it reaches the builder, but nothing internal ever calls
+`.parse()` on either, so nothing in this file ever did either:
+
+- `VariableName` — exported for validating a variable name in isolation; the regex
+  constraint (lower-snake-case) had zero tests. `extractVariables`/`substituteVariables`
+  only ever see names their own regex already matched, so the exported schema's
+  constraint was never exercised through any path.
+- `PromptBudget` — exported for validating an untrusted budget config; `buildPrompt` and
+  `enforceBudget` both take it as a plain TypeScript type with no runtime `.parse()`
+  call, so its `int().positive()` constraints on all three fields had zero coverage.
+
+**What changed.** `packages/prompt-builder/test/prompt-builder.spec.ts`: 9 new tests —
+`VariableName` (valid lower_snake_case, rejects uppercase, rejects spaces, rejects a
+leading digit) and `PromptBudget` (valid budget, rejects non-positive
+`maxSystemTokens`, rejects a non-integer `maxUserTokens`, rejects non-positive
+`maxOutputTokens`).
+
+**Verification.** `pnpm --filter @infinite-ai/prompt-builder test` — 32 tests, all pass
+(9 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` / `pnpm
+format:check` (whole repo) — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read the existing 23-test spec file and all three source files before assuming the gap | PASS   |
+| `VariableName`'s lower-snake-case constraint now proven to reject                      | PASS   |
+| `PromptBudget`'s int/positive constraints now proven to reject on all three fields     | PASS   |
+| `pnpm --filter @infinite-ai/prompt-builder test` — 32/32 pass                          | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
+
+## Stage 80 — Failure-path tests for `packages/system-prompt-builder` (closes Task 15) · 2026-09-26
+
+**Goal.** Tenth and final package on the audit's Task 15 list — "Add failure-path tests
+to thin packages." Same method as Stages 71–79: read `test/system-prompt-builder.spec.ts`
+(28 tests) and all three source files in full before assuming anything about the gap.
+
+**What the gap actually was.** Thorough on the two composition functions
+(`buildSystemMessage`, `buildChatRequest`) and on most of `TenantContext`'s constraints.
+Two real gaps:
+
+- `TenantContext`'s `locale` (`min(2)`) and `province` (`min(2).max(3)`) constraints had
+  never been proven to reject.
+- `RequestMeta` — exported so a caller can validate untrusted per-call metadata before it
+  reaches `buildChatRequest` — had zero tests of its own; `buildChatRequest` takes it as
+  a plain TypeScript type with no runtime `.parse()` call. This matters more than the
+  usual missing-schema-test gap: `RequestMeta.provenance.deidentified` is typed
+  `z.literal(true)`, which is this package's own encoding of rule 4's PII-provenance
+  invariant ("a payload without a `deidentified: true` stamp is refused") — and nothing
+  had ever proven that a `false` value is actually rejected rather than merely
+  type-checked away at compile time.
+
+**What changed.** `packages/system-prompt-builder/test/system-prompt-builder.spec.ts`: 8
+new tests — `TenantContext` (locale too short, province too short, province too long)
+and `RequestMeta` (accepts minimal valid metadata; rejects empty `module`; rejects an
+empty `idempotencyKey` when supplied; rejects `provenance.deidentified: false`; rejects a
+negative `provenance.saltVersion`).
+
+**Verification.** `pnpm --filter @infinite-ai/system-prompt-builder test` — 36 tests, all
+pass (8 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` /
+`pnpm format:check` (whole repo) — clean. With Task 15 now closed across all ten
+packages, ran the full monorepo suite as a final check: `pnpm typecheck` — 53/53 packages
+pass; `pnpm test` — 53/53 packages pass.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read the existing 28-test spec file and all three source files before assuming the gap | PASS   |
+| `TenantContext`'s `locale`/`province` length bounds now proven to reject               | PASS   |
+| `RequestMeta`'s own constraints tested, including the rule-4 provenance literal        | PASS   |
+| `pnpm --filter @infinite-ai/system-prompt-builder test` — 36/36 pass                   | PASS   |
+| Full monorepo `pnpm typecheck` and `pnpm test` — 53/53 packages pass                   | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
+| **Task 15 (failure-path tests for thin packages) closed** — all ten packages done      | PASS   |
+
+## Stage 81 — Task 16 (per-package READMEs), batch 1: cross-cutting foundations · 2026-09-26
+
+**Goal.** Task 16 ("Add a `README.md` per package") — the audit's own text recommends
+doing this incrementally rather than as a standalone sweep, but the user asked for a full
+sweep split into several small, reviewable commits by architecture layer instead. 34
+packages/apps had no `README.md` at all. This is batch 1 of that sweep: the six
+cross-cutting foundation packages nothing else in the stack can do without.
+
+**What changed.** New `README.md` for `packages/{config,contracts,security,telemetry,testkit,design-system}`,
+each following the audit's suggested template ("what this package does, how it fits the
+L0–L8 stack, how to run its tests"), grounded in each package's real `package.json`
+description and actual exports (read in full before writing) rather than a generic
+template filled in from the package name:
+
+- `config` — corrected a first-draft overclaim: `apps/web` is not the only other place
+  `process.env` is read outside this package: `apps/gateway/src/config/env.ts` has its
+  own mirrored loader too, confirmed with a `process.env` search across the repo before
+  writing the final wording.
+- `design-system` — read both test files before describing test coverage, rather than
+  guessing from the file names.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed, so no test
+run was needed; each README's factual claims were checked against the package's actual
+`package.json`/source rather than assumed.
+
+| Exit gate item                                                                   | Result |
+| -------------------------------------------------------------------------------- | ------ |
+| Read each package's `package.json` and full `index.ts` before writing its README | PASS   |
+| Verified the `process.env` claim in `config`'s README against a repo-wide search | PASS   |
+| Verified `design-system`'s test-coverage claim against its actual test files     | PASS   |
+| `pnpm format:check` (whole repo) — clean                                         | PASS   |
+
+## Stage 82 — Task 16, batch 2: READMEs for the data plane and the Brain · 2026-09-26
+
+**Goal.** Batch 2 of the Task 16 README sweep: `packages/db` (L3, the data plane) and
+`packages/brain` (L4, the Infinite Brain). Read each package's `index.ts` in full — `db`'s
+export list and `brain`'s own header comment (which already narrates its build history
+step by step) — before writing.
+
+**What changed.** New `README.md` for `packages/db` and `packages/brain`. Both describe
+the real export surface (not a summary of the directory listing) and tie each file back
+to the specific CLAUDE.md rule or manual concept it exists to satisfy — rule 5's
+tenant-scoped client and the RLS table classification for `db`; rule 11's
+supersede-don't-update invariant and the manual's fixed retrieval-stage order for
+`brain`.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read `db`'s and `brain`'s full `index.ts` before writing either README                 | PASS   |
+| Each file's role tied to the specific rule/manual concept it satisfies, not just named | PASS   |
+| `pnpm format:check` (whole repo) — clean                                               | PASS   |
+
+## Stage 83 — Task 16, batch 3: READMEs for the guardrail plane · 2026-09-26
+
+**Goal.** Batch 3 of the Task 16 README sweep: `packages/guardrails`, `packages/policy`,
+`packages/deident` — the L5 guardrail plane. Read each `index.ts` in full before writing.
+
+**What changed.** New `README.md` for all three packages. Caught and corrected one
+real inaccuracy before it shipped: a first draft of `deident`'s README claimed the
+package itself attaches the `deidentified: true` provenance stamp
+`packages/guardrails`'s PII egress guard checks for. A repo-wide search
+(`grep -rln "deidentified: true"`) showed the stamp is actually set by callers
+(the MOD-01 curriculum agent executors in `packages/curriculum-seed`, and others) — this
+package provides the tokenisation/scrubbing primitives that make the stamp true, but
+does not set it itself. Corrected before committing rather than leaving a plausible but
+false claim in a README a future contributor would read as documentation of fact.
+`policy`'s `NEVER_GRANTED_VIA_RBAC` claim was checked the same way, against
+`rbac.ts`'s actual `authorize()` implementation, and confirmed accurate.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                       | Result |
+| ------------------------------------------------------------------------------------ | ------ |
+| Read all three packages' full `index.ts` before writing any README                   | PASS   |
+| `deident`'s stamp-attachment claim verified against real usage, corrected once wrong | PASS   |
+| `policy`'s `NEVER_GRANTED_VIA_RBAC` claim verified against `rbac.ts` directly        | PASS   |
+| `pnpm format:check` (whole repo) — clean                                             | PASS   |
+
+## Stage 84 — Task 16, batch 4: READMEs for the agent runtime and eval harness · 2026-09-26
+
+**Goal.** Batch 4 of the Task 16 README sweep: `packages/agents`, `packages/orchestrator`,
+`packages/prompts`, `packages/agent-builder`, `packages/evals` — L6 (the agent runtime)
+plus the design-time builder and Stage 07's eval harness. Read each `index.ts` in full,
+and grepped for several specific claims before writing them, rather than assuming a
+comment or a package description told the whole story.
+
+**Two real gaps found and written up honestly instead of glossed over.**
+
+- `agent-builder/src/workflow.ts`'s own header comment says "see `compile()` in
+  `index.ts` for the translation" from a design-time `WorkflowGraph` to an
+  `@infinite-ai/orchestrator` `PipelineDefinition` — a repo-wide grep for `compile` inside
+  the package found no such function anywhere. The comment describes intended, not
+  built, behaviour. The README says so directly rather than repeating the comment's
+  implied claim as fact.
+- `bootAgentRegistry()`'s `PromptExistenceCheck`/`EvalSetExistenceCheck` parameters
+  default to assuming every reference exists when a caller doesn't supply a real one —
+  and a repo-wide grep for `bootAgentRegistry` found no application code (`apps/worker`,
+  `apps/gateway`) calling it at all. The registered/prompt-versioned/eval-set/cost-budget
+  checklist in the Definition of Done is real, but only the duplicate-id check is
+  currently enforced by running code; the rest are reviewer-checked conventions today.
+  Both the `agents` and `evals` READMEs were corrected to say this precisely, after an
+  earlier draft of each overclaimed that the registry enforces the whole checklist.
+
+**What changed.** New `README.md` for all five packages.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                                                     | Result |
+| ------------------------------------------------------------------------------------------------------------------ | ------ |
+| Read all five packages' full `index.ts` before writing any README                                                  | PASS   |
+| `validatePipelineGating`'s human-gate-reachability claim verified against `dag.ts`                                 | PASS   |
+| `agent-builder`'s `compile()` claim checked against the real source — found missing, written up honestly           | PASS   |
+| `bootAgentRegistry()`'s actual enforcement scope verified — found no real caller, corrected two READMEs' overclaim | PASS   |
+| `pnpm format:check` (whole repo) — clean                                                                           | PASS   |
+
+## Stage 85 — Task 16, batch 5: READMEs for five L7 module packages · 2026-09-26
+
+**Goal.** Batch 5 of the Task 16 README sweep: `packages/compliance`,
+`packages/gamification`, `packages/pd-journal`, `packages/school-setup`,
+`packages/document-annotation` — five of the ten L7 module packages already read in full
+during Task 15's failure-path-test work, so this batch reused that existing familiarity
+rather than re-reading from scratch, while still verifying every specific cross-package
+claim before writing it.
+
+**What changed.** New `README.md` for all five packages. Verified rather than assumed:
+
+- `school-setup`'s claim that the onboarding wizard actually imports it — confirmed via
+  `apps/web/src/components/admin/setup/SchoolOnboardingWizard.tsx`.
+- `document-annotation`'s first draft guessed at a consumer ("an `apps/web` API route,
+  most likely") — a repo-wide grep for `@infinite-ai/document-annotation` found no real
+  consumer at all, only `scripts/verify-stage.ts` running its tests. Corrected to state
+  that plainly instead of presenting a guess as near-fact.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                     | Result |
+| ---------------------------------------------------------------------------------- | ------ |
+| `school-setup`'s onboarding-wizard link verified against the real import           | PASS   |
+| `document-annotation`'s consumer claim checked against a repo-wide grep, corrected | PASS   |
+| `pnpm format:check` (whole repo) — clean                                           | PASS   |
+
+## Stage 86 — Task 16, batch 6: READMEs for the remaining thin modules and curriculum-seed · 2026-09-26
+
+**Goal.** Batch 6 of the Task 16 README sweep: `packages/learner-client`,
+`packages/low-tech-assessment`, `packages/prompt-builder`,
+`packages/system-prompt-builder` — the last four Task 15 packages — plus
+`packages/curriculum-seed`, read fresh for this batch.
+
+**What changed.** New `README.md` for all five packages.
+
+**One real gap found and corrected.** A first draft of `curriculum-seed`'s README
+claimed `@infinite-ai/orchestrator`'s `MOD01_CURRICULUM_PIPELINE` "actually calls" this
+package's executors at each step. A grep of `pipelines/mod-01.ts` for any reference to
+`curriculum-seed` or its executor names found none — the pipeline file only declares the
+DAG's step _shape_. A follow-up grep across the repo found the real wiring:
+`apps/worker` (via `scripts/register-ce-executors.ts`) binds each step to its executor,
+and `apps/web`'s `/api/caps-canon` routes call into this package directly for the
+CAPS-canon admin surface. Corrected before committing.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                                                   | Result |
+| ---------------------------------------------------------------------------------------------------------------- | ------ |
+| Read `curriculum-seed`'s full `index.ts` plus three previously-unread source files                               | PASS   |
+| `curriculum-seed`'s pipeline-wiring claim checked against `pipelines/mod-01.ts` directly, found wrong, corrected | PASS   |
+| Real wiring (`apps/worker`, `apps/web`'s `/api/caps-canon`) confirmed via repo-wide grep                         | PASS   |
+| `pnpm format:check` (whole repo) — clean                                                                         | PASS   |
+
+## Stage 87 — Task 16, batch 7: READMEs for provisioning, billing, warehouse, analytics, learning · 2026-09-26
+
+**Goal.** Batch 7 of the Task 16 README sweep: `packages/provisioning`,
+`packages/billing`, `packages/warehouse`, `packages/analytics`, `packages/learning` — all
+five read fresh for this batch. After finding and correcting three separate overclaims in
+this session's earlier batches, adopted a stricter rule for the remaining two packages in
+this batch: grep every cross-package integration claim's real imports _before_ drafting
+the "Where it fits" section, not after.
+
+**Three real cross-package gaps found and written up, not glossed over.**
+
+- `provisioning`'s onboarding wizard has its own `SchoolProfileInputSchema` (lolt,
+  additional languages, term weeks, phase count) that does **not** reuse
+  `@infinite-ai/school-setup`'s `LanguageSettings`/`TermWeeks` for the same concept — two
+  independent schemas for "school profile" data, confirmed via a grep of
+  `wizard.ts` finding no import from `school-setup` at all. Flagged in both this stage
+  entry and the README as worth resolving, not treated as intentional duplication.
+- `billing`'s `DunningState` machine and `provisioning`'s `TenantStatus` machine share
+  status names (`SUSPENDED`, `CLOSED`) and are clearly designed to work together, but
+  neither package imports the other — nothing in code drives a lifecycle transition from
+  a dunning escalation yet.
+- `warehouse`'s first-draft README claimed conformed data "flows... into
+  `@infinite-ai/analytics`" — a grep found the only real importers of `warehouse` are
+  `packages/agents/src/mod-03/`'s `DW-*.contract.ts` files and
+  `scripts/register-dw-executors.ts`; no cross-import to `analytics` exists.
+  `analytics`'s own README was written the disciplined way from the start:
+  `apps/worker/src/condition-evaluator.ts` was checked and found to reference this
+  package's shapes only in comments (duck-typed), not via a real `import`, and the
+  README says so precisely rather than claiming an import that isn't there.
+
+**What changed.** New `README.md` for all five packages.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                          | Result |
+| --------------------------------------------------------------------------------------- | ------ |
+| `provisioning`/`school-setup` schema-duplication finding verified and flagged           | PASS   |
+| `billing`/`provisioning` non-wiring finding verified and flagged                        | PASS   |
+| `warehouse`'s overclaimed `analytics` data flow checked, found wrong, corrected         | PASS   |
+| `analytics`'s `condition-evaluator.ts` reference checked precisely (comment vs. import) | PASS   |
+| `pnpm format:check` (whole repo) — clean                                                | PASS   |
+
+## Stage 88 — Task 16, batch 8: READMEs for the three apps (closes Task 16) · 2026-09-26
+
+**Goal.** Final batch of the Task 16 README sweep: `apps/web` (L8), `apps/gateway`
+(L2), `apps/worker` (the L6 execution host). All 34 packages/apps in the repository now
+have a `README.md`.
+
+**Verified before writing, not after, this time.** Two claims checked against real
+source before drafting rather than corrected afterward:
+
+- `apps/gateway`'s claim that its `adapters/` files are the only ones in the repo
+  allowed to import a provider SDK — confirmed against `eslint.config.mjs`'s own
+  restricted-imports list (`@anthropic-ai/*`, `openai`, `@google/generative-ai`, ...) and
+  a repo-wide grep for those import paths outside `apps/gateway`, which found none.
+  Genuinely enforced, not aspirational.
+- `apps/worker`'s `step-executor.ts` — a first instinct to write "runs it through
+  `@infinite-ai/guardrails`" would have overstated real coverage. Its own header comment
+  says plainly that the full `runInputGuardrails`/`runOutputGuardrails` engine is **not**
+  called from this site — only `checkAgeAppropriateness` (always) and
+  `checkDiagnosticLanguage` (when a contract declares `diagnosis_guard`) are wired in
+  directly, because most of the engine's other checks need data (a citation set, a cost
+  budget, a readability range, an established refusal-signalling convention) this call
+  site doesn't have yet. This is a real, already-documented-in-source gap (OQ-015/
+  OQ-026's "mechanism now, real policy wired in once ratified" shape), not a bug — the
+  README states it precisely rather than implying broader guardrail coverage than
+  actually runs.
+
+**What changed.** New `README.md` for `apps/web`, `apps/gateway`, `apps/worker`. **Task
+16 ("Add a `README.md` per package") is now closed** — every one of the 34
+packages/apps that had none at the start of this sweep (Stage 81) has one, across eight
+batches.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed. Confirmed
+via a fresh scan that zero packages/apps remain without a `README.md`.
+
+| Exit gate item                                                                                        | Result |
+| ----------------------------------------------------------------------------------------------------- | ------ |
+| `apps/gateway`'s provider-SDK-isolation claim verified against ESLint config + a grep                 | PASS   |
+| `apps/worker`'s guardrail-coverage claim corrected to match `step-executor.ts`'s own header precisely | PASS   |
+| `pnpm format:check` (whole repo) — clean                                                              | PASS   |
+| **Task 16 (README per package) closed** — 0 of 34 packages/apps remain without one                    | PASS   |

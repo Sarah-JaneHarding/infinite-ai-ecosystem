@@ -1,0 +1,50 @@
+# CODEOWNERS — Stage 68 (repository audit follow-through, Task 5).
+#
+# This repository currently has one collaborator (@Sarah-JaneHarding, confirmed via the
+# GitHub API before writing this file), so every path below resolves to the same owner
+# today — this file does not change who can review what right now. It is still worth
+# having, structured by path rather than as one blanket line, for two reasons: it
+# documents which areas this codebase already treats as most sensitive (the same split
+# CLAUDE.md's own "Four invariants, each enforced in a specific file" section draws), and
+# it means the day a second collaborator joins to own one of these areas, only this
+# file's ownership lines change — nothing about how review is requested does.
+#
+# No fabricated teams or usernames: every handle below is the one real collaborator this
+# repository actually has. Add a real second reviewer's handle to narrow a section when
+# one exists, rather than inventing a placeholder team name now.
+
+# Default owner for anything not matched more specifically below.
+* @Sarah-JaneHarding
+
+# --- The four CLAUDE.md invariants, each enforced in a specific file/package ---
+
+# Rule 5 — tenant isolation. packages/db/src/client.ts (withTenant()) and tables.ts
+# are what the RLS proof is driven off; packages/db/prisma holds every migration.
+/packages/db/ @Sarah-JaneHarding
+
+# Rule 4 — no PII in a prompt. The egress guard and de-identification service.
+/packages/guardrails/ @Sarah-JaneHarding
+/packages/deident/ @Sarah-JaneHarding
+
+# Rule 3 — the Model Gateway is the only path to a provider.
+/apps/gateway/ @Sarah-JaneHarding
+
+# Purpose limitation, consent replay, RBAC, and the POPIA vocabulary the guardrail
+# plane's purpose gate reads (packages/contracts/src/popia/purpose.ts).
+/packages/policy/ @Sarah-JaneHarding
+/packages/contracts/src/popia/ @Sarah-JaneHarding
+
+# --- Cross-cutting security/compliance/infra surfaces ---
+
+/packages/security/ @Sarah-JaneHarding
+/docs/POPIA.md @Sarah-JaneHarding
+/docs/SECURITY.md @Sarah-JaneHarding
+
+# Infrastructure-as-code and CI/CD — anything here can provision real, billable AWS
+# resources or change what gets deployed where.
+/infra/ @Sarah-JaneHarding
+/.github/workflows/ @Sarah-JaneHarding
+
+# The stage gate itself — CLAUDE.md rule 1 ("never skip a stage") is only as real as
+# this script and the CI step that runs it.
+/scripts/verify-stage.ts @Sarah-JaneHarding

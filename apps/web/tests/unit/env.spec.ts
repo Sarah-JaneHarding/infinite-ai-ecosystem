@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { resetEnvCacheForTesting, getWebEnv, WebEnvSchema } from '../../src/lib/env.js';
 
 describe('getWebEnv', () => {
@@ -27,6 +27,71 @@ describe('getWebEnv', () => {
     resetEnvCacheForTesting();
     const second = getWebEnv();
     expect(first).not.toBe(second);
+  });
+});
+
+// The real validation boundary — Stage 8 (repository audit follow-through, Task 15).
+//
+// getWebEnv() short-circuits to a fixed TEST_ENV whenever NODE_ENV==='test' (see
+// src/lib/env.ts), which every other test in this file relies on and which is exactly why
+// none of them ever reach WebEnvSchema.safeParse(process.env). That leaves the schema's own
+// constraints (NEXTAUTH_SECRET's min(32), the two .url() fields, the NODE_ENV enum) and the
+// production throw-on-invalid-env path with zero coverage — the same "business logic well
+// tested, validation boundary untested" gap found in packages/compliance.
+describe('WebEnvSchema', () => {
+  it('rejects a NEXTAUTH_SECRET shorter than 32 characters', () => {
+    const result = WebEnvSchema.safeParse({ NEXTAUTH_SECRET: 'too-short' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a malformed NEXTAUTH_URL', () => {
+    const result = WebEnvSchema.safeParse({
+      NEXTAUTH_SECRET: 'a'.repeat(32),
+      NEXTAUTH_URL: 'not-a-url',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a malformed AUTH_KEYCLOAK_ISSUER', () => {
+    const result = WebEnvSchema.safeParse({
+      NEXTAUTH_SECRET: 'a'.repeat(32),
+      AUTH_KEYCLOAK_ISSUER: 'not-a-url',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a NODE_ENV value outside development/test/production', () => {
+    const result = WebEnvSchema.safeParse({
+      NEXTAUTH_SECRET: 'a'.repeat(32),
+      NODE_ENV: 'staging',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts the minimum valid input (secret only, everything else defaulted)', () => {
+    const result = WebEnvSchema.safeParse({ NEXTAUTH_SECRET: 'a'.repeat(32) });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('getWebEnv (production validation-failure path)', () => {
+  const originalSecret = process.env['NEXTAUTH_SECRET'];
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    if (originalSecret === undefined) {
+      delete process.env['NEXTAUTH_SECRET'];
+    } else {
+      process.env['NEXTAUTH_SECRET'] = originalSecret;
+    }
+    resetEnvCacheForTesting();
+  });
+
+  it('throws a descriptive error when the environment fails schema validation', () => {
+    resetEnvCacheForTesting();
+    vi.stubEnv('NODE_ENV', 'production');
+    delete process.env['NEXTAUTH_SECRET'];
+    expect(() => getWebEnv()).toThrow(/Web environment invalid/);
   });
 });
 

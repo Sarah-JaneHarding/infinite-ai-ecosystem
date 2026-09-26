@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import {
   Annotation,
   AnnotatedDocument,
+  AnnotationPayload,
   AnnotationReply,
   AnnotationThread,
   DocumentExport,
@@ -137,6 +138,112 @@ describe('HighlightPayload schema', () => {
         startOffset: 0,
         endOffset: 5,
         color: '#FF0000',
+      }).success,
+    ).toBe(false);
+  });
+});
+
+// ─── CommentPayload / TextBoxPayload / StampPayload schemas ──────────────────
+//
+// Only HighlightPayload and FreehandPayload had any rejection tests. The other three
+// payload types' own constraints — CommentPayload's and StampPayload's min(1) on their
+// text field, TextBoxPayload's .positive() on width/height — had never been proven to
+// actually reject invalid data.
+
+describe('CommentPayload schema', () => {
+  it('parses a valid comment', () => {
+    expect(
+      AnnotationPayload.safeParse({
+        type: 'comment',
+        page: 1,
+        x: 10,
+        y: 20,
+        body: 'A comment',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects an empty body', () => {
+    expect(
+      AnnotationPayload.safeParse({
+        type: 'comment',
+        page: 1,
+        x: 10,
+        y: 20,
+        body: '',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects page < 1', () => {
+    expect(
+      AnnotationPayload.safeParse({
+        type: 'comment',
+        page: 0,
+        x: 10,
+        y: 20,
+        body: 'A comment',
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe('TextBoxPayload schema', () => {
+  it('rejects a non-positive width', () => {
+    expect(
+      AnnotationPayload.safeParse({
+        type: 'text_box',
+        page: 1,
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 50,
+        body: 'Hello',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a non-positive height', () => {
+    expect(
+      AnnotationPayload.safeParse({
+        type: 'text_box',
+        page: 1,
+        x: 0,
+        y: 0,
+        width: 100,
+        height: -1,
+        body: 'Hello',
+      }).success,
+    ).toBe(false);
+  });
+
+  // Deliberate design choice, not an oversight — unlike CommentPayload.body and
+  // StampPayload.label, TextBoxPayload.body has no min(1): a freshly placed, still-empty
+  // text box is a valid intermediate state a collaborator is actively typing into.
+  it('accepts an empty body (deliberate — an empty text box is a valid placeholder)', () => {
+    expect(
+      AnnotationPayload.safeParse({
+        type: 'text_box',
+        page: 1,
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 50,
+        body: '',
+      }).success,
+    ).toBe(true);
+  });
+});
+
+describe('StampPayload schema', () => {
+  it('rejects an empty label', () => {
+    expect(
+      AnnotationPayload.safeParse({
+        type: 'stamp',
+        page: 1,
+        x: 50,
+        y: 50,
+        label: '',
       }).success,
     ).toBe(false);
   });
@@ -389,6 +496,93 @@ describe('exportDocument', () => {
         exportedAt: 'not-a-date',
         annotationCount: 0,
         annotations: [],
+      }).success,
+    ).toBe(false);
+  });
+});
+
+// ─── Annotation envelope schema ───────────────────────────────────────────────
+//
+// Every existing Annotation-related test exercised business-logic mismatches
+// (documentId mismatch, page exceeding pageCount) via addAnnotation — never the
+// envelope schema's own min(1)/datetime constraints on its opaque identifier fields.
+
+describe('Annotation schema', () => {
+  it('rejects an empty annotationId', () => {
+    expect(
+      Annotation.safeParse({
+        annotationId: '',
+        documentId: DOC_ID,
+        authorId: AUTHOR,
+        createdAt: NOW,
+        payload: { type: 'stamp', page: 1, x: 0, y: 0, label: 'X' },
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects an empty authorId', () => {
+    expect(
+      Annotation.safeParse({
+        annotationId: 'a1',
+        documentId: DOC_ID,
+        authorId: '',
+        createdAt: NOW,
+        payload: { type: 'stamp', page: 1, x: 0, y: 0, label: 'X' },
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a malformed createdAt', () => {
+    expect(
+      Annotation.safeParse({
+        annotationId: 'a1',
+        documentId: DOC_ID,
+        authorId: AUTHOR,
+        createdAt: 'not-a-date',
+        payload: { type: 'stamp', page: 1, x: 0, y: 0, label: 'X' },
+      }).success,
+    ).toBe(false);
+  });
+});
+
+// ─── AnnotationReply schema ────────────────────────────────────────────────────
+//
+// makeReply always builds a valid reply — nothing previously proved the schema itself
+// rejects an empty body, empty replyId, or a malformed createdAt.
+
+describe('AnnotationReply schema', () => {
+  it('rejects an empty body', () => {
+    expect(
+      AnnotationReply.safeParse({
+        replyId: 'r1',
+        annotationId: 'a1',
+        authorId: AUTHOR,
+        body: '',
+        createdAt: NOW,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects an empty replyId', () => {
+    expect(
+      AnnotationReply.safeParse({
+        replyId: '',
+        annotationId: 'a1',
+        authorId: AUTHOR,
+        body: 'A reply',
+        createdAt: NOW,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a malformed createdAt', () => {
+    expect(
+      AnnotationReply.safeParse({
+        replyId: 'r1',
+        annotationId: 'a1',
+        authorId: AUTHOR,
+        body: 'A reply',
+        createdAt: 'not-a-date',
       }).success,
     ).toBe(false);
   });

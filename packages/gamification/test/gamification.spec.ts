@@ -304,6 +304,39 @@ describe('evaluateBadges', () => {
     });
     expect(ids).toContain('level_5');
   });
+
+  // BADGE_CATALOGUE gates streak_30 behind minLevel: 2 — distinct from the level_5/
+  // level_10 badges above, which gate themselves. Nothing previously proved that a
+  // non-level badge's own minLevel gate is actually enforced.
+  it('does NOT award streak_30 when level has not yet reached its minLevel gate of 2', () => {
+    const ids = evaluateBadges({
+      event: GamificationEvent.parse({
+        type: 'learning_streak_day',
+        profileId: 'p-1',
+        occurredAt: NOW,
+        streakDays: 30,
+      }),
+      newLevel: 1,
+      newStreakDays: 30,
+      earnedBadgeIds: new Set(),
+    });
+    expect(ids).not.toContain('streak_30');
+  });
+
+  it('awards streak_30 once level reaches its minLevel gate of 2', () => {
+    const ids = evaluateBadges({
+      event: GamificationEvent.parse({
+        type: 'learning_streak_day',
+        profileId: 'p-1',
+        occurredAt: NOW,
+        streakDays: 30,
+      }),
+      newLevel: 2,
+      newStreakDays: 30,
+      earnedBadgeIds: new Set(),
+    });
+    expect(ids).toContain('streak_30');
+  });
 });
 
 // ─── engine.ts — processEvent ─────────────────────────────────────────────────
@@ -382,6 +415,42 @@ describe('processEvent — assessment_passed', () => {
       profile,
     );
     expect(update.xpEarned).toBe(XP_VALUES.assessment_passed);
+  });
+});
+
+// assessment_completed is a real switch case in engine.ts's computeXpEarned and a real
+// GamificationEventType member, but nothing previously called processEvent with one —
+// only assessment_passed (the graded, badge-earning variant) was exercised end-to-end.
+describe('processEvent — assessment_completed', () => {
+  it('adds base XP and awards no badge (bare completion earns no badge)', () => {
+    const profile = makeProfile();
+    const update = processEvent(
+      GamificationEvent.parse({
+        type: 'assessment_completed',
+        profileId: 'profile-001',
+        occurredAt: NOW,
+        assessmentId: 'a-1',
+        score: 50,
+      }),
+      profile,
+    );
+    expect(update.xpEarned).toBe(XP_VALUES.assessment_completed);
+    expect(update.newBadgeIds).toEqual([]);
+  });
+
+  it('does not apply the high-score bonus even at a perfect score (only assessment_passed does)', () => {
+    const profile = makeProfile();
+    const update = processEvent(
+      GamificationEvent.parse({
+        type: 'assessment_completed',
+        profileId: 'profile-001',
+        occurredAt: NOW,
+        assessmentId: 'a-1',
+        score: 100,
+      }),
+      profile,
+    );
+    expect(update.xpEarned).toBe(XP_VALUES.assessment_completed);
   });
 });
 
