@@ -6,7 +6,12 @@ import {
   SubjectGradePeriods,
   TermWeeks,
 } from '../types.js';
-import { periodsFromHours, totalWeeks, validateLanguageConflicts } from '../validate.js';
+import {
+  periodsFromHours,
+  totalWeeks,
+  validateLanguageConflicts,
+  validateSchoolConfig,
+} from '../validate.js';
 
 describe('LanguageSettings', () => {
   it('accepts valid LOLT + FAL', () => {
@@ -173,6 +178,51 @@ describe('SchoolConfig', () => {
 
   it('rejects extra unknown fields (strict schema)', () => {
     expect(() => SchoolConfig.parse({ ...validConfig, extraField: 'oops' })).toThrow();
+  });
+});
+
+// validateSchoolConfig is the package's one exported function whose whole job is to
+// safely validate arbitrary untrusted input (raw: unknown) — every test above exercises
+// SchoolConfig.parse directly instead, so this real entry point had no test of its own,
+// including no proof that a non-object or completely empty input is rejected rather than
+// throwing something other than the documented ZodError, or silently coercing.
+describe('validateSchoolConfig', () => {
+  const validConfig = {
+    tenantId: '00000000-0000-0000-0000-000000000001',
+    schoolName: 'Benjamin Pine Primary School',
+    academicYear: 2026,
+    languages: { lolt: 'English', fal: ['Afrikaans'] },
+    termWeeks: { term1: 10, term2: 10, term3: 11, term4: 7 },
+    subjects: [{ subject: 'Mathematics', grades: ['Grade 4'], hoursPerWeek: 5 }],
+    staff: [{ name: 'Ms Nkosi', role: 'Class Teacher' }],
+    configuredAt: '2026-01-01T08:00:00.000Z',
+    configuredBy: 'admin@school.ac.za',
+  };
+
+  it('returns a typed SchoolConfig for valid raw input', () => {
+    const result = validateSchoolConfig(validConfig);
+    expect(result.schoolName).toBe('Benjamin Pine Primary School');
+  });
+
+  it('throws for a completely empty object', () => {
+    expect(() => validateSchoolConfig({})).toThrow();
+  });
+
+  it('throws for a non-object input (null)', () => {
+    expect(() => validateSchoolConfig(null)).toThrow();
+  });
+
+  it('throws for a non-object input (a plain string)', () => {
+    expect(() => validateSchoolConfig('not-a-config')).toThrow();
+  });
+
+  it('throws when a nested schema violation is present (invalid language)', () => {
+    expect(() =>
+      validateSchoolConfig({
+        ...validConfig,
+        languages: { lolt: 'Klingon', fal: ['English'] },
+      }),
+    ).toThrow();
   });
 });
 

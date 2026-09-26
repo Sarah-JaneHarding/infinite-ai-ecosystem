@@ -12,6 +12,13 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 75 — Failure-path tests for `packages/school-setup`**
+  - `packages/school-setup/src/__tests__/types.spec.ts` (5 new tests): `validateSchoolConfig`
+    — `validate.ts`'s one exported function whose whole purpose is safely parsing a raw
+    `unknown` value — had zero tests of its own; every existing test called
+    `SchoolConfig.parse` directly instead. Now proven to accept valid raw input, reject an
+    empty object, `null`, a plain string, and input with a nested schema violation.
+
 - **Stage 74 — Failure-path tests for `packages/pd-journal`**
   - `packages/pd-journal/test/pd-journal.spec.ts` (6 new tests): `resolveCycleYear`'s
     documented clamp to cycle year 3 for a date years past the cycle end — previously

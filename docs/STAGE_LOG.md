@@ -9417,3 +9417,39 @@ format:check` (whole repo) — clean.
 | `buildPdCycleSummary`'s educator-token re-tagging proven to override a mismatch   | PASS   |
 | `pnpm --filter @infinite-ai/pd-journal test` — 39/39 pass                         | PASS   |
 | `pnpm lint` / `pnpm format:check` — clean                                         | PASS   |
+
+## Stage 75 — Failure-path tests for `packages/school-setup` · 2026-09-26
+
+**Goal.** Fifth package on the audit's Task 15 list. Same method as Stages 71–74: read
+`src/__tests__/types.spec.ts` (28 tests) and both source files in full before assuming
+anything about the gap.
+
+**What the gap actually was.** The package's Zod schemas (`LanguageSettings`,
+`TermWeeks`, `SubjectGradePeriods`, `StaffMember`, `SchoolConfig`) already had thorough
+rejection tests, and `validateLanguageConflicts` had all three overlap cases covered.
+What every single existing test did, though, was call `SchoolConfig.parse` (or one of the
+other schemas' `.parse`) directly — never `validateSchoolConfig`, `validate.ts`'s one
+exported function whose entire purpose is stated in its own docstring: "Parse and
+validate a raw **unknown** value... throws ZodError on failure." The package's real
+untrusted-input boundary — the function a real caller (an onboarding-wizard API route,
+say) would actually call — had zero tests of its own, including no proof that a
+completely empty object, `null`, or a bare string is rejected rather than throwing
+something unexpected.
+
+**What changed.** `packages/school-setup/src/__tests__/types.spec.ts`: 5 new tests under
+a `validateSchoolConfig` block — accepts valid raw input and returns a typed
+`SchoolConfig`; rejects an empty object; rejects `null`; rejects a plain string; rejects
+input with a nested schema violation (an invalid language code).
+
+**Verification.** `pnpm --filter @infinite-ai/school-setup test` — 33 tests, all pass (5
+new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` / `pnpm
+format:check` (whole repo) — clean.
+
+| Exit gate item                                                                        | Result |
+| ------------------------------------------------------------------------------------- | ------ |
+| Read the existing 28-test spec file and both source files before assuming the gap     | PASS   |
+| `validateSchoolConfig` — the real untrusted-input entry point — now has its own tests | PASS   |
+| Non-object inputs (`{}`, `null`, a string) proven rejected                            | PASS   |
+| A nested schema violation inside otherwise-valid raw input proven rejected            | PASS   |
+| `pnpm --filter @infinite-ai/school-setup test` — 33/33 pass                           | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                             | PASS   |
