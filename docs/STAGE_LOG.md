@@ -9453,3 +9453,48 @@ format:check` (whole repo) — clean.
 | A nested schema violation inside otherwise-valid raw input proven rejected            | PASS   |
 | `pnpm --filter @infinite-ai/school-setup test` — 33/33 pass                           | PASS   |
 | `pnpm lint` / `pnpm format:check` — clean                                             | PASS   |
+
+## Stage 76 — Failure-path tests for `packages/document-annotation` · 2026-09-26
+
+**Goal.** Sixth package on the audit's Task 15 list. Same method as Stages 71–75: read
+`test/document-annotation.spec.ts` (37 tests) and all three source files in full before
+assuming anything about the gap.
+
+**What the gap actually was.** Thorough on business logic (thread lifecycle, page
+bounds, export shape, an idempotent resolve) and on two of the five annotation payload
+schemas (`HighlightPayload`'s offset ordering, `FreehandPayload`'s point-count and
+stroke-width constraints). Three real gaps remained:
+
+- `CommentPayload`, `TextBoxPayload`, and `StampPayload` had zero rejection tests despite
+  real constraints of their own — `CommentPayload.body` and `StampPayload.label` are both
+  `min(1)`, `TextBoxPayload`'s `width`/`height` are both `.positive()`. Along the way,
+  found that `TextBoxPayload.body` deliberately has **no** `min(1)` (unlike its two
+  siblings) — a freshly placed, still-empty text box is a valid state a collaborator is
+  actively typing into — so a regression test now documents that as intentional rather
+  than letting a future "fix" silently change the behaviour.
+- The `Annotation` envelope schema itself had no test of its own constraints (empty
+  `annotationId`/`authorId`, malformed `createdAt`) — every existing `Annotation`-related
+  test went through `addAnnotation`'s business-logic checks (documentId mismatch, page
+  bounds) rather than the schema.
+- `AnnotationReply` had the same gap — `makeReply` always builds a valid reply, so
+  nothing ever exercised its `min(1)`/`datetime` constraints failing.
+
+**What changed.** `packages/document-annotation/test/document-annotation.spec.ts`: 10 new
+tests — `CommentPayload` (valid parse, empty body, page < 1), `TextBoxPayload`
+(non-positive width, non-positive height, the deliberate empty-body accept),
+`StampPayload` (empty label), `Annotation` (empty `annotationId`, empty `authorId`,
+malformed `createdAt`), `AnnotationReply` (empty `body`, empty `replyId`, malformed
+`createdAt`).
+
+**Verification.** `pnpm --filter @infinite-ai/document-annotation test` — 47 tests, all
+pass (10 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` /
+`pnpm format:check` (whole repo) — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read the existing 37-test spec file and all three source files before assuming the gap | PASS   |
+| `CommentPayload`/`TextBoxPayload`/`StampPayload` constraints now proven to reject      | PASS   |
+| `TextBoxPayload`'s deliberate no-`min(1)`-on-body design documented with a test        | PASS   |
+| `Annotation` envelope and `AnnotationReply` schemas' own constraints now tested        | PASS   |
+| `pnpm --filter @infinite-ai/document-annotation test` — 47/47 pass                     | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |

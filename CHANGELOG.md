@@ -12,6 +12,16 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 76 — Failure-path tests for `packages/document-annotation`**
+  - `packages/document-annotation/test/document-annotation.spec.ts` (10 new tests):
+    `CommentPayload`, `TextBoxPayload`, and `StampPayload` had zero rejection tests
+    despite real constraints of their own (`min(1)` body/label, `.positive()`
+    width/height) — closed, including a regression test documenting that
+    `TextBoxPayload.body` deliberately has no `min(1)` (an empty text box is a valid
+    in-progress state). The `Annotation` envelope and `AnnotationReply` schemas'
+    own constraints (empty identifiers, malformed `createdAt`) were also untested —
+    every prior test exercised business-logic checks instead of the schemas.
+
 - **Stage 75 — Failure-path tests for `packages/school-setup`**
   - `packages/school-setup/src/__tests__/types.spec.ts` (5 new tests): `validateSchoolConfig`
     — `validate.ts`'s one exported function whose whole purpose is safely parsing a raw
