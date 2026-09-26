@@ -12,6 +12,11 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 82 — Task 16, batch 2: READMEs for the data plane and the Brain**
+  - `README.md` for `packages/db` (L3) and `packages/brain` (L4), each tying its files
+    back to the specific rule or manual concept they satisfy (rule 5's tenant-scoped
+    client, rule 11's supersede-don't-update invariant, the fixed retrieval-stage order).
+
 - **Stage 81 — Task 16, batch 1: READMEs for cross-cutting foundation packages**
   - `README.md` for `packages/{config,contracts,security,telemetry,testkit,design-system}`
     — what each package does, where it fits the L0–L8 stack, and how to run its tests.

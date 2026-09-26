@@ -9688,3 +9688,25 @@ run was needed; each README's factual claims were checked against the package's 
 | Verified the `process.env` claim in `config`'s README against a repo-wide search | PASS   |
 | Verified `design-system`'s test-coverage claim against its actual test files     | PASS   |
 | `pnpm format:check` (whole repo) — clean                                         | PASS   |
+
+## Stage 82 — Task 16, batch 2: READMEs for the data plane and the Brain · 2026-09-26
+
+**Goal.** Batch 2 of the Task 16 README sweep: `packages/db` (L3, the data plane) and
+`packages/brain` (L4, the Infinite Brain). Read each package's `index.ts` in full — `db`'s
+export list and `brain`'s own header comment (which already narrates its build history
+step by step) — before writing.
+
+**What changed.** New `README.md` for `packages/db` and `packages/brain`. Both describe
+the real export surface (not a summary of the directory listing) and tie each file back
+to the specific CLAUDE.md rule or manual concept it exists to satisfy — rule 5's
+tenant-scoped client and the RLS table classification for `db`; rule 11's
+supersede-don't-update invariant and the manual's fixed retrieval-stage order for
+`brain`.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read `db`'s and `brain`'s full `index.ts` before writing either README                 | PASS   |
+| Each file's role tied to the specific rule/manual concept it satisfies, not just named | PASS   |
+| `pnpm format:check` (whole repo) — clean                                               | PASS   |
