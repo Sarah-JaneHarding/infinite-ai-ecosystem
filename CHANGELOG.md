@@ -12,6 +12,13 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 79 — Failure-path tests for `packages/prompt-builder`**
+  - `packages/prompt-builder/test/prompt-builder.spec.ts` (9 new tests): `VariableName`
+    and `PromptBudget` are both exported specifically so a caller can validate untrusted
+    input before it reaches the builder, but nothing internal calls `.parse()` on
+    either — so neither had a test of its own. Closed: `VariableName`'s lower-snake-case
+    regex, and `PromptBudget`'s `int().positive()` constraints on all three fields.
+
 - **Stage 78 — Failure-path tests for `packages/low-tech-assessment`**
   - `packages/low-tech-assessment/test/low-tech-assessment.spec.ts` (8 new tests):
     `ScanResult` and `AssessmentSession` were only ever built through always-valid

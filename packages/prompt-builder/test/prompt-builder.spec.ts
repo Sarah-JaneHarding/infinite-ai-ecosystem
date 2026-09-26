@@ -6,9 +6,11 @@ import { describe, expect, it } from 'vitest';
 import type { LoadedPrompt } from '@infinite-ai/prompts';
 
 import {
+  PromptBudget,
   PromptBuildError,
   PromptBudgetError,
   PromptVariableError,
+  VariableName,
   buildPrompt,
   enforceBudget,
   estimateTokens,
@@ -141,7 +143,79 @@ describe('substituteVariables', () => {
   });
 });
 
+// ─── variables.ts — VariableName schema ───────────────────────────────────────
+//
+// VariableName is exported specifically so a caller can validate a variable name
+// before it reaches substituteVariables — but nothing in this file ever parsed
+// against it directly; extractVariables/substituteVariables only ever see names
+// the PLACEHOLDER_PATTERN regex already matched, so the schema's own regex
+// constraint had zero coverage of its own.
+
+describe('VariableName schema', () => {
+  it('accepts a valid lower_snake_case name', () => {
+    expect(VariableName.safeParse('context_value').success).toBe(true);
+  });
+
+  it('rejects an uppercase name', () => {
+    expect(VariableName.safeParse('Context').success).toBe(false);
+  });
+
+  it('rejects a name containing spaces', () => {
+    expect(VariableName.safeParse('two words').success).toBe(false);
+  });
+
+  it('rejects a name starting with a digit', () => {
+    expect(VariableName.safeParse('1name').success).toBe(false);
+  });
+});
+
 // ─── budget.ts ────────────────────────────────────────────────────────────────
+
+// PromptBudget is exported so a caller can validate an untrusted budget config
+// before passing it to buildPrompt/enforceBudget — but neither of those calls
+// PromptBudget.parse() internally (they only rely on the TS type), so the
+// schema's own int/positive constraints had zero test coverage of their own.
+describe('PromptBudget schema', () => {
+  it('accepts a valid budget', () => {
+    expect(
+      PromptBudget.safeParse({
+        maxSystemTokens: 4000,
+        maxUserTokens: 8000,
+        maxOutputTokens: 4000,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects a non-positive maxSystemTokens', () => {
+    expect(
+      PromptBudget.safeParse({
+        maxSystemTokens: 0,
+        maxUserTokens: 8000,
+        maxOutputTokens: 4000,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a non-integer maxUserTokens', () => {
+    expect(
+      PromptBudget.safeParse({
+        maxSystemTokens: 4000,
+        maxUserTokens: 100.5,
+        maxOutputTokens: 4000,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects a non-positive maxOutputTokens', () => {
+    expect(
+      PromptBudget.safeParse({
+        maxSystemTokens: 4000,
+        maxUserTokens: 8000,
+        maxOutputTokens: -1,
+      }).success,
+    ).toBe(false);
+  });
+});
 
 describe('estimateTokens', () => {
   it('estimates 1 token per 4 characters', () => {

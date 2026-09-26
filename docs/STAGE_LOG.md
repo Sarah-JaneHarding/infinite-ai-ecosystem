@@ -9573,3 +9573,43 @@ pass (8 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `
 | `AssessmentSession`'s identifier, classSize, and questions-array constraints tested    | PASS   |
 | `pnpm --filter @infinite-ai/low-tech-assessment test` — 48/48 pass                     | PASS   |
 | `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
+
+## Stage 79 — Failure-path tests for `packages/prompt-builder` · 2026-09-26
+
+**Goal.** Ninth package on the audit's Task 15 list. Same method as Stages 71–78: read
+`test/prompt-builder.spec.ts` (23 tests) and all three source files in full before
+assuming anything about the gap.
+
+**What the gap actually was.** Already thorough on business logic and real error paths
+— variable substitution (missing/unknown), token-budget enforcement on both sides, and
+the section-parser's mandatory-section check, each asserted via the thrown error's own
+fields (`.missing`, `.unknown`, `.section`), not just `.toThrow()`. Two schemas were the
+gap, and both share the same shape: each is exported specifically so a caller can
+validate untrusted input before it reaches the builder, but nothing internal ever calls
+`.parse()` on either, so nothing in this file ever did either:
+
+- `VariableName` — exported for validating a variable name in isolation; the regex
+  constraint (lower-snake-case) had zero tests. `extractVariables`/`substituteVariables`
+  only ever see names their own regex already matched, so the exported schema's
+  constraint was never exercised through any path.
+- `PromptBudget` — exported for validating an untrusted budget config; `buildPrompt` and
+  `enforceBudget` both take it as a plain TypeScript type with no runtime `.parse()`
+  call, so its `int().positive()` constraints on all three fields had zero coverage.
+
+**What changed.** `packages/prompt-builder/test/prompt-builder.spec.ts`: 9 new tests —
+`VariableName` (valid lower_snake_case, rejects uppercase, rejects spaces, rejects a
+leading digit) and `PromptBudget` (valid budget, rejects non-positive
+`maxSystemTokens`, rejects a non-integer `maxUserTokens`, rejects non-positive
+`maxOutputTokens`).
+
+**Verification.** `pnpm --filter @infinite-ai/prompt-builder test` — 32 tests, all pass
+(9 new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` / `pnpm
+format:check` (whole repo) — clean.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Read the existing 23-test spec file and all three source files before assuming the gap | PASS   |
+| `VariableName`'s lower-snake-case constraint now proven to reject                      | PASS   |
+| `PromptBudget`'s int/positive constraints now proven to reject on all three fields     | PASS   |
+| `pnpm --filter @infinite-ai/prompt-builder test` — 32/32 pass                          | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                              | PASS   |
