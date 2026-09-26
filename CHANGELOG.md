@@ -12,6 +12,18 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 73 — Failure-path tests for `packages/gamification`**
+  - `packages/gamification/test/schemas.spec.ts` (new, 12 tests): `LearnerGamificationProfile`
+    — the input state `processEvent` trusts completely — now has its own constraints
+    (non-negative/integer `xp` and `streakDays`, `level` ≥ 1, non-empty `profileId`) proven
+    to reject bad data, plus the same for `AssessmentCompletedEvent`, `ModuleCompletedEvent`,
+    `GateApprovedEvent`, and the `GamificationEvent` discriminated union (unknown `type`,
+    malformed `occurredAt`).
+  - `packages/gamification/test/gamification.spec.ts` (4 new tests): `assessment_completed`
+    — a real event type and switch case with zero prior coverage — now exercised end-to-end
+    through `processEvent`; `streak_30`'s `minLevel: 2` badge gate now proven enforced
+    (previously only the self-gating `level_5`/`level_10` badges were tested).
+
 - **Stage 72 — Failure-path tests for `apps/web`**
   - `apps/web/tests/unit/env.spec.ts` (9 new tests): proves `WebEnvSchema` actually
     rejects an under-length `NEXTAUTH_SECRET`, a malformed `NEXTAUTH_URL` or

@@ -9317,3 +9317,58 @@ clean.
 | `pnpm --filter web test` — 63/63 pass                                             | PASS   |
 | `pnpm --filter web typecheck` — clean                                             | PASS   |
 | `pnpm lint` / `pnpm format:check` — clean                                         | PASS   |
+
+## Stage 73 — Failure-path tests for `packages/gamification` · 2026-09-26
+
+**Goal.** Third package on the audit's Task 15 list. Same method as Stages 71–72: read
+`test/gamification.spec.ts` (45 tests) in full, and every source file it exercises, before
+assuming anything about the gap.
+
+**What the gap actually was.** The existing suite is thorough on the paths it does cover —
+XP math, level thresholds, most badge triggers, and even a few schema-rejection tests for
+`LessonCompletedEvent`/`AssessmentPassedEvent`/`LearningStreakDayEvent`. Three genuine
+gaps remained:
+
+- `LearnerGamificationProfile` — the input state `processEvent` trusts completely
+  (`engine.ts` takes it as already-typed) — had zero tests proving its own constraints
+  (`xp`/`streakDays` non-negative integers, `level` ≥ 1, non-empty `profileId`) actually
+  reject bad data. Same shape as `packages/compliance`'s Zod-schema boundary gap.
+  `AssessmentCompletedEvent`, `ModuleCompletedEvent`, and `GateApprovedEvent` had the same
+  hole for their own `min(1)`/range constraints, and the `GamificationEvent` discriminated
+  union had no test proving it rejects an unknown `type` or a malformed `occurredAt`.
+- `assessment_completed` is a real `GamificationEventType` member and a real switch case
+  in `engine.ts`'s `computeXpEarned`, but no test ever called `processEvent` with one —
+  only `assessment_passed` (the graded, badge-earning variant) was exercised end-to-end.
+- `badges.ts`'s `evaluateBadges` gates every badge behind its own `minLevel` from
+  `BADGE_CATALOGUE`. The existing tests proved `level_5`/`level_10` gate themselves, but
+  nothing proved a _different_ badge's `minLevel` gate is enforced — `streak_30` requires
+  `minLevel: 2`, and a learner at level 1 with a 30-day streak had never been tested to
+  confirm the badge is correctly withheld until they actually reach level 2.
+
+**What changed.**
+
+- `packages/gamification/test/schemas.spec.ts` (new) — 12 tests: `LearnerGamificationProfile`
+  rejects negative/non-integer `xp`, `level` below 1, negative `streakDays`, and an empty
+  `profileId` (plus one happy-path accept); `AssessmentCompletedEvent` rejects score > 100
+  and an empty `assessmentId`; `ModuleCompletedEvent` and `GateApprovedEvent` each reject
+  their empty identifier; `GamificationEvent` rejects an unknown `type` and a malformed
+  `occurredAt`.
+- `packages/gamification/test/gamification.spec.ts`: 4 new tests — a
+  `processEvent — assessment_completed` block (base XP with no badge; no high-score bonus
+  even at a perfect score, since only `assessment_passed` grants that) and two
+  `evaluateBadges` tests proving `streak_30` is withheld at level 1 and awarded once level
+  reaches 2.
+
+**Verification.** `pnpm --filter @infinite-ai/gamification test` — 57 tests, all pass (16
+new). `eslint`/`tsc --noEmit` on the package — clean. `prettier --check` on both edited
+files — clean. `pnpm lint` / `pnpm format:check` (whole repo) — clean.
+
+| Exit gate item                                                                       | Result |
+| ------------------------------------------------------------------------------------ | ------ |
+| Read the existing 45-test spec file in full before assuming the gap                  | PASS   |
+| `LearnerGamificationProfile`'s constraints (xp, level, streakDays, profileId) tested | PASS   |
+| Remaining event schemas' own constraints tested; union rejects unknown type          | PASS   |
+| `assessment_completed` exercised end-to-end through `processEvent`                   | PASS   |
+| A non-self-gating badge's `minLevel` (`streak_30`) proven enforced                   | PASS   |
+| `pnpm --filter @infinite-ai/gamification test` — 57/57 pass                          | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                            | PASS   |
