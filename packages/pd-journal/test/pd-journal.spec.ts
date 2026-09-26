@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 
 import { checkPdPoints } from '@infinite-ai/compliance';
 
-import { buildPdCycleSummary, computeCycleProgress } from '../src/journal.js';
+import {
+  buildPdCycleSummary,
+  computeCycleProgress,
+  resolveCycleYear,
+} from '../src/journal.js';
 import { PdJournalEntry } from '../src/types.js';
 import type { PdJournalEntry as PdJournalEntryType } from '../src/types.js';
 
@@ -65,6 +69,30 @@ describe('PdJournalEntry schema', () => {
   it('accepts claimedPoints = 0', () => {
     const result = PdJournalEntry.safeParse(makeEntry({ claimedPoints: 0 }));
     expect(result.success).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// resolveCycleYear — the year-3+ clamp
+// ---------------------------------------------------------------------------
+//
+// computeCycleProgress's own existing tests only ever reach exactly YEAR_3_DATE (the
+// upper edge of the cycle) — nothing previously exercised a date further out, so the
+// docstring's own claim ("Clamps to SACE_CPTD_CYCLE_YEARS (3) if beyond the cycle end")
+// had no test proving the clamp branch is actually reached rather than, say, returning
+// an out-of-range number that PdCycleSummary's `1 | 2 | 3` type would only catch at
+// compile time for a literal, not for a value computed at runtime.
+describe('resolveCycleYear', () => {
+  it('clamps to 3 for a date more than 3 years past cycleStartDate', () => {
+    expect(resolveCycleYear('2029-06-15', CYCLE_START)).toBe(3);
+  });
+
+  it('returns 1 for a date exactly on cycleStartDate', () => {
+    expect(resolveCycleYear(CYCLE_START, CYCLE_START)).toBe(1);
+  });
+
+  it('returns 1 for a date before cycleStartDate', () => {
+    expect(resolveCycleYear('2023-01-01', CYCLE_START)).toBe(1);
   });
 });
 
@@ -372,6 +400,27 @@ describe('buildPdCycleSummary', () => {
     const yr3 = summary.educators.find((e) => e.educatorToken === 'edu-yr3');
     expect(yr1?.cycleYear).toBe(1);
     expect(yr3?.cycleYear).toBe(3);
+  });
+
+  // buildPdCycleSummary's `tagged` step re-writes every entry's educatorToken to the
+  // Map's own key before computing progress — nothing previously proved that override
+  // actually happens rather than trusting whatever educatorToken the entry itself
+  // carries. A caller passing an entry mistagged with a different educator's token
+  // (a bug elsewhere, or a stale record) must not have its points misattributed.
+  it('attributes points by the journal Map key, not by the educatorToken stored on the entry itself', () => {
+    const journal = new Map([
+      [
+        'edu-correct',
+        {
+          entries: [makeEntry({ educatorToken: 'edu-wrong', claimedPoints: 25 })],
+          cycleStartDate: CYCLE_START,
+        },
+      ],
+    ]);
+    const summary = buildPdCycleSummary(journal, 'tenant-a', YEAR_1_DATE);
+    expect(summary.educators).toHaveLength(1);
+    expect(summary.educators[0]?.educatorToken).toBe('edu-correct');
+    expect(summary.educators[0]?.pdPointsAccumulated).toBe(25);
   });
 
   it('educators with different cycle start dates are each computed from their own start', () => {

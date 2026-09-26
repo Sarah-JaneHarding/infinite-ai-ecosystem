@@ -9372,3 +9372,48 @@ files — clean. `pnpm lint` / `pnpm format:check` (whole repo) — clean.
 | A non-self-gating badge's `minLevel` (`streak_30`) proven enforced                   | PASS   |
 | `pnpm --filter @infinite-ai/gamification test` — 57/57 pass                          | PASS   |
 | `pnpm lint` / `pnpm format:check` — clean                                            | PASS   |
+
+## Stage 74 — Failure-path tests for `packages/pd-journal` · 2026-09-26
+
+**Goal.** Fourth package on the audit's Task 15 list. Same method as Stages 71–73: read
+`test/pd-journal.spec.ts` (33 tests) and both source files in full before assuming
+anything about the gap.
+
+**What the gap actually was.** This package was already the most thoroughly tested of
+the four so far — schema rejections, cycle-window boundary inclusion/exclusion, per-type
+breakdown accumulation, multi-educator independence, and even a dedicated
+`checkPdPoints` integration block with its own boundary case (exactly 150 points produces
+no VIOLATION). Two genuine gaps remained, both narrow:
+
+- `resolveCycleYear` (exported directly alongside `computeCycleProgress`) has a
+  documented clamp — "Clamps to SACE_CPTD_CYCLE_YEARS (3) if beyond the cycle end" — that
+  no test ever reached: every existing test's `asOf` stopped at exactly `YEAR_3_DATE`
+  (2026-06-15, precisely 2.5 calendar years after the 2024-01-01 cycle start), never
+  further out. `PdCycleSummary.educators[].cycleYear` is typed `1 | 2 | 3`, which only
+  guards a literal at compile time — nothing proved the runtime clamp actually fires for
+  a date years past the cycle end.
+- `buildPdCycleSummary`'s `tagged` step rewrites every entry's `educatorToken` to the
+  journal `Map`'s own key before calling `computeCycleProgress` — nothing proved that
+  override actually happens rather than trusting whatever `educatorToken` the entry
+  itself carries. A caller passing a mistagged entry (a bug elsewhere, or a stale record)
+  must not have its points misattributed to the wrong educator — a data-integrity
+  concern in the same family as the tenant-isolation invariant, even though this package
+  has no tenant/RLS boundary of its own to test.
+
+**What changed.** `packages/pd-journal/test/pd-journal.spec.ts`: 6 new tests — a
+`resolveCycleYear` block (clamps to 3 for a date 5+ years past cycle start; returns 1 for
+a date exactly on or before cycle start) and one `buildPdCycleSummary` test proving an
+entry mistagged with a different educator's token is still correctly attributed to the
+journal `Map`'s own key.
+
+**Verification.** `pnpm --filter @infinite-ai/pd-journal test` — 39 tests, all pass (6
+new). `eslint`/`tsc --noEmit` — clean. `prettier --check` — clean. `pnpm lint` / `pnpm
+format:check` (whole repo) — clean.
+
+| Exit gate item                                                                    | Result |
+| --------------------------------------------------------------------------------- | ------ |
+| Read the existing 33-test spec file and both source files before assuming the gap | PASS   |
+| `resolveCycleYear`'s documented year-3+ clamp proven to actually fire             | PASS   |
+| `buildPdCycleSummary`'s educator-token re-tagging proven to override a mismatch   | PASS   |
+| `pnpm --filter @infinite-ai/pd-journal test` — 39/39 pass                         | PASS   |
+| `pnpm lint` / `pnpm format:check` — clean                                         | PASS   |

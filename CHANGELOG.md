@@ -12,6 +12,15 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 74 — Failure-path tests for `packages/pd-journal`**
+  - `packages/pd-journal/test/pd-journal.spec.ts` (6 new tests): `resolveCycleYear`'s
+    documented clamp to cycle year 3 for a date years past the cycle end — previously
+    unreached, since every existing test's `asOf` stopped exactly at the year-3 boundary
+    and never went further out. `buildPdCycleSummary`'s re-tagging of each entry's
+    `educatorToken` to its journal `Map` key, rather than trusting whatever token the
+    entry itself carries, is now proven to correctly override a mismatch — a
+    data-attribution-integrity path with no prior test.
+
 - **Stage 73 — Failure-path tests for `packages/gamification`**
   - `packages/gamification/test/schemas.spec.ts` (new, 12 tests): `LearnerGamificationProfile`
     — the input state `processEvent` trusts completely — now has its own constraints
