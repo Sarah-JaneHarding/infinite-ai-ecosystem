@@ -12,6 +12,18 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Stage 88 — Task 16, batch 8: READMEs for the three apps (closes Task 16)**
+  - `README.md` for `apps/web`, `apps/gateway`, `apps/worker`. Verified two claims
+    against real source before writing rather than after: `apps/gateway`'s adapters are
+    genuinely the only files in the repo allowed to import a provider SDK (confirmed
+    against `eslint.config.mjs` and a repo-wide grep); `apps/worker`'s `step-executor.ts`
+    wires in only two specific guardrail checks directly
+    (`checkAgeAppropriateness`, `checkDiagnosticLanguage`), not the full
+    `runInputGuardrails`/`runOutputGuardrails` engine — a real, already-documented gap
+    in the source (OQ-015/OQ-026), stated precisely rather than implied away.
+  - **Closes Task 16** ("Add a `README.md` per package"): all 34 packages/apps that had
+    none at the start of this sweep now have one, across eight batches (Stages 81–88).
+
 - **Stage 87 — Task 16, batch 7: READMEs for provisioning, billing, warehouse, analytics, learning**
   - `README.md` for `packages/provisioning`, `packages/billing`, `packages/warehouse`,
     `packages/analytics`, `packages/learning`. Found and flagged three real

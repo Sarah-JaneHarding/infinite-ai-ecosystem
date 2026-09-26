@@ -9868,3 +9868,44 @@ the "Where it fits" section, not after.
 | `warehouse`'s overclaimed `analytics` data flow checked, found wrong, corrected         | PASS   |
 | `analytics`'s `condition-evaluator.ts` reference checked precisely (comment vs. import) | PASS   |
 | `pnpm format:check` (whole repo) — clean                                                | PASS   |
+
+## Stage 88 — Task 16, batch 8: READMEs for the three apps (closes Task 16) · 2026-09-26
+
+**Goal.** Final batch of the Task 16 README sweep: `apps/web` (L8), `apps/gateway`
+(L2), `apps/worker` (the L6 execution host). All 34 packages/apps in the repository now
+have a `README.md`.
+
+**Verified before writing, not after, this time.** Two claims checked against real
+source before drafting rather than corrected afterward:
+
+- `apps/gateway`'s claim that its `adapters/` files are the only ones in the repo
+  allowed to import a provider SDK — confirmed against `eslint.config.mjs`'s own
+  restricted-imports list (`@anthropic-ai/*`, `openai`, `@google/generative-ai`, ...) and
+  a repo-wide grep for those import paths outside `apps/gateway`, which found none.
+  Genuinely enforced, not aspirational.
+- `apps/worker`'s `step-executor.ts` — a first instinct to write "runs it through
+  `@infinite-ai/guardrails`" would have overstated real coverage. Its own header comment
+  says plainly that the full `runInputGuardrails`/`runOutputGuardrails` engine is **not**
+  called from this site — only `checkAgeAppropriateness` (always) and
+  `checkDiagnosticLanguage` (when a contract declares `diagnosis_guard`) are wired in
+  directly, because most of the engine's other checks need data (a citation set, a cost
+  budget, a readability range, an established refusal-signalling convention) this call
+  site doesn't have yet. This is a real, already-documented-in-source gap (OQ-015/
+  OQ-026's "mechanism now, real policy wired in once ratified" shape), not a bug — the
+  README states it precisely rather than implying broader guardrail coverage than
+  actually runs.
+
+**What changed.** New `README.md` for `apps/web`, `apps/gateway`, `apps/worker`. **Task
+16 ("Add a `README.md` per package") is now closed** — every one of the 34
+packages/apps that had none at the start of this sweep (Stage 81) has one, across eight
+batches.
+
+**Verification.** `pnpm format:check` (whole repo) — clean. No code changed. Confirmed
+via a fresh scan that zero packages/apps remain without a `README.md`.
+
+| Exit gate item                                                                                        | Result |
+| ----------------------------------------------------------------------------------------------------- | ------ |
+| `apps/gateway`'s provider-SDK-isolation claim verified against ESLint config + a grep                 | PASS   |
+| `apps/worker`'s guardrail-coverage claim corrected to match `step-executor.ts`'s own header precisely | PASS   |
+| `pnpm format:check` (whole repo) — clean                                                              | PASS   |
+| **Task 16 (README per package) closed** — 0 of 34 packages/apps remain without one                    | PASS   |
