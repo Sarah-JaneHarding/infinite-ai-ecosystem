@@ -140,18 +140,25 @@ AUTH_KEYCLOAK_SECRET=<same value as infra/docker/.env's KEYCLOAK_WEB_CLIENT_SECR
 AUTH_KEYCLOAK_ISSUER=http://localhost:8180/realms/infinite-ai
 ```
 
-## 5. (Optional) Seed curriculum data
+## 5. (Optional) Seed curriculum, template and age-appropriateness data
 
 CE-01/CE-02 need real CAPS/ATP data in L0 to produce anything other than
 `NEEDS_INPUT` — see `docs/OPEN_QUESTIONS.md`'s OQ-002 for what's actually been ingested
-so far. `pnpm curriculum:seed`/`pnpm curriculum:ratify` write into three fixed dev tenant
-ids (`10000000-…001/002/003`), so the dev tenants themselves have to exist first —
+so far. All three seed scripts below write into the same three fixed dev tenant ids
+(`10000000-…001/002/003`), so the dev tenants themselves have to exist first —
 `pnpm --filter @infinite-ai/db db:seed` creates them (idempotent; safe to run again):
 
 ```bash
 pnpm --filter @infinite-ai/db db:seed   # creates the three dev tenants, if not already done
+
 pnpm curriculum:seed                    # submits CAPS/ATP source documents to L0
 pnpm curriculum:ratify                  # advances them to committed brain_constitution rows
+
+pnpm templates:seed                     # submits lesson-plan template definitions to L0
+pnpm templates:ratify                   # advances them to committed brain_constitution rows
+
+pnpm age-appropriateness:seed           # submits the 206 age-appropriateness/readiness entries
+pnpm age-appropriateness:ratify         # advances them to committed brain_constitution rows
 ```
 
 ## 6. Start the apps
@@ -176,11 +183,31 @@ pnpm --filter @infinite-ai/worker start
 pnpm --filter @infinite-ai/web dev
 ```
 
-Visit `http://localhost:3000` and sign in via the Keycloak sign-in button. You'll need a
-user account and role assignment in the realm to actually reach a role surface — the
-imported realm ships no users; create one via the Keycloak admin console
-(`http://localhost:8180`) or through the app's own onboarding flow once you're signed in
-as an admin.
+Visit `http://localhost:3000` and sign in via the Keycloak sign-in button. The imported
+realm ships one dev login per role, all scoped to the Kleinbos Primary dev tenant
+(`10000000-0000-4000-8000-000000000001`) that step 5's `db:seed` creates, so every role
+surface is reachable immediately after import — no manual Keycloak admin-console step
+needed:
+
+### Signing in as each role
+
+| Username               | Role               | Reaches                                            |
+| ---------------------- | ------------------ | -------------------------------------------------- |
+| `teacher.dev`          | `teacher`          | `/teacher`                                         |
+| `hod.dev`              | `hod`              | `/hod`                                             |
+| `smt.dev`              | `smt`              | `/smt`                                             |
+| `sbst.dev`             | `sbst`             | `/sbst`                                            |
+| `admin.dev`            | `admin`            | `/admin/prompts`, `/admin/setup`, `/admin/env`     |
+| `guardian.dev`         | `guardian`         | `/guardian`                                        |
+| `learner.dev`          | `learner`          | `/learner`                                         |
+| `platform-support.dev` | `platform_support` | `/platform/runs`                                   |
+| `platform-admin.dev`   | `platform_admin`   | `/platform/runs`, `/platform/tenants`, `/district` |
+
+The password for all nine is `SEED_USER_PASSWORD` from `infra/docker/.env` — each
+account has `temporary: true` on its credential, so Keycloak forces a password change on
+first login (pick anything meeting the realm's password policy). These are fixture
+identities, invented the same way `packages/db/prisma/seed.ts`'s own header explains: no
+real person, staff member, guardian or learner is represented.
 
 ## Building and running the apps as containers
 
