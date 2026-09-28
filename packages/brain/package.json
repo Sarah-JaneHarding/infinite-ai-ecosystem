@@ -25,9 +25,9 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@opentelemetry/sdk-trace-base": "2.10.0",
-    "@testcontainers/postgresql": "12.0.4",
-    "testcontainers": "12.0.4",
+    "@opentelemetry/sdk-trace-base": "2.11.0",
+    "@testcontainers/postgresql": "12.1.0",
+    "testcontainers": "12.1.0",
     "typescript": "5.9.3",
     "vitest": "3.2.7"
   }
