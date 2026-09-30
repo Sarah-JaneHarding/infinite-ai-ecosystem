@@ -108,8 +108,23 @@ services:
   # `OBJECT_STORE_BUCKET` (root .env.example) point here; production points the same two
   # variables at a real S3 bucket in af-south-1 instead — nothing in application code
   # changes between the two, since both speak the S3 API.
+  #
+  # Image note: MinIO stopped publishing free images to Docker Hub on 2026-09-12, and
+  # quay.io/minio/* went login-only on 2026-09-24 (MinIO Inc.'s community edition became
+  # source-only distribution) — both `minio/minio` and `minio/mc` are gone from anonymous
+  # pull entirely, confirmed against both registries' own APIs. `cgr.dev/chainguard/minio`
+  # is MinIO built from source by Chainguard, pulls without login, and bundles both `mc`
+  # and `/bin/sh` in the same image — one image now serves the server (below) and the
+  # bucket-init step (`minio-init`), replacing two separate MinIO-published images.
+  # Chainguard's free tier only keeps `latest` pointed at the newest build, so this pins
+  # the digest `latest` resolved to on 2026-09-30 for reproducibility; every digest stays
+  # pullable even after `latest` moves on. Its `ENTRYPOINT` is `/usr/bin/minio` with no
+  # baked-in `CMD`, so `command:` below is unchanged from the original image's own
+  # convention. It runs as non-root UID 65532 (Chainguard's standard hardening) — if the
+  # `minio-data` volume ever ends up root-owned from a prior image, this may need a
+  # `chown` fix on first boot; a fresh volume has not shown that problem in practice.
   minio:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    image: cgr.dev/chainguard/minio@sha256:4692462f35d97d7e82c30371d82f057703c5d9489bcae726010594c812f2d285
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
@@ -129,8 +144,10 @@ services:
   # One-shot: creates the bucket application code expects and exits. `mc` has no
   # "create if missing, otherwise no-op" flag, hence `mb --ignore-existing`, so a second
   # `docker compose up` on an already-provisioned volume is a clean no-op, not an error.
+  # Same Chainguard image as `minio` above (see its comment) — it bundles `mc`, so no
+  # separate `minio/mc` image is needed.
   minio-init:
-    image: minio/mc:RELEASE.2025-04-16T18-13-26Z
+    image: cgr.dev/chainguard/minio@sha256:4692462f35d97d7e82c30371d82f057703c5d9489bcae726010594c812f2d285
     restart: 'no'
     depends_on:
       minio:
