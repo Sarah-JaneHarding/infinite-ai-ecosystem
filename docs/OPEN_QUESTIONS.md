@@ -382,3 +382,16 @@ Terraform — no code change needed to update routing per school.
    ECS task-definition environment override).
 3. Subscribe the appropriate school contact(s) to the topic — SMS, email, or a PagerDuty
    HTTP endpoint — for each pilot school.
+
+### OQ-030 — a platform tenant directory has no sanctioned read path · 2026-10-01
+
+The shell linked platform admins to `/platform/tenants`, a page that never existed. It was
+removed from the navigation rather than built, because the data it implies cannot be read
+the way this codebase reads anything: `tenant` is RLS-protected and `withTenant()` shows a
+caller only its own tenant row, and `rbac.ts` grants `platform_admin` `tenant_setting` and
+`audit_event` at PLATFORM scope but nothing on the `tenant` table itself. Listing every
+tenant needs a deliberate platform-scoped read — a new RLS policy or a separate privileged
+role — which is a security-boundary decision, not a page. Nothing was weakened to get around
+it. **Needs a human:** whether a tenant directory is wanted, which fields it may show, and
+which role and policy may read it. Until then, `platform_admin` reaches the Run Inspector
+(still sample data) and the environment docs.

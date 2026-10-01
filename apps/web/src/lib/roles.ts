@@ -74,7 +74,6 @@ export const ROLE_NAV: Record<Role, readonly NavLink[]> = {
   platform_support: [{ label: 'Run Inspector', href: '/platform/runs' }],
   platform_admin: [
     { label: 'Run Inspector', href: '/platform/runs' },
-    { label: 'Tenants', href: '/platform/tenants' },
     { label: 'Environment Docs', href: '/admin/env' },
   ],
 };

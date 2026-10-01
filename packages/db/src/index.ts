@@ -151,6 +151,7 @@ export {
   decideApprovalTask,
   getApprovalTask,
   getApprovalTaskForStep,
+  listPendingApprovalTasks,
   openApprovalTask,
   type ApprovalDecisionOutcome,
   type ApprovalTaskRow,

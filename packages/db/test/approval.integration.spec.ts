@@ -17,6 +17,7 @@ import {
   getApprovalTask,
   getApprovalTaskForStep,
   hasActiveRoleAssignment,
+  listPendingApprovalTasks,
   openApprovalTask,
   openRun,
 } from '../src/index.js';
@@ -60,6 +61,72 @@ async function openTestRun(): Promise<string> {
   );
   return run.id;
 }
+
+describe('listPendingApprovalTasks', () => {
+  it('lists only undecided tasks of the caller tenant, oldest first', async () => {
+    const other = randomUUID();
+    const migrator = db.clientFor('migrator');
+    await asTenant(migrator, other, ACTOR, (tx) =>
+      tx.tenant.create({
+        data: {
+          id: other,
+          name: 'Other School',
+          slug: `other-${other.slice(0, 8)}`,
+          kind: 'SCHOOL',
+        },
+      }),
+    );
+    const open = async (tenant: string, stepId: string) => {
+      const run = await asTenant(appRw, tenant, ACTOR, (tx) =>
+        openRun(tx, {
+          pipelineId: 'p',
+          pipelineVersion: '1.0.0',
+          traceId: randomUUID(),
+          input: {},
+        }),
+      );
+      return asTenant(appRw, tenant, ACTOR, (tx) =>
+        openApprovalTask(tx, {
+          runId: run.id,
+          stepId,
+          requiredRole: 'hod',
+          artefact: { draft: stepId },
+          evidence: {},
+          traceId: randomUUID(),
+        }),
+      );
+    };
+
+    const first = await open(TENANT, 'list-first');
+    const decided = await open(TENANT, 'list-decided');
+    const second = await open(TENANT, 'list-second');
+    const foreign = await open(other, 'list-foreign');
+    await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      decideApprovalTask(
+        tx,
+        decided.id,
+        { outcome: 'APPROVED', decidedBy: ACTOR, reason: 'fine' },
+        NOW,
+      ),
+    );
+
+    const mine = await asTenant(appRw, TENANT, ACTOR, (tx) =>
+      listPendingApprovalTasks(tx),
+    );
+    const ids = mine.map((t) => t.id);
+    expect(ids).toContain(first.id);
+    expect(ids).toContain(second.id);
+    expect(ids).not.toContain(decided.id);
+    expect(ids).not.toContain(foreign.id);
+    expect(mine.every((t) => t.decision === null)).toBe(true);
+    expect(ids.indexOf(first.id)).toBeLessThan(ids.indexOf(second.id));
+
+    const theirs = await asTenant(appRw, other, ACTOR, (tx) =>
+      listPendingApprovalTasks(tx),
+    );
+    expect(theirs.map((t) => t.id)).toEqual([foreign.id]);
+  });
+});
 
 describe('openApprovalTask / getApprovalTask / getApprovalTaskForStep', () => {
   it('opens a task pending, with the artefact, evidence, diff and required role supplied', async () => {

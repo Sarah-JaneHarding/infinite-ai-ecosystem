@@ -62,6 +62,7 @@ describe('package export surface', () => {
       'listEffectiveExemplars',
       'listOpenBrainConflicts',
       'listOpenBrainWrites',
+      'listPendingApprovalTasks',
       'listStepRuns',
       'lookupHash',
       'openApprovalTask',
@@ -124,6 +125,7 @@ describe('package export surface', () => {
       db.openApprovalTask,
       db.getApprovalTask,
       db.getApprovalTaskForStep,
+      db.listPendingApprovalTasks,
       db.decideApprovalTask,
       db.hasActiveRoleAssignment,
     ]) {

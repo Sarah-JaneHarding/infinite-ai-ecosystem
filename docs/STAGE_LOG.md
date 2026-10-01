@@ -10447,3 +10447,48 @@ and a real Anthropic key on your machine.
 | Refuses to score an unreviewed set; dry run labelled not-evidence | PASS   |
 | A failed call is never scored as a rejection                      | PASS   |
 | A real judge verdict / real agreement figure                      | N/A    |
+
+## Stage 97 — the dead /approvals and /platform/tenants links
+
+**Task.** "Fix the dead /approvals and /platform/tenants links."
+
+**What was found.** Neither route had a page. Looking behind them found more than a missing file:
+
+- `/approvals/[id]` rendered a hardcoded "Mathematics Gr 8 — Solving linear equations" lesson plan
+  for _any_ task id, and the HoD console linked to it with ids (`a1`, `a2`) that are not tasks and no
+  run id (so it 404'd). A person could have approved a real gate while looking at invented content
+  — a rule 6 hazard that building only the index would have steered real users into.
+- `/platform/tenants` has no data path (OQ-030): `withTenant` shows a caller only its own tenant.
+
+**What changed.**
+
+- `/approvals` is a real queue: undecided `approval_task` rows of the caller's tenant that are waiting on
+  the caller's own role (`requiredRole`), via new `listPendingApprovalTasks` in `packages/db`. The list
+  carries no artefact content. Tenant and actor come from the session only; roles with no queue are
+  sent home; a session without both ids reads nothing.
+- `/approvals/[id]` now shows the stored artefact, evidence and diff, and only if the task is in the
+  caller's tenant, undecided, waiting on the caller's role, and `runId` is its own run — else not found.
+  The mock and the client-side role list are gone. Artefact shapes are not fixed by the gate, so they
+  are shown as written (string) or indented JSON, never HTML.
+- HoD console sample rows link to `/approvals` instead of a dead-ending id. (The rows are still sample data.)
+- `/platform/tenants` removed from the platform admin navigation; OQ-030 records why and what a human must decide.
+- A navigation test requires every shell link to have a page, with a **ratchet** list of the four
+  links still dead (`/hod/coverage`, `/sbst/meetings`, `/smt/pd`, `/smt/tiers`): it fails on a new dead link and
+  fails again when one is fixed but not removed from the list.
+
+**Tests.** Web 144 pass (+33: lib, loader, both pages incl. security cases, navigation). DB integration
+`approval.integration.spec.ts` 14 pass on real Postgres, including that a second tenant's pending task
+never appears and decided tasks are excluded; db unit 220 pass. Typecheck, eslint, prettier and the
+web production build are clean (`/approvals` and `/approvals/[id]` are dynamic routes).
+A pre-existing slip was fixed in the same spec: one call omitted `decideApprovalTask`'s `now` argument.
+
+**Not done.** Not exercised in a browser against seeded approval tasks (the dev seed creates none, so the
+queue shows its empty state until a pipeline opens a gate). The other four dead links. The Run Inspector,
+HoD console and ApprovalDetail "Edit & approve" (records EDITED with no diff) are unchanged.
+
+| Exit gate item                                                                  | Result                      |
+| ------------------------------------------------------------------------------- | --------------------------- |
+| `/approvals` renders the tenant's pending tasks for the caller's role only      | PASS (unit + real Postgres) |
+| Detail shows the stored artefact, never a mock; refuses another role/run/tenant | PASS                        |
+| `/platform/tenants` no longer linked; reason recorded (OQ-030)                  | PASS                        |
+| Browser check with a seeded task                                                | N/A                         |
