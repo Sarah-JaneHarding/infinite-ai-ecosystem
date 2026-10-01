@@ -135,6 +135,19 @@ export async function getApprovalTaskForStep(
   return found === null ? null : toRow(found);
 }
 
+/** Every task in the caller's tenant that has no decision yet, oldest first. Tenant scope
+ * comes from the transaction (`withTenant`) and RLS, not from a parameter: there is no way
+ * to ask this for another tenant's queue. */
+export async function listPendingApprovalTasks(
+  tx: TenantClient,
+): Promise<ApprovalTaskRow[]> {
+  const found = await tx.approvalTask.findMany({
+    where: { decision: null },
+    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+  });
+  return found.map(toRow);
+}
+
 export interface DecideApprovalTaskInput {
   readonly outcome: ApprovalDecisionOutcome;
   readonly decidedBy: string;

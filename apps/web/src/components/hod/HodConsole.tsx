@@ -58,7 +58,7 @@ export function HodConsole() {
                 <div className="flex items-center gap-2">
                   <StatusPill status={item.status} />
                   <Link
-                    href={`/approvals/${item.id}`}
+                    href="/approvals"
                     className="text-xs text-[var(--iai-primary)] hover:underline"
                   >
                     Review

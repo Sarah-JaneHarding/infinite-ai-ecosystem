@@ -2,49 +2,21 @@
 
 import { useState } from 'react';
 import { StatusPill } from '@infinite-ai/design-system';
-import { Badge } from '@infinite-ai/design-system';
-import type { Role } from '@infinite-ai/policy';
+import { describeValue, type ApprovalView } from '@/lib/approvals';
 
 interface Props {
-  readonly id: string;
-  readonly runId: string;
-  readonly role: Role;
+  readonly approval: ApprovalView;
 }
 
 type Outcome = 'APPROVED' | 'REJECTED' | 'EDITED';
 type UIState = 'pending' | 'submitting' | 'done' | 'error';
 
-const MOCK_ARTEFACT = {
-  type: 'Lesson plan',
-  subject: 'Mathematics Gr 8',
-  topic: 'Solving linear equations',
-  agent: 'TB-01 v7',
-  author: 'Ms Nkosi',
-  content: `
-## Learning objectives
-By the end of this lesson, learners will be able to:
-1. Identify linear equations in one variable.
-2. Apply the balance method to isolate the variable.
-3. Verify their answer by substitution.
-
-## Lesson outline (60 min)
-- 0–5 min: Recap — what is an equation? (Think-Pair-Share)
-- 5–20 min: The balance model — demonstration with physical manipulatives
-- 20–40 min: Three worked examples, increasing in complexity
-- 40–50 min: Independent practice — 5 problems
-- 50–60 min: Exit ticket (2 questions)
-  `.trim(),
-  evidence: ['Learner progress data (de-identified)', 'ATP sequence node: Equations-01'],
-  previousVersion: 'v6 — lacked worked examples for negative coefficients.',
-};
-
-export function ApprovalDetail({ id, runId, role }: Props) {
+export function ApprovalDetail({ approval }: Props) {
+  const { id, runId } = approval;
   const [uiState, setUiState] = useState<UIState>('pending');
   const [confirmedOutcome, setConfirmedOutcome] = useState<Outcome | null>(null);
   const [reason, setReason] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-
-  const canDecide = ['hod', 'smt', 'admin'].includes(role);
 
   async function submitDecision(outcome: Outcome) {
     if (reason.length === 0) return;
@@ -111,28 +83,36 @@ export function ApprovalDetail({ id, runId, role }: Props) {
             className="text-2xl font-bold text-[var(--iai-text)] mt-0.5"
             style={{ fontFamily: 'var(--iai-font-title)' }}
           >
-            {MOCK_ARTEFACT.topic}
+            Step: {approval.stepId}
           </h1>
           <p className="text-sm text-[var(--iai-text-subtle)] mt-0.5">
-            {MOCK_ARTEFACT.type} · {MOCK_ARTEFACT.subject} · by {MOCK_ARTEFACT.author}
+            Awaiting a decision from: {approval.requiredRole} · opened{' '}
+            {approval.openedAt.slice(0, 16).replace('T', ' ')} UTC
           </p>
         </div>
         <StatusPill status="pending" />
       </div>
 
-      {/* Agent + evidence */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        <Badge variant="info">{MOCK_ARTEFACT.agent}</Badge>
-        {MOCK_ARTEFACT.evidence.map((e) => (
-          <Badge key={e} variant="default">
-            {e}
-          </Badge>
-        ))}
+      {/* Evidence */}
+      <div className="mb-4">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--iai-text-subtle)] mb-1">
+          Evidence
+        </h2>
+        <pre className="text-xs text-[var(--iai-text)] whitespace-pre-wrap p-3 rounded-[var(--iai-radius-md)] bg-[var(--iai-bg-subtle)] border border-[var(--iai-border)]">
+          {describeValue(approval.evidence)}
+        </pre>
       </div>
 
       {/* Diff against previous */}
       <div className="mb-4 p-3 rounded-[var(--iai-radius-md)] bg-[var(--iai-bg-subtle)] border border-[var(--iai-border)] text-xs text-[var(--iai-text-subtle)]">
-        <strong>Change from previous:</strong> {MOCK_ARTEFACT.previousVersion}
+        <strong>Change from previous:</strong>{' '}
+        {approval.diffAgainstPrevious === null ? (
+          'none — there is no earlier version.'
+        ) : (
+          <pre className="mt-1 whitespace-pre-wrap">
+            {describeValue(approval.diffAgainstPrevious)}
+          </pre>
+        )}
       </div>
 
       {/* Artefact content */}
@@ -141,7 +121,7 @@ export function ApprovalDetail({ id, runId, role }: Props) {
         className="mb-6 p-5 rounded-[var(--iai-radius-xl)] bg-[var(--iai-bg)] border border-[var(--iai-border)] shadow-[var(--iai-shadow-sm)]"
       >
         <pre className="text-sm text-[var(--iai-text)] whitespace-pre-wrap leading-relaxed font-sans">
-          {MOCK_ARTEFACT.content}
+          {describeValue(approval.artefact)}
         </pre>
       </article>
 
@@ -155,62 +135,57 @@ export function ApprovalDetail({ id, runId, role }: Props) {
         </div>
       )}
 
-      {/* Decision UI — only for roles that can approve */}
-      {canDecide ? (
-        <div className="rounded-[var(--iai-radius-xl)] bg-[var(--iai-bg)] border border-[var(--iai-border)] p-5">
-          <h2 className="text-sm font-semibold text-[var(--iai-text)] mb-3">
-            Your decision
-          </h2>
-          <label
-            htmlFor="reason"
-            className="block text-xs text-[var(--iai-text-subtle)] mb-1"
+      {/* The page only renders for the role the gate is waiting on; the server still checks
+          the actor's own role assignment when the decision is recorded. */}
+      <div className="rounded-[var(--iai-radius-xl)] bg-[var(--iai-bg)] border border-[var(--iai-border)] p-5">
+        <h2 className="text-sm font-semibold text-[var(--iai-text)] mb-3">
+          Your decision
+        </h2>
+        <label
+          htmlFor="reason"
+          className="block text-xs text-[var(--iai-text-subtle)] mb-1"
+        >
+          Reason (required)
+        </label>
+        <textarea
+          id="reason"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          rows={3}
+          disabled={uiState === 'submitting'}
+          className="w-full text-sm border border-[var(--iai-border)] rounded-[var(--iai-radius-md)] p-2.5 bg-[var(--iai-bg-subtle)] text-[var(--iai-text)] resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--iai-primary)] disabled:opacity-60"
+          placeholder="Notes or reason for your decision…"
+        />
+        <div className="flex gap-3 mt-4 flex-wrap">
+          <button
+            type="button"
+            onClick={() => void submitDecision('APPROVED')}
+            disabled={!reason || uiState === 'submitting'}
+            className="px-4 py-2 rounded-[var(--iai-radius-md)] bg-[var(--iai-green)] text-white text-sm font-medium hover:bg-[var(--iai-green-deep)] transition-colors disabled:opacity-50"
           >
-            Reason (required)
-          </label>
-          <textarea
-            id="reason"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            rows={3}
-            disabled={uiState === 'submitting'}
-            className="w-full text-sm border border-[var(--iai-border)] rounded-[var(--iai-radius-md)] p-2.5 bg-[var(--iai-bg-subtle)] text-[var(--iai-text)] resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--iai-primary)] disabled:opacity-60"
-            placeholder="Notes or reason for your decision…"
-          />
-          <div className="flex gap-3 mt-4 flex-wrap">
-            <button
-              type="button"
-              onClick={() => void submitDecision('APPROVED')}
-              disabled={!reason || uiState === 'submitting'}
-              className="px-4 py-2 rounded-[var(--iai-radius-md)] bg-[var(--iai-green)] text-white text-sm font-medium hover:bg-[var(--iai-green-deep)] transition-colors disabled:opacity-50"
-            >
-              {uiState === 'submitting' ? 'Saving…' : 'Approve'}
-            </button>
-            <button
-              type="button"
-              onClick={() => void submitDecision('EDITED')}
-              disabled={!reason || uiState === 'submitting'}
-              className="px-4 py-2 rounded-[var(--iai-radius-md)] border border-[var(--iai-border)] text-[var(--iai-text)] text-sm font-medium hover:bg-[var(--iai-bg-subtle)] transition-colors disabled:opacity-50"
-            >
-              Edit &amp; approve
-            </button>
-            <button
-              type="button"
-              onClick={() => void submitDecision('REJECTED')}
-              disabled={!reason || uiState === 'submitting'}
-              className="px-4 py-2 rounded-[var(--iai-radius-md)] text-[var(--iai-red)] text-sm font-medium hover:bg-[var(--iai-error-bg)] transition-colors disabled:opacity-50"
-            >
-              Reject
-            </button>
-          </div>
-          <p className="text-xs text-[var(--iai-text-subtle)] mt-2">
-            A reason is required. The record is append-only and cannot be undone.
-          </p>
+            {uiState === 'submitting' ? 'Saving…' : 'Approve'}
+          </button>
+          <button
+            type="button"
+            onClick={() => void submitDecision('EDITED')}
+            disabled={!reason || uiState === 'submitting'}
+            className="px-4 py-2 rounded-[var(--iai-radius-md)] border border-[var(--iai-border)] text-[var(--iai-text)] text-sm font-medium hover:bg-[var(--iai-bg-subtle)] transition-colors disabled:opacity-50"
+          >
+            Edit &amp; approve
+          </button>
+          <button
+            type="button"
+            onClick={() => void submitDecision('REJECTED')}
+            disabled={!reason || uiState === 'submitting'}
+            className="px-4 py-2 rounded-[var(--iai-radius-md)] text-[var(--iai-red)] text-sm font-medium hover:bg-[var(--iai-error-bg)] transition-colors disabled:opacity-50"
+          >
+            Reject
+          </button>
         </div>
-      ) : (
-        <p className="text-sm text-[var(--iai-text-subtle)] italic">
-          You can view this artefact but do not have permission to approve or reject it.
+        <p className="text-xs text-[var(--iai-text-subtle)] mt-2">
+          A reason is required. The record is append-only and cannot be undone.
         </p>
-      )}
+      </div>
     </section>
   );
 }
