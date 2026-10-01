@@ -33,6 +33,6 @@
     "@infinite-ai/deident": "workspace:*",
     "@infinite-ai/policy": "workspace:*",
     "@infinite-ai/telemetry": "workspace:*",
-    "zod": "3.25.76"
+    "zod": "4.6.5"
   }
 }
