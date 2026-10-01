@@ -23,14 +23,23 @@ function isPublic(pathname: string): boolean {
  */
 export default async function proxy(req: NextRequest): Promise<NextResponse> {
   // Generate a fresh nonce for every request so each page's CSP is unique.
-  // The nonce is forwarded to the page via a request header; layouts read it and pass
-  // it to <Script nonce={nonce}> tags. The CSP is set on the response so the browser
-  // enforces it before executing any script.
+  //
+  // The CSP goes on BOTH the request and the response, and that is load-bearing:
+  //  - on the response, the browser enforces it before executing any script;
+  //  - on the request, Next.js reads it during server rendering, extracts the
+  //    `'nonce-…'` value and stamps it onto the framework's own <script> tags and any
+  //    <Script nonce> it emits (see Next's "Content Security Policy" guide). With it
+  //    only on the response, nothing carries the nonce, `strict-dynamic` trusts nothing,
+  //    and the browser blocks every script — the page renders but never hydrates.
+  // That only works for dynamically rendered pages; the root layout opts in with
+  // `await connection()`. `x-nonce` is kept for any server component that needs the
+  // value itself.
   const nonce = generateNonce();
   const csp = buildCsp(nonce);
 
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-nonce', nonce);
+  requestHeaders.set('Content-Security-Policy', csp);
 
   const { pathname, search } = req.nextUrl;
 
