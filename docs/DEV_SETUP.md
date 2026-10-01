@@ -43,10 +43,16 @@ docker compose -f infra/docker/compose.dev.yml ps
 Keycloak's realm import can take 20–30 seconds after the container starts — `ps` will
 show it as `starting` until then.
 
+`ps` will then show Keycloak as `unhealthy`, and keep showing it: its compose healthcheck
+runs `curl`, which the Keycloak image does not ship. That is a false alarm — check the
+realm itself with `curl -s http://localhost:8180/realms/infinite-ai/.well-known/openid-configuration`
+(HTTP 200 means the import worked).
+
 **If Keycloak's client secret substitution doesn't take** (the `${KEYCLOAK_WEB_CLIENT_SECRET}`
 /`${KEYCLOAK_WORKER_CLIENT_SECRET}` placeholders in `infra/keycloak/realm.json` are
-resolved by Keycloak's own environment-variable placeholder mechanism at import time —
-this has not been verified against a live container in this build): open
+resolved by Keycloak's own environment-variable placeholder mechanism at import time;
+verified against a live Keycloak 26.0 container on 2026-10-01 — see Stage 90 in
+`docs/STAGE_LOG.md`): open
 `http://localhost:8180`, sign in as `KEYCLOAK_ADMIN`/`KEYCLOAK_ADMIN_PASSWORD`, go to the
 `infinite-ai` realm → Clients → `infinite-ai-web` → Credentials tab, and copy the secret
 shown there into `apps/web/.env`'s `AUTH_KEYCLOAK_SECRET` instead of what you put in
