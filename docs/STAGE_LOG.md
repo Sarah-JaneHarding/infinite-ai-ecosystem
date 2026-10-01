@@ -10408,3 +10408,42 @@ reviewed); each `checkLabelledSet` problem is reported. Guardrails coverage stay
 | Every cited clause exists, matches the case's phase, is twinned | PASS   |
 | Contract controls present                                       | PASS   |
 | 50+ human-labelled cases (OQ-016)                               | N/A    |
+
+## Stage 96 — calibration runner for the age-appropriateness judge
+
+**Task.** "Build the calibration runner."
+
+**What changed.** `pnpm age-appropriateness:calibrate` (`scripts/calibrate-age-appropriateness.ts`) sends
+the labelled set through the real judge via a running gateway and reports raw agreement, a confusion
+table, per-kind/per-phase agreement, each disagreement with the judge's rationale, the provider that
+served the run, prompt version and token use. Logic is in `packages/guardrails/src/age-appropriateness-calibration.ts`
+(pure, judge injected).
+
+**Decisions that matter.**
+
+- No pass mark. Agreement thresholds are the school's decision (OQ-016).
+- A failed call is "no verdict", never a rejection (`isNoVerdict`, via a shared prefix on the judge's
+  fail-closed rationale) — otherwise an outage scores as a correct catch on every violation case.
+- Default scores only human-reviewed cases and refuses to run on an unreviewed set; `--include-unreviewed`
+  is a dry run whose output says it is not calibration evidence. Disputed cases are never scored.
+- Schema fix found while building it: a reviewer's `relabelled` case could not invert its kind's
+  default expectation, so the documented relabel workflow would have been rejected. Now allowed for
+  `relabelled` only.
+- One case named a first name (`Thandi`), which the gateway's PII guard could refuse against a tenant
+  lexicon; replaced with "A learner".
+- Root `package.json` gains two workspace links (`guardrails`, `prompts`) so the script can import them; no
+  external dependency.
+
+**Tests.** 11 new (selection, per-phase clause hand-over, no-verdict handling, confusion/agreement,
+not-evidence flag, empty input); export surface updated for 8 new exports. Guardrails coverage 99.75%.
+Script exercised end to end against a **stub** gateway: refuses (exit 2) on the unreviewed set, dry run
+reports and records a deliberately failed call as no verdict. The stub's numbers mean nothing.
+
+**Not done.** No real model call, so no real agreement figure exists. The set still needs human review
+and a real Anthropic key on your machine.
+
+| Exit gate item                                                    | Result |
+| ----------------------------------------------------------------- | ------ |
+| Refuses to score an unreviewed set; dry run labelled not-evidence | PASS   |
+| A failed call is never scored as a rejection                      | PASS   |
+| A real judge verdict / real agreement figure                      | N/A    |

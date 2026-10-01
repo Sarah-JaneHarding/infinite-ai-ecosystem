@@ -291,7 +291,7 @@
     "grade": "7",
     "subject": "Mathematics",
     "clauseSet": "phase",
-    "output": "Grade 7 financial maths. Thandi saves R100 a month and her aunt adds R20 every month. How much does she have after 6 months? Work it out with a table, no formula needed.",
+    "output": "Grade 7 financial maths. A learner saves R100 a month and her aunt adds R20 every month. How much does she have after 6 months? Work it out with a table, no formula needed.",
     "expectedAppropriate": true,
     "drivingClauses": ["age-appropriateness-152"],
     "construction": "Same topic as aa-152-v, within age-appropriateness-152: Grade 7 learners are \"not expected to use formulae for calculating simple interest\".",

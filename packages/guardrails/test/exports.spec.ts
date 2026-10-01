@@ -11,6 +11,9 @@ describe('package export surface', () => {
       'DIAGNOSTIC_TERMS',
       'EscalationRoute',
       'GuardrailEscalationError',
+      'LabelledCase',
+      'LabelledCoverage',
+      'NO_VERDICT_PREFIX',
       'PACKAGE_NAME',
       'PASSED',
       'PiiEgressError',
@@ -23,6 +26,7 @@ describe('package export surface', () => {
       'checkDiagnosticLanguage',
       'checkGrounding',
       'checkInputSchema',
+      'checkLabelledSet',
       'checkOutputSchema',
       'checkPii',
       'checkPromptInjection',
@@ -36,10 +40,14 @@ describe('package export surface', () => {
       'defaultEscalationNotifier',
       'extractFreeText',
       'inspectEgress',
+      'isNoVerdict',
       'refuse',
+      'runCalibration',
       'runInputGuardrails',
       'runOutputGuardrails',
       'scoreReadability',
+      'selectCases',
+      'summariseCalibration',
     ]);
   });
 

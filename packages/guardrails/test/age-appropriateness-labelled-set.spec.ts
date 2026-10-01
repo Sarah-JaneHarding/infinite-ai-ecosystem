@@ -64,6 +64,26 @@ describe('LabelledCase', () => {
     ).toBe(false);
   });
 
+  it('lets a reviewer relabel a case against its kind, and nobody else', () => {
+    const review = {
+      status: 'relabelled',
+      reviewer: 'A. Teacher',
+      reviewedOn: '2026-10-02',
+      note: 'The clause does not forbid this.',
+    };
+    expect(
+      LabelledCase.safeParse({ ...first('violation'), expectedAppropriate: true, review })
+        .success,
+    ).toBe(true);
+    expect(
+      LabelledCase.safeParse({
+        ...first('violation'),
+        expectedAppropriate: true,
+        review: { ...review, status: 'confirmed' },
+      }).success,
+    ).toBe(false);
+  });
+
   it('rejects a control that cites a clause, and a non-control that cites none', () => {
     expect(
       LabelledCase.safeParse({ ...first('control'), drivingClauses: [key(1)] }).success,

@@ -55,7 +55,9 @@ export const LabelledCase = z
       conformant: true,
       control: c.expectedAppropriate,
     }[c.kind];
-    if (c.expectedAppropriate !== expected) {
+    // A reviewer who disagrees with the construction records it by relabelling; that is the
+    // one way a violation may expect a pass (or a conformant case a fail).
+    if (c.review.status !== 'relabelled' && c.expectedAppropriate !== expected) {
       ctx.addIssue({
         code: 'custom',
         message: `${c.kind} must expect ${String(expected)}`,

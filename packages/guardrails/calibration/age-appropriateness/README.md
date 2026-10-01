@@ -32,3 +32,25 @@ sets `review` to `confirmed`, `relabelled` (change `expectedAppropriate`, say wh
 Only confirmed or relabelled cases count towards OQ-016's 50.
 Cases for the remaining clauses are for the reviewer to add; this set does not guess which of
 them are testable.
+
+## Running it
+
+```bash
+pnpm age-appropriateness:calibrate                  # scores reviewed cases only
+pnpm age-appropriateness:calibrate --out report.json
+```
+
+Needs a running gateway (`docs/DEV_SETUP.md`: Anthropic-only recipe) and a **real** Anthropic key
+in the gateway's environment — the script itself reads no key. It sends each case through the
+gateway as the production judge does, and prints raw agreement, a confusion table, per-kind
+agreement, every disagreement with the judge's rationale, and which provider served the run.
+
+- It sets **no pass mark**. What agreement is good enough is the school's decision.
+- By default it scores only `confirmed`/`relabelled` cases, so until a person has reviewed the
+  set it refuses to run. `--include-unreviewed` is a dry run, and the output then says plainly
+  that it is **not calibration evidence**. `disputed` cases are never scored.
+- A call that fails (gateway down, bad key, PII guard refusal) is reported as **no verdict**, not
+  as a rejection — otherwise an outage would score as a correct catch on every violation case.
+- Record the served model with the result and re-run when it changes (OQ-016).
+- A reviewer who disagrees with a case sets `status: "relabelled"` and flips `expectedAppropriate`;
+  that is the only way a violation may expect a pass.

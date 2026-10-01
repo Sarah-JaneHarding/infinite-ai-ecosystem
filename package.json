@@ -55,6 +55,7 @@
     "templates:ratify": "tsx scripts/ratify-templates.ts",
     "age-appropriateness:seed": "tsx scripts/seed-age-appropriateness.ts",
     "age-appropriateness:ratify": "tsx scripts/ratify-age-appropriateness.ts",
+    "age-appropriateness:calibrate": "tsx scripts/calibrate-age-appropriateness.ts",
     "load:peak": "k6 run scripts/load/k6-peak.js",
     "load:spike": "k6 run scripts/load/k6-spike.js",
     "verify:stage": "tsx scripts/verify-stage.ts"
@@ -67,6 +68,8 @@
     "@infinite-ai/curriculum-seed": "workspace:*",
     "@infinite-ai/db": "workspace:*",
     "@infinite-ai/evals": "workspace:*",
+    "@infinite-ai/guardrails": "workspace:*",
+    "@infinite-ai/prompts": "workspace:*",
     "@infinite-ai/warehouse": "workspace:*",
     "@types/node": "22.20.1",
     "eslint": "9.39.5",
