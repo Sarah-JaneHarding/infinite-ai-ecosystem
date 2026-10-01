@@ -9,6 +9,8 @@ declare module 'next-auth' {
   interface Session {
     role: Role;
     tenantId: string;
+    /** The Keycloak subject (a UUID) — the `actorId` for tenant-scoped database reads. */
+    userId: string;
   }
 }
 declare module 'next-auth/jwt' {
@@ -64,6 +66,7 @@ export const authOptions: AuthOptions = {
     async session({ session, token }): Promise<Session> {
       session.role = parseRole(token['role']);
       session.tenantId = (token['tenantId'] as string | undefined) ?? '';
+      session.userId = typeof token.sub === 'string' ? token.sub : '';
       return session;
     },
   },

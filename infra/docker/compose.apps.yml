@@ -118,6 +118,10 @@ services:
       AUTH_KEYCLOAK_ID: ${AUTH_KEYCLOAK_ID:?set AUTH_KEYCLOAK_ID in your local .env}
       AUTH_KEYCLOAK_SECRET: ${AUTH_KEYCLOAK_SECRET:?set AUTH_KEYCLOAK_SECRET in your local .env}
       AUTH_KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER:?set KEYCLOAK_ISSUER in your local .env}
+      # Server components read tenant data (e.g. the Teacher Studio curriculum map) through
+      # withTenant(), so the web app needs the same least-privilege app_rw URL as production
+      # (infra/terraform/modules/stack: web gets app_rw). Never the migrator URL.
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in your local .env}
       GATEWAY_URL: ${GATEWAY_URL:-http://gateway:8080}
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
       OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-}
