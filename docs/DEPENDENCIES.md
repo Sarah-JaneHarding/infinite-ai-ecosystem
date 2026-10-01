@@ -375,7 +375,7 @@ components in the test environment; no React runtime ships with the package.
 
 | Package                | Version | Licence    | Why                                                                                                                                                                                                                                                                          | Replaces |
 | ---------------------- | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `next`                 | 16.3.4  | MIT        | The App Router framework. Server components by default; Turbopack for the dev server. Required by Stage 14 step 1. Bumped from 16.3.0 — see the supply-chain audit note below.                                                                                               | —        |
+| `next`                 | 16.3.6  | MIT        | The App Router framework. Server components by default; Turbopack for the dev server. Required by Stage 14 step 1. Bumped from 16.3.0 — see the supply-chain audit note below.                                                                                               | —        |
 | `react`                | 19.2.8  | MIT        | React 19 — required by Next.js 16. Provides concurrent features, form actions and the compiler the framework depends on.                                                                                                                                                     | —        |
 | `react-dom`            | 19.2.8  | MIT        | The DOM renderer for React 19.                                                                                                                                                                                                                                               | —        |
 | `@types/react`         | 19.2.18 | MIT        | TypeScript types for React 19.                                                                                                                                                                                                                                               | —        |
@@ -435,6 +435,17 @@ so no push since then had actually run the audit. Bumped the direct dependency
 in `apps/web/package.json` to `16.3.4` (latest patch on the 16.3.x line at the
 time of this fix) and regenerated `pnpm-lock.yaml`; `pnpm --filter @infinite-ai/web`
 typecheck/test/build all re-verified green after the bump.
+
+### `next` 16.3.4 → 16.3.6 (2026-10-01)
+
+`pnpm audit:supply-chain` (Stage 16 step, part of the cumulative `verify:stage 65`
+gate) reported one critical advisory against `next@16.3.4`: GHSA-vcvr-r3jv-pc5j,
+remote code execution in `next/og` `ImageResponse`, affecting `>=16.2.0 <16.3.6`
+and patched in `>=16.3.6`. Bumped the direct dependency in `apps/web/package.json`
+to `16.3.6` (exact, as the audit's pinning check requires) and regenerated
+`pnpm-lock.yaml` and `docs/sbom.json`; the lockfile diff touches only `next`,
+`@next/env` and the `@next/swc-*` platform binaries. Re-run of
+`pnpm audit:supply-chain` after the bump: PASS, no known vulnerabilities.
 
 ## Stage 17 — Tenant lifecycle, provisioning, billing
 
