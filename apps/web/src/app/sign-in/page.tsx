@@ -4,7 +4,23 @@ import { SignInForm } from '@/components/auth/SignInForm';
 
 export const metadata: Metadata = { title: 'Sign in' };
 
-export default function SignInPage() {
+// What the identity provider's `?error=` code means to a person. The code comes from the URL,
+// so it only ever selects one of these strings; it is never rendered.
+const SIGN_IN_ERRORS: Readonly<Record<string, string>> = {
+  AccessDenied:
+    'Your account is not set up for INFINITE-AI yet: it has no role. Ask your school administrator to assign you one, then sign in again.',
+};
+const GENERIC_SIGN_IN_ERROR = 'Sign-in did not complete. Please try again.';
+
+export default async function SignInPage({
+  searchParams,
+}: {
+  readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const { error } = await searchParams;
+  const message =
+    typeof error === 'string' ? (SIGN_IN_ERRORS[error] ?? GENERIC_SIGN_IN_ERROR) : null;
+
   return (
     <main
       id="main"
@@ -58,6 +74,14 @@ export default function SignInPage() {
             Educate · Innovate · Transform
           </p>
         </div>
+        {message !== null && (
+          <p
+            role="alert"
+            className="mb-4 rounded-[var(--iai-radius-md)] border border-[var(--iai-error-border)] bg-[var(--iai-error-bg)] p-3 text-sm text-[var(--iai-error-text)]"
+          >
+            {message}
+          </p>
+        )}
         <SignInForm />
       </div>
     </main>
