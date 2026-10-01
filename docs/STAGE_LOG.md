@@ -10135,3 +10135,89 @@ the existing Stage 18 hardening item named in `buildCsp()`. Stage 90 findings 1,
 | New tests fail on the original code, pass on the fix                            | PASS   |
 | `pnpm lint`, web typecheck, `pnpm format:check`                                 | PASS   |
 | Playwright e2e / a11y suites                                                    | N/A    |
+
+## Stage 92 — Teacher Studio Curriculum Map reads the seeded ATP data (Stage 90 finding 8) · 2026-10-01
+
+**Goal.** Replace the Curriculum Map's hardcoded sample rows with what is actually in the
+database, so the seeded L0 sources can be checked by hand in the product.
+
+**What was wrong.** `TeacherStudio.tsx` shipped six invented lesson rows labelled "English
+Home Language — Grade 6 · 2026". Neither the heading nor the rows exist in the data: the
+Grade 6 subjects in L0 are "Home Language", "Mathematics" and so on. More fundamentally the
+screen's right-hand columns (WALT, success criteria, FA technique, activity, resources) are
+lesson-level content. An ATP row holds pacing — term, week range, topic, content area,
+assessment type — plus formal assessment tasks, not those. Filling the columns from L0 would
+have meant inventing curriculum content, so they are not filled; the view shows what the ATP
+holds and says what it does not.
+
+**What changed.**
+
+- `apps/web/src/lib/atp-curriculum.ts` (pure): Zod-parses stored `ATP_CALENDAR` rows (rule 8);
+  a row that does not parse is skipped and counted, never half-rendered. Builds the
+  grade/subject catalogue, resolves a selection (unknown input falls back to a real choice
+  and is never echoed), and groups the chosen curriculum **by ATP year** — Grade 1
+  Mathematics has both a 2023 and a 2026 plan, and which applies is a curriculum-policy
+  decision (CLAUDE.md), so both are shown, labelled, with no default winner.
+- `apps/web/src/lib/atp-curriculum-loader.ts`: the one database read — `withTenant` +
+  `listEffectiveConstitution` (rules 5 and 11: tenant-scoped, effective versions only).
+- `apps/web/src/app/(shell)/teacher/page.tsx`: tenant and actor come from the verified
+  session only, never the URL; no database read for an unauthenticated caller, a non-teacher,
+  or a session with no tenant or user id. `apps/web/src/auth.ts` exposes the Keycloak
+  subject as `session.userId` (the audit actor).
+- `CurriculumMapView.tsx`: Term / Weeks / Topic / Content area / Assessment, the formal
+  assessment tasks, a source-document list (document id and version) per ATP year, grade and
+  subject selectors (a plain GET form; the subject list follows the grade), and the term
+  filter. `TeacherStudio.tsx` drops `SAMPLE_ROWS`.
+- The Daily Schedule, Lesson Planner and AI Studio panels still show built-in sample content
+  — there is no timetable or lesson-plan data to read, and the AI Studio needs a model and
+  the approval gate. They are now labelled "Sample data", and the AI Studio says plainly
+  that nothing is generated or saved: its Approve button previously reported "Lesson plan
+  approved and saved." although nothing was saved.
+- `infra/docker/compose.apps.yml`: the web service gets `DATABASE_URL` (the `app_rw` URL, as
+  Terraform already gives it in production). Without it the first server-side database read
+  failed with Prisma `P1012` — no web page had read the database at render time before.
+- `apps/web/vitest.config.ts`: the app's `@/` import alias.
+
+**Tests.** `@infinite-ai/web` unit tests 71 → 105 (+34): data layer (18), page security
+(13) and loader (3). Failure paths covered: malformed and wrong-kind rows, an unknown or
+hostile grade, no data, a database error that must surface rather than look like an empty
+curriculum. Security: the tenant and actor are taken from the session even when the URL
+carries other ones; seven non-teacher roles and an unauthenticated caller are refused with
+no read; a session with no tenant or user id makes no read. Mutation-checked — taking the
+tenant from the query string, dropping the role check, echoing an unknown grade, and
+merging ATP years each make a test fail, and the restored code passes 105 of 105.
+`pnpm lint`, `@infinite-ai/web` typecheck and `pnpm format:check` are clean.
+
+**Verified against the real stack.** Web image rebuilt from its unmodified Dockerfile (its
+`next build` ran), signed in as `teacher.dev` in Chromium with the CSP enforced, compared
+with SQL on `brain_constitution`: Grade 6 Mathematics shows 25 topics and 7 assessment
+tasks (SQL: 25 and 7); its Term 2 filter shows 7 topics (SQL: 7); Grade 1 Mathematics shows
+two sections, ATP 2023 and ATP 2026, 16 topics each (SQL: 16 and 16). A `<script>` grade
+falls back to the first real entry; a `tenantId` in the URL is ignored. No JavaScript
+errors; the only 404 is the dead `/approvals` link below.
+
+**Found, not fixed.**
+
+- The teacher sidebar links to `/approvals`, which 404s (only `approvals/[id]` exists) —
+  like `/platform/tenants` in Stage 90.
+- `auth.ts` `parseRole` falls back to `teacher` for any user without a recognised role,
+  which would give such a user this page's tenant-scoped read. Worth a decision.
+- The map is not narrowed to the teacher's own classes: nothing maps a Keycloak user to
+  their class or subject, so it offers every grade and subject the tenant has.
+- `listEffectiveConstitution` returns every constitution kind and this page filters in
+  memory (about 1 MB of rows per tenant in the dev seed); a kind-filtered query in
+  `@infinite-ai/db` would avoid that.
+- Still open from Stage 90: findings 1, 2, 5, 6 and 7.
+
+**Not done.** The Playwright e2e and a11y suites were not run, and `verify:stage 65` was not
+re-run locally (CI runs it on the PR).
+
+| Exit gate item                                                                  | Result |
+| ------------------------------------------------------------------------------- | ------ |
+| Curriculum Map reads the tenant's ratified ATP rows; no invented lesson content | PASS   |
+| Screen counts equal SQL (topics, assessment tasks, term filter, two ATP years)  | PASS   |
+| Tenant and actor from the session only; refusals make no database read          | PASS   |
+| New tests fail under four deliberate breakages, pass on the fix                 | PASS   |
+| `pnpm lint`, web typecheck, `pnpm format:check`                                 | PASS   |
+| Daily Schedule / Lesson Planner / AI Studio connected to real data              | N/A    |
+| Playwright e2e / a11y suites                                                    | N/A    |
