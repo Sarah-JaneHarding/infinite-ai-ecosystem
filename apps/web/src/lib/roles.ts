@@ -70,7 +70,15 @@ export const ROLE_NAV: Record<Role, readonly NavLink[]> = {
   ],
 };
 
-/** Returns true when a role is permitted to view the given pathname. */
+/**
+ * Whether `pathname` is one of the role's own navigation destinations (or beneath one).
+ *
+ * NOT an access check. Nothing enforces access with this: it is derived from the links a role
+ * is shown, so it cannot express a page that has no link (`/district`) or a page a role may
+ * open without a link (`/admin/curriculum/caps-canon`). Who may reach what is
+ * `lib/route-access.ts`, enforced in `proxy.ts`. Kept, with its tests, as a description of
+ * the navigation; do not use it to guard anything.
+ */
 export function roleCanViewPath(role: Role, pathname: string): boolean {
   const allowed = ROLE_NAV[role].map((l) => l.href);
   // A role can always access its home surface.

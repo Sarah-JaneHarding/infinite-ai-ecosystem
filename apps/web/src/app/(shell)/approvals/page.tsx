@@ -7,8 +7,8 @@ import { loadApprovalQueue } from '@/lib/approvals-loader';
 
 export const metadata: Metadata = { title: 'Approvals' };
 
-// The roles that can have a human gate waiting on them (and that `roleCanViewPath` lets
-// onto /approvals). Anyone else has no queue.
+// The roles that can have a human gate waiting on them. Mirrors the /approvals rule in
+// `lib/route-access.ts` (a test keeps the two equal). Anyone else has no queue.
 const APPROVAL_ROLES: ReadonlyArray<string> = ['teacher', 'hod', 'smt', 'sbst', 'admin'];
 
 export default async function ApprovalsPage() {
