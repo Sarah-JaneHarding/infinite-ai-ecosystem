@@ -4,16 +4,8 @@ import type { NextRequest } from 'next/server';
 
 import { buildCsp, generateNonce } from '@infinite-ai/security';
 
-/**
- * Public paths that do not require authentication. `/api/health` is the container
- * liveness probe: it returns a constant and nothing else (see its route), and it must be
- * reachable without a session or the healthcheck would be answered by a sign-in redirect.
- */
-const PUBLIC = ['/sign-in', '/api/auth', '/api/health'];
-
-function isPublic(pathname: string): boolean {
-  return PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-}
+import { isApiPath, isPublic, roleMayReach } from './lib/route-access';
+import { readRole } from './lib/session-role';
 
 /**
  * Deliberately does not use next-auth's `withAuth` wrapper. `withAuth`'s own
@@ -49,10 +41,22 @@ export default async function proxy(req: NextRequest): Promise<NextResponse> {
 
   if (!isPublic(pathname)) {
     const token = await getToken({ req });
-    if (!token) {
+    // A token with no valid role is not a session (see lib/session-role.ts): treated like
+    // no token at all, never as some default role.
+    const role = token === null ? null : readRole(token['role']);
+    if (role === null) {
       const signInUrl = new URL('/sign-in', req.url);
       signInUrl.searchParams.set('callbackUrl', `${pathname}${search}`);
       return NextResponse.redirect(signInUrl);
+    }
+
+    // Who may reach this route (lib/route-access.ts). Default deny: an unlisted route
+    // reaches nobody. A handler gets a 403; a page sends the person home, which is what
+    // each page's own role check already did.
+    if (!roleMayReach(role, pathname)) {
+      return isApiPath(pathname)
+        ? NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        : NextResponse.redirect(new URL('/', req.url));
     }
   }
 

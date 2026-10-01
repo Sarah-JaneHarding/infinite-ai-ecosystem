@@ -10562,3 +10562,54 @@ build clean.
 | A stored token with no valid role is signed out, not a teacher | PASS (real next-auth) |
 | Role list has one source                                       | PASS                  |
 | Live Keycloak check with a role-less account                   | N/A                   |
+
+## Stage 100 — central role gating
+
+**Task.** "Fix the central role gating."
+
+**The gap.** Role checks lived only inside each page and handler (`if (session.role !== 'hod') redirect('/')`, repeated page by page).
+`proxy.ts` checked that a session existed and nothing more, and `roleCanViewPath`, which looks like the gate, was
+called by nothing — and could not have been, because it is derived from the navigation: it denies a page with no
+link (`/district`) and an admin's own `/admin/curriculum/caps-canon`. A new page with a forgotten check was open to
+every signed-in role.
+
+**What changed.**
+
+- `lib/route-access.ts` (new): one declarative table, `ROUTE_ACCESS` (prefix → roles), read top to bottom, **transcribed from
+  what the pages and handlers already enforced** — no role was granted anything new. Matching is exact and
+  case-sensitive on a segment boundary, so `/HOD`, `//hod`, `/hodx`, `/%68od` match nothing. **Default deny:** a route not
+  in the table is reachable by no role.
+- `proxy.ts` enforces it before any page or handler runs: no/invalid token → sign-in (a token without a valid role is
+  signed out, not defaulted, as in Stage 99); wrong role → a page redirects to `/` (what each page already did), a handler
+  answers 403 JSON. `/` is open to every signed-in role (it only redirects to that role's own home, so there is no loop).
+  Public paths are unchanged. The pages' own checks stay as the second layer.
+- `roleCanViewPath` is now documented as navigation-only, not an access check (kept with its tests).
+
+**One behaviour narrowed.** `/api/approvals/*` was open to any signed-in role (the decision itself is still checked against the
+actor's role assignment by the orchestrator); it is now limited to the five school roles that can have a gate waiting,
+the same set as the `/approvals` page. Guardian, learner and the platform roles can no longer even reach it.
+
+**Tests.** Web 313 pass (+115): the policy pinned per route and role (written independently of the table); lookalike paths;
+real signed session tokens through the real `proxy()`; **a filesystem walk requiring every page and handler to be public,
+`/`, or covered by a rule** (so a new page cannot be forgotten); a check that the roles each page names in its own guard equal
+its rule (so the two layers cannot drift); a check that no rule is orphaned. Mutation-checked, each failing the intended tests:
+opening `/district` to teachers (3), default-allow (18), proxy skipping the check (22), prefix without a segment boundary (10),
+a new unlisted page (1), a page edited to admit another role without the table (1). Typecheck, eslint, prettier and the production
+build (`ƒ Proxy (Middleware)`) clean.
+
+**Verified on the real production server** (`next start`, signed cookies minted with the app's own secret, no Keycloak): no cookie →
+sign-in; teacher on `/hod` → `/`; hod on `/hod` → 200; hod on `/teacher` and `/admin/env` → `/`; admin on `/admin/env` → 200;
+teacher on `/api/caps-canon` → 403 JSON; a token with no role → sign-in; unlisted `/not-a-route` → `/`; hod on `/` → `/hod`.
+Admin on `/api/caps-canon` reached the handler and returned 500 only because that run had no `DATABASE_URL`.
+
+**Not done.** Not tested with a live Keycloak login (the cookies were minted, not issued by sign-in). Multi-role precedence is
+still OQ-032. The table is hand-maintained: a route needs an entry before anyone can reach it, which the filesystem test enforces.
+
+| Exit gate item                                                         | Result      |
+| ---------------------------------------------------------------------- | ----------- |
+| One table says who reaches what; unlisted routes reach nobody          | PASS        |
+| Enforced before any page/handler, pages/handlers keep their own checks | PASS        |
+| A new page cannot be added without an access decision                  | PASS (test) |
+| Page guards and the table cannot drift                                 | PASS (test) |
+| Real production server behaves as the table says                       | PASS        |
+| Live Keycloak sign-in through the gate                                 | N/A         |
