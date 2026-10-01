@@ -5,11 +5,8 @@ import { describe, it, expect } from 'vitest';
 
 import { ROLE_HOME, ROLE_NAV } from '../../src/lib/roles.js';
 
-// Every link the shell shows must land on a page. This list is a ratchet, not an excuse:
-// these links were dead when the check was written, and are still unfixed. The test fails
-// when a NEW dead link appears, and fails again when one of these gets a page without being
-// removed here — so the list can only shrink.
-const KNOWN_DEAD = ['/hod/coverage', '/sbst/meetings', '/smt/pd', '/smt/tiers'];
+// Every link the shell shows must land on a page. A link is added together with its page,
+// not before it.
 
 const appDir = new URL('../../src/app/(shell)/', import.meta.url);
 const hasPage = (href: string): boolean =>
@@ -23,9 +20,15 @@ const hrefs = [
 ];
 
 describe('shell navigation', () => {
-  it('has no dead link beyond the known ones', () => {
-    const dead = hrefs.filter((h) => !hasPage(h)).sort();
-    expect(dead).toEqual(KNOWN_DEAD);
+  it('has no dead link', () => {
+    expect(hrefs.filter((h) => !hasPage(h))).toEqual([]);
+  });
+
+  it('has no navigation entry for the surfaces that have no data behind them yet', () => {
+    // See OQ-031. Re-add each with its page, once the data it needs exists.
+    for (const href of ['/hod/coverage', '/smt/tiers', '/smt/pd', '/sbst/meetings']) {
+      expect(hrefs).not.toContain(href);
+    }
   });
 
   it('links to the approvals queue and no longer to a tenant directory', () => {
