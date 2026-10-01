@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { approvalHref, type PendingApproval } from '@/lib/approvals';
+import { approvalHref, formatOpened, type PendingApproval } from '@/lib/approvals';
 
 interface Props {
   readonly items: readonly PendingApproval[];
@@ -58,8 +58,7 @@ export function ApprovalQueue({ items, role }: Props) {
                     {item.stepId}
                   </td>
                   <td className="px-3 py-2 text-[var(--iai-text-subtle)] whitespace-nowrap">
-                    {new Date(item.openedAt).toISOString().slice(0, 16).replace('T', ' ')}{' '}
-                    UTC
+                    {formatOpened(item.openedAt)}
                   </td>
                   <td className="px-3 py-2 font-mono text-xs text-[var(--iai-text-subtle)]">
                     {item.id.slice(0, 8)}

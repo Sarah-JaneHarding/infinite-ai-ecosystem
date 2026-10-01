@@ -41,6 +41,12 @@ export function queueFor(
     .map(toPending);
 }
 
+/** `2026-10-01 08:30 UTC` — a fixed format, so the same task reads the same on every screen
+ * and in every viewer's time zone. */
+export function formatOpened(iso: string): string {
+  return `${new Date(iso).toISOString().slice(0, 16).replace('T', ' ')} UTC`;
+}
+
 /** The detail page needs the run id as well as the task id (the decide route takes both). */
 export function approvalHref(item: {
   readonly id: string;

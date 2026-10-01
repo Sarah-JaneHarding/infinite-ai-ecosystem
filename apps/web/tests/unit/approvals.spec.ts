@@ -4,6 +4,7 @@ import type { ApprovalTaskRow } from '@infinite-ai/db';
 import {
   approvalHref,
   describeValue,
+  formatOpened,
   queueFor,
   toPending,
   viewFor,
@@ -104,5 +105,12 @@ describe('describeValue', () => {
 
   it('shows nothing, not "undefined", for a value JSON cannot represent', () => {
     expect(describeValue(undefined)).toBe('');
+  });
+});
+
+describe('formatOpened', () => {
+  it('is a fixed UTC format, whatever the viewer time zone', () => {
+    expect(formatOpened('2026-10-01T08:30:59.999Z')).toBe('2026-10-01 08:30 UTC');
+    expect(formatOpened('2026-12-31T23:59:00.000Z')).toBe('2026-12-31 23:59 UTC');
   });
 });
