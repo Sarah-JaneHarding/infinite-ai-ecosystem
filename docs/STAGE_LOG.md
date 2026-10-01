@@ -10613,3 +10613,42 @@ still OQ-032. The table is hand-maintained: a route needs an entry before anyone
 | Page guards and the table cannot drift                                 | PASS (test) |
 | Real production server behaves as the table says                       | PASS        |
 | Live Keycloak sign-in through the gate                                 | N/A         |
+
+## Stage 101 — the SMT dashboard stops inventing numbers
+
+**Task.** "Fix the sample data in the SMT dashboard."
+
+**What was there.** Three cards, all invented, none labelled: a green **"Operational — all modules running, no active
+incidents"** (nothing monitors anything, so this was a false assurance on a leadership page), a **learner distribution of
+412 / 71 / 18 (82% / 14% / 4%)** across three tiers (no tier model, rule or data exists — OQ-031), and **"3 teachers have
+pending CPTD artefacts"** (CPTD is unsourced and no PD records exist — OQ-006).
+
+**What changed.**
+
+- **Removed** the health card. No health signal exists beyond the container liveness probe, which answers "is the process up",
+  not "are the modules fine"; a status badge would claim more than anyone knows.
+- **Replaced** it with the one thing SMT can act on that is real: approvals waiting on the `smt` role in this tenant, from the
+  `approval_task` table through `loadApprovalQueue` (Stage 97), with a link to `/approvals`. Zero reads "Nothing is waiting for
+  you"; a session without a tenant reads **"—" and "unavailable"**, never a guessed zero.
+- **Kept** the tiers and PD cards, with no figures, marked "Not available yet" in plain words (no OQ numbers shown to users).
+- Tenant and actor come from the verified session only; nothing is read for an unauthenticated caller, another role, or a
+  session without both ids.
+
+**Tests.** Web 331 pass (+18): the page (scope from the session, role gating, no read without ids, zero vs unavailable) and
+the component (singular/plural, zero, unavailable, link; **none of 14 invented strings may reappear** — 412, 71, 18, the
+percentages, "Operational", "No active incidents", "3 teachers", "CPTD artefacts", Tier 1–3 — across counts 0, 1, 5 and
+unavailable). Mutation-checked: putting the invented health text back fails 2, rendering an unreadable count as zero fails 1.
+Typecheck, eslint, prettier and the production build clean.
+One process slip caught on the way: a first draft of the component spec was a `.tsx` file, which the web vitest config
+(`include: tests/unit/**/*.spec.ts`) does not collect — it would have been silently skipped. Rewritten JSX-free as `.ts` and
+confirmed collected (the run count rose by 9).
+
+**Not done.** Not viewed in a browser against a seeded SMT user with a real approval task (the dev seed creates none). Other
+panels still show sample data: the HoD console (its approvals and coverage lists), the Run Inspector, the SBST MTSS overview;
+the district roll-up and SBST casebook/EGRA/SIAS views are likely the same and were not checked in this stage.
+
+| Exit gate item                                                                     | Result      |
+| ---------------------------------------------------------------------------------- | ----------- |
+| No invented figure or status on the SMT dashboard                                  | PASS (test) |
+| The one live figure is tenant-scoped, from the session, and honest when unreadable | PASS        |
+| Browser check with a seeded approval task                                          | N/A         |
