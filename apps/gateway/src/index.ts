@@ -111,7 +111,12 @@ export const failClosedLexicon = async (tenantId: string): Promise<TenantLexicon
 
 /** A fixed system actor for the gateway's own read-only lexicon lookups — see the file
  *  header note on why this stands in for real caller identity until Stage 06. */
-export const GATEWAY_SERVICE_ACTOR_ID = '00000000-0000-0000-0000-000000000004';
+// Must satisfy the RFC-style UUID pattern `withTenant` enforces (version nibble 1-8, variant
+// 8/9/a/b): the previous value, 00000000-0000-0000-0000-000000000004, did not, so every
+// lexicon lookup — which runs before ANY provider call — was refused with
+// InvalidTenantContextError and every gateway request returned HTTP 500. The unit tests
+// mock the resolver, so nothing caught it; test/index.spec.ts now runs the real one.
+export const GATEWAY_SERVICE_ACTOR_ID = '00000000-0000-4000-8000-000000000004';
 
 /**
  * Builds the real resolver when `DB_ENCRYPTION_KEY` is configured, or `failClosedLexicon`
