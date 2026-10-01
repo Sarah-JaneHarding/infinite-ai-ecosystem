@@ -9972,3 +9972,96 @@ Stage 89: Stage 66 extended the gate through 65 and no later stage has added an 
 | `@infinite-ai/web` typecheck / test (63) / build                                      | PASS   |
 | `pnpm format:check` (whole repo) — clean                                              | PASS   |
 | Seed 180 s transaction limit exceeded under slow sandbox I/O (passes on a quiet run)  | N/A    |
+
+## Stage 90 — Real build/run of gateway, web and worker against a live data plane · 2026-10-01
+
+**Goal.** Build the three app images from their own Dockerfiles, run them against a real
+Postgres/Redis/MinIO/Keycloak stack, seed and check the L0 source data, and sign in to the
+web app as each role — the first end-to-end run of `compose.apps.yml` this repository has
+had. Run in a sandbox: Linux, Docker Engine 29.3.1 started inside the session, host
+networking, throwaway secrets generated outside the repository (rule 7).
+
+**Verified working.**
+
+- `docker build` of `apps/gateway`, `apps/worker`, `apps/web` from the unmodified
+  Dockerfiles: all three succeed (gateway 2.8 GB, built in 1 m 49 s; worker 2.8 GB; web 3.02 GB). The sandbox needed its TLS-intercepting proxy's CA
+  trusted inside the build, done with a sandbox-only `node:22` base layer — no Dockerfile
+  was edited.
+- Postgres, Redis, MinIO and Keycloak start from `compose.dev.yml`. Migrations apply as
+  `migrator`; `db:seed` creates the three dev tenants.
+- Source seeds and ratification (as `app_rw`) succeed. Direct SQL on `brain_constitution`
+  shows, for each of the three tenants: 21 `CAPS_CANON`, 137 `ATP_CALENDAR`, 1 `TEMPLATE`,
+  206 `AGE_APPROPRIATENESS` (all version 1; phases 69 FOUNDATION / 62 INTERMEDIATE / 75
+  SENIOR). All 1,095 candidates are in `RETENTION_SCHEDULED`.
+- Gateway `/health` and worker `/health` return HTTP 200 `{"status":"ok"}` once configured
+  as below.
+- Sign-in through Keycloak works for all nine dev logins: each gets a session carrying its
+  own role, and eight of the nine role landing pages return HTTP 200 with content. The
+  web client-secret substitution in `realm.json` works against a live container.
+
+**Fixed in this change.** `compose.dev.yml` never passed `SEED_USER_PASSWORD` into the
+Keycloak container, although `realm.json` references it for all nine users. Keycloak
+therefore checked the literal text `${SEED_USER_PASSWORD}` against the realm's password
+policy, failed the import with `invalidPasswordMinLowerCaseCharsMessage`, and restarted
+in a loop (41 restarts seen) on every fresh clone. One line added; after it, 0 restarts
+and the realm discovery document returns 200.
+
+**Found, not fixed here — each needs a decision or its own change.**
+
+1. `compose.apps.yml` passes `OTEL_EXPORTER_OTLP_ENDPOINT: ${…:-}`, i.e. an empty string
+   when unset. `packages/config`'s `z.string().url().optional()` accepts absent but
+   rejects `""`, so the worker exits with `EnvironmentValidationError`. Observed on the
+   worker; the gateway and web receive the same empty values. A copied `.env.example`
+   has the same empty values. The strict schema is deliberate (other optional fields,
+   `DB_ENCRYPTION_KEY` among them, should not silently treat `""` as unset), so the
+   remedy — omit the key from compose, or treat empty as unset for OTEL only — is a
+   design choice.
+2. The gateway refuses to boot unless every provider named in any fallback chain of
+   `apps/gateway/routing.json` has a credential pool: `anthropic`, `openai`, `google` and
+   `local` (47 routes). `compose.apps.yml` passes only `ANTHROPIC_API_KEYS` — and
+   requires it non-empty, where `GatewayEnvSchema` and `docs/DEV_SETUP.md` call it
+   optional — and does not pass `DB_ENCRYPTION_KEY`, without which the gateway logs that
+   its PII guard "will fail closed on every request". Sandbox boot used clearly-labelled
+   placeholder values for the other providers; any real model call fails.
+3. The web image serves no working client JavaScript. `/sign-in` is statically
+   prerendered (`x-nextjs-prerender: 1`), so none of its nine `<script>` tags carries a
+   nonce, while `apps/web/src/proxy.ts` sets `script-src 'nonce-…' 'strict-dynamic'`.
+   Nothing in `apps/web/src` reads the `x-nonce` request header, and the CSP is set only
+   on the response. Chromium blocks every script and the sign-in button does nothing.
+   Passing in `next dev` (dynamic rendering) is consistent with OQ-025 having been
+   verified there. The sign-in checks above ran with the test browser's CSP enforcement
+   switched off (Playwright `bypassCSP`); the application was not modified.
+4. The web image's production stylesheet is unprocessed: the served CSS contains a raw
+   Tailwind `@theme` block and none of the utility classes the pages use (for example
+   `w-full`), so every page renders as unstyled HTML. Not yet root-caused;
+   `apps/web/postcss.config.ts` combined with `next build --webpack` is the first thing to
+   check.
+5. `apps/web` has no `/api/health` route and `proxy.ts` redirects every non-static path to
+   sign-in, so the compose healthcheck (`curl -sf …/api/health`) receives a 307 and passes
+   regardless of the app's state.
+6. Keycloak's compose healthcheck runs `curl`, which the image does not ship, so it
+   reports `unhealthy` permanently (the realm itself serves 200). Noted in
+   `docs/DEV_SETUP.md`.
+7. `/platform/tenants` is a nav entry (`apps/web/src/lib/roles.ts`) and is listed for
+   `platform_admin` in `docs/DEV_SETUP.md`, but no page exists for it: HTTP 404.
+8. The Teacher Studio curriculum map is hardcoded sample data in
+   `apps/web/src/components/teacher/TeacherStudio.tsx`; no `brain_constitution` row
+   contains its text. The seeded L0 data is not what that screen shows.
+
+**Not exercised.** Any model call (no real provider credentials were supplied, and none
+was invented), agent runs, the age-appropriateness judge, Langfuse, and a Docker Desktop
+network layout (this run used host networking). Calibration of the judge remains blocked
+as OQ-015/OQ-016 record: it needs a human-labelled dataset and gateway credentials.
+
+| Exit gate item                                                                  | Result |
+| ------------------------------------------------------------------------------- | ------ |
+| Gateway, worker and web images build from their unmodified Dockerfiles          | PASS   |
+| Migrations, base seed, source seeds and ratification; counts confirmed with SQL | PASS   |
+| Gateway and worker `/health` return 200 in a running stack                      | PASS   |
+| Keycloak realm imports and stays up (after the one-line fix)                    | PASS   |
+| All nine dev logins sign in with the correct role                               | PASS   |
+| Eight of nine role landing pages load; `/platform/tenants` is 404               | N/A    |
+| Web client JS runs under the app's own CSP                                      | FAIL   |
+| Web CSS is built (Tailwind utilities present)                                   | FAIL   |
+| `compose.apps.yml` boots the gateway/worker with only the variables it passes   | FAIL   |
+| Any model call / agent run / judge verdict                                      | N/A    |

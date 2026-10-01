@@ -91,6 +91,13 @@ services:
       # realm file references — apps/web's AUTH_KEYCLOAK_SECRET must match the web one.
       KEYCLOAK_WEB_CLIENT_SECRET: ${KEYCLOAK_WEB_CLIENT_SECRET:?set KEYCLOAK_WEB_CLIENT_SECRET in your local .env}
       KEYCLOAK_WORKER_CLIENT_SECRET: ${KEYCLOAK_WORKER_CLIENT_SECRET:?set KEYCLOAK_WORKER_CLIENT_SECRET in your local .env}
+      # Initial password for the nine dev-login users in realm.json (temporary: true, so
+      # Keycloak forces a change on first login). Without this the realm file's
+      # ${SEED_USER_PASSWORD} placeholder is never resolved, the literal text is checked
+      # against the realm's password policy, and the import fails with
+      # invalidPasswordMinLowerCaseCharsMessage — Keycloak then restart-loops.
+      # Must satisfy that policy: length 12+, upper, lower, digit and special character.
+      SEED_USER_PASSWORD: ${SEED_USER_PASSWORD:?set SEED_USER_PASSWORD in your local .env}
     ports:
       - '8180:8080'
     volumes:
