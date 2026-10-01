@@ -395,3 +395,22 @@ role — which is a security-boundary decision, not a page. Nothing was weakened
 it. **Needs a human:** whether a tenant directory is wanted, which fields it may show, and
 which role and policy may read it. Until then, `platform_admin` reaches the Run Inspector
 (still sample data) and the environment docs.
+
+### OQ-031 — four navigation entries had no page and no data behind them · 2026-10-01
+
+`/hod/coverage`, `/smt/tiers`, `/smt/pd` and `/sbst/meetings` were linked from the shell but never
+existed. They were removed from the navigation rather than built, because each needs something this
+codebase does not have — and building a page over invented data or invented rules is how the
+approval screen ended up showing a hardcoded lesson plan (Stage 97). The Prisma schema has no model
+for meetings, PD/CPTD, support tiers or curriculum-coverage progress.
+
+| Entry         | What a real page needs                                                                                                                                                                                                        | Why it was not guessed                                                                                                                                                                                          |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| HoD Coverage  | A record of what has actually been taught or assessed against each ATP topic, per class. The ATP itself (what _should_ be taught when) is stored and shown in the Teacher Studio; progress against it is not stored anywhere. | No progress data exists. A percentage from nothing would be invented.                                                                                                                                           |
+| SMT Tiers     | A rule for placing a learner in a support tier, and an aggregation rule for what a school-level view may show. The sample dashboard uses a generic 80/15/5 RTI split.                                                         | Tier placement is a SIAS/MTSS process decision (OQ list: "never invent SIAS process steps"), and a school-wide count of identifiable support cases is the aggregation question `mod-05-suppression` exists for. |
+| SMT PD        | The CPTD point-value schedule and the PD records it would total.                                                                                                                                                              | CPTD point values are unsourced (OQ-006). Never invented.                                                                                                                                                       |
+| SBST Meetings | A meeting/minutes record and the SIAS meeting steps it supports. `packages/analytics` models a `MeetingEntry` inside a learner case file, but nothing persists one.                                                           | No stored data; SIAS steps are not to be guessed.                                                                                                                                                               |
+
+**Needs a human:** which of these are wanted, and for each the missing source (a progress-capture
+design, the SIAS/MTSS tier rule, the SACE schedule, a minutes record). Each can be re-added to
+`ROLE_NAV` together with its page; the navigation test then requires the page to exist.

@@ -53,17 +53,9 @@ export const ROLE_NAV: Record<Role, readonly NavLink[]> = {
   hod: [
     { label: 'Console', href: '/hod' },
     { label: 'Approvals', href: '/approvals' },
-    { label: 'Coverage', href: '/hod/coverage' },
   ],
-  smt: [
-    { label: 'Dashboard', href: '/smt' },
-    { label: 'Tiers', href: '/smt/tiers' },
-    { label: 'PD', href: '/smt/pd' },
-  ],
-  sbst: [
-    { label: 'Casebook', href: '/sbst' },
-    { label: 'Meetings', href: '/sbst/meetings' },
-  ],
+  smt: [{ label: 'Dashboard', href: '/smt' }],
+  sbst: [{ label: 'Casebook', href: '/sbst' }],
   admin: [
     { label: 'Prompts', href: '/admin/prompts' },
     { label: 'School Setup', href: '/admin/setup' },

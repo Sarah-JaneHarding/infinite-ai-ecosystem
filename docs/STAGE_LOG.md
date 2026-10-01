@@ -10492,3 +10492,30 @@ HoD console and ApprovalDetail "Edit & approve" (records EDITED with no diff) ar
 | Detail shows the stored artefact, never a mock; refuses another role/run/tenant | PASS                        |
 | `/platform/tenants` no longer linked; reason recorded (OQ-030)                  | PASS                        |
 | Browser check with a seeded task                                                | N/A                         |
+
+## Stage 98 — the other four dead links
+
+**Task.** "Fix the other four dead links": `/hod/coverage`, `/smt/tiers`, `/smt/pd`, `/sbst/meetings`.
+
+**Finding.** None had a page, and none has data behind it: the Prisma schema has no model for meetings,
+PD/CPTD, support tiers or curriculum-coverage progress (checked all 45 models). Each page would have had to
+be sample data presented as a feature, or an invented rule (a tier placement, a CPTD value, SIAS meeting
+steps) — which CLAUDE.md forbids and Stage 97 showed the cost of.
+
+**What changed.** The four entries are removed from `ROLE_NAV`. OQ-031 records, per entry, what a real page
+needs and why it was not guessed. The navigation test's known-dead ratchet list is now empty and was
+replaced by a plain "no dead link" assertion, plus an assertion that the four stay out until their data
+exists. Mutation-checked: putting `/hod/coverage` back fails both.
+
+**Tests.** Web 145 pass. Direct URLs to the four routes were already 404. (`roleCanViewPath`, which is derived
+from the navigation, is not called by the proxy or any page — only by its own tests — so this change has no
+access-control effect; each page still checks its own role.)
+
+**Not done.** The pages themselves — blocked on OQ-031, not on effort. The SMT dashboard, SBST views, HoD
+console panels and Run Inspector are still sample data.
+
+| Exit gate item                           | Result       |
+| ---------------------------------------- | ------------ |
+| Every shell link lands on a page         | PASS         |
+| A dead link cannot be re-added unnoticed | PASS         |
+| The four pages built                     | N/A — OQ-031 |
