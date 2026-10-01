@@ -33,6 +33,12 @@ importers:
       '@infinite-ai/evals':
         specifier: workspace:*
         version: link:packages/evals
+      '@infinite-ai/guardrails':
+        specifier: workspace:*
+        version: link:packages/guardrails
+      '@infinite-ai/prompts':
+        specifier: workspace:*
+        version: link:packages/prompts
       '@infinite-ai/warehouse':
         specifier: workspace:*
         version: link:packages/warehouse
