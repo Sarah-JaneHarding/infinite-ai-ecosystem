@@ -1,31 +1,25 @@
-import { ModularCard } from '@infinite-ai/design-system';
-import { StatusPill } from '@infinite-ai/design-system';
 import Link from 'next/link';
+import { ModularCard } from '@infinite-ai/design-system';
 
-const PENDING_APPROVALS = [
-  {
-    id: 'a1',
-    type: 'Lesson plan',
-    teacher: 'Ms Nkosi',
-    subject: 'Mathematics Gr 8',
-    status: 'pending' as const,
-  },
-  {
-    id: 'a2',
-    type: 'Assessment',
-    teacher: 'Mr Dlamini',
-    subject: 'Physics Gr 11',
-    status: 'pending' as const,
-  },
-];
+import { approvalHref, formatOpened, type PendingApproval } from '@/lib/approvals';
 
-const COVERAGE = [
-  { subject: 'Mathematics', complete: 72, total: 100 },
-  { subject: 'Physics', complete: 58, total: 100 },
-  { subject: 'Life Sci.', complete: 83, total: 100 },
-];
+interface Props {
+  /** Undecided approvals waiting on the HoD role in this tenant, oldest first; `null` when
+   * they could not be read (the session carries no tenant), which is not the same as none. */
+  readonly pending: readonly PendingApproval[] | null;
+}
 
-export function HodConsole() {
+/** How many to list on the console; the rest are one click away on /approvals. */
+const SHOWN = 5;
+
+// Everything here is read from the school's own records, or says plainly that it cannot be.
+// There are no placeholder rows: a console that lists a teacher who does not exist, or a
+// coverage percentage nobody measured, gets believed.
+
+export function HodConsole({ pending }: Props) {
+  const shown = pending?.slice(0, SHOWN) ?? [];
+  const more = pending === null ? 0 : pending.length - shown.length;
+
   return (
     <section aria-labelledby="hod-heading">
       <h1
@@ -42,59 +36,68 @@ export function HodConsole() {
           eyebrow="Approvals"
           title="Pending review"
           emoji="✅"
-          status={`${PENDING_APPROVALS.length} items`}
+          status={
+            pending === null
+              ? '—'
+              : `${pending.length} ${pending.length === 1 ? 'item' : 'items'}`
+          }
         >
-          <ul className="space-y-3" role="list">
-            {PENDING_APPROVALS.map((item) => (
-              <li key={item.id} className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm font-medium text-[var(--iai-text)]">
-                    {item.type}
-                  </p>
-                  <p className="text-xs text-[var(--iai-text-subtle)]">
-                    {item.teacher} · {item.subject}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <StatusPill status={item.status} />
+          {pending === null ? (
+            <p className="text-sm text-[var(--iai-text-subtle)]">
+              The list is unavailable: your session has no school attached.
+            </p>
+          ) : pending.length === 0 ? (
+            <p className="text-sm text-[var(--iai-text-subtle)]">
+              Nothing is waiting for your decision.
+            </p>
+          ) : (
+            <>
+              <ul className="space-y-3" role="list">
+                {shown.map((item) => (
+                  <li key={item.id} className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-medium text-[var(--iai-text)]">
+                        {item.stepId}
+                      </p>
+                      <p className="text-xs text-[var(--iai-text-subtle)]">
+                        Opened {formatOpened(item.openedAt)}
+                      </p>
+                    </div>
+                    <Link
+                      href={approvalHref(item)}
+                      className="text-xs text-[var(--iai-primary)] hover:underline"
+                    >
+                      Review
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {more > 0 && (
+                <p className="mt-3 text-xs text-[var(--iai-text-subtle)]">
+                  and {more} more.{' '}
                   <Link
                     href="/approvals"
-                    className="text-xs text-[var(--iai-primary)] hover:underline"
+                    className="text-[var(--iai-primary)] hover:underline"
                   >
-                    Review
+                    See all approvals
                   </Link>
-                </div>
-              </li>
-            ))}
-          </ul>
+                </p>
+              )}
+            </>
+          )}
         </ModularCard>
 
-        <ModularCard hue="blue" eyebrow="Coverage" title="Curriculum progress" emoji="📊">
-          <ul className="space-y-3" role="list">
-            {COVERAGE.map((item) => (
-              <li key={item.subject}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="font-medium text-[var(--iai-text)]">
-                    {item.subject}
-                  </span>
-                  <span className="text-[var(--iai-text-subtle)]">{item.complete}%</span>
-                </div>
-                <div
-                  className="h-2 rounded-full bg-[var(--iai-bg-subtle)] border border-[var(--iai-border)]"
-                  role="progressbar"
-                  aria-valuenow={item.complete}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label={`${item.subject} curriculum coverage`}
-                >
-                  <div
-                    className="h-full rounded-full bg-[var(--iai-teal)]"
-                    style={{ width: `${item.complete}%` }}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
+        <ModularCard
+          hue="blue"
+          eyebrow="Coverage"
+          title="Curriculum progress"
+          emoji="📊"
+          status="Not available yet"
+        >
+          <p className="text-sm text-[var(--iai-text-subtle)]">
+            Curriculum coverage is not tracked yet, so there is no progress to show. The
+            Annual Teaching Plans themselves are in the Teacher Studio.
+          </p>
         </ModularCard>
       </div>
     </section>

@@ -10652,3 +10652,47 @@ the district roll-up and SBST casebook/EGRA/SIAS views are likely the same and w
 | No invented figure or status on the SMT dashboard                                  | PASS (test) |
 | The one live figure is tenant-scoped, from the session, and honest when unreadable | PASS        |
 | Browser check with a seeded approval task                                          | N/A         |
+
+## Stage 102 — the HoD console stops inventing rows
+
+**Task.** "Fix the sample data in the HoD console."
+
+**What was there.** Two cards of invented content, unlabelled:
+
+- **"Pending review"**: _Lesson plan — Ms Nkosi — Mathematics Gr 8_ and _Assessment — Mr Dlamini — Physics Gr 11_. Two
+  invented **people** (named, as if real staff), and a **Grade 11** physics item in a product that covers primary school
+  (Grades R–7). Their "Review" links went to ids that are not tasks, and (until Stage 97) to a detail page that showed a
+  hardcoded lesson plan whatever the id.
+- **"Curriculum progress"**: Mathematics 72%, Physics 58%, Life Sci. 83%, drawn as progress bars. Nothing measures
+  curriculum coverage (OQ-031), and Physics / Life Sciences are not primary subjects.
+
+**What changed.**
+
+- Pending review now lists the school's real undecided approvals waiting on the `hod` role (`approval_task`, via
+  `loadApprovalQueue`): the gate's step name and when it was opened, each linking to **its own** review page with the run id
+  that page requires. At most five are shown, with "and N more" and a link to `/approvals`. Empty reads "Nothing is
+  waiting for your decision"; a session with no tenant reads **"—" / unavailable**, never a guessed empty list. No artefact
+  content is shown on the console (the list carries none), and no staff names (the task row holds none).
+- Curriculum progress keeps its place as a card with **no figure** and says "Not available yet" and why; it points to the
+  Annual Teaching Plans in the Teacher Studio, which are real.
+- Tenant and actor from the verified session only; nothing read for an unauthenticated caller, another role, or a session
+  without both ids.
+- `formatOpened` (fixed UTC format) shared by the console and the approvals queue.
+
+**Tests.** Web 352 pass (+21): the page (scope from the session, role gating, no read without ids, empty vs unavailable),
+the component (real rows with their own run-id links, singular/plural, the five-row cap and "more", empty, unavailable, no
+figure for coverage; **none of 12 invented strings may reappear** — both names, Physics, Life Sci, Gr 8, Gr 11,
+Mathematics, the three percentages, "Lesson plan", any progress bar), and `formatOpened`. Mutation-checked: invented coverage
+text back fails 5, a link without the run id fails 1, removing the cap fails 1, an unreadable list shown as empty fails 2.
+Typecheck, eslint, prettier and the production build (`ƒ /hod`) clean.
+
+**Not done.** Not viewed in a browser against a seeded HoD user with real approval tasks (the dev seed creates none, and no
+pipeline in the dev stack opens a gate). The Run Inspector and the SBST MTSS overview still show sample data; the district
+roll-up and the other SBST views are likely the same and were not checked.
+
+| Exit gate item                                                                 | Result      |
+| ------------------------------------------------------------------------------ | ----------- |
+| No invented person, grade, subject or percentage on the HoD console            | PASS (test) |
+| Each listed item links to its own review page, tenant-scoped, from the session | PASS        |
+| An unreadable list is shown as unavailable, never as empty                     | PASS        |
+| Browser check with a seeded approval task                                      | N/A         |
