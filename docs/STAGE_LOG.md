@@ -10382,3 +10382,29 @@ human-labelled set (OQ-015/OQ-016) before its verdicts can be scored.
 | Gateway not reachable from other hosts; web and worker still reach it          | PASS   |
 | Blank-line trap in the local `source .env` flow reproduced and avoided         | PASS   |
 | A successful model completion / a judge verdict                                | N/A    |
+
+## Stage 95 — labelled set for the age-appropriateness judge (seed)
+
+**Task.** "Build the labelled set from the 206 clauses." Done in part, and honestly smaller than the
+ask: the 206 clauses were read and 14 were found to state something an output can be checked against.
+
+**What changed.** `packages/guardrails/calibration/age-appropriateness/` (`cases.json`,
+`coverage.json`, README) and `src/age-appropriateness-labelled-set.ts` (schema + `checkLabelledSet`).
+31 cases: a violation and a conformant twin for each of 14 clauses, plus 3 controls for the judge's
+contract (empty clauses, uncovered concern, empty output). Flagged, not tested: 3 ambiguous clauses
+and one conflict — Grade R jigsaw benchmarks 026 (5/10/10-20/20+ pieces) and 051 (6/12/18/24) disagree.
+
+**What this is not.** Not human labels: every case is `constructed` and `unreviewed`, and the schema
+makes a reviewer mandatory once the status changes. It does not meet OQ-016's 50 human-labelled
+cases, and no scoring or threshold was added. The other ~189 clauses are unclassified rather than
+declared untestable.
+
+**Tests.** 15 (`age-appropriateness-labelled-set.spec.ts`): the shipped set is consistent with the
+real 206 clauses; schema rules (a violation cannot expect a pass, controls cite nothing, reviewer iff
+reviewed); each `checkLabelledSet` problem is reported. Guardrails coverage stays above 95%.
+
+| Exit gate item                                                  | Result |
+| --------------------------------------------------------------- | ------ |
+| Every cited clause exists, matches the case's phase, is twinned | PASS   |
+| Contract controls present                                       | PASS   |
+| 50+ human-labelled cases (OQ-016)                               | N/A    |

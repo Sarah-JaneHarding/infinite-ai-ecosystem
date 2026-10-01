@@ -1,0 +1,591 @@
+[
+  {
+    "id": "aa-043-v",
+    "kind": "violation",
+    "phase": "FOUNDATION",
+    "grade": "2",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 2 number-sense warm-up. Put all counters and pencils away. Every learner must work out 14 + 9 and 23 - 8 in their head and call out the answer. No counters, no paper.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-043"],
+    "construction": "Contradicts age-appropriateness-043: \"never force learners into mental calculations they cannot handle; writing materials and/or physical counters must always be available\". ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-043-c",
+    "kind": "conformant",
+    "phase": "FOUNDATION",
+    "grade": "2",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 2 number-sense warm-up. Ask 14 + 9 and 23 - 8 as mental sums. Keep counters and paper on every desk so any learner who needs them can use them, and let those learners show the answer with counters.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-043"],
+    "construction": "Same topic as aa-043-v, within age-appropriateness-043: \"never force learners into mental calculations they cannot handle; writing materials and/or physical counters must always be available\".",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-097-v",
+    "kind": "violation",
+    "phase": "INTERMEDIATE",
+    "grade": "5",
+    "subject": "Natural Sciences and Technology",
+    "clauseSet": "phase",
+    "output": "Grade 5 investigation: dissolving. Put learners in groups of seven. Each group shares one set of beakers, one spirit burner and one tray while all seven take turns at the bench.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-097"],
+    "construction": "Contradicts age-appropriateness-097: \"no more than three learners should share investigation space and equipment at a time\". ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-097-c",
+    "kind": "conformant",
+    "phase": "INTERMEDIATE",
+    "grade": "5",
+    "subject": "Natural Sciences and Technology",
+    "clauseSet": "phase",
+    "output": "Grade 5 investigation: dissolving. Put learners in groups of three. Each group has its own beakers and tray. Learners rotate the roles of measurer, stirrer and recorder.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-097"],
+    "construction": "Same topic as aa-097-v, within age-appropriateness-097: \"no more than three learners should share investigation space and equipment at a time\".",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-094-v",
+    "kind": "violation",
+    "phase": "INTERMEDIATE",
+    "grade": "6",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 6 data handling. A bag has 3 red and 5 blue counters. Calculate the probability of drawing a red counter and write it as a fraction and as a percentage.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-094"],
+    "construction": "Contradicts age-appropriateness-094: learners are \"not expected to calculate the probability of events\"; work is capped at listing, counting and predicting outcomes from repeated trials. ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-094-c",
+    "kind": "conformant",
+    "phase": "INTERMEDIATE",
+    "grade": "6",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 6 data handling. Toss a coin 20 times and tally the heads and tails. List all the possible outcomes. Predict what you expect in the next 20 tosses and compare.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-094"],
+    "construction": "Same topic as aa-094-v, within age-appropriateness-094: learners are \"not expected to calculate the probability of events\"; work is capped at listing, counting and predicting outcomes from repeated trials.",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-091-v",
+    "kind": "violation",
+    "phase": "INTERMEDIATE",
+    "grade": "5",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 5 number properties. Define the commutative property and the associative property. In your test, name the property used in each equation and write its formal definition.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-091"],
+    "construction": "Contradicts age-appropriateness-091: learners are \"NOT expected to know or use formal terminology\" such as commutative or associative property. ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-091-c",
+    "kind": "conformant",
+    "phase": "INTERMEDIATE",
+    "grade": "5",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 5 number properties. Show that 6 x 4 and 4 x 6 give the same answer using an array. Explain in your own words that you can swap the numbers when you multiply. No property names are needed.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-091"],
+    "construction": "Same topic as aa-091-v, within age-appropriateness-091: learners are \"NOT expected to know or use formal terminology\" such as commutative or associative property.",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-113-v",
+    "kind": "violation",
+    "phase": "INTERMEDIATE",
+    "grade": "5",
+    "subject": "Social Sciences",
+    "clauseSet": "phase",
+    "output": "Grade 5 history task. Write a four-page essay with an introduction, five connected body paragraphs and a conclusion on the life of Nelson Mandela.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-113"],
+    "construction": "Contradicts age-appropriateness-113: formal writing is capped at paragraph level; connected extended passages are introduced \"from Grade 7\". ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-113-c",
+    "kind": "conformant",
+    "phase": "INTERMEDIATE",
+    "grade": "5",
+    "subject": "Social Sciences",
+    "clauseSet": "phase",
+    "output": "Grade 5 history task. Write one paragraph of 5-6 sentences about why Nelson Mandela was important. Use the sentence starters on the board.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-113"],
+    "construction": "Same topic as aa-113-v, within age-appropriateness-113: formal writing is capped at paragraph level; connected extended passages are introduced \"from Grade 7\".",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-096-v",
+    "kind": "violation",
+    "phase": "INTERMEDIATE",
+    "grade": "4",
+    "subject": "Natural Sciences and Technology",
+    "clauseSet": "phase",
+    "output": "Grade 4 leaf survey. Strip as many leaves as you like from the school hedge to compare them. Keep the snails you find in a tin for the week to watch them.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-096"],
+    "construction": "Contradicts age-appropriateness-096: learners \"should not strip leaves off bushes just to compare them\", and small animals must be cared for and released unharmed where found. ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-096-c",
+    "kind": "conformant",
+    "phase": "INTERMEDIATE",
+    "grade": "4",
+    "subject": "Natural Sciences and Technology",
+    "clauseSet": "phase",
+    "output": "Grade 4 leaf survey. Compare leaves that have already fallen. Look at snails in the garden with a hand lens, then put each one back where you found it.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-096"],
+    "construction": "Same topic as aa-096-v, within age-appropriateness-096: learners \"should not strip leaves off bushes just to compare them\", and small animals must be cared for and released unharmed where found.",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-151-v",
+    "kind": "violation",
+    "phase": "SENIOR",
+    "grade": "7",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 7 exponents test. Question 4: use the laws of exponents to show why 5^0 = 1, then simplify (3x)^0 + 7^0 and state the rule for any base raised to the power 0.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-151"],
+    "construction": "Contradicts age-appropriateness-151: \"learners do not need to know the rule for raising a number to the power 0. This will only be introduced in Grade 8\". ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-151-c",
+    "kind": "conformant",
+    "phase": "SENIOR",
+    "grade": "7",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 7 exponents test. Question 4: write 2 x 2 x 2 x 2 as a power and calculate 3^4 and 10^3. Answers are whole numbers only.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-151"],
+    "construction": "Same topic as aa-151-v, within age-appropriateness-151: \"learners do not need to know the rule for raising a number to the power 0. This will only be introduced in Grade 8\".",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-152-v",
+    "kind": "violation",
+    "phase": "SENIOR",
+    "grade": "7",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 7 financial maths. Use the formula I = P x r x t to calculate the simple interest on R4 500 at 8% per year for 3 years. Show the substitution.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-152"],
+    "construction": "Contradicts age-appropriateness-152: Grade 7 learners are \"not expected to use formulae for calculating simple interest\". ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-152-c",
+    "kind": "conformant",
+    "phase": "SENIOR",
+    "grade": "7",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 7 financial maths. Thandi saves R100 a month and her aunt adds R20 every month. How much does she have after 6 months? Work it out with a table, no formula needed.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-152"],
+    "construction": "Same topic as aa-152-v, within age-appropriateness-152: Grade 7 learners are \"not expected to use formulae for calculating simple interest\".",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-173-v",
+    "kind": "violation",
+    "phase": "SENIOR",
+    "grade": "8",
+    "subject": "Technology",
+    "clauseSet": "phase",
+    "output": "Grade 8 electricity worksheet. A circuit has a 12 V supply and a current of 3 A. Calculate the resistance using R = V/I. Then calculate the current when the resistance doubles.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-173"],
+    "construction": "Contradicts age-appropriateness-173: Ohm's Law is introduced \"qualitatively - no calculations\" in Grade 8; R = V/I calculations come in Grade 9. ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-173-c",
+    "kind": "conformant",
+    "phase": "SENIOR",
+    "grade": "8",
+    "subject": "Technology",
+    "clauseSet": "phase",
+    "output": "Grade 8 electricity practical. Add a second cell to the circuit and watch the bulb. Write a sentence on what happens to the current when more cells are added. No calculations.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-173"],
+    "construction": "Same topic as aa-173-v, within age-appropriateness-173: Ohm's Law is introduced \"qualitatively - no calculations\" in Grade 8; R = V/I calculations come in Grade 9.",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-174-v",
+    "kind": "violation",
+    "phase": "SENIOR",
+    "grade": "9",
+    "subject": "Technology",
+    "clauseSet": "phase",
+    "output": "Grade 9 task. Design your own electronic circuit for an automatic night light. Choose the components, calculate the resistor values and draw the full circuit diagram.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-174"],
+    "construction": "Contradicts age-appropriateness-174: \"Learners will not be expected to design an electronic circuit\"; they assemble a given circuit and design an application for it. ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-174-c",
+    "kind": "conformant",
+    "phase": "SENIOR",
+    "grade": "9",
+    "subject": "Technology",
+    "clauseSet": "phase",
+    "output": "Grade 9 task. Assemble the given light-sensor circuit from the diagram. Then design a suitable application for it, such as a night light for a passage, and describe how it would be used.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-174"],
+    "construction": "Same topic as aa-174-v, within age-appropriateness-174: \"Learners will not be expected to design an electronic circuit\"; they assemble a given circuit and design an application for it.",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-162-v",
+    "kind": "violation",
+    "phase": "SENIOR",
+    "grade": "8",
+    "subject": "Natural Science",
+    "clauseSet": "phase",
+    "output": "Grade 8 static electricity test. Memorise the table of materials: write down which charge glass, wool, silk and rubber each acquire when rubbed together. Ten marks.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-162"],
+    "construction": "Contradicts age-appropriateness-162: \"Learners do not need to memorise what charge the materials acquire when rubbed together\". ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-162-c",
+    "kind": "conformant",
+    "phase": "SENIOR",
+    "grade": "8",
+    "subject": "Natural Science",
+    "clauseSet": "phase",
+    "output": "Grade 8 static electricity test. Rub a balloon on your hair. Explain in your own words that charge is transferred by friction and why the balloon then sticks to the wall.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-162"],
+    "construction": "Same topic as aa-162-v, within age-appropriateness-162: \"Learners do not need to memorise what charge the materials acquire when rubbed together\".",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-164-v",
+    "kind": "violation",
+    "phase": "SENIOR",
+    "grade": "7",
+    "subject": "Social Science",
+    "clauseSet": "phase",
+    "output": "Grade 7 geography task. Using the 1:50 000 topographic map extract, give the grid reference of the school and calculate the distance from the station to the river.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-164"],
+    "construction": "Contradicts age-appropriateness-164: Grade 7 learners are \"not expected to work with 1: 50 000 topographical maps or orthophoto maps\". ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-164-c",
+    "kind": "conformant",
+    "phase": "SENIOR",
+    "grade": "7",
+    "subject": "Social Science",
+    "clauseSet": "phase",
+    "output": "Grade 7 geography task. Draw a plan of your classroom to scale, then use a map of your town to find the school and the nearest river.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-164"],
+    "construction": "Same topic as aa-164-v, within age-appropriateness-164: Grade 7 learners are \"not expected to work with 1: 50 000 topographical maps or orthophoto maps\".",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-133-v",
+    "kind": "violation",
+    "phase": "SENIOR",
+    "grade": "8",
+    "subject": "First Additional Language",
+    "clauseSet": "phase",
+    "output": "Grade 8 poetry task. Write a critical essay applying a post-colonial or feminist theoretical framework to the poem and deconstruct its ideology.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-133"],
+    "construction": "Contradicts age-appropriateness-133: literary interpretation \"is essentially a university level activity\" and learners \"do not have to learn this advanced level of interpretation\". ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-133-c",
+    "kind": "conformant",
+    "phase": "SENIOR",
+    "grade": "8",
+    "subject": "First Additional Language",
+    "clauseSet": "phase",
+    "output": "Grade 8 poetry task. Pick two lines you like. Say what the poet does with words to be clever or imaginative, and how it made you feel.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-133"],
+    "construction": "Same topic as aa-133-v, within age-appropriateness-133: literary interpretation \"is essentially a university level activity\" and learners \"do not have to learn this advanced level of interpretation\".",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-135-v",
+    "kind": "violation",
+    "phase": "SENIOR",
+    "grade": "9",
+    "subject": "First Additional Language",
+    "clauseSet": "phase",
+    "output": "Grade 9 oral task. After each prepared speech the class votes anonymously for the worst speaker, whose name goes on the board. Laughing at mistakes is part of the game.",
+    "expectedAppropriate": false,
+    "drivingClauses": ["age-appropriateness-135"],
+    "construction": "Contradicts age-appropriateness-135: learners must be assured of \"no mockery or ridicule\" when speaking, with teacher support at all times. ",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-135-c",
+    "kind": "conformant",
+    "phase": "SENIOR",
+    "grade": "9",
+    "subject": "First Additional Language",
+    "clauseSet": "phase",
+    "output": "Grade 9 oral task. After each prepared speech the class says one thing that worked well. The teacher adds one suggestion in private. Mistakes are expected and nobody is laughed at.",
+    "expectedAppropriate": true,
+    "drivingClauses": ["age-appropriateness-135"],
+    "construction": "Same topic as aa-135-v, within age-appropriateness-135: learners must be assured of \"no mockery or ridicule\" when speaking, with teacher support at all times.",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-ctl-empty-clauses",
+    "kind": "control",
+    "phase": "INTERMEDIATE",
+    "grade": "5",
+    "subject": "Mathematics",
+    "clauseSet": "empty",
+    "output": "Grade 5 task. Write a 600-word essay with at least ten connected paragraphs.",
+    "expectedAppropriate": true,
+    "drivingClauses": [],
+    "construction": "Contract: with no clauses supplied the judge has nothing to judge against and must return appropriate: true, saying so. The same text is a violation of age-appropriateness-113 when clauses are supplied (aa-113-v).",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-ctl-uncovered",
+    "kind": "control",
+    "phase": "FOUNDATION",
+    "grade": "1",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "Grade 1 lesson on adding to 10. Learners practise on whiteboards. The lesson starts at 07:30 and finishes at 07:55 with a tidy-up song.",
+    "expectedAppropriate": true,
+    "drivingClauses": [],
+    "construction": "Contract: a concern no supplied clause covers (the scheduled time of day) must not be failed on general knowledge; the judge returns true noting the clauses did not cover it.",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  },
+  {
+    "id": "aa-ctl-empty-output",
+    "kind": "control",
+    "phase": "SENIOR",
+    "grade": "8",
+    "subject": "Mathematics",
+    "clauseSet": "phase",
+    "output": "",
+    "expectedAppropriate": false,
+    "drivingClauses": [],
+    "construction": "Contract: an empty output cannot be judged and is failed closed, never passed.",
+    "labelledBy": "constructed",
+    "review": {
+      "status": "unreviewed",
+      "reviewer": null,
+      "reviewedOn": null,
+      "note": null
+    }
+  }
+]
