@@ -1,13 +1,36 @@
 # Application service stack — gateway, worker, web.
 #
-# Run alongside (not instead of) the data-plane stack:
-#   docker compose --env-file infra/docker/.env \
-#     -f infra/docker/compose.dev.yml \
-#     -f infra/docker/compose.apps.yml \
-#     up -d
+# Run alongside (not instead of) the data-plane stack, in two steps — the data plane
+# first, because it creates the network below:
+#   docker compose --env-file infra/docker/.env -f infra/docker/compose.dev.yml up -d
+#   # migrate and seed the database (docs/DEV_SETUP.md), then:
+#   docker compose --env-file infra/docker/.env -f infra/docker/compose.apps.yml up -d
+#
+# Do NOT pass both files to one `up`: the two files are separate Compose projects, and
+# combining them fails on a fresh machine with "network infinite-ai-dev_default declared
+# as external, but could not be found".
 #
 # Or use pre-built images from Docker Hub:
-#   IMAGE_TAG=v1.2.3 docker compose -f infra/docker/compose.apps.yml up -d
+#   IMAGE_TAG=v1.2.3 docker compose --env-file infra/docker/.env \
+#     -f infra/docker/compose.apps.yml up -d
+#
+# Environment hygiene — read this before the first `up`:
+#  * The apps validate their environment strictly (packages/config: "crashes at boot on a
+#    missing or malformed variable"). A variable that is PRESENT BUT EMPTY is malformed,
+#    not unset: `OTEL_EXPORTER_OTLP_ENDPOINT=` makes the worker exit with
+#    `Invalid url`. Optional variables below are passed through only when set, so
+#    delete a line you are not using instead of leaving `NAME=` blank.
+#  * Provider credentials belong to the gateway alone and are not passed to any other
+#    service. The gateway will not boot unless every provider named in its routing file
+#    has credentials — see the comment on the gateway's provider block.
+#  * URLs are read INSIDE containers: use service names (`postgres`, `redis`, `minio`),
+#    not `localhost`. The one exception is KEYCLOAK_ISSUER — see below.
+#
+# KEYCLOAK_ISSUER must be one URL that the web app's container AND your browser can both
+# open, because the browser is redirected to it and the same string is the token issuer.
+# `http://host.docker.internal:8180/realms/infinite-ai` does that: Docker Desktop resolves
+# the name on the host and in containers, and `extra_hosts` below adds it for Linux engines
+# (on a Linux host also add `127.0.0.1 host.docker.internal` to /etc/hosts for the browser).
 #
 # Rule 7: no secret in this file. All runtime credentials come from a local .env
 # that is never committed. See .env.example (root) for every variable the application
@@ -19,6 +42,11 @@
 # the `external` network reference below.
 
 name: infinite-ai-apps
+
+# Lets a container reach the host's published ports (Keycloak on 8180) by name on Linux
+# engines too; Docker Desktop already resolves it.
+x-host-gateway: &host_gateway
+  - 'host.docker.internal:host-gateway'
 
 networks:
   # Shared with the data-plane stack so app containers can reach postgres, redis,
@@ -38,6 +66,7 @@ services:
     restart: unless-stopped
     networks:
       - data_plane
+    extra_hosts: *host_gateway
     ports:
       - '8080:8080'
     environment:
@@ -47,16 +76,33 @@ services:
       REDIS_URL: ${REDIS_URL:?set REDIS_URL in your local .env}
       # Keycloak JWKS endpoint — gateway validates bearer tokens here.
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER:?set KEYCLOAK_ISSUER in your local .env}
-      # Comma-separated for credential pooling (Stage 04 step 3). Singular ANTHROPIC_API_KEY
-      # is the Anthropic SDK default name — the gateway's own schema uses the plural form
-      # so the pool can hold more than one key.
-      ANTHROPIC_API_KEYS: ${ANTHROPIC_API_KEYS:?set ANTHROPIC_API_KEYS in your local .env}
+      # Without this key the PII guard cannot decrypt the learner-name lexicon and fails
+      # closed on EVERY request, so the gateway would boot but refuse everything. The same
+      # key must be set when the dev tenants are seeded (`db:seed`), or seeded learner
+      # names cannot be recognised later. openssl rand -base64 32
+      DB_ENCRYPTION_KEY: ${DB_ENCRYPTION_KEY:?set DB_ENCRYPTION_KEY in your local .env (openssl rand -base64 32)}
+      DB_ENCRYPTION_KEY_VERSION: ${DB_ENCRYPTION_KEY_VERSION:-1}
+      # Provider credentials — comma-separated for credential pooling (Stage 04 step 3).
+      # The gateway REFUSES TO BOOT unless every provider named in any fallback chain of
+      # its routing file has a credential pool. The shipped routing.json names all four:
+      # anthropic, openai, google and local (an OpenAI-compatible server, e.g. Ollama,
+      # whose URL is LOCAL_MODEL_BASE_URL). To run with fewer providers, point
+      # ROUTING_CONFIG_PATH below at a routing file that names only those and supply only
+      # their variables. Each is passed through only when set (see the header: a blank
+      # value is an error, an absent one is not).
+      ANTHROPIC_API_KEYS:
+      OPENAI_API_KEYS:
+      GOOGLE_API_KEYS:
+      LOCAL_MODEL_BASE_URL:
+      LOCAL_MODEL_API_KEYS:
       # Path to the model-routing JSON inside the container. The Dockerfile copies the full
       # workspace to /repo, so this file is present in every locally-built and pushed image.
-      # Mount a replacement file (volumes:) to change routing without rebuilding.
+      # Mount a replacement file (volumes:) and change this path to change routing without
+      # rebuilding.
       ROUTING_CONFIG_PATH: /repo/apps/gateway/routing.json
-      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
-      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-}
+      # Optional tracing (Langfuse). Passed through only when set.
+      OTEL_EXPORTER_OTLP_ENDPOINT:
+      OTEL_EXPORTER_OTLP_HEADERS:
       GATEWAY_PORT: 8080
     healthcheck:
       test: ['CMD-SHELL', 'curl -sf http://localhost:8080/health || exit 1']
@@ -76,6 +122,7 @@ services:
     restart: unless-stopped
     networks:
       - data_plane
+    extra_hosts: *host_gateway
     ports:
       - '127.0.0.1:8081:8081'
     environment:
@@ -84,9 +131,13 @@ services:
       DIRECT_DATABASE_URL: ${DIRECT_DATABASE_URL:?set DIRECT_DATABASE_URL in your local .env}
       REDIS_URL: ${REDIS_URL:?set REDIS_URL in your local .env}
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER:?set KEYCLOAK_ISSUER in your local .env}
-      ANTHROPIC_API_KEYS: ${ANTHROPIC_API_KEYS:?set ANTHROPIC_API_KEYS in your local .env}
-      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
-      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-}
+      # The worker reaches models only through the gateway (rule 3) and holds no provider
+      # credentials. Left unset it would default to http://localhost:8080 — itself, inside
+      # this container — so the age-appropriateness judge and every agent call would fail.
+      GATEWAY_BASE_URL: http://gateway:8080
+      # Optional tracing (Langfuse). Passed through only when set.
+      OTEL_EXPORTER_OTLP_ENDPOINT:
+      OTEL_EXPORTER_OTLP_HEADERS:
       WORKER_PORT: 8081
       OBJECT_STORE_ENDPOINT: ${OBJECT_STORE_ENDPOINT:?set OBJECT_STORE_ENDPOINT in your local .env}
       OBJECT_STORE_BUCKET: ${OBJECT_STORE_BUCKET:?set OBJECT_STORE_BUCKET in your local .env}
@@ -107,6 +158,7 @@ services:
     restart: unless-stopped
     networks:
       - data_plane
+    extra_hosts: *host_gateway
     ports:
       - '3000:3000'
     environment:
@@ -123,8 +175,9 @@ services:
       # (infra/terraform/modules/stack: web gets app_rw). Never the migrator URL.
       DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in your local .env}
       GATEWAY_URL: ${GATEWAY_URL:-http://gateway:8080}
-      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
-      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-}
+      # Optional tracing (Langfuse). Passed through only when set.
+      OTEL_EXPORTER_OTLP_ENDPOINT:
+      OTEL_EXPORTER_OTLP_HEADERS:
     healthcheck:
       test: ['CMD-SHELL', 'curl -sf http://localhost:3000/api/health || exit 1']
       interval: 10s

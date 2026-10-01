@@ -4,8 +4,12 @@ import type { NextRequest } from 'next/server';
 
 import { buildCsp, generateNonce } from '@infinite-ai/security';
 
-/** Public paths that do not require authentication. */
-const PUBLIC = ['/sign-in', '/api/auth'];
+/**
+ * Public paths that do not require authentication. `/api/health` is the container
+ * liveness probe: it returns a constant and nothing else (see its route), and it must be
+ * reachable without a session or the healthcheck would be answered by a sign-in redirect.
+ */
+const PUBLIC = ['/sign-in', '/api/auth', '/api/health'];
 
 function isPublic(pathname: string): boolean {
   return PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`));

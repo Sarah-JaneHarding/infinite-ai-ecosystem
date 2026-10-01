@@ -97,6 +97,26 @@ describe('proxy', () => {
     expect(response.headers.get('location')).toContain('callbackUrl=%2Fdashboard');
   });
 
+  it('lets the liveness probe through without a session', async () => {
+    const response = await proxy(new NextRequest('http://localhost:3000/api/health'));
+
+    expect(response.status).not.toBe(307);
+    expect(response.headers.get('location')).toBeNull();
+  });
+
+  // The probe's exemption is exactly one path. Guard against it widening into "all of /api".
+  it.each([
+    '/api/caps-canon',
+    '/api/approvals/abc/decide',
+    '/api/healthz',
+    '/api/health-secret',
+  ])('still requires a session for %s', async (path) => {
+    const response = await proxy(new NextRequest(`http://localhost:3000${path}`));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toContain('/sign-in');
+  });
+
   it('does not redirect a request to a public NextAuth API route', async () => {
     const response = await proxy(
       new NextRequest('http://localhost:3000/api/auth/session'),

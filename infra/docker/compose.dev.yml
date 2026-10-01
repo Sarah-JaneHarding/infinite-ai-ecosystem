@@ -70,6 +70,31 @@ services:
       timeout: 5s
       retries: 20
 
+  # Creates Keycloak's own database. Keycloak used to share the application database, so its
+  # ~90 tables landed in the application's `public` schema and `prisma migrate deploy` then
+  # refused to run (P3005: schema not empty, no migration history) — on every fresh machine
+  # once Keycloak had finished booting, which is exactly when DEV_SETUP tells you to migrate.
+  # Keycloak will not create a schema or database itself (KC_DB_SCHEMA fails with
+  # `schema "keycloak" does not exist`), so this one-shot does. It is idempotent and runs
+  # on an existing volume too, where initdb scripts would not run again.
+  keycloak-db-init:
+    image: pgvector/pgvector:pg16
+    restart: 'no'
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in your local .env}
+    entrypoint:
+      - sh
+      - -c
+      - >-
+        psql -h postgres -U ${POSTGRES_USER:?set POSTGRES_USER in your local .env}
+        -d ${POSTGRES_DB:?set POSTGRES_DB in your local .env} -tAc
+        "SELECT 1 FROM pg_database WHERE datname = 'keycloak'" | grep -q 1
+        || psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+        -v ON_ERROR_STOP=1 -c 'CREATE DATABASE keycloak'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   # Keycloak — Stage 02 identity provider. Imports the realm.json on first boot.
   # Rule 7: KEYCLOAK_ADMIN_PASSWORD comes from the developer's local .env, never a default.
   keycloak:
@@ -78,7 +103,8 @@ services:
     command: start-dev --import-realm
     environment:
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:?set POSTGRES_DB in your local .env}
+      # Its own database (see keycloak-db-init), never the application's.
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
       KC_DB_USERNAME: ${POSTGRES_USER:?set POSTGRES_USER in your local .env}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in your local .env}
       KC_HOSTNAME_STRICT: 'false'
@@ -105,8 +131,21 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      keycloak-db-init:
+        condition: service_completed_successfully
     healthcheck:
-      test: ['CMD-SHELL', 'curl -sf http://localhost:8080/health/ready || exit 1']
+      # The Keycloak image ships no curl (the previous `curl … /health/ready` check could
+      # never pass, so `ps` showed this service unhealthy forever), and /health/ready is
+      # not served unless health is enabled. bash's /dev/tcp needs nothing extra, and the
+      # realm's discovery document answers 200 only once --import-realm has finished —
+      # the readiness that actually matters to the web app and gateway.
+      test:
+        [
+          'CMD',
+          'bash',
+          '-c',
+          "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /realms/infinite-ai/.well-known/openid-configuration HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 && head -n1 <&3 | grep -q ' 200 '",
+        ]
       interval: 10s
       timeout: 5s
       retries: 30

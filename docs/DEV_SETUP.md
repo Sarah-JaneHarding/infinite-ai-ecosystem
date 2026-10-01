@@ -43,10 +43,16 @@ docker compose -f infra/docker/compose.dev.yml ps
 Keycloak's realm import can take 20–30 seconds after the container starts — `ps` will
 show it as `starting` until then.
 
-`ps` will then show Keycloak as `unhealthy`, and keep showing it: its compose healthcheck
-runs `curl`, which the Keycloak image does not ship. That is a false alarm — check the
-realm itself with `curl -s http://localhost:8180/realms/infinite-ai/.well-known/openid-configuration`
-(HTTP 200 means the import worked).
+Once it reports `healthy` the realm import has finished: the healthcheck asks for the
+realm's discovery document and only gets a 200 after `--import-realm` completes.
+
+Keycloak keeps its own database (`keycloak`, created by the one-shot `keycloak-db-init`
+service), separate from the application database. It used to share it, which put Keycloak's
+tables in the application's `public` schema and made `prisma migrate deploy` fail with
+`P3005: The database schema is not empty` as soon as Keycloak had finished booting. If you
+started this stack before that change, your application database still contains them:
+remove the volumes and start again (`docker compose --env-file infra/docker/.env -f
+infra/docker/compose.dev.yml down -v`) — this deletes the dev data.
 
 **If Keycloak's client secret substitution doesn't take** (the `${KEYCLOAK_WEB_CLIENT_SECRET}`
 /`${KEYCLOAK_WORKER_CLIENT_SECRET}` placeholders in `infra/keycloak/realm.json` are
@@ -129,13 +135,21 @@ OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <output of the command below>
 echo -n '<LANGFUSE_INIT_PROJECT_PUBLIC_KEY>:<LANGFUSE_INIT_PROJECT_SECRET_KEY>' | base64
 ```
 
-(Same values, two files, same shape `KEYCLOAK_WEB_CLIENT_SECRET` already has.) Leave
-`DB_ENCRYPTION_KEY` unset unless you're specifically testing PII-at-rest encryption.
+(Same values, two files, same shape `KEYCLOAK_WEB_CLIENT_SECRET` already has.) Set
+`DB_ENCRYPTION_KEY` (`openssl rand -base64 32`) **before you seed** and keep it for the
+gateway: without it the gateway's PII guard cannot read the learner-name lexicon and
+**refuses every request**, and a seed run without it encrypts the dev learners under a
+throwaway key the gateway can never use.
 
-**`apps/gateway/.env`** — real provider credentials only if you're testing an agent flow
-that actually calls a model. For everything else (pipeline wiring, RLS, most UI flows),
-you can leave `ANTHROPIC_API_KEYS`/`OPENAI_API_KEYS` empty — the gateway starts fine
-without them, it just has no live provider to route to.
+**`apps/gateway/.env`** — provider credentials. The gateway **refuses to boot** unless
+every provider named in any fallback chain of its routing file has a credential pool
+(`Routing config for "…" references unknown provider "openai"`). The shipped
+`apps/gateway/routing.json` names four — `anthropic`, `openai`, `google` and `local` (an
+OpenAI-compatible server such as Ollama: `LOCAL_MODEL_BASE_URL` + `LOCAL_MODEL_API_KEYS`) —
+so all four must be set, with placeholder values if you will never call that provider. To
+run with fewer, point `ROUTING_CONFIG_PATH` at a routing file that lists only the providers
+you have (verified: a copy of `routing.json` reduced to its `anthropic` links boots with just
+`ANTHROPIC_API_KEYS`). Any model call to a provider with a placeholder credential fails.
 
 **`apps/web/.env`**:
 
@@ -223,10 +237,13 @@ dependency resolves through pnpm's `workspace:*` protocol — the whole monorepo
 to be present, not just one app's own directory:
 
 ```bash
-docker build -f apps/worker/Dockerfile -t infinite-ai-worker .
-docker build -f apps/gateway/Dockerfile -t infinite-ai-gateway .
-docker build -f apps/web/Dockerfile -t infinite-ai-web .
+docker build -f apps/worker/Dockerfile -t infiniteai/infinite-ai-worker:latest .
+docker build -f apps/gateway/Dockerfile -t infiniteai/infinite-ai-gateway:latest .
+docker build -f apps/web/Dockerfile -t infiniteai/infinite-ai-web:latest .
 ```
+
+(Those are the names `infra/docker/compose.apps.yml` looks for; any other tag makes
+compose try to pull `infiniteai/…` from Docker Hub.)
 
 Each image runs the same way its `pnpm start` already does locally — see each
 Dockerfile's own header comment for why (no separate compiled build output exists yet)
@@ -243,6 +260,48 @@ docker run --rm -p 8081:8081 --env-file .env infinite-ai-worker
 `REDIS_URL` at a reachable Postgres/Redis, which `localhost` won't resolve to from inside
 the container; use `host.docker.internal` in its place, or run the container on the same
 Docker network as the dev-stack `docker compose` services.)
+
+### The whole stack in Docker (no local Node needed)
+
+Verified end to end on a clean machine with the shipped compose files. Two steps, in this
+order, because `compose.apps.yml` joins the network `compose.dev.yml` creates — passing both
+files to one `up` fails with `network infinite-ai-dev_default declared as external, but could
+not be found`.
+
+1. Fill in `infra/docker/.env`, including the apps' variables (the second half of
+   `infra/docker/.env.example`). Inside containers use **service names**, not `localhost`:
+   `postgres`, `redis`, `minio`. Two rules to follow:
+   - A variable that is present but **empty** is an error, not "unset": the apps validate
+     strictly, so `OTEL_EXPORTER_OTLP_ENDPOINT=` makes the worker exit with `Invalid url`.
+     Delete lines you do not use; do not leave `NAME=` blank.
+   - `KEYCLOAK_ISSUER` must be one URL that both the web container and your browser can open
+     — use `http://host.docker.internal:8180/realms/infinite-ai`. Docker Desktop resolves
+     that name on the host and in containers; on a Linux engine add
+     `127.0.0.1 host.docker.internal` to `/etc/hosts` (compose already maps it for the
+     containers).
+2. Start the data plane, migrate and seed from a throwaway container (the same image the
+   gateway uses, which carries the whole workspace), then start the apps:
+
+```bash
+docker compose --env-file infra/docker/.env -f infra/docker/compose.dev.yml \
+  up -d postgres redis minio minio-init keycloak          # + langfuse services if you want them
+
+set -a; source infra/docker/.env; set +a
+docker run --rm --network infinite-ai-dev_default \
+  -e MIG_URL="postgresql://migrator:${MIGRATOR_PASSWORD}@postgres:5432/${POSTGRES_DB}" \
+  -e DATABASE_URL -e DB_ENCRYPTION_KEY \
+  infiniteai/infinite-ai-gateway:latest bash -c '
+    cd /repo
+    DATABASE_URL="$MIG_URL" pnpm --filter @infinite-ai/db db:migrate:deploy
+    DATABASE_URL="$MIG_URL" pnpm --filter @infinite-ai/db db:seed
+    for s in curriculum:seed curriculum:ratify templates:seed templates:ratify \
+             age-appropriateness:seed age-appropriateness:ratify; do pnpm "$s"; done'
+
+docker compose --env-file infra/docker/.env -f infra/docker/compose.apps.yml up -d
+```
+
+Then open `http://localhost:3000`. The gateway is on `:8080`, the worker's probe on
+`127.0.0.1:8081`, Keycloak on `:8180`, the MinIO console on `:9001`.
 
 ## Running the automated tests
 
