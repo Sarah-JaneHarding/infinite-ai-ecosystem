@@ -148,8 +148,17 @@ every provider named in any fallback chain of its routing file has a credential 
 OpenAI-compatible server such as Ollama: `LOCAL_MODEL_BASE_URL` + `LOCAL_MODEL_API_KEYS`) —
 so all four must be set, with placeholder values if you will never call that provider. To
 run with fewer, point `ROUTING_CONFIG_PATH` at a routing file that lists only the providers
-you have (verified: a copy of `routing.json` reduced to its `anthropic` links boots with just
-`ANTHROPIC_API_KEYS`). Any model call to a provider with a placeholder credential fails.
+you have. For **Anthropic alone** the repo ships one: `apps/gateway/routing.anthropic.json`,
+which is `routing.json` reduced to its Anthropic links (a test keeps the two in step). With it,
+`ANTHROPIC_API_KEYS` is the only credential needed, and every route is served by Claude. The one
+route it drops is `embedding.encode` (Anthropic has no embeddings API; nothing but tests calls
+it today). Any model call to a provider with a placeholder credential fails.
+
+**Calibrating the age-appropriateness judge?** Use the Anthropic-only file. In `routing.json` the
+judge's route, `guardrail.age_appropriateness`, tries **Google first** (`gemini-2.0-flash`), then
+Claude, then OpenAI — so a run with a Google credential present measures Gemini, and one without
+measures Claude only after a failed Google call. In `routing.anthropic.json` the route is Claude
+alone, so every verdict comes from the model you are calibrating.
 
 **`apps/web/.env`**:
 
@@ -189,8 +198,13 @@ Three separate processes, three terminals. Neither the gateway nor the worker lo
 `.env` into your shell first:
 
 ```bash
-set -a; source .env; set +a
+set -a; source <(grep -vE '=[[:space:]]*$' .env); set +a
 ```
+
+The `grep` leaves out lines with an empty value. The apps validate their environment strictly and
+treat a variable that is present but empty as an error, not as "unset" — and `.env.example` is made
+of blank `NAME=` lines, so a plain `source .env` makes the worker refuse to start (verified with the
+real loader: `OTEL_EXPORTER_OTLP_ENDPOINT` and `SAFEGUARDING_SNS_TOPIC_ARN` are refused when empty).
 
 ```bash
 # terminal 1
@@ -270,10 +284,16 @@ not be found`.
 
 1. Fill in `infra/docker/.env`, including the apps' variables (the second half of
    `infra/docker/.env.example`). Inside containers use **service names**, not `localhost`:
-   `postgres`, `redis`, `minio`. Two rules to follow:
+   `postgres`, `redis`, `minio`. Three things to get right:
    - A variable that is present but **empty** is an error, not "unset": the apps validate
      strictly, so `OTEL_EXPORTER_OTLP_ENDPOINT=` makes the worker exit with `Invalid url`.
      Delete lines you do not use; do not leave `NAME=` blank.
+   - Gateway providers: for Anthropic alone set `ANTHROPIC_API_KEYS` and
+     `GATEWAY_ROUTING_CONFIG=/repo/apps/gateway/routing.anthropic.json` (see "Calibrating the
+     age-appropriateness judge?" above); leave `OPENAI_API_KEYS`, `GOOGLE_API_KEYS` and
+     `LOCAL_MODEL_*` out. The gateway is published on `127.0.0.1:8080` only: it has no
+     per-request authentication (the tenant is taken from the request body), so it must not be
+     reachable from other machines.
    - `KEYCLOAK_ISSUER` must be one URL that both the web container and your browser can open
      — use `http://host.docker.internal:8180/realms/infinite-ai`. Docker Desktop resolves
      that name on the host and in containers; on a Linux engine add

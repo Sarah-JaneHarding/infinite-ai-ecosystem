@@ -1,9 +1,10 @@
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { parseEnv } from '@infinite-ai/config';
+import { InvalidTenantContextError } from '@infinite-ai/db';
 import { NOOP_TRACER } from '@infinite-ai/telemetry';
 
 import {
@@ -12,6 +13,7 @@ import {
   buildLexiconResolver,
   buildTracer,
   failClosedLexicon,
+  GATEWAY_SERVICE_ACTOR_ID,
   loadRouting,
 } from '../src/index.js';
 import { parseGatewayEnv } from '../src/config/env.js';
@@ -122,6 +124,55 @@ describe('buildLexiconResolver', () => {
     );
     expect(resolver).not.toBe(failClosedLexicon);
     expect(typeof resolver).toBe('function');
+  });
+});
+
+describe('buildLexiconResolver — the real tenant-scoped read', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  // `withTenant` validates the tenant and actor ids BEFORE it touches the database, so the
+  // real resolver can be exercised here without Postgres. This is the check the mocked
+  // resolvers elsewhere could not make: with an actor id that is not a valid UUID, every
+  // lexicon lookup — and therefore every gateway request — died before reaching a provider.
+  it('uses a service actor id that withTenant accepts', async () => {
+    vi.stubEnv('DATABASE_URL', 'postgresql://nobody:none@127.0.0.1:1/none');
+    const resolver = buildLexiconResolver(
+      parseEnv({
+        DATABASE_URL: 'postgresql://nobody:none@127.0.0.1:1/none',
+        REDIS_URL: 'redis://x',
+        DB_ENCRYPTION_KEY: VALID_ENCRYPTION_KEY,
+      }),
+    );
+
+    const failure = await resolver('10000000-0000-4000-8000-000000000001').then(
+      () => undefined,
+      (error: unknown) => error,
+    );
+
+    // It may fail — nothing is listening on that port — but never on its own identity.
+    expect(failure).not.toBeInstanceOf(InvalidTenantContextError);
+  }, 30_000);
+
+  it('rejects a tenant id that is not a UUID, before any database access', async () => {
+    const resolver = buildLexiconResolver(
+      parseEnv({
+        DATABASE_URL: 'postgresql://x/y',
+        REDIS_URL: 'redis://x',
+        DB_ENCRYPTION_KEY: VALID_ENCRYPTION_KEY,
+      }),
+    );
+
+    await expect(resolver("1' OR '1'='1")).rejects.toBeInstanceOf(
+      InvalidTenantContextError,
+    );
+  });
+
+  it('keeps the service actor id in the RFC UUID shape', () => {
+    expect(GATEWAY_SERVICE_ACTOR_ID).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
   });
 });
 

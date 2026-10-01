@@ -68,7 +68,11 @@ services:
       - data_plane
     extra_hosts: *host_gateway
     ports:
-      - '8080:8080'
+      # Loopback only. The gateway has no per-request authentication — the tenant is taken
+      # from the request body by design (packages/contracts: "not inferred from an auth
+      # header") — so anyone who can reach this port can spend the model budget as any
+      # tenant. The web and worker containers reach it over the compose network instead.
+      - '127.0.0.1:8080:8080'
     environment:
       NODE_ENV: production
       DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in your local .env}
@@ -86,20 +90,27 @@ services:
       # The gateway REFUSES TO BOOT unless every provider named in any fallback chain of
       # its routing file has a credential pool. The shipped routing.json names all four:
       # anthropic, openai, google and local (an OpenAI-compatible server, e.g. Ollama,
-      # whose URL is LOCAL_MODEL_BASE_URL). To run with fewer providers, point
-      # ROUTING_CONFIG_PATH below at a routing file that names only those and supply only
-      # their variables. Each is passed through only when set (see the header: a blank
-      # value is an error, an absent one is not).
+      # whose URL is LOCAL_MODEL_BASE_URL). To run with fewer providers, select a routing
+      # file that names only those (GATEWAY_ROUTING_CONFIG, below) and supply only their
+      # variables. Each is passed through only when set (see the header: a blank value is
+      # an error, an absent one is not).
       ANTHROPIC_API_KEYS:
       OPENAI_API_KEYS:
       GOOGLE_API_KEYS:
       LOCAL_MODEL_BASE_URL:
       LOCAL_MODEL_API_KEYS:
       # Path to the model-routing JSON inside the container. The Dockerfile copies the full
-      # workspace to /repo, so this file is present in every locally-built and pushed image.
-      # Mount a replacement file (volumes:) and change this path to change routing without
-      # rebuilding.
-      ROUTING_CONFIG_PATH: /repo/apps/gateway/routing.json
+      # workspace to /repo, so every routing file in apps/gateway/ is present in every
+      # locally-built and pushed image — choose one by setting GATEWAY_ROUTING_CONFIG:
+      #   (unset)                                   routing.json, all four providers
+      #   /repo/apps/gateway/routing.anthropic.json  Anthropic only. It is routing.json
+      #     reduced to its Anthropic links (a test keeps them in step), so ANTHROPIC_API_KEYS
+      #     is the only credential needed, and every route — including the age-appropriateness
+      #     judge, which in routing.json tries Google first — is served by Claude. Not
+      #     served: embedding.encode (Anthropic has no embeddings API; nothing but tests
+      #     calls it today).
+      # Or mount your own file (volumes:) and point this at it.
+      ROUTING_CONFIG_PATH: ${GATEWAY_ROUTING_CONFIG:-/repo/apps/gateway/routing.json}
       # Optional tracing (Langfuse). Passed through only when set.
       OTEL_EXPORTER_OTLP_ENDPOINT:
       OTEL_EXPORTER_OTLP_HEADERS:

@@ -10309,3 +10309,76 @@ the dead `/approvals` and `/platform/tenants` links, and `parseRole`'s `teacher`
 | `pnpm lint`, web typecheck, `pnpm format:check`                                        | PASS   |
 | Real Docker Desktop network                                                            | N/A    |
 | Any model call                                                                         | N/A    |
+
+## Stage 94 — Gateway: Anthropic-only routing, and the service-actor bug that stopped every request · 2026-10-01
+
+**Goal.** Make the gateway usable with Anthropic as the only provider (the calibration provider
+chosen for the age-appropriateness judge) and finish the OTEL and gateway items from Stage 90.
+Stage 93 had already fixed both at the compose level; this stage closes what that left.
+
+**What was found.**
+
+1. **The gateway could not serve a single request.** `GATEWAY_SERVICE_ACTOR_ID` was
+   `00000000-0000-0000-0000-000000000004`, which `withTenant` refuses (its UUID pattern needs a
+   version nibble 1-8 and a variant 8/9/a/b). The PII lexicon lookup runs before any provider call,
+   so every request that passed schema validation died with `InvalidTenantContextError` and HTTP 500.
+   No test caught it: every gateway test mocks the lexicon resolver, and the one test of
+   `buildLexiconResolver` deliberately did not invoke it. Fixed (`…-4000-8000-…0004`).
+   `withTenant` validates both ids _before_ touching the database, so the regression test calls the
+   real resolver against an unreachable address and requires the failure not to be
+   `InvalidTenantContextError`.
+2. **The judge's shipped route is not Claude-first.** `guardrail.age_appropriateness` in
+   `routing.json` tries Google (`gemini-2.0-flash`), then Claude (`claude-haiku-4-5`), then OpenAI. A
+   calibration run with a Google credential present measures Gemini; without one it measures Claude
+   only after a failed Google call. Neither is a clean measurement.
+3. **Anthropic alone still needed three placeholder credentials**, or a hand-built routing file.
+4. **The documented local flow trips the strict loader.** `set -a; source .env` exports the
+   template's blank `NAME=` lines as empty strings; verified with the real loader that
+   `OTEL_EXPORTER_OTLP_ENDPOINT` and `SAFEGUARDING_SNS_TOPIC_ARN` are then refused.
+5. **The gateway had no authentication and was published on every interface.** By design the tenant
+   comes from the request body ("not inferred from an auth header"), so reachability is the only
+   control; compose published `0.0.0.0:8080`.
+6. **No test validated `routing.json` at all.**
+
+**What changed.**
+
+- `apps/gateway/src/index.ts`: valid service-actor UUID, with a comment on why it must stay valid.
+- `apps/gateway/routing.anthropic.json`: `routing.json` reduced to its Anthropic links (46 of 47 routes).
+  Dropped: `embedding.encode` — Anthropic has no embeddings API; nothing but tests calls it, and the
+  judge reads its clauses with `recall({ vectorK: 0 })`, i.e. no vector search. Selected with one
+  line, `GATEWAY_ROUTING_CONFIG=/repo/apps/gateway/routing.anthropic.json` (the file is in the image);
+  the default is unchanged. It is a projection, not a second policy: a test recomputes it from
+  `routing.json` and fails on any drift, on any non-Anthropic link, on an empty chain, and when the set
+  of dropped routes changes. The same spec now also parses both files.
+- `compose.apps.yml`: `ROUTING_CONFIG_PATH: ${GATEWAY_ROUTING_CONFIG:-…routing.json}`; gateway port
+  bound to `127.0.0.1:8080` (web and worker reach it over the compose network).
+- `docs/DEV_SETUP.md`: the Anthropic-only recipe, the judge-routing caveat, and a `source` that skips
+  blank lines. `infra/docker/.env.example`: the new variable (commented).
+- The schema stays strict. Rejecting a present-but-empty value is `packages/config`'s stated principle;
+  the fix for OTEL is in how the variables are supplied, not in the loader.
+
+**Tests.** Gateway: `routing-files.spec.ts` (9 new) and 3 new in `index.spec.ts`. Mutation-checked:
+hand-editing the reduced file fails 4, adding a route only another provider serves fails 1, changing
+the judge's Claude model in one file only fails 2, and restoring the old actor id fails 2.
+
+**Verified.** The shipped `compose.apps.yml` with an env file holding only an Anthropic credential and
+the one routing line (no override file): gateway `healthy`, no other provider variable in the
+container. A request for the judge's model, sent through the gateway with a harmless synthetic
+sentence and a placeholder key, passes schema, the database lexicon lookup and the PII guard, reaches
+the Anthropic adapter and is rejected by Anthropic: `gateway.fallback … provider=anthropic
+reason=unauthorized`, HTTP 502 — before the actor fix it was HTTP 500 and never left the gateway. The
+gateway answers on `127.0.0.1:8080`, is refused on the host's other address, and the web and worker
+containers still reach it by name.
+
+**Not done.** No successful model call: the credential was a placeholder, so there is no verdict to
+inspect and nothing has been calibrated. Real Docker Desktop untested. The judge needs a
+human-labelled set (OQ-015/OQ-016) before its verdicts can be scored.
+
+| Exit gate item                                                                 | Result |
+| ------------------------------------------------------------------------------ | ------ |
+| A gateway request passes the lexicon/PII guard and reaches a provider          | PASS   |
+| Anthropic-only: one credential, one routing line, judge served by Claude alone | PASS   |
+| `routing.anthropic.json` cannot drift from `routing.json` (test)               | PASS   |
+| Gateway not reachable from other hosts; web and worker still reach it          | PASS   |
+| Blank-line trap in the local `source .env` flow reproduced and avoided         | PASS   |
+| A successful model completion / a judge verdict                                | N/A    |
