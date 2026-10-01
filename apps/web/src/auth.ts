@@ -3,6 +3,7 @@ import type { JWT } from 'next-auth/jwt';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 import { getWebEnv } from './lib/env';
 import type { Role } from '@infinite-ai/policy';
+import { readRole, roleFromProfile } from './lib/session-role';
 
 /** Extend next-auth types with our domain fields. */
 declare module 'next-auth' {
@@ -20,23 +21,6 @@ declare module 'next-auth/jwt' {
   }
 }
 
-const VALID_ROLES: ReadonlySet<string> = new Set([
-  'teacher',
-  'hod',
-  'smt',
-  'sbst',
-  'admin',
-  'guardian',
-  'learner',
-  'platform_support',
-  'platform_admin',
-]);
-
-function parseRole(raw: unknown): Role {
-  if (typeof raw === 'string' && VALID_ROLES.has(raw)) return raw as Role;
-  return 'teacher';
-}
-
 export const authOptions: AuthOptions = {
   providers: [
     KeycloakProvider({
@@ -47,24 +31,29 @@ export const authOptions: AuthOptions = {
   ],
   session: { strategy: 'jwt' },
   callbacks: {
+    // Fail closed: an account with none of our roles does not get a session at all (the
+    // sign-in page shows why). There is no default role — see lib/session-role.ts.
+    async signIn({ profile }) {
+      return roleFromProfile(profile) !== null;
+    },
     async jwt({ token, account, profile }) {
       if (account) {
-        // Map Keycloak realm_access.roles to our Role enum.
-        const rawRoles = (profile as Record<string, unknown> | undefined)?.[
-          'realm_access'
-        ];
-        const roles = (rawRoles as { roles?: unknown[] } | undefined)?.roles ?? [];
-        const matched = roles.find(
-          (r): r is string => typeof r === 'string' && VALID_ROLES.has(r),
-        );
-        token['role'] = parseRole(matched);
+        // Map Keycloak realm_access.roles to our Role enum. `signIn` has already refused
+        // an account without one, so a missing role here is a bug, not a user to default.
+        const role = roleFromProfile(profile);
+        if (role === null) throw new Error('Signed in without a recognised role.');
+        token['role'] = role;
         token['tenantId'] =
           (profile as Record<string, string> | undefined)?.['tenant_id'] ?? '';
       }
       return token as JWT;
     },
     async session({ session, token }): Promise<Session> {
-      session.role = parseRole(token['role']);
+      // A token without a valid role (issued before this check existed, or malformed) is
+      // not a session: next-auth turns a throw here into "signed out" and clears the cookie.
+      const role = readRole(token['role']);
+      if (role === null) throw new Error('Session token carries no recognised role.');
+      session.role = role;
       session.tenantId = (token['tenantId'] as string | undefined) ?? '';
       session.userId = typeof token.sub === 'string' ? token.sub : '';
       return session;

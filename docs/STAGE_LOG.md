@@ -10519,3 +10519,46 @@ console panels and Run Inspector are still sample data.
 | Every shell link lands on a page         | PASS         |
 | A dead link cannot be re-added unnoticed | PASS         |
 | The four pages built                     | N/A — OQ-031 |
+
+## Stage 99 — no silent `teacher` role
+
+**Task.** "Fix the parseRole teacher fallback."
+
+**The defect.** `apps/web/src/auth.ts` mapped anything it did not recognise to `teacher`: an account whose
+Keycloak realm roles were only the provider defaults (`default-roles-*`, `offline_access`), a renamed role,
+or a typo signed in as a teacher, with a teacher's access to the tenant's curriculum and approvals page.
+It also did so a second time when reading the session token back. Fail-open on the one input that
+decides what a person may do.
+
+**What changed.**
+
+- `lib/session-role.ts` (new): `readRole` and `roleFromProfile` return a role or `null`. The role list is
+  `@infinite-ai/policy`'s own `Role` enum — the duplicate hand-written list in `auth.ts` is gone.
+- `signIn` callback refuses an account with none of our roles; the sign-in page says why
+  (`?error=AccessDenied` → "your account has no role… ask your school administrator"; any other code gets a
+  generic line; the code from the URL is never rendered).
+- `jwt` throws rather than inventing a role; the `session` callback throws for a token with no valid role.
+  next-auth turns that into signed out (clears the cookie) — **proved against the real `getServerSession`**,
+  not assumed (`auth-session-signout.spec.ts`).
+- No change to what a valid role gets, to `tenantId` handling, or to the roles in the dev realm.
+
+**Tests.** Web 198 pass (+53): role parsing incl. wrong case/whitespace/non-strings; every malformed profile shape;
+the three auth callbacks; the real-next-auth sign-out; the sign-in page messages. Mutation-checked: restoring the
+fallback in `readRole` fails 21, letting `signIn` admit everyone fails 2. Typecheck, eslint, prettier, production
+build clean.
+
+**Known gaps.**
+
+- A session issued **before** this change stores `role: 'teacher'` for any account the old code defaulted, and stays
+  valid until it expires (next-auth default: 30 days) or the person signs out. Rotating `NEXTAUTH_SECRET` signs
+  everyone out and ends them. Not done here: it logs out every user.
+- Multi-role accounts keep first-match behaviour: OQ-032.
+- Not exercised against a live Keycloak with a role-less user (the dev realm has none); the callbacks and next-auth
+  are tested directly.
+
+| Exit gate item                                                 | Result                |
+| -------------------------------------------------------------- | --------------------- |
+| An account with none of our roles cannot sign in               | PASS (unit)           |
+| A stored token with no valid role is signed out, not a teacher | PASS (real next-auth) |
+| Role list has one source                                       | PASS                  |
+| Live Keycloak check with a role-less account                   | N/A                   |

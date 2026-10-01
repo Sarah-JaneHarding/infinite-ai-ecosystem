@@ -414,3 +414,17 @@ for meetings, PD/CPTD, support tiers or curriculum-coverage progress.
 **Needs a human:** which of these are wanted, and for each the missing source (a progress-capture
 design, the SIAS/MTSS tier rule, the SACE schedule, a minutes record). Each can be re-added to
 `ROLE_NAV` together with its page; the navigation test then requires the page to exist.
+
+### OQ-032 — which role wins when an account holds more than one · 2026-10-01
+
+Stage 99 removed the silent `teacher` default for accounts with no recognised role. It did not
+change how an account holding **several** of our roles is handled: the first one in Keycloak's
+`realm_access.roles` order wins, and that order is not meaningful. If the same account can be both,
+say, `learner` and `admin`, which one it signs in as depends on claim ordering. The dev realm gives
+every user exactly one role, so nothing exercises this today.
+
+Neither "first wins" nor "refuse" is safe to pick without a policy: refusing locks out anyone
+legitimately holding two roles (a head of department who is also a teacher); precedence by privilege
+needs a ranking nobody has ratified. **Needs a human:** are multi-role accounts allowed, and if so
+what is the precedence (or should the person choose at sign-in)? Until then `roleFromProfile` keeps
+first-match behaviour, pinned by a test that names this OQ.
