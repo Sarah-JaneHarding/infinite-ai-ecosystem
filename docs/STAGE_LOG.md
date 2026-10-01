@@ -10221,3 +10221,91 @@ re-run locally (CI runs it on the PR).
 | `pnpm lint`, web typecheck, `pnpm format:check`                                 | PASS   |
 | Daily Schedule / Lesson Planner / AI Studio connected to real data              | N/A    |
 | Playwright e2e / a11y suites                                                    | N/A    |
+
+## Stage 93 — `compose.apps.yml` boots: the Stage 90 compose findings, and what a clean-slate run turned up · 2026-10-01
+
+**Goal.** Make the shipped Docker route — `compose.dev.yml` then `compose.apps.yml` — start the
+gateway, worker and web on a clean machine with no override file and no hand-patching, and
+prove it from zero (volumes wiped, images the only thing kept).
+
+**What a clean-slate run found** (Stage 90 findings 1, 2, 5, 6, plus five more it exposed):
+
+1. **Blank `OTEL_*`** (finding 1). Compose passed `${OTEL_…:-}`, i.e. `""`. `packages/config`
+   states its principle — crash on a missing or malformed variable, never quietly disable a
+   control — so a present-but-empty value is rejected on purpose and the schema is **not
+   changed**. Compose now passes these three variables through only when set; a blank line in
+   an env file is still an error, now documented (a deliberate negative test confirms the worker
+   refuses to boot with a clear message).
+2. **Gateway cannot boot as configured** (finding 2). It needs a credential pool for every
+   provider in any fallback chain of its routing file (`anthropic`, `openai`, `google`, `local`
+   for the shipped `routing.json`) and `DB_ENCRYPTION_KEY`. Compose passes those through
+   (provider variables optional, the key required with a clear message). Verified both ways: a
+   copy of `routing.json` reduced to its `anthropic` links boots with only
+   `ANTHROPIC_API_KEYS`; the shipped routing with only that key is refused.
+   `docs/DEV_SETUP.md` had said the gateway "starts fine" without keys — false; corrected.
+3. **The worker was given provider credentials and the wrong gateway URL.** It never reads
+   `ANTHROPIC_API_KEYS` (rule 3: models only through the gateway), yet compose passed it — against
+   the project's own rule that provider credentials live only on the gateway. Removed. And its
+   `GATEWAY_BASE_URL` defaulted to `http://localhost:8080` — itself, inside its container — so
+   every call to the gateway would have failed; now `http://gateway:8080`.
+4. **Web healthcheck was vacuous** (finding 5). `/api/health` did not exist and the auth proxy
+   answered it with a 307 that `curl -sf` counts as success. Added a real route (a constant,
+   no session, database or environment access), made that one path public in `proxy.ts`, with
+   tests that the exemption does not widen.
+5. **Keycloak healthcheck could never pass** (finding 6) — the image has no `curl`. Now asks for
+   the realm discovery document with bash `/dev/tcp`, which only answers 200 after the import
+   finishes. Reports `healthy` after ~35 s.
+6. **Keycloak shared the application database.** Its 87 tables landed in `public`, so
+   `prisma migrate deploy` failed with `P3005` as soon as Keycloak had booted — exactly when
+   `DEV_SETUP` says to migrate. An earlier run only worked because the migration won a race.
+   Keycloak does not create a schema itself (`KC_DB_SCHEMA` fails with `schema "keycloak" does
+not exist`), so a one-shot, idempotent `keycloak-db-init` creates a separate `keycloak`
+   database. Chosen over an `initdb` script because five Testcontainers harnesses and the
+   Terraform bootstrap share that directory. Existing volumes need `down -v`.
+7. **The documented combined command does not work.** `-f compose.dev.yml -f compose.apps.yml
+up -d` fails on a fresh machine with `network infinite-ai-dev_default declared as external,
+but could not be found`. The files are separate projects; the header and `DEV_SETUP` now give
+   the two-step order.
+8. **Browser and container could not share one Keycloak issuer.** `KEYCLOAK_ISSUER` is both
+   redirected to by the browser and the token issuer. `http://host.docker.internal:8180/realms/
+infinite-ai` serves both; compose adds `extra_hosts: host.docker.internal:host-gateway` for
+   Linux engines.
+9. **Migrations and seeds needed a local Node install.** Documented a one-off container from the
+   gateway image on the compose network; the `DEV_SETUP` build commands also tagged images
+   `infinite-ai-*`, which compose does not look for (it pulls `infiniteai/…`). Corrected.
+
+`infra/docker/.env.example` gains the apps' variables (names only; optional ones commented out
+so copying the file cannot create blank lines). CI's rule-7 `.env.example` check passes locally.
+
+**Verified from a clean slate** with the shipped files only: the data plane comes up with
+Keycloak `healthy` and a separate `keycloak` database (application `public` schema: 0 tables);
+migrations and every seed succeed from the one-off container; the three apps are `healthy`;
+`/api/health` returns `200 {"status":"ok"}` without a session while `/` still redirects to
+sign-in; provider keys and the encryption key exist in the gateway container only; no `OTEL_*`
+variables exist in any container; the worker reaches the gateway by name; the web container
+opens the issuer URL the browser uses. In Chromium with CSP enforced, all nine dev logins sign in
+and the Curriculum Map matches SQL (Grade 6 Mathematics 25 topics / 7 assessment tasks).
+`@infinite-ai/web` unit tests 105 → 112 (+7); widening the proxy exemption to all of `/api` makes
+4 of them fail. `pnpm lint`, web typecheck and `pnpm format:check` are clean.
+
+**Not done.** Real Docker Desktop (Mac/Windows): `host.docker.internal` was emulated on Linux with
+an `/etc/hosts` entry. Langfuse services were not started. No model call was made — the provider
+credentials were placeholders. Compose has no automated guard in CI (a `docker compose config`
+step would catch syntax and required-variable errors, not these behavioural ones). Playwright
+e2e/a11y suites not run.
+
+**Noted, not changed.** The gateway publishes `0.0.0.0:8080` on the host. Still open from earlier:
+the dead `/approvals` and `/platform/tenants` links, and `parseRole`'s `teacher` fallback.
+
+| Exit gate item                                                                         | Result |
+| -------------------------------------------------------------------------------------- | ------ |
+| Shipped compose files boot gateway, worker and web from a clean slate, no override     | PASS   |
+| Migrate + seed succeed after Keycloak is up (P3005 gone); no local Node                | PASS   |
+| Healthchecks reflect reality (web route; Keycloak realm discovery)                     | PASS   |
+| Provider credentials only on the gateway; worker reaches gateway by service name       | PASS   |
+| Blank `OTEL_*` refused; missing `DB_ENCRYPTION_KEY` gives a clear error                | PASS   |
+| Reduced-routing single-provider gateway boots; shipped routing with one key is refused | PASS   |
+| Nine roles sign in under enforced CSP via `host.docker.internal`; map equals SQL       | PASS   |
+| `pnpm lint`, web typecheck, `pnpm format:check`                                        | PASS   |
+| Real Docker Desktop network                                                            | N/A    |
+| Any model call                                                                         | N/A    |
