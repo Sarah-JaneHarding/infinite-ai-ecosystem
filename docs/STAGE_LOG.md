@@ -10065,3 +10065,73 @@ as OQ-015/OQ-016 record: it needs a human-labelled dataset and gateway credentia
 | Web CSS is built (Tailwind utilities present)                                   | FAIL   |
 | `compose.apps.yml` boots the gateway/worker with only the variables it passes   | FAIL   |
 | Any model call / agent run / judge verdict                                      | N/A    |
+
+## Stage 91 — Web image: CSP nonce and Tailwind CSS fixed (Stage 90 findings 3 and 4) · 2026-10-01
+
+**Goal.** Make the production web image usable: client JavaScript must run under the
+app's own Content-Security-Policy, and the stylesheet must actually be built. Both were
+found by Stage 90's first build-and-run and had never shown under `next dev`.
+
+**Root causes (reproduced, not inferred).**
+
+- **CSS.** `next build --webpack` does not load a TypeScript PostCSS config. With
+  `apps/web/postcss.config.ts` the build succeeds but Tailwind never runs: the emitted
+  stylesheet was 24,706 bytes, kept a raw `@theme` block and contained no utility
+  classes. The same file, hash `b3c9de3ba4b6374a`, came out of a plain
+  `pnpm --filter @infinite-ai/web build` outside Docker, so it is the project's build, not
+  the image. Renamed to `postcss.config.mjs` (same contents): 45,410 bytes, `w-full`
+  present, `@theme` gone.
+- **CSP, two causes together** (confirmed against the Content Security Policy guide that
+  ships inside the installed `next` package). (1) `proxy.ts` set the CSP only on the
+  response; Next.js extracts the nonce from the CSP on the _request_ during server
+  rendering and stamps it onto its own `<script>` tags, so none carried one while
+  `strict-dynamic` trusted nothing else. (2) The root layout was static, so `/sign-in` was
+  prerendered at build time (`x-nextjs-prerender: 1`, `s-maxage=31536000`) — no request,
+  no nonce.
+
+**What changed.**
+
+- `apps/web/postcss.config.ts` → `postcss.config.mjs`.
+- `apps/web/src/proxy.ts`: also sets `Content-Security-Policy` on the forwarded request
+  headers; the comment that claimed layouts read `x-nonce` (none did) now says what really
+  happens.
+- `apps/web/src/app/layout.tsx`: async, awaits `connection()` so every route renders per
+  request. Trade-off: no static optimisation for any page under this layout; Next.js
+  requires this for nonce-based CSP.
+- `apps/web/vitest.config.ts`: automatic JSX runtime so a test can render the layout.
+- The policy itself is unchanged: `script-src` stays nonce-only, nothing was loosened.
+
+**Tests.** `@infinite-ai/web` unit tests 63 → 71 (+8). New: request-header forwarding of
+the CSP, a distinct nonce per request, a guard that `script-src` stays nonce-only (no
+`unsafe-inline`, `unsafe-eval` or wildcard) and that a redirect carries no CSP
+(`proxy.spec.ts`, +4); the layout awaits `connection()` and does not render before it
+resolves (`root-layout.spec.ts`, +2); PostCSS config uses a loadable extension and
+registers the Tailwind plugin (`postcss-config.spec.ts`, +2). Run against the original
+code, the forwarding test, both layout tests and both PostCSS tests fail; the other three
+proxy tests pass on both, as they guard against loosening the policy, not against the bug.
+`pnpm lint`, `@infinite-ai/web` typecheck and `pnpm format:check` are clean.
+
+**Verified against the real image.** Rebuilt `apps/web` from its unmodified Dockerfile
+(the sandbox needed a build-context override of `FROM node:22` for its proxy CA; the
+Dockerfile was not edited) and replaced the running container. `/sign-in`: scripts
+carrying the nonce **0 of 9 → 9 of 9**; `Cache-Control` `s-maxage=31536000` →
+`private, no-cache, no-store`; no prerender header; stylesheet 24,706 → 45,410 bytes.
+In Chromium with CSP enforcement **on** (the Stage 90 runs had it off), the sign-in
+button works and all nine dev logins sign in through the UI with the right role, zero CSP
+violations on every page; the same eight of nine landing pages load (`/platform/tenants`
+is still the separate 404 recorded in Stage 90).
+
+**Not done.** The Playwright e2e and a11y suites were not run, and `verify:stage 65` was
+not re-run locally (CI runs it on the PR). `style-src 'unsafe-inline'` is unchanged — it is
+the existing Stage 18 hardening item named in `buildCsp()`. Stage 90 findings 1, 2, 5, 6,
+7 and 8 remain open.
+
+| Exit gate item                                                                  | Result |
+| ------------------------------------------------------------------------------- | ------ |
+| Web client JS runs under the enforced CSP (9 of 9 scripts nonced, 0 violations) | PASS   |
+| Web stylesheet is built (utilities present, no raw `@theme`)                    | PASS   |
+| All nine dev logins sign in through the UI with CSP enforced                    | PASS   |
+| CSP policy not loosened; guarded by tests                                       | PASS   |
+| New tests fail on the original code, pass on the fix                            | PASS   |
+| `pnpm lint`, web typecheck, `pnpm format:check`                                 | PASS   |
+| Playwright e2e / a11y suites                                                    | N/A    |

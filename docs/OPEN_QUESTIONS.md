@@ -183,6 +183,17 @@ entirely, so it does not depend on Keycloak being reachable to be correct, but a
 authenticated request through Keycloak is still the strongest possible confirmation and
 has not been done.
 
+**Addendum 2026-10-01 — the fix above was incomplete in production.** It was verified only
+against `next dev`, which renders every page dynamically. In a production build the header
+was present but the nonce never reached the page: `/sign-in` was statically prerendered, so
+none of its `<script>` tags carried a nonce, and the CSP existed only on the _response_,
+whereas Next.js reads the nonce from the CSP on the _request_ during server rendering. The
+browser blocked every script and the sign-in button did nothing. Fixed in Stage 91
+(`docs/STAGE_LOG.md`): `proxy.ts` now also forwards the CSP as a request header and the
+root layout awaits `connection()` so every route renders per request. Re-verified against
+the built image in a real browser with the CSP enforced: 9 of 9 scripts carry the nonce
+and there are no CSP violations.
+
 ### OQ-024 — `branch` step conditions cannot see a prior step's actual output · resolved 2026-09-01
 
 **Question.** `RunnerOptions.evaluateCondition` only ever received `run.input` — the run's
