@@ -10696,3 +10696,59 @@ roll-up and the other SBST views are likely the same and were not checked.
 | Each listed item links to its own review page, tenant-scoped, from the session | PASS        |
 | An unreadable list is shown as unavailable, never as empty                     | PASS        |
 | Browser check with a seeded approval task                                      | N/A         |
+
+## Stage 103 — browser verification of the approvals, SMT, HoD and role-gating work
+
+**Task.** Look at what Stages 97–102 built in a real browser with real data. Until now none of it had been seen: the work was
+covered by unit tests, and the role gating by cookies this build minted itself.
+
+**Setup.** The shipped `compose.dev.yml` + `compose.apps.yml` only (no override), web image rebuilt from `main`, Anthropic-only
+routing, Chromium with the CSP **enforced**, signing in through Keycloak as the nine dev users. New: `pnpm --filter
+@infinite-ai/db db:seed:approvals` opens ten placeholder gates (6 HoD, 2 SMT, 1 teacher, 1 in a second tenant), because the dev
+seed had none and every screen would otherwise show only its empty state.
+
+**Result: 45/45 checks pass**, 0 CSP violations. HoD sees six gates, five rows and "and 1 more", each Review link carrying its own
+task and run id; the detail page shows the stored artefact; the other tenant's gate appears nowhere; the invented staff and
+percentages are gone. SMT sees "2 items", no invented figures, and its link opens exactly its two gates. The teacher sees only the
+teacher gate. Guardian, learner and the platform roles are turned away from `/approvals` and get 403 from the decide endpoint.
+`/platform/tenants` is gone, `/district` and `/admin/env` are reachable only by the roles the table names. **Live Keycloak check of
+#133:** an account holding only Keycloak's default roles lands on `/sign-in?error=AccessDenied` with the "no role" message, has no
+session, and `/teacher` sends it to sign-in. Screenshots were read, not only asserted.
+
+**Defects the browser found that no unit test could.**
+
+1. **Every card in the product had an invisible title.** `ModularCard`'s header is white text on a gradient whose classes live in
+   `packages/design-system`; Tailwind v4 scans only the app it runs from, so 14 of 16 gradient classes were never generated,
+   and white-on-white hid the title and eyebrow on every card. Fixed with one `@source` line; a test compiles the real stylesheet
+   and requires every gradient class the card names (read from the component) — it fails without the fix, with 14 missing.
+2. **The seeded gates were unfaithful.** The runs were left `PENDING`, so the decide path refused them as "not waiting for approval"
+   (correctly) and would have hidden the next problem. The seed now parks each run on its gate.
+3. **No real person can decide a gate (OQ-033).** With a genuinely open gate, **Approve** returns 422 "Actor … does not hold the
+   required role": the decide path looks up the OIDC `sub` as a `user_account.id`, which are different values, and nothing
+   provisions accounts for Keycloak users. It **fails closed** (decision stays null, no audit event), so rule 6 holds, but the
+   feature is unusable end to end. Not fixed: it is the identity model of a security gate. Evidence and the two candidate fixes are in
+   the OQ.
+
+**Seen, not fixed.**
+
+- The header shows the tenant **UUID** under "INFINITE-AI" (`layout.tsx` uses the tenant id as its name). Showing a name needs a read
+  in the shell layout or a claim; a choice about a per-request database read.
+- The Run Inspector still shows three sample runs under the line "Live view of agent runs across all tenants" — sample data
+  presented as live, cross-tenant data. The next sample-data fix.
+- The queue's task column shows the first 8 characters of an id; the fixtures share a prefix, so it reads `ac000000` on every row.
+  Real ids differ.
+
+**Environment notes (sandbox, not product).** My own host-network override made the web container point at `postgres:5432` from the
+host network and fail with P1001; the shipped compose files alone were healthy — the same lesson as Stage 94. On a Linux host the
+browser needs `127.0.0.1 host.docker.internal` in `/etc/hosts`, as the compose header says.
+
+**Not done.** No decision has ever been recorded through the UI (OQ-033). Not run against Docker Desktop. The three sample-data panels
+above remain.
+
+| Exit gate item                                                    | Result         |
+| ----------------------------------------------------------------- | -------------- |
+| Each merged screen renders with real data under the enforced CSP  | PASS (45/45)   |
+| Role gating behaves as the table says in a real browser, per role | PASS           |
+| A role-less account is refused at sign-in, live                   | PASS           |
+| Cards readable                                                    | PASS after fix |
+| A gate can be decided by a person end to end                      | FAIL — OQ-033  |
