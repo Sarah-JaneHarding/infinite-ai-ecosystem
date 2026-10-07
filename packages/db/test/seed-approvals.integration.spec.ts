@@ -70,6 +70,17 @@ describe('seedApprovals', () => {
     expect(small.every((t) => t.tenantId === SMALL_PRIMARY)).toBe(true);
   });
 
+  it('parks every run on its gate, as a real open gate is', async () => {
+    const runs = await asTenant(appRw, SMALL_PRIMARY, ACTOR, (tx) =>
+      tx.orchestratorRun.findMany(),
+    );
+    expect(runs.length).toBeGreaterThan(0);
+    for (const run of runs) {
+      expect(run.status).toBe('WAITING_FOR_APPROVAL');
+      expect(run.currentStepId).toMatch(/^dev-gate-/);
+    }
+  });
+
   it('stores the placeholder artefact exactly, with a null diff where there is none', async () => {
     const small = await asTenant(appRw, SMALL_PRIMARY, ACTOR, (tx) =>
       listPendingApprovalTasks(tx),

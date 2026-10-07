@@ -1,6 +1,11 @@
 @import 'tailwindcss';
 @import '@infinite-ai/design-system/tokens.css';
 
+/* Tailwind v4 scans only the app it runs from. The design system's components are in another
+   package, so without this their classes (the card header gradients, for one) are never
+   generated and white-on-white text vanishes. A test compiles this file to keep it honest. */
+@source '../../../../packages/design-system/src';
+
 /* ── Tailwind theme bridge ─────────────────────────────────────────────────── */
 @theme {
   --color-iai-red: var(--iai-red);

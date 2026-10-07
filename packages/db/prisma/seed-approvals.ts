@@ -29,6 +29,11 @@ export async function seedApprovals(
           tenantId: f.tenantId,
           pipelineId: 'dev-fixture',
           pipelineVersion: '0.0.0',
+          // A gate that is actually open: the run is parked on this step. Without this the
+          // decide path refuses the task ("not waiting for approval"), which is correct, and
+          // would make every seeded gate undecidable for the wrong reason.
+          status: 'WAITING_FOR_APPROVAL',
+          currentStepId: f.stepId,
           traceId: f.traceId,
           input: { devFixture: true },
           createdBy: SEED_ACTOR,

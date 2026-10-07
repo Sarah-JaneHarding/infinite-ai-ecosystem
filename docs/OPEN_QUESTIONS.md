@@ -428,3 +428,32 @@ legitimately holding two roles (a head of department who is also a teacher); pre
 needs a ranking nobody has ratified. **Needs a human:** are multi-role accounts allowed, and if so
 what is the precedence (or should the person choose at sign-in)? Until then `roleFromProfile` keeps
 first-match behaviour, pinned by a test that names this OQ.
+
+### OQ-033 — no real person can decide an approval gate: identity mismatch and no provisioning · 2026-10-07
+
+Found by approving a gate in a browser, not by any test. With the dev stack running and a gate genuinely open (run
+`WAITING_FOR_APPROVAL`), signing in as the SMT dev user and pressing **Approve** returns **HTTP 422**:
+`Actor b53b1ae8-… does not hold the required role "smt" for this gate.` Nothing is recorded (the task's decision stays null and
+no audit event is written), so the gate fails closed — rule 6 holds — but the human-gate feature cannot be used end to end.
+
+Two separate causes, both visible in the code:
+
+1. **Two id spaces.** `POST /api/approvals/[id]/decide` passes the session's OIDC `sub` as `decidedBy`.
+   `decideHumanGate` hands it to `hasActiveRoleAssignment(tx, userAccountId, role, now)`, which looks for a
+   `role_assignment` whose `user_account_id` equals it. But `role_assignment.user_account_id` references
+   `user_account.id` (a database UUID); the OIDC `sub` is stored in the **separate** `user_account.subject` column. The
+   two are different values, so the lookup cannot match for a real sign-in even once an account exists. (The orchestrator's own
+   tests pass a `user_account.id` as the actor, which is why they pass.)
+2. **No provisioning.** Nothing creates a `user_account` or `role_assignment` for a Keycloak user — not the app at first
+   sign-in, not the dev seed (it creates generated teacher accounts with invented subjects, none for the nine dev users).
+
+**Needs a human** — this is the identity model for a security gate, so it is not mine to pick:
+
+- Which id identifies the deciding actor everywhere (the `sub`, which the audit trail and `app.actor_id` already use, or
+  `user_account.id`)? Either (a) resolve `(tenant, sub)` → `user_account` in the decide route and check roles on that account, or
+  (b) change the role lookup to join through `user_account.subject`. Both keep the check as strict as today.
+- How do accounts and role assignments come to exist: create on first sign-in from the Keycloak claims, or only by a school
+  administrator (the onboarding wizard)? Creating them from a token's role claim would let the identity provider grant
+  gate authority, which may or may not be intended.
+
+Until decided, nothing was weakened and no fixture user was given a role assignment to make the button work.
