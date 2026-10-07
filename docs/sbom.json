@@ -2,7 +2,7 @@
   "bomFormat": "minimal-pnpm-list",
   "specVersion": "1.0",
   "metadata": {
-    "timestamp": "2026-10-01T14:20:25.687Z",
+    "timestamp": "2026-10-07T09:10:56.180Z",
     "component": "infinite-ai-ecosystem"
   },
   "components": [
@@ -47,6 +47,16 @@
           "from": "@infinite-ai/evals",
           "version": "link:packages/evals",
           "path": "/home/user/infinite-ai-ecosystem/packages/evals"
+        },
+        "@infinite-ai/guardrails": {
+          "from": "@infinite-ai/guardrails",
+          "version": "link:packages/guardrails",
+          "path": "/home/user/infinite-ai-ecosystem/packages/guardrails"
+        },
+        "@infinite-ai/prompts": {
+          "from": "@infinite-ai/prompts",
+          "version": "link:packages/prompts",
+          "path": "/home/user/infinite-ai-ecosystem/packages/prompts"
         },
         "@infinite-ai/warehouse": {
           "from": "@infinite-ai/warehouse",

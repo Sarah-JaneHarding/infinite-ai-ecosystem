@@ -447,6 +447,24 @@ to `16.3.6` (exact, as the audit's pinning check requires) and regenerated
 `@next/env` and the `@next/swc-*` platform binaries. Re-run of
 `pnpm audit:supply-chain` after the bump: PASS, no known vulnerabilities.
 
+### `sharp` 0.35.4 → 0.35.5 and `source-map-js` 1.2.1 → 1.2.2 (2026-10-07)
+
+`pnpm audit:supply-chain` started failing on `main` with two new high advisories, both transitive
+through `next` (so neither is a dependency this repository declares), both patched within the
+version range `next` already accepts:
+
+- `source-map-js` `>=1.0.0 <1.2.2` — event-loop denial of service through indexed source-map
+  section offsets (GHSA-68fv-2mgg-jv7q), reached via `next > postcss`. Patched in `1.2.2`.
+- `sharp` `<0.35.5` — a vulnerability in its librsvg dependency (CVE-2026-96889), reached via
+  `next`'s optional `sharp ^0.35.4`. Patched in `0.35.5`, which also moves its bundled
+  `@img/sharp-libvips-*` from 1.3.3 to 1.3.4.
+
+Fixed with `pnpm update source-map-js sharp -r`: **lockfile and `docs/sbom.json` only**. No
+`package.json` changed, no `overrides` were added, and the lockfile diff touches only the `sharp`
+family, the libvips binaries and `source-map-js`. Licences unchanged (Apache-2.0 for `sharp` and
+the libvips packages, MIT for `source-map-js`). `pnpm audit:supply-chain` after: PASS, no known
+vulnerabilities.
+
 ## Stage 17 — Tenant lifecycle, provisioning, billing
 
 No new external runtime dependencies were added. Both `packages/provisioning` and

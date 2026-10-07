@@ -190,6 +190,17 @@ pnpm age-appropriateness:seed           # submits the 206 age-appropriateness/re
 pnpm age-appropriateness:ratify         # advances them to committed brain_constitution rows
 ```
 
+Optional, to see the approvals screens with something on them (`/approvals`, the HoD console, the SMT
+dashboard), open ten placeholder human gates. Run it as the migrator, like `db:seed`, after `db:seed`:
+
+```bash
+pnpm --filter @infinite-ai/db db:seed:approvals   # 6 for the HoD, 2 SMT, 1 teacher, 1 in another tenant
+```
+
+The gates carry a plainly marked placeholder artefact ("Dev fixture") — no curriculum, no people — and the
+seed is idempotent. The one in the second tenant is there to make a cross-tenant leak visible: nobody signed in
+to the first tenant should ever see it.
+
 ## 6. Start the apps
 
 Three separate processes, three terminals. Neither the gateway nor the worker load a
