@@ -10761,3 +10761,43 @@ the last green run (2026-10-01) and now, two high advisories were published agai
 `source-map-js` (<1.2.2, GHSA-68fv-2mgg-jv7q) and `sharp` (<0.35.5, CVE-2026-96889). Both are patched inside the ranges `next` already
 accepts, so the fix is a lockfile refresh with no `package.json` change and no override (recorded in `docs/DEPENDENCIES.md`). It is on
 this branch because no other PR carries it and `main` is red until something does; it is a separate commit so it can be read alone.
+
+## Stage 104 — the Run Inspector stops presenting sample runs as live data
+
+**Task.** "Fix the Run Inspector sample data."
+
+**What was there.** Three sample runs (`run-a1b2`, `run-c3d4`, `run-e5f6`; agents CE-01, TB-03, PD-02; tenants `tenant-001`/`-002`;
+Approved / Pending review / Rejected; durations and 2026-08-12 timestamps) under the line **"Live view of agent runs across all
+tenants. Platform access only."** — sample data stated as live, cross-tenant data, on the home page of both platform roles.
+
+**Why it cannot simply be wired to real data.** There is no sanctioned path to it:
+
+- Run records are tenant-scoped, and the access matrix gives neither platform role any right to read them
+  (`packages/policy` rbac: `platform_support` holds tenant settings, audit events and class groups; `platform_admin` holds tenant
+  settings and audit events — never runs).
+- The one sanctioned way platform staff touch a school's data is a support session the school's administrator has approved, with a
+  stated reason and a time limit (`packages/policy` impersonation: "the one sanctioned route"). The app has only a banner placeholder
+  for it (`impersonating={null}`); no session flow exists.
+  So a cross-school run list would be a new cross-tenant read of identifiable operational data, which this codebase forbids. Same
+  reasoning as OQ-030 (tenant directory).
+
+**What changed.** The table and every sample value are gone. The page keeps its title and "Platform access" badge and says, in plain words,
+that run data belongs to each school, that there is no cross-school view, that platform staff reach a school's records only through
+an administrator-approved, reasoned, time-limited support session, and that this session is **not available in the app yet** — so
+there is nothing to show. It makes no claim of a live view. The route stays: it is both platform roles' home page.
+
+**Tests.** Web 368 pass (+13): the component shows none of 16 invented strings (the three run ids, agents, tenants, durations, dates,
+the three statuses, "Live view", "across all tenants", any table) and does say why; the page lets only the two platform roles in
+(unauthenticated → sign-in, the seven school and family roles → home). Mutation-checked: putting the live-view claim back fails 1, a
+sample run back fails 2, opening the page to every role fails 7. Typecheck, eslint, prettier and the production build (`ƒ /platform/runs`)
+clean. **Not viewed in a browser** (a static page; the stack was not rebuilt for this change).
+
+**Seen, not fixed.** `DistrictRollup` (`/district`, reachable by both platform roles) has the same shape: three invented schools
+("School A/B/C", 501/387/620 "tenants", tier percentages) under "Aggregated, de-identified data only. Minimum cohort size enforced."
+— an assurance of a control that this page does not exercise. It is the next sample-data fix.
+
+| Exit gate item                                                        | Result      |
+| --------------------------------------------------------------------- | ----------- |
+| No invented run, tenant, status or timestamp; no claim of a live view | PASS (test) |
+| Page open to the two platform roles only                              | PASS (test) |
+| Browser check                                                         | N/A         |
