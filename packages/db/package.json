@@ -16,6 +16,7 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:approvals": "tsx prisma/seed-approvals.ts",
     "db:validate": "prisma validate",
     "lint": "eslint src",
     "postinstall": "prisma generate",
