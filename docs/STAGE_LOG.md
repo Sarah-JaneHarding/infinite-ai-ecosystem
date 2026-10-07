@@ -10752,3 +10752,12 @@ above remain.
 | A role-less account is refused at sign-in, live                   | PASS           |
 | Cards readable                                                    | PASS after fix |
 | A gate can be decided by a person end to end                      | FAIL — OQ-033  |
+
+### Stage 103 addendum — `main` and this PR went red on two new advisories (2026-10-07)
+
+`install → lint → typecheck → unit → build` failed on this PR at `stage 16: pnpm audit:supply-chain`, and the same check was already
+red on `main` after #136 merged, so the failure is not this PR's: no dependency changed here. Every test in the job passed. Between
+the last green run (2026-10-01) and now, two high advisories were published against packages that arrive only through `next`:
+`source-map-js` (<1.2.2, GHSA-68fv-2mgg-jv7q) and `sharp` (<0.35.5, CVE-2026-96889). Both are patched inside the ranges `next` already
+accepts, so the fix is a lockfile refresh with no `package.json` change and no override (recorded in `docs/DEPENDENCIES.md`). It is on
+this branch because no other PR carries it and `main` is red until something does; it is a separate commit so it can be read alone.
