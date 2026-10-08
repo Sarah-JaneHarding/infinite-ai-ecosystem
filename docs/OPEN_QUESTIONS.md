@@ -457,3 +457,19 @@ Two separate causes, both visible in the code:
   gate authority, which may or may not be intended.
 
 Until decided, nothing was weakened and no fixture user was given a role assignment to make the button work.
+
+### OQ-034 — what a district rollup would be, if the product wants one · 2026-10-08
+
+`/district` (reachable by both platform roles, no nav link) used to show three invented schools with learner counts and tier
+percentages under "Aggregated, de-identified data only. Minimum cohort size enforced." It now says it is not available. There is no
+district concept in the data model, no cross-school read in `packages/db`, and no cohort-size rule anywhere in the codebase; the
+access matrix gives neither platform role any right to learner records or tier placements.
+
+**Needs a human** before anything is built:
+
+- Is a cross-school rollup wanted at all, and for whom (platform staff, or a district office that is not yet a role)?
+- If yes: which measures, under which declared purpose (`packages/contracts/src/popia/purpose.ts` has none for it), computed how
+  without a cross-tenant query on identifiable data (per-school aggregates published upward, rather than a platform read)?
+- The smallest group that may be reported (the "minimum cohort size") is a policy number. I have not picked one.
+
+Until decided, the page asserts no control it does not exercise.
