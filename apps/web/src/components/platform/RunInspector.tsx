@@ -1,33 +1,14 @@
-import { Card } from '@infinite-ai/design-system';
-import { Badge } from '@infinite-ai/design-system';
-import { StatusPill } from '@infinite-ai/design-system';
+import { Badge, Card } from '@infinite-ai/design-system';
 
-const RUNS = [
-  {
-    id: 'run-a1b2',
-    agent: 'CE-01',
-    tenant: 'tenant-001',
-    status: 'approved' as const,
-    durationMs: 1240,
-    ts: '2026-08-12T09:14:22Z',
-  },
-  {
-    id: 'run-c3d4',
-    agent: 'TB-03',
-    tenant: 'tenant-002',
-    status: 'pending' as const,
-    durationMs: 2100,
-    ts: '2026-08-12T09:11:05Z',
-  },
-  {
-    id: 'run-e5f6',
-    agent: 'PD-02',
-    tenant: 'tenant-001',
-    status: 'rejected' as const,
-    durationMs: 980,
-    ts: '2026-08-12T09:09:41Z',
-  },
-];
+// This page used to list three sample runs under "Live view of agent runs across all
+// tenants". There is no such view to show, and nothing here may pretend otherwise:
+//  - run records are tenant-scoped, and the access policy gives neither platform role any
+//    right to read them (`packages/policy` rbac: platform_support and platform_admin hold
+//    tenant settings, audit events and class groups, never runs);
+//  - the one sanctioned way platform staff touch a school's data is a support session that
+//    the school's administrator has approved, with a stated reason and a time limit
+//    (`packages/policy` impersonation), and that session flow is not built into the app yet.
+// So the page says that, and shows no run, no tenant and no status.
 
 export function RunInspector() {
   return (
@@ -42,100 +23,27 @@ export function RunInspector() {
             Run Inspector
           </h1>
           <p className="text-sm text-[var(--iai-text-subtle)] mt-0.5">
-            Live view of agent runs across all tenants. Platform access only.
+            Platform access only.
           </p>
         </div>
         <Badge variant="error">Platform access</Badge>
       </div>
 
-      <div className="overflow-x-auto">
-        <Card>
-          <table className="w-full text-sm" role="table">
-            <thead>
-              <tr className="border-b border-[var(--iai-border)]">
-                <th
-                  scope="col"
-                  className="text-left py-2 pr-4 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  Run ID
-                </th>
-                <th
-                  scope="col"
-                  className="text-left py-2 pr-4 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  Agent
-                </th>
-                <th
-                  scope="col"
-                  className="text-left py-2 pr-4 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  Tenant
-                </th>
-                <th
-                  scope="col"
-                  className="text-left py-2 pr-4 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  Status
-                </th>
-                <th
-                  scope="col"
-                  className="text-right py-2 pr-4 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  Duration
-                </th>
-                <th
-                  scope="col"
-                  className="text-left py-2 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  Timestamp
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {RUNS.map((r) => (
-                <tr
-                  key={r.id}
-                  className="border-b border-[var(--iai-border)] last:border-0"
-                >
-                  <td
-                    className="py-2.5 pr-4 font-medium text-[var(--iai-text)]"
-                    style={{ fontFamily: 'var(--iai-font-mono)' }}
-                  >
-                    {r.id}
-                  </td>
-                  <td
-                    className="py-2.5 pr-4 text-[var(--iai-text-subtle)]"
-                    style={{ fontFamily: 'var(--iai-font-mono)' }}
-                  >
-                    {r.agent}
-                  </td>
-                  <td
-                    className="py-2.5 pr-4 text-[var(--iai-text-subtle)]"
-                    style={{ fontFamily: 'var(--iai-font-mono)' }}
-                  >
-                    {r.tenant}
-                  </td>
-                  <td className="py-2.5 pr-4">
-                    <StatusPill status={r.status} />
-                  </td>
-                  <td
-                    className="py-2.5 pr-4 text-right text-[var(--iai-text-subtle)]"
-                    style={{ fontFamily: 'var(--iai-font-mono)' }}
-                  >
-                    {r.durationMs}ms
-                  </td>
-                  <td
-                    className="py-2.5 text-[var(--iai-text-subtle)]"
-                    style={{ fontFamily: 'var(--iai-font-mono)' }}
-                  >
-                    {r.ts}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
-      </div>
+      <Card>
+        <p role="status" className="text-sm font-semibold text-[var(--iai-text)] mb-2">
+          Not available yet
+        </p>
+        <p className="text-sm text-[var(--iai-text-subtle)] mb-2">
+          Agent runs belong to the school that produced them, and there is no view of runs
+          across schools.
+        </p>
+        <p className="text-sm text-[var(--iai-text-subtle)]">
+          Platform staff can see a school&rsquo;s records only through a support session
+          that the school&rsquo;s administrator has approved, with a stated reason and a
+          time limit. That support session is not available in the app yet, so there is
+          nothing to show here.
+        </p>
+      </Card>
     </section>
   );
 }
