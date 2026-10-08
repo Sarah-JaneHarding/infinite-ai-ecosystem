@@ -57,6 +57,7 @@ export {
 } from './tables.js';
 
 export { readTenantLexicon } from './lexicon.js';
+export { readTenantName } from './tenant-name.js';
 
 export {
   BrainWriteError,
