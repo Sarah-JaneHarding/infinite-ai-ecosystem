@@ -10829,6 +10829,39 @@ with it, and that the decision on what would be counted and the smallest reporta
 | Page open to the two platform roles only                          | PASS (test) |
 | Browser check                                                     | N/A         |
 
+## Stage 106 — the header shows the school's name, not its tenant id
+
+**Task.** "Fix the header tenant UUID."
+
+**What was there.** `(shell)/layout.tsx` passed `session.tenantId` to the header as `tenantName`, so every signed-in user read a UUID
+(e.g. `10000000-0000-4000-8000-000000000001`) under the INFINITE-AI mark on every page. The fallback to "Infinite AI" only applied if
+the field was `undefined`; the session sets it to `''` when absent, so a user without a tenant claim saw a blank line.
+
+**What changed.**
+
+- `packages/db/src/tenant-name.ts`: `readTenantName(tx)` — one read of `tenant.name`, no id argument. `tenant` is self-keyed, so under
+  `withTenant` RLS leaves only the caller's own row; a name for another school cannot be asked for. Exported (surface test updated).
+- `apps/web/src/lib/tenant-name-loader.ts`: `loadTenantLabel` reads it through `withTenant` with the session's tenant and actor. With
+  no tenant or actor, a missing/blank name, or a failed lookup it returns "Infinite AI" — never the id. A failed lookup is swallowed
+  on purpose (the header is on every page and must not blank the shell; each page's own reads still surface a real database fault).
+- The layout calls the loader.
+
+**Tests.** Web 389 (+8): the loader uses `withTenant` with exactly the given scope, skips the database without a tenant or actor, and
+survives a database error without leaking the id; the layout hands the header the looked-up name and never the id, and does no lookup
+for a signed-out caller. DB unit +4 (trimmed name, no filter argument, null for missing/blank, errors propagate). DB integration
+`tenant-name.integration.spec.ts` (each tenant gets its own name; an unknown tenant gets null) is **written blind — the sandbox has no
+Docker; CI's RLS job runs it**. Mutation-checked: restoring `session.tenantId` fails 2 layout tests; removing the empty-scope guard fails 2
+loader tests.
+
+**Not changed / seen.** Platform staff have no tenant of their own, so their header reads "Infinite AI". Not viewed in a browser.
+
+| Exit gate item                                    | Result                      |
+| ------------------------------------------------- | --------------------------- |
+| Header never shows a tenant id                    | PASS (test)                 |
+| Name read only inside the caller's tenant context | PASS (unit); integration CI |
+| Shell survives a failed lookup                    | PASS (test)                 |
+| Browser check                                     | N/A                         |
+
 ## Stage 107 — `next` 16.3.6 → 16.3.8 (GHSA-cjq9-62q9-8jv4)
 
 **Task.** "Open the next bump as its own PR." Found while merging [#140](https://github.com/Sarah-JaneHarding/infinite-ai-ecosystem/pull/140):
