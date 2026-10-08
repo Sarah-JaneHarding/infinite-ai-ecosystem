@@ -10801,3 +10801,22 @@ clean. **Not viewed in a browser** (a static page; the stack was not rebuilt for
 | No invented run, tenant, status or timestamp; no claim of a live view | PASS (test) |
 | Page open to the two platform roles only                              | PASS (test) |
 | Browser check                                                         | N/A         |
+
+## Stage 107 — `next` 16.3.6 → 16.3.8 (GHSA-cjq9-62q9-8jv4)
+
+**Task.** "Open the next bump as its own PR." Found while merging [#140](https://github.com/Sarah-JaneHarding/infinite-ai-ecosystem/pull/140):
+its `install → lint → typecheck → unit → build` job passed every test, lint, typecheck and build step and failed only at
+`verify:stage 65` → `pnpm audit:supply-chain` on a newly published high advisory in `next` (SSRF in Image Optimization,
+`>=16.0.0 <16.3.8`). #140 changes no dependency file, so the failure is `main`'s and is not that PR's.
+
+**What changed.** `apps/web/package.json` `next` 16.3.6 → 16.3.8 (exact pin); `pnpm-lock.yaml` regenerated, diff confined to `next`,
+`@next/env` and the `@next/swc-*` binaries; `docs/DEPENDENCIES.md` row and entry (rule 9). No source change.
+
+**Checks.** `pnpm audit:supply-chain`: PASS, no known vulnerabilities (was: 1 high). Web typecheck, tests and production build
+re-run after the bump (see the PR).
+
+| Exit gate item                                              | Result |
+| ----------------------------------------------------------- | ------ |
+| `pnpm audit:supply-chain` — high `next` advisory remediated | PASS   |
+| `next` pinned exactly at `16.3.8`; lockfile diff confined   | PASS   |
+| `docs/DEPENDENCIES.md` records the bump (rule 9)            | PASS   |
