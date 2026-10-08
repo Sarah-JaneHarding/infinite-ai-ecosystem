@@ -10802,6 +10802,33 @@ clean. **Not viewed in a browser** (a static page; the stack was not rebuilt for
 | Page open to the two platform roles only                              | PASS (test) |
 | Browser check                                                         | N/A         |
 
+## Stage 105 — the District Rollup stops presenting sample schools as aggregated data
+
+**Task.** "Fix the DistrictRollup sample data."
+
+**What was there.** Three invented schools ("School A/B/C"), learner counts 501/387/620 (the field was even named `tenants`), and tier
+percentages (81/14/5, 84/12/4, 79/16/5), under **"Aggregated, de-identified data only. Minimum cohort size enforced."** and a
+"De-identified" badge — sample figures, plus an assurance of a privacy control that the page never exercised and that does not exist
+anywhere in the codebase.
+
+**Why it cannot simply be wired to real data.** No district or cross-school read exists in `packages/db`; learner and tier data are
+tenant-scoped; the access matrix gives neither platform role any right to learner records or tier placements. A rollup would be a new
+cross-tenant read of identifiable data, which is forbidden, or a new aggregation design with its own purpose and cohort floor
+(neither decided). Recorded as OQ-034; I did not choose a cohort number.
+
+**What changed.** Table, sample values, the cohort-size claim and the "De-identified" badge are gone. The page keeps its title, says
+"Platform access only." with a "Platform access" badge, and states that there is no district rollup, that each school's data stays
+with it, and that the decision on what would be counted and the smallest reportable group has not been made.
+
+**Tests.** New `district-rollup.spec.ts` (none of 13 invented strings may return; the honest text is present) and `district-page.spec.ts`
+(only the two platform roles open the page; unauthenticated → sign-in; the seven other roles → home).
+
+| Exit gate item                                                    | Result      |
+| ----------------------------------------------------------------- | ----------- |
+| No invented school, count or percentage; no unexercised assurance | PASS (test) |
+| Page open to the two platform roles only                          | PASS (test) |
+| Browser check                                                     | N/A         |
+
 ## Stage 107 — `next` 16.3.6 → 16.3.8 (GHSA-cjq9-62q9-8jv4)
 
 **Task.** "Open the next bump as its own PR." Found while merging [#140](https://github.com/Sarah-JaneHarding/infinite-ai-ecosystem/pull/140):
