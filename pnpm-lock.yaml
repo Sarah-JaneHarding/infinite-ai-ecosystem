@@ -97,8 +97,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/telemetry
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@opentelemetry/sdk-trace-base':
         specifier: 2.10.0
@@ -158,8 +158,8 @@ importers:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@axe-core/playwright':
         specifier: 4.13.0
@@ -231,8 +231,8 @@ importers:
         specifier: 6.0.0
         version: 6.0.0
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       tsx:
         specifier: 4.23.1
@@ -247,8 +247,8 @@ importers:
   packages/agent-builder:
     dependencies:
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -272,8 +272,8 @@ importers:
         specifier: workspace:*
         version: link:../warehouse
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -288,8 +288,8 @@ importers:
         specifier: workspace:*
         version: link:../guardrails
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -304,8 +304,8 @@ importers:
   packages/billing:
     dependencies:
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -332,8 +332,8 @@ importers:
         specifier: workspace:*
         version: link:../telemetry
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@opentelemetry/sdk-trace-base':
         specifier: 2.10.0
@@ -357,8 +357,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -373,8 +373,8 @@ importers:
   packages/config:
     dependencies:
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -386,8 +386,8 @@ importers:
   packages/contracts:
     dependencies:
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -411,8 +411,8 @@ importers:
         specifier: workspace:*
         version: link:../db
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@testcontainers/postgresql':
         specifier: 12.0.4
@@ -491,8 +491,8 @@ importers:
   packages/document-annotation:
     dependencies:
       zod:
-        specifier: ^3.25.67
-        version: 3.25.76
+        specifier: ^4.6.5
+        version: 4.6.5
     devDependencies:
       '@infinite-ai/config':
         specifier: workspace:*
@@ -516,8 +516,8 @@ importers:
         specifier: workspace:*
         version: link:../guardrails
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -529,8 +529,8 @@ importers:
   packages/gamification:
     dependencies:
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -563,8 +563,8 @@ importers:
         specifier: workspace:*
         version: link:../telemetry
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@opentelemetry/sdk-trace-base':
         specifier: 2.10.0
@@ -588,8 +588,8 @@ importers:
   packages/learner-client:
     dependencies:
       zod:
-        specifier: ^3.25.67
-        version: 3.25.76
+        specifier: ^4.6.5
+        version: 4.6.5
     devDependencies:
       '@infinite-ai/config':
         specifier: workspace:*
@@ -610,8 +610,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -626,8 +626,8 @@ importers:
   packages/low-tech-assessment:
     dependencies:
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -648,8 +648,8 @@ importers:
         specifier: workspace:*
         version: link:../telemetry
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@opentelemetry/sdk-trace-base':
         specifier: 2.10.0
@@ -673,8 +673,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@infinite-ai/compliance':
         specifier: workspace:*
@@ -689,8 +689,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -708,8 +708,8 @@ importers:
         specifier: workspace:*
         version: link:../prompts
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -727,8 +727,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -743,8 +743,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -759,8 +759,8 @@ importers:
   packages/school-setup:
     dependencies:
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -790,8 +790,8 @@ importers:
         specifier: workspace:*
         version: link:../prompt-builder
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 3.2.7
@@ -843,8 +843,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -3598,8 +3598,8 @@ packages:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+  zod@4.6.5:
+    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
 
 snapshots:
 
@@ -6299,4 +6299,4 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
-  zod@3.25.76: {}
+  zod@4.6.5: {}

@@ -19,7 +19,7 @@
   "dependencies": {
     "@infinite-ai/db": "workspace:*",
     "@infinite-ai/telemetry": "workspace:*",
-    "zod": "3.25.76"
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@opentelemetry/sdk-trace-base": "2.10.0",
