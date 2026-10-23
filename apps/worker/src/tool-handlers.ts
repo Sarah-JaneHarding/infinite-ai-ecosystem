@@ -63,7 +63,7 @@ const TombstoneInput = z.object({
  * these tools are backdated; a caller replaying history would set it explicitly. */
 const EpisodeCommon = {
   occurredAt: z.string().datetime().optional(),
-  actorId: z.string().uuid().nullable().default(null),
+  actorId: z.guid().nullable().default(null),
 };
 
 async function recordEpisode(
@@ -144,7 +144,7 @@ const RecordSbstMinutesInput = z.object({
 
 const UpdateFeatureStoreInput = z.object({
   learnerRefs: z.array(z.string().min(1)).min(1),
-  features: z.record(z.unknown()).default({}),
+  features: z.record(z.string(), z.unknown()).default({}),
   ...EpisodeCommon,
 });
 

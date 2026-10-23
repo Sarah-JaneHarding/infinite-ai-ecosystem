@@ -11,6 +11,8 @@
 // export surface — three independent mechanisms, because any one of them could be
 // weakened by someone in a hurry.
 
+import { loadDatabaseUrl } from '@infinite-ai/config';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, type Prisma } from '@prisma/client';
 
 /**
@@ -62,10 +64,19 @@ function assertUuid(value: string, label: string): void {
   }
 }
 
+/**
+ * Prisma 7 connects through a driver adapter and no longer reads `DATABASE_URL` itself, so
+ * every client is built here from an explicit connection string. Package-internal: the
+ * seeds and the test support use it; nothing outside this package can reach it.
+ */
+export function createPrismaClient(connectionString: string): PrismaClient {
+  return new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
+}
+
 let singleton: PrismaClient | undefined;
 
 function client(): PrismaClient {
-  singleton ??= new PrismaClient();
+  singleton ??= createPrismaClient(loadDatabaseUrl());
   return singleton;
 }
 

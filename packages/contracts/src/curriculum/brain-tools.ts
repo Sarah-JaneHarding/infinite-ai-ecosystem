@@ -28,19 +28,19 @@ import { GradeLabel } from './framework.js';
  * decision rather than relying on a join.
  */
 export const CurriculumPublishInput = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   grade: GradeLabel,
   subjects: z.array(z.string().min(1)).min(1),
   termNumber: z.number().int().min(1).max(4),
   academicYear: z.number().int().min(2000).max(2100),
-  hodApprovalId: z.string().uuid(),
+  hodApprovalId: z.guid(),
   /** The full curriculum artefact bundle from CE-03..CE-08. */
   content: z.unknown(),
 });
 export type CurriculumPublishInput = z.infer<typeof CurriculumPublishInput>;
 
 export const CurriculumPublishResult = z.object({
-  brainFactId: z.string().uuid(),
+  brainFactId: z.guid(),
 });
 export type CurriculumPublishResult = z.infer<typeof CurriculumPublishResult>;
 
@@ -56,14 +56,14 @@ export type CurriculumPublishResult = z.infer<typeof CurriculumPublishResult>;
  * succeeded.
  */
 export const CurriculumTombstoneInput = z.object({
-  tenantId: z.string().uuid(),
-  brainFactId: z.string().uuid(),
+  tenantId: z.guid(),
+  brainFactId: z.guid(),
   reason: z.literal('pipeline_compensation'),
 });
 export type CurriculumTombstoneInput = z.infer<typeof CurriculumTombstoneInput>;
 
 export const CurriculumTombstoneResult = z.object({
-  tombstoneId: z.string().uuid(),
-  supersedes: z.string().uuid(),
+  tombstoneId: z.guid(),
+  supersedes: z.guid(),
 });
 export type CurriculumTombstoneResult = z.infer<typeof CurriculumTombstoneResult>;

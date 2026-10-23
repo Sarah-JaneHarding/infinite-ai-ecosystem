@@ -249,7 +249,7 @@ export async function cancelRun(
 
 const HumanGateDecisionInputSchema = z.object({
   outcome: z.enum(['APPROVED', 'REJECTED', 'EDITED']),
-  decidedBy: z.string().uuid(),
+  decidedBy: z.guid(),
   /** Required for every outcome, not only a rejection — "the decision, the actor, the
    * reason... are recorded" (the manual's own step 5 text) reads as unconditional. */
   reason: z.string().min(1),

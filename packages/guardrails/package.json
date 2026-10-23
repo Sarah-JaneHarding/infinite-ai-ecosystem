@@ -20,11 +20,11 @@
   },
   "devDependencies": {
     "@opentelemetry/sdk-trace-base": "2.12.0",
-    "@testcontainers/postgresql": "12.2.0",
-    "@vitest/coverage-v8": "3.2.7",
-    "testcontainers": "12.2.0",
+    "@testcontainers/postgresql": "12.2.1",
+    "@vitest/coverage-v8": "5.0.5",
+    "testcontainers": "12.2.1",
     "typescript": "6.0.3",
-    "vitest": "3.2.7"
+    "vitest": "5.0.5"
   },
   "dependencies": {
     "@infinite-ai/brain": "workspace:*",
@@ -33,6 +33,6 @@
     "@infinite-ai/deident": "workspace:*",
     "@infinite-ai/policy": "workspace:*",
     "@infinite-ai/telemetry": "workspace:*",
-    "zod": "3.25.76"
+    "zod": "4.6.7"
   }
 }

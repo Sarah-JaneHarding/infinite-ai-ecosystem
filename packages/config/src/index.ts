@@ -5,6 +5,7 @@ export {
   EnvironmentValidationError,
   NodeEnv,
   Region,
+  loadDatabaseUrl,
   loadEnv,
   parseEnv,
   resetEnvCacheForTesting,

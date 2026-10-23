@@ -15,37 +15,20 @@
 // in-flight jobs before the process exits. The default BullMQ close timeout is 5 s.
 
 import type { AgentContract } from '@infinite-ai/agents';
-import { remember } from '@infinite-ai/brain';
 import { loadEnv } from '@infinite-ai/config';
 import type { TenantClient } from '@infinite-ai/db';
-import { withTenant } from '@infinite-ai/db';
 import type {
   AgeAppropriatenessChecker,
   EscalationNotifier,
 } from '@infinite-ai/guardrails';
 import type { CapsPhase } from '@infinite-ai/contracts';
-import type { PipelineDefinition, RunnerOptions } from '@infinite-ai/orchestrator';
-import { runToCompletion } from '@infinite-ai/orchestrator';
+import type { PipelineDefinition } from '@infinite-ai/orchestrator';
 import { createLogger, type Logger } from '@infinite-ai/telemetry';
 import { Queue, Worker } from 'bullmq';
-import { z } from 'zod';
 
-import { prepareApproval } from './approval.js';
-import { evaluateCondition } from './condition-evaluator.js';
-import { buildPendingLeSignalJob, type PendingLeSignalJob } from './le-signal-trigger.js';
+import { processPipelineJob } from './job-processor.js';
 import type { PipelineJobData } from './queue-names.js';
 import { QUEUE_LE_SIGNAL } from './queue-names.js';
-import { createStepExecutor } from './step-executor.js';
-import { createToolHandlers } from './tool-handlers.js';
-
-const CapsPhaseSchema = z.enum(['FOUNDATION', 'INTERMEDIATE', 'SENIOR']);
-
-const JobDataSchema = z.object({
-  runId: z.string().min(1),
-  tenantId: z.string().min(1),
-  actorId: z.string().min(1),
-  gradePhase: CapsPhaseSchema.optional(),
-});
 
 export interface WorkerHostDeps {
   readonly pipelines: ReadonlyMap<string, PipelineDefinition>;
@@ -96,87 +79,11 @@ export class WorkerHost {
     const worker = new Worker<PipelineJobData>(
       queueName,
       async (job) => {
-        const jobData = JobDataSchema.parse(job.data);
-        const { runId, tenantId, actorId } = jobData;
-        // gradePhase is read later inside withTenant to build the per-job checker
-
-        // Collected inside the withTenant callback; flushed to BullMQ after the transaction
-        // commits so a DB rollback never leaves a phantom LE signal job in Redis.
-        const pendingLeSignalJobs: PendingLeSignalJob[] = [];
-
-        await withTenant({ tenantId, actorId }, async (tx) => {
-          const toolHandlers = createToolHandlers(tx);
-
-          // Closes over `tx` so the Brain write runs inside the same withTenant transaction
-          // as every other database operation in this job — rule 5.
-          const brainWriter = async (
-            agentId: string,
-            contractVersion: string,
-            output: unknown,
-            runId: string,
-          ): Promise<void> => {
-            await remember(tx, {
-              targetTier: 'L2_EPISODE',
-              rawPayload: {
-                eventType: 'agent_output',
-                subjectNodeId: null,
-                actorId: actorId,
-                occurredAt: new Date().toISOString(),
-                summary: `${agentId}@${contractVersion} persisted output to Brain`,
-                detail: { agentId, contractVersion, runId, agentOutput: output },
-                outcome: null,
-                supersedes: null,
-                dataCategory: null,
-              },
-              source: `${agentId}/${contractVersion}`,
-              derivationRunId: runId,
-            });
-          };
-
-          // Per-job phase-aware checker: when the job carries gradePhase and the host was
-          // given a factory, build a checker scoped to that phase inside this transaction
-          // (OQ-015 Gap 1). Falls back to the static checker or undefined when absent.
-          const jobPhase = jobData.gradePhase;
-          const jobAgeChecker: AgeAppropriatenessChecker | undefined =
-            jobPhase !== undefined &&
-            this.deps.ageAppropriatenessCheckerFactory !== undefined
-              ? this.deps.ageAppropriatenessCheckerFactory(tx, tenantId, jobPhase)
-              : this.deps.ageAppropriatenessChecker;
-
-          // exactOptionalPropertyTypes (rule 8): only set these keys when this host was
-          // actually given a checker/notifier, rather than assigning `undefined` to an
-          // optional field explicitly.
-          const executeStep = createStepExecutor({
-            pipeline,
-            agentContracts: this.deps.agentContracts,
-            promptsRoot: this.deps.promptsRoot,
-            gatewayBaseUrl: env.GATEWAY_BASE_URL,
-            tenantId,
-            toolHandlers,
-            brainWriter,
-            ...(jobAgeChecker === undefined
-              ? {}
-              : { ageAppropriatenessChecker: jobAgeChecker }),
-            ...(this.deps.notify === undefined ? {} : { notify: this.deps.notify }),
-          });
-
-          const runnerOptions: RunnerOptions = {
-            executeStep,
-            prepareApproval,
-            evaluateCondition,
-            onHumanGateResolved: async (tx, _runId, _stepId, task) => {
-              // decidedBy is always set at this point — decideHumanGate requires it —
-              // but guard defensively to avoid a runtime throw.
-              if (task.decidedBy === null) return;
-              const job = await buildPendingLeSignalJob(tx, task, task.decidedBy);
-              if (job !== null) {
-                pendingLeSignalJobs.push(job);
-              }
-            },
-          };
-
-          await runToCompletion(tx, pipeline, runId, runnerOptions);
-        });
+        const pendingLeSignalJobs = await processPipelineJob(
+          { ...this.deps, gatewayBaseUrl: env.GATEWAY_BASE_URL },
+          pipeline,
+          job.data,
+        );
 
         // Flush LE signal jobs after the DB transaction commits — safe to enqueue now.
         for (const leJob of pendingLeSignalJobs) {

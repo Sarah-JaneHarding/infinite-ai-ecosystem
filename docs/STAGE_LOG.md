@@ -10880,3 +10880,166 @@ re-run after the bump (see the PR).
 | `pnpm audit:supply-chain` — high `next` advisory remediated | PASS   |
 | `next` pinned exactly at `16.3.8`; lockfile diff confined   | PASS   |
 | `docs/DEPENDENCIES.md` records the bump (rule 9)            | PASS   |
+
+## Stage 108 — the SBST tabs stop presenting sample learners and SIAS cases as real
+
+**Task.** "Fix the sample data in the SBST views."
+
+**What was there.** Three tabs on the SBST role's only page (`/sbst`):
+
+- **MTSS Overview** — ten invented learners (`L-001` … `L-010`) with grades, tiers, EGRA risk flags and August 2026 screening dates, and
+  the KPI tiles, tier-distribution bar and "Class roster — universal screening results" table computed from them.
+- **SIAS Pipeline** — five invented cases (`SIAS-001` … `SIAS-005`) across four invented "phases", with made-up stages and September 2026
+  review dates, under a footer asserting what the "DoE SIAS Guidelines (2014)" require and when escalation to the district ILST occurs.
+- **EGRA Screening** — a calculator, not sample data (see below).
+
+**Why the first two cannot be wired to real data.** The database holds no screening results, tier placements, interventions or SIAS
+cases (only the analytics feature store, `ScreeningFeature`), so there is no roster or pipeline to read. Worse, the SIAS tab's
+four-phase model was invented here and contradicts the ratified SIAS state machine (`packages/analytics` `sias-state.ts`: ten states,
+SBST ratification before any tier change, referral or exit); the escalation sentence was never supplied by a source (CLAUDE.md: never
+invent SIAS process steps).
+
+**What changed.** The MTSS and SIAS tabs each say "Not available yet" and why; they show no learner, tier, count, case, phase, stage,
+date or process claim. The three tabs, the page and its access rule are unchanged. In `EgraScreeningView.tsx` only a **comment** changed:
+it claimed the benchmarks came from the EGRA reference in `docs/examples`, which is false — recorded as **OQ-035** (different subtests and
+scales, two cut-points per grade, "starting reference values only", and the tier is assigned by a person there, not by a flag count).
+The EGRA tab's behaviour is untouched; whether it should recommend a tier at all is for you.
+
+**Tests.** Web 403 (+15): the two tabs and the whole casebook (every panel renders, hidden or not) contain none of 25 invented strings
+and no table; the EGRA form still renders; `/sbst` opens for `sbst` only (unauthenticated → sign-in; the other seven school and
+platform roles → home). Mutation-checked: putting a sample case back fails 2 tests; opening the page to `teacher` fails 1. Typecheck,
+eslint, prettier clean. **Not viewed in a browser.**
+
+| Exit gate item                                                        | Result        |
+| --------------------------------------------------------------------- | ------------- |
+| No invented learner, tier, case, phase, date or SIAS/escalation claim | PASS (test)   |
+| `/sbst` open to the `sbst` role only                                  | PASS (test)   |
+| EGRA benchmark and tier-rule provenance                               | OPEN (OQ-035) |
+| Browser check                                                         | N/A           |
+
+## Stage 109 — free local testing manual, local-model timeout, single-provider routing
+
+**Task.** "Audit the repository and write a manual for running the ecosystem locally on free
+models so every module and user experience can be tested and edited."
+
+**Audit findings that shaped the change.**
+
+- The gateway reaches a model only through `anthropic`, `openai`, `google` and `local`
+  adapters. `GROQ_*`, `OLLAMA_*`, `LM_STUDIO_*`, `AI_PROVIDER` and `getProviderDefaults()` are
+  declared but not wired into `buildAdapters()`. The `local` and `openai` (with `OPENAI_BASE_URL`)
+  adapters already serve any OpenAI-compatible endpoint, so no new adapter was needed.
+- The openai-compatible adapter's timeout was fixed at 30 s and never configurable: a CPU-only
+  local model would time out. Added `LOCAL_MODEL_TIMEOUT_MS` (default 30 000).
+- The gateway refuses to boot unless every provider in its routing file has a credential, and
+  `routing.json` names four. Added `pnpm routing:local` to derive a one-provider file.
+- `pnpm evals:run` / `evals:gate` use stub executors and a rule-based judge: they never call a
+  model. Only `age-appropriateness:calibrate` makes real model calls today.
+- Nothing in the web app or `scripts/` starts a MOD-01…05 or LE pipeline run; the worker only
+  consumes jobs. Recorded in the manual as the main gap (Part 13).
+
+**Tests.** Gateway +8 (timeout default/override/rejects 0, negative, non-numeric; routing
+derivation happy path, heavy/light split, override, empty model, unknown override). Gateway
+162 passing, lint, typecheck, prettier clean. Config tests (env/.env.example in step) pass.
+
+**Not done / not verified.** The Docker stack and live model calls were not run (no Docker
+daemon or GPU in the sandbox); the manual says so and its commands come from the verified
+Stage 90–94 sequence.
+
+| Exit gate item                                   | Result       |
+| ------------------------------------------------ | ------------ |
+| Gateway lint, typecheck, unit tests              | PASS         |
+| `.env.example` in step with the env schema       | PASS (test)  |
+| Manual's stack and model commands run end to end | NOT VERIFIED |
+| Docs updated in the same commit                  | PASS         |
+
+## Stage 110 — live agent and pipeline runners
+
+**Task.** "Build the live agent and pipeline runner" (Part 13 item 1 of the free-testing manual).
+
+**What changed.**
+
+- `apps/worker/src/dev/`: `agent-runner.ts` (one agent through the worker's own
+  `createStepExecutor`, capturing raw reply/usage/provider/latency/failure stage via a recording
+  `fetch`), `live-eval.ts` (golden set → scored summary, `llm_judge` deferred), `pipeline-runner.ts`
+  (validate input against the agents a pipeline reaches, `startRun` inside `withTenant`, enqueue,
+  read back with `inspectRun`), `schema-template.ts` (input skeletons from Zod), `dev-guard.ts`.
+- `apps/worker/src/pipeline-bindings.ts`: the pipeline→queue table, now used by `index.ts` too
+  (replacing 13 hand-written `.register` calls) so runner and worker cannot disagree.
+- `StepExecutorDeps.fetchImpl` (optional). Scripts: `dev-run-agent`, `evals-run-live`, `dev-run-pipeline`.
+- `@infinite-ai/evals` added to the worker as a workspace dependency (no third-party addition).
+
+**Guardrails.** Gateway remains the only model path (rule 3). The runners accept only the three
+seeded fixture tenants and refuse `NODE_ENV=production` (rule 4: they stamp prompts de-identified,
+honest only for synthetic data; the gateway still checks the tenant lexicon). All database work is
+inside `withTenant` (rule 5). A human gate is never decided by the runner (rule 6).
+
+**Audit findings (recorded in the manual, Part 8.5 / 13).** (1) The runner passes `run.input` to
+every step; one agent's output never reaches the next. (2) The worker adds no L0 retrieval to an
+agent call. (3) `toolbox.draft_artefact` only records a Brain episode - MOD-04 never calls a TB agent.
+(4) 1,242 of 1,473 golden inputs satisfy their agent's input schema; the rest are deliberate negatives.
+
+**Tests.** Worker 114 (+27 new across five files): runner outcomes (ok, non-JSON with full raw text,
+HTTP 500, unreachable gateway, invalid input without a model call, `--send-invalid`, guardrail
+refusal, unknown agent), live-eval scoring (pass/fail/deferred judge/call_failed), pipeline input
+validation and template, binding table covers every worker pipeline once, tenant/production guard.
+Lint, typecheck, prettier clean. Smoke run: the three scripts executed against a throwaway fake
+gateway - template output, tenant refusal, and `evals:run-live --agent CE-01 --limit 6` writing
+`calls.jsonl`/`summary.json` (3 passed, 1 failed, 2 call_failed on injected non-JSON replies).
+
+**Not verified.** `dev:run-pipeline`'s start/enqueue/watch path needs Postgres and Redis (no Docker in
+the sandbox); its validation, template and summary code is unit-tested, the database and queue calls
+are not. No real model was called.
+
+| Exit gate item                                                    | Result       |
+| ----------------------------------------------------------------- | ------------ |
+| Lint, typecheck, worker unit tests                                | PASS         |
+| `evals:run-live` / `dev:run-agent` against a fake gateway         | PASS (smoke) |
+| `dev:run-pipeline` start/enqueue/inspect against Postgres + Redis | NOT VERIFIED |
+| Real model call                                                   | NOT VERIFIED |
+
+## Stage 111 — dev-only chaining and grounding for MOD-01 (OQ-030, option C)
+
+**Task.** "Make pipelines chain outputs and use grounding."
+
+**Found, and why it became a question.** The MOD-01 agents' inputs are small parameter sets, not
+earlier outputs; the prompts take earlier outputs and L0 documents through `context.*` and treat
+any artefact with `ratifiedAt: null` as absent. The pipeline has one human gate at the end and no
+store for ratified artefacts, so chaining in production would mean forging a ratification (rule 6)
+or changing prompts/pipeline. Recorded as OQ-030; the owner chose option C (dev-only chaining).
+
+**What changed.**
+
+- `apps/worker/src/dev/chain-context.ts`: `CHAIN_SPECS` (declarative: which L0 kinds and which
+  upstream artefacts each of CE-01…CE-09 receives, under the prompts' own key names),
+  `assembleChainContext` (pure), `makeChainPayloadBuilder`, `staticContextBuilder`, and the
+  calibration addendum.
+- `apps/worker/src/job-processor.ts` (extracted unchanged from `WorkerHost`, with one optional
+  `payloadBuilder` hook), `age-checker.ts` (extracted from `index.ts`), optional
+  `StepExecutorDeps.buildPayload` (unset in production).
+- `dev/pipeline-runner.ts`: `driveRun` / `runPipelineInProcess`. `dev:run-pipeline --chain
+[--context-file]`; `dev:run-agent --context-file`.
+
+**Guardrails.** No `ratifiedAt` is ever set; drafts are labelled `provisional`; the human gate still
+decides (rule 6). Reads go through `withTenant` (rule 5); the gateway is still the only model path
+(rule 3). The runners keep the fixture-tenant and not-in-production refusals.
+
+**Tests.** Worker 139 (+25): spec table integrity (agents exist; producers precede consumers),
+context assembly (grounding, chaining, needs_input and failed steps treated as missing, item
+matching singular/plural, developer context labelled, `ratifiedAt` never set, no spec -> null),
+payload builders, `processPipelineJob` (tenant scope, hook, no hooks, bad job data), `driveRun`
+(terminal, through a gate, timeout, Learning-Engine jobs counted, vanished run), step-executor
+builder (production unchanged, suffix appended, builder failure fails the step). Lint, typecheck,
+prettier clean. Wire check against an echoing fake gateway: with `--context-file` the model
+receives `{input, context}` and the addendum; without it, the bare input and no addendum.
+
+**Not verified.** `--chain` against Postgres (`runPipelineInProcess`, `makeChainPayloadBuilder`'s
+real database reads, and the extracted `processPipelineJob` against a live database) - no Docker in
+the sandbox. The extraction is mechanical and unit-tested with mocks, but the BullMQ worker should
+be smoke-run once before relying on it.
+
+| Exit gate item                                                       | Result       |
+| -------------------------------------------------------------------- | ------------ |
+| Lint, typecheck, worker unit tests                                   | PASS         |
+| Payload shape on the wire (with and without `--context-file`)        | PASS (smoke) |
+| Production worker behaviour unchanged (default path, existing tests) | PASS (unit)  |
+| `--chain` and the worker against Postgres + Redis                    | NOT VERIFIED |

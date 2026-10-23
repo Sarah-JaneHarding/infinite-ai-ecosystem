@@ -162,6 +162,16 @@ export function loadEnv(): Env {
   return cached;
 }
 
+/**
+ * Reads and validates `DATABASE_URL` alone. The database package connects through a driver
+ * adapter that needs the URL passed in (Prisma 7 no longer reads it itself), and tools that
+ * only touch the database - the seeds - should not be made to carry every other variable
+ * `loadEnv` requires.
+ */
+export function loadDatabaseUrl(): string {
+  return EnvSchema.shape.DATABASE_URL.parse(process.env['DATABASE_URL']);
+}
+
 /** Test-only: drops the cache so a suite can load a different environment. */
 export function resetEnvCacheForTesting(): void {
   cached = undefined;

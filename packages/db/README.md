@@ -12,6 +12,9 @@ checked by.
   transaction and sets `app.tenant_id` transaction-locally; every RLS policy reads it via
   the _raising_ form of `current_setting`, so a context-less query errors instead of
   quietly matching nothing.
+  Under Prisma 7 the client is built in this file by `createPrismaClient` (package-internal)
+  around the `@prisma/adapter-pg` driver adapter, with the URL from `loadDatabaseUrl()`.
+  `prisma.config.ts` (next to `prisma/`) holds the URL the CLI uses for `migrate`/`generate`.
 - `tables.ts` — `TENANT_OWNED_TABLES`, `APPEND_ONLY_TABLES`, `NON_TENANT_TABLES`: the
   classification the RLS isolation suite is driven off of. A new tenant-owned table
   cannot escape the isolation proof without failing a test.

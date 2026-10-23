@@ -24,7 +24,7 @@ export const CE09Input = z.object({
   subject: z.string().min(1),
   termNumber: z.number().int().min(1).max(4),
   academicYear: z.number().int().min(2000).max(2100),
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
 });
 export type CE09Input = z.infer<typeof CE09Input>;
 

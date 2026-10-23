@@ -12,6 +12,33 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Dev-only chaining and grounding for MOD-01** (`pnpm dev:run-pipeline --chain`; OQ-030 option C)
+  - Each CE-01…CE-09 agent gets the ratified L0 documents and the provisional drafts earlier
+    agents produced in the same run, labelled, plus a calibration addendum. Production
+    behaviour, prompts and pipelines unchanged.
+  - `--context-file` for `dev:run-pipeline` and `dev:run-agent`.
+  - Worker: job body extracted to `job-processor.ts` and age-checker wiring to
+    `age-checker.ts` (no behaviour change) so the BullMQ worker and the in-process runner share
+    one code path; optional `StepExecutorDeps.buildPayload` (unset in production).
+
+- **Live agent and pipeline runners** (dev-only; `docs/FREE_LOCAL_TESTING.md` Part 8.3–8.5)
+  - `pnpm dev:run-agent`: one agent against the live gateway via the worker's own step
+    executor; keeps the raw reply, usage, provider, latency and failure stage.
+  - `pnpm evals:run-live`: golden sets on a live model; `calls.jsonl` + `summary.json`.
+  - `pnpm dev:run-pipeline`: validates input, starts a run, enqueues the worker's job, and
+    watches it through the Run Inspector. Never decides a human gate.
+  - Refuses non-fixture tenants and `NODE_ENV=production`.
+  - `StepExecutorDeps.fetchImpl` (optional, default global `fetch`); `PIPELINE_QUEUE_BINDINGS`
+    is now the single pipeline-to-queue table the worker and the runner both use.
+
+- **Free local testing manual** (`docs/FREE_LOCAL_TESTING.md`)
+  - Step-by-step guide to running the stack on a local/free OpenAI-compatible model.
+  - `LOCAL_MODEL_TIMEOUT_MS` (gateway, default 30 000 — behaviour unchanged): the `local`
+    adapter's 30 s request limit was hard-coded and too short for CPU-only models.
+  - `pnpm routing:local` (`scripts/make-local-routing.ts`,
+    `apps/gateway/src/routing/single-provider.ts`): derives a one-provider routing file from
+    `routing.json` so the gateway boots with a single credential.
+
 - **Stage 88 — Task 16, batch 8: READMEs for the three apps (closes Task 16)**
   - `README.md` for `apps/web`, `apps/gateway`, `apps/worker`. Verified two claims
     against real source before writing rather than after: `apps/gateway`'s adapters are

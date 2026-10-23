@@ -23,7 +23,7 @@ export const CE03Input = z.object({
   subjects: z.array(z.string().min(1)).min(1),
   termNumber: z.number().int().min(1).max(4),
   academicYear: z.number().int().min(2000).max(2100),
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
 });
 export type CE03Input = z.infer<typeof CE03Input>;
 
@@ -98,7 +98,7 @@ export const CE04Input = z.object({
   termNumber: z.number().int().min(1).max(4),
   contentArea: z.string().min(1),
   academicYear: z.number().int().min(2000).max(2100),
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
 });
 export type CE04Input = z.infer<typeof CE04Input>;
 
@@ -192,7 +192,7 @@ export type CoverageStatus = z.infer<typeof CoverageStatus>;
  * L3 under the RLS policy — a document without a tenant is not storable.
  */
 export const UnitPlanDocument = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
 
   // Section 1 — Administrative & Contextual Details
   schoolName: z.string().min(1),

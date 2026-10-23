@@ -36,7 +36,7 @@ export type ToolboxEditField = z.infer<typeof ToolboxEditField>;
  * contract violation.
  */
 export const ToolboxEditDiff = z.object({
-  artefactId: z.string().uuid(),
+  artefactId: z.guid(),
   artefactType: ToolboxArtefactType,
   editedAt: z.string().datetime(),
   editedBy: z.string().min(1),
@@ -54,10 +54,10 @@ export type ToolboxEditDiff = z.infer<typeof ToolboxEditDiff>;
  * Brain writes are append-only — this record is never updated or deleted.
  */
 export const TeacherEditSignal = z.object({
-  signalId: z.string().uuid(),
-  tenantId: z.string().uuid(),
+  signalId: z.guid(),
+  tenantId: z.guid(),
   agentId: z.string().min(1),
-  artefactId: z.string().uuid(),
+  artefactId: z.guid(),
   artefactType: ToolboxArtefactType,
   capsTopicId: z.string().min(1),
   editDiff: ToolboxEditDiff,
