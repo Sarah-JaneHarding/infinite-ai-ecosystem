@@ -11007,3 +11007,22 @@ be smoke-run once before relying on it.
 | Payload shape on the wire (with and without `--context-file`)        | PASS (smoke) |
 | Production worker behaviour unchanged (default path, existing tests) | PASS (unit)  |
 | `--chain` and the worker against Postgres + Redis                    | NOT VERIFIED |
+
+## Stage 111 — `next` 16.4.0 → 16.4.3 (GHSA-2464-fhr4-w9xw)
+
+**Task.** "Add the next bump to this branch." CI on PR #155 failed only at `verify:stage 65` →
+`pnpm audit:supply-chain` on new critical advisories against `next@16.4.0` (unauthenticated RCE in
+`use cache`, patched `>=16.4.1`); nothing in this branch's diff touches `apps/web`.
+
+**What changed.** `apps/web/package.json` `next` 16.4.0 → 16.4.3 (exact pin); `pnpm-lock.yaml`
+regenerated, diff confined to `next`, `@next/env` and the `@next/swc-*` binaries;
+`docs/DEPENDENCIES.md` entry and row (rule 9). No source change. `docs/sbom.json` not committed.
+
+**Checks.** `pnpm audit:supply-chain` PASS (was: critical). Web typecheck, 389 unit tests and
+production build green.
+
+| Exit gate item                                               | Result |
+| ------------------------------------------------------------ | ------ |
+| `pnpm audit:supply-chain` - critical `next` advisories fixed | PASS   |
+| `next` pinned exactly at `16.4.3`; lockfile diff confined    | PASS   |
+| `docs/DEPENDENCIES.md` records the bump (rule 9)             | PASS   |
