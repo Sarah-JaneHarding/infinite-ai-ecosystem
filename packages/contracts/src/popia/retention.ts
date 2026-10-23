@@ -71,7 +71,7 @@ export type RetentionRule = z.infer<typeof RetentionRule>;
  * which is how special personal information ends up on the same clock as a class list.
  */
 export const RetentionSchedule = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   rules: z.array(RetentionRule).superRefine((rules, ctx) => {
     const seen = new Set<string>();
     for (const rule of rules) {

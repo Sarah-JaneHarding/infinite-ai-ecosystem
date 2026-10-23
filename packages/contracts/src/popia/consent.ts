@@ -107,8 +107,8 @@ export type ConsentDecision = z.infer<typeof ConsentDecision>;
  * than lost. Evaluation uses `effectiveFrom`; the gap is what an auditor examines.
  */
 const ConsentEntryShape = z.object({
-  id: z.string().uuid(),
-  tenantId: z.string().uuid(),
+  id: z.guid(),
+  tenantId: z.guid(),
   /** Tenant-salted pseudonym: `LNR_…`, `GDN_…`, `STF_…`. */
   subjectToken: z.string().min(1),
   category: DataCategory,
@@ -127,7 +127,7 @@ const ConsentEntryShape = z.object({
   /** When this system learned of it. */
   recordedAt: z.coerce.date(),
   /** The staff account that captured it. Null for system-generated entries. */
-  recordedBy: z.string().uuid().nullable(),
+  recordedBy: z.guid().nullable(),
   /** Free text from the subject, for an objection. Never contains a decision. */
   note: z.string().max(2000).nullable(),
 });

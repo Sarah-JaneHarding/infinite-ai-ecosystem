@@ -27,7 +27,7 @@ import { z } from 'zod';
 // ---------------------------------------------------------------------------
 
 const LEOutputBase = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   processedAt: z.string().datetime(),
 });
 
@@ -40,11 +40,11 @@ export const HITLEventType = z.enum(['approved', 'edited', 'rejected']);
 export type HITLEventType = z.infer<typeof HITLEventType>;
 
 export const LE01Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   /** The HITL gate event to classify. Comes from Stage 06/11's HumanGateDecision records. */
-  gateEventId: z.string().uuid(),
+  gateEventId: z.guid(),
   agentId: z.string().min(1),
-  artefactId: z.string().uuid(),
+  artefactId: z.guid(),
   artefactType: z.string().min(1),
   capsTopicId: z.string().min(1),
   eventType: HITLEventType,
@@ -58,10 +58,10 @@ export type LE01Input = z.infer<typeof LE01Input>;
 
 /** A labelled learning event ready for downstream LE agents. */
 export const LabelledLearningEvent = z.object({
-  eventId: z.string().uuid(),
-  tenantId: z.string().uuid(),
+  eventId: z.guid(),
+  tenantId: z.guid(),
   agentId: z.string().min(1),
-  artefactId: z.string().uuid(),
+  artefactId: z.guid(),
   artefactType: z.string().min(1),
   capsTopicId: z.string().min(1),
   label: HITLEventType,
@@ -110,10 +110,10 @@ export const CorrectionType = z.enum([
 export type CorrectionType = z.infer<typeof CorrectionType>;
 
 export const LE02Input = z.object({
-  tenantId: z.string().uuid(),
-  learningEventId: z.string().uuid(),
+  tenantId: z.guid(),
+  learningEventId: z.guid(),
   agentId: z.string().min(1),
-  artefactId: z.string().uuid(),
+  artefactId: z.guid(),
   artefactType: z.string().min(1),
   capsTopicId: z.string().min(1),
   /** The edit diff captured by Stage 11's toolbox.capture_edit_signal. */
@@ -146,9 +146,9 @@ export type FieldCorrection = z.infer<typeof FieldCorrection>;
 export const LE02Result = z.discriminatedUnion('status', [
   LEOutputBase.extend({
     status: z.literal('ok'),
-    learningEventId: z.string().uuid(),
+    learningEventId: z.guid(),
     agentId: z.string().min(1),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     capsTopicId: z.string().min(1),
     /** Dominant correction type across all field edits. */
     primaryCorrectionType: CorrectionType,
@@ -183,8 +183,8 @@ export const AttributionMethod = z.enum([
 export type AttributionMethod = z.infer<typeof AttributionMethod>;
 
 export const LE03Input = z.object({
-  tenantId: z.string().uuid(),
-  artefactId: z.string().uuid(),
+  tenantId: z.guid(),
+  artefactId: z.guid(),
   artefactType: z.string().min(1),
   agentId: z.string().min(1),
   capsTopicId: z.string().min(1),
@@ -211,7 +211,7 @@ export type LE03Input = z.infer<typeof LE03Input>;
 export const LE03Result = z.discriminatedUnion('status', [
   LEOutputBase.extend({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     agentId: z.string().min(1),
     capsTopicId: z.string().min(1),
     method: AttributionMethod,
@@ -246,13 +246,13 @@ export type LE03Result = z.infer<typeof LE03Result>;
 export const PATTERN_MIN_SAMPLE_SIZE = 10 as const;
 
 export const LE04Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   capsTopicId: z.string().min(1),
   /** Attribution records from LE-03 to mine patterns from. Min 1. */
   attributions: z
     .array(
       z.object({
-        artefactId: z.string().uuid(),
+        artefactId: z.guid(),
         agentId: z.string().min(1),
         method: AttributionMethod,
         confidence: z.number().min(0).max(1),
@@ -267,7 +267,7 @@ export const LE04Input = z.object({
 export type LE04Input = z.infer<typeof LE04Input>;
 
 export const MinedPattern = z.object({
-  patternId: z.string().uuid(),
+  patternId: z.guid(),
   capsTopicId: z.string().min(1),
   agentId: z.string().min(1),
   sampleSize: z.number().int().min(PATTERN_MIN_SAMPLE_SIZE),
@@ -308,14 +308,14 @@ export type LE04Result = z.infer<typeof LE04Result>;
 // ---------------------------------------------------------------------------
 
 export const LE05Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   capsTopicId: z.string().min(1),
   agentId: z.string().min(1),
   /** Artefacts with their eval scores and attribution confidence. */
   candidates: z
     .array(
       z.object({
-        artefactId: z.string().uuid(),
+        artefactId: z.guid(),
         evalScore: z.number().min(0).max(1),
         firstPassAcceptanceRate: z.number().min(0).max(1),
         attributionConfidence: z.number().min(0).max(1),
@@ -327,8 +327,8 @@ export type LE05Input = z.infer<typeof LE05Input>;
 
 /** An exemplar candidate — not yet promoted; requires human ratification (step 6). */
 export const ExemplarCandidate = z.object({
-  candidateId: z.string().uuid(),
-  artefactId: z.string().uuid(),
+  candidateId: z.guid(),
+  artefactId: z.guid(),
   capsTopicId: z.string().min(1),
   agentId: z.string().min(1),
   /** Composite score: weighted combination of evalScore, firstPassAcceptanceRate, attribution. */
@@ -362,7 +362,7 @@ export type LE05Result = z.infer<typeof LE05Result>;
 // ---------------------------------------------------------------------------
 
 export const LE06Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   agentId: z.string().min(1),
   /** Current champion prompt text and version. */
   championPrompt: z.object({
@@ -384,7 +384,7 @@ export type LE06Input = z.infer<typeof LE06Input>;
 
 /** A challenger prompt candidate — never a live champion; requires LE-07 + ratification. */
 export const PromptChallenger = z.object({
-  challengerId: z.string().uuid(),
+  challengerId: z.guid(),
   agentId: z.string().min(1),
   challengerVersion: z.string().min(1),
   content: z.string().min(1),
@@ -432,9 +432,9 @@ export const GatekeeperVerdict = z.enum([
 export type GatekeeperVerdict = z.infer<typeof GatekeeperVerdict>;
 
 export const LE07Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   agentId: z.string().min(1),
-  challengerId: z.string().uuid(),
+  challengerId: z.guid(),
   /** Eval run results for the current champion on the golden set. */
   championEvalResult: z.object({
     overallPassRate: z.number().min(0).max(1),
@@ -483,18 +483,18 @@ export const COMMONS_K_ANONYMITY_THRESHOLD = 5 as const;
 export const LE08Input = z.object({
   /** Publishing tenant's explicit opt-in flag. */
   tenantOptIn: z.boolean(),
-  publishingTenantId: z.string().uuid(),
+  publishingTenantId: z.guid(),
   pattern: MinedPattern,
   /** De-identified tenant references contributing to this pattern. */
-  contributingTenantRefs: z.array(z.string().uuid()).min(1),
+  contributingTenantRefs: z.array(z.guid()).min(1),
   /** The de-identified, aggregated form of the pattern for publication. */
   deidentifiedPayload: z.unknown(),
 });
 export type LE08Input = z.infer<typeof LE08Input>;
 
 export const PublishedPattern = z.object({
-  publishedPatternId: z.string().uuid(),
-  patternId: z.string().uuid(),
+  publishedPatternId: z.guid(),
+  patternId: z.guid(),
   capsTopicId: z.string().min(1),
   agentId: z.string().min(1),
   effectSize: z.number(),
@@ -546,7 +546,7 @@ export const DecayReason = z.enum([
 export type DecayReason = z.infer<typeof DecayReason>;
 
 export const LE09Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   pattern: MinedPattern,
   /** ISO-8601 datetime the pattern was last validated. */
   lastValidatedAt: z.string().datetime(),
@@ -572,19 +572,19 @@ export type LE09Input = z.infer<typeof LE09Input>;
 export const LE09Result = z.discriminatedUnion('status', [
   LEOutputBase.extend({
     status: z.literal('valid'),
-    patternId: z.string().uuid(),
+    patternId: z.guid(),
     daysUntilExpiry: z.number().int().nonnegative(),
   }),
   LEOutputBase.extend({
     status: z.literal('invalidated'),
-    patternId: z.string().uuid(),
+    patternId: z.guid(),
     reason: DecayReason,
     detail: z.string().min(1),
     invalidatedAt: z.string().datetime(),
   }),
   LEOutputBase.extend({
     status: z.literal('revalidation_required'),
-    patternId: z.string().uuid(),
+    patternId: z.guid(),
     reason: DecayReason,
     detail: z.string().min(1),
   }),
@@ -601,10 +601,10 @@ export type LE09Result = z.infer<typeof LE09Result>;
 // ---------------------------------------------------------------------------
 
 export const PromotionLogEntry = z.object({
-  promotionId: z.string().uuid(),
-  tenantId: z.string().uuid(),
+  promotionId: z.guid(),
+  tenantId: z.guid(),
   agentId: z.string().min(1),
-  challengerId: z.string().uuid(),
+  challengerId: z.guid(),
   /** The prompt/exemplar version that was the champion before this promotion. */
   previousChampionVersion: z.string().min(1),
   /** The new champion version after promotion. */
@@ -635,7 +635,7 @@ export const MaturityLevel = z.enum([
 export type MaturityLevel = z.infer<typeof MaturityLevel>;
 
 export const MaturityReport = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   maturityLevel: MaturityLevel,
   /** Edit rate: fraction of artefacts that required teacher edits. Lower is better over time. */
   editRate: z.number().min(0).max(1),

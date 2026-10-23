@@ -20,7 +20,7 @@ approval before it is added.
 | `vitest`                 | 5.0.5   | MIT        | Unit and integration test runner (Part 4 §4.1).                                                                             | —        |
 | `tsx`                    | 4.23.1  | MIT        | Runs `scripts/verify-stage.ts` without a build step.                                                                        | —        |
 | `@types/node`            | 22.20.1 | MIT        | Node type definitions.                                                                                                      | —        |
-| `zod`                    | 3.25.76 | MIT        | Runtime validation. `unknown` + a Zod parse is the sanctioned pattern under rule 8, and every API contract is a Zod schema. | —        |
+| `zod`                    | 4.6.7   | MIT        | Runtime validation. `unknown` + a Zod parse is the sanctioned pattern under rule 8, and every API contract is a Zod schema. | —        |
 
 All licences above are MIT or Apache-2.0. Nothing on this list needs an approval
 exception.
@@ -465,6 +465,23 @@ advisories, including GHSA-2464-fhr4-w9xw (unauthenticated remote code execution
 affecting `>=16.0.0 <=16.4.0` and patched in `>=16.4.1`. `main` already carries `16.4.2` (exact pin, MIT, no replacement), which
 clears them; this entry records it (the row above read 16.3.8 because the move to 16.4.0 and then 16.4.2 was not recorded here).
 After merging `main`: `pnpm audit:supply-chain` PASS.
+
+### `zod` 3.25.76 → 4.6.7 (2026-10-23)
+
+Exact-pinned in every workspace manifest that declares it; licence unchanged (MIT); replaces nothing. What the major bump
+changed in this repository:
+
+- `z.record(value)` needs a key schema: `z.record(z.string(), value)` (18 sites).
+- `z.SafeParseReturnType<unknown, T>` is now `z.ZodSafeParseResult<T>` (one site, the Brain write-path unwrap).
+- `z.string().uuid()` now enforces RFC 9562 version and variant bits, which rejects the all-zero and patterned ids this
+  codebase and its tests use (183 contract tests failed on it). Every site became `z.guid()` (296 sites), which keeps zod 3's
+  accept-any-8-4-4-4-12-hex behaviour exactly. Stricter validation is a separate decision; the database layer's own check in
+  `withTenant` is already RFC-shaped.
+- Schema introspection moved from `_def.typeName` to `_zod.def.type`. The one consumer, `apps/worker/src/dev/schema-template.ts`
+  (the input-skeleton generator behind `--template`), was rewritten for it and gained tests for the new shapes.
+
+After the bump: lint, format, typecheck (53 packages), unit tests with coverage thresholds and
+`pnpm audit:supply-chain` pass locally; the database integration suites run in CI.
 
 ### `vitest` 3.2.7 → 5.0.5 and `@vitest/coverage-v8` 3.2.7 → 5.0.5 (2026-10-23)
 

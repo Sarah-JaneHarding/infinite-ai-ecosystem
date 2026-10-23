@@ -8,7 +8,7 @@ describe('templateFor', () => {
     const schema = z.object({
       name: z.string(),
       count: z.number(),
-      id: z.string().uuid(),
+      id: z.guid(),
       phase: z.enum(['FOUNDATION', 'SENIOR']),
       tags: z.array(z.string()),
       note: z.string().optional(),
@@ -28,6 +28,23 @@ describe('templateFor', () => {
     expect(templateFor(z.number().default(3))).toBe(0);
     expect(templateFor(z.string().refine((s) => s.length > 0))).toBe('<string>');
     expect(templateFor(z.union([z.literal('a'), z.literal('b')]))).toBe('a');
+  });
+
+  it('handles datetime strings, literals, transforms and nullable wrappers', () => {
+    expect(templateFor(z.string().datetime())).toBe('2026-01-01T00:00:00.000Z');
+    expect(templateFor(z.literal('ok'))).toBe('ok');
+    expect(templateFor(z.string().transform((v) => v.length))).toBe('<string>');
+    expect(templateFor(z.number().nullable())).toBe(0);
+    expect(templateFor(z.record(z.string(), z.number()))).toEqual({});
+  });
+
+  it('produces a valid input for a real agent contract', () => {
+    const schema = z.object({
+      tenantId: z.guid(),
+      grade: z.enum(['R', '1']),
+      subjects: z.array(z.string()).min(1),
+    });
+    expect(schema.safeParse(templateFor(schema)).success).toBe(true);
   });
 
   it('falls back to a visible marker for a schema kind it does not know', () => {

@@ -34,7 +34,7 @@ export const CE06Input = z.object({
   termNumber: z.number().int().min(1).max(4),
   taskKind: AssessmentTaskKind,
   academicYear: z.number().int().min(2000).max(2100),
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
 });
 export type CE06Input = z.infer<typeof CE06Input>;
 
@@ -125,7 +125,7 @@ export const CE07Input = z.object({
   grade: GradeLabel,
   subject: z.string().min(1),
   taskKind: AssessmentTaskKind,
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   totalMarks: z.number().int().positive(),
 });
 export type CE07Input = z.infer<typeof CE07Input>;
@@ -204,7 +204,7 @@ export const SbaBlueprintRow = z.object({
 export type SbaBlueprintRow = z.infer<typeof SbaBlueprintRow>;
 
 export const SbaBlueprint = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   subject: z.string().min(1),
   grade: GradeLabel,
   termNumber: z.number().int().min(1).max(4),
@@ -240,7 +240,7 @@ export const MarkingMemoMatrix = z.object({
 export type MarkingMemoMatrix = z.infer<typeof MarkingMemoMatrix>;
 
 export const MarkingMemo = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   subject: z.string().min(1),
   examinationName: z.string().min(1),
   totalMarks: z.number().int().positive(),
