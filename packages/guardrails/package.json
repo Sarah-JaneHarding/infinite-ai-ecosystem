@@ -24,7 +24,7 @@
     "@vitest/coverage-v8": "3.2.7",
     "testcontainers": "12.2.1",
     "typescript": "6.0.3",
-    "vitest": "3.2.7"
+    "vitest": "5.0.5"
   },
   "dependencies": {
     "@infinite-ai/brain": "workspace:*",
