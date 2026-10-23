@@ -10880,3 +10880,38 @@ re-run after the bump (see the PR).
 | `pnpm audit:supply-chain` — high `next` advisory remediated | PASS   |
 | `next` pinned exactly at `16.3.8`; lockfile diff confined   | PASS   |
 | `docs/DEPENDENCIES.md` records the bump (rule 9)            | PASS   |
+
+## Stage 108 — free local testing manual, local-model timeout, single-provider routing
+
+**Task.** "Audit the repository and write a manual for running the ecosystem locally on free
+models so every module and user experience can be tested and edited."
+
+**Audit findings that shaped the change.**
+
+- The gateway reaches a model only through `anthropic`, `openai`, `google` and `local`
+  adapters. `GROQ_*`, `OLLAMA_*`, `LM_STUDIO_*`, `AI_PROVIDER` and `getProviderDefaults()` are
+  declared but not wired into `buildAdapters()`. The `local` and `openai` (with `OPENAI_BASE_URL`)
+  adapters already serve any OpenAI-compatible endpoint, so no new adapter was needed.
+- The openai-compatible adapter's timeout was fixed at 30 s and never configurable: a CPU-only
+  local model would time out. Added `LOCAL_MODEL_TIMEOUT_MS` (default 30 000).
+- The gateway refuses to boot unless every provider in its routing file has a credential, and
+  `routing.json` names four. Added `pnpm routing:local` to derive a one-provider file.
+- `pnpm evals:run` / `evals:gate` use stub executors and a rule-based judge: they never call a
+  model. Only `age-appropriateness:calibrate` makes real model calls today.
+- Nothing in the web app or `scripts/` starts a MOD-01…05 or LE pipeline run; the worker only
+  consumes jobs. Recorded in the manual as the main gap (Part 13).
+
+**Tests.** Gateway +8 (timeout default/override/rejects 0, negative, non-numeric; routing
+derivation happy path, heavy/light split, override, empty model, unknown override). Gateway
+162 passing, lint, typecheck, prettier clean. Config tests (env/.env.example in step) pass.
+
+**Not done / not verified.** The Docker stack and live model calls were not run (no Docker
+daemon or GPU in the sandbox); the manual says so and its commands come from the verified
+Stage 90–94 sequence.
+
+| Exit gate item                                   | Result       |
+| ------------------------------------------------ | ------------ |
+| Gateway lint, typecheck, unit tests              | PASS         |
+| `.env.example` in step with the env schema       | PASS (test)  |
+| Manual's stack and model commands run end to end | NOT VERIFIED |
+| Docs updated in the same commit                  | PASS         |

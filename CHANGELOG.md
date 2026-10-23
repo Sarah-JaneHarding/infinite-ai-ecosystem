@@ -12,6 +12,14 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Free local testing manual** (`docs/FREE_LOCAL_TESTING.md`)
+  - Step-by-step guide to running the stack on a local/free OpenAI-compatible model.
+  - `LOCAL_MODEL_TIMEOUT_MS` (gateway, default 30 000 — behaviour unchanged): the `local`
+    adapter's 30 s request limit was hard-coded and too short for CPU-only models.
+  - `pnpm routing:local` (`scripts/make-local-routing.ts`,
+    `apps/gateway/src/routing/single-provider.ts`): derives a one-provider routing file from
+    `routing.json` so the gateway boots with a single credential.
+
 - **Stage 88 — Task 16, batch 8: READMEs for the three apps (closes Task 16)**
   - `README.md` for `apps/web`, `apps/gateway`, `apps/worker`. Verified two claims
     against real source before writing rather than after: `apps/gateway`'s adapters are
