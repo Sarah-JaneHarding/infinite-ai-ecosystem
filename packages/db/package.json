@@ -30,7 +30,7 @@
     "@infinite-ai/contracts": "workspace:*",
     "@testcontainers/postgresql": "12.2.1",
     "@vitest/coverage-v8": "3.2.7",
-    "prisma": "6.19.3",
+    "prisma": "7.10.1",
     "testcontainers": "12.2.1",
     "tsx": "4.23.15",
     "typescript": "6.0.3",
