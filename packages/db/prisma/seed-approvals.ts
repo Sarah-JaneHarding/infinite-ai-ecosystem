@@ -4,7 +4,10 @@
 // exist). Run it as the migrator, like db:seed. Idempotent: every write is an upsert on a
 // fixed id, and the upsert's update is empty, so a second run changes nothing.
 
-import { PrismaClient } from '@prisma/client';
+import { loadDatabaseUrl } from '@infinite-ai/config';
+import type { PrismaClient } from '@prisma/client';
+
+import { createPrismaClient } from '../src/client.js';
 
 import { APPROVAL_FIXTURES, type ApprovalFixture } from './approval-fixtures.js';
 
@@ -62,7 +65,7 @@ export async function seedApprovals(
 }
 
 async function main(): Promise<void> {
-  const prisma = new PrismaClient();
+  const prisma = createPrismaClient(loadDatabaseUrl());
   try {
     const count = await seedApprovals(prisma);
     console.log(`seeded ${count} dev approval gates`);

@@ -14,15 +14,14 @@
 // The Infinite Brain (L0-L4) is added in Stage 05, below.
 
 generator client {
-  // Default output (node_modules/.prisma/client), so `@prisma/client` resolves to the
-  // real generated types. A custom output path makes `@prisma/client` a stub, and every
-  // call on it then type-checks as an untyped function.
+  // Default output, so `@prisma/client` resolves to the real generated types. A custom output
+  // path makes `@prisma/client` a stub, and every call on it then type-checks as an untyped
+  // function. Prisma 7 needs a driver adapter at construction time - see src/client.ts.
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ---------------------------------------------------------------------------
