@@ -473,3 +473,24 @@ access matrix gives neither platform role any right to learner records or tier p
 - The smallest group that may be reported (the "minimum cohort size") is a policy number. I have not picked one.
 
 Until decided, the page asserts no control it does not exercise.
+
+### OQ-035 — the EGRA screening tab's benchmarks and tier rule have no supplied source · 2026-10-08
+
+Found while removing the sample data from the SBST tabs. `EgraScreeningView.tsx` carries a benchmark table (per grade, per subtest) and
+a rule that turns the number of below-benchmark subtests into a tier recommendation (0 → Tier 1, 1–2 → Tier 2, 3+ → Tier 3). Its
+comment said the benchmarks were "sourced from the EGRA MTSS Data System reference" (`docs/examples/mod-02-analytics/`). They are not:
+
+- The reference uses different subtests (initial sound, letter sound, nonword decoding, familiar words, oral passage WCPM, reading and
+  listening comprehension) on different scales (e.g. `/10`, `/5`), and **two cut-points per grade** (well-below, benchmark) — the view
+  uses one number and different subtests (LSI, PA, NWF, WR, ORF, LC, RC) with other values (e.g. Grade 2 letter sounds 72 vs 30/50).
+- The reference says its values are "starting reference values only … Recalibrate these using your own baseline data, DBE guidance, or
+  a district norm-referencing exercise." EGRA has no single fixed cut-score.
+- In the reference a **person** assigns the tier ("Assign / Update Intervention"); there is no flag-count rule. The 0 / 1–2 / 3+ rule
+  was written into the view.
+
+The tab is a calculator (nothing is stored) and says its output is a screening recommendation the SBST must confirm, so I left its
+behaviour alone and only corrected the false "sourced from" comment. But it does put an invented threshold and an invented tier rule in
+front of a support team.
+
+**Needs a human:** which benchmark set and cut-points the school (or DBE guidance) actually uses, and whether the app should recommend a
+tier at all or only show scores against the school's own benchmarks. Until decided the numbers are placeholders, not policy.

@@ -10880,3 +10880,39 @@ re-run after the bump (see the PR).
 | `pnpm audit:supply-chain` — high `next` advisory remediated | PASS   |
 | `next` pinned exactly at `16.3.8`; lockfile diff confined   | PASS   |
 | `docs/DEPENDENCIES.md` records the bump (rule 9)            | PASS   |
+
+## Stage 108 — the SBST tabs stop presenting sample learners and SIAS cases as real
+
+**Task.** "Fix the sample data in the SBST views."
+
+**What was there.** Three tabs on the SBST role's only page (`/sbst`):
+
+- **MTSS Overview** — ten invented learners (`L-001` … `L-010`) with grades, tiers, EGRA risk flags and August 2026 screening dates, and
+  the KPI tiles, tier-distribution bar and "Class roster — universal screening results" table computed from them.
+- **SIAS Pipeline** — five invented cases (`SIAS-001` … `SIAS-005`) across four invented "phases", with made-up stages and September 2026
+  review dates, under a footer asserting what the "DoE SIAS Guidelines (2014)" require and when escalation to the district ILST occurs.
+- **EGRA Screening** — a calculator, not sample data (see below).
+
+**Why the first two cannot be wired to real data.** The database holds no screening results, tier placements, interventions or SIAS
+cases (only the analytics feature store, `ScreeningFeature`), so there is no roster or pipeline to read. Worse, the SIAS tab's
+four-phase model was invented here and contradicts the ratified SIAS state machine (`packages/analytics` `sias-state.ts`: ten states,
+SBST ratification before any tier change, referral or exit); the escalation sentence was never supplied by a source (CLAUDE.md: never
+invent SIAS process steps).
+
+**What changed.** The MTSS and SIAS tabs each say "Not available yet" and why; they show no learner, tier, count, case, phase, stage,
+date or process claim. The three tabs, the page and its access rule are unchanged. In `EgraScreeningView.tsx` only a **comment** changed:
+it claimed the benchmarks came from the EGRA reference in `docs/examples`, which is false — recorded as **OQ-035** (different subtests and
+scales, two cut-points per grade, "starting reference values only", and the tier is assigned by a person there, not by a flag count).
+The EGRA tab's behaviour is untouched; whether it should recommend a tier at all is for you.
+
+**Tests.** Web 403 (+15): the two tabs and the whole casebook (every panel renders, hidden or not) contain none of 25 invented strings
+and no table; the EGRA form still renders; `/sbst` opens for `sbst` only (unauthenticated → sign-in; the other seven school and
+platform roles → home). Mutation-checked: putting a sample case back fails 2 tests; opening the page to `teacher` fails 1. Typecheck,
+eslint, prettier clean. **Not viewed in a browser.**
+
+| Exit gate item                                                        | Result        |
+| --------------------------------------------------------------------- | ------------- |
+| No invented learner, tier, case, phase, date or SIAS/escalation claim | PASS (test)   |
+| `/sbst` open to the `sbst` role only                                  | PASS (test)   |
+| EGRA benchmark and tier-rule provenance                               | OPEN (OQ-035) |
+| Browser check                                                         | N/A           |
