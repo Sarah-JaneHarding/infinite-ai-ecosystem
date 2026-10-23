@@ -3,10 +3,10 @@
 // is proven separately in test/routing/router.spec.ts.
 
 import type { AddressInfo } from 'node:net';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 
-import { createLogger, createTracer, type Span } from '@infinite-ai/telemetry';
+import { createLogger, createTracer } from '@infinite-ai/telemetry';
 import type { TenantLexicon } from '@infinite-ai/deident';
 
 import { BudgetTracker } from '../src/budgets/budget.js';
@@ -48,9 +48,12 @@ function baseRequestBody(
 
 let server: ReturnType<typeof createGatewayServer>;
 let baseUrl: string;
-let routeChatCompletion: ReturnType<typeof vi.fn>;
-let routeEmbeddings: ReturnType<typeof vi.fn>;
-let routeChatCompletionStream: ReturnType<typeof vi.fn>;
+// Typed against the router so vitest 5's `Mock<Procedure | Constructable>` default (which is
+// not assignable to a concrete function type) is not what the deps object receives.
+type Router = GatewayServerDeps['router'];
+let routeChatCompletion: Mock<Router['routeChatCompletion']>;
+let routeEmbeddings: Mock<Router['routeEmbeddings']>;
+let routeChatCompletionStream: Mock<Router['routeChatCompletionStream']>;
 let spanExporter: InMemorySpanExporter;
 
 function start(overrides: Partial<GatewayServerDeps> = {}): void {
@@ -383,21 +386,19 @@ describe('POST /v1/chat/completions — tracing (Stage 04 step 8)', () => {
   });
 
   it('passes the request span through to the router, so fallback events land on the trace', async () => {
-    routeChatCompletion.mockImplementation(
-      async (_request: unknown, span?: Span): Promise<unknown> => {
-        span?.addEvent('gateway.fallback', {
-          provider: 'anthropic',
-          reason: 'rate_limited',
-        });
-        return {
-          result: {
-            content: 'A lesson plan.',
-            usage: { promptTokens: 5, completionTokens: 5, totalTokens: 10 },
-          },
-          provider: 'openai',
-        };
-      },
-    );
+    routeChatCompletion.mockImplementation(async (_request, span) => {
+      span?.addEvent('gateway.fallback', {
+        provider: 'anthropic',
+        reason: 'rate_limited',
+      });
+      return {
+        result: {
+          content: 'A lesson plan.',
+          usage: { promptTokens: 5, completionTokens: 5, totalTokens: 10 },
+        },
+        provider: 'openai',
+      };
+    });
 
     await post('/v1/chat/completions', baseRequestBody());
 

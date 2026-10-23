@@ -96,8 +96,9 @@ export function rollupClass(
     if (r.interventionActive) interventionCount++;
   }
 
-  const interventionRate =
-    learnerReports.length > 0 ? interventionCount / learnerReports.length : null;
+  // The cohort-size guard above makes `learnerReports.length` at least MIN_COHORT_SIZE here,
+  // so the division is always defined.
+  const interventionRate = interventionCount / learnerReports.length;
   const fidelityRate =
     fidelityAdequateCounts !== undefined && fidelityAdequateCounts.total > 0
       ? fidelityAdequateCounts.adequate / fidelityAdequateCounts.total
