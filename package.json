@@ -49,6 +49,7 @@
     "test:billing:reconcile": "pnpm --filter @infinite-ai/billing test:reconcile",
     "test:tenant-deletion": "pnpm --filter @infinite-ai/db exec vitest run test/tenant-deletion.integration.spec.ts",
     "check:flags": "tsx scripts/check-feature-flags.ts",
+    "routing:local": "tsx scripts/make-local-routing.ts",
     "curriculum:seed": "tsx scripts/seed-curriculum.ts",
     "curriculum:ratify": "tsx scripts/ratify-curriculum.ts",
     "templates:seed": "tsx scripts/seed-templates.ts",
