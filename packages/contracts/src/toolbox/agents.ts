@@ -35,8 +35,8 @@ import { GradeBand, ReadabilityCheckResult } from './readability.js';
  */
 const TBLinkageBase = z.object({
   capsTopicId: z.string().min(1),
-  lessonId: z.string().uuid().optional(),
-  interventionId: z.string().uuid().optional(),
+  lessonId: z.guid().optional(),
+  interventionId: z.guid().optional(),
 });
 
 /** Shared superRefine that enforces at least one linkage field. */
@@ -56,8 +56,8 @@ const requireOneLinkage = (
 /** The linkage fields that appear inside every TB-agent output's 'ok' variant. */
 export const TBOutputLinkage = z.object({
   capsTopicId: z.string().min(1),
-  lessonId: z.string().uuid().optional(),
-  interventionId: z.string().uuid().optional(),
+  lessonId: z.guid().optional(),
+  interventionId: z.guid().optional(),
 });
 export type TBOutputLinkage = z.infer<typeof TBOutputLinkage>;
 
@@ -77,7 +77,7 @@ export const WorksheetSection = z.object({
 export type WorksheetSection = z.infer<typeof WorksheetSection>;
 
 export const TB01Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   subject: z.string().min(1),
   learningObjectives: z.array(z.string().min(1)).min(1),
@@ -94,7 +94,7 @@ export type TB01Input = z.infer<typeof TB01Input>;
 export const TB01Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('WORKSHEET'),
     linkage: TBOutputLinkage,
     sections: z.array(WorksheetSection).min(1),
@@ -145,7 +145,7 @@ export const Slide = z.object({
 export type Slide = z.infer<typeof Slide>;
 
 export const TB02Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   subject: z.string().min(1),
   topic: z.string().min(1),
@@ -163,7 +163,7 @@ export type TB02Input = z.infer<typeof TB02Input>;
 export const TB02Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('BOARD_DECK'),
     linkage: TBOutputLinkage,
     slides: z.array(Slide).min(1),
@@ -188,7 +188,7 @@ export type TB02Result = z.infer<typeof TB02Result>;
 // ---------------------------------------------------------------------------
 
 export const TB03Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   subject: z.string().min(1),
   topic: z.string().min(1),
@@ -209,7 +209,7 @@ export type TB03Input = z.infer<typeof TB03Input>;
 export const TB03Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('READING_PASSAGE'),
     linkage: TBOutputLinkage,
     title: z.string().min(1),
@@ -258,7 +258,7 @@ export type MCOption = z.infer<typeof MCOption>;
 
 /** One written assessment item — question only, no answer. Answer key is TB-05's domain. */
 export const AssessmentItem = z.object({
-  itemId: z.string().uuid(),
+  itemId: z.guid(),
   questionText: z.string().min(1),
   itemType: AssessmentItemType,
   cognitiveLevel: CognitiveLevel,
@@ -269,7 +269,7 @@ export const AssessmentItem = z.object({
 export type AssessmentItem = z.infer<typeof AssessmentItem>;
 
 export const TB04Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   subject: z.string().min(1),
   topic: z.string().min(1),
@@ -287,7 +287,7 @@ export type TB04Input = z.infer<typeof TB04Input>;
 export const TB04Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('ASSESSMENT_ITEM'),
     linkage: TBOutputLinkage,
     items: z.array(AssessmentItem).min(1),
@@ -313,7 +313,7 @@ export type TB04Result = z.infer<typeof TB04Result>;
 
 /** One item sent to TB-05 for answer-key production (questions + mark allocation). */
 export const TB05ItemInput = z.object({
-  itemId: z.string().uuid(),
+  itemId: z.guid(),
   questionText: z.string().min(1),
   itemType: AssessmentItemType,
   options: z.array(MCOption),
@@ -323,7 +323,7 @@ export type TB05ItemInput = z.infer<typeof TB05ItemInput>;
 
 /** One item in the produced answer key (before or after verification). */
 export const AnswerKeyEntry = z.object({
-  itemId: z.string().uuid(),
+  itemId: z.guid(),
   modelAnswer: z.string().min(1),
   markingCriteria: z.string().min(1),
   /** For multiple_choice, the optionId of the correct answer. */
@@ -333,7 +333,7 @@ export type AnswerKeyEntry = z.infer<typeof AnswerKeyEntry>;
 
 /** One verifier's independent answers for comparison. */
 export const VerifierAnswers = z.object({
-  itemId: z.string().uuid(),
+  itemId: z.guid(),
   verifierAnswer: z.string().min(1),
   correctOptionId: z.string().optional(),
 });
@@ -341,7 +341,7 @@ export type VerifierAnswers = z.infer<typeof VerifierAnswers>;
 
 /** Per-item verification comparison result. */
 export const TB05VerificationItem = z.object({
-  itemId: z.string().uuid(),
+  itemId: z.guid(),
   authorAnswer: z.string().min(1),
   verifierAnswer: z.string().min(1),
   agrees: z.boolean(),
@@ -349,10 +349,10 @@ export const TB05VerificationItem = z.object({
 export type TB05VerificationItem = z.infer<typeof TB05VerificationItem>;
 
 export const TB05Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   /** The TB-04 output artefact this memo is built for. */
-  assessmentArtefactId: z.string().uuid(),
+  assessmentArtefactId: z.guid(),
   items: z.array(TB05ItemInput).min(1),
   language: z.string().min(2).max(5),
   requestedBy: z.string().min(1),
@@ -362,7 +362,7 @@ export type TB05Input = z.infer<typeof TB05Input>;
 export const TB05Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('verified'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('MARKING_MEMO'),
     linkage: TBOutputLinkage,
     answerKey: z.array(AnswerKeyEntry).min(1),
@@ -406,10 +406,10 @@ export const OfficialLanguage = z.enum([
 export type OfficialLanguage = z.infer<typeof OfficialLanguage>;
 
 export const TB06Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   /** UUID of the source artefact being adapted. */
-  sourceArtefactId: z.string().uuid(),
+  sourceArtefactId: z.guid(),
   /** Type of the source artefact — determines how content is structured for adaptation. */
   sourceArtefactType: ToolboxArtefactType,
   /** Full text content of the source artefact to adapt. */
@@ -437,7 +437,7 @@ export type TB06Input = z.infer<typeof TB06Input>;
 export const TB06Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('HOME_LANGUAGE_ADAPTED'),
     linkage: TBOutputLinkage,
     adaptedContent: z.string().min(1),
@@ -469,10 +469,10 @@ export type TB06Result = z.infer<typeof TB06Result>;
 // ---------------------------------------------------------------------------
 
 export const TB07Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   /** UUID of the source artefact being adapted. */
-  sourceArtefactId: z.string().uuid(),
+  sourceArtefactId: z.guid(),
   /** Type of the source artefact — determines how content is structured for adaptation. */
   sourceArtefactType: ToolboxArtefactType,
   /** Full text content of the source artefact to adapt. */
@@ -488,7 +488,7 @@ export type TB07Input = z.infer<typeof TB07Input>;
 export const TB07Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('ACCESSIBLE_ARTEFACT'),
     linkage: TBOutputLinkage,
     adaptedContent: z.string().min(1),
@@ -537,7 +537,7 @@ export const RemediationSection = z.object({
 export type RemediationSection = z.infer<typeof RemediationSection>;
 
 export const TB08Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   subject: z.string().min(1),
   /**
@@ -563,7 +563,7 @@ export type TB08Input = z.infer<typeof TB08Input>;
 export const TB08Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('REMEDIATION_PACK'),
     linkage: TBOutputLinkage,
     /** One section per missed skill, in the order supplied in the input. */
@@ -615,7 +615,7 @@ export const ExtensionSection = z.object({
 export type ExtensionSection = z.infer<typeof ExtensionSection>;
 
 export const TB09Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   subject: z.string().min(1),
   topic: z.string().min(1),
@@ -642,7 +642,7 @@ export type TB09Input = z.infer<typeof TB09Input>;
 export const TB09Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('EXTENSION_PACK'),
     linkage: TBOutputLinkage,
     sections: z.array(ExtensionSection).min(1),
@@ -689,7 +689,7 @@ export const ActivityStep = z.object({
 export type ActivityStep = z.infer<typeof ActivityStep>;
 
 export const TB10Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   subject: z.string().min(1),
   topic: z.string().min(1),
@@ -708,7 +708,7 @@ export type TB10Input = z.infer<typeof TB10Input>;
 export const TB10Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('ACTIVITY_PLAN'),
     linkage: TBOutputLinkage,
     activityTitle: z.string().min(1),
@@ -747,7 +747,7 @@ export type TB10Result = z.infer<typeof TB10Result>;
  * display", "worksheet illustration") to help the artist frame the composition.
  */
 export const TB11Input = TBLinkageBase.extend({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gradeLabel: GradeLabel,
   subject: z.string().min(1),
   topic: z.string().min(1),
@@ -763,7 +763,7 @@ export type TB11Input = z.infer<typeof TB11Input>;
 export const TB11Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.literal('VISUAL_BRIEF'),
     linkage: TBOutputLinkage,
     /** Written description of the image the teacher should commission. */

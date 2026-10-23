@@ -5,6 +5,7 @@ import { Header } from '@/components/shell/Header';
 import { Nav } from '@/components/shell/Nav';
 import { ImpersonationBanner } from '@/components/shell/ImpersonationBanner';
 import { ROLE_NAV } from '@/lib/roles';
+import { loadTenantLabel } from '@/lib/tenant-name-loader';
 import type { Role } from '@infinite-ai/policy';
 
 export default async function ShellLayout({
@@ -18,7 +19,10 @@ export default async function ShellLayout({
   const role = session.role as Role;
   const links = ROLE_NAV[role];
   const userName = session.user?.name ?? session.user?.email ?? 'User';
-  const tenantName = session.tenantId ?? 'Infinite AI';
+  const tenantName = await loadTenantLabel({
+    tenantId: session.tenantId,
+    actorId: session.userId,
+  });
 
   return (
     <div className="flex flex-col min-h-dvh">

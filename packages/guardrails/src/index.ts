@@ -56,9 +56,25 @@ export {
 } from './brain-age-appropriateness.js';
 
 export {
+  NO_VERDICT_PREFIX,
   createGatewayAgeAppropriatenessJudge,
+  isNoVerdict,
   type JudgeGatewayCallFn,
 } from './age-appropriateness-judge.js';
+
+export {
+  LabelledCase,
+  LabelledCoverage,
+  checkLabelledSet,
+} from './age-appropriateness-labelled-set.js';
+
+export {
+  runCalibration,
+  selectCases,
+  summariseCalibration,
+  type CalibrationResult,
+  type CalibrationSummary,
+} from './age-appropriateness-calibration.js';
 
 export {
   GuardrailEscalationError,

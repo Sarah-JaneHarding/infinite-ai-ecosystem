@@ -39,9 +39,9 @@ export const FORMAT_SUPPORT: Readonly<
 
 export const RenderRequest = z.object({
   artefact: z.object({
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: ToolboxArtefactType,
-    tenantId: z.string().uuid(),
+    tenantId: z.guid(),
   }),
   format: ToolboxOutputFormat,
   /** The school's ratified template version. Absent means no template has been ratified. */
@@ -53,8 +53,8 @@ export type RenderRequest = z.infer<typeof RenderRequest>;
 export const RenderResult = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('accepted'),
-    jobId: z.string().uuid(),
-    artefactId: z.string().uuid(),
+    jobId: z.guid(),
+    artefactId: z.guid(),
     format: ToolboxOutputFormat,
   }),
   z.object({

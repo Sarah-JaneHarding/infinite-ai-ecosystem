@@ -1,0 +1,92 @@
+{
+  "curriculum.map": [{ "provider": "anthropic", "concreteModel": "claude-opus-4-5" }],
+  "curriculum.assess": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "curriculum.audit": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "curriculum.design": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "curriculum.differentiate": [
+    { "provider": "anthropic", "concreteModel": "claude-sonnet-5" }
+  ],
+  "curriculum.lessons": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "curriculum.plan": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "curriculum.rubric": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "curriculum.sequence": [
+    { "provider": "anthropic", "concreteModel": "claude-sonnet-5" }
+  ],
+  "plan.author": [{ "provider": "anthropic", "concreteModel": "claude-opus-4-5" }],
+  "plan.verify": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "support.screen": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "support.health": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "analytics.screen": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "analytics.report": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "data.consent": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "data.deident": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "data.ingest": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "data.map": [{ "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }],
+  "data.materialise": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "data.quality": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "data.insight": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "data.nextstep": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "le.attribution": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "le.commons": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "le.correction": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "le.decay": [{ "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }],
+  "le.evolver": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "le.exemplar": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "le.gatekeeper": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "le.pattern": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "le.signal": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "pd.aggregate": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "pd.analyse": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "pd.assess": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "pd.coach": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "pd.compose": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "pd.coverage": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "pd.cptd": [{ "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }],
+  "pd.detect": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "pd.observe": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "pd.plan": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "toolbox.generate": [{ "provider": "anthropic", "concreteModel": "claude-sonnet-5" }],
+  "toolbox.adapt": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ],
+  "warehouse.synthesise": [
+    { "provider": "anthropic", "concreteModel": "claude-sonnet-5" }
+  ],
+  "guardrail.age_appropriateness": [
+    { "provider": "anthropic", "concreteModel": "claude-haiku-4-5-20251001" }
+  ]
+}

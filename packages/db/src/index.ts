@@ -57,6 +57,7 @@ export {
 } from './tables.js';
 
 export { readTenantLexicon } from './lexicon.js';
+export { readTenantName } from './tenant-name.js';
 
 export {
   BrainWriteError,
@@ -151,6 +152,7 @@ export {
   decideApprovalTask,
   getApprovalTask,
   getApprovalTaskForStep,
+  listPendingApprovalTasks,
   openApprovalTask,
   type ApprovalDecisionOutcome,
   type ApprovalTaskRow,

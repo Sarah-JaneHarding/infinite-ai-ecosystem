@@ -27,7 +27,7 @@ export const CE01Input = z.object({
   /** The subjects to map. One or more — a caller requesting zero subjects has nothing to
    * do, so the schema refuses rather than returning an empty framework. */
   subjects: z.array(z.string().min(1)).min(1),
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
 });
 export type CE01Input = z.infer<typeof CE01Input>;
 
@@ -146,7 +146,7 @@ export const CE02Input = z.object({
   subjects: z.array(z.string().min(1)).min(1),
   /** The academic year to sequence for, e.g. 2026. */
   academicYear: z.number().int().min(2000).max(2100),
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   /** School-specific calendar blocks. When present, they override the DBE calendar for
    * matching weeks. When absent, the ATP document's own calendar is used unchanged. */
   schoolCalendar: z.array(SchoolCalendarBlock).optional(),

@@ -4,12 +4,8 @@ import type { NextRequest } from 'next/server';
 
 import { buildCsp, generateNonce } from '@infinite-ai/security';
 
-/** Public paths that do not require authentication. */
-const PUBLIC = ['/sign-in', '/api/auth'];
-
-function isPublic(pathname: string): boolean {
-  return PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-}
+import { isApiPath, isPublic, roleMayReach } from './lib/route-access';
+import { readRole } from './lib/session-role';
 
 /**
  * Deliberately does not use next-auth's `withAuth` wrapper. `withAuth`'s own
@@ -23,23 +19,44 @@ function isPublic(pathname: string): boolean {
  */
 export default async function proxy(req: NextRequest): Promise<NextResponse> {
   // Generate a fresh nonce for every request so each page's CSP is unique.
-  // The nonce is forwarded to the page via a request header; layouts read it and pass
-  // it to <Script nonce={nonce}> tags. The CSP is set on the response so the browser
-  // enforces it before executing any script.
+  //
+  // The CSP goes on BOTH the request and the response, and that is load-bearing:
+  //  - on the response, the browser enforces it before executing any script;
+  //  - on the request, Next.js reads it during server rendering, extracts the
+  //    `'nonce-…'` value and stamps it onto the framework's own <script> tags and any
+  //    <Script nonce> it emits (see Next's "Content Security Policy" guide). With it
+  //    only on the response, nothing carries the nonce, `strict-dynamic` trusts nothing,
+  //    and the browser blocks every script — the page renders but never hydrates.
+  // That only works for dynamically rendered pages; the root layout opts in with
+  // `await connection()`. `x-nonce` is kept for any server component that needs the
+  // value itself.
   const nonce = generateNonce();
   const csp = buildCsp(nonce);
 
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-nonce', nonce);
+  requestHeaders.set('Content-Security-Policy', csp);
 
   const { pathname, search } = req.nextUrl;
 
   if (!isPublic(pathname)) {
     const token = await getToken({ req });
-    if (!token) {
+    // A token with no valid role is not a session (see lib/session-role.ts): treated like
+    // no token at all, never as some default role.
+    const role = token === null ? null : readRole(token['role']);
+    if (role === null) {
       const signInUrl = new URL('/sign-in', req.url);
       signInUrl.searchParams.set('callbackUrl', `${pathname}${search}`);
       return NextResponse.redirect(signInUrl);
+    }
+
+    // Who may reach this route (lib/route-access.ts). Default deny: an unlisted route
+    // reaches nobody. A handler gets a 403; a page sends the person home, which is what
+    // each page's own role check already did.
+    if (!roleMayReach(role, pathname)) {
+      return isApiPath(pathname)
+        ? NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        : NextResponse.redirect(new URL('/', req.url));
     }
   }
 

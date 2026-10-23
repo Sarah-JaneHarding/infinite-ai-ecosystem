@@ -20,8 +20,8 @@ export const APPROVAL_VALIDITY_HOURS = 24;
 
 export const ImpersonationRequest = z.object({
   /** The platform user asking. */
-  actorId: z.string().uuid(),
-  tenantId: z.string().uuid(),
+  actorId: z.guid(),
+  tenantId: z.guid(),
   /**
    * Why. Free text with a floor, because "support" is not a reason and a reason nobody
    * can read afterwards is the same as none.
@@ -35,21 +35,21 @@ export type ImpersonationRequest = z.infer<typeof ImpersonationRequest>;
 
 /** A tenant administrator's approval. Impersonation cannot start without one. */
 export const TenantApproval = z.object({
-  approvedByUserId: z.string().uuid(),
+  approvedByUserId: z.guid(),
   approvedAt: z.date(),
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
 });
 export type TenantApproval = z.infer<typeof TenantApproval>;
 
 export const ImpersonationSession = z.object({
-  id: z.string().uuid(),
-  actorId: z.string().uuid(),
-  tenantId: z.string().uuid(),
+  id: z.guid(),
+  actorId: z.guid(),
+  tenantId: z.guid(),
   reason: z.string().min(20),
   ticketRef: z.string().nullable(),
   startedAt: z.date(),
   expiresAt: z.date(),
-  approvedByUserId: z.string().uuid(),
+  approvedByUserId: z.guid(),
   endedAt: z.date().nullable(),
 });
 export type ImpersonationSession = z.infer<typeof ImpersonationSession>;

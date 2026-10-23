@@ -24,8 +24,8 @@ import { GradeLabel } from '../curriculum/framework.js';
 // ---------------------------------------------------------------------------
 
 const SignalBase = z.object({
-  tenantId: z.string().uuid(),
-  signalId: z.string().uuid(),
+  tenantId: z.guid(),
+  signalId: z.guid(),
   capturedAt: z.string().datetime(),
 });
 
