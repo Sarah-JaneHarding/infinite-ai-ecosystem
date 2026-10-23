@@ -93,18 +93,18 @@ export type Action = z.infer<typeof Action>;
 /** One role held by an actor, optionally narrowed to a school, class or subject. */
 export const RoleGrant = z.object({
   role: Role,
-  schoolId: z.string().uuid().nullable(),
-  classGroupId: z.string().uuid().nullable(),
-  subjectId: z.string().uuid().nullable(),
+  schoolId: z.guid().nullable(),
+  classGroupId: z.guid().nullable(),
+  subjectId: z.guid().nullable(),
   /** Null means it does not lapse. A past value is treated as no grant at all. */
   expiresAt: z.date().nullable(),
 });
 export type RoleGrant = z.infer<typeof RoleGrant>;
 
 export const Actor = z.object({
-  userId: z.string().uuid(),
+  userId: z.guid(),
   /** The tenant this session is scoped to. */
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   grants: z.array(RoleGrant),
   /**
    * Learners this actor is a guardian of. Empty for everyone else.
@@ -113,7 +113,7 @@ export const Actor = z.object({
    * stays pure and synchronous — an authorisation function that does I/O is one that gets
    * skipped "just this once" for performance.
    */
-  guardianOfLearnerIds: z.array(z.string().uuid()).default([]),
+  guardianOfLearnerIds: z.array(z.guid()).default([]),
   /** Set while a platform role is acting inside a tenant. See impersonation.ts. */
   impersonating: z.boolean().default(false),
 });
@@ -121,14 +121,14 @@ export type Actor = z.infer<typeof Actor>;
 
 export const Resource = z.object({
   type: ResourceType,
-  tenantId: z.string().uuid(),
-  schoolId: z.string().uuid().nullable().default(null),
-  classGroupId: z.string().uuid().nullable().default(null),
-  subjectId: z.string().uuid().nullable().default(null),
+  tenantId: z.guid(),
+  schoolId: z.guid().nullable().default(null),
+  classGroupId: z.guid().nullable().default(null),
+  subjectId: z.guid().nullable().default(null),
   /** For learner-owned resources: whose learner record this concerns. */
-  learnerId: z.string().uuid().nullable().default(null),
+  learnerId: z.guid().nullable().default(null),
   /** The user who owns or authored this resource, where that applies. */
-  ownerId: z.string().uuid().nullable().default(null),
+  ownerId: z.guid().nullable().default(null),
 });
 export type Resource = z.infer<typeof Resource>;
 

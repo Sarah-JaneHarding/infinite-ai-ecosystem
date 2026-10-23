@@ -197,7 +197,7 @@ export type GradeFramework = z.infer<typeof GradeFramework>;
 
 /** The full framework for a school, one entry per grade it offers. */
 export const CurriculumFramework = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   academicYear: z.number().int(),
   grades: z.array(GradeFramework).min(1),
   /** Every document this framework was derived from, for audit. */

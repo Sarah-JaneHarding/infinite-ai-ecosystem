@@ -34,7 +34,7 @@ export const PerformanceRow = z.object({
 export type PerformanceRow = z.infer<typeof PerformanceRow>;
 
 export const ParentProgressReport = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   surname: z.string().min(1),
   firstNames: z.string().min(1),
   gradeSection: GradeLabel,

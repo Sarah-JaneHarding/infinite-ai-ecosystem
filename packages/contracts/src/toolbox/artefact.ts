@@ -50,8 +50,8 @@ export const ARTEFACT_TYPE_TO_AGENT: Readonly<Record<ToolboxArtefactType, string
 export const ArtefactLinkage = z
   .object({
     capsTopicId: z.string().min(1),
-    lessonId: z.string().uuid().optional(),
-    interventionId: z.string().uuid().optional(),
+    lessonId: z.guid().optional(),
+    interventionId: z.guid().optional(),
   })
   .superRefine((linkage, ctx) => {
     if (linkage.lessonId === undefined && linkage.interventionId === undefined) {
@@ -74,9 +74,9 @@ export type ArtefactLinkage = z.infer<typeof ArtefactLinkage>;
  * deliver an artefact to a learner until both are non-null.
  */
 export const ToolboxArtefact = z.object({
-  artefactId: z.string().uuid(),
+  artefactId: z.guid(),
   artefactType: ToolboxArtefactType,
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   linkage: ArtefactLinkage,
   /** ISO 639-1 code for the language this artefact is written in. */
   language: z.string().min(2).max(5),

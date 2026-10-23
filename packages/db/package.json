@@ -30,14 +30,16 @@
     "@infinite-ai/contracts": "workspace:*",
     "@testcontainers/postgresql": "12.2.1",
     "@vitest/coverage-v8": "5.0.5",
-    "prisma": "6.19.3",
+    "prisma": "7.10.1",
     "testcontainers": "12.2.1",
     "tsx": "4.23.15",
     "typescript": "6.0.3",
     "vitest": "5.0.5"
   },
   "dependencies": {
+    "@infinite-ai/config": "workspace:*",
     "@infinite-ai/telemetry": "workspace:*",
-    "@prisma/client": "6.19.3"
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1"
   }
 }

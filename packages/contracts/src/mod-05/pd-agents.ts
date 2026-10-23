@@ -31,7 +31,7 @@ import { CohortSuppressionResult } from './signals.js';
 // ---------------------------------------------------------------------------
 
 const PDOutputBase = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   generatedAt: z.string().datetime(),
 });
 
@@ -46,7 +46,7 @@ const NeedsInput = z.object({
 // ---------------------------------------------------------------------------
 
 export const PD01Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   subject: z.string().min(1),
   gradeLabel: GradeLabel,
   /** ISO-8601 date range for the analysis window. */
@@ -90,7 +90,7 @@ export type PD01Result = z.infer<typeof PD01Result>;
 // ---------------------------------------------------------------------------
 
 export const PD02Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   assessmentSignals: z.array(z.unknown()).min(1),
   /** If provided, filter analysis to this topic. */
   capsTopicId: z.string().min(1).optional(),
@@ -146,7 +146,7 @@ export type PD02Result = z.infer<typeof PD02Result>;
 // ---------------------------------------------------------------------------
 
 export const PD03Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   /** Walkthrough notes to synthesise. All teacher refs must be anonymised. */
   walkthroughNotes: z.array(z.unknown()).min(1),
   /** Optional: restrict synthesis to a single focus area. */
@@ -193,7 +193,7 @@ export type PD03Result = z.infer<typeof PD03Result>;
 // ---------------------------------------------------------------------------
 
 export const PD04Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   /** All four signal types may be present; at least one required. */
   signals: z.array(z.unknown()).min(1),
   /** Cohort size for suppression check — must be counted before aggregation. */
@@ -231,7 +231,7 @@ export type PD04Result = z.infer<typeof PD04Result>;
 // ---------------------------------------------------------------------------
 
 export const PD05Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   /** Output from PD-04 (serialised as unknown to avoid circular imports). */
   needProfile: z.unknown(),
   /** Available PD interventions from the school's L3 exemplars. */
@@ -269,7 +269,7 @@ export type PD05Result = z.infer<typeof PD05Result>;
 // ---------------------------------------------------------------------------
 
 export const PD06Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gap: z.unknown(),
   /** L3 exemplars and school evidence to ground the course content. */
   sourceDocumentIds: z.array(z.string().min(1)).min(1),
@@ -293,7 +293,7 @@ export type MicroCourseModule = z.infer<typeof MicroCourseModule>;
 export const PD06Result = z.discriminatedUnion('status', [
   PDOutputBase.extend({
     status: z.literal('ok'),
-    courseId: z.string().uuid(),
+    courseId: z.guid(),
     title: z.string().min(1),
     targetGap: z.string().min(1),
     totalEstimatedMinutes: z.number().int().min(20).max(40),
@@ -313,10 +313,10 @@ export type PD06Result = z.infer<typeof PD06Result>;
 // ---------------------------------------------------------------------------
 
 export const PD07Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   gap: z.unknown(),
   /** Reference to the micro-course produced by PD-06, if available. */
-  courseId: z.string().uuid().optional(),
+  courseId: z.guid().optional(),
   /** Number of coaching sessions to plan for. */
   sessionCount: z.number().int().min(1).max(6),
   sourceDocumentIds: z.array(z.string().min(1)).min(1),
@@ -340,7 +340,7 @@ export type CoachingSession = z.infer<typeof CoachingSession>;
 export const PD07Result = z.discriminatedUnion('status', [
   PDOutputBase.extend({
     status: z.literal('ok'),
-    planId: z.string().uuid(),
+    planId: z.guid(),
     targetGap: z.string().min(1),
     sessions: z.array(CoachingSession).min(1),
     /** Overarching coaching goal statement. */
@@ -356,7 +356,7 @@ export type PD07Result = z.infer<typeof PD07Result>;
 // ---------------------------------------------------------------------------
 
 export const PD08Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   /** Opaque anonymised teacher reference. */
   teacherRef: z.string().min(1),
   /** Activity that may qualify for CPTD points. */
