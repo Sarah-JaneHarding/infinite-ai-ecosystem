@@ -32,7 +32,7 @@ role at this school", and what proves that the person signing in is that person.
 | The token's `tenant_id` and role claims both come from **Keycloak** (a user attribute and the realm roles)                                                                         | `infra/keycloak/realm.json` mappers                            |
 | The onboarding wizard's staff step records only a **count and an import method** — no names, emails or roles                                                                       | `packages/provisioning/src/wizard.ts` `ImportStaffInputSchema` |
 | RBAC has a `staff_member` resource (admin: read/create/update) but **no resource for accounts or role assignments**                                                                | `packages/policy/src/rbac.ts`                                  |
-| Nothing in the codebase sends email or calls the Keycloak admin API                                                                                                                | grep of `packages`, `apps`                                     |
+| No mail-sending library or SMTP code, and no call to the Keycloak admin API, was found (OQ-021 names a mail account for dunning notices, but no sender exists)                     | grep of `packages`, `apps`, `infra`                            |
 | The audit ledger forbids plaintext personal information in an event's `diff`                                                                                                       | `packages/db/src/audit.ts`                                     |
 | `docs/SECURITY.md` says MFA is enforced in Keycloak for `admin`, `smt` and `platform_*`, but **`realm.json` contains no MFA, required-action or email-verification configuration** | `docs/SECURITY.md` §7 vs `realm.json`                          |
 
@@ -202,8 +202,9 @@ session. Two cheap mitigations, both recommended:
 
 - `decideHumanGate`'s existing role check also requires the deciding account to be `ACTIVE` (today
   it checks only the role assignment);
-- shorten the application session's lifetime to match the 30-minute refresh token in
-  `docs/SECURITY.md` §7, or re-check account status when the token is refreshed.
+- shorten the application session's lifetime, or re-check account status periodically. `auth.ts`
+  sets no `maxAge`, so next-auth's default (30 days) applies, while `docs/SECURITY.md` §7 describes
+  30-minute refresh tokens at the provider — the application session outlives them by a wide margin.
 
 Offboarding sets `OFFBOARDED`, expires role assignments (`expiresAt`), and leaves audit and consent
 history intact (OQ-022). It never deletes the row.
