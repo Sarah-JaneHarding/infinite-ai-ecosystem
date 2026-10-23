@@ -9,9 +9,6 @@
 // development (ts-node / tsx) and after build. In production the build output mirrors the
 // monorepo layout, so the relative ../../packages/prompts/src path holds in both cases.
 
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
-
 import { SNSClient } from '@aws-sdk/client-sns';
 import {
   CE01Contract,
@@ -72,14 +69,6 @@ import {
 } from '@infinite-ai/agents';
 import type { AgentContract } from '@infinite-ai/agents';
 import { loadEnv } from '@infinite-ai/config';
-import { ChatCompletionRequest, ChatCompletionResponse } from '@infinite-ai/contracts';
-import {
-  createBrainAgeAppropriatenessChecker,
-  createGatewayAgeAppropriatenessJudge,
-  type DeidentificationProvenance,
-  type JudgeGatewayCallFn,
-} from '@infinite-ai/guardrails';
-import { loadPromptFile } from '@infinite-ai/prompts';
 import {
   LE_COMMONS_PIPELINE,
   LE_EVOLUTION_PIPELINE,
@@ -113,7 +102,9 @@ import {
   QUEUE_MOD05_CPTD,
   QUEUE_MOD05_PD,
 } from './queue-names.js';
+import { buildAgeCheckerFactory, resolvePromptsRoot } from './age-checker.js';
 import { createWorkerHealthServer } from './health-server.js';
+import { PIPELINE_QUEUE_BINDINGS } from './pipeline-bindings.js';
 import { createSnsEscalationNotifier } from './sns-escalation-notifier.js';
 import { WorkerHost } from './worker-host.js';
 
@@ -239,54 +230,6 @@ export function buildPipelineMap(): ReadonlyMap<string, PipelineDefinition> {
   return map;
 }
 
-/** The absolute path to the prompts source tree — works from both src/ and built output. */
-function resolvePromptsRoot(): string {
-  const thisFile = fileURLToPath(import.meta.url);
-  return path.resolve(path.dirname(thisFile), '../../../packages/prompts/src');
-}
-
-/**
- * `JudgeGatewayCallFn` implementation for `createGatewayAgeAppropriatenessJudge` — the same
- * "POST to /v1/chat/completions, throw on a non-2xx response" shape `step-executor.ts`'s own
- * `runAgentCall` already uses for every other gateway call this app makes. Throwing here
- * (rather than swallowing) is deliberate: the judge's own fail-closed try/catch is what turns
- * this into `appropriate: false` — this function's job is just to report the failure
- * honestly, not to decide what it means.
- */
-function createWorkerGatewayCall(gatewayBaseUrl: string): JudgeGatewayCallFn {
-  return async (request) => {
-    const response = await fetch(`${gatewayBaseUrl}/v1/chat/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(ChatCompletionRequest.parse(request)),
-    });
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(
-        `Gateway returned HTTP ${response.status} for the age-appropriateness judge: ` +
-          text.slice(0, 300),
-      );
-    }
-    const rawJson: unknown = await response.json();
-    return ChatCompletionResponse.parse(rawJson);
-  };
-}
-
-/**
- * The provenance stamp for the judge's own gateway call. Honest only for the scope
- * `createBrainAgeAppropriatenessChecker` already documents itself as built for — MOD-01/
- * MOD-04 curriculum-planning pipelines, which carry no learner-derived text (the same
- * `CURRICULUM_PROVENANCE` reasoning `packages/curriculum-seed`'s CE executors already use).
- * A pipeline whose output could carry learner-derived text needs a real de-identification
- * step before this stamp would be true for it — see `age-appropriateness-judge.ts`'s own
- * header for why this is a required constructor parameter rather than a silent default.
- */
-const CURRICULUM_PLANNING_PROVENANCE: DeidentificationProvenance = {
-  deidentified: true,
-  saltVersion: 0,
-  dropped: [],
-};
-
 /** Starts all BullMQ consumers and blocks until SIGTERM or SIGINT. */
 export async function start(): Promise<void> {
   const env = loadEnv();
@@ -310,14 +253,7 @@ export async function start(): Promise<void> {
     ],
   });
 
-  // OQ-015 Gap 2 (model-call half): a real AgeAppropriatenessJudge, loaded once at
-  // startup rather than per-call — the prompt body never changes between calls within one
-  // process lifetime, the same "load once, reuse" shape contracts/prompts loading already
-  // gets for agent prompts via WorkerHost's own promptsRoot.
-  const { body: ageAppropriatenessJudgePromptBody } = loadPromptFile(
-    path.join(resolvePromptsRoot(), 'AGE-APPROPRIATENESS-JUDGE', '1.0.0.prompt.md'),
-  );
-  const ageAppropriatenessGatewayCall = createWorkerGatewayCall(env.GATEWAY_BASE_URL);
+  const ageAppropriatenessCheckerFactory = buildAgeCheckerFactory(env.GATEWAY_BASE_URL);
 
   const host = new WorkerHost({
     pipelines: buildPipelineMap(),
@@ -331,18 +267,7 @@ export async function start(): Promise<void> {
     // verdict via the Model Gateway and fails closed if that call cannot be completed (see
     // age-appropriateness-judge.ts's own header). Jobs without gradePhase fall through to
     // undefined (no checker) — unchanged from before this wiring.
-    ageAppropriatenessCheckerFactory: (tx, tenantId, phase) =>
-      createBrainAgeAppropriatenessChecker(
-        tx,
-        tenantId,
-        phase,
-        createGatewayAgeAppropriatenessJudge(
-          ageAppropriatenessGatewayCall,
-          tenantId,
-          ageAppropriatenessJudgePromptBody,
-          CURRICULUM_PLANNING_PROVENANCE,
-        ),
-      ),
+    ageAppropriatenessCheckerFactory,
     // OQ-014: wire the real SNS notifier when the topic ARN is configured.
     // When absent, WorkerHost's default falls through to defaultEscalationNotifier
     // which throws loudly rather than silently no-oping on a safeguarding refusal.
@@ -356,20 +281,9 @@ export async function start(): Promise<void> {
         }),
   });
 
-  host
-    .register(QUEUE_MOD01, MOD01_CURRICULUM_PIPELINE.id)
-    .register(QUEUE_MOD02_RTI, MOD02_RTI_PIPELINE.id)
-    .register(QUEUE_MOD02_MONITORING, MOD02_MONITORING_PIPELINE.id)
-    .register(QUEUE_MOD02_SBST_SCRIBE, MOD02_SBST_SCRIBE_PIPELINE.id)
-    .register(QUEUE_MOD03_WAREHOUSE, MOD03_WAREHOUSE_PIPELINE.id)
-    .register(QUEUE_MOD04, MOD04_TOOLBOX_PIPELINE.id)
-    .register(QUEUE_MOD05_CPTD, MOD05_CPTD_PIPELINE.id)
-    .register(QUEUE_MOD05_PD, MOD05_PD_ANALYSIS_PIPELINE.id)
-    .register(QUEUE_LE_SIGNAL, LE_SIGNAL_PIPELINE.id)
-    .register(QUEUE_LE_PATTERN_MINING, LE_PATTERN_PIPELINE.id)
-    .register(QUEUE_LE_EVOLUTION, LE_EVOLUTION_PIPELINE.id)
-    .register(QUEUE_LE_EXEMPLAR, LE_EXEMPLAR_PIPELINE.id)
-    .register(QUEUE_LE_COMMONS, LE_COMMONS_PIPELINE.id);
+  for (const { queue, pipeline } of PIPELINE_QUEUE_BINDINGS) {
+    host.register(queue, pipeline.id);
+  }
 
   const health = createWorkerHealthServer();
   health.listen(env.WORKER_PORT);

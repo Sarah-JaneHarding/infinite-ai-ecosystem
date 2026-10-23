@@ -272,6 +272,8 @@ describe('POST /v1/chat/completions — streaming', () => {
         next: () => Promise.reject(error),
         return: () => Promise.resolve({ done: true, value: undefined }),
         throw: (err: unknown) => Promise.reject(err),
+        // Required by AsyncGenerator since @types/node 26 pulls in lib.esnext.disposable.
+        [Symbol.asyncDispose]: () => Promise.resolve(),
         [Symbol.asyncIterator]() {
           return this;
         },
