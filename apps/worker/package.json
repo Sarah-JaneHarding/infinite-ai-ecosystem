@@ -23,6 +23,7 @@
     "@infinite-ai/config": "workspace:*",
     "@infinite-ai/contracts": "workspace:*",
     "@infinite-ai/db": "workspace:*",
+    "@infinite-ai/evals": "workspace:*",
     "@infinite-ai/guardrails": "workspace:*",
     "@infinite-ai/orchestrator": "workspace:*",
     "@infinite-ai/prompts": "workspace:*",
