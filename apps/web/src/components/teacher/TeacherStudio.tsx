@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { ModularCard } from '@infinite-ai/design-system';
 import { Badge } from '@infinite-ai/design-system';
-import { CurriculumMapView, type CurriculumRow } from './CurriculumMapView';
+import type { CurriculumMapData } from '@/lib/atp-curriculum';
+import { CurriculumMapView } from './CurriculumMapView';
 import { DailyScheduleView } from './DailyScheduleView';
 import { LessonPlanView } from './LessonPlanView';
 
@@ -46,81 +47,27 @@ const MOCK_INTERVENTION = {
   ],
 };
 
-// ── Sample curriculum rows (demo data only — real rows come from the engine) ──
+// ── Honest labelling of the panels that are not connected to data yet ────────
 
-const SAMPLE_ROWS: CurriculumRow[] = [
-  {
-    week: 1,
-    lessonNumber: 1,
-    term: 1,
-    topic: 'Personal Narrative — My Story',
-    walt: 'write a personal recount in chronological order',
-    successCriteria:
-      'I can use first-person pronouns, time connectives, and past tense correctly.',
-    faTechnique: 'Exit ticket',
-    activity: 'Shared writing of a class recount; pair-share drafts.',
-    resources: 'DBE Workbook Gr 6 p.4; sentence-strip kit',
-  },
-  {
-    week: 1,
-    lessonNumber: 2,
-    term: 1,
-    topic: 'Personal Narrative — My Story',
-    walt: 'edit a draft for spelling and punctuation',
-    successCriteria: 'I can identify and correct at least 3 errors in my draft.',
-    faTechnique: 'Peer assessment',
-    activity: 'Swap-and-mark using a peer checklist.',
-    resources: 'Peer checklist (photocopied)',
-  },
-  {
-    week: 2,
-    lessonNumber: 3,
-    term: 1,
-    topic: 'Nouns — Proper & Common',
-    walt: 'identify and classify nouns in a text',
-    successCriteria: 'I can sort 10 nouns into proper and common columns.',
-    faTechnique: 'Whiteboards / show-me',
-    activity: 'Word-sort activity using noun cards; whiteboard quick-writes.',
-    resources: 'Noun card set; mini-whiteboards',
-  },
-  {
-    week: 2,
-    lessonNumber: 4,
-    term: 1,
-    topic: 'Nouns — Proper & Common',
-    walt: 'use capital letters correctly for proper nouns',
-    successCriteria: 'I can rewrite 5 sentences with correct capitalisation.',
-    faTechnique: 'Marking & feedback',
-    activity: 'Written task in DBE Workbook; teacher marks with 2-stars-and-a-wish.',
-    resources: 'DBE Workbook Gr 6 p.8',
-  },
-  {
-    week: 3,
-    lessonNumber: 5,
-    term: 1,
-    topic: 'Verbs — Action & Linking',
-    walt: 'distinguish action verbs from linking verbs in sentences',
-    successCriteria: 'I can underline action verbs in blue and linking verbs in red.',
-    faTechnique: 'Traffic lights',
-    activity: 'Colour-coded sentence analysis; traffic-light self-rating.',
-    resources: 'Highlighter set; printed sentences',
-  },
-  {
-    week: 4,
-    lessonNumber: 6,
-    term: 2,
-    topic: 'Descriptive Writing — Settings',
-    walt: 'use sensory language to describe a place',
-    successCriteria: 'My paragraph includes details for at least 3 senses.',
-    faTechnique: 'Self-assessment',
-    activity: 'Sensory-web pre-writing; guided paragraph draft.',
-    resources: 'Sensory web template; photos of settings',
-  },
-];
+function SampleDataNotice({ children }: { readonly children: React.ReactNode }) {
+  return (
+    <p
+      role="note"
+      className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-[var(--iai-border)] bg-[var(--iai-bg-subtle)] px-3 py-2 text-xs text-[var(--iai-text)]"
+    >
+      <Badge variant="warning">Sample data</Badge>
+      <span>{children}</span>
+    </p>
+  );
+}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function TeacherStudio() {
+export function TeacherStudio({
+  curriculum,
+}: {
+  readonly curriculum: CurriculumMapData;
+}) {
   const [activeTab, setActiveTab] = useState<TabId>('curriculum');
 
   // AI-studio sub-state
@@ -179,12 +126,7 @@ export function TeacherStudio() {
         aria-labelledby="tab-curriculum"
         hidden={activeTab !== 'curriculum'}
       >
-        <CurriculumMapView
-          subject="English Home Language"
-          grade="Grade 6"
-          academicYear={2026}
-          rows={SAMPLE_ROWS}
-        />
+        <CurriculumMapView data={curriculum} />
       </div>
 
       {/* Daily Schedule */}
@@ -194,6 +136,9 @@ export function TeacherStudio() {
         aria-labelledby="tab-schedule"
         hidden={activeTab !== 'schedule'}
       >
+        <SampleDataNotice>
+          Illustrative timetable only — your school's timetable is not connected yet.
+        </SampleDataNotice>
         <DailyScheduleView
           grade="Grade 6"
           week={1}
@@ -226,6 +171,10 @@ export function TeacherStudio() {
         aria-labelledby="tab-planner"
         hidden={activeTab !== 'planner'}
       >
+        <SampleDataNotice>
+          Illustrative lesson plan only — it is not read from, or saved to, your school's
+          lesson plans.
+        </SampleDataNotice>
         <LessonPlanView
           grade="Grade 6"
           subject="English Home Language"
@@ -243,6 +192,10 @@ export function TeacherStudio() {
         aria-labelledby="tab-ai-studio"
         hidden={activeTab !== 'ai-studio'}
       >
+        <SampleDataNotice>
+          Demonstration only — nothing on this tab is generated by a model, and nothing is
+          saved when you press Approve or Reject.
+        </SampleDataNotice>
         {/* Primary action cards */}
         {flow === 'idle' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

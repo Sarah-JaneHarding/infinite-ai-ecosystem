@@ -21,7 +21,7 @@ export const CE05Input = z.object({
   weekNumber: z.number().int().positive(),
   termNumber: z.number().int().min(1).max(4),
   academicYear: z.number().int().min(2000).max(2100),
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   templateId: z.string().min(1),
 });
 export type CE05Input = z.infer<typeof CE05Input>;
@@ -99,7 +99,7 @@ export const CE08Input = z.object({
   weekNumber: z.number().int().positive(),
   termNumber: z.number().int().min(1).max(4),
   academicYear: z.number().int().min(2000).max(2100),
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   tiers: z.array(DifferentiationTierName).min(1),
 });
 export type CE08Input = z.infer<typeof CE08Input>;
@@ -156,7 +156,7 @@ export type DifferentiationResult = z.infer<typeof DifferentiationResult>;
 // ---------------------------------------------------------------------------
 
 export const LessonPlanBlueprint = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   subject: z.string().min(1),
   grade: GradeLabel,
   date: z.string().min(1),

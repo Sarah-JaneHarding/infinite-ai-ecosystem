@@ -1,11 +1,15 @@
-import { Card } from '@infinite-ai/design-system';
-import { Badge } from '@infinite-ai/design-system';
+import { Badge, Card } from '@infinite-ai/design-system';
 
-const SCHOOLS = [
-  { name: 'School A', tenants: 501, tier1Pct: 81, tier2Pct: 14, tier3Pct: 5 },
-  { name: 'School B', tenants: 387, tier1Pct: 84, tier2Pct: 12, tier3Pct: 4 },
-  { name: 'School C', tenants: 620, tier1Pct: 79, tier2Pct: 16, tier3Pct: 5 },
-];
+// This page used to list three invented schools ("School A/B/C", 501/387/620 learners, tier
+// percentages) under "Aggregated, de-identified data only. Minimum cohort size enforced."
+// There is nothing real to show, and nothing here may pretend otherwise:
+//  - the platform has no district or cross-school rollup: every table that holds learner or
+//    support data is tenant-scoped, and the access policy (`packages/policy` rbac) gives
+//    neither platform role any right to read a school's learner records or tier placements;
+//  - the "minimum cohort size" the old text promised is a control this page never exercised,
+//    and no such rule exists in the codebase, so the page must not assert one.
+// A real rollup needs its own decision (what is aggregated, by whom, under what purpose and
+// cohort floor), recorded in docs/OPEN_QUESTIONS.md (OQ-034). Until then the page says so.
 
 export function DistrictRollup() {
   return (
@@ -20,77 +24,26 @@ export function DistrictRollup() {
             District Rollup
           </h1>
           <p className="text-sm text-[var(--iai-text-subtle)] mt-0.5">
-            Aggregated, de-identified data only. Minimum cohort size enforced.
+            Platform access only.
           </p>
         </div>
-        <Badge variant="info">De-identified</Badge>
+        <Badge variant="info">Platform access</Badge>
       </div>
 
-      <div className="overflow-x-auto">
-        <Card>
-          <table className="w-full text-sm" role="table">
-            <caption className="sr-only">Learner tier distribution by school</caption>
-            <thead>
-              <tr className="border-b border-[var(--iai-border)]">
-                <th
-                  scope="col"
-                  className="text-left py-2 pr-6 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  School
-                </th>
-                <th
-                  scope="col"
-                  className="text-right py-2 pr-6 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  Learners
-                </th>
-                <th
-                  scope="col"
-                  className="text-right py-2 pr-6 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  T1
-                </th>
-                <th
-                  scope="col"
-                  className="text-right py-2 pr-6 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  T2
-                </th>
-                <th
-                  scope="col"
-                  className="text-right py-2 text-xs font-semibold text-[var(--iai-text-subtle)] uppercase tracking-wide"
-                >
-                  T3
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {SCHOOLS.map((s) => (
-                <tr
-                  key={s.name}
-                  className="border-b border-[var(--iai-border)] last:border-0"
-                >
-                  <td className="py-2.5 pr-6 font-medium text-[var(--iai-text)]">
-                    {s.name}
-                  </td>
-                  <td className="py-2.5 pr-6 text-right text-[var(--iai-text-subtle)]">
-                    {s.tenants.toLocaleString()}
-                  </td>
-                  <td className="py-2.5 pr-6 text-right text-[var(--iai-text-subtle)]">
-                    {s.tier1Pct}%
-                  </td>
-                  <td className="py-2.5 pr-6 text-right text-[var(--iai-text-subtle)]">
-                    {s.tier2Pct}%
-                  </td>
-                  <td className="py-2.5 text-right text-[var(--iai-text-subtle)]">
-                    {s.tier3Pct}%
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
-      </div>
+      <Card>
+        <p role="status" className="text-sm font-semibold text-[var(--iai-text)] mb-2">
+          Not available yet
+        </p>
+        <p className="text-sm text-[var(--iai-text-subtle)] mb-2">
+          There is no district rollup. Each school&rsquo;s learner data stays with that
+          school, and nothing combines it across schools.
+        </p>
+        <p className="text-sm text-[var(--iai-text-subtle)]">
+          A rollup would need a decision on what is counted, for what purpose, and the
+          smallest group that may be reported. That decision has not been made, so there
+          is nothing to show here.
+        </p>
+      </Card>
     </section>
   );
 }

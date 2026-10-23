@@ -14,7 +14,10 @@
 // key, so a second run is a no-op rather than a duplicate. CI proves this by seeding twice
 // and comparing row counts.
 
-import { PrismaClient } from '@prisma/client';
+import { loadDatabaseUrl } from '@infinite-ai/config';
+import type { PrismaClient } from '@prisma/client';
+
+import { createPrismaClient } from '../src/client.js';
 
 import { EncryptionKey, encrypt, lookupHash } from '../src/encryption.js';
 
@@ -560,7 +563,7 @@ export async function seed(prisma: PrismaClient): Promise<Record<string, SeedCou
 
 /** CLI entry point: `pnpm --filter @infinite-ai/db db:seed`. */
 async function main(): Promise<void> {
-  const prisma = new PrismaClient();
+  const prisma = createPrismaClient(loadDatabaseUrl());
   try {
     const summary = await seed(prisma);
     for (const [label, counts] of Object.entries(summary)) {

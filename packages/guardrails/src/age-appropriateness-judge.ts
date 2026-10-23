@@ -50,13 +50,22 @@ const AgeAppropriatenessVerdict = z.object({
   rationale: z.string().min(1),
 });
 
+/** Every fail-closed rationale starts with this. A caller that must tell "the judge said no"
+ * from "the judge said nothing" — a calibration run, which would otherwise score an outage as
+ * a correct rejection — tests for it with `isNoVerdict`. */
+export const NO_VERDICT_PREFIX = 'Age-appropriateness judge could not render a verdict';
+
+export function isNoVerdict(verdict: { readonly rationale: string }): boolean {
+  return verdict.rationale.startsWith(NO_VERDICT_PREFIX);
+}
+
 /** Returns a fail-closed verdict with `reason` folded into the rationale, so every failure
  * mode below produces the same honest, traceable shape rather than a bare boolean. */
 function failClosed(reason: string): { appropriate: false; rationale: string } {
   return {
     appropriate: false,
     rationale:
-      `Age-appropriateness judge could not render a verdict, failing closed rather than ` +
+      `${NO_VERDICT_PREFIX}, failing closed rather than ` +
       `passing unjudged content: ${reason}`,
   };
 }

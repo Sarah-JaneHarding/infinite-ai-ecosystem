@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     '@infinite-ai/school-setup',
     '@infinite-ai/db',
     '@infinite-ai/orchestrator',
+    '@infinite-ai/learner-client',
   ],
   // Stage 54: @infinite-ai/db and @infinite-ai/orchestrator use "type":"module" with
   // explicit .js extensions in TypeScript source imports (ESM convention). webpack's

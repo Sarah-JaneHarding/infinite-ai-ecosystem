@@ -11,11 +11,12 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "coverage:merged": "pnpm test:coverage && pnpm test:integration:coverage && vitest --merge-reports --config vitest.merge.config.ts --coverage",
+    "coverage:merged": "pnpm test:coverage && pnpm test:integration:coverage && vitest --merge-reports .vitest-reports --config vitest.merge.config.ts --coverage",
     "db:generate": "prisma generate",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:approvals": "tsx prisma/seed-approvals.ts",
     "db:validate": "prisma validate",
     "lint": "eslint src",
     "postinstall": "prisma generate",
@@ -27,16 +28,18 @@
   },
   "devDependencies": {
     "@infinite-ai/contracts": "workspace:*",
-    "@testcontainers/postgresql": "12.0.4",
-    "@vitest/coverage-v8": "3.2.7",
-    "prisma": "6.19.3",
-    "testcontainers": "12.0.4",
-    "tsx": "4.23.1",
-    "typescript": "5.9.3",
-    "vitest": "3.2.7"
+    "@testcontainers/postgresql": "12.2.1",
+    "@vitest/coverage-v8": "5.0.5",
+    "prisma": "7.10.1",
+    "testcontainers": "12.2.1",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5"
   },
   "dependencies": {
+    "@infinite-ai/config": "workspace:*",
     "@infinite-ai/telemetry": "workspace:*",
-    "@prisma/client": "6.19.3"
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1"
   }
 }

@@ -48,7 +48,7 @@ export const NodeDefinition = z.object({
       description: z.string().optional(),
     }),
   ),
-  configSchema: z.record(z.string()).optional(),
+  configSchema: z.record(z.string(), z.string()).optional(),
 });
 export type NodeDefinition = z.infer<typeof NodeDefinition>;
 

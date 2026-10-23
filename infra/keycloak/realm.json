@@ -119,6 +119,125 @@
       }
     }
   ],
+  "users": [
+    {
+      "username": "teacher.dev",
+      "email": "teacher.dev@example.invalid",
+      "firstName": "Palesa",
+      "lastName": "Nkosi",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["teacher"]
+    },
+    {
+      "username": "hod.dev",
+      "email": "hod.dev@example.invalid",
+      "firstName": "Sipho",
+      "lastName": "Mahlangu",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["hod"]
+    },
+    {
+      "username": "smt.dev",
+      "email": "smt.dev@example.invalid",
+      "firstName": "Zanele",
+      "lastName": "Dlamini",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["smt"]
+    },
+    {
+      "username": "sbst.dev",
+      "email": "sbst.dev@example.invalid",
+      "firstName": "Ayanda",
+      "lastName": "Naidoo",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["sbst"]
+    },
+    {
+      "username": "admin.dev",
+      "email": "admin.dev@example.invalid",
+      "firstName": "Divan",
+      "lastName": "Botha",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "guardian.dev",
+      "email": "guardian.dev@example.invalid",
+      "firstName": "Aisha",
+      "lastName": "Adams",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["guardian"]
+    },
+    {
+      "username": "learner.dev",
+      "email": "learner.dev@example.invalid",
+      "firstName": "Keanu",
+      "lastName": "Pillay",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["learner"]
+    },
+    {
+      "username": "platform-support.dev",
+      "email": "platform-support.dev@example.invalid",
+      "firstName": "Ruan",
+      "lastName": "Fourie",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["platform_support"]
+    },
+    {
+      "username": "platform-admin.dev",
+      "email": "platform-admin.dev@example.invalid",
+      "firstName": "Chanel",
+      "lastName": "Jacobs",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["platform_admin"]
+    }
+  ],
   "defaultRoles": [],
   "requiredCredentials": ["password"],
   "passwordPolicy": "length(12) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1)",

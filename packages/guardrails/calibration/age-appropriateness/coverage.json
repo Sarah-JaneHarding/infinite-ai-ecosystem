@@ -1,0 +1,38 @@
+{
+  "tested": {
+    "age-appropriateness-043": ["aa-043-v", "aa-043-c"],
+    "age-appropriateness-097": ["aa-097-v", "aa-097-c"],
+    "age-appropriateness-094": ["aa-094-v", "aa-094-c"],
+    "age-appropriateness-091": ["aa-091-v", "aa-091-c"],
+    "age-appropriateness-113": ["aa-113-v", "aa-113-c"],
+    "age-appropriateness-096": ["aa-096-v", "aa-096-c"],
+    "age-appropriateness-151": ["aa-151-v", "aa-151-c"],
+    "age-appropriateness-152": ["aa-152-v", "aa-152-c"],
+    "age-appropriateness-173": ["aa-173-v", "aa-173-c"],
+    "age-appropriateness-174": ["aa-174-v", "aa-174-c"],
+    "age-appropriateness-162": ["aa-162-v", "aa-162-c"],
+    "age-appropriateness-164": ["aa-164-v", "aa-164-c"],
+    "age-appropriateness-133": ["aa-133-v", "aa-133-c"],
+    "age-appropriateness-135": ["aa-135-v", "aa-135-c"]
+  },
+  "ambiguous": [
+    {
+      "clause": "age-appropriateness-013",
+      "reason": "Gives a decoding band (90-95%) for choosing reading groups; whether a given generated text meets it cannot be seen from the text alone without a reader. Not testable from output."
+    },
+    {
+      "clause": "age-appropriateness-105",
+      "reason": "Says some NCS History topics were removed as \"too cognitively demanding\" without naming them; a judge cannot decide which topics are meant. Needs the source document or a human."
+    },
+    {
+      "clause": "age-appropriateness-117",
+      "reason": "Stages HIV/AIDS content by grade (basic facts Gr4, stigma Gr5, myths and risk Gr6). Whether a given text sits at the right depth is a judgement the clause does not make mechanical; needs a human-written boundary."
+    }
+  ],
+  "conflicting": [
+    {
+      "clauses": ["age-appropriateness-026", "age-appropriateness-051"],
+      "reason": "Both set Grade R term-by-term jigsaw benchmarks and disagree: 026 says 5+/10+/10-20/20+ pieces; 051 says 6/12/18/24. No case relies on either. Needs the source documents to settle which is current."
+    }
+  ]
+}

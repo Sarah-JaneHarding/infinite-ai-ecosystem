@@ -76,7 +76,7 @@ export const ExportRequest = z
     artefactId: z.string().min(1),
     artefactType: ArtefactType,
     format: ExportFormat,
-    tenantId: z.string().uuid(),
+    tenantId: z.guid(),
     /** The authenticated user requesting the export — for audit purposes only. */
     requestedBy: z.string().min(1),
     /**
@@ -109,7 +109,7 @@ export type ExportRequest = z.infer<typeof ExportRequest>;
 // ---------------------------------------------------------------------------
 
 export const ExportJob = z.object({
-  jobId: z.string().uuid(),
+  jobId: z.guid(),
   artefactId: z.string().min(1),
   artefactType: ArtefactType,
   format: ExportFormat,

@@ -12,8 +12,8 @@ import { DataDomainSchema, InsightScope } from './types.js';
 // ---------------------------------------------------------------------------
 
 export const DW01Input = z.object({
-  tenantId: z.string().uuid(),
-  sourceId: z.string().uuid(),
+  tenantId: z.guid(),
+  sourceId: z.guid(),
   configRef: z.string().min(1),
   cursor: z.string().optional(),
 });
@@ -24,12 +24,12 @@ export type DW01Input = z.infer<typeof DW01Input>;
 // ---------------------------------------------------------------------------
 
 export const DW02Input = z.object({
-  tenantId: z.string().uuid(),
-  runId: z.string().uuid(),
-  rawRecordId: z.string().uuid(),
-  sourceId: z.string().uuid(),
+  tenantId: z.guid(),
+  runId: z.guid(),
+  rawRecordId: z.guid(),
+  sourceId: z.guid(),
   connectorKind: z.string().min(1),
-  sourceFields: z.record(z.unknown()),
+  sourceFields: z.record(z.string(), z.unknown()),
   targetDomain: DataDomainSchema,
 });
 export type DW02Input = z.infer<typeof DW02Input>;
@@ -37,10 +37,10 @@ export type DW02Input = z.infer<typeof DW02Input>;
 export const DW02Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    learnerId: z.string().uuid(),
+    learnerId: z.guid(),
     eventType: z.string().min(1),
     occurredAt: z.string().datetime(),
-    canonicalPayload: z.record(z.unknown()),
+    canonicalPayload: z.record(z.string(), z.unknown()),
     mappingsApplied: z.array(
       z.object({ sourceField: z.string(), canonicalField: z.string() }),
     ),
@@ -62,8 +62,8 @@ export type DW02Result = z.infer<typeof DW02Result>;
 // ---------------------------------------------------------------------------
 
 export const DW03Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
   domain: DataDomainSchema,
   purpose: z.string().min(1),
   fields: z.array(z.string()).min(1),
@@ -93,9 +93,9 @@ export type DW03Result = z.infer<typeof DW03Result>;
 // ---------------------------------------------------------------------------
 
 export const DW04Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
-  payload: z.record(z.unknown()),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
+  payload: z.record(z.string(), z.unknown()),
   domain: DataDomainSchema,
 });
 export type DW04Input = z.infer<typeof DW04Input>;
@@ -103,7 +103,7 @@ export type DW04Input = z.infer<typeof DW04Input>;
 export const DW04Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    deidentifiedPayload: z.record(z.unknown()),
+    deidentifiedPayload: z.record(z.string(), z.unknown()),
     learnerToken: z.string().min(1),
     deidentified: z.literal(true),
   }),
@@ -119,10 +119,10 @@ export type DW04Result = z.infer<typeof DW04Result>;
 // ---------------------------------------------------------------------------
 
 export const DW05Input = z.object({
-  tenantId: z.string().uuid(),
-  runId: z.string().uuid(),
+  tenantId: z.guid(),
+  runId: z.guid(),
   domain: DataDomainSchema,
-  sampleRecords: z.array(z.record(z.unknown())).min(1),
+  sampleRecords: z.array(z.record(z.string(), z.unknown())).min(1),
 });
 export type DW05Input = z.infer<typeof DW05Input>;
 
@@ -154,8 +154,8 @@ export type DW05Result = z.infer<typeof DW05Result>;
 // ---------------------------------------------------------------------------
 
 export const DW06Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
   termNumber: z.number().int().min(1).max(4),
   academicYear: z.number().int().min(2000).max(2100),
 });
@@ -168,9 +168,9 @@ export type DW06Input = z.infer<typeof DW06Input>;
 // ---------------------------------------------------------------------------
 
 export const DW07Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   scope: InsightScope,
-  scopeId: z.string().uuid(),
+  scopeId: z.guid(),
   domain: DataDomainSchema,
   termNumber: z.number().int().min(1).max(4),
   academicYear: z.number().int().min(2000).max(2100),
@@ -184,10 +184,10 @@ export type DW07Input = z.infer<typeof DW07Input>;
 // ---------------------------------------------------------------------------
 
 export const DW08Input = z.object({
-  tenantId: z.string().uuid(),
-  insightId: z.string().uuid(),
+  tenantId: z.guid(),
+  insightId: z.guid(),
   scope: InsightScope,
-  scopeId: z.string().uuid(),
+  scopeId: z.guid(),
   domain: DataDomainSchema,
 });
 export type DW08Input = z.infer<typeof DW08Input>;

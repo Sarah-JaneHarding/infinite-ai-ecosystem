@@ -50,7 +50,7 @@ export type DataDomain = z.infer<typeof DataDomainSchema>;
 
 export const RawRecord = z.object({
   sourceRef: z.string().min(1),
-  payload: z.record(z.unknown()),
+  payload: z.record(z.string(), z.unknown()),
   schemaVersion: z.string().optional(),
 });
 export type RawRecord = z.infer<typeof RawRecord>;
@@ -60,13 +60,13 @@ export type RawRecord = z.infer<typeof RawRecord>;
 // ---------------------------------------------------------------------------
 
 export const ConformedEvent = z.object({
-  learnerId: z.string().uuid(),
+  learnerId: z.guid(),
   domain: DataDomainSchema,
   eventType: z.string().min(1),
   occurredAt: z.string().datetime(),
-  payload: z.record(z.unknown()),
-  rawRecordId: z.string().uuid().optional(),
-  sourceId: z.string().uuid().optional(),
+  payload: z.record(z.string(), z.unknown()),
+  rawRecordId: z.guid().optional(),
+  sourceId: z.guid().optional(),
 });
 export type ConformedEvent = z.infer<typeof ConformedEvent>;
 
@@ -119,7 +119,7 @@ export type AttendanceSummary = z.infer<typeof AttendanceSummary>;
 export const AcademicSummary = z.object({
   termNumber: z.number().int().min(1).max(4),
   academicYear: z.number().int().min(2000).max(2100),
-  subjectAverages: z.record(z.number().min(0).max(100)),
+  subjectAverages: z.record(z.string(), z.number().min(0).max(100)),
   overallAverage: z.number().min(0).max(100),
 });
 export type AcademicSummary = z.infer<typeof AcademicSummary>;
@@ -135,19 +135,19 @@ export type BehaviourSummary = z.infer<typeof BehaviourSummary>;
 export const WellbeingSummary = z.object({
   termNumber: z.number().int().min(1).max(4),
   academicYear: z.number().int().min(2000).max(2100),
-  screenerScores: z.record(z.number()),
+  screenerScores: z.record(z.string(), z.number()),
   flagged: z.boolean(),
 });
 export type WellbeingSummary = z.infer<typeof WellbeingSummary>;
 
 export const Learner360Profile = z.object({
-  learnerId: z.string().uuid(),
-  tenantId: z.string().uuid(),
+  learnerId: z.guid(),
+  tenantId: z.guid(),
   attendance: AttendanceSummary.nullable(),
   academic: AcademicSummary.nullable(),
   behaviour: BehaviourSummary.nullable(),
   wellbeing: WellbeingSummary.nullable(),
-  screenerResults: z.record(z.unknown()).nullable(),
+  screenerResults: z.record(z.string(), z.unknown()).nullable(),
   dataQualityNote: z.string().nullable(),
   lastMaterialisedAt: z.string().datetime(),
 });
@@ -158,12 +158,12 @@ export type Learner360Profile = z.infer<typeof Learner360Profile>;
 // ---------------------------------------------------------------------------
 
 export const ScreeningFeatureRecord = z.object({
-  learnerId: z.string().uuid(),
+  learnerId: z.guid(),
   featureName: z.string().min(1),
   featureValue: z.number(),
   asAt: z.string().datetime(),
-  sourceRunId: z.string().uuid().optional(),
-  supersedes: z.string().uuid().optional(),
+  sourceRunId: z.guid().optional(),
+  supersedes: z.guid().optional(),
 });
 export type ScreeningFeatureRecord = z.infer<typeof ScreeningFeatureRecord>;
 
@@ -174,7 +174,7 @@ export type ScreeningFeatureRecord = z.infer<typeof ScreeningFeatureRecord>;
 export const DW01Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    runId: z.string().uuid(),
+    runId: z.guid(),
     recordsReceived: z.number().int().nonnegative(),
     recordsConformed: z.number().int().nonnegative(),
     recordsRejected: z.number().int().nonnegative(),
@@ -194,7 +194,7 @@ export const DW06Result = z.discriminatedUnion('status', [
   z.object({ status: z.literal('ok'), profile: Learner360Profile }),
   z.object({
     status: z.literal('needs_input'),
-    learnerId: z.string().uuid(),
+    learnerId: z.guid(),
     detail: z.string().min(1),
   }),
 ]);
@@ -209,12 +209,12 @@ export type InsightScope = z.infer<typeof InsightScope>;
 
 export const Insight = z.object({
   scope: InsightScope,
-  scopeId: z.string().uuid(),
+  scopeId: z.guid(),
   domain: DataDomainSchema,
   narrative: z.string().min(1),
   confidenceScore: z.number().min(0).max(1),
   dataPointCount: z.number().int().positive(),
-  sourceEventIds: z.array(z.string().uuid()).min(1),
+  sourceEventIds: z.array(z.guid()).min(1),
   generatedAt: z.string().datetime(),
 });
 export type Insight = z.infer<typeof Insight>;
@@ -224,7 +224,7 @@ export const DW07Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('needs_input'),
     scope: InsightScope,
-    scopeId: z.string().uuid(),
+    scopeId: z.guid(),
     detail: z.string().min(1),
   }),
 ]);
@@ -238,7 +238,7 @@ export const NextStep = z.object({
   description: z.string().min(1),
   owner: z.string().min(1),
   dueDate: z.string().datetime(),
-  insightId: z.string().uuid(),
+  insightId: z.guid(),
   rationale: z.string().min(1),
 });
 export type NextStep = z.infer<typeof NextStep>;

@@ -3,7 +3,12 @@
 import { useState } from 'react';
 
 // EGRA: Early Grade Reading Assessment — 7 subtests used in SA Foundation/Intermediate Phase literacy screening.
-// Benchmarks sourced from the EGRA MTSS Data System reference (docs/examples/mod-02-analytics/).
+//
+// UNRESOLVED (OQ-035): the benchmark numbers below and the flag-count rule in `tierFromFlags`
+// are NOT taken from the EGRA MTSS Data System reference in docs/examples/mod-02-analytics/.
+// That reference uses different subtests and scales and two cut-points per grade, calls its
+// values "starting reference values only", and has a person assign the tier. Until a source is
+// supplied these are placeholders, not policy.
 
 const GRADES = [
   'Grade R',
