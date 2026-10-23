@@ -40,9 +40,9 @@ export const DomainReading = z.object({
 export type DomainReading = z.infer<typeof DomainReading>;
 
 export const AC01Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
-  termId: z.string().uuid(),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
+  termId: z.guid(),
   /** Readings for each domain. At least one is required. */
   domainReadings: z.array(DomainReading).min(1),
 });
@@ -51,13 +51,13 @@ export type AC01Input = z.infer<typeof AC01Input>;
 export const AC01Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ok'),
-    screenId: z.string().uuid(),
-    learnerId: z.string().uuid(),
-    termId: z.string().uuid(),
+    screenId: z.guid(),
+    learnerId: z.guid(),
+    termId: z.guid(),
     /** Mean of the supplied domain percentile scores. */
     compositePercentile: z.number().min(0).max(100),
     tier: SupportTierSchema,
-    domainSufficiency: z.record(DataSufficiencyVerdictSchema),
+    domainSufficiency: z.record(z.string(), DataSufficiencyVerdictSchema),
     overallSufficiency: DataSufficiencyVerdictSchema,
   }),
   z.object({
@@ -80,15 +80,15 @@ export type AC01Result = z.infer<typeof AC01Result>;
 
 /** One learner's tier as reported by AC-01, used in the class-level health check. */
 export const LearnerTierSummary = z.object({
-  learnerId: z.string().uuid(),
+  learnerId: z.guid(),
   tier: SupportTierSchema,
 });
 export type LearnerTierSummary = z.infer<typeof LearnerTierSummary>;
 
 export const AC02Input = z.object({
-  tenantId: z.string().uuid(),
-  classId: z.string().uuid(),
-  termId: z.string().uuid(),
+  tenantId: z.guid(),
+  classId: z.guid(),
+  termId: z.guid(),
   /** AC-01 tier results for every learner in the class. Empty array returns needs_input. */
   screenResults: z.array(LearnerTierSummary).min(0),
 });
@@ -125,27 +125,27 @@ export type AC02Result = z.infer<typeof AC02Result>;
 // ---------------------------------------------------------------------------
 
 export const AC03Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
-  classId: z.string().uuid(),
-  termId: z.string().uuid(),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
+  classId: z.guid(),
+  termId: z.guid(),
   /** The 'ok' screen result from AC-01 for this learner. */
-  screenId: z.string().uuid(),
+  screenId: z.guid(),
   compositePercentile: z.number().min(0).max(100),
   tier: SupportTierSchema,
-  domainSufficiency: z.record(DataSufficiencyVerdictSchema),
+  domainSufficiency: z.record(z.string(), DataSufficiencyVerdictSchema),
   /** Must be 'healthy' — the AC-02 gate; pass the full gatesAc03 flag as proof. */
   coreHealthGate: z.literal(true),
-  classHealthRecordId: z.string().uuid(),
+  classHealthRecordId: z.guid(),
 });
 export type AC03Input = z.infer<typeof AC03Input>;
 
 export const AC03Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('recommended'),
-    recommendationId: z.string().uuid(),
-    learnerId: z.string().uuid(),
-    termId: z.string().uuid(),
+    recommendationId: z.guid(),
+    learnerId: z.guid(),
+    termId: z.guid(),
     tier: SupportTierSchema,
     compositePercentile: z.number().min(0).max(100),
     /** IDs of the evidence records that justify this recommendation. */
@@ -178,10 +178,10 @@ export const EarlyWarningReading = z.object({
 export type EarlyWarningReading = z.infer<typeof EarlyWarningReading>;
 
 export const AC04Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
-  classId: z.string().uuid(),
-  termId: z.string().uuid(),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
+  classId: z.guid(),
+  termId: z.guid(),
   recentReadings: z.array(EarlyWarningReading).min(1),
   /** Composite percentile from the most recent full screen, if available. */
   previousScreenCompositePercentile: z.number().min(0).max(100).optional(),
@@ -203,8 +203,8 @@ export type EarlyWarningSignal = z.infer<typeof EarlyWarningSignal>;
 export const AC04Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('signals_found'),
-    warningId: z.string().uuid(),
-    learnerId: z.string().uuid(),
+    warningId: z.guid(),
+    learnerId: z.guid(),
     riskLevel: RiskLevel,
     signals: z.array(EarlyWarningSignal).min(1),
     /** True when data has degraded enough that a new full screen is warranted. */
@@ -213,7 +213,7 @@ export const AC04Result = z.discriminatedUnion('status', [
   }),
   z.object({
     status: z.literal('no_signals'),
-    learnerId: z.string().uuid(),
+    learnerId: z.guid(),
     checkedAt: z.string().datetime(),
     evidenceIds: z.array(z.string()).min(1),
   }),
@@ -235,15 +235,15 @@ export const InterventionDosage = z.object({
 export type InterventionDosage = z.infer<typeof InterventionDosage>;
 
 export const AC05Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
-  termId: z.string().uuid(),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
+  termId: z.guid(),
   /** Only TIER_2/TIER_3 learners receive intervention plans. */
   tier: z.enum(['TIER_2', 'TIER_3']),
   targetDomains: z.array(ScreeningDomainSchema).min(1),
   compositePercentile: z.number().min(0).max(100),
   /** Proof that SBST ratified the tier before a plan was requested. */
-  sbstRatificationId: z.string().uuid(),
+  sbstRatificationId: z.guid(),
   /** Evidence IDs from AC-03 recommendation that SBST approved. */
   evidenceIds: z.array(z.string()).min(1),
 });
@@ -252,9 +252,9 @@ export type AC05Input = z.infer<typeof AC05Input>;
 export const AC05Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('planned'),
-    planId: z.string().uuid(),
-    learnerId: z.string().uuid(),
-    termId: z.string().uuid(),
+    planId: z.guid(),
+    learnerId: z.guid(),
+    termId: z.guid(),
     tier: z.enum(['TIER_2', 'TIER_3']),
     targetDomains: z.array(ScreeningDomainSchema).min(1),
     /** Specific, measurable goal statement (no PII, no diagnostic language). */
@@ -295,10 +295,10 @@ export const MonitoringRecommendation = z.enum(['continue', 'intensify', 'exit']
 export type MonitoringRecommendation = z.infer<typeof MonitoringRecommendation>;
 
 export const AC06Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
-  termId: z.string().uuid(),
-  planId: z.string().uuid(),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
+  termId: z.guid(),
+  planId: z.guid(),
   measurements: z.array(ProgressMeasurement).min(2),
   goalPercentile: z.number().min(0).max(100),
   weeksSinceIntervention: z.number().int().min(1),
@@ -308,10 +308,10 @@ export type AC06Input = z.infer<typeof AC06Input>;
 export const AC06Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('monitored'),
-    monitorId: z.string().uuid(),
-    learnerId: z.string().uuid(),
-    termId: z.string().uuid(),
-    planId: z.string().uuid(),
+    monitorId: z.guid(),
+    learnerId: z.guid(),
+    termId: z.guid(),
+    planId: z.guid(),
     trendDirection: TrendDirection,
     currentPercentile: z.number().min(0).max(100),
     goalPercentile: z.number().min(0).max(100),
@@ -352,10 +352,10 @@ export const DeliveredSession = z.object({
 export type DeliveredSession = z.infer<typeof DeliveredSession>;
 
 export const AC07Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
-  termId: z.string().uuid(),
-  planId: z.string().uuid(),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
+  termId: z.guid(),
+  planId: z.guid(),
   plannedSessions: z.array(PlannedSession).min(1),
   deliveredSessions: z.array(DeliveredSession).min(0),
   /** Evidence IDs for the plan document itself. */
@@ -366,10 +366,10 @@ export type AC07Input = z.infer<typeof AC07Input>;
 export const AC07Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('adequate'),
-    fidelityId: z.string().uuid(),
-    learnerId: z.string().uuid(),
-    termId: z.string().uuid(),
-    planId: z.string().uuid(),
+    fidelityId: z.guid(),
+    learnerId: z.guid(),
+    termId: z.guid(),
+    planId: z.guid(),
     plannedSessionCount: z.number().int().min(1),
     deliveredSessionCount: z.number().int().min(0),
     /** Delivery rate as a percentage (0–100). ≥80 % is 'adequate'. */
@@ -379,10 +379,10 @@ export const AC07Result = z.discriminatedUnion('status', [
   }),
   z.object({
     status: z.literal('inadequate'),
-    fidelityId: z.string().uuid(),
-    learnerId: z.string().uuid(),
-    termId: z.string().uuid(),
-    planId: z.string().uuid(),
+    fidelityId: z.guid(),
+    learnerId: z.guid(),
+    termId: z.guid(),
+    planId: z.guid(),
     plannedSessionCount: z.number().int().min(1),
     deliveredSessionCount: z.number().int().min(0),
     fidelityRate: z.number().min(0).max(100),
@@ -428,7 +428,7 @@ export const SbstDecisionType = z.enum([
 export type SbstDecisionType = z.infer<typeof SbstDecisionType>;
 
 export const MeetingAgendaItem = z.object({
-  learnerId: z.string().uuid(),
+  learnerId: z.guid(),
   /** Current SIAS state for this learner. */
   siasStatus: z.string().min(1),
   recommendedDecision: SbstDecisionType,
@@ -439,9 +439,9 @@ export const MeetingAgendaItem = z.object({
 export type MeetingAgendaItem = z.infer<typeof MeetingAgendaItem>;
 
 export const AC08Input = z.object({
-  tenantId: z.string().uuid(),
-  meetingId: z.string().uuid(),
-  termId: z.string().uuid(),
+  tenantId: z.guid(),
+  meetingId: z.guid(),
+  termId: z.guid(),
   /** ISO date of the meeting. */
   scheduledOn: z.string().date(),
   /** Roles of attendees — never names. */
@@ -451,10 +451,10 @@ export const AC08Input = z.object({
 export type AC08Input = z.infer<typeof AC08Input>;
 
 export const MeetingDecisionRecord = z.object({
-  learnerId: z.string().uuid(),
+  learnerId: z.guid(),
   decision: SbstDecisionType,
   /** Present when decision is not 'defer'; null when deferred. */
-  sbstRatificationId: z.string().uuid().nullable(),
+  sbstRatificationId: z.guid().nullable(),
   nextSteps: z.array(z.string().min(1)).min(1),
 });
 export type MeetingDecisionRecord = z.infer<typeof MeetingDecisionRecord>;
@@ -462,8 +462,8 @@ export type MeetingDecisionRecord = z.infer<typeof MeetingDecisionRecord>;
 export const AC08Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('scribed'),
-    minutesId: z.string().uuid(),
-    termId: z.string().uuid(),
+    minutesId: z.guid(),
+    termId: z.guid(),
     scheduledOn: z.string().date(),
     participantRoles: z.array(z.string().min(1)).min(1),
     decisions: z.array(MeetingDecisionRecord).min(1),
@@ -486,15 +486,15 @@ export type AC08Result = z.infer<typeof AC08Result>;
 // ---------------------------------------------------------------------------
 
 export const ScreenHistoryEntry = z.object({
-  screenId: z.string().uuid(),
-  termId: z.string().uuid(),
+  screenId: z.guid(),
+  termId: z.guid(),
   compositePercentile: z.number().min(0).max(100),
   tier: SupportTierSchema,
 });
 export type ScreenHistoryEntry = z.infer<typeof ScreenHistoryEntry>;
 
 export const InterventionHistoryEntry = z.object({
-  planId: z.string().uuid(),
+  planId: z.guid(),
   goal: z.string().min(1),
   tier: z.enum(['TIER_2', 'TIER_3']),
   durationWeeks: z.number().int().min(1),
@@ -516,13 +516,13 @@ export const SiasSection = z.object({
 export type SiasSection = z.infer<typeof SiasSection>;
 
 export const AC09Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
-  termId: z.string().uuid(),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
+  termId: z.guid(),
   /** Must be REFERRAL_PENDING; the state machine blocks compilation in any other state. */
   siasStatus: z.literal('REFERRAL_PENDING'),
   /** Proof that an SBST ratification has been stored before the referral pack is compiled. */
-  sbstRatificationId: z.string().uuid(),
+  sbstRatificationId: z.guid(),
   screenHistory: z.array(ScreenHistoryEntry).min(1),
   interventionHistory: z.array(InterventionHistoryEntry).min(0),
   progressSummary: ProgressSummary,
@@ -533,10 +533,10 @@ export type AC09Input = z.infer<typeof AC09Input>;
 export const AC09Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('compiled'),
-    compilationId: z.string().uuid(),
-    learnerId: z.string().uuid(),
-    termId: z.string().uuid(),
-    sbstRatificationId: z.string().uuid(),
+    compilationId: z.guid(),
+    learnerId: z.guid(),
+    termId: z.guid(),
+    sbstRatificationId: z.guid(),
     sections: z.array(SiasSection).min(1),
     evidenceIds: z.array(z.string().min(1)).min(1),
     /** A SIAS referral pack always requires sign-off before submission. */
@@ -567,11 +567,11 @@ export const ParentProgressSummary = z.object({
 export type ParentProgressSummary = z.infer<typeof ParentProgressSummary>;
 
 export const AC10Input = z.object({
-  tenantId: z.string().uuid(),
-  learnerId: z.string().uuid(),
-  termId: z.string().uuid(),
-  planId: z.string().uuid(),
-  sbstRatificationId: z.string().uuid(),
+  tenantId: z.guid(),
+  learnerId: z.guid(),
+  termId: z.guid(),
+  planId: z.guid(),
+  sbstRatificationId: z.guid(),
   homeLanguage: SaHomeLanguageCodeSchema,
   /** Target Flesch-Kincaid grade level for the report text (1–12). */
   targetReadabilityGrade: z.number().int().min(1).max(12),
@@ -583,9 +583,9 @@ export type AC10Input = z.infer<typeof AC10Input>;
 export const AC10Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('written'),
-    reportId: z.string().uuid(),
-    learnerId: z.string().uuid(),
-    termId: z.string().uuid(),
+    reportId: z.guid(),
+    learnerId: z.guid(),
+    termId: z.guid(),
     homeLanguage: SaHomeLanguageCodeSchema,
     reportText: z.string().min(1),
     /** Estimated Flesch-Kincaid grade level of the generated reportText. */
@@ -613,9 +613,9 @@ export type AC10Result = z.infer<typeof AC10Result>;
 // database access and depends on this field being present and accurate.
 
 export const ActiveInterventionItem = z.object({
-  learnerId: z.string().uuid(),
-  planId: z.string().uuid(),
-  termId: z.string().uuid(),
+  learnerId: z.guid(),
+  planId: z.guid(),
+  termId: z.guid(),
   /** The learner's current SIAS status at the time this monitoring run was started. */
   siasStatus: SiasStatusSchema,
 });
@@ -634,11 +634,11 @@ export const ReportScope = z.enum(['class', 'grade', 'school']);
 export type ReportScope = z.infer<typeof ReportScope>;
 
 export const AC11Input = z.object({
-  tenantId: z.string().uuid(),
+  tenantId: z.guid(),
   reportScope: ReportScope,
   /** classId, gradeId, or schoolId depending on scope. */
-  scopeId: z.string().uuid(),
-  termId: z.string().uuid(),
+  scopeId: z.guid(),
+  termId: z.guid(),
   /** Total learners whose data has been ingested into the rollup for this term. */
   learnerCount: z.number().int().min(0),
   /** Screening domains for which at least one data point is present this term. */
@@ -658,20 +658,20 @@ export type AC11Input = z.infer<typeof AC11Input>;
 export const AC11Result = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ready'),
-    screenId: z.string().uuid(),
+    screenId: z.guid(),
     reportScope: ReportScope,
-    scopeId: z.string().uuid(),
-    termId: z.string().uuid(),
+    scopeId: z.guid(),
+    termId: z.guid(),
     learnerCount: z.number().int().min(1),
     coveredDomainCount: z.number().int().min(1),
     evidenceIds: z.array(z.string().min(1)).min(1),
   }),
   z.object({
     status: z.literal('suppressed'),
-    screenId: z.string().uuid(),
+    screenId: z.guid(),
     reportScope: ReportScope,
-    scopeId: z.string().uuid(),
-    termId: z.string().uuid(),
+    scopeId: z.guid(),
+    termId: z.guid(),
     learnerCount: z.number().int().min(0),
     /** Machine-readable reason: 'cohort_too_small' | 'sub_bucket_suppressed'. */
     suppressionReason: z.string().min(1),

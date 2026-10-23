@@ -55,7 +55,7 @@ const BrainProcedureKind = z.enum([
   'TOOL_CONTRACT',
 ]);
 
-const UUID = z.string().uuid();
+const UUID = z.guid();
 
 /** L0 Constitution — a policy fact, keyed by `key` and versioned by the write path. */
 export const L0ConstitutionPayload = z.object({
@@ -78,7 +78,7 @@ export const L1NodePayload = z.object({
   entityType: BrainEntityType,
   externalRef: z.string().min(1).nullable().default(null),
   label: z.string().min(1),
-  attributes: z.record(z.unknown()).default({}),
+  attributes: z.record(z.string(), z.unknown()).default({}),
   /** The node this candidate corrects or replaces. Only ever declared, never inferred. */
   supersedes: UUID.nullable().default(null),
   /** Which `DataCategory` this node's content is about, for retention resolution
@@ -93,7 +93,7 @@ export const L1EdgePayload = z.object({
   sourceId: UUID,
   targetId: UUID,
   relation: z.string().min(1),
-  attributes: z.record(z.unknown()).default({}),
+  attributes: z.record(z.string(), z.unknown()).default({}),
   supersedes: UUID.nullable().default(null),
   dataCategory: DataCategory.nullable().default(null),
 });
@@ -111,7 +111,7 @@ export const L2EpisodePayload = z.object({
   actorId: UUID.nullable().default(null),
   occurredAt: z.coerce.date(),
   summary: z.string().min(1),
-  detail: z.record(z.unknown()).default({}),
+  detail: z.record(z.string(), z.unknown()).default({}),
   outcome: z.string().nullable().default(null),
   supersedes: UUID.nullable().default(null),
   /** Recorded for retention resolution (step 8) even though episodes have no
@@ -179,7 +179,7 @@ export function extractTyped(
 
 /** Unwraps a `safeParse` result, or throws with which tier and why. */
 function unwrap<Output>(
-  result: z.SafeParseReturnType<unknown, Output>,
+  result: z.ZodSafeParseResult<Output>,
   targetTier: BrainTargetTier,
 ): Output {
   if (!result.success) {

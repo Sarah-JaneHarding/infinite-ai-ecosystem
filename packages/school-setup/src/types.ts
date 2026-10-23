@@ -80,7 +80,7 @@ export type StaffMember = z.infer<typeof StaffMember>;
 
 export const SchoolConfig = z
   .object({
-    tenantId: z.string().uuid(),
+    tenantId: z.guid(),
     schoolName: z.string().min(1),
     academicYear: z.number().int().min(2024).max(2099),
     languages: LanguageSettings,

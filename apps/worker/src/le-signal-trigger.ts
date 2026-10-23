@@ -23,7 +23,7 @@ import { z } from 'zod';
 // gate, a MOD-02 support gate) produces a failed parse → null return from buildLeSignalInput.
 const LeSignalContextSchema = z
   .object({
-    artefactId: z.string().uuid(),
+    artefactId: z.guid(),
     artefactType: z.string().min(1),
     capsTopicId: z.string().min(1),
     agentId: z.string().min(1),

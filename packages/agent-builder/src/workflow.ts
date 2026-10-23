@@ -59,7 +59,7 @@ export const WorkflowNode = z.object({
   label: z.string().min(1),
   position: WorkflowNodePosition,
   /** Free-form configuration specific to this node type (validated per NodeDefinition). */
-  config: z.record(z.unknown()),
+  config: z.record(z.string(), z.unknown()),
 });
 export type WorkflowNode = z.infer<typeof WorkflowNode>;
 
