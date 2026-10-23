@@ -17,7 +17,7 @@ approval before it is added.
 | `prettier`               | 3.9.6   | MIT        | One formatter, no formatting debates in review.                                                                             | —        |
 | `lint-staged`            | 16.4.0  | MIT        | Runs lint and format on staged files only, so the hook stays fast.                                                          | —        |
 | `husky`                  | 9.1.7   | MIT        | Git hooks: pre-commit lint, pre-push unit suite (Stage 00 step 5).                                                          | —        |
-| `vitest`                 | 3.2.7   | MIT        | Unit and integration test runner (Part 4 §4.1).                                                                             | —        |
+| `vitest`                 | 5.0.5   | MIT        | Unit and integration test runner (Part 4 §4.1).                                                                             | —        |
 | `tsx`                    | 4.23.1  | MIT        | Runs `scripts/verify-stage.ts` without a build step.                                                                        | —        |
 | `@types/node`            | 22.20.1 | MIT        | Node type definitions.                                                                                                      | —        |
 | `zod`                    | 3.25.76 | MIT        | Runtime validation. `unknown` + a Zod parse is the sanctioned pattern under rule 8, and every API contract is a Zod schema. | —        |
@@ -33,7 +33,7 @@ exception.
 | `@prisma/client`             | 6.19.3  | Apache-2.0 | The generated client the tenant-scoped wrapper wraps.                                            | —        |
 | `testcontainers`             | 12.0.4  | MIT        | Real Postgres per test run, locked by §1.1 and Part 4 §4.1.                                      | —        |
 | `@testcontainers/postgresql` | 12.0.4  | MIT        | The Postgres module for the above.                                                               | —        |
-| `@vitest/coverage-v8`        | 3.2.7   | MIT        | Coverage, to hold `packages/db` to the ≥ 95% line threshold in §4.2. Pinned to the Vitest minor. | —        |
+| `@vitest/coverage-v8`        | 5.0.5   | MIT        | Coverage, to hold `packages/db` to the ≥ 95% line threshold in §4.2. Pinned to the Vitest minor. | —        |
 
 ### Why Prisma 6 rather than 7
 
@@ -463,6 +463,27 @@ advisories, including GHSA-2464-fhr4-w9xw (unauthenticated remote code execution
 affecting `>=16.0.0 <=16.4.0` and patched in `>=16.4.1`. `main` already carries `16.4.2` (exact pin, MIT, no replacement), which
 clears them; this entry records it (the row above read 16.3.8 because the move to 16.4.0 and then 16.4.2 was not recorded here).
 After merging `main`: `pnpm audit:supply-chain` PASS.
+
+### `vitest` 3.2.7 → 5.0.5 and `@vitest/coverage-v8` 3.2.7 → 5.0.5 (2026-10-23)
+
+Dependabot proposed these as two PRs; they must move together (the coverage provider imports Vitest's own `./coverage` entry
+point), so they land as one change, exact-pinned, licences unchanged (MIT), replacing the 3.2.7 pair. Two packages
+(`learner-client`, `document-annotation`) declared the provider as `^3.2.7`; they are now exact like the rest. What the major
+bump changed in this repository:
+
+- `vi.fn()` now returns `Mock<Procedure | Constructable>`, not assignable to a concrete function type. Two typed-mock fixes
+  in test files (`apps/gateway/test/server.spec.ts`, `packages/curriculum-seed/test/brain-publish-executor.spec.ts`).
+- Branch coverage is measured more precisely, which exposed branches earlier versions did not count. `packages/analytics`
+  fell to 93.75% against its 95% threshold. Rather than lower the threshold, five tests now cover the missing paths
+  (a learner with no current tier; classes and grades with no known intervention rate) and one provably dead ternary in
+  `rollupClass` (the cohort-size guard above it makes `length > 0` always true) was replaced by the plain division.
+
+- `vitest --merge-reports` no longer defaults to `.vitest-reports`; it reads `.vitest/blob` unless told otherwise, so
+  `packages/db`'s `coverage:merged` (the unit and integration tiers merged for its 95% gate) failed in CI with ENOENT. The
+  script now passes the directory its two tiers write to. Verified with the real two-tier run against a local Postgres 16:
+  905 tests, 98.05% lines, 96.06% branches.
+
+After the bump: lint, format, typecheck, unit tests with coverage thresholds, build and `pnpm audit:supply-chain` pass locally.
 
 ### `sharp` 0.35.4 → 0.35.5 and `source-map-js` 1.2.1 → 1.2.2 (2026-10-07)
 

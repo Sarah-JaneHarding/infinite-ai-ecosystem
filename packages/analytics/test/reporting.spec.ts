@@ -98,6 +98,19 @@ describe('rollupClass', () => {
     expect(cr.fidelityRate).toBeCloseTo(0.75);
   });
 
+  it('leaves a learner with no current tier out of every tier bucket but still counts them in the rate', () => {
+    const reports = [
+      ...learners([['TIER_1', true], ['TIER_1'], ['TIER_2'], ['TIER_3']]),
+      { ...learner('TIER_1', true), currentTier: null },
+    ];
+    const cr = rollupClass('cls-1', TERM, reports);
+    expect(cr.tierDistribution.suppressed).toBe(false);
+    if (!cr.tierDistribution.suppressed) {
+      expect(cr.tierDistribution.total).toBe(4);
+    }
+    expect(cr.interventionRate).toBeCloseTo(2 / 5);
+  });
+
   it('counts REFERRAL tier', () => {
     const reports = learners([
       ['TIER_1'],
@@ -178,6 +191,67 @@ describe('rollupGrade', () => {
 // ---------------------------------------------------------------------------
 // School rollup
 // ---------------------------------------------------------------------------
+
+const visibleDistribution = (total: number) => ({
+  suppressed: false as const,
+  TIER_1: total,
+  TIER_2: 0,
+  TIER_3: 0,
+  REFERRAL: 0,
+  total,
+});
+
+describe('rollupGrade - classes with no known intervention rate', () => {
+  it('weights only the classes that report a rate', () => {
+    const known = {
+      classId: 'a',
+      termId: TERM,
+      tierDistribution: visibleDistribution(10),
+      interventionRate: 0.5,
+      fidelityRate: null,
+    };
+    const unknown = {
+      classId: 'b',
+      termId: TERM,
+      tierDistribution: visibleDistribution(30),
+      interventionRate: null,
+      fidelityRate: null,
+    };
+    expect(rollupGrade('g', TERM, [known, unknown]).interventionRate).toBeCloseTo(0.5);
+  });
+
+  it('reports no rate when no class has one', () => {
+    const unknown = {
+      classId: 'b',
+      termId: TERM,
+      tierDistribution: visibleDistribution(10),
+      interventionRate: null,
+      fidelityRate: null,
+    };
+    expect(rollupGrade('g', TERM, [unknown]).interventionRate).toBeNull();
+  });
+});
+
+describe('rollupSchool - grades with no known intervention rate', () => {
+  const grade = (id: string, total: number, rate: number | null) => ({
+    gradeId: id,
+    termId: TERM,
+    tierDistribution: visibleDistribution(total),
+    classCount: 1,
+    interventionRate: rate,
+  });
+
+  it('weights only the grades that report a rate', () => {
+    expect(
+      rollupSchool('s', TERM, [grade('1', 10, 0.2), grade('2', 90, null)])
+        .interventionRate,
+    ).toBeCloseTo(0.2);
+  });
+
+  it('reports no rate when no grade has one', () => {
+    expect(rollupSchool('s', TERM, [grade('1', 10, null)]).interventionRate).toBeNull();
+  });
+});
 
 describe('rollupSchool', () => {
   it('aggregates grade reports into a school report', () => {
