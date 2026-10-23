@@ -14,6 +14,7 @@ import type { AgeAppropriatenessChecker } from '@infinite-ai/guardrails';
 import { PipelineDefinition, type StepExecutor } from '@infinite-ai/orchestrator';
 
 import {
+  type AgentPayloadBuilder,
   GuardrailRefusalError,
   StepExecutorError,
   createStepExecutor,
@@ -60,6 +61,8 @@ export interface AgentRunnerDeps {
   readonly tenantId: string;
   readonly fetchImpl?: typeof fetch;
   readonly ageAppropriatenessChecker?: AgeAppropriatenessChecker;
+  /** Adds developer-supplied context to the call (`--context-file`). Unset: input only. */
+  readonly payloadBuilder?: AgentPayloadBuilder;
   readonly now?: () => number;
   /** Send an input that fails the agent's `inputSchema` anyway. Default: skip the call. */
   readonly sendInvalidInput?: boolean;
@@ -152,6 +155,7 @@ export async function runAgentLive(
     fetchImpl: recordingFetch,
     tenantId: deps.tenantId,
     toolHandlers: new Map(),
+    ...(deps.payloadBuilder === undefined ? {} : { buildPayload: deps.payloadBuilder }),
     ...(deps.ageAppropriatenessChecker === undefined
       ? {}
       : { ageAppropriatenessChecker: deps.ageAppropriatenessChecker }),

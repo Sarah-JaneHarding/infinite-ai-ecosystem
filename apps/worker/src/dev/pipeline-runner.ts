@@ -16,8 +16,10 @@ import {
 } from '@infinite-ai/orchestrator';
 import { Queue } from 'bullmq';
 
+import { processPipelineJob, type JobProcessorDeps } from '../job-processor.js';
 import { PIPELINE_QUEUE_BINDINGS } from '../pipeline-bindings.js';
 import type { PipelineJobData } from '../queue-names.js';
+import { makeChainPayloadBuilder } from './chain-context.js';
 import { mergeTemplates, templateFor } from './schema-template.js';
 
 export class PipelineRunnerError extends Error {
@@ -199,4 +201,100 @@ export function summariseRun(run: RunInspection): string {
     lines.push(`  ${step.stepId}#${step.attempt}  ${step.status}  ${latency}${error}`);
   }
   return lines.join('\n');
+}
+
+// ── In-process mode (`--chain`) ───────────────────────────────────────────────────────────
+
+export interface DriveRunPorts {
+  /** Runs the pipeline as far as it can go right now; returns how many Learning-Engine
+   * signal jobs it produced (not enqueued in-process). */
+  readonly advance: () => Promise<number>;
+  readonly read: () => Promise<RunInspection | null>;
+  readonly sleep: (ms: number) => Promise<void>;
+  readonly now: () => number;
+}
+
+export interface DriveRunOptions {
+  readonly timeoutMs: number;
+  readonly pollMs: number;
+  readonly onUpdate: (run: RunInspection, leSignalJobsSkipped: number) => void;
+}
+
+/** Advances a run until it finishes, repeating while it waits for a person (a human gate is
+ * decided in the web app; the next `advance` notices the decision) or for a retry. */
+export async function driveRun(
+  ports: DriveRunPorts,
+  options: DriveRunOptions,
+): Promise<RunInspection> {
+  const deadline = ports.now() + options.timeoutMs;
+  let skipped = 0;
+  let last: RunInspection | null = null;
+  for (;;) {
+    skipped += await ports.advance();
+    const run = await ports.read();
+    if (run === null)
+      throw new PipelineRunnerError('The run disappeared while it was being driven.');
+    last = run;
+    options.onUpdate(run, skipped);
+    if (TERMINAL_RUN_STATUSES.includes(run.status)) return run;
+    if (ports.now() >= deadline) return last;
+    await ports.sleep(options.pollMs);
+  }
+}
+
+export async function runPipelineInProcess(options: {
+  readonly pipelineId: string;
+  readonly tenantId: string;
+  readonly actorId: string;
+  readonly input: unknown;
+  readonly gradePhase?: PipelineJobData['gradePhase'];
+  readonly extraContext?: Readonly<Record<string, unknown>>;
+  readonly jobDeps: JobProcessorDeps;
+  readonly timeoutMs: number;
+  readonly onStarted: (runId: string) => void;
+  readonly onUpdate: DriveRunOptions['onUpdate'];
+}): Promise<RunInspection> {
+  const { pipeline } = bindingFor(options.pipelineId);
+  const scope = { tenantId: options.tenantId, actorId: options.actorId };
+  const traceId = `dev-chain-${Date.now().toString(36)}`;
+  const runId = await withTenant(
+    scope,
+    async (tx) =>
+      (await startRun(tx, pipeline, options.input, traceId, options.actorId)).id,
+  );
+  options.onStarted(runId);
+
+  return driveRun(
+    {
+      advance: async () =>
+        (
+          await processPipelineJob(
+            options.jobDeps,
+            pipeline,
+            {
+              runId,
+              ...scope,
+              ...(options.gradePhase === undefined
+                ? {}
+                : { gradePhase: options.gradePhase }),
+            },
+            {
+              payloadBuilder: (tx, id) =>
+                makeChainPayloadBuilder({
+                  tx,
+                  runId: id,
+                  pipeline,
+                  ...(options.extraContext === undefined
+                    ? {}
+                    : { extra: options.extraContext }),
+                }),
+            },
+          )
+        ).length,
+      read: () => readRun(options.tenantId, options.actorId, runId, pipeline),
+      sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+      now: Date.now,
+    },
+    { timeoutMs: options.timeoutMs, pollMs: 3000, onUpdate: options.onUpdate },
+  );
 }

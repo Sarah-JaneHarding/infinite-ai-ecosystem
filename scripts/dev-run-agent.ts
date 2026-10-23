@@ -8,7 +8,8 @@
  *
  * Flags: --agent (required), --input FILE, --template, --tenant UUID (a seeded fixture
  * tenant only), --out FILE (JSON lines, appended), --send-invalid (call the model even if
- * the input fails the agent's schema). Needs the gateway running (docs/FREE_LOCAL_TESTING.md).
+ * the input fails the agent's schema), --context-file FILE (a JSON object sent as `context`
+ * beside the input, labelled developer-supplied, with the calibration addendum). Needs the gateway running (docs/FREE_LOCAL_TESTING.md).
  *
  * Exit codes: 0 call returned an `ok` outcome · 1 any other outcome · 2 usage / refused.
  */
@@ -24,6 +25,7 @@ import {
   assertDevRun,
 } from '../apps/worker/src/dev/dev-guard.js';
 import { AgentRunnerError, runAgentLive } from '../apps/worker/src/dev/agent-runner.js';
+import { staticContextBuilder } from '../apps/worker/src/dev/chain-context.js';
 import { templateFor } from '../apps/worker/src/dev/schema-template.js';
 import { buildAgentContractMap } from '../apps/worker/src/index.js';
 
@@ -63,6 +65,15 @@ const tenantId = flag('tenant') ?? DEFAULT_DEV_TENANT_ID;
 try {
   assertDevRun({ nodeEnv: env.NODE_ENV, tenantId });
   const input: unknown = JSON.parse(readFileSync(inputFile, 'utf8'));
+  const contextFile = flag('context-file');
+  const context: unknown =
+    contextFile === undefined ? undefined : JSON.parse(readFileSync(contextFile, 'utf8'));
+  if (
+    context !== undefined &&
+    (typeof context !== 'object' || context === null || Array.isArray(context))
+  ) {
+    usage('--context-file must contain a JSON object.');
+  }
   const record = await runAgentLive(
     {
       contracts,
@@ -70,6 +81,9 @@ try {
       gatewayBaseUrl: env.GATEWAY_BASE_URL,
       tenantId,
       sendInvalidInput: has('send-invalid'),
+      ...(context === undefined
+        ? {}
+        : { payloadBuilder: staticContextBuilder(context as Record<string, unknown>) }),
     },
     agentId,
     input,

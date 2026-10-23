@@ -7,6 +7,16 @@
  *   pnpm dev:run-pipeline --pipeline mod-01-curriculum --input in.json [--out run.json]
  *   pnpm dev:run-pipeline --pipeline mod-01-curriculum --inspect <runId>
  *
+ *   pnpm dev:run-pipeline --pipeline mod-01-curriculum --input in.json --chain [--context-file ctx.json]
+ *
+ * --chain runs the pipeline IN THIS PROCESS (no worker needed - stop the worker, or it may
+ * pick up the post-approval continuation too) and gives each MOD-01 agent the ratified L0
+ * documents and the provisional drafts earlier agents produced in this run, labelled as
+ * such, with a calibration addendum on the system prompt (docs/OPEN_QUESTIONS.md OQ-030,
+ * option C). Production behaviour is unchanged. --context-file is a JSON object merged into
+ * every chained agent's `context` (e.g. {"assessmentPolicy": [...]}) and reported as
+ * developer-supplied.
+ *
  * Flags: --pipeline ID · --input FILE · --template · --list · --inspect RUN_ID ·
  * --tenant UUID (a seeded fixture tenant only) · --grade-phase FOUNDATION|INTERMEDIATE|SENIOR ·
  * --no-wait · --timeout-min N (default 30) · --out FILE (final inspection as JSON).
@@ -19,6 +29,7 @@
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 
 import { loadEnv } from '../packages/config/src/index.js';
 
@@ -34,11 +45,16 @@ import {
   bindingFor,
   pipelineInputTemplate,
   readRun,
+  runPipelineInProcess,
   startAndEnqueue,
   summariseRun,
   validatePipelineInput,
 } from '../apps/worker/src/dev/pipeline-runner.js';
 import { PIPELINE_QUEUE_BINDINGS } from '../apps/worker/src/pipeline-bindings.js';
+import {
+  buildAgeCheckerFactory,
+  resolvePromptsRoot,
+} from '../apps/worker/src/age-checker.js';
 import { buildAgentContractMap } from '../apps/worker/src/index.js';
 
 function flag(name: string): string | undefined {
@@ -94,6 +110,64 @@ try {
       !['FOUNDATION', 'INTERMEDIATE', 'SENIOR'].includes(phase)
     ) {
       usage('--grade-phase must be FOUNDATION, INTERMEDIATE or SENIOR.');
+    }
+    if (has('chain')) {
+      const contextFile = flag('context-file');
+      const extra: unknown =
+        contextFile === undefined
+          ? undefined
+          : JSON.parse(readFileSync(contextFile, 'utf8'));
+      if (
+        extra !== undefined &&
+        (typeof extra !== 'object' || extra === null || Array.isArray(extra))
+      ) {
+        usage('--context-file must contain a JSON object.');
+      }
+      console.log(
+        'chain mode: running in this process. Stop the worker, or it may also continue the run after an approval.',
+      );
+      let last = '';
+      const run = await runPipelineInProcess({
+        pipelineId,
+        tenantId,
+        actorId: DEV_RUNNER_ACTOR_ID,
+        input,
+        ...(phase === undefined
+          ? {}
+          : { gradePhase: phase as 'FOUNDATION' | 'INTERMEDIATE' | 'SENIOR' }),
+        ...(extra === undefined
+          ? {}
+          : { extraContext: extra as Record<string, unknown> }),
+        jobDeps: {
+          agentContracts: contracts,
+          promptsRoot: resolvePromptsRoot(),
+          gatewayBaseUrl: env.GATEWAY_BASE_URL,
+          ageAppropriatenessCheckerFactory: buildAgeCheckerFactory(env.GATEWAY_BASE_URL),
+        },
+        timeoutMs: Number(flag('timeout-min') ?? '30') * 60_000,
+        onStarted: (id) => console.log(`started run ${id} (in-process)`),
+        onUpdate: (current, skipped) => {
+          const summary = summariseRun(current);
+          if (summary !== last) {
+            console.log(summary);
+            last = summary;
+            if (current.status === 'WAITING_FOR_APPROVAL') {
+              console.log(
+                'Waiting for a person: decide the gate in the web app (/approvals) as the required role.',
+              );
+            }
+            if (skipped > 0) {
+              console.log(
+                `(${skipped} Learning-Engine signal job(s) not enqueued in chain mode)`,
+              );
+            }
+          }
+        },
+      });
+      const out = flag('out');
+      if (out !== undefined)
+        writeFileSync(path.resolve(out), `${JSON.stringify(run, null, 2)}\n`);
+      process.exit(run.status === 'SUCCEEDED' ? 0 : 1);
     }
     const started = await startAndEnqueue({
       pipelineId,
