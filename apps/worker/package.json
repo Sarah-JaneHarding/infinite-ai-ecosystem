@@ -17,7 +17,7 @@
     "start": "tsx src/main.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-sns": "3.1148.0",
+    "@aws-sdk/client-sns": "3.1153.0",
     "@infinite-ai/agents": "workspace:*",
     "@infinite-ai/brain": "workspace:*",
     "@infinite-ai/config": "workspace:*",
@@ -28,13 +28,13 @@
     "@infinite-ai/orchestrator": "workspace:*",
     "@infinite-ai/prompts": "workspace:*",
     "@infinite-ai/telemetry": "workspace:*",
-    "bullmq": "6.3.12",
+    "bullmq": "6.3.19",
     "ioredis": "6.0.0",
     "zod": "3.25.76"
   },
   "devDependencies": {
     "tsx": "4.23.15",
-    "typescript": "5.9.3",
+    "typescript": "6.0.3",
     "vitest": "3.2.7"
   }
 }

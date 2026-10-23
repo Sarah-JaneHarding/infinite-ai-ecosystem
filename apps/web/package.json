@@ -26,22 +26,22 @@
     "@infinite-ai/learner-client": "workspace:*",
     "@infinite-ai/policy": "workspace:*",
     "@infinite-ai/security": "workspace:*",
-    "next": "16.4.3",
+    "next": "16.4.2",
     "next-auth": "4.24.15",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@axe-core/playwright": "4.13.0",
-    "@playwright/test": "1.64.0",
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1",
     "@tailwindcss/postcss": "4.3.3",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "autoprefixer": "10.6.1",
-    "postcss": "8.5.29",
+    "postcss": "8.5.31",
     "tailwindcss": "4.3.3",
-    "typescript": "5.9.3",
+    "typescript": "6.0.3",
     "vitest": "3.2.7"
   }
 }

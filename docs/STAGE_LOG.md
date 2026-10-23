@@ -10881,7 +10881,43 @@ re-run after the bump (see the PR).
 | `next` pinned exactly at `16.3.8`; lockfile diff confined   | PASS   |
 | `docs/DEPENDENCIES.md` records the bump (rule 9)            | PASS   |
 
-## Stage 108 — free local testing manual, local-model timeout, single-provider routing
+## Stage 108 — the SBST tabs stop presenting sample learners and SIAS cases as real
+
+**Task.** "Fix the sample data in the SBST views."
+
+**What was there.** Three tabs on the SBST role's only page (`/sbst`):
+
+- **MTSS Overview** — ten invented learners (`L-001` … `L-010`) with grades, tiers, EGRA risk flags and August 2026 screening dates, and
+  the KPI tiles, tier-distribution bar and "Class roster — universal screening results" table computed from them.
+- **SIAS Pipeline** — five invented cases (`SIAS-001` … `SIAS-005`) across four invented "phases", with made-up stages and September 2026
+  review dates, under a footer asserting what the "DoE SIAS Guidelines (2014)" require and when escalation to the district ILST occurs.
+- **EGRA Screening** — a calculator, not sample data (see below).
+
+**Why the first two cannot be wired to real data.** The database holds no screening results, tier placements, interventions or SIAS
+cases (only the analytics feature store, `ScreeningFeature`), so there is no roster or pipeline to read. Worse, the SIAS tab's
+four-phase model was invented here and contradicts the ratified SIAS state machine (`packages/analytics` `sias-state.ts`: ten states,
+SBST ratification before any tier change, referral or exit); the escalation sentence was never supplied by a source (CLAUDE.md: never
+invent SIAS process steps).
+
+**What changed.** The MTSS and SIAS tabs each say "Not available yet" and why; they show no learner, tier, count, case, phase, stage,
+date or process claim. The three tabs, the page and its access rule are unchanged. In `EgraScreeningView.tsx` only a **comment** changed:
+it claimed the benchmarks came from the EGRA reference in `docs/examples`, which is false — recorded as **OQ-035** (different subtests and
+scales, two cut-points per grade, "starting reference values only", and the tier is assigned by a person there, not by a flag count).
+The EGRA tab's behaviour is untouched; whether it should recommend a tier at all is for you.
+
+**Tests.** Web 403 (+15): the two tabs and the whole casebook (every panel renders, hidden or not) contain none of 25 invented strings
+and no table; the EGRA form still renders; `/sbst` opens for `sbst` only (unauthenticated → sign-in; the other seven school and
+platform roles → home). Mutation-checked: putting a sample case back fails 2 tests; opening the page to `teacher` fails 1. Typecheck,
+eslint, prettier clean. **Not viewed in a browser.**
+
+| Exit gate item                                                        | Result        |
+| --------------------------------------------------------------------- | ------------- |
+| No invented learner, tier, case, phase, date or SIAS/escalation claim | PASS (test)   |
+| `/sbst` open to the `sbst` role only                                  | PASS (test)   |
+| EGRA benchmark and tier-rule provenance                               | OPEN (OQ-035) |
+| Browser check                                                         | N/A           |
+
+## Stage 109 — free local testing manual, local-model timeout, single-provider routing
 
 **Task.** "Audit the repository and write a manual for running the ecosystem locally on free
 models so every module and user experience can be tested and edited."
@@ -10916,7 +10952,7 @@ Stage 90–94 sequence.
 | Manual's stack and model commands run end to end | NOT VERIFIED |
 | Docs updated in the same commit                  | PASS         |
 
-## Stage 109 — live agent and pipeline runners
+## Stage 110 — live agent and pipeline runners
 
 **Task.** "Build the live agent and pipeline runner" (Part 13 item 1 of the free-testing manual).
 
@@ -10961,7 +10997,7 @@ are not. No real model was called.
 | `dev:run-pipeline` start/enqueue/inspect against Postgres + Redis | NOT VERIFIED |
 | Real model call                                                   | NOT VERIFIED |
 
-## Stage 110 — dev-only chaining and grounding for MOD-01 (OQ-030, option C)
+## Stage 111 — dev-only chaining and grounding for MOD-01 (OQ-030, option C)
 
 **Task.** "Make pipelines chain outputs and use grounding."
 
@@ -11007,22 +11043,3 @@ be smoke-run once before relying on it.
 | Payload shape on the wire (with and without `--context-file`)        | PASS (smoke) |
 | Production worker behaviour unchanged (default path, existing tests) | PASS (unit)  |
 | `--chain` and the worker against Postgres + Redis                    | NOT VERIFIED |
-
-## Stage 111 — `next` 16.4.0 → 16.4.3 (GHSA-2464-fhr4-w9xw)
-
-**Task.** "Add the next bump to this branch." CI on PR #155 failed only at `verify:stage 65` →
-`pnpm audit:supply-chain` on new critical advisories against `next@16.4.0` (unauthenticated RCE in
-`use cache`, patched `>=16.4.1`); nothing in this branch's diff touches `apps/web`.
-
-**What changed.** `apps/web/package.json` `next` 16.4.0 → 16.4.3 (exact pin); `pnpm-lock.yaml`
-regenerated, diff confined to `next`, `@next/env` and the `@next/swc-*` binaries;
-`docs/DEPENDENCIES.md` entry and row (rule 9). No source change. `docs/sbom.json` not committed.
-
-**Checks.** `pnpm audit:supply-chain` PASS (was: critical). Web typecheck, 389 unit tests and
-production build green.
-
-| Exit gate item                                               | Result |
-| ------------------------------------------------------------ | ------ |
-| `pnpm audit:supply-chain` - critical `next` advisories fixed | PASS   |
-| `next` pinned exactly at `16.4.3`; lockfile diff confined    | PASS   |
-| `docs/DEPENDENCIES.md` records the bump (rule 9)             | PASS   |
