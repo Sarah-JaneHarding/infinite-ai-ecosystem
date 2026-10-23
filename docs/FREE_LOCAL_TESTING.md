@@ -31,18 +31,20 @@ short bursts when you want a stronger model than your hardware can run.
 
 **What is testable end to end today.**
 
-| You want to…                                           | Works today?     | How                                                        |
-| ------------------------------------------------------ | ---------------- | ---------------------------------------------------------- |
-| See and edit all nine role screens                     | Yes              | Part 6–7 (needs Postgres + Keycloak, **no model**)         |
-| Run the age-appropriateness **judge** on a real model  | Yes              | Part 8.1                                                   |
-| See every prompt/response in a trace viewer            | Yes              | Langfuse, Part 5.5                                         |
-| Run the eval harness (`pnpm evals:run`)                | Yes, but see 8.2 | It uses **stub executors — it never calls a model**        |
-| Trigger a MOD-01…05 / LE pipeline from the web UI      | **No**           | No screen or script enqueues a pipeline — see Part 8.3, 13 |
-| Run one agent against a live model and save its output | **No**           | No such runner exists yet — see Part 13, item 1            |
+| You want to…                                                     | Works today?     | How                                                    |
+| ---------------------------------------------------------------- | ---------------- | ------------------------------------------------------ |
+| See and edit all nine role screens                               | Yes              | Part 6–7 (needs Postgres + Keycloak, **no model**)     |
+| Run the age-appropriateness **judge** on a real model            | Yes              | Part 8.1                                               |
+| See every prompt/response in a trace viewer                      | Yes              | Langfuse, Part 5.5                                     |
+| Run the eval harness (`pnpm evals:run`)                          | Yes, but see 8.2 | It uses **stub executors — it never calls a model**    |
+| Run any one of the 55 agents on a live model, keep the raw reply | Yes              | `pnpm dev:run-agent`, Part 8.3                         |
+| Run golden sets on a live model and save every reply             | Yes              | `pnpm evals:run-live`, Part 8.4                        |
+| Start a MOD-01…05 / LE pipeline and watch it                     | Yes (new)        | `pnpm dev:run-pipeline`, Part 8.5 — but see its limits |
+| Start a pipeline from the web UI                                 | **No**           | No screen does it; use the command above               |
 
-The last two rows are the gap between "the ecosystem runs" and "I can generate training and
-calibration data from it". Part 13 says exactly what to build to close it; this manual does
-not pretend otherwise.
+The new runners close most of the old gap between "the ecosystem runs" and "I can generate
+training and calibration data from it". Their limits are real and listed in Part 8.5 and
+Part 13 — read them before trusting a number.
 
 **Smaller models will behave differently.** Agents are required to answer in JSON that is
 validated by Zod, and the judge fails closed (a malformed reply becomes "not appropriate").
@@ -505,20 +507,97 @@ agents' _deterministic_ logic and schemas, not what a model writes. They need no
 will pass without any model. Use them to guard against regressions while you edit; do **not**
 read them as model-quality results.
 
-### 8.3 Pipelines (MOD-01…05, Learning Engine) — the manual's biggest limit
+### 8.3 One agent, live — `pnpm dev:run-agent`
 
-All thirteen pipelines run inside the worker, consuming BullMQ jobs
-(`PipelineJobData = { runId, tenantId, actorId, gradePhase? }`) after something calls
-`startRun(...)` and enqueues the job. **Nothing in the web app or `scripts/` does that**; the
-only automatic trigger is an approval decision feeding the Learning Engine's signal pipeline
-(`apps/worker/src/le-signal-trigger.ts`). So today the worker starts and idles, and agent
-steps run only inside the test suites.
+Runs a single agent exactly as the worker would for an `agent_call` step: same prompt file,
+same gateway request, same JSON parsing, same production guardrails. It also keeps what the
+worker throws away: the **raw reply**, token usage, which provider answered, latency, and
+_where_ a failure happened. It needs only the gateway (Part 5.4, terminal 1).
 
-What you _can_ do now: seed placeholder approvals (5.2 step 4), open them as `hod.dev` /
-`teacher.dev` and approve/edit/reject them — those decisions are real, are recorded in the
-audit ledger, and are the human labels the Learning Engine learns from.
+```bash
+pnpm dev:run-agent --agent CE-01 --template > in.json      # skeleton of the agent's input
+# edit in.json, replacing the "<string>" placeholders with synthetic data
+pnpm dev:run-agent --agent CE-01 --input in.json --out runs/ce01.jsonl
+```
 
-To run an agent or pipeline for real you need the small runner described in Part 13, item 1.
+The printed record has an `outcome`: `ok`, `invalid_input` (no model call was made — the input
+broke the agent's schema; the issues are listed), `gateway_error`, `non_json` (the model replied
+with prose; `rawContent` has all of it), `guardrail_refused`, or `error`. `--send-invalid`
+calls the model even for an invalid input. `--out` appends one JSON line per run — iterate a
+prompt, re-run, and diff the file.
+
+Safety: the runner only accepts the three seeded fixture tenants and refuses
+`NODE_ENV=production`. It stamps prompts "de-identified" the way the worker does for
+curriculum work, which is only honest for synthetic data — so use only synthetic data.
+
+### 8.4 Golden sets, live — `pnpm evals:run-live`
+
+```bash
+pnpm evals:run-live --agent CE-05 --limit 5        # 5 cases of one agent
+pnpm evals:run-live --module TB                    # every Toolbox agent
+pnpm evals:run-live --all --limit 3                # a sample of everything (55 agents × 3)
+```
+
+Each case's input goes to the live model; the output is scored with the same scorers as
+`evals:run`. It writes `runs/evals-live-<time>/calls.jsonl` (one record per call, as in 8.3)
+and `summary.json` (per case: `passed`, `failed`, `unscored`, `call_failed`).
+
+Read the numbers carefully:
+
+- **The golden sets were written for the stub executors.** Many expectations describe the
+  stub's behaviour (for example "L0 is empty, so reply `needs_input`"). A live "failed" often
+  means "the model did something reasonable that the stub-era case did not expect". The
+  **raw replies are the product of this tool**, not the pass rate.
+- `llm_judge` expectations are **not scored** (there is no calibrated judge — OQ-016). They are
+  counted as deferred; a case with nothing else to check is `unscored`. The saved replies are
+  exactly what you would hand to a judge or a human reviewer.
+- About 1 in 6 golden inputs deliberately breaks its agent's schema (they test refusals).
+  Those come back `invalid_input` without a model call unless you pass `--send-invalid`.
+- `--all` without `--limit` is 1,473 model calls. On a CPU-only local model that is hours:
+  start small.
+- It is sequential and spends no money, but it does spend your time and (on Option B) your
+  daily quota.
+
+### 8.5 Pipelines, live — `pnpm dev:run-pipeline`
+
+```bash
+pnpm dev:run-pipeline --list
+pnpm dev:run-pipeline --pipeline mod-01-curriculum --template > in.json
+# edit in.json (synthetic data only)
+pnpm dev:run-pipeline --pipeline mod-01-curriculum --input in.json --out runs/run1.json
+pnpm dev:run-pipeline --pipeline mod-01-curriculum --inspect <runId>
+```
+
+It validates the input against every agent the pipeline will reach (printing exactly which
+field is wrong, before any model time is spent), opens the run, puts the same job on the
+queue the **running worker** consumes (so start the worker, Part 5.4), and prints one line per
+step until the run finishes. `--out` saves the full inspection (every step's input, output,
+error and timing) as JSON; `--no-wait` just starts it.
+
+**Human gates are never decided by this tool.** When a run reaches one it prints "waiting for
+a person"; sign in as the gate's role (`hod.dev`, `teacher.dev`, …) and decide it under
+`/approvals`. The run then continues and this command reports the rest. That decision is a
+real, audited label — the best training signal in the system.
+
+**What a pipeline run does today (audit findings — they bound what you can learn):**
+
+1. **Every step receives the run's original input.** The runner passes `run.input` to each
+   step; one agent's output is not handed to the next (only `map` steps split a collection
+   from the input). So a pipeline run exercises each agent on the same input rather than
+   chaining them. Use it to test wiring, gates and failure handling; use 8.3/8.4 to study one
+   agent's behaviour.
+2. **The worker adds no L0/Brain context to an agent call.** The retrieval-grounded
+   executors in `packages/curriculum-seed` are used only by the (stub) eval harness, not by the
+   worker. Live agent output therefore lacks CAPS grounding unless you put the facts in the
+   input.
+3. **MOD-04's `draft-artefact` step does not call a Toolbox agent.** `toolbox.draft_artefact`
+   only records a Brain episode saying a draft was created; its comment promises dispatch to
+   TB-01…11, but the handler does not do it. A MOD-04 run is a test of gates and bookkeeping,
+   not of generation. Use `dev:run-agent --agent TB-0x` for generation.
+4. Some pipelines begin with a tool step (for example `l0.ingest_ratified_source`) that
+   validates its own input at run time; `--template` cannot show those fields.
+
+These are recorded as follow-ups in Part 13.
 
 ---
 
@@ -611,12 +690,15 @@ Then repeat from Part 4.1 (new secrets) or keep the same `.env` files and go to 
 These are findings from the audit, not hypothetical wishes. Each is its own change under
 `CLAUDE.md`'s rules (tests, docs, one logical change per PR).
 
-1. **A live agent/pipeline runner.** A dev-only script that (a) opens a run with
-   `startRun`, enqueues a `PipelineJobData` job on the right queue, and prints the run id; and
-   (b) a variant of `evals:run` that wires the _real_ gateway into the executor factories and
-   writes each output to a JSON-lines file. Without these, the agents cannot be exercised
-   from outside the test suite, which is the heart of the "train, iterate, calibrate" goal.
-   Human gates must stay: the runner must wait for a real approval, not bypass it (rule 6).
+1. **Make pipelines chain and ground.** Pass each step's output to the next step that needs
+   it, and run the retrieval-grounded executors (`packages/curriculum-seed`) in the worker
+   instead of a bare prompt + input. Until then, pipeline runs test wiring, not generation
+   (Part 8.5, findings 1–2). This is a design change to the orchestrator, so it needs a decision
+   first (`docs/OPEN_QUESTIONS.md`).
+   1a. **Make MOD-04's `draft-artefact` actually call the TB agent** named in the run input
+   (Part 8.5, finding 3).
+   1b. **Golden sets for live use.** Cases written for the stub executors expect stub behaviour;
+   a live-calibrated set (reviewed by a person) is what turns 8.4 into a score.
 2. **A real-model LLM judge for the eval harness.** `LlmJudge` in `packages/evals` is only a
    hook; scripts use the rule-based `ac-stub-judge`. Wire one through the gateway (rule 3),
    with the 50+ human-labelled cases OQ-016 requires.

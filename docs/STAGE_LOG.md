@@ -10915,3 +10915,48 @@ Stage 90–94 sequence.
 | `.env.example` in step with the env schema       | PASS (test)  |
 | Manual's stack and model commands run end to end | NOT VERIFIED |
 | Docs updated in the same commit                  | PASS         |
+
+## Stage 109 — live agent and pipeline runners
+
+**Task.** "Build the live agent and pipeline runner" (Part 13 item 1 of the free-testing manual).
+
+**What changed.**
+
+- `apps/worker/src/dev/`: `agent-runner.ts` (one agent through the worker's own
+  `createStepExecutor`, capturing raw reply/usage/provider/latency/failure stage via a recording
+  `fetch`), `live-eval.ts` (golden set → scored summary, `llm_judge` deferred), `pipeline-runner.ts`
+  (validate input against the agents a pipeline reaches, `startRun` inside `withTenant`, enqueue,
+  read back with `inspectRun`), `schema-template.ts` (input skeletons from Zod), `dev-guard.ts`.
+- `apps/worker/src/pipeline-bindings.ts`: the pipeline→queue table, now used by `index.ts` too
+  (replacing 13 hand-written `.register` calls) so runner and worker cannot disagree.
+- `StepExecutorDeps.fetchImpl` (optional). Scripts: `dev-run-agent`, `evals-run-live`, `dev-run-pipeline`.
+- `@infinite-ai/evals` added to the worker as a workspace dependency (no third-party addition).
+
+**Guardrails.** Gateway remains the only model path (rule 3). The runners accept only the three
+seeded fixture tenants and refuse `NODE_ENV=production` (rule 4: they stamp prompts de-identified,
+honest only for synthetic data; the gateway still checks the tenant lexicon). All database work is
+inside `withTenant` (rule 5). A human gate is never decided by the runner (rule 6).
+
+**Audit findings (recorded in the manual, Part 8.5 / 13).** (1) The runner passes `run.input` to
+every step; one agent's output never reaches the next. (2) The worker adds no L0 retrieval to an
+agent call. (3) `toolbox.draft_artefact` only records a Brain episode - MOD-04 never calls a TB agent.
+(4) 1,242 of 1,473 golden inputs satisfy their agent's input schema; the rest are deliberate negatives.
+
+**Tests.** Worker 114 (+27 new across five files): runner outcomes (ok, non-JSON with full raw text,
+HTTP 500, unreachable gateway, invalid input without a model call, `--send-invalid`, guardrail
+refusal, unknown agent), live-eval scoring (pass/fail/deferred judge/call_failed), pipeline input
+validation and template, binding table covers every worker pipeline once, tenant/production guard.
+Lint, typecheck, prettier clean. Smoke run: the three scripts executed against a throwaway fake
+gateway - template output, tenant refusal, and `evals:run-live --agent CE-01 --limit 6` writing
+`calls.jsonl`/`summary.json` (3 passed, 1 failed, 2 call_failed on injected non-JSON replies).
+
+**Not verified.** `dev:run-pipeline`'s start/enqueue/watch path needs Postgres and Redis (no Docker in
+the sandbox); its validation, template and summary code is unit-tested, the database and queue calls
+are not. No real model was called.
+
+| Exit gate item                                                    | Result       |
+| ----------------------------------------------------------------- | ------------ |
+| Lint, typecheck, worker unit tests                                | PASS         |
+| `evals:run-live` / `dev:run-agent` against a fake gateway         | PASS (smoke) |
+| `dev:run-pipeline` start/enqueue/inspect against Postgres + Redis | NOT VERIFIED |
+| Real model call                                                   | NOT VERIFIED |

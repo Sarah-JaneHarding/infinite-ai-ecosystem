@@ -12,6 +12,16 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Live agent and pipeline runners** (dev-only; `docs/FREE_LOCAL_TESTING.md` Part 8.3–8.5)
+  - `pnpm dev:run-agent`: one agent against the live gateway via the worker's own step
+    executor; keeps the raw reply, usage, provider, latency and failure stage.
+  - `pnpm evals:run-live`: golden sets on a live model; `calls.jsonl` + `summary.json`.
+  - `pnpm dev:run-pipeline`: validates input, starts a run, enqueues the worker's job, and
+    watches it through the Run Inspector. Never decides a human gate.
+  - Refuses non-fixture tenants and `NODE_ENV=production`.
+  - `StepExecutorDeps.fetchImpl` (optional, default global `fetch`); `PIPELINE_QUEUE_BINDINGS`
+    is now the single pipeline-to-queue table the worker and the runner both use.
+
 - **Free local testing manual** (`docs/FREE_LOCAL_TESTING.md`)
   - Step-by-step guide to running the stack on a local/free OpenAI-compatible model.
   - `LOCAL_MODEL_TIMEOUT_MS` (gateway, default 30 000 — behaviour unchanged): the `local`
