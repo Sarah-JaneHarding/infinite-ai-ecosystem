@@ -20,11 +20,13 @@
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { PrismaClient, type Prisma } from '@prisma/client';
+import type { Prisma, PrismaClient } from '@prisma/client';
 import {
   PostgreSqlContainer,
   type StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
+
+import { createPrismaClient } from '../../src/client.js';
 
 const initdbDir = fileURLToPath(
   new URL('../../../../infra/docker/initdb', import.meta.url),
@@ -97,7 +99,7 @@ export async function startTestDatabase(): Promise<TestDatabase> {
     container,
     urlFor,
     clientFor(role) {
-      const client = new PrismaClient({ datasources: { db: { url: urlFor(role) } } });
+      const client = createPrismaClient(urlFor(role));
       clients.push(client);
       return client;
     },

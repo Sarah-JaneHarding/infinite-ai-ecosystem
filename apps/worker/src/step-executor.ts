@@ -96,12 +96,33 @@ export class GuardrailRefusalError extends Error {
   }
 }
 
+/** What one agent call sends to the model: the JSON for the user message and an optional
+ * suffix appended to the system prompt. */
+export interface AgentPayload {
+  readonly userContent: unknown;
+  readonly systemSuffix?: string;
+}
+
+/** Decides what an agent call sends. Production leaves it unset, which sends the step's
+ * input unchanged; only the dev runners set one (see `dev/chain-context.ts`). */
+export type AgentPayloadBuilder = (call: {
+  readonly agentId: string;
+  readonly stepId: string;
+  readonly input: unknown;
+  readonly mapItemIndex?: number;
+}) => Promise<AgentPayload>;
+
 export interface StepExecutorDeps {
   readonly pipeline: PipelineDefinition;
   readonly agentContracts: ReadonlyMap<string, AgentContract>;
   /** Absolute path to the prompts source directory — where <agentId>/<version>.prompt.md live. */
   readonly promptsRoot: string;
   readonly gatewayBaseUrl: string;
+  /** The `fetch` used to reach the gateway. Defaults to the global one; the dev runners
+   * inject a recording wrapper so the raw reply and token usage survive for calibration. */
+  readonly fetchImpl?: typeof fetch;
+  /** See `AgentPayloadBuilder`. Unset in production. */
+  readonly buildPayload?: AgentPayloadBuilder;
   readonly tenantId: string;
   readonly toolHandlers: ToolHandlerMap;
   /**
@@ -219,14 +240,30 @@ async function runAgentCall(
   );
   const { body: promptBody } = loadPromptFile(promptFile);
 
+  const payload: AgentPayload =
+    deps.buildPayload === undefined
+      ? { userContent: input }
+      : await deps.buildPayload({
+          agentId,
+          stepId,
+          input,
+          ...(mapItemIndex === undefined ? {} : { mapItemIndex }),
+        });
+
   const requestBody = ChatCompletionRequest.parse({
     tenantId: deps.tenantId,
     module: deps.pipeline.id,
     agent: agentId,
     model: contract.model,
     messages: [
-      { role: 'system', content: promptBody },
-      { role: 'user', content: JSON.stringify(input) },
+      {
+        role: 'system',
+        content:
+          payload.systemSuffix === undefined
+            ? promptBody
+            : `${promptBody}\n\n${payload.systemSuffix}`,
+      },
+      { role: 'user', content: JSON.stringify(payload.userContent) },
     ],
     maxOutputTokens: contract.budget.maxTokens,
     provenance: { deidentified: true, saltVersion: 0, dropped: [] },
@@ -241,11 +278,14 @@ async function runAgentCall(
         : `${runId}-${stepId}-${mapItemIndex}-${attempt}`,
   });
 
-  const response = await fetch(`${deps.gatewayBaseUrl}/v1/chat/completions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(requestBody),
-  });
+  const response = await (deps.fetchImpl ?? fetch)(
+    `${deps.gatewayBaseUrl}/v1/chat/completions`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    },
+  );
 
   if (!response.ok) {
     const text = await response.text();

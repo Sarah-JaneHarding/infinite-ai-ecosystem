@@ -17,7 +17,7 @@ approval before it is added.
 | `prettier`               | 3.9.6   | MIT        | One formatter, no formatting debates in review.                                                                             | —        |
 | `lint-staged`            | 16.4.0  | MIT        | Runs lint and format on staged files only, so the hook stays fast.                                                          | —        |
 | `husky`                  | 9.1.7   | MIT        | Git hooks: pre-commit lint, pre-push unit suite (Stage 00 step 5).                                                          | —        |
-| `vitest`                 | 3.2.7   | MIT        | Unit and integration test runner (Part 4 §4.1).                                                                             | —        |
+| `vitest`                 | 5.0.5   | MIT        | Unit and integration test runner (Part 4 §4.1).                                                                             | —        |
 | `tsx`                    | 4.23.1  | MIT        | Runs `scripts/verify-stage.ts` without a build step.                                                                        | —        |
 | `@types/node`            | 22.20.1 | MIT        | Node type definitions.                                                                                                      | —        |
 | `zod`                    | 3.25.76 | MIT        | Runtime validation. `unknown` + a Zod parse is the sanctioned pattern under rule 8, and every API contract is a Zod schema. | —        |
@@ -27,28 +27,30 @@ exception.
 
 ## Stage 01 — data foundation
 
-| Package                      | Version | Licence    | Why                                                                                              | Replaces |
-| ---------------------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------ | -------- |
-| `prisma`                     | 6.19.3  | Apache-2.0 | ORM and migration engine, locked by §1.1.                                                        | —        |
-| `@prisma/client`             | 6.19.3  | Apache-2.0 | The generated client the tenant-scoped wrapper wraps.                                            | —        |
-| `testcontainers`             | 12.0.4  | MIT        | Real Postgres per test run, locked by §1.1 and Part 4 §4.1.                                      | —        |
-| `@testcontainers/postgresql` | 12.0.4  | MIT        | The Postgres module for the above.                                                               | —        |
-| `@vitest/coverage-v8`        | 3.2.7   | MIT        | Coverage, to hold `packages/db` to the ≥ 95% line threshold in §4.2. Pinned to the Vitest minor. | —        |
+| Package                      | Version | Licence    | Why                                                                                                                                    | Replaces |
+| ---------------------------- | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `prisma`                     | 7.10.1  | Apache-2.0 | ORM and migration engine, locked by §1.1.                                                                                              | —        |
+| `@prisma/client`             | 7.10.1  | Apache-2.0 | The generated client the tenant-scoped wrapper wraps.                                                                                  | —        |
+| `@prisma/adapter-pg`         | 7.10.1  | Apache-2.0 | Prisma 7's required Postgres driver adapter (brings `pg`, MIT, and `@types/pg`). Replaces Prisma 6's built-in query engine connection. | —        |
+| `testcontainers`             | 12.0.4  | MIT        | Real Postgres per test run, locked by §1.1 and Part 4 §4.1.                                                                            | —        |
+| `@testcontainers/postgresql` | 12.0.4  | MIT        | The Postgres module for the above.                                                                                                     | —        |
+| `@vitest/coverage-v8`        | 5.0.5   | MIT        | Coverage, to hold `packages/db` to the ≥ 95% line threshold in §4.2. Pinned to the Vitest minor.                                       | —        |
 
-### Why Prisma 6 rather than 7
+### Prisma 7 (adopted 2026-10-23; was "Why Prisma 6 rather than 7")
 
-Prisma 7 is current, and choosing a version behind it needs a reason on the record.
+This section used to defer Prisma 7 for one reason: it removes the Rust query engine and requires a driver adapter for
+Postgres, and that connection path carries the transaction-local `app.tenant_id` setting every RLS policy depends on, so it
+should not be adopted without "a working RLS suite to prove it did not break isolation". That precondition is now met, and the
+upgrade was made as its own change:
 
-Prisma 7 removes the Rust query engine and requires a driver adapter for Postgres. That
-is a materially different connection path, and the connection path is precisely what
-carries the transaction-local `app.tenant_id` setting that every RLS policy depends on.
-This environment has no Docker and no Postgres server, so nothing here can be exercised
-against a real database before it reaches CI — and a new connection architecture is the
-wrong thing to adopt blind, on the one layer where a subtle bug is a cross-tenant leak.
-
-Prisma 6 is supported and behaves the way the tenant client assumes. The upgrade to 7
-should be its own change, made when there is a working RLS suite to prove it did not
-break isolation. Revisit at Stage 16, where the supply-chain review runs.
+- `packages/db/src/client.ts` builds every client with `new PrismaPg({ connectionString })` (`createPrismaClient`, package
+  internal); the URL comes from `loadDatabaseUrl()` in `packages/config`, the one place `process.env` is read. `datasource.url`
+  left `schema.prisma` for `packages/db/prisma.config.ts`, which the CLI (migrate, generate) reads and the running app never does.
+- Proof against a real Postgres 16 with pgvector: the 20 `packages/db` integration suites (676 tests, including the exhaustive
+  RLS suite, tenant deletion and POPIA), plus the `brain`, `orchestrator`, `curriculum-seed` and `guardrails` integration suites;
+  `prisma migrate deploy` of all migrations; the seed run twice (idempotent); and a direct check that a query with no tenant
+  context still raises `unrecognised configuration parameter "app.tenant_id"` instead of returning rows.
+- New dependency recorded above: `@prisma/adapter-pg` 7.10.1 (Apache-2.0; pulls `pg`, MIT).
 
 ## Stage 04 — Model Gateway
 
@@ -375,7 +377,7 @@ components in the test environment; no React runtime ships with the package.
 
 | Package                | Version | Licence    | Why                                                                                                                                                                                                                                                                          | Replaces |
 | ---------------------- | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `next`                 | 16.3.8  | MIT        | The App Router framework. Server components by default; Turbopack for the dev server. Required by Stage 14 step 1. Bumped from 16.3.0 — see the supply-chain audit note below.                                                                                               | —        |
+| `next`                 | 16.4.2  | MIT        | The App Router framework. Server components by default; Turbopack for the dev server. Required by Stage 14 step 1. Bumped from 16.3.0 — see the supply-chain audit note below.                                                                                               | —        |
 | `react`                | 19.2.8  | MIT        | React 19 — required by Next.js 16. Provides concurrent features, form actions and the compiler the framework depends on.                                                                                                                                                     | —        |
 | `react-dom`            | 19.2.8  | MIT        | The DOM renderer for React 19.                                                                                                                                                                                                                                               | —        |
 | `@types/react`         | 19.2.18 | MIT        | TypeScript types for React 19.                                                                                                                                                                                                                                               | —        |
@@ -455,6 +457,35 @@ advisory against `next@16.3.6`: GHSA-cjq9-62q9-8jv4, server-side request forgery
 audit's pinning check requires; licence unchanged, MIT) and regenerated `pnpm-lock.yaml`; the diff touches only the `next`, `@next/env`
 and `@next/swc-*` entries. Replaces nothing; same minor, patch bump. `docs/sbom.json` changes by its timestamp only and is not
 committed. Re-run of `pnpm audit:supply-chain` after the bump: PASS, no known vulnerabilities.
+
+### `next` 16.4.0 → 16.4.2 (2026-10-23)
+
+`pnpm audit:supply-chain` (part of the cumulative `verify:stage 65` gate) failed against `next@16.4.0` with new **critical**
+advisories, including GHSA-2464-fhr4-w9xw (unauthenticated remote code execution in `use cache` functions returning typed arrays),
+affecting `>=16.0.0 <=16.4.0` and patched in `>=16.4.1`. `main` already carries `16.4.2` (exact pin, MIT, no replacement), which
+clears them; this entry records it (the row above read 16.3.8 because the move to 16.4.0 and then 16.4.2 was not recorded here).
+After merging `main`: `pnpm audit:supply-chain` PASS.
+
+### `vitest` 3.2.7 → 5.0.5 and `@vitest/coverage-v8` 3.2.7 → 5.0.5 (2026-10-23)
+
+Dependabot proposed these as two PRs; they must move together (the coverage provider imports Vitest's own `./coverage` entry
+point), so they land as one change, exact-pinned, licences unchanged (MIT), replacing the 3.2.7 pair. Two packages
+(`learner-client`, `document-annotation`) declared the provider as `^3.2.7`; they are now exact like the rest. What the major
+bump changed in this repository:
+
+- `vi.fn()` now returns `Mock<Procedure | Constructable>`, not assignable to a concrete function type. Two typed-mock fixes
+  in test files (`apps/gateway/test/server.spec.ts`, `packages/curriculum-seed/test/brain-publish-executor.spec.ts`).
+- Branch coverage is measured more precisely, which exposed branches earlier versions did not count. `packages/analytics`
+  fell to 93.75% against its 95% threshold. Rather than lower the threshold, five tests now cover the missing paths
+  (a learner with no current tier; classes and grades with no known intervention rate) and one provably dead ternary in
+  `rollupClass` (the cohort-size guard above it makes `length > 0` always true) was replaced by the plain division.
+
+- `vitest --merge-reports` no longer defaults to `.vitest-reports`; it reads `.vitest/blob` unless told otherwise, so
+  `packages/db`'s `coverage:merged` (the unit and integration tiers merged for its 95% gate) failed in CI with ENOENT. The
+  script now passes the directory its two tiers write to. Verified with the real two-tier run against a local Postgres 16:
+  905 tests, 98.05% lines, 96.06% branches.
+
+After the bump: lint, format, typecheck, unit tests with coverage thresholds, build and `pnpm audit:supply-chain` pass locally.
 
 ### `sharp` 0.35.4 → 0.35.5 and `source-map-js` 1.2.1 → 1.2.2 (2026-10-07)
 

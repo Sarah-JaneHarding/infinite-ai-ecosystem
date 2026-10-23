@@ -16,6 +16,9 @@
     "evals:run": "tsx scripts/evals-run.ts",
     "evals:gate": "tsx scripts/evals-gate.ts",
     "evals:promote": "tsx scripts/evals-promote.ts",
+    "evals:run-live": "tsx scripts/evals-run-live.ts",
+    "dev:run-agent": "tsx scripts/dev-run-agent.ts",
+    "dev:run-pipeline": "tsx scripts/dev-run-pipeline.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
@@ -49,6 +52,7 @@
     "test:billing:reconcile": "pnpm --filter @infinite-ai/billing test:reconcile",
     "test:tenant-deletion": "pnpm --filter @infinite-ai/db exec vitest run test/tenant-deletion.integration.spec.ts",
     "check:flags": "tsx scripts/check-feature-flags.ts",
+    "routing:local": "tsx scripts/make-local-routing.ts",
     "curriculum:seed": "tsx scripts/seed-curriculum.ts",
     "curriculum:ratify": "tsx scripts/ratify-curriculum.ts",
     "templates:seed": "tsx scripts/seed-templates.ts",
@@ -71,17 +75,17 @@
     "@infinite-ai/guardrails": "workspace:*",
     "@infinite-ai/prompts": "workspace:*",
     "@infinite-ai/warehouse": "workspace:*",
-    "@types/node": "22.20.1",
+    "@types/node": "26.6.5",
     "eslint": "9.39.5",
     "eslint-config-prettier": "10.1.8",
     "husky": "9.1.7",
-    "lint-staged": "16.4.0",
+    "lint-staged": "17.6.0",
     "prettier": "3.9.10",
     "tsx": "4.23.15",
     "turbo": "2.11.9",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.0",
-    "vitest": "3.2.7"
+    "vitest": "5.0.5"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

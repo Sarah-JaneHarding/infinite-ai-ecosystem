@@ -83,6 +83,8 @@ export const GatewayEnvSchema = z.object({
   LOCAL_MODEL_BASE_URL: z.string().url().optional(),
   /** @deprecated Prefer named provider slots (LM_STUDIO_*, OLLAMA_*) over this. */
   LOCAL_MODEL_API_KEYS: commaSeparatedKeys.optional(),
+  /** Per-request timeout for the `local` adapter. A CPU-only model can take minutes. */
+  LOCAL_MODEL_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
 
   // --- Provider selection --------------------------------------------------------
   /** Primary provider for CAPS-aligned curriculum requests. */

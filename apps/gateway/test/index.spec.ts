@@ -210,3 +210,21 @@ describe('boot', () => {
     server.close();
   });
 });
+
+describe('LOCAL_MODEL_TIMEOUT_MS', () => {
+  it('defaults to the adapter default of 30 seconds', () => {
+    expect(parseGatewayEnv({}).LOCAL_MODEL_TIMEOUT_MS).toBe(30_000);
+  });
+
+  it('accepts a longer timeout for slow CPU-only models', () => {
+    expect(
+      parseGatewayEnv({ LOCAL_MODEL_TIMEOUT_MS: '300000' }).LOCAL_MODEL_TIMEOUT_MS,
+    ).toBe(300_000);
+  });
+
+  it('refuses a zero, negative or non-numeric timeout', () => {
+    for (const bad of ['0', '-5', 'soon']) {
+      expect(() => parseGatewayEnv({ LOCAL_MODEL_TIMEOUT_MS: bad })).toThrow();
+    }
+  });
+});

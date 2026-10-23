@@ -157,7 +157,7 @@ describe('makePublishCurriculumVersionExecutor', () => {
     const capturedInputs: BrainWriteCandidateInput[] = [];
     const capturingRemember: RememberFn = async (tx, input) => {
       capturedInputs.push(input);
-      return (rememberFn as ReturnType<typeof vi.fn>)(tx, input);
+      return rememberFn(tx, input);
     };
 
     const executor = makePublishCurriculumVersionExecutor(withTenant, capturingRemember);
@@ -173,7 +173,7 @@ describe('makePublishCurriculumVersionExecutor', () => {
     const capturedInputs: BrainWriteCandidateInput[] = [];
     const capturingRemember: RememberFn = async (tx, input) => {
       capturedInputs.push(input);
-      return (rememberFn as ReturnType<typeof vi.fn>)(tx, input);
+      return rememberFn(tx, input);
     };
 
     const executor = makePublishCurriculumVersionExecutor(withTenant, capturingRemember);
