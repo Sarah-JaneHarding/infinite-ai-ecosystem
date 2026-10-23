@@ -10960,3 +10960,50 @@ are not. No real model was called.
 | `evals:run-live` / `dev:run-agent` against a fake gateway         | PASS (smoke) |
 | `dev:run-pipeline` start/enqueue/inspect against Postgres + Redis | NOT VERIFIED |
 | Real model call                                                   | NOT VERIFIED |
+
+## Stage 110 — dev-only chaining and grounding for MOD-01 (OQ-030, option C)
+
+**Task.** "Make pipelines chain outputs and use grounding."
+
+**Found, and why it became a question.** The MOD-01 agents' inputs are small parameter sets, not
+earlier outputs; the prompts take earlier outputs and L0 documents through `context.*` and treat
+any artefact with `ratifiedAt: null` as absent. The pipeline has one human gate at the end and no
+store for ratified artefacts, so chaining in production would mean forging a ratification (rule 6)
+or changing prompts/pipeline. Recorded as OQ-030; the owner chose option C (dev-only chaining).
+
+**What changed.**
+
+- `apps/worker/src/dev/chain-context.ts`: `CHAIN_SPECS` (declarative: which L0 kinds and which
+  upstream artefacts each of CE-01…CE-09 receives, under the prompts' own key names),
+  `assembleChainContext` (pure), `makeChainPayloadBuilder`, `staticContextBuilder`, and the
+  calibration addendum.
+- `apps/worker/src/job-processor.ts` (extracted unchanged from `WorkerHost`, with one optional
+  `payloadBuilder` hook), `age-checker.ts` (extracted from `index.ts`), optional
+  `StepExecutorDeps.buildPayload` (unset in production).
+- `dev/pipeline-runner.ts`: `driveRun` / `runPipelineInProcess`. `dev:run-pipeline --chain
+[--context-file]`; `dev:run-agent --context-file`.
+
+**Guardrails.** No `ratifiedAt` is ever set; drafts are labelled `provisional`; the human gate still
+decides (rule 6). Reads go through `withTenant` (rule 5); the gateway is still the only model path
+(rule 3). The runners keep the fixture-tenant and not-in-production refusals.
+
+**Tests.** Worker 139 (+25): spec table integrity (agents exist; producers precede consumers),
+context assembly (grounding, chaining, needs_input and failed steps treated as missing, item
+matching singular/plural, developer context labelled, `ratifiedAt` never set, no spec -> null),
+payload builders, `processPipelineJob` (tenant scope, hook, no hooks, bad job data), `driveRun`
+(terminal, through a gate, timeout, Learning-Engine jobs counted, vanished run), step-executor
+builder (production unchanged, suffix appended, builder failure fails the step). Lint, typecheck,
+prettier clean. Wire check against an echoing fake gateway: with `--context-file` the model
+receives `{input, context}` and the addendum; without it, the bare input and no addendum.
+
+**Not verified.** `--chain` against Postgres (`runPipelineInProcess`, `makeChainPayloadBuilder`'s
+real database reads, and the extracted `processPipelineJob` against a live database) - no Docker in
+the sandbox. The extraction is mechanical and unit-tested with mocks, but the BullMQ worker should
+be smoke-run once before relying on it.
+
+| Exit gate item                                                       | Result       |
+| -------------------------------------------------------------------- | ------------ |
+| Lint, typecheck, worker unit tests                                   | PASS         |
+| Payload shape on the wire (with and without `--context-file`)        | PASS (smoke) |
+| Production worker behaviour unchanged (default path, existing tests) | PASS (unit)  |
+| `--chain` and the worker against Postgres + Redis                    | NOT VERIFIED |

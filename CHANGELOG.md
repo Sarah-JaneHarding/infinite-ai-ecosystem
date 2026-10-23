@@ -12,6 +12,15 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Dev-only chaining and grounding for MOD-01** (`pnpm dev:run-pipeline --chain`; OQ-030 option C)
+  - Each CE-01…CE-09 agent gets the ratified L0 documents and the provisional drafts earlier
+    agents produced in the same run, labelled, plus a calibration addendum. Production
+    behaviour, prompts and pipelines unchanged.
+  - `--context-file` for `dev:run-pipeline` and `dev:run-agent`.
+  - Worker: job body extracted to `job-processor.ts` and age-checker wiring to
+    `age-checker.ts` (no behaviour change) so the BullMQ worker and the in-process runner share
+    one code path; optional `StepExecutorDeps.buildPayload` (unset in production).
+
 - **Live agent and pipeline runners** (dev-only; `docs/FREE_LOCAL_TESTING.md` Part 8.3–8.5)
   - `pnpm dev:run-agent`: one agent against the live gateway via the worker's own step
     executor; keeps the raw reply, usage, provider, latency and failure stage.

@@ -581,15 +581,15 @@ real, audited label — the best training signal in the system.
 
 **What a pipeline run does today (audit findings — they bound what you can learn):**
 
-1. **Every step receives the run's original input.** The runner passes `run.input` to each
+1. **In the worker, every step receives the run's original input.** (`--chain`, Part 8.6, changes
+   this for MOD-01 in dev only.) The runner passes `run.input` to each
    step; one agent's output is not handed to the next (only `map` steps split a collection
    from the input). So a pipeline run exercises each agent on the same input rather than
    chaining them. Use it to test wiring, gates and failure handling; use 8.3/8.4 to study one
    agent's behaviour.
-2. **The worker adds no L0/Brain context to an agent call.** The retrieval-grounded
-   executors in `packages/curriculum-seed` are used only by the (stub) eval harness, not by the
-   worker. Live agent output therefore lacks CAPS grounding unless you put the facts in the
-   input.
+2. **The worker adds no L0/Brain context to an agent call**, although the MOD-01 prompts are
+   written to receive `{ input, context }` (the L0 documents and earlier agents' artefacts).
+   Without `--chain`, live output lacks CAPS grounding unless you put the facts in the input.
 3. **MOD-04's `draft-artefact` step does not call a Toolbox agent.** `toolbox.draft_artefact`
    only records a Brain episode saying a draft was created; its comment promises dispatch to
    TB-01…11, but the handler does not do it. A MOD-04 run is a test of gates and bookkeeping,
@@ -598,6 +598,51 @@ real, audited label — the best training signal in the system.
    validates its own input at run time; `--template` cannot show those fields.
 
 These are recorded as follow-ups in Part 13.
+
+### 8.6 Chained and grounded MOD-01 — `--chain` (dev only)
+
+```bash
+pnpm dev:run-pipeline --pipeline mod-01-curriculum --template > in.json   # edit: synthetic data
+pnpm dev:run-pipeline --pipeline mod-01-curriculum --input in.json --chain \
+  [--context-file ctx.json] --out runs/mod01.json
+pnpm dev:run-agent --agent CE-04 --input in.json --context-file ctx.json    # one agent, your context
+```
+
+**Stop the worker first.** `--chain` runs the pipeline inside this command (no queue). If the
+worker is up, the approval you give in the web app also queues a continuation job for it.
+
+What changes, for the nine MOD-01 agents only (CE-01…CE-09; every other agent is sent exactly
+what production sends):
+
+- **Grounding.** Each agent receives `context.l0Documents` (and the named groups its prompt
+  reads, such as `assessmentPolicy` and `templateDefinition`) from the tenant's ratified L0 —
+  the same kinds `packages/curriculum-seed`'s executors attach.
+- **Chaining.** Each agent also receives the drafts earlier agents produced **in this run**:
+  `framework` (CE-01) for CE-02…09, `atpSchedule` (CE-02), `termPlan` (CE-03),
+  `unitBlueprint` (CE-04 items matching subject and term), `assessmentTask` (CE-06 items
+  matching subject and task kind), `lessonPlan` (CE-05 items matching subject, week and term).
+  Where several items match, they arrive under the plural key (`unitBlueprints`) and the model
+  must choose. An upstream result that is `needs_input`, failed, or absent is simply missing; it
+  is listed in `context.devChain.missingUpstream`.
+- **Labelled, never ratified.** Drafts are listed in `context.devChain.provisionalArtefacts`,
+  nothing sets `ratifiedAt`, and the system prompt gets a "CALIBRATION RUN (development only)"
+  addendum saying provisional artefacts may be used for this run. The HoD gate still decides, and
+  the human decision is still the only ratification (OQ-030, option C).
+- `--context-file` merges your own JSON object into every chained agent's `context`, reported as
+  `devSupplied`. Use it for documents the system does not have yet (below).
+
+**What will still come back `needs_input`, honestly.** The map steps still take their _parameters_
+from your run input (`contentAreas`, `units`, `lessonPlans`, `assessmentTasks` — one entry per
+item, each a full input for that item's agent); chaining adds the _artefacts_. And no
+`ASSESSMENT_POLICY` document is seeded (there is no source in the repository for it, and the
+rules forbid inventing assessment policy), so CE-03 and CE-06 return `needs_input`, which leaves
+CE-04…CE-09 without a term plan. To exercise the whole chain, supply a real policy excerpt of your
+own via `--context-file` (`{"assessmentPolicy": [ … ]}`) — it is labelled developer-supplied. CE-09
+also needs an episode log (`{"episodeLog": {…}}`) that does not exist in a fresh database.
+
+Not covered: the other 46 agents (add a row to `CHAIN_SPECS` once their data flow is decided),
+the first tool step `l0.ingest_ratified_source` (it needs `documentId`, `documentVersion`,
+`content` and `source` in the run input), and the production design — see OQ-030 option A.
 
 ---
 
@@ -690,11 +735,11 @@ Then repeat from Part 4.1 (new secrets) or keep the same `.env` files and go to 
 These are findings from the audit, not hypothetical wishes. Each is its own change under
 `CLAUDE.md`'s rules (tests, docs, one logical change per PR).
 
-1. **Make pipelines chain and ground.** Pass each step's output to the next step that needs
-   it, and run the retrieval-grounded executors (`packages/curriculum-seed`) in the worker
-   instead of a bare prompt + input. Until then, pipeline runs test wiring, not generation
-   (Part 8.5, findings 1–2). This is a design change to the orchestrator, so it needs a decision
-   first (`docs/OPEN_QUESTIONS.md`).
+1. **Production chaining and grounding (OQ-030 option A).** `--chain` is dev-only. For production,
+   each MOD-01 artefact needs its own human ratification and a store (new constitution kinds and a
+   migration), so the prompts' "ratified only" rule holds. A person must decide this first.
+   1x. **Other modules.** Add `CHAIN_SPECS` rows (and decide the data flow) for MOD-02, MOD-03, MOD-05
+   and the Learning Engine.
    1a. **Make MOD-04's `draft-artefact` actually call the TB agent** named in the run input
    (Part 8.5, finding 3).
    1b. **Golden sets for live use.** Cases written for the stub executors expect stub behaviour;
