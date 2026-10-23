@@ -212,6 +212,9 @@ importers:
       '@infinite-ai/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@infinite-ai/evals':
+        specifier: workspace:*
+        version: link:../../packages/evals
       '@infinite-ai/guardrails':
         specifier: workspace:*
         version: link:../../packages/guardrails

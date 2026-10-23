@@ -114,6 +114,7 @@ import {
   QUEUE_MOD05_PD,
 } from './queue-names.js';
 import { createWorkerHealthServer } from './health-server.js';
+import { PIPELINE_QUEUE_BINDINGS } from './pipeline-bindings.js';
 import { createSnsEscalationNotifier } from './sns-escalation-notifier.js';
 import { WorkerHost } from './worker-host.js';
 
@@ -356,20 +357,9 @@ export async function start(): Promise<void> {
         }),
   });
 
-  host
-    .register(QUEUE_MOD01, MOD01_CURRICULUM_PIPELINE.id)
-    .register(QUEUE_MOD02_RTI, MOD02_RTI_PIPELINE.id)
-    .register(QUEUE_MOD02_MONITORING, MOD02_MONITORING_PIPELINE.id)
-    .register(QUEUE_MOD02_SBST_SCRIBE, MOD02_SBST_SCRIBE_PIPELINE.id)
-    .register(QUEUE_MOD03_WAREHOUSE, MOD03_WAREHOUSE_PIPELINE.id)
-    .register(QUEUE_MOD04, MOD04_TOOLBOX_PIPELINE.id)
-    .register(QUEUE_MOD05_CPTD, MOD05_CPTD_PIPELINE.id)
-    .register(QUEUE_MOD05_PD, MOD05_PD_ANALYSIS_PIPELINE.id)
-    .register(QUEUE_LE_SIGNAL, LE_SIGNAL_PIPELINE.id)
-    .register(QUEUE_LE_PATTERN_MINING, LE_PATTERN_PIPELINE.id)
-    .register(QUEUE_LE_EVOLUTION, LE_EVOLUTION_PIPELINE.id)
-    .register(QUEUE_LE_EXEMPLAR, LE_EXEMPLAR_PIPELINE.id)
-    .register(QUEUE_LE_COMMONS, LE_COMMONS_PIPELINE.id);
+  for (const { queue, pipeline } of PIPELINE_QUEUE_BINDINGS) {
+    host.register(queue, pipeline.id);
+  }
 
   const health = createWorkerHealthServer();
   health.listen(env.WORKER_PORT);

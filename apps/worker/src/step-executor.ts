@@ -102,6 +102,9 @@ export interface StepExecutorDeps {
   /** Absolute path to the prompts source directory — where <agentId>/<version>.prompt.md live. */
   readonly promptsRoot: string;
   readonly gatewayBaseUrl: string;
+  /** The `fetch` used to reach the gateway. Defaults to the global one; the dev runners
+   * inject a recording wrapper so the raw reply and token usage survive for calibration. */
+  readonly fetchImpl?: typeof fetch;
   readonly tenantId: string;
   readonly toolHandlers: ToolHandlerMap;
   /**
@@ -241,11 +244,14 @@ async function runAgentCall(
         : `${runId}-${stepId}-${mapItemIndex}-${attempt}`,
   });
 
-  const response = await fetch(`${deps.gatewayBaseUrl}/v1/chat/completions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(requestBody),
-  });
+  const response = await (deps.fetchImpl ?? fetch)(
+    `${deps.gatewayBaseUrl}/v1/chat/completions`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    },
+  );
 
   if (!response.ok) {
     const text = await response.text();
