@@ -478,6 +478,11 @@ bump changed in this repository:
   (a learner with no current tier; classes and grades with no known intervention rate) and one provably dead ternary in
   `rollupClass` (the cohort-size guard above it makes `length > 0` always true) was replaced by the plain division.
 
+- `vitest --merge-reports` no longer defaults to `.vitest-reports`; it reads `.vitest/blob` unless told otherwise, so
+  `packages/db`'s `coverage:merged` (the unit and integration tiers merged for its 95% gate) failed in CI with ENOENT. The
+  script now passes the directory its two tiers write to. Verified with the real two-tier run against a local Postgres 16:
+  905 tests, 98.05% lines, 96.06% branches.
+
 After the bump: lint, format, typecheck, unit tests with coverage thresholds, build and `pnpm audit:supply-chain` pass locally.
 
 ### `sharp` 0.35.4 → 0.35.5 and `source-map-js` 1.2.1 → 1.2.2 (2026-10-07)

@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "coverage:merged": "pnpm test:coverage && pnpm test:integration:coverage && vitest --merge-reports --config vitest.merge.config.ts --coverage",
+    "coverage:merged": "pnpm test:coverage && pnpm test:integration:coverage && vitest --merge-reports .vitest-reports --config vitest.merge.config.ts --coverage",
     "db:generate": "prisma generate",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
