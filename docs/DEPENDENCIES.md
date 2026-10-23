@@ -27,28 +27,30 @@ exception.
 
 ## Stage 01 — data foundation
 
-| Package                      | Version | Licence    | Why                                                                                              | Replaces |
-| ---------------------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------ | -------- |
-| `prisma`                     | 6.19.3  | Apache-2.0 | ORM and migration engine, locked by §1.1.                                                        | —        |
-| `@prisma/client`             | 6.19.3  | Apache-2.0 | The generated client the tenant-scoped wrapper wraps.                                            | —        |
-| `testcontainers`             | 12.0.4  | MIT        | Real Postgres per test run, locked by §1.1 and Part 4 §4.1.                                      | —        |
-| `@testcontainers/postgresql` | 12.0.4  | MIT        | The Postgres module for the above.                                                               | —        |
-| `@vitest/coverage-v8`        | 5.0.5   | MIT        | Coverage, to hold `packages/db` to the ≥ 95% line threshold in §4.2. Pinned to the Vitest minor. | —        |
+| Package                      | Version | Licence    | Why                                                                                                                                    | Replaces |
+| ---------------------------- | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `prisma`                     | 7.10.1  | Apache-2.0 | ORM and migration engine, locked by §1.1.                                                                                              | —        |
+| `@prisma/client`             | 7.10.1  | Apache-2.0 | The generated client the tenant-scoped wrapper wraps.                                                                                  | —        |
+| `@prisma/adapter-pg`         | 7.10.1  | Apache-2.0 | Prisma 7's required Postgres driver adapter (brings `pg`, MIT, and `@types/pg`). Replaces Prisma 6's built-in query engine connection. | —        |
+| `testcontainers`             | 12.0.4  | MIT        | Real Postgres per test run, locked by §1.1 and Part 4 §4.1.                                                                            | —        |
+| `@testcontainers/postgresql` | 12.0.4  | MIT        | The Postgres module for the above.                                                                                                     | —        |
+| `@vitest/coverage-v8`        | 5.0.5   | MIT        | Coverage, to hold `packages/db` to the ≥ 95% line threshold in §4.2. Pinned to the Vitest minor.                                       | —        |
 
-### Why Prisma 6 rather than 7
+### Prisma 7 (adopted 2026-10-23; was "Why Prisma 6 rather than 7")
 
-Prisma 7 is current, and choosing a version behind it needs a reason on the record.
+This section used to defer Prisma 7 for one reason: it removes the Rust query engine and requires a driver adapter for
+Postgres, and that connection path carries the transaction-local `app.tenant_id` setting every RLS policy depends on, so it
+should not be adopted without "a working RLS suite to prove it did not break isolation". That precondition is now met, and the
+upgrade was made as its own change:
 
-Prisma 7 removes the Rust query engine and requires a driver adapter for Postgres. That
-is a materially different connection path, and the connection path is precisely what
-carries the transaction-local `app.tenant_id` setting that every RLS policy depends on.
-This environment has no Docker and no Postgres server, so nothing here can be exercised
-against a real database before it reaches CI — and a new connection architecture is the
-wrong thing to adopt blind, on the one layer where a subtle bug is a cross-tenant leak.
-
-Prisma 6 is supported and behaves the way the tenant client assumes. The upgrade to 7
-should be its own change, made when there is a working RLS suite to prove it did not
-break isolation. Revisit at Stage 16, where the supply-chain review runs.
+- `packages/db/src/client.ts` builds every client with `new PrismaPg({ connectionString })` (`createPrismaClient`, package
+  internal); the URL comes from `loadDatabaseUrl()` in `packages/config`, the one place `process.env` is read. `datasource.url`
+  left `schema.prisma` for `packages/db/prisma.config.ts`, which the CLI (migrate, generate) reads and the running app never does.
+- Proof against a real Postgres 16 with pgvector: the 20 `packages/db` integration suites (676 tests, including the exhaustive
+  RLS suite, tenant deletion and POPIA), plus the `brain`, `orchestrator`, `curriculum-seed` and `guardrails` integration suites;
+  `prisma migrate deploy` of all migrations; the seed run twice (idempotent); and a direct check that a query with no tenant
+  context still raises `unrecognised configuration parameter "app.tenant_id"` instead of returning rows.
+- New dependency recorded above: `@prisma/adapter-pg` 7.10.1 (Apache-2.0; pulls `pg`, MIT).
 
 ## Stage 04 — Model Gateway
 
