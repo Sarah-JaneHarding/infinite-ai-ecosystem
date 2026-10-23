@@ -47,3 +47,11 @@ pnpm --filter @infinite-ai/worker test
 
 Unit tier only — BullMQ, the gateway, and SNS are all exercised against fakes/mocks, not
 real infrastructure.
+
+## Dev runners
+
+`src/dev/` holds the library behind `pnpm dev:run-agent`, `pnpm evals:run-live` and
+`pnpm dev:run-pipeline` (scripts in `scripts/`): run one agent, a golden set, or a whole
+pipeline against the live gateway and keep the raw replies. Fixture tenants only, never in
+production, never decides a human gate. Manual: `docs/FREE_LOCAL_TESTING.md` Part 8.3–8.5.
+`src/pipeline-bindings.ts` is the single pipeline-to-queue table shared with `index.ts`.

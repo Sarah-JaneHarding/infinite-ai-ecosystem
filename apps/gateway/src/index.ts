@@ -88,6 +88,7 @@ export function buildAdapters(
     adapters.local = createOpenAiCompatibleAdapter({
       provider: 'local',
       baseUrl: env.LOCAL_MODEL_BASE_URL,
+      timeoutMs: env.LOCAL_MODEL_TIMEOUT_MS,
       fetchImpl,
     });
   }

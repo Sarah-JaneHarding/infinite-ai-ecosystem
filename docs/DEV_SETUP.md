@@ -6,6 +6,9 @@ to run the test suites (unit or integration), you don't need any of this: see
 `README.md`'s "Getting started" and the "Running the automated tests" section near the
 bottom of this file instead.
 
+Want to run it on free models with no paid API? Use `docs/FREE_LOCAL_TESTING.md`, which
+picks the free path for you.
+
 None of this is automated yet (there is no root `dev` script that starts everything
 together) — each step below is a real command you run.
 
