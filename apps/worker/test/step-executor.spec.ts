@@ -1222,3 +1222,69 @@ describe('createStepExecutor', () => {
     });
   });
 });
+
+describe('createStepExecutor - payload builder (dev runners only)', () => {
+  const okReply = () =>
+    new Response(
+      JSON.stringify({
+        id: 'r',
+        model: 'curriculum.map',
+        provider: 'p',
+        message: { role: 'assistant', content: '{"status":"needs_input"}' },
+        usage: { promptTokens: 1, completionTokens: 1, totalTokens: 2 },
+        cached: false,
+      }),
+      { status: 200 },
+    );
+
+  const run = async (buildPayload?: StepExecutorDeps['buildPayload']) => {
+    const sent: { messages: { role: string; content: string }[] }[] = [];
+    const fetchImpl = (async (_url: unknown, init?: { body?: string }) => {
+      sent.push(JSON.parse(init?.body ?? '{}'));
+      return okReply();
+    }) as unknown as typeof fetch;
+    const execute = createStepExecutor({
+      pipeline: MOD01_CURRICULUM_PIPELINE,
+      agentContracts: new Map([[CE01Contract.id, CE01Contract]]),
+      promptsRoot: PROMPTS_ROOT,
+      gatewayBaseUrl: 'http://gateway.test',
+      fetchImpl,
+      tenantId: '10000000-0000-4000-8000-000000000001',
+      toolHandlers: new Map(),
+      ...(buildPayload === undefined ? {} : { buildPayload }),
+    });
+    await execute({
+      runId: 'r',
+      stepId: 'build-topic-graph',
+      attempt: 0,
+      input: { grade: 'R' },
+    });
+    return sent[0]?.messages ?? [];
+  };
+
+  it('sends the step input and the bare prompt when no builder is set (production)', async () => {
+    const [system, user] = await run();
+    expect(JSON.parse(user?.content ?? '')).toEqual({ grade: 'R' });
+    expect(system?.content).not.toMatch(/CALIBRATION/);
+  });
+
+  it('sends the builder content and appends its suffix to the system prompt', async () => {
+    const [system, user] = await run(async ({ input }) => ({
+      userContent: { input, context: { l0Documents: [] } },
+      systemSuffix: 'EXTRA RULE',
+    }));
+    expect(JSON.parse(user?.content ?? '')).toEqual({
+      input: { grade: 'R' },
+      context: { l0Documents: [] },
+    });
+    expect(system?.content.endsWith('\n\nEXTRA RULE')).toBe(true);
+  });
+
+  it('lets a builder failure fail the step rather than sending a half-built prompt', async () => {
+    await expect(
+      run(async () => {
+        throw new Error('db down');
+      }),
+    ).rejects.toThrow('db down');
+  });
+});
