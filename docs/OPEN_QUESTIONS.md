@@ -459,6 +459,21 @@ Two separate causes, both visible in the code:
 
 Until decided, nothing was weakened and no fixture user was given a role assignment to make the button work.
 
+**Decision 2026-10-23 (actor id): `user_account.id`.** The deciding actor is the school's own account id, not the OIDC `sub`.
+Implemented in Stage 112: the sign-in `jwt` callback resolves `(tenant, sub)` → the ACTIVE `user_account` once
+(`findActiveUserAccountId`, `@@unique([tenantId, subject])`), stores it as `token.userId`, and the session and every API
+route use that; `token.sub` is never an actor (a test scans the routes for it). No active account → `''` → pages show
+nothing and routes answer 403; a database fault fails the sign-in rather than issuing a session with no actor. The dev stack
+gets fixed Keycloak ids and seeded accounts (`db:seed:identities`).
+
+**Still open — provisioning.** Nothing yet creates a `user_account` or `role_assignment` for a real person. My recommendation,
+not yet decided: the school administrator creates accounts and role assignments; first sign-in only **links** an invited
+account by _verified_ email within the tenant (setting its `subject`), and never grants a role from a token claim. That
+needs: an invite flow, an `email_verified` check, and a way to create the first administrator. Until then a real person at
+a real school has no actor, so cannot decide a gate (fails closed, as intended). Also open: a session's account is fixed
+at sign-in, so suspending an account does not end an existing session; `decideHumanGate`'s role check does look the
+account up at decision time, but its status is not re-checked there.
+
 ### OQ-034 — what a district rollup would be, if the product wants one · 2026-10-08
 
 `/district` (reachable by both platform roles, no nav link) used to show three invented schools with learner counts and tier

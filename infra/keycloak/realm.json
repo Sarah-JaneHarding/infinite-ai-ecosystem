@@ -121,6 +121,7 @@
   ],
   "users": [
     {
+      "id": "ba000000-0000-4000-8000-000000000001",
       "username": "teacher.dev",
       "email": "teacher.dev@example.invalid",
       "firstName": "Palesa",
@@ -134,6 +135,7 @@
       "realmRoles": ["teacher"]
     },
     {
+      "id": "ba000000-0000-4000-8000-000000000002",
       "username": "hod.dev",
       "email": "hod.dev@example.invalid",
       "firstName": "Sipho",
@@ -147,6 +149,7 @@
       "realmRoles": ["hod"]
     },
     {
+      "id": "ba000000-0000-4000-8000-000000000003",
       "username": "smt.dev",
       "email": "smt.dev@example.invalid",
       "firstName": "Zanele",
@@ -160,6 +163,7 @@
       "realmRoles": ["smt"]
     },
     {
+      "id": "ba000000-0000-4000-8000-000000000004",
       "username": "sbst.dev",
       "email": "sbst.dev@example.invalid",
       "firstName": "Ayanda",
@@ -173,6 +177,7 @@
       "realmRoles": ["sbst"]
     },
     {
+      "id": "ba000000-0000-4000-8000-000000000005",
       "username": "admin.dev",
       "email": "admin.dev@example.invalid",
       "firstName": "Divan",
@@ -186,6 +191,7 @@
       "realmRoles": ["admin"]
     },
     {
+      "id": "ba000000-0000-4000-8000-000000000006",
       "username": "guardian.dev",
       "email": "guardian.dev@example.invalid",
       "firstName": "Aisha",
@@ -199,6 +205,7 @@
       "realmRoles": ["guardian"]
     },
     {
+      "id": "ba000000-0000-4000-8000-000000000007",
       "username": "learner.dev",
       "email": "learner.dev@example.invalid",
       "firstName": "Keanu",

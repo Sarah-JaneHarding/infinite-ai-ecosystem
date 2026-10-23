@@ -43,8 +43,14 @@ async function sessionFor(payload: Record<string, unknown>) {
 
 describe('getServerSession with the real next-auth', () => {
   it('returns the session for a token with a valid role', async () => {
+    const session = await sessionFor({ role: 'hod', tenantId: 't', userId: 'acct-1' });
+    expect(session).toMatchObject({ role: 'hod', tenantId: 't', userId: 'acct-1' });
+  });
+
+  it('gives a token with no resolved account an empty actor — not its subject (OQ-033)', async () => {
+    // The helper's token has sub 'u1'; the session must not take it for the actor.
     const session = await sessionFor({ role: 'hod', tenantId: 't' });
-    expect(session).toMatchObject({ role: 'hod', tenantId: 't', userId: 'u1' });
+    expect(session).toMatchObject({ role: 'hod', tenantId: 't', userId: '' });
   });
 
   it('returns no session — signed out, not a teacher — for a token with no role', async () => {

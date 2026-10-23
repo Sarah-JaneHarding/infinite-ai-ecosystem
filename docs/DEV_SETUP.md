@@ -193,6 +193,22 @@ pnpm age-appropriateness:seed           # submits the 206 age-appropriateness/re
 pnpm age-appropriateness:ratify         # advances them to committed brain_constitution rows
 ```
 
+To act as someone — decide a gate, or use the admin CAPS console — the dev login needs an account at the dev
+school. A token's `sub` is resolved at sign-in to that school's `user_account`, and the account's id (not the `sub`)
+is the actor everywhere (OQ-033). Seed one for each of the seven school-role logins, after `db:seed`, as the migrator:
+
+```bash
+pnpm --filter @infinite-ai/db db:seed:identities   # 7 accounts + role assignments at the dev school
+```
+
+The seven Keycloak users in `infra/keycloak/realm.json` carry fixed ids so their `sub` is stable across imports; the
+seed uses those same ids as each account's `subject` (`packages/db/prisma/dev-identities.ts`, with a test that fails
+if the two drift). Without this step you can still sign in, but the app has no actor for you: pages that read data
+show nothing, and API routes answer 403 "No active account for this user". Sign out and in again after seeding —
+the account is resolved when you sign in, not on every request. A realm that was imported before the ids were added
+must be re-imported (the old users have random ids). `platform-support.dev` and `platform-admin.dev` have no tenant of
+their own and get no account.
+
 Optional, to see the approvals screens with something on them (`/approvals`, the HoD console, the SMT
 dashboard), open ten placeholder human gates. Run it as the migrator, like `db:seed`, after `db:seed`:
 
