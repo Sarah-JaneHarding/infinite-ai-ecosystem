@@ -159,6 +159,8 @@ model UserAccount {
   staffMember     StaffMember?
   /// The invitation this account was created from (OQ-033), if any.
   acceptedInvitation UserInvitation? @relation("InvitationAcceptedAccount")
+  /// Invitations this account confirmed as the second administrator (OQ-033).
+  confirmedInvitations UserInvitation[] @relation("InvitationConfirmer")
 
   @@unique([tenantId, subject])
   @@unique([tenantId, email])
@@ -237,12 +239,17 @@ model UserInvitation {
   createdBy         String?              @map("created_by") @db.Uuid
   acceptedAt        DateTime?            @map("accepted_at") @db.Timestamptz(6)
   acceptedAccountId String?              @unique @map("accepted_account_id") @db.Uuid
+  /// Whether a second administrator must confirm before this can be accepted (roles `admin` or
+  /// `smt` while the school has two or more administrators). AWAITING blocks acceptance.
+  confirmation      InvitationConfirmation @default(NOT_REQUIRED)
+  confirmedBy       String?              @map("confirmed_by") @db.Uuid
   version           Int                  @default(1)
 
   tenant          Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   school          School?      @relation(fields: [schoolId], references: [id])
   staffMember     StaffMember? @relation(fields: [staffMemberId], references: [id])
   acceptedAccount UserAccount? @relation("InvitationAcceptedAccount", fields: [acceptedAccountId], references: [id])
+  confirmer       UserAccount? @relation("InvitationConfirmer", fields: [confirmedBy], references: [id])
 
   @@index([tenantId])
   @@index([tenantId, status])
@@ -256,6 +263,18 @@ enum UserInvitationStatus {
   EXPIRED
 
   @@map("user_invitation_status")
+}
+
+/// NOT_REQUIRED: no second administrator needed. AWAITING: one must confirm first.
+/// CONFIRMED: one did (`confirmed_by`). WAIVED_SOLE_ADMIN: the school had a single
+/// administrator, so none could — recorded so the exception stays visible.
+enum InvitationConfirmation {
+  NOT_REQUIRED
+  AWAITING
+  CONFIRMED
+  WAIVED_SOLE_ADMIN
+
+  @@map("invitation_confirmation")
 }
 
 // ---------------------------------------------------------------------------

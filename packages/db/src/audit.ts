@@ -17,9 +17,10 @@
 // the same tenant: without it, two transactions racing to write an event could both read
 // the same "last" hash and each chain onto it, forking the ledger — a broken chain nobody
 // would notice until an audit tried to walk it. The lock is released automatically at
-// commit or rollback; nothing here needs to remember to release it. Nothing else in this
-// codebase takes a Postgres advisory lock, so there is no shared key space this could
-// collide with.
+// commit or rollback; nothing here needs to remember to release it. The only other
+// advisory lock is the provisioning lock (provisioning.ts), keyed on a different string, so
+// the two never share a key; provisioning always takes its own first, then this one, so they
+// cannot wait on each other in a cycle.
 //
 // "Last event" is found by ordering on `sequence`, a plain autoincrementing column, never
 // on `at`: a caller may legitimately reuse one `Date` across several events in the same

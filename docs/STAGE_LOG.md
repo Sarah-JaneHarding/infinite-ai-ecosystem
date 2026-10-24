@@ -11131,3 +11131,48 @@ and the CHECK constraints exist only in the SQL.
 | Cross-tenant isolation of `user_invitation`                           | WRITTEN (CI runs) |
 | No platform / guardian / learner role can be invited                  | PASS (unit) + CI  |
 | Table registered as tenant-owned                                      | PASS (unit)       |
+
+## Stage 115 — OQ-033 provisioning, step 3a: the transactional functions
+
+`packages/db/src/provisioning.ts` — `createInvitation`, `confirmInvitation`, `revokeInvitation`, `acceptInvitation`,
+`revokeRole`, `setAccountStatus`, plus `lockProvisioning`, `listActiveAdminAccountIds`, `normaliseEmail`. Each runs in
+the caller's `withTenant` transaction, appends its audit event in that transaction, and returns a result (`ok` or a
+stable `reason`) rather than throwing for a refusal.
+
+- **One lock closes the race.** Every function first takes `pg_advisory_xact_lock(hashtext('provisioning:' || tenant))`,
+  then reads the administrators, then applies the rules. Two administrators demoting each other can no longer both see
+  "two administrators": the second waits, then sees one and is refused `actor_not_admin`. The audit lock (audit.ts) is
+  always taken after it, so the two never wait in a cycle; audit.ts's comment, which said no other advisory lock
+  existed, is corrected.
+- **Rules are injected.** db (L3) may not import policy (L5), so functions take a `ProvisioningRules` whose shapes mirror
+  policy's. The web facade that binds the real rules, with a compile-time conformance check, is **not in this PR**: it
+  needs PR #159 (the policy rules) and follows it.
+- **Confirmation is a recorded act.** Migration `20261024100000_oq033_invitation_confirmation` adds `confirmation`
+  (`NOT_REQUIRED | AWAITING | CONFIRMED | WAIVED_SOLE_ADMIN`) and `confirmed_by` to `user_invitation`, with CHECKs that
+  `CONFIRMED` iff a confirmer is recorded and that an `AWAITING` invitation can never be `ACCEPTED`. Rollback script
+  included.
+- **No address in the ledger.** Audit diffs carry ids, roles and states only.
+- **Acceptance** refuses an unverified address, an unknown or expired invitation (an expired one is marked `EXPIRED`),
+  an invitation still `AWAITING`, an address already held by another account, and any subject whose account is not
+  `ACTIVE`. Roles come from the invitation, never from the identity.
+- **Deferred (3b):** granting `admin`/`smt` to an existing account when there are two or more administrators; no function
+  does it yet, so it fails closed.
+
+**Tests.** Unit: export-surface updated (db). Integration, **written blind (no Docker in the authoring sandbox) and run
+by CI**: `provisioning.integration.spec.ts` (create/confirm/revoke/accept paths and refusals; audit without the address;
+cross-school isolation; same person signing in twice concurrently yields one account; two identities racing for one
+address yield one winner; a deterministic lock-blocking test; eight repeated demote-each-other races each ending with
+exactly one administrator); the rollback integration test now also rolls back the confirmation migration first.
+Typecheck and eslint clean.
+
+**Not verified.** None of the integration tests, the migration or either rollback have run against a live Postgres here.
+Mutation checks of the lock (removing `lockProvisioning`) need a database and are left to CI: the blocking test is
+expected to fail without it.
+
+| Exit gate item                                         | Result                |
+| ------------------------------------------------------ | --------------------- |
+| Invite, confirm, revoke, accept, revoke role, suspend  | WRITTEN (CI runs)     |
+| Each audited, no address in the ledger                 | WRITTEN (CI runs)     |
+| Concurrency: demote-each-other and double sign-in      | WRITTEN (CI runs)     |
+| Migration + tested rollback for the confirmation state | WRITTEN (CI runs)     |
+| Web facade binding the real rules                      | NOT DONE (needs #159) |
