@@ -11086,3 +11086,48 @@ here); if it does not, sign-in still works and resolves no actor — fail closed
 | No active account → no actor → no read, no decision                         | PASS (tests)        |
 | Provisioning real people (invite / link / first admin)                      | OPEN (OQ-033)       |
 | End-to-end: sign in as SMT dev, approve a gate                              | NOT RUN             |
+
+## Stage 113 — OQ-033 provisioning, step 1: the `user_invitation` table
+
+**Task.** "Answer all five and start step 1." The five decisions are recorded in
+`docs/PROVISIONING_DESIGN.md` §12.1 (admin may grant `admin`, second-admin confirmation when there are two or more
+administrators; one active role per session; link on verified email alone for the pilot; operator-created Keycloak
+users for the pilot; MFA left to the owner → **OQ-036**). Step 1 of the delivery plan is the schema.
+
+**What changed.**
+
+- `packages/db/prisma/schema.prisma`: `UserInvitation` and `UserInvitationStatus`, with back-relations on
+  `Tenant`, `School`, `StaffMember` and `UserAccount`. No existing column or table was altered.
+- Migrations `20261024090000_oq033_user_invitation` (table, enum, constraints, indexes, foreign keys; sets the
+  nil-UUID tenant context for the foreign-key validation scan, as Stages 03/05/17 do) and
+  `20261024090100_oq033_user_invitation_rls` (enable + force RLS, the standard `tenant_isolation` policy).
+  Rollback: `…/rollback.sql`.
+- Constraints held in the database: normalised email; non-empty roles limited to the five school staff roles (so no
+  platform, guardian or learner role can ever be invited); one `PENDING` invitation per `(tenant, email)`; `ACCEPTED`
+  if and only if `accepted_at` and `accepted_account_id` are both set; an account is created from at most one invitation.
+- `packages/db/src/tables.ts`: `user_invitation` registered as tenant-owned, so the isolation suites drive off it.
+- Design doc: what was built where it differs from the draft (a `roles` array with one optional school scope; plaintext
+  email like `user_account.email`); §12.1 decisions; `docs/SECURITY.md` §7 now notes that MFA is not evidenced.
+
+**Nothing uses the table yet.** No application code reads or writes it; sign-in is unchanged. Steps 2–8 follow.
+
+**Tests.** Unit: policy 226 (+3: a drift guard that the SQL role list is exactly the school staff roles and contains no
+platform role), db 246 (+4: the schema-classification cases for the new table). Integration, **written blind (no Docker
+in the authoring sandbox) and run by CI**: the generic isolation suite now seeds an invitation per tenant;
+`user-invitation.integration.spec.ts` (every constraint above; cross-tenant read, write and revoke refused; no tenant
+context is an error); `user-invitation-rollback.integration.spec.ts` (applies the rollback to a database holding an
+invitation, checks only the invitation objects went, then re-applies the forward migrations and checks RLS is forced).
+Mutation-checked: adding `platform_admin` to the SQL list fails 2 policy tests; unregistering the table fails the
+schema-classification test. Typecheck, eslint, prettier clean.
+
+**Not verified.** The migration SQL and the rollback have not run against a live Postgres here; CI's RLS job is the
+first real run. `prisma migrate dev` was not run, so the partial unique index (which the Prisma schema cannot express)
+and the CHECK constraints exist only in the SQL.
+
+| Exit gate item                                                        | Result            |
+| --------------------------------------------------------------------- | ----------------- |
+| Forward migration + RLS migration + rollback                          | WRITTEN (CI runs) |
+| Tested rollback (only invitation objects removed; forward re-applies) | WRITTEN (CI runs) |
+| Cross-tenant isolation of `user_invitation`                           | WRITTEN (CI runs) |
+| No platform / guardian / learner role can be invited                  | PASS (unit) + CI  |
+| Table registered as tenant-owned                                      | PASS (unit)       |

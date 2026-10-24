@@ -104,6 +104,14 @@ async function seedTwoTenants(): Promise<void> {
       const role = await tx.roleAssignment.create({
         data: { tenantId, userAccountId: user.id, role: 'teacher' },
       });
+      const invitation = await tx.userInvitation.create({
+        data: {
+          tenantId,
+          email: `invitee@${tenantId.slice(0, 8)}.example`,
+          roles: ['teacher'],
+          expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+        },
+      });
       const staff = await tx.staffMember.create({
         data: {
           tenantId,
@@ -490,6 +498,7 @@ async function seedTwoTenants(): Promise<void> {
         tenant_setting: setting.id,
         term: term.id,
         user_account: user.id,
+        user_invitation: invitation.id,
       };
 
       for (const [table, id] of Object.entries(created)) {

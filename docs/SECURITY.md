@@ -139,6 +139,9 @@ Every system boundary applies:
 ## 7. Identity hardening (Stage 16 step 4)
 
 - **MFA** is enforced in Keycloak for the `admin`, `smt` and `platform_*` roles.
+  **Not evidenced in this repository** (2026-10-24): `infra/keycloak/realm.json` configures no
+  MFA, required action or email verification, and the production realm is not stored here. Treat
+  MFA as unverified until OQ-036 is closed.
 - **Session fixation** — Keycloak regenerates the session token on every login.
 - **Session rotation** — access tokens expire in 5 minutes; refresh tokens in 30 minutes;
   the client must re-authenticate silently. A stolen short-lived token has a bounded
