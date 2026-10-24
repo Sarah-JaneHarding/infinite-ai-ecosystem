@@ -11131,3 +11131,45 @@ and the CHECK constraints exist only in the SQL.
 | Cross-tenant isolation of `user_invitation`                           | WRITTEN (CI runs) |
 | No platform / guardian / learner role can be invited                  | PASS (unit) + CI  |
 | Table registered as tenant-owned                                      | PASS (unit)       |
+
+## Stage 114 — OQ-033 provisioning, step 2: who may confer and remove authority
+
+**Task.** "Start step 2" of `docs/PROVISIONING_DESIGN.md`. Nothing here is wired to a route yet; that is step 3.
+
+**What changed.**
+
+- `packages/policy/src/rbac.ts`: three new resource types — `user_account`, `role_assignment`, `user_invitation` — with
+  **admin-only** grants at tenant scope. Verbs: `user_account` read / update (suspend, offboard; **no create** — an account is
+  made by a first sign-in linking to an invitation); `role_assignment` read / create (grant) / delete (revoke) / approve
+  (confirm another administrator's grant); `user_invitation` read / create (invite) / update (revoke). The draft named two
+  resources; the invitation is a third because it holds an address.
+- `packages/policy/src/provisioning.ts` (new, pure): `SCHOOL_STAFF_ROLES` (the list the SQL CHECK also holds),
+  `evaluateRoleConferral` (invite or grant), `evaluateRoleRevocation`, `evaluateAccountStatusChange`, each returning a reason for
+  every refusal. Rules, in order: the actor is an active administrator; at least one role, every one a school staff role; nobody
+  changes their own roles (including inviting their own address); `admin` and `smt` need a second administrator's confirmation —
+  recorded as `confirmed` — unless the school has a single administrator, in which case it proceeds as `waived_sole_admin` so the
+  exception is visible in the audit. A confirmer must be an active administrator and neither the actor nor the person receiving
+  the role. Revocation and suspension: not yourself, and only by an administrator.
+- **The last administrator.** The draft listed "never remove the last admin" as a rule. Writing the tests showed it needs no
+  branch: the actor must be an administrator and cannot be the target, so removing an administrator always leaves the actor.
+  The unit test checks that over every small school instead. The real hazard is a **race** (two administrators demoting each
+  other at once, both passing against one snapshot); it is closed in step 3 by locking and re-counting inside the committing
+  transaction, with a concurrency test. This is recorded in the design doc (§4.5, §11).
+- `docs/PROVISIONING_DESIGN.md`: §4.5 updated, §11 marks step 2 built, and a new §12.2 with recommendations for the four
+  still-open decisions and for OQ-036. `docs/OPEN_QUESTIONS.md`: OQ-036 now carries the recommended check.
+
+**Tests.** Policy 301 (+75, from 226): the matrix (the nine admin actions and no others; no account `create`; every other role, including
+impersonating, refused every action; platform staff refused; another school's admin refused; a lapsed grant refused) and every
+guard-rail refusal and allowance, plus an exhaustive check that no single change can remove the last administrator, and a drift
+test that `SCHOOL_STAFF_ROLES` equals the SQL CHECK list. Mutation-checked: dropping the confirmation requirement fails 9; allowing
+self-grant fails 2; letting `smt` create role assignments fails the per-role refusal test. Typecheck, eslint, prettier clean.
+
+**Not done.** Nothing enforces these rules in a route yet (step 3); the confirmation is not persisted (step 3: a proposal record
+or the audit chain); the database lock for the race is step 3.
+
+| Exit gate item                                                          | Result            |
+| ----------------------------------------------------------------------- | ----------------- |
+| Provisioning resources in the matrix, admin-only                        | PASS (tests)      |
+| No self-grant; no platform / guardian / learner role; confirmation rule | PASS (tests)      |
+| Last administrator cannot be removed by a single change                 | PASS (exhaustive) |
+| Last administrator safe under concurrency                               | OPEN (step 3)     |

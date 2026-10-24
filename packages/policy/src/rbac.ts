@@ -80,6 +80,10 @@ export const ResourceType = z.enum([
   'teaching_analytics',
   'tenant_setting',
   'audit_event',
+  // OQ-033 provisioning (docs/PROVISIONING_DESIGN.md): who may hold which role at a school.
+  'user_account',
+  'role_assignment',
+  'user_invitation',
 ]);
 export type ResourceType = z.infer<typeof ResourceType>;
 
@@ -199,6 +203,19 @@ export const PERMISSIONS: readonly Permission[] = [
   ...grant('admin', 'class_group', ['read', 'create', 'update'], 'TENANT'),
   ...grant('admin', 'learner', ['read', 'create', 'update'], 'TENANT'),
   ...grant('admin', 'audit_event', ['read'], 'TENANT'),
+
+  // Provisioning (OQ-033). Authority over who may act is the most sensitive thing an admin holds,
+  // so these rows are admin-only and nothing else in the matrix reaches them. Read the verbs as:
+  //   user_account     read; update = suspend / offboard. No `create`: an account is made by a
+  //                    person's first sign-in linking to an invitation, never by an admin.
+  //   role_assignment  read; create = grant a role; delete = revoke one; approve = confirm
+  //                    another administrator's grant of `admin` or `smt`.
+  //   user_invitation  read; create = invite; update = revoke an invitation.
+  // Who may be granted what, who may not change themselves, and the last administrator are not
+  // matrix questions — they are in provisioning.ts, where each has a name and a test.
+  ...grant('admin', 'user_account', ['read', 'update'], 'TENANT'),
+  ...grant('admin', 'role_assignment', ['read', 'create', 'delete', 'approve'], 'TENANT'),
+  ...grant('admin', 'user_invitation', ['read', 'create', 'update'], 'TENANT'),
 
   // --- guardian: their own children, read-only -------------------------------
   // Scope OWN is not sufficient on its own; guardianOfLearnerIds is checked explicitly
