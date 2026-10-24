@@ -49,6 +49,7 @@ model Tenant {
 
   settings             TenantSetting[]
   userAccounts         UserAccount[]
+  userInvitations      UserInvitation[]
   roleAssignments      RoleAssignment[]
   schools              School[]
   phases               Phase[]
@@ -156,6 +157,8 @@ model UserAccount {
   tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   roleAssignments RoleAssignment[]
   staffMember     StaffMember?
+  /// The invitation this account was created from (OQ-033), if any.
+  acceptedInvitation UserInvitation? @relation("InvitationAcceptedAccount")
 
   @@unique([tenantId, subject])
   @@unique([tenantId, email])
@@ -204,6 +207,57 @@ model RoleAssignment {
   @@map("role_assignment")
 }
 
+/// An administrator's invitation for a named person to join the school with the listed roles
+/// (OQ-033, docs/PROVISIONING_DESIGN.md). It is the only way a person comes to hold a role:
+/// first sign-in links a verified identity to a PENDING invitation and never grants authority
+/// of its own. A separate table rather than a half-built `user_account`, so every
+/// `user_account` is a real, linked person.
+///
+/// Constraints the Prisma schema cannot express live in the migration, and are the point:
+///   * `email` is stored normalised (trimmed, lower-case) — matching is exact, never fuzzy;
+///   * `roles` is non-empty and limited to school staff roles, so a platform role can never
+///     be granted by an invitation, whoever writes the row;
+///   * one PENDING invitation per (tenant, email);
+///   * ACCEPTED if and only if `accepted_at` and `accepted_account_id` are both set.
+/// `email` is personal information. It is held like `user_account.email` (plaintext, behind
+/// row-level security) and must never appear in an audit event's diff.
+model UserInvitation {
+  id                String               @id @default(uuid()) @db.Uuid
+  tenantId          String               @map("tenant_id") @db.Uuid
+  email             String
+  /// School staff roles to grant on acceptance. Scope: `schoolId` below applies to all of them.
+  roles             String[]
+  schoolId          String?              @map("school_id") @db.Uuid
+  staffMemberId     String?              @map("staff_member_id") @db.Uuid
+  status            UserInvitationStatus @default(PENDING)
+  expiresAt         DateTime             @map("expires_at") @db.Timestamptz(6)
+  createdAt         DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  /// The inviting administrator's account id; null for an operator-created bootstrap invitation.
+  createdBy         String?              @map("created_by") @db.Uuid
+  acceptedAt        DateTime?            @map("accepted_at") @db.Timestamptz(6)
+  acceptedAccountId String?              @unique @map("accepted_account_id") @db.Uuid
+  version           Int                  @default(1)
+
+  tenant          Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  school          School?      @relation(fields: [schoolId], references: [id])
+  staffMember     StaffMember? @relation(fields: [staffMemberId], references: [id])
+  acceptedAccount UserAccount? @relation("InvitationAcceptedAccount", fields: [acceptedAccountId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("user_invitation")
+}
+
+enum UserInvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+
+  @@map("user_invitation_status")
+}
+
 // ---------------------------------------------------------------------------
 // Organisation
 // ---------------------------------------------------------------------------
@@ -228,6 +282,7 @@ model School {
   classGroups     ClassGroup[]
   learners        Learner[]
   staffMembers    StaffMember[]
+  userInvitations UserInvitation[]
   roleAssignments RoleAssignment[]
   academicYears   AcademicYear[]
 
@@ -526,6 +581,7 @@ model StaffMember {
   school              School               @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   userAccount         UserAccount?         @relation(fields: [userAccountId], references: [id])
   teachingAssignments TeachingAssignment[]
+  userInvitations     UserInvitation[]
 
   @@index([tenantId])
   @@map("staff_member")

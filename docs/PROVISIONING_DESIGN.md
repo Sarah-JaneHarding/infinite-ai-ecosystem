@@ -74,6 +74,21 @@ A new tenant-owned table, `user_invitation`:
 
 Unique on `(tenant_id, email)` where `status = PENDING`, so one live invitation per address.
 
+**As built in step 1 (2026-10-24), where it differs from the draft above:**
+
+- `roles` is a `text[]` on the invitation, with one optional `school_id` that applies to **all** of the listed
+  roles — not child rows with a scope each. Per-role scope is a role change after acceptance (step 3).
+- `email` is stored in plaintext behind row-level security, exactly as `user_account.email` already is, rather
+  than encrypted: it has to be compared exactly at sign-in, and the neighbouring table sets the precedent.
+  It must still never appear in an audit event's `diff`.
+- The data layer enforces what the design says the application must: `email` is trimmed and lower-case and
+  contains an `@`; `roles` is non-empty and a subset of `teacher, hod, smt, sbst, admin` (a platform, guardian or
+  learner role can never be invited, whoever writes the row); one `PENDING` invitation per `(tenant, email)`; and
+  `ACCEPTED` if and only if `accepted_at` and `accepted_account_id` are both set. An account is created from at
+  most one invitation.
+- Forward migrations: `20261024090000_oq033_user_invitation` (table) and `…090100_…_rls` (policy). Rollback:
+  `20261024090000_oq033_user_invitation/rollback.sql`, exercised by an integration test.
+
 **Why a separate table rather than a half-built `user_account`:** `user_account.subject` is
 required and is the key of the sign-in lookup. A placeholder subject or a nullable subject would
 create accounts that exist but cannot be the target of a lookup, weaken the `(tenant, subject)`
@@ -298,6 +313,22 @@ migration tests are integration tests and run in CI.
 8. **MFA reality check** (§5): is it configured anywhere? Who owns fixing `SECURITY.md` or the realm?
 9. **Retention of invitations** after acceptance/expiry — the school's determination (OQ-007).
 10. **Guardian and learner provisioning** — commission separate designs (§9).
+
+## 12.1 Decisions recorded 2026-10-24
+
+The owner asked the implementer to answer the five questions below. They are answered here so work can
+proceed; each is **reversible until the step that depends on it ships**, and the owner can overrule any of
+them. (Numbers refer to the list in §12.)
+
+| Question                                                                                                         | Decision                                                                                                                                                                                                                                                                        | Why                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2 — May an administrator grant `admin`? Is a second administrator's confirmation required for `admin` and `smt`? | **Yes** to granting `admin`. A second administrator **confirms** a grant of `admin` or `smt` **when the tenant has two or more active administrators**. A **sole** administrator may grant without confirmation, and the audit event records that no confirmation was possible. | Authority over human gates (`hod`, `smt`) and over accounts (`admin`) should not be a one-person decision (rule 6's spirit). But a small primary may have exactly one administrator; requiring a second would deadlock it. The audit marker keeps the exception visible. The first `admin` of a tenant comes from the operator's bootstrap invitation (§4.6). |
+| 3 — One active role per session, chosen at sign-in?                                                              | **Yes.** More than one role in the intersection of the account's assignments and the provider's claim → the person chooses; exactly one → that one.                                                                                                                             | Keeps `session.role`, `ROUTE_ACCESS` and the proxy unchanged; avoids a privilege ranking nobody has ratified (OQ-032). Acting in two roles at once can be added later without undoing this.                                                                                                                                                                   |
+| 4 — Verified email alone, or also a secret token?                                                                | **Verified email alone** for the pilot. Revisit with a secret token in the link if a school's mailboxes are shared or weakly secured.                                                                                                                                           | Keycloak's verification link already proves control of the address, and the invitation must exist in that tenant. A second secret mainly helps against a compromised mailbox, which the pilot's three schools can be asked about directly.                                                                                                                    |
+| 5 — Who creates Keycloak users for the pilot?                                                                    | **The operator, by hand,** for the three pilot schools. The Admin API integration stays at step 7.                                                                                                                                                                              | Everything in steps 1–6 (linking, roles, guard-rails, UI) works identically either way; the integration is the largest piece and the only one that needs a running Keycloak to test.                                                                                                                                                                          |
+| 8 — Is MFA configured anywhere?                                                                                  | **Not answerable by the implementer.** Until the owner confirms, **treat MFA as not enforced**. Recorded as **OQ-036**; `docs/SECURITY.md` §7 now carries a note.                                                                                                               | `SECURITY.md` says it is enforced, but `infra/keycloak/realm.json` configures none, and the production realm is not in the repository. The owner (or whoever operates Keycloak) has to look. Step 7 adds the realm configuration with a drift test, so the repository stops depending on memory.                                                              |
+
+Still open: 1 (lifetime; 14 days is the working default), 6, 7, 9, 10.
 
 ## 13. Not verified
 

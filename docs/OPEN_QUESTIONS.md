@@ -466,7 +466,7 @@ route use that; `token.sub` is never an actor (a test scans the routes for it). 
 nothing and routes answer 403; a database fault fails the sign-in rather than issuing a session with no actor. The dev stack
 gets fixed Keycloak ids and seeded accounts (`db:seed:identities`).
 
-**Still open — provisioning.** Nothing yet creates a `user_account` or `role_assignment` for a real person. My recommendation,
+**Still open — provisioning** (designed in `docs/PROVISIONING_DESIGN.md`; decisions recorded in its §12.1; step 1, the `user_invitation` table, is built). Nothing yet creates a `user_account` or `role_assignment` for a real person. My recommendation,
 not yet decided: the school administrator creates accounts and role assignments; first sign-in only **links** an invited
 account by _verified_ email within the tenant (setting its `subject`), and never grants a role from a token claim. That
 needs: an invite flow, an `email_verified` check, and a way to create the first administrator. Until then a real person at
@@ -510,3 +510,16 @@ front of a support team.
 
 **Needs a human:** which benchmark set and cut-points the school (or DBE guidance) actually uses, and whether the app should recommend a
 tier at all or only show scores against the school's own benchmarks. Until decided the numbers are placeholders, not policy.
+
+### OQ-036 — is MFA actually enforced for `admin`, `smt` and the platform roles? · 2026-10-24
+
+`docs/SECURITY.md` §7 states that MFA is enforced in Keycloak for the `admin`, `smt` and `platform_*` roles. Nothing
+in the repository shows it: `infra/keycloak/realm.json` configures no OTP / required action / browser-flow step and
+no email verification, and the production realm is not stored here. Found while designing account provisioning
+(OQ-033, `docs/PROVISIONING_DESIGN.md` §5), which depends on `email_verified` meaning something and on MFA keying
+off a role that Keycloak still carries.
+
+**Needs a human who operates Keycloak:** is MFA enforced in the real environment, how (which flow / required
+action, keyed on what), and is email verification required? If yes, record where it is configured; if no, say so in
+`SECURITY.md`. Until answered, treat MFA as not enforced. The provisioning design's step 7 will add the realm
+configuration to the repository with a drift test, so this does not depend on memory again.
