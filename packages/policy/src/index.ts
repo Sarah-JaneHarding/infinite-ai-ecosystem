@@ -60,3 +60,21 @@ export {
 } from './access.js';
 
 export const PACKAGE_NAME = '@infinite-ai/policy' as const;
+
+export {
+  CONFIRMATION_REQUIRED_ROLES,
+  SCHOOL_STAFF_ROLES,
+  evaluateAccountStatusChange,
+  evaluateRoleConferral,
+  evaluateRoleRevocation,
+  isSchoolStaffRole,
+  type AccountStatusChange,
+  type AdminState,
+  type ConferralTarget,
+  type ConfirmationOutcome,
+  type ProvisioningDecision,
+  type ProvisioningDenial,
+  type RoleConferral,
+  type RoleRevocation,
+  type SchoolStaffRole,
+} from './provisioning.js';
