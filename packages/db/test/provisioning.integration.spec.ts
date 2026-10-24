@@ -692,3 +692,292 @@ describe('two administrators demoting each other', () => {
     await expect(inTenant(tenant, (tx) => lockProvisioning(tx))).resolves.toBeUndefined();
   });
 });
+
+describe('the remaining refusals', () => {
+  async function schoolAndStaff(linked: boolean) {
+    return asTenant(migrator, TENANT_A, randomUUID(), async (tx) => {
+      const school = await tx.school.create({
+        data: { tenantId: TENANT_A, name: 'Refusals', lolt: 'English' },
+      });
+      const owner = linked ? await makeAccountIn(tx, TENANT_A) : null;
+      const staff = await tx.staffMember.create({
+        data: {
+          tenantId: TENANT_A,
+          schoolId: school.id,
+          displayName: 'Staff',
+          userAccountId: owner?.id ?? null,
+        },
+      });
+      return { school, staff };
+    });
+  }
+  async function makeAccountIn(
+    tx: Parameters<Parameters<typeof asTenant>[3]>[0],
+    tenantId: string,
+  ) {
+    return tx.userAccount.create({
+      data: {
+        tenantId,
+        subject: `sub-${randomUUID()}`,
+        email: `${randomUUID()}@example.invalid`,
+        displayName: 'Owner',
+      },
+    });
+  }
+  const create = (
+    actorAccountId: string,
+    extra: { email?: string; schoolId?: string; staffMemberId?: string } = {},
+  ) =>
+    inTenant(TENANT_A, (tx) =>
+      createInvitation(tx, testRules, {
+        actorAccountId,
+        email: extra.email ?? `${randomUUID()}@example.invalid`,
+        roles: ['teacher'],
+        ...(extra.schoolId === undefined ? {} : { schoolId: extra.schoolId }),
+        ...(extra.staffMemberId === undefined
+          ? {}
+          : { staffMemberId: extra.staffMemberId }),
+        expiresAt: LATER,
+        now: NOW,
+      }),
+    );
+
+  it('scopes an invitation to a school and a free staff record', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    const { school, staff } = await schoolAndStaff(false);
+    const result = await create(admin.id, {
+      schoolId: school.id,
+      staffMemberId: staff.id,
+    });
+    expect(result).toMatchObject({ ok: true });
+  });
+
+  it('refuses a staff record that is missing or already linked', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    const { staff } = await schoolAndStaff(true);
+    expect(await create(admin.id, { staffMemberId: randomUUID() })).toEqual({
+      ok: false,
+      reason: 'staff_member_not_found',
+    });
+    expect(await create(admin.id, { staffMemberId: staff.id })).toEqual({
+      ok: false,
+      reason: 'staff_member_already_linked',
+    });
+  });
+
+  it("refuses inviting the actor's own address", async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    expect(await create(admin.id, { email: admin.email })).toEqual({
+      ok: false,
+      reason: 'email_in_use',
+    });
+  });
+
+  describe('confirmInvitation', () => {
+    async function twoAdminsAwaiting() {
+      const tenant = randomUUID();
+      await asTenant(migrator, tenant, randomUUID(), (tx) =>
+        tx.tenant.create({
+          data: {
+            id: tenant,
+            name: 'Conf',
+            slug: `cf-${tenant.slice(0, 8)}`,
+            kind: 'SCHOOL',
+          },
+        }),
+      );
+      const a = await makeAccount(tenant, ['admin']);
+      const b = await makeAccount(tenant, ['admin']);
+      const created = await inTenant(tenant, (tx) =>
+        createInvitation(tx, testRules, {
+          actorAccountId: a.id,
+          email: `${randomUUID()}@example.invalid`,
+          roles: ['admin'],
+          expiresAt: LATER,
+          now: NOW,
+        }),
+      );
+      if (!created.ok) throw new Error('setup failed');
+      return { tenant, a, b, invitationId: created.invitationId };
+    }
+    const confirm = (
+      tenant: string,
+      confirmerAccountId: string,
+      invitationId: string,
+      extra: { now?: Date; rules?: typeof testRules } = {},
+    ) =>
+      inTenant(tenant, (tx) =>
+        confirmInvitation(tx, extra.rules ?? testRules, {
+          confirmerAccountId,
+          invitationId,
+          now: extra.now ?? NOW,
+        }),
+      );
+
+    it('refuses an unknown, revoked, expired or not-awaiting invitation', async () => {
+      const { tenant, a, b, invitationId } = await twoAdminsAwaiting();
+      expect(await confirm(tenant, b.id, randomUUID())).toEqual({
+        ok: false,
+        reason: 'invitation_not_found',
+      });
+      expect(
+        await confirm(tenant, b.id, invitationId, { now: new Date('2027-06-01') }),
+      ).toEqual({
+        ok: false,
+        reason: 'invitation_expired',
+      });
+      const plain = await inTenant(tenant, (tx) =>
+        createInvitation(tx, testRules, {
+          actorAccountId: a.id,
+          email: `${randomUUID()}@example.invalid`,
+          roles: ['teacher'],
+          expiresAt: LATER,
+          now: NOW,
+        }),
+      );
+      if (!plain.ok) throw new Error('setup failed');
+      expect(await confirm(tenant, b.id, plain.invitationId)).toEqual({
+        ok: false,
+        reason: 'not_awaiting_confirmation',
+      });
+      await inTenant(tenant, (tx) =>
+        revokeInvitation(tx, { actorAccountId: a.id, invitationId, now: NOW }),
+      );
+      expect(await confirm(tenant, b.id, invitationId)).toEqual({
+        ok: false,
+        reason: 'invitation_not_pending',
+      });
+    });
+
+    it('refuses when the proposer has since lost the administrator role', async () => {
+      const { tenant, a, b, invitationId } = await twoAdminsAwaiting();
+      await asTenant(migrator, tenant, randomUUID(), (tx) =>
+        tx.roleAssignment.updateMany({
+          where: { userAccountId: a.id, role: 'admin' },
+          data: { expiresAt: NOW },
+        }),
+      );
+      expect(await confirm(tenant, b.id, invitationId)).toEqual({
+        ok: false,
+        reason: 'actor_not_admin',
+      });
+    });
+
+    it('refuses an invitation with no recorded proposer', async () => {
+      const { tenant, b } = await twoAdminsAwaiting();
+      const orphan = await asTenant(migrator, tenant, randomUUID(), (tx) =>
+        tx.userInvitation.create({
+          data: {
+            tenantId: tenant,
+            email: `${randomUUID()}@example.invalid`,
+            roles: ['admin'],
+            expiresAt: LATER,
+            confirmation: 'AWAITING',
+            createdBy: null,
+          },
+        }),
+      );
+      expect(await confirm(tenant, b.id, orphan.id)).toEqual({
+        ok: false,
+        reason: 'proposer_unknown',
+      });
+    });
+
+    it('refuses if the rules do not report a real confirmation', async () => {
+      const { tenant, b, invitationId } = await twoAdminsAwaiting();
+      const lax: typeof testRules = {
+        ...testRules,
+        conferral: () => ({
+          allowed: true,
+          confirmation: 'not_required',
+          confirmedBy: null,
+        }),
+      };
+      expect(await confirm(tenant, b.id, invitationId, { rules: lax })).toEqual({
+        ok: false,
+        reason: 'confirmation_not_applicable',
+      });
+    });
+  });
+
+  it('refuses to revoke an invitation that does not exist', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    expect(
+      await inTenant(TENANT_A, (tx) =>
+        revokeInvitation(tx, {
+          actorAccountId: admin.id,
+          invitationId: randomUUID(),
+          now: NOW,
+        }),
+      ),
+    ).toEqual({ ok: false, reason: 'invitation_not_found' });
+  });
+
+  it('refuses a verified but malformed address, and an address another account holds', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    const email = `${randomUUID()}@example.invalid`;
+    await create(admin.id, { email });
+    const accept = (address: string) =>
+      inTenant(TENANT_A, (tx) =>
+        acceptInvitation(tx, {
+          subject: `sub-${randomUUID()}`,
+          email: address,
+          emailVerified: true,
+          displayName: 'X',
+          now: NOW,
+        }),
+      );
+    expect(await accept('not-an-address')).toEqual({
+      ok: false,
+      reason: 'invalid_email',
+    });
+    // Someone else came to hold the address after the invitation was issued.
+    await makeAccount(TENANT_A, ['teacher'], email);
+    expect(await accept(email)).toEqual({ ok: false, reason: 'email_in_use' });
+  });
+
+  it('falls back to the address when the provider gives no display name', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    const email = `${randomUUID()}@example.invalid`;
+    await create(admin.id, { email });
+    const result = await inTenant(TENANT_A, (tx) =>
+      acceptInvitation(tx, {
+        subject: `sub-${randomUUID()}`,
+        email,
+        emailVerified: true,
+        displayName: '   ',
+        now: NOW,
+      }),
+    );
+    if (!result.ok || result.outcome !== 'linked') throw new Error('expected a link');
+    const account = await inTenant(TENANT_A, (tx) =>
+      tx.userAccount.findFirstOrThrow({ where: { id: result.accountId } }),
+    );
+    expect(account.displayName).toBe(email);
+  });
+
+  it('refuses to change an account that does not exist', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    expect(
+      await inTenant(TENANT_A, (tx) =>
+        setAccountStatus(tx, testRules, {
+          actorAccountId: admin.id,
+          targetAccountId: randomUUID(),
+          status: 'SUSPENDED',
+          now: NOW,
+        }),
+      ),
+    ).toEqual({ ok: false, reason: 'target_not_found' });
+  });
+});
+
+describe('without a tenant context', () => {
+  it('refuses to take the provisioning lock', async () => {
+    await expect(
+      appRw.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.tenant_id', '', true)`;
+        await lockProvisioning(tx);
+      }),
+    ).rejects.toThrow(/tenant/i);
+  });
+});
