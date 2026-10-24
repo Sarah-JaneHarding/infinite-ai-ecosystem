@@ -17,6 +17,7 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:approvals": "tsx prisma/seed-approvals.ts",
+    "db:seed:identities": "tsx prisma/seed-dev-identities.ts",
     "db:validate": "prisma validate",
     "lint": "eslint src",
     "postinstall": "prisma generate",

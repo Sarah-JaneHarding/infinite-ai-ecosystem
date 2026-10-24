@@ -22,6 +22,7 @@ import { BrainApiError } from '@infinite-ai/brain';
 import { z } from 'zod';
 
 import { getWebEnv } from '@/lib/env';
+import { readTokenActor } from '@/lib/token-actor';
 import { findCanonDoc } from '@/components/curriculum/caps-canon-docs';
 
 const RatifyBodySchema = z.object({
@@ -38,20 +39,16 @@ export async function POST(
   const env = getWebEnv();
   const token = await getToken({ req: request, secret: env.NEXTAUTH_SECRET });
 
-  if (token === null || typeof token.sub !== 'string') {
-    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  // The actor is the school's own account id resolved at sign-in (OQ-033), not the OIDC `sub`.
+  const caller = readTokenActor(token);
+  if (!caller.ok) {
+    return NextResponse.json({ error: caller.error }, { status: caller.status });
   }
+  const { tenantId, actorId } = caller.actor;
 
-  const tenantId = (token['tenantId'] as string | undefined) ?? '';
-  if (!tenantId) {
-    return NextResponse.json({ error: 'No tenant context' }, { status: 403 });
-  }
-
-  if (token['role'] !== 'admin') {
+  if (token?.['role'] !== 'admin') {
     return NextResponse.json({ error: 'Admin role required' }, { status: 403 });
   }
-
-  const actorId = token.sub;
 
   const doc = findCanonDoc(consoleId);
   if (!doc) {

@@ -20,6 +20,7 @@ import {
 import { z } from 'zod';
 
 import { getWebEnv } from '@/lib/env';
+import { readTokenActor } from '@/lib/token-actor';
 
 // The run ID is passed in the request body alongside the decision because the Route Handler
 // receives the TASK id (from the URL) but decideHumanGate needs the RUN id. The client
@@ -37,23 +38,19 @@ export async function POST(
 ): Promise<NextResponse> {
   const { id: taskId } = await params;
 
-  // Extract the JWT sub (actor UUID) — sessions do not expose userId directly.
+  // The actor is the school's own account id, resolved at sign-in (OQ-033) — not the OIDC
+  // `sub`. The gate's role check looks it up in `role_assignment`.
   const env = getWebEnv();
   const token = await getToken({
     req: request,
     secret: env.NEXTAUTH_SECRET,
   });
 
-  if (token === null || typeof token.sub !== 'string') {
-    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  const caller = readTokenActor(token);
+  if (!caller.ok) {
+    return NextResponse.json({ error: caller.error }, { status: caller.status });
   }
-
-  const tenantId = (token['tenantId'] as string | undefined) ?? '';
-  if (!tenantId) {
-    return NextResponse.json({ error: 'No tenant context' }, { status: 403 });
-  }
-
-  const actorId = token.sub; // JWT sub is the Keycloak user UUID (pseudonymous, not a name)
+  const { tenantId, actorId } = caller.actor;
 
   let body: unknown;
   try {

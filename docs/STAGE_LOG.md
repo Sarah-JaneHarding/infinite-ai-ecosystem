@@ -11043,3 +11043,46 @@ be smoke-run once before relying on it.
 | Payload shape on the wire (with and without `--context-file`)        | PASS (smoke) |
 | Production worker behaviour unchanged (default path, existing tests) | PASS (unit)  |
 | `--chain` and the worker against Postgres + Redis                    | NOT VERIFIED |
+
+## Stage 112 — the actor is the school's account id, not the provider's `sub` (OQ-033)
+
+**Task.** "Confirm actor id as: user_account.id."
+
+**What was wrong.** Signing in as the SMT dev user and pressing Approve returned HTTP 422 ("Actor … does not hold the required
+role"). The session and four API routes used the OIDC `sub` as the actor, but a human gate's role check looks the actor up in
+`role_assignment`, which references `user_account.id` — a different value, so the check could never match for a real sign-in.
+(Found in a browser in Stage 100; fails closed, so no gate was ever decided wrongly.)
+
+**What changed.**
+
+- `packages/db/src/user-account.ts`: `findActiveUserAccountId(tx, subject)` — the ACTIVE account in the current tenant for a
+  subject (a suspended or offboarded account does not resolve). Exported; export-surface test updated.
+- `apps/web/src/lib/actor-resolution.ts`: `resolveActorId` runs it through `withTenant`. `''` for no tenant, no subject, a
+  non-UUID tenant/subject, or no active account; a database fault is not swallowed.
+- `apps/web/src/auth.ts`: the `jwt` callback stores `token.userId` at sign-in; the session's `userId` is that, never `token.sub`.
+  Sign-in itself is not blocked for a person with no account.
+- `apps/web/src/lib/token-actor.ts` and the decide route and three caps-canon routes: the actor is `token.userId`; no tenant →
+  403, no resolved account → 403, no session → 401.
+- Dev: the seven school-role Keycloak users carry fixed ids (`infra/keycloak/realm.json`); `db:seed:identities` creates their
+  accounts and role assignments (`packages/db/prisma/dev-identities.ts`). Platform staff get no account.
+- `docs/DEV_SETUP.md`, `docs/OPEN_QUESTIONS.md` (OQ-033 decision, and what is still open).
+
+**Behaviour changes to know about.** Existing sessions have no `userId`, so everyone must sign in again. Until the identities are
+seeded, a dev login can sign in but has no actor. `ratified_by` on CAPS canon ratifications is now the account id.
+
+**Tests.** Web 431 (+29 incl. updated): sign-in stores the resolved account, never the subject; the session never falls back to
+`sub`; the decide route decides as the account id and refuses a `sub`-only token (and records nothing); a guard fails if any API
+route reads `token.sub`. DB unit 242 (+10): the lookup, and a drift test between the realm file and the seeded fixtures.
+Integration (written blind — no Docker here, run by CI): the lookup per tenant and for suspended accounts, and the identity seed
+(idempotent; each subject resolves to its account, which holds exactly its role). Mutation-checked: the decide route reading
+`sub` fails 2; the session falling back to `sub` fails 4. Typecheck, eslint, prettier clean.
+
+**Not verified.** That Keycloak 26 honours a user `id` in the realm import (documented behaviour, but the stack was not rebuilt
+here); if it does not, sign-in still works and resolves no actor — fail closed. Not viewed in a browser.
+
+| Exit gate item                                                              | Result              |
+| --------------------------------------------------------------------------- | ------------------- |
+| Actor = `user_account.id` in session and every API route; `sub` never actor | PASS (tests, guard) |
+| No active account → no actor → no read, no decision                         | PASS (tests)        |
+| Provisioning real people (invite / link / first admin)                      | OPEN (OQ-033)       |
+| End-to-end: sign in as SMT dev, approve a gate                              | NOT RUN             |
