@@ -697,7 +697,7 @@ describe('the remaining refusals', () => {
   async function schoolAndStaff(linked: boolean) {
     return asTenant(migrator, TENANT_A, randomUUID(), async (tx) => {
       const school = await tx.school.create({
-        data: { tenantId: TENANT_A, name: 'Refusals', lolt: 'English' },
+        data: { tenantId: TENANT_A, name: `Refusals ${randomUUID()}`, lolt: 'English' },
       });
       const owner = linked ? await makeAccountIn(tx, TENANT_A) : null;
       const staff = await tx.staffMember.create({
