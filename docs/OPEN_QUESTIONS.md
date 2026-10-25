@@ -523,3 +523,5 @@ off a role that Keycloak still carries.
 action, keyed on what), and is email verification required? If yes, record where it is configured; if no, say so in
 `SECURITY.md`. Until answered, treat MFA as not enforced. The provisioning design's step 7 will add the realm
 configuration to the repository with a drift test, so this does not depend on memory again.
+
+**Recommended way to answer it** (detail in `docs/PROVISIONING_DESIGN.md` §12.2): export the production realm and check four things — OTP required for `admin`, `smt` and the platform roles (or `CONFIGURE_TOTP` on creation), Verify email on, brute-force detection on, no federated provider that skips email verification — then commit the sanitised export with a drift test, or configure what is missing and correct `SECURITY.md`.
