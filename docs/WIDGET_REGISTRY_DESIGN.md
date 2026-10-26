@@ -53,4 +53,4 @@ invents a value. `tenantId` is filled by the platform on ingest.
 
 - Show a widget to other schools unless school-specific information was removed and a person confirmed it (OQ-037, decided).
 - Record a typed name as the actor of record: the signed-in account is required (OQ-038, decided).
-- Release a public widget without a platform review (OQ-039, open).
+- Release a public widget without review by Infinite-AI appointed staff (OQ-039, decided; the appointed list is open).

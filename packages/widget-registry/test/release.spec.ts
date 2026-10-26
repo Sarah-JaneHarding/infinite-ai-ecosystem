@@ -4,6 +4,7 @@ import {
   addRelease,
   bumpPatch,
   cmpVersion,
+  applyPlatformReview,
   mayOfferToOtherSchools,
   prepareRollback,
   submitStatus,
@@ -182,5 +183,38 @@ describe('wire', () => {
     const h = must(addRelease(empty, base('0.1.0', null)));
     expect(must(wire(h, '0.1.0', jane)).wired).toBe('0.1.0');
     expect(wire(h, '0.2.0', jane).ok).toBe(false);
+  });
+});
+
+describe('platform review by Infinite-AI appointed staff (OQ-039)', () => {
+  const appointed = ['22222222-2222-4222-8222-222222222222'];
+  const review = (
+    accountId: string | null,
+    reason = 'Checked, no school detail left',
+  ) => ({
+    reviewer: { accountId, name: 'Pat Reviewer', role: 'Infinite-AI reviewer' },
+    decision: 'approved' as const,
+    reason,
+    at: '2026-10-26T10:00:00.000Z',
+  });
+  it('accepts an appointed reviewer', () => {
+    expect(applyPlatformReview(review(appointed[0] ?? null), appointed)).toEqual({
+      ok: true,
+      status: 'platform_approved',
+    });
+  });
+  it('refuses a school member, an unsigned reviewer and a missing reason', () => {
+    expect(applyPlatformReview(review(jane.accountId), appointed)).toEqual({
+      ok: false,
+      code: 'REVIEWER_NOT_APPOINTED',
+    });
+    expect(applyPlatformReview(review(null), appointed)).toEqual({
+      ok: false,
+      code: 'ACCOUNT_REQUIRED',
+    });
+    expect(applyPlatformReview(review(appointed[0] ?? null, ' '), appointed)).toEqual({
+      ok: false,
+      code: 'REASON_REQUIRED',
+    });
   });
 });

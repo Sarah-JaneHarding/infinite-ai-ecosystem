@@ -549,7 +549,9 @@ The browser Studio asks the person ratifying to type a name and role. The repo's
 `user_account.id` and treat the typed name as display text. The registry package already carries `accountId`
 (nullable while only the browser kit exists) and refuses codes and single words as names.
 
-### OQ-039 — who reviews a widget before it goes public · 2026-10-25
+### OQ-039 — who reviews a widget before it goes public · 2026-10-25 · **decided 2026-10-26**
+
+**Decision (Sarah-Jane Harding):** Infinite-AI appointed staff review it. Built: `applyPlatformReview` accepts a decision only from a signed-in account on the platform's appointed-reviewer list (a school cannot supply that list), with a reason; a public offer stays `submitted_for_platform_review` until then. **Still open:** who is appointed, how the list is kept, and what the reviewer checks (suggested: school information left, POPIA, contract, no network or dynamic code).
 
 A school-made widget that passes the automatic audit (POPIA scan, agent contract present) has still not been read
 by a person outside the school. The request names SMT ratification and public/private choice but no platform
