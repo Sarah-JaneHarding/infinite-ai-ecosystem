@@ -524,7 +524,9 @@ action, keyed on what), and is email verification required? If yes, record where
 `SECURITY.md`. Until answered, treat MFA as not enforced. The provisioning design's step 7 will add the realm
 configuration to the repository with a drift test, so this does not depend on memory again.
 
-### OQ-037 — a public widget catalogue puts one school's code in front of other schools · 2026-10-25
+### OQ-037 — a public widget catalogue puts one school's code in front of other schools · 2026-10-25 · **decided 2026-10-26 (partly)**
+
+**Decision (Sarah-Jane Harding):** yes, widgets may be shared publicly, but school-specific information is removed first. Built: the Wiring Board removes listed school details and contact patterns, a named SMT member confirms the cleaned version, and the offer file records counts only, never the removed words. `mayOfferToOtherSchools` refuses a public offer that is not marked cleaned. **Still open:** whether shared code runs only after platform review in a sandbox (see OQ-039), and how the platform detects school details a word list misses.
 
 The request is that a widget a school makes can be published "publicly" and offered to every school to accept or
 reject. A widget is HTML and JavaScript. Offering it across schools means one tenant's code running in another
@@ -536,7 +538,9 @@ agent contract) and let the platform build the widget from a reviewed kit; (b) s
 operator reviews and signs it, and run it sandboxed with no network; (c) do not offer cross-school code at all.
 Until decided, `packages/widget-registry` only models the states and does no cross-school work.
 
-### OQ-038 — a typed name is not the actor of record · 2026-10-25
+### OQ-038 — a typed name is not the actor of record · 2026-10-25 · **decided 2026-10-26**
+
+**Decision (Sarah-Jane Harding):** the signed-in account is the actor of record. The typed name is display only. Built: the registry refuses a ratification, wiring or roll back with no `accountId`; the browser kit takes the signed-in identity from the host page (`window.IAI_IDENTITY`), locks the name field to it, and marks a package with no sign-in `ratified_unverified_identity`. **Still open:** the platform must supply that identity to the page (depends on OQ-033).
 
 The browser Studio asks the person ratifying to type a name and role. The repo's rule is that every decision records
 `user_account.id`, and OQ-033 already notes no real person can decide a gate yet. A typed name can be anyone's.

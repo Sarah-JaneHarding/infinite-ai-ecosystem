@@ -49,6 +49,7 @@ export function addRelease(h: History, r: WidgetRelease): Result<History> {
   if (!r.ratification) return fail({ code: 'NOT_RATIFIED' });
   if (r.ratification.contentHash !== r.contentHash)
     return fail({ code: 'HASH_MISMATCH' });
+  if (!r.ratification.actor.accountId) return fail({ code: 'ACCOUNT_REQUIRED' });
   const problem = actorProblem(r.ratification.actor);
   if (problem) return fail({ code: 'ACTOR_REQUIRED', detail: problem });
   const cur = latest(h);
@@ -69,6 +70,7 @@ export function prepareRollback(
   now: string,
 ): Result<WidgetRelease> {
   if (!reason.trim()) return fail({ code: 'REASON_REQUIRED' });
+  if (!by.accountId) return fail({ code: 'ACCOUNT_REQUIRED' });
   const problem = actorProblem(by);
   if (problem) return fail({ code: 'ACTOR_REQUIRED', detail: problem });
   const old = h.releases.find((x) => x.version === target);
@@ -93,6 +95,7 @@ export function prepareRollback(
 
 /** Wire a ratified release. Only a ratified, known version can be wired. */
 export function wire(h: History, version: string, by: Actor): Result<History> {
+  if (!by.accountId) return fail({ code: 'ACCOUNT_REQUIRED' });
   const r = h.releases.find((x) => x.version === version);
   if (!r) return fail({ code: 'UNKNOWN_VERSION', version });
   if (!r.ratification) return fail({ code: 'NOT_RATIFIED' });

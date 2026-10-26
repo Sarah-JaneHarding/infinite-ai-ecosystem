@@ -13,9 +13,12 @@ export type ChangeKind = z.infer<typeof ChangeKind>;
 
 /** A person who ratified or changed something. `accountId` is the platform user (OQ-038). */
 export const Actor = z.object({
-  /** user_account.id once identity is wired; null while only a typed name exists (the browser kit). */
+  /**
+   * user_account.id of the signed-in person (OQ-038: the signed-in account is the actor of record).
+   * Null only for a package made by the browser kit with no sign-in; the registry refuses it.
+   */
   accountId: z.string().uuid().nullable(),
-  /** Display name typed or resolved. Staff only, never a learner. */
+  /** Display name beside the account. Staff only, never a learner. */
   name: z.string().min(3),
   role: z.string().min(2),
 });
@@ -49,6 +52,9 @@ export type WidgetRelease = z.infer<typeof WidgetRelease>;
 export type RegistryError =
   | { code: 'REASON_REQUIRED' }
   | { code: 'ACTOR_REQUIRED'; detail: string }
+  | { code: 'ACCOUNT_REQUIRED' }
+  | { code: 'SCHOOL_INFO_NOT_REMOVED' }
+  | { code: 'PUBLIC_NEEDS_PLATFORM_REVIEW' }
   | { code: 'NOT_RATIFIED' }
   | { code: 'SELF_PARENT' }
   | { code: 'VERSION_NOT_NEWER'; current: string }

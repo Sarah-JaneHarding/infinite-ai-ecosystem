@@ -26,7 +26,7 @@ A release is one JSON file the browser Studio downloads and the registry stores:
 Rules (tested in `packages/widget-registry/test/release.spec.ts`):
 
 - Only a ratified release can be added or wired. The ratification must be for the same content hash.
-- The ratifier is a named person (first name and surname), never a code or number.
+- The ratifier is a signed-in account with a named person (first name and surname), never a code or number.
 - Every change after the first needs a reason.
 - **Roll back is a new forward release** that restores earlier content. History is never rewritten, so who
   rolled back, when and why stays on record. A roll back is ratified like any other change.
@@ -51,6 +51,6 @@ invents a value. `tenantId` is filled by the platform on ingest.
 
 ## What this design will not do until decided
 
-- Run code written by one school inside another school (OQ-037).
-- Record a typed name as the actor of record (OQ-038).
-- Release a public widget without a platform review (OQ-039).
+- Show a widget to other schools unless school-specific information was removed and a person confirmed it (OQ-037, decided).
+- Record a typed name as the actor of record: the signed-in account is required (OQ-038, decided).
+- Release a public widget without a platform review (OQ-039, open).

@@ -4,13 +4,19 @@ import {
   addRelease,
   bumpPatch,
   cmpVersion,
+  mayOfferToOtherSchools,
   prepareRollback,
+  submitStatus,
   wire,
   type History,
   type WidgetRelease,
 } from '../src/index.js';
 
-const jane = { accountId: null, name: 'Jane Dlamini', role: 'Head of Department' };
+const jane = {
+  accountId: '11111111-1111-4111-8111-111111111111',
+  name: 'Jane Dlamini',
+  role: 'Head of Department',
+};
 const base = (
   v: string,
   parent: string | null,
@@ -79,6 +85,64 @@ describe('addRelease', () => {
       ok: false,
       error: { code: 'VERSION_NOT_NEWER', current: '0.1.1' },
     });
+  });
+});
+
+describe('the signed-in account is the actor of record (OQ-038)', () => {
+  it('refuses a ratification with a typed name and no account', () => {
+    const r = base('0.1.0', null);
+    r.ratification = { ...r.ratification!, actor: { ...jane, accountId: null } };
+    expect(addRelease(empty, r)).toEqual({
+      ok: false,
+      error: { code: 'ACCOUNT_REQUIRED' },
+    });
+  });
+  it('refuses to wire or roll back without an account', () => {
+    const h = must(addRelease(empty, base('0.1.0', null)));
+    expect(wire(h, '0.1.0', { ...jane, accountId: null })).toEqual({
+      ok: false,
+      error: { code: 'ACCOUNT_REQUIRED' },
+    });
+    expect(prepareRollback(h, '0.1.0', 'why', { ...jane, accountId: null }, 'x')).toEqual(
+      { ok: false, error: { code: 'ACCOUNT_REQUIRED' } },
+    );
+  });
+});
+
+describe('public offers (OQ-037, OQ-039)', () => {
+  it('shows a widget to other schools only when cleaned and platform-approved', () => {
+    expect(
+      mayOfferToOtherSchools({
+        visibility: 'private',
+        schoolInfoRemoved: true,
+        platformApproved: true,
+      }).ok,
+    ).toBe(false);
+    expect(
+      mayOfferToOtherSchools({
+        visibility: 'public',
+        schoolInfoRemoved: false,
+        platformApproved: true,
+      }),
+    ).toEqual({ ok: false, code: 'SCHOOL_INFO_NOT_REMOVED' });
+    expect(
+      mayOfferToOtherSchools({
+        visibility: 'public',
+        schoolInfoRemoved: true,
+        platformApproved: false,
+      }),
+    ).toEqual({ ok: false, code: 'PUBLIC_NEEDS_PLATFORM_REVIEW' });
+    expect(
+      mayOfferToOtherSchools({
+        visibility: 'public',
+        schoolInfoRemoved: true,
+        platformApproved: true,
+      }),
+    ).toEqual({ ok: true });
+  });
+  it('submits a public widget for review, never live', () => {
+    expect(submitStatus('public')).toBe('submitted_for_platform_review');
+    expect(submitStatus('private')).toBe('ratified_private');
   });
 });
 
