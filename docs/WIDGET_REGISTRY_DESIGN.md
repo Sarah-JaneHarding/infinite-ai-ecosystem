@@ -36,7 +36,7 @@ Rules (tested in `packages/widget-registry/test/release.spec.ts`):
 Each widget has an adapter that lays its output out the way its agent contract asks. The adapter output is
 validated against the agent's own JSON Schema (generated from `validateAgentContract`). Where the widget
 cannot supply a required field it returns the contract's `needs_input` shape and names the field. It never
-invents a value. `tenantId` is filled by the platform on ingest.
+invents a value. `tenantId` is filled by the platform on ingest. Adapters exist for PD-W01 to PD-W08, TB-W01 to TB-W11 and DW-W01 to DW-W04. The rest cannot be done from a widget: MOD-02 and DW-W07 to W09 need platform record ids (OQ-040) and CE needs ratified source citations (OQ-041).
 
 ## Custom widgets and publishing (proposal)
 

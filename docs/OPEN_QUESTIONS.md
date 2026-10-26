@@ -559,3 +559,25 @@ review before release to other schools.
 
 **Needs a human:** confirm a platform operator reviews before any public release, who that role is, and what it
 checks. Until then the design treats "public" as "submitted for platform review", not "live".
+
+### OQ-040 — widget output uses learner codes; agent results use platform record ids · 2026-10-26
+
+Most MOD-02 agents (AC-01 to AC-10) and DW-06, DW-07, DW-08 return per-learner results naming `learnerId`, `termId`,
+`planId`, `insightId` or `sbstRatificationId` as UUIDs. The browser widgets only hold learner codes (for example
+`L001`) and run ids, by design (POPIA: no learner names, no real ids in a widget). A widget therefore cannot produce a
+schema-valid agent result, and inventing UUIDs would be wrong.
+
+**Needs a human:** confirm that the platform resolves learner codes and run ids to record ids when it ingests a
+widget's output (the same step that fills `tenantId`), and where that mapping lives. Until then the Studio marks these
+widgets "cannot be laid out from this page" and shows the reason. New artefact ids (worksheets, passages, plans) are
+minted by the adapter because the artefact is created there.
+
+### OQ-041 — CE agents cite sources by document id, version and clause; the widgets hold typed references · 2026-10-26
+
+CE-01 to CE-09 cite every source as `{documentId, documentVersion, clause, page?, ratifiedBy}` taken from ratified L0
+documents. The CE widgets carry a typed source reference (for example "DEMO ATP Grade 2 Term 1, weeks 1-3"), which does
+not split into those three parts, and "ratifiedBy" is a Brain fact the widget does not have.
+
+**Needs a human:** decide whether CE widgets should take the ratified source documents as an input (from the Brain's
+L0 list, by id and version) so their output can cite them properly, or whether the platform resolves a typed reference
+to a document at ingest. Until then the Studio shows the reason and the fields the agent asks for.
