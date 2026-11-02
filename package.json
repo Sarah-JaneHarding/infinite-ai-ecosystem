@@ -65,7 +65,7 @@
     "verify:stage": "tsx scripts/verify-stage.ts"
   },
   "devDependencies": {
-    "@eslint/js": "9.39.5",
+    "@eslint/js": "10.0.1",
     "@infinite-ai/analytics": "workspace:*",
     "@infinite-ai/brain": "workspace:*",
     "@infinite-ai/contracts": "workspace:*",
