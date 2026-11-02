@@ -1,0 +1,21 @@
+{
+  "name": "@infinite-ai/widget-registry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Widget registry rules: release packages, ratification, forward-only rollback, custom-widget audit, publishing and per-school acceptance. Pure TypeScript; no I/O.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.5"
+  }
+}
