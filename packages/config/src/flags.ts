@@ -41,15 +41,6 @@ export const FLAGS = [
     defaultValue: false,
   },
   {
-    key: 'billing_dunning_emails',
-    description:
-      'Activates automated dunning email notifications when a tenant enters OVERDUE or SUSPENDED status. ' +
-      'Requires a configured transactional email provider (OQ-021).',
-    owner: 'mrsharding@benjaminpine.co.za',
-    expiresAt: '2026-11-01',
-    defaultValue: false,
-  },
-  {
     key: 'commons_pattern_sharing',
     description:
       'Allows tenants that have opted in to share anonymised learning patterns to the Commons pool (LE-08). ' +
