@@ -100,7 +100,7 @@ jobs:
           github.event_name == 'push' ||
           github.event.inputs.service == 'all' ||
           github.event.inputs.service == 'gateway'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: apps/gateway/Dockerfile
@@ -115,7 +115,7 @@ jobs:
           github.event_name == 'push' ||
           github.event.inputs.service == 'all' ||
           github.event.inputs.service == 'worker'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: apps/worker/Dockerfile
@@ -130,7 +130,7 @@ jobs:
           github.event_name == 'push' ||
           github.event.inputs.service == 'all' ||
           github.event.inputs.service == 'web'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: apps/web/Dockerfile
