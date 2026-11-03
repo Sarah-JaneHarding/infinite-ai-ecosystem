@@ -10,6 +10,15 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ## [Unreleased]
 
+### Removed
+
+- **Expired `billing_dunning_emails` feature flag** (`packages/config`)
+  - Passed its `expiresAt` (2026-11-01) and failed the `check:flags` CI gate on every PR.
+    The feature is not shipping, so the flag is removed rather than extended. Nothing in
+    product code evaluated it. Flag tests now use the remaining flags;
+    `docs/ONBOARDING_GUIDE.md` Step 4 updated. Re-add a flag when dunning emails are built
+    (needs a transactional email provider, OQ-021).
+
 ### Added
 
 - **Widget registry rules** (`@infinite-ai/widget-registry`, `docs/WIDGET_REGISTRY_DESIGN.md`; OQ-037 to OQ-039)
