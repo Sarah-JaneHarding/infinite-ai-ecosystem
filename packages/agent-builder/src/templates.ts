@@ -590,15 +590,13 @@ export const WORKFLOW_TEMPLATES: ReadonlyMap<string, WorkflowGraph> = new Map([
   ['weekly-pd-brief', weeklyPdBriefTemplate],
 ]);
 
-export type TemplateKey = keyof typeof _TEMPLATE_KEYS;
-const _TEMPLATE_KEYS = {
-  'lesson-plan': true,
-  assessment: true,
-  'sias-report': true,
-  'learning-engine-cycle': true,
-  'support-tier-routing': true,
-  'weekly-pd-brief': true,
-} as const;
+export type TemplateKey =
+  | 'lesson-plan'
+  | 'assessment'
+  | 'sias-report'
+  | 'learning-engine-cycle'
+  | 'support-tier-routing'
+  | 'weekly-pd-brief';
 
 /** Returns the template with the given key, or undefined if unknown. */
 export function getTemplate(key: string): WorkflowGraph | undefined {
