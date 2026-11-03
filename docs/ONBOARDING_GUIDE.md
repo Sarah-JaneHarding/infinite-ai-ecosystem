@@ -85,8 +85,8 @@ curriculum graph is activated for lesson-plan generation.
 - Email addresses must be resolvable (format check; DNS MX check in production).
 
 **What happens:** `user_account` and `role_assignment` rows are created. Invitation
-emails are queued (gated behind `billing_dunning_emails` flag; otherwise displayed in
-the wizard for manual sending).
+emails are displayed in the wizard for manual sending; automated sending is not
+enabled until a transactional email provider is configured (OQ-021).
 
 ---
 
