@@ -38,6 +38,9 @@ import {
   CAPS_SEPEDI_HL_FP_CONTENT_AREAS,
   CAPS_SEPEDI_HL_FP_METADATA,
   CAPS_SEPEDI_HL_FP_TOPIC_PROGRESSIONS,
+  CAPS_SESOTHO_HL_FP_CONTENT_AREAS,
+  CAPS_SESOTHO_HL_FP_METADATA,
+  CAPS_SESOTHO_HL_FP_TOPIC_PROGRESSIONS,
   CAPS_FAL_FP_CONTENT_AREAS,
   CAPS_FAL_FP_METADATA,
   CAPS_FAL_FP_TOPIC_PROGRESSIONS,
@@ -166,6 +169,22 @@ const sepediHlFp: CapsSourceInfo = {
   source: sourceRef(
     CAPS_SEPEDI_HL_FP_METADATA.documentId,
     CAPS_SEPEDI_HL_FP_METADATA.documentVersion,
+  ),
+};
+
+const sesothoHlFp: CapsSourceInfo = {
+  documentId: CAPS_SESOTHO_HL_FP_METADATA.documentId,
+  documentVersion: CAPS_SESOTHO_HL_FP_METADATA.documentVersion,
+  title: CAPS_SESOTHO_HL_FP_METADATA.title,
+  subject: 'Sesotho Home Language',
+  phase: 'FOUNDATION',
+  grades: PHASE_GRADES['FOUNDATION'],
+  contentAreas: [...CAPS_SESOTHO_HL_FP_CONTENT_AREAS],
+  weightings: [],
+  topicCount: CAPS_SESOTHO_HL_FP_TOPIC_PROGRESSIONS.length,
+  source: sourceRef(
+    CAPS_SESOTHO_HL_FP_METADATA.documentId,
+    CAPS_SESOTHO_HL_FP_METADATA.documentVersion,
   ),
 };
 
@@ -487,6 +506,7 @@ export const ALL_CAPS_SOURCES: readonly CapsSourceInfo[] = [
   mathsFp,
   engHlFp,
   sepediHlFp,
+  sesothoHlFp,
   falFp,
   lifeSkillsR3,
   isiZuluFalFp,

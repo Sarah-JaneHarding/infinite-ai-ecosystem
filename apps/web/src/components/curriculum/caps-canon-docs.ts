@@ -61,6 +61,7 @@ const B = {
   MATHS_FP: 'caps-mathematics-fp-gr-r3-2011',
   ENG_HL_FP: 'caps-english-hl-fp-gr-r3-2011',
   SEPEDI_HL_FP: 'caps-sepedi-hl-fp-gr-r3-2011',
+  SESOTHO_HL_FP: 'caps-sesotho-hl-fp-gr-r3-2011',
   FAL_FP: 'caps-fal-fp-gr-r3-2011',
   LIFE_SKILLS_R3: 'caps-life-skills-r3-2011',
   ISIZULU_FAL_FP: 'caps-isizulu-fal-gr1-3-2011',
@@ -85,6 +86,7 @@ const B = {
 function fpHlBrainId(langCode: string): string | null {
   if (langCode === 'en') return B.ENG_HL_FP;
   if (langCode === 'nso') return B.SEPEDI_HL_FP;
+  if (langCode === 'st') return B.SESOTHO_HL_FP;
   return null; // other FP HL languages await CE-01 PDF parsing
 }
 
