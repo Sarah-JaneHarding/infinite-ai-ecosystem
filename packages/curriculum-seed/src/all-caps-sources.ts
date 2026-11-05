@@ -41,6 +41,9 @@ import {
   CAPS_SESOTHO_HL_FP_CONTENT_AREAS,
   CAPS_SESOTHO_HL_FP_METADATA,
   CAPS_SESOTHO_HL_FP_TOPIC_PROGRESSIONS,
+  CAPS_SETSWANA_HL_FP_CONTENT_AREAS,
+  CAPS_SETSWANA_HL_FP_METADATA,
+  CAPS_SETSWANA_HL_FP_TOPIC_PROGRESSIONS,
   CAPS_FAL_FP_CONTENT_AREAS,
   CAPS_FAL_FP_METADATA,
   CAPS_FAL_FP_TOPIC_PROGRESSIONS,
@@ -185,6 +188,22 @@ const sesothoHlFp: CapsSourceInfo = {
   source: sourceRef(
     CAPS_SESOTHO_HL_FP_METADATA.documentId,
     CAPS_SESOTHO_HL_FP_METADATA.documentVersion,
+  ),
+};
+
+const setswanaHlFp: CapsSourceInfo = {
+  documentId: CAPS_SETSWANA_HL_FP_METADATA.documentId,
+  documentVersion: CAPS_SETSWANA_HL_FP_METADATA.documentVersion,
+  title: CAPS_SETSWANA_HL_FP_METADATA.title,
+  subject: 'Setswana Home Language',
+  phase: 'FOUNDATION',
+  grades: PHASE_GRADES['FOUNDATION'],
+  contentAreas: [...CAPS_SETSWANA_HL_FP_CONTENT_AREAS],
+  weightings: [],
+  topicCount: CAPS_SETSWANA_HL_FP_TOPIC_PROGRESSIONS.length,
+  source: sourceRef(
+    CAPS_SETSWANA_HL_FP_METADATA.documentId,
+    CAPS_SETSWANA_HL_FP_METADATA.documentVersion,
   ),
 };
 
@@ -498,15 +517,16 @@ const lifeOrientationSp: CapsSourceInfo = {
 };
 
 // ---------------------------------------------------------------------------
-// Full collection — 22 CAPS source documents
+// Full collection — 24 CAPS source documents
 // ---------------------------------------------------------------------------
 
 export const ALL_CAPS_SOURCES: readonly CapsSourceInfo[] = [
-  // Foundation Phase (7)
+  // Foundation Phase (9)
   mathsFp,
   engHlFp,
   sepediHlFp,
   sesothoHlFp,
+  setswanaHlFp,
   falFp,
   lifeSkillsR3,
   isiZuluFalFp,
