@@ -588,12 +588,13 @@ Nine HTML files were supplied to ingest. Six were already in the repo as identic
 Lesson Plan Blueprint, Marking Memorandum, Provider Setup Guide, Provider Hub, SBA Blueprint apart from one flag
 emoji, fixed). The CAPS Canon Console is already built as the admin page and registry. Two things need a person:
 
-1. **The marketing site** (`docs/marketing/educators-ecosystem/`) is archived, not served. Its copy says "52 build
-   stages" (the stage log is past 110), calls the platform "production-grade" while integration decisions are open, and
-   its contact form would send names, emails and phone numbers to a Google Form.
+1. **The marketing site** (`docs/marketing/educators-ecosystem/`) is archived, not served. On 2026-11-05 its stale
+   claims were corrected, the Google Form was removed (the form now only opens the visitor's email app) and a POPIA
+   privacy notice was added. Still open: the legal entity name and Information Officer registration for the notice,
+   a concrete retention period, whether to publish roadmap dates for stages 2 to 4, and where it is hosted.
 2. **The Unit Blueprint upload** has `[1]` reference links on its field labels that the repo copy lacks. Seven distinct
    targets: three are DBE or DBE-style sources, the rest are Scribd, YouTube and a Brisk Teaching blog post.
 
-**Needs a human:** (a) where the marketing site is hosted, who approves its claims, and whose POPIA notice and
-operator agreement cover the contact form; (b) whether the Unit Blueprint should carry the reference links, and if
+**Needs a human:** (a) where the marketing site is hosted, who approves its claims, and the entity and Information
+Officer details for its privacy notice; (b) whether the Unit Blueprint should carry the reference links, and if
 so only the DBE ones. Until then the site stays archived and the Unit Blueprint stays as it is.

@@ -1124,6 +1124,39 @@
         min-height: 90px;
         resize: vertical;
       }
+      .form-note {
+        font-size: 12.5px;
+        line-height: 1.55;
+        opacity: 0.8;
+        margin: 0 0 14px;
+      }
+      .form-note a {
+        color: #fbbf24;
+      }
+      .notice-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 22px 24px;
+        margin-bottom: 16px;
+      }
+      .notice-card h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+      .notice-card p,
+      .notice-card li {
+        font-size: 15px;
+        line-height: 1.65;
+        margin: 0 0 8px;
+      }
+      .notice-card ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .notice-card a {
+        color: #fbbf24;
+      }
       .form-status {
         margin-top: 14px;
         font-size: 13px;
@@ -1615,7 +1648,7 @@
               </div>
               <div class="hero-meta reveal">
                 <div class="meta-item">
-                  <span class="meta-num">52</span
+                  <span class="meta-num">110+</span
                   ><span class="meta-lbl">Build stages logged</span>
                 </div>
                 <div class="meta-item">
@@ -1910,8 +1943,8 @@
                 <h3>POPIA Safe &amp; Local</h3>
                 <p>
                   A dedicated privacy layer keeps every child's personal information
-                  detached from the core AI models. Sensitive data stays encrypted, hosted
-                  on South African soil (AWS af-south-1).
+                  detached from the core AI models. Sensitive data is designed to stay
+                  encrypted and hosted in South Africa (AWS af-south-1).
                 </p>
               </div>
               <div class="law-card reveal">
@@ -1974,9 +2007,9 @@
                 </div>
                 <h3>Investors</h3>
                 <p contenteditable="true">
-                  A working, multi-tenant SaaS platform with a documented 52-stage build
-                  history, an AI-first cost structure, and a founder embedded in the exact
-                  market she's building for.
+                  A working, multi-tenant SaaS platform with a documented build history of
+                  more than 110 stages, an AI-first cost structure, and a founder embedded
+                  in the exact market she's building for.
                 </p>
                 <button
                   class="btn btn-ghost"
@@ -2149,43 +2182,44 @@
             <div class="section-head reveal">
               <div class="section-num">07 · WHERE WE ARE · WHERE WE'RE GOING</div>
               <h2 contenteditable="true">
-                52 build stages complete. Enterprise-grade ambition.
+                More than 110 build stages logged. Pilot next.
               </h2>
               <p contenteditable="true">
-                52 build stages complete. Production-grade code. Enterprise-grade security
-                and strict guardrails in place. A small number of integration decisions
-                remain open before any school goes live — and we're working through them
-                carefully, not skipping past them.
+                More than 110 build stages logged, with strict typing, automated tests and
+                privacy guardrails enforced in code. The first pilot school is confirmed
+                for Term 4 2026. A small number of integration decisions remain open
+                before any school goes live — and we're working through them carefully,
+                not skipping past them.
               </p>
             </div>
             <div class="timeline">
               <div class="tl-item reveal">
                 <div class="tl-dot">1</div>
                 <div class="tl-content">
-                  <div class="tl-stage">STAGE 1 · NOW · Q3 2026</div>
+                  <div class="tl-stage">STAGE 1 · NOW · TERM 4 2026</div>
                   <h3>Pilot Launch</h3>
                   <p>
-                    Deploy to 3–5 strategic partner schools in and around Durban, working
-                    through the remaining open questions with real, closely-supported
-                    users.
+                    A pilot cohort of three schools. The first school is confirmed and the
+                    other two are being identified. We work through the remaining open
+                    questions with real, closely-supported users.
                   </p>
                 </div>
               </div>
               <div class="tl-item reveal">
                 <div class="tl-dot">2</div>
                 <div class="tl-content">
-                  <div class="tl-stage">STAGE 2 · NEXT · Q4 2026</div>
+                  <div class="tl-stage">STAGE 2 · NEXT</div>
                   <h3>District Rollout</h3>
                   <p>
                     Expand within a single district, proving the SMT-to-district oversight
-                    layer at real scale.
+                    layer at real scale. Timing depends on how the pilot goes.
                   </p>
                 </div>
               </div>
               <div class="tl-item reveal">
                 <div class="tl-dot">3</div>
                 <div class="tl-content">
-                  <div class="tl-stage">STAGE 3 · SCALE · 2027</div>
+                  <div class="tl-stage">STAGE 3 · THEN</div>
                   <h3>Provincial Rollout</h3>
                   <p>
                     Extend to province-level oversight and onboarding, deepening CAPS and
@@ -2196,7 +2230,7 @@
               <div class="tl-item reveal">
                 <div class="tl-dot">4</div>
                 <div class="tl-content">
-                  <div class="tl-stage">STAGE 4 · 2028+</div>
+                  <div class="tl-stage">STAGE 4 · LATER</div>
                   <h3>Africa Expansion</h3>
                   <p>
                     Carry the curriculum-agnostic core into new national curricula and
@@ -2233,8 +2267,16 @@
                 <div class="contact-feature">
                   <span class="contact-feature-icon">🔒</span>
                   <p>
-                    Your details go straight to the founder — nothing is sold, shared, or
-                    used for anything else.
+                    Your details go straight to the founder's inbox. They are not sold,
+                    and they are used only to reply to you. Read our
+                    <a
+                      href="#"
+                      onclick="
+                        go('privacy');
+                        return false;
+                      "
+                      >privacy notice</a
+                    >.
                   </p>
                 </div>
                 <div class="contact-feature">
@@ -2252,13 +2294,7 @@
                   >
                 </div>
               </div>
-              <form
-                class="lead-form reveal"
-                id="leadForm"
-                target="hiddenFormFrame"
-                method="POST"
-                action="GOOGLE_FORM_ACTION_URL"
-              >
+              <form class="lead-form reveal" id="leadForm">
                 <div class="field-row">
                   <div class="field">
                     <label>Name <span class="required-mark">*</span></label
@@ -2308,6 +2344,19 @@
                     placeholder="Tell us a little about what you need…"
                   ></textarea>
                 </div>
+                <p class="form-note">
+                  Sending this opens your email app with these details so you can email
+                  us. We use them only to reply to you. Please do not include any
+                  learner's personal information.
+                  <a
+                    href="#"
+                    onclick="
+                      go('privacy');
+                      return false;
+                    "
+                    >Read the privacy notice</a
+                  >.
+                </p>
                 <button
                   type="submit"
                   class="btn btn-amber"
@@ -2317,12 +2366,116 @@
                 </button>
                 <div class="form-status" id="formStatus"></div>
               </form>
-              <iframe
-                name="hiddenFormFrame"
-                id="hiddenFormFrame"
-                style="display: none"
-                title="form submit target"
-              ></iframe>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ PAGE: PRIVACY NOTICE ============ -->
+      <div class="page" id="page-privacy">
+        <section class="dark-section" style="padding-top: 64px">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="section-num">PRIVACY NOTICE</div>
+              <h2>How we handle what you send us.</h2>
+              <p>
+                This notice is given under the Protection of Personal Information Act 4 of
+                2013 (POPIA). It covers this website only. Last updated 5 November 2026.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>1 · Who is responsible</h3>
+              <p>
+                INFINITE-AI, Durban, South Africa. The founder, Sarah-Jane Harding, deals
+                with every enquiry herself. Email
+                <a href="mailto:infinite-ai-ecosystem@protonmail.com"
+                  >infinite-ai-ecosystem@protonmail.com</a
+                >
+                or phone <a href="tel:+27611939620">+27 61 193 9620</a>.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>2 · What we collect</h3>
+              <p>Only what you type into the contact form:</p>
+              <ul>
+                <li>Your name and email address (needed to reply).</li>
+                <li>
+                  What you are interested in and who you are, from the two dropdowns
+                  (needed to route your enquiry).
+                </li>
+                <li>
+                  Your organisation or school, your phone number and your message
+                  (optional).
+                </li>
+              </ul>
+              <p style="margin-top: 8px">
+                This website has no accounts, no cookies and no analytics or advertising
+                trackers.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>3 · Why we collect it</h3>
+              <p>
+                To read your enquiry and reply to you, and, if you ask, to arrange a
+                conversation, a place on the pilot waitlist or an investor discussion. We
+                do not add you to a marketing list, we do not sell or share your details,
+                and no automated decision is made about you.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>4 · How your details reach us</h3>
+              <p>
+                Pressing Send opens a message in your own email app, addressed to our
+                Proton Mail inbox, with your details filled in. You choose whether to send
+                it. This website does not store or transmit the form itself. Proton Mail
+                is based in Switzerland, so once you send the email it is held outside
+                South Africa.
+              </p>
+              <p>
+                This page loads its fonts from Google Fonts, so Google receives your IP
+                address and browser details when the page opens.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>5 · How long we keep it</h3>
+              <p>
+                Only as long as we need it to deal with your enquiry and any conversation
+                that follows. After that we delete it.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>6 · Please do not send learner information</h3>
+              <p>
+                This form is for adults. Do not put any learner's personal information in
+                it. If you do by mistake, tell us and we will delete it. When a school
+                uses INFINITE-AI, the school is the responsible party for its learners'
+                information and INFINITE-AI acts only as its operator, inside that
+                school's own separated space.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>7 · Your rights</h3>
+              <p>
+                You may ask us what we hold about you, ask us to correct or delete it, or
+                object to how we use it. Email us at the address above and we will reply
+                to you.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>8 · Complaints</h3>
+              <p>
+                If you are unhappy with how we handled your information, you may complain
+                to the Information Regulator (South Africa):
+                <a
+                  href="https://inforegulator.org.za/complaints/"
+                  target="_blank"
+                  rel="noopener"
+                  >inforegulator.org.za/complaints</a
+                >,
+                <a href="mailto:enquiries@inforegulator.org.za"
+                  >enquiries@inforegulator.org.za</a
+                >, 010 023 5200.
+              </p>
             </div>
           </div>
         </section>
@@ -2343,7 +2496,7 @@
             African schools. One Brain, five modules, a pipeline that never forgets.
           </p>
           <p style="margin-top: 12px; opacity: 0.7; font-size: 13px">
-            Durban · South Africa<br />Hosted on AWS af-south-1 (POPIA)
+            Durban · South Africa<br />Designed for AWS af-south-1 (South Africa)
           </p>
         </div>
         <div class="footer-links-row">
@@ -2353,6 +2506,7 @@
             <button onclick="go('ecosystem')">The Ecosystem</button>
             <button onclick="go('trust')">Trust &amp; Security</button>
             <button onclick="go('roadmap')">Roadmap</button>
+            <button onclick="go('privacy')">Privacy notice</button>
           </div>
           <div class="footer-col">
             <h5>Get in touch</h5>
@@ -2385,6 +2539,7 @@
         'access',
         'roadmap',
         'contact',
+        'privacy',
       ];
       function go(pageId, presetPurpose, presetStakeholder) {
         if (PAGES.indexOf(pageId) === -1) pageId = 'home';
@@ -2438,7 +2593,7 @@
         );
       });
 
-      // ---- Contact form: Google Forms POST + mailto fallback ----
+      // ---- Contact form: opens the visitor's own email app (no third-party form service) ----
       (function () {
         const form = document.getElementById('leadForm');
         if (!form) return;
@@ -2448,12 +2603,12 @@
           statusEl.className = 'form-status show ' + kind;
         }
         form.addEventListener('submit', function (e) {
+          e.preventDefault();
           const name = document.getElementById('lf-name').value.trim();
           const email = document.getElementById('lf-email').value.trim();
           const purpose = document.getElementById('lf-purpose').value;
           const stakeholder = document.getElementById('lf-stakeholder').value;
           if (!name || !email || !purpose || !stakeholder) {
-            e.preventDefault();
             showStatus(
               'err',
               'Please fill in your name, email, and both dropdowns before sending.',
