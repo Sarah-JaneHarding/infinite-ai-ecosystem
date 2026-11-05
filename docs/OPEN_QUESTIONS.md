@@ -60,19 +60,19 @@ deliberately, not defaulted into, when that time comes.
 
 Decided by Sarah-Jane Harding. Each row stays in the table above until its work is done.
 
-| ID | Decision |
-| --- | --- |
-| OQ-003 | Benjamin Pine will supply the unit blueprint, assessment task, rubric/marking memo and parent progress report templates. Not yet supplied. |
-| OQ-006 | SACE Type-1 activity-level point tables are not available yet. Stays open; nothing is computed. |
-| OQ-008 | The workflow builder is its own package. |
-| OQ-009 | Live quiz games are built inside MOD-04, the Teacher Toolbox. |
-| OQ-011 | SIAS stays inside MOD-02 until it needs its own data model. |
-| OQ-012 | Master and System Prompt Builders are two views over one engine. |
-| OQ-013 | Launch with the documents supplied. Source Sepedi, Sesotho and Setswana next and show which languages are covered. |
-| OQ-015 | Use Benjamin Pine's own content or safeguarding policy, by grade band, as the checker. Policy not yet supplied. |
-| OQ-016 | A spreadsheet of 50 real outputs per module is made for human labelling. Not yet made. |
-| OQ-017, OQ-018, OQ-020 | No decision needed. Each waits on a staging environment, the first pilot month, or a human recording. |
-| OQ-030 | Unchanged. This is the MOD-01 ratified-artefacts question. The tenant-directory question was renumbered OQ-042. |
+| ID                     | Decision                                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| OQ-003                 | Benjamin Pine will supply the unit blueprint, assessment task, rubric/marking memo and parent progress report templates. Not yet supplied. |
+| OQ-006                 | SACE Type-1 activity-level point tables are not available yet. Stays open; nothing is computed.                                            |
+| OQ-008                 | The workflow builder is its own package.                                                                                                   |
+| OQ-009                 | Live quiz games are built inside MOD-04, the Teacher Toolbox.                                                                              |
+| OQ-011                 | SIAS stays inside MOD-02 until it needs its own data model.                                                                                |
+| OQ-012                 | Master and System Prompt Builders are two views over one engine.                                                                           |
+| OQ-013                 | Launch with the documents supplied. Source Sepedi, Sesotho and Setswana next and show which languages are covered.                         |
+| OQ-015                 | Use Benjamin Pine's own content or safeguarding policy, by grade band, as the checker. Policy not yet supplied.                            |
+| OQ-016                 | A spreadsheet of 50 real outputs per module is made for human labelling. Not yet made.                                                     |
+| OQ-017, OQ-018, OQ-020 | No decision needed. Each waits on a staging environment, the first pilot month, or a human recording.                                      |
+| OQ-030                 | Unchanged. This is the MOD-01 ratified-artefacts question. The tenant-directory question was renumbered OQ-042.                            |
 
 ## Resolved
 
