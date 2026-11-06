@@ -56,6 +56,24 @@ deliberately, not defaulted into, when that time comes.
 | OQ-012 | 2026-08-05 | 20/21 | OPEN                | Should the Master Prompt Builder (Stage 20) and System Prompt Builder (Stage 21) be one combined tool or two separate ones? Separate is clearer about what each does; combined is a simpler experience over shared infrastructure.                                                                                                                                                                                                                                                  |
 | OQ-013 | 2026-08-05 | 08    | OPEN                | Eight of South Africa's eleven official languages, and Grades 10-12 entirely, are still missing from the CAPS documents supplied so far (see OQ-002). Sepedi, Sesotho and Setswana would serve the largest remaining population. Prioritise sourcing these before Stage 08 is considered feature-complete, or launch with what's supplied and add the rest afterward?                                                                                                               |
 
+## Decisions recorded 2026-11-05 (table items)
+
+Decided by Sarah-Jane Harding. Each row stays in the table above until its work is done.
+
+| ID                     | Decision                                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| OQ-003                 | Benjamin Pine will supply the unit blueprint, assessment task, rubric/marking memo and parent progress report templates. Not yet supplied. |
+| OQ-006                 | SACE Type-1 activity-level point tables are not available yet. Stays open; nothing is computed.                                            |
+| OQ-008                 | The workflow builder is its own package.                                                                                                   |
+| OQ-009                 | Live quiz games are built inside MOD-04, the Teacher Toolbox.                                                                              |
+| OQ-011                 | SIAS stays inside MOD-02 until it needs its own data model.                                                                                |
+| OQ-012                 | Master and System Prompt Builders are two views over one engine.                                                                           |
+| OQ-013                 | Launch with the documents supplied. Source Sepedi, Sesotho and Setswana next and show which languages are covered.                         |
+| OQ-015                 | Use Benjamin Pine's own content or safeguarding policy, by grade band, as the checker. Policy not yet supplied.                            |
+| OQ-016                 | A spreadsheet of 50 real outputs per module is made for human labelling. Not yet made.                                                     |
+| OQ-017, OQ-018, OQ-020 | No decision needed. Each waits on a staging environment, the first pilot month, or a human recording.                                      |
+| OQ-030                 | Unchanged. This is the MOD-01 ratified-artefacts question. The tenant-directory question was renumbered OQ-042.                            |
+
 ## Resolved
 
 ### OQ-023 — DBE time allocations and assessment weightings · resolved 2026-09-11
@@ -384,7 +402,9 @@ Terraform — no code change needed to update routing per school.
 3. Subscribe the appropriate school contact(s) to the topic — SMS, email, or a PagerDuty
    HTTP endpoint — for each pilot school.
 
-### OQ-030 — a platform tenant directory has no sanctioned read path · 2026-10-01
+### OQ-042 — a platform tenant directory has no sanctioned read path · 2026-10-01 (first numbered OQ-030 by mistake; OQ-030 is the MOD-01 ratified-artefacts question in the table above)
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** yes, build a tenant directory for platform admins, with usage counts. Needs before building: a separate privileged read role and tested database policy, and a second declared purpose in `purpose.ts` for usage counts. No learner data. Not started.
 
 The shell linked platform admins to `/platform/tenants`, a page that never existed. It was
 removed from the navigation rather than built, because the data it implies cannot be read
@@ -398,6 +418,8 @@ which role and policy may read it. Until then, `platform_admin` reaches the Run 
 (still sample data) and the environment docs.
 
 ### OQ-031 — four navigation entries had no page and no data behind them · 2026-10-01
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** all four pages are wanted. HoD Coverage and SBST Meetings (minutes record only, no SIAS steps) can start now. SMT Tiers is blocked on the SIAS/MTSS tier rule and a school-level counting rule; SMT PD is blocked on SACE activity-level points (OQ-006). Neither will be built over invented data.
 
 `/hod/coverage`, `/smt/tiers`, `/smt/pd` and `/sbst/meetings` were linked from the shell but never
 existed. They were removed from the navigation rather than built, because each needs something this
@@ -418,6 +440,8 @@ design, the SIAS/MTSS tier rule, the SACE schedule, a minutes record). Each can 
 
 ### OQ-032 — which role wins when an account holds more than one · 2026-10-01
 
+**Decision 2026-11-05 (Sarah-Jane Harding):** multi-role accounts are allowed. The person chooses the active role at sign-in and every action is checked against that role. Not yet built; `roleFromProfile` keeps first-match until it is.
+
 Stage 99 removed the silent `teacher` default for accounts with no recognised role. It did not
 change how an account holding **several** of our roles is handled: the first one in Keycloak's
 `realm_access.roles` order wins, and that order is not meaningful. If the same account can be both,
@@ -431,6 +455,8 @@ what is the precedence (or should the person choose at sign-in)? Until then `rol
 first-match behaviour, pinned by a test that names this OQ.
 
 ### OQ-033 — no real person can decide an approval gate: identity mismatch and no provisioning · 2026-10-07
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** provisioning: the school administrator invites; first sign-in only links an invited account by verified email and never grants a role from a token claim. Still to build: invite flow, `email_verified` check, first-administrator route, session end on suspension.
 
 Found by approving a gate in a browser, not by any test. With the dev stack running and a gate genuinely open (run
 `WAITING_FOR_APPROVAL`), signing in as the SMT dev user and pressing **Approve** returns **HTTP 422**:
@@ -476,6 +502,8 @@ account up at decision time, but its status is not re-checked there.
 
 ### OQ-034 — what a district rollup would be, if the product wants one · 2026-10-08
 
+**Decision 2026-11-05 (Sarah-Jane Harding):** parked. No district page until a district office exists as a role. If revived, schools publish their own aggregates upward (no cross-school read of identifiable data); the minimum group size is still a policy number to be supplied.
+
 `/district` (reachable by both platform roles, no nav link) used to show three invented schools with learner counts and tier
 percentages under "Aggregated, de-identified data only. Minimum cohort size enforced." It now says it is not available. There is no
 district concept in the data model, no cross-school read in `packages/db`, and no cohort-size rule anywhere in the codebase; the
@@ -491,6 +519,8 @@ access matrix gives neither platform role any right to learner records or tier p
 Until decided, the page asserts no control it does not exercise.
 
 ### OQ-035 — the EGRA screening tab's benchmarks and tier rule have no supplied source · 2026-10-08
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** the tab shows scores against benchmarks the school types in, and recommends no tier. The SBST person assigns the tier. The built-in benchmark table and 0 / 1-2 / 3+ rule are to be removed. Not yet changed.
 
 Found while removing the sample data from the SBST tabs. `EgraScreeningView.tsx` carries a benchmark table (per grade, per subtest) and
 a rule that turns the number of below-benchmark subtests into a tier recommendation (0 → Tier 1, 1–2 → Tier 2, 3+ → Tier 3). Its
@@ -513,6 +543,8 @@ tier at all or only show scores against the school's own benchmarks. Until decid
 
 ### OQ-036 — is MFA actually enforced for `admin`, `smt` and the platform roles? · 2026-10-24
 
+**Decision 2026-11-05 (Sarah-Jane Harding):** treat MFA as **not enforced** until verified. Correct `docs/SECURITY.md` section 7 to say so, and add the Keycloak configuration to the repo with a drift test (provisioning step 7).
+
 `docs/SECURITY.md` §7 states that MFA is enforced in Keycloak for the `admin`, `smt` and `platform_*` roles. Nothing
 in the repository shows it: `infra/keycloak/realm.json` configures no OTP / required action / browser-flow step and
 no email verification, and the production realm is not stored here. Found while designing account provisioning
@@ -525,6 +557,8 @@ action, keyed on what), and is email verification required? If yes, record where
 configuration to the repository with a drift test, so this does not depend on memory again.
 
 ### OQ-037 — a public widget catalogue puts one school's code in front of other schools · 2026-10-25 · **decided 2026-10-26 (partly)**
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** reviewed before public release by Infinite-AI appointed staff (see OQ-039), and every public widget runs in a sandbox with no network.
 
 **Decision (Sarah-Jane Harding):** yes, widgets may be shared publicly, but school-specific information is removed first. Built: the Wiring Board removes listed school details and contact patterns, a named SMT member confirms the cleaned version, and the offer file records counts only, never the removed words. `mayOfferToOtherSchools` refuses a public offer that is not marked cleaned. **Still open:** whether shared code runs only after platform review in a sandbox (see OQ-039), and how the platform detects school details a word list misses.
 
@@ -551,6 +585,8 @@ The browser Studio asks the person ratifying to type a name and role. The repo's
 
 ### OQ-039 — who reviews a widget before it goes public · 2026-10-25 · **decided 2026-10-26**
 
+**Decision 2026-11-05 (Sarah-Jane Harding):** you alone are the appointed reviewer to start. Public releases need two reviewers once a second person is appointed. The list is held by the platform, not by schools. Checklist (suggested, to confirm): school information left, POPIA, contract, no network or dynamic code.
+
 **Decision (Sarah-Jane Harding):** Infinite-AI appointed staff review it. Built: `applyPlatformReview` accepts a decision only from a signed-in account on the platform's appointed-reviewer list (a school cannot supply that list), with a reason; a public offer stays `submitted_for_platform_review` until then. **Still open:** who is appointed, how the list is kept, and what the reviewer checks (suggested: school information left, POPIA, contract, no network or dynamic code).
 
 A school-made widget that passes the automatic audit (POPIA scan, agent contract present) has still not been read
@@ -561,6 +597,8 @@ review before release to other schools.
 checks. Until then the design treats "public" as "submitted for platform review", not "live".
 
 ### OQ-040 — widget output uses learner codes; agent results use platform record ids · 2026-10-26
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** the platform resolves learner codes and run ids to record ids at ingest, using a per-school mapping it holds. Widgets never hold real ids. Mapping store and ingest step not yet designed.
 
 Most MOD-02 agents (AC-01 to AC-10) and DW-06, DW-07, DW-08 return per-learner results naming `learnerId`, `termId`,
 `planId`, `insightId` or `sbstRatificationId` as UUIDs. The browser widgets only hold learner codes (for example
@@ -573,6 +611,8 @@ widgets "cannot be laid out from this page" and shows the reason. New artefact i
 minted by the adapter because the artefact is created there.
 
 ### OQ-041 — CE agents cite sources by document id, version and clause; the widgets hold typed references · 2026-10-26
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** CE widgets will let the teacher pick the ratified source document (id and version) from the Brain's L0 list and type the clause, so output cites properly. Not yet built.
 
 CE-01 to CE-09 cite every source as `{documentId, documentVersion, clause, page?, ratifiedBy}` taken from ratified L0
 documents. The CE widgets carry a typed source reference (for example "DEMO ATP Grade 2 Term 1, weeks 1-3"), which does
