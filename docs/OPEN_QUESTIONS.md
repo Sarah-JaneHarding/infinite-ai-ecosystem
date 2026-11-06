@@ -581,3 +581,20 @@ not split into those three parts, and "ratifiedBy" is a Brain fact the widget do
 **Needs a human:** decide whether CE widgets should take the ratified source documents as an input (from the Brain's
 L0 list, by id and version) so their output can cite them properly, or whether the platform resolves a typed reference
 to a document at ingest. Until then the Studio shows the reason and the fields the agent asks for.
+
+### OQ-042 — the marketing site and the reference links in the Unit Blueprint · 2026-11-05
+
+Nine HTML files were supplied to ingest. Six were already in the repo as identical copies (Parent Progress Report,
+Lesson Plan Blueprint, Marking Memorandum, Provider Setup Guide, Provider Hub, SBA Blueprint apart from one flag
+emoji, fixed). The CAPS Canon Console is already built as the admin page and registry. Two things need a person:
+
+1. **The marketing site** (`docs/marketing/educators-ecosystem/`) is archived, not served. On 2026-11-05 its stale
+   claims were corrected, the Google Form was removed (the form now only opens the visitor's email app) and a POPIA
+   privacy notice was added. Still open: the legal entity name and Information Officer registration for the notice,
+   a concrete retention period, whether to publish roadmap dates for stages 2 to 4, and where it is hosted.
+2. **The Unit Blueprint upload** has `[1]` reference links on its field labels that the repo copy lacks. Seven distinct
+   targets: three are DBE or DBE-style sources, the rest are Scribd, YouTube and a Brisk Teaching blog post.
+
+**Needs a human:** (a) where the marketing site is hosted, who approves its claims, and the entity and Information
+Officer details for its privacy notice; (b) whether the Unit Blueprint should carry the reference links, and if
+so only the DBE ones. Until then the site stays archived and the Unit Blueprint stays as it is.

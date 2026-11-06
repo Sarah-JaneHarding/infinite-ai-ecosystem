@@ -180,3 +180,5 @@ AI system — they are not instructions for this repository and are not reproduc
 This repository already has its own equivalents that are ratified and in use:
 `INFINITEAI_BUILD_MANUAL.md` for the build plan, `docs/STAGE_LOG.md` for the audit trail,
 and `docs/OPEN_QUESTIONS.md` for what is still undecided.
+
+The marketing site draft is archived at `docs/marketing/educators-ecosystem/` (not served; see its README and OQ-042).
