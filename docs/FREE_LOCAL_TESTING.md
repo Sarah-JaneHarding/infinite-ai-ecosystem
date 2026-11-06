@@ -37,7 +37,7 @@ short bursts when you want a stronger model than your hardware can run.
 | Run the age-appropriateness **judge** on a real model            | Yes              | Part 8.1                                               |
 | See every prompt/response in a trace viewer                      | Yes              | Langfuse, Part 5.5                                     |
 | Run the eval harness (`pnpm evals:run`)                          | Yes, but see 8.2 | It uses **stub executors — it never calls a model**    |
-| Run any one of the 55 agents on a live model, keep the raw reply | Yes              | `pnpm dev:run-agent`, Part 8.3                         |
+| Run any one of the 56 agents on a live model, keep the raw reply | Yes              | `pnpm dev:run-agent`, Part 8.3                         |
 | Run golden sets on a live model and save every reply             | Yes              | `pnpm evals:run-live`, Part 8.4                        |
 | Start a MOD-01…05 / LE pipeline and watch it                     | Yes (new)        | `pnpm dev:run-pipeline`, Part 8.5 — but see its limits |
 | Start a pipeline from the web UI                                 | **No**           | No screen does it; use the command above               |
@@ -535,7 +535,7 @@ curriculum work, which is only honest for synthetic data — so use only synthet
 ```bash
 pnpm evals:run-live --agent CE-05 --limit 5        # 5 cases of one agent
 pnpm evals:run-live --module TB                    # every Toolbox agent
-pnpm evals:run-live --all --limit 3                # a sample of everything (55 agents × 3)
+pnpm evals:run-live --all --limit 3                # a sample of everything (56 agents × 3)
 ```
 
 Each case's input goes to the live model; the output is scored with the same scorers as
