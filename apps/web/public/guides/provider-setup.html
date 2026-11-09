@@ -1290,18 +1290,18 @@
 
       <div class="env-block">
         <div class="env-row">
-          <span class="env-key">GEMINI_API_KEYS=</span>
+          <span class="env-key">GOOGLE_API_KEYS=</span>
           <span class="env-hint">Paste your AIza… key here</span>
           <button
             class="env-copy"
-            onclick="copyEnv(this, 'GEMINI_API_KEYS')"
+            onclick="copyEnv(this, 'GOOGLE_API_KEYS')"
             title="Copy key name"
           >
             📋
           </button>
         </div>
         <div class="env-row">
-          <span class="env-key">GEMINI_BASE_URL=</span>
+          <span class="env-key">GOOGLE_BASE_URL=</span>
           <span class="env-hint"
             >Leave blank — default OpenAI-compatible endpoint is used</span
           >
@@ -1383,18 +1383,18 @@
 
       <div class="env-block">
         <div class="env-row">
-          <span class="env-key">QWEN_API_KEYS=</span>
+          <span class="env-key">DASHSCOPE_API_KEYS=</span>
           <span class="env-hint">Paste your sk-… DashScope key here</span>
           <button
             class="env-copy"
-            onclick="copyEnv(this, 'QWEN_API_KEYS')"
+            onclick="copyEnv(this, 'DASHSCOPE_API_KEYS')"
             title="Copy key name"
           >
             📋
           </button>
         </div>
         <div class="env-row">
-          <span class="env-key">QWEN_BASE_URL=</span>
+          <span class="env-key">DASHSCOPE_BASE_URL=</span>
           <span class="env-hint">Leave blank — default DashScope endpoint is used</span>
         </div>
       </div>
@@ -1472,24 +1472,24 @@
 
       <div class="env-block">
         <div class="env-row">
-          <span class="env-key">LMSTUDIO_BASE_URL=</span>
+          <span class="env-key">LM_STUDIO_BASE_URL=</span>
           <span class="env-hint"
             >e.g. http://192.168.1.10:1234/v1 (your server's IP)</span
           >
           <button
             class="env-copy"
-            onclick="copyEnv(this, 'LMSTUDIO_BASE_URL')"
+            onclick="copyEnv(this, 'LM_STUDIO_BASE_URL')"
             title="Copy key name"
           >
             📋
           </button>
         </div>
         <div class="env-row">
-          <span class="env-key">LMSTUDIO_API_KEYS=</span>
+          <span class="env-key">LM_STUDIO_API_KEYS=</span>
           <span class="env-hint">Any placeholder word, e.g. lmstudio-key</span>
           <button
             class="env-copy"
-            onclick="copyEnv(this, 'LMSTUDIO_API_KEYS')"
+            onclick="copyEnv(this, 'LM_STUDIO_API_KEYS')"
             title="Copy key name"
           >
             📋
@@ -1691,22 +1691,18 @@
           <div class="step-body">
             Under <strong>Keys and Endpoint</strong>, copy <strong>Key 1</strong> and the
             <strong>Endpoint URL</strong>. The endpoint looks like:
-            <code
-              >https://your-resource.openai.azure.com/openai/deployments/your-deployment</code
-            >
+            <code>https://your-resource.openai.azure.com</code>
           </div>
         </div>
       </div>
 
       <div class="env-block">
         <div class="env-row">
-          <span class="env-key">AZURE_OPENAI_BASE_URL=</span>
-          <span class="env-hint"
-            >https://yourresource.openai.azure.com/openai/deployments/gpt-4o</span
-          >
+          <span class="env-key">AZURE_OPENAI_ENDPOINT=</span>
+          <span class="env-hint">https://yourresource.openai.azure.com</span>
           <button
             class="env-copy"
-            onclick="copyEnv(this, 'AZURE_OPENAI_BASE_URL')"
+            onclick="copyEnv(this, 'AZURE_OPENAI_ENDPOINT')"
             title="Copy key name"
           >
             📋
@@ -1723,15 +1719,29 @@
             📋
           </button>
         </div>
+        <div class="env-row">
+          <span class="env-key">AZURE_OPENAI_DEPLOYMENT=</span>
+          <span class="env-hint"
+            >The deployment name from step 3, e.g. gpt-4o-production</span
+          >
+          <button
+            class="env-copy"
+            onclick="copyEnv(this, 'AZURE_OPENAI_DEPLOYMENT')"
+            title="Copy key name"
+          >
+            📋
+          </button>
+        </div>
       </div>
 
       <div class="callout callout-warn">
         <span class="callout-icon">⚠️</span>
         <span class="callout-text"
           ><strong>Both vars required:</strong> Azure OpenAI only activates when
-          <em>both</em> <code>AZURE_OPENAI_BASE_URL</code> and
+          <em>both</em> <code>AZURE_OPENAI_ENDPOINT</code> and
           <code>AZURE_OPENAI_API_KEYS</code> are set. If only one is provided the provider
-          is silently skipped.</span
+          is silently skipped. If you leave <code>AZURE_OPENAI_DEPLOYMENT</code> empty the
+          gateway uses <em>gpt-4o</em>.</span
         >
       </div>
     </div>
