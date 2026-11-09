@@ -598,3 +598,19 @@ emoji, fixed). The CAPS Canon Console is already built as the admin page and reg
 **Needs a human:** (a) where the marketing site is hosted, who approves its claims, and the entity and Information
 Officer details for its privacy notice; (b) whether the Unit Blueprint should carry the reference links, and if
 so only the DBE ones. Until then the site stays archived and the Unit Blueprint stays as it is.
+
+### OQ-043 — provider names in the Provider Hub, Azure wiring, and the price card · 2026-11-06
+
+Checked while ingesting the supplied Provider Setup Guide and Provider Hub against `apps/gateway/src/config/env.ts`.
+
+1. **Setup Guide: fixed.** Five variable names did not match what the gateway reads (`GEMINI_*`, `QWEN_*`, `LMSTUDIO_*`,
+   `AZURE_OPENAI_BASE_URL`). They are now `GOOGLE_*`, `DASHSCOPE_*`, `LM_STUDIO_*` and `AZURE_OPENAI_ENDPOINT`
+   (plus `AZURE_OPENAI_DEPLOYMENT`). Every variable the guide names is now in `env.ts`.
+2. **Provider Hub: not fixed.** It uses singular `*_API_KEY`, `GEMINI_API_KEY`, `QWEN_BASE_URL` and `*_MODEL_ID` names
+   (`LM_STUDIO_MODEL_ID`, `OLLAMA_MODEL_ID`, `QWEN_MODEL_ID`) that `env.ts` does not define. It is 300 KB of generated
+   markup, so it was left alone. **Needs a human:** is the Hub meant to produce a `.env` file? If so its names must change.
+3. **Azure.** `providers.ts` passes `AZURE_OPENAI_ENDPOINT` to the generic OpenAI-compatible adapter and uses the
+   deployment as the model name. No code builds Azure's `/openai/deployments/<name>/...?api-version=` path, so Azure may
+   not work end to end. Test it against a real resource before telling a school to use it.
+4. **Price card.** The billing code, `docs/COST_MODEL.md` and `docs/financial-model.html` carry different price cards.
+   **Needs a human:** choose one, then update `packages/billing/src/tiers.ts` and the documents together.
