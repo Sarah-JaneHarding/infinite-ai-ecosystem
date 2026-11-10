@@ -22,7 +22,7 @@ approves before anything is passed on, and no page makes a network call.
 Supplied on 2026-11-10 as the Studio and Board Intake and Classroom Tools packages. The Wiring Board in `built/` is the
 classroom-tools copy (PF-W06), which also accepts a school-made widget that declares `agentId: null`; the Studio package's
 copy did not. The scripts in `studio-kit/` and `classroom-tools/source/` keep the author's machine paths, so they record how
-the files were made but do not run from a clean checkout (OQ-044). Their browser tests can be run against `built/` with the paths edited. On ingest the 70 classroom-tool board checks passed.
+the files were made but do not run from a clean checkout (OQ-044). Their browser tests can be run against `built/` with the paths edited. On ingest the 70 classroom-tool board checks passed, and the Studio edit, ratify and release walk passed for 78 of 80 widgets (PF-W03 and PF-W06 have no Studio panel by design).
 
 ## Not here on purpose
 
