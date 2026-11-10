@@ -36,6 +36,9 @@ export default tseslint.config(
       // hand-edited, and never reviewed. Linting it produces thousands of errors about
       // code nobody wrote.
       'packages/db/generated/**',
+      // Supplied browser widgets and their build kit: generated single-file HTML and kit scripts,
+      // verified by hash in packages/widget-registry/test/widget-files.spec.ts, not hand-linted.
+      'widgets/**',
     ],
   },
 

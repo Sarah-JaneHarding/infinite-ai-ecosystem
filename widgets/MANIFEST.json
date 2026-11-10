@@ -1,0 +1,564 @@
+{
+  "widgets": [
+    {
+      "file": "INFINITE-AI-CE-W01_CURRICULUM-MAP-GENERATOR.html",
+      "widgetId": "CE-W01",
+      "version": "0.1.0",
+      "sha256": "9252cf857074acff84df2fd746798066fc64d5c1392466539a6594c281b775c5",
+      "bytes": 149553
+    },
+    {
+      "file": "INFINITE-AI-CE-W02_ATP-YEAR-PLANNER.html",
+      "widgetId": "CE-W02",
+      "version": "0.1.0",
+      "sha256": "3f7076619e2a1d592c2de1a8512a1933da427842d09aa1ec2b527af7baa986cc",
+      "bytes": 154413
+    },
+    {
+      "file": "INFINITE-AI-CE-W03_TERM-PLANNER-&-ASSESSMENT-CALENDAR.html",
+      "widgetId": "CE-W03",
+      "version": "0.1.0",
+      "sha256": "357b8d5a2564c30f35d4de3b9eae0e1fdb25d3a474dd9f1a32c9ddbc1890d273",
+      "bytes": 167487
+    },
+    {
+      "file": "INFINITE-AI-CE-W04_TIMETABLE-GENERATOR.html",
+      "widgetId": "CE-W04",
+      "version": "0.1.0",
+      "sha256": "0b4cb4f9cd69c72c18f3ee98a6ccccb49c9327ca1de61a5e1c221446a2f92b10",
+      "bytes": 149778
+    },
+    {
+      "file": "INFINITE-AI-CE-W05__WEEKLY-OVERVIEW-GENERATOR.html",
+      "widgetId": "CE-W05",
+      "version": "0.1.0",
+      "sha256": "66226bfd3ae3134b77285285b631ea154c9826f4089e0ced50277ca876835320",
+      "bytes": 198806
+    },
+    {
+      "file": "INFINITE-AI-CE-W06_DAILY-SCHEDULE-GENERATOR.html",
+      "widgetId": "CE-W06",
+      "version": "0.1.0",
+      "sha256": "9d91c196bb93c7327839e12747afaeb99e2de780a6e992456b87c3fb0c55bcee",
+      "bytes": 191074
+    },
+    {
+      "file": "INFINITE-AI-CE-W07_UNIT-BLUEPRINT-BUILDER.html",
+      "widgetId": "CE-W07",
+      "version": "0.1.0",
+      "sha256": "9e30905c4a9da7eb2827c6d534055e76be7530847c15397e1ddd95fb0425d71c",
+      "bytes": 171841
+    },
+    {
+      "file": "INFINITE-AI-CE-W08_LESSON-PLAN-GENERATOR.html",
+      "widgetId": "CE-W08",
+      "version": "0.1.0",
+      "sha256": "dd5f6ef2e7e9314021fb497c46b4896c98cd0f098124367299ee236888a79b22",
+      "bytes": 189188
+    },
+    {
+      "file": "INFINITE-AI-CE-W09_ASSESSMENT-TASK-DESIGNER.html",
+      "widgetId": "CE-W09",
+      "version": "0.1.0",
+      "sha256": "1b7dd9444d11b926ddc2415798f89c03cfa812d88145640d693a6255edfc893f",
+      "bytes": 175466
+    },
+    {
+      "file": "INFINITE-AI-CE-W10_RUBRIC-&-MEMO-BUILDER.html",
+      "widgetId": "CE-W10",
+      "version": "0.1.0",
+      "sha256": "b1bf56bda3144a0601a2aa5ff7107338a37a35c21c76751c766cd2017830974d",
+      "bytes": 155307
+    },
+    {
+      "file": "INFINITE-AI-CE-W11_DIFFERENTIATED-VERSION-GENERATOR.html",
+      "widgetId": "CE-W11",
+      "version": "0.1.0",
+      "sha256": "5a3926d6d9dcd815152784f633fdaf0e42009fb33e1f50d0912877744b2e8133",
+      "bytes": 153725
+    },
+    {
+      "file": "INFINITE-AI-CE-W12_DAILY-REFLECTION-RECORDER-&-PROCESSOR.html",
+      "widgetId": "CE-W12",
+      "version": "0.1.0",
+      "sha256": "2315e65108f0bcd162529a78054353a90e107e2cd35189f10e1443d58d1c7b22",
+      "bytes": 157697
+    },
+    {
+      "file": "INFINITE-AI-CE-W13_COVERAGE-TRACKER-&-AUDITOR.html",
+      "widgetId": "CE-W13",
+      "version": "0.1.0",
+      "sha256": "f5a88246a97dbb5de8ae3e02bd2a1523c15a728f27e5e1fafa6fcd6d9536e02a",
+      "bytes": 171369
+    },
+    {
+      "file": "INFINITE-AI-DW-W01_DATA-IMPORT-&-FIELD-MAPPER.html",
+      "widgetId": "DW-W01",
+      "version": "0.1.0",
+      "sha256": "b2f575513a12650db419f1f2b4c12e5358c1eee36ad1fe208c9f836245afc0ce",
+      "bytes": 167135
+    },
+    {
+      "file": "INFINITE-AI-DW-W02_CONSENT-&-PURPOSE-REGISTER.html",
+      "widgetId": "DW-W02",
+      "version": "0.1.0",
+      "sha256": "522a420877642f127b42f72cc9135a7e048268ac3f1c89bbed1c1260cfdd1128",
+      "bytes": 178321
+    },
+    {
+      "file": "INFINITE-AI-DW-W03_DE-IDENTIFICATION-PREVIEWER.html",
+      "widgetId": "DW-W03",
+      "version": "0.1.0",
+      "sha256": "6e91bb87823bc16109dc60830e4b8fe0cc329528d492097c4a289f297822096e",
+      "bytes": 172653
+    },
+    {
+      "file": "INFINITE-AI-DW-W04_DATA-QUALITY-SENTINEL.html",
+      "widgetId": "DW-W04",
+      "version": "0.1.0",
+      "sha256": "4d00ea5069cb1254292f910049d2f4c77d950f3a640ee575841f0ab567543108",
+      "bytes": 171913
+    },
+    {
+      "file": "INFINITE-AI-DW-W05_MARKS-&-ATTENDANCE-CAPTURE.html",
+      "widgetId": "DW-W05",
+      "version": "0.1.0",
+      "sha256": "4e5c18d686034d509d8d6ef8347512d2945517ed4b9b73111604d779256b3a89",
+      "bytes": 193158
+    },
+    {
+      "file": "INFINITE-AI-DW-W06_REPORT-CARD-GENERATOR.html",
+      "widgetId": "DW-W06",
+      "version": "0.1.0",
+      "sha256": "555035f2d0370bf3e9cd57826e963b16458a6f4204ee5e69559c9fb6dda21c3d",
+      "bytes": 170507
+    },
+    {
+      "file": "INFINITE-AI-DW-W07_LEARNER-360-VIEWER.html",
+      "widgetId": "DW-W07",
+      "version": "0.1.0",
+      "sha256": "21bd59a3afa3b3704bb73cf0c4e101dc9025ce2b738e9c6a88a1ead4d50e669b",
+      "bytes": 184730
+    },
+    {
+      "file": "INFINITE-AI-DW-W08_INSIGHT-SYNTHESISER.html",
+      "widgetId": "DW-W08",
+      "version": "0.1.0",
+      "sha256": "4439cde6f931595f979e8575252cbb9a48db049c8754455a651d93f7932fe393",
+      "bytes": 173212
+    },
+    {
+      "file": "INFINITE-AI-DW-W09_NEST-STEP-GENERATOR.html",
+      "widgetId": "DW-W09",
+      "version": "0.1.0",
+      "sha256": "480455610ec8d652e3c913447c2335a823edac1740953b210a5d635f059c165f",
+      "bytes": 165173
+    },
+    {
+      "file": "INFINITE-AI-PD-W01.html",
+      "widgetId": "PD-W01",
+      "version": "0.1.0",
+      "sha256": "e3524d1d3586af0703a5499763fa10a07586ba93cb80d821edd959a88c97f41b",
+      "bytes": 175659
+    },
+    {
+      "file": "INFINITE-AI-PD-W02.html",
+      "widgetId": "PD-W02",
+      "version": "0.1.0",
+      "sha256": "598b8597ef1b14501ab0dd217ddf20b43c222ac0c02091b0e9ac98fb44cc69f6",
+      "bytes": 193339
+    },
+    {
+      "file": "INFINITE-AI-PD-W03.html",
+      "widgetId": "PD-W03",
+      "version": "0.1.0",
+      "sha256": "740eb2f40bb0358adc78b1306f273232474aea97d2f39fc85619d12ec4e809bd",
+      "bytes": 173438
+    },
+    {
+      "file": "INFINITE-AI-PD-W04.html",
+      "widgetId": "PD-W04",
+      "version": "0.2.0",
+      "sha256": "8a3cd8d1f1219c219accf7be7a726643acea35f274bbe9ba21bc0f0a1b9c9085",
+      "bytes": 191683
+    },
+    {
+      "file": "INFINITE-AI-PD-W05.html",
+      "widgetId": "PD-W05",
+      "version": "0.2.0",
+      "sha256": "c365d6cd91ba66c3181a76a97bfadb4df6b6c9e1e5c949ab844e59b028769dd1",
+      "bytes": 182454
+    },
+    {
+      "file": "INFINITE-AI-PD-W06.html",
+      "widgetId": "PD-W06",
+      "version": "0.1.0",
+      "sha256": "79db49d67935f22d7edb779211b34ad038ad4ed0f081d2bbade15437c15f16a0",
+      "bytes": 183488
+    },
+    {
+      "file": "INFINITE-AI-PD-W07.html",
+      "widgetId": "PD-W07",
+      "version": "0.1.0",
+      "sha256": "e03bc09adb2c573894e0c99c48706d92cb63d9114853549e304041805d687fc0",
+      "bytes": 179041
+    },
+    {
+      "file": "INFINITE-AI-PD-W08.html",
+      "widgetId": "PD-W08",
+      "version": "0.1.0",
+      "sha256": "b896c3fc5e5808e5982c46deab0c523d506db9dab9aa6fe7ad87b9ea473d5b74",
+      "bytes": 177957
+    },
+    {
+      "file": "INFINITE-AI-PD-W09.html",
+      "widgetId": "PD-W09",
+      "version": "0.1.0",
+      "sha256": "b0b65fafaa0ade3e3d6cd306bac108ef7237238a8535e021a1cfb72e7f888961",
+      "bytes": 176769
+    },
+    {
+      "file": "INFINITE-AI-PD-W10.html",
+      "widgetId": "PD-W10",
+      "version": "0.1.0",
+      "sha256": "20580ec80b70ff1409b2893633b4a7e0443fd3de8bbe51fda8c2ffb18e2c1e14",
+      "bytes": 191875
+    },
+    {
+      "file": "INFINITE-AI-PD-W11.html",
+      "widgetId": "PD-W11",
+      "version": "0.1.0",
+      "sha256": "667162aaa21ff95bfdb028765007b7155c7e3342b4e906bc36ac11b55c72d0c1",
+      "bytes": 179820
+    },
+    {
+      "file": "INFINITE-AI-PD-W12.html",
+      "widgetId": "PD-W12",
+      "version": "0.1.0",
+      "sha256": "499240c24e01fbbd6146d17e369383dbca2dfc757f6def6c08815a025f0b8e12",
+      "bytes": 208603
+    },
+    {
+      "file": "INFINITE-AI-PD-W13.html",
+      "widgetId": "PD-W13",
+      "version": "0.1.0",
+      "sha256": "8ff860b715aa25e3f6dd3ec193cc76520e11fa7931cc062c45e3ae5f107c5f6f",
+      "bytes": 215199
+    },
+    {
+      "file": "INFINITE-AI-PD-W14.html",
+      "widgetId": "PD-W14",
+      "version": "0.1.0",
+      "sha256": "f20bac6b73319394e32f13154eca1677a1cf1952a223c13ed88e639aa4b64742",
+      "bytes": 231306
+    },
+    {
+      "file": "INFINITE-AI-PD-W15.html",
+      "widgetId": "PD-W15",
+      "version": "0.1.0",
+      "sha256": "ef1dc8b3e44788054a9942a10ecd6a82c6437891e57230a84efe529ec80129b7",
+      "bytes": 217599
+    },
+    {
+      "file": "INFINITE-AI-PD-W16.html",
+      "widgetId": "PD-W16",
+      "version": "0.1.0",
+      "sha256": "693a938933c449cff6a47f27b0479598efc8e241c4140ee84e8516625aa936db",
+      "bytes": 215019
+    },
+    {
+      "file": "INFINITE-AI-PD-W17.html",
+      "widgetId": "PD-W17",
+      "version": "0.1.0",
+      "sha256": "dd0ce724bf9cb186c4c99c9e226375abea6df4ff92e15d339920af9cbf1b060a",
+      "bytes": 213945
+    },
+    {
+      "file": "INFINITE-AI-PD-W18.html",
+      "widgetId": "PD-W18",
+      "version": "0.1.0",
+      "sha256": "6707ada99ed02aa08fe00791f04710c78500670c9c3aad9d43f3b53e4e87d889",
+      "bytes": 251668
+    },
+    {
+      "file": "INFINITE-AI-PD-W19.html",
+      "widgetId": "PD-W19",
+      "version": "0.1.0",
+      "sha256": "b1a552f5ca94f9b490217fa4b15bcaf9ecbfe27721de117326bea715bbf79afd",
+      "bytes": 442501
+    },
+    {
+      "file": "INFINITE-AI-PF-W01_TEMPLATE-INGESTOR-&-SLOT-MANAGER.html",
+      "widgetId": "PF-W01",
+      "version": "0.1.0",
+      "sha256": "24d9ac947a144ced762e6197931eaba361c009c9f3ceec80149aa74f9f7df601",
+      "bytes": 141819
+    },
+    {
+      "file": "INFINITE-AI-PF-W02_SOURCE-DOCUMENT-INGESTOR.html",
+      "widgetId": "PF-W02",
+      "version": "0.1.0",
+      "sha256": "2be158b8d11c655aec2edeff29096f5fc15e40ca55e1006c33c33ad03c8b243c",
+      "bytes": 135725
+    },
+    {
+      "file": "INFINITE-AI-PF-W03_APPROVAL-GATE-INBOX.html",
+      "widgetId": "PF-W03",
+      "version": "0.1.0",
+      "sha256": "676e7d5f9705ffa491c02cbdd6460a8cecbafb2117f7677cdedc100677b287d8",
+      "bytes": 146434
+    },
+    {
+      "file": "INFINITE-AI-PF-W04.html",
+      "widgetId": "PF-W04",
+      "version": "0.1.1",
+      "sha256": "3651ea160a04f946886d205752d5b5a043c09af85b2035a4e63c20aaa0f17337",
+      "bytes": 178720
+    },
+    {
+      "file": "INFINITE-AI-PF-W05_EDIT-CAPTURE-&-DIFF-VIEWER.html",
+      "widgetId": "PF-W05",
+      "version": "0.1.0",
+      "sha256": "5627af96b01185f3d5a85791740dbe0d3b85b1ea958721829d4bd63c2b40cbe4",
+      "bytes": 135474
+    },
+    {
+      "file": "INFINITE-AI-PF-W06.html",
+      "widgetId": "PF-W06",
+      "version": "0.1.0",
+      "sha256": "18a1491d22e084d786aedbc4894e1994d2bcf4d62576c8877973f86c07b2d8c7",
+      "bytes": 425288
+    },
+    {
+      "file": "INFINITE-AI-PF-W07_POPIA-CHECK-PANEL.html",
+      "widgetId": "PF-W07",
+      "version": "0.1.0",
+      "sha256": "5abf0674b8b05bf51a31e4e39e798c6e9d8cead2dc79377eb6794befbccc2496",
+      "bytes": 138237
+    },
+    {
+      "file": "INFINITE-AI-SA-W01_UNIVERSAL-SCREENING-CAPTURE.html",
+      "widgetId": "SA-W01",
+      "version": "0.1.0",
+      "sha256": "bdac44943a00554360c96da7246c780716a19262449d9770ceaf2caeffc8aaf7",
+      "bytes": 171401
+    },
+    {
+      "file": "INFINITE-AI-SA-W02_CORE-HEALTH-TIER-1-ANALYST.html",
+      "widgetId": "SA-W02",
+      "version": "0.1.0",
+      "sha256": "81e752eba9140c74d3c243f8d2460a570c6d86cf2cb04112d99027f9f1d9cfb4",
+      "bytes": 169205
+    },
+    {
+      "file": "INFINITE-AI-SA-W03_TIER-RECOMMENDER.html",
+      "widgetId": "SA-W03",
+      "version": "0.1.0",
+      "sha256": "7ef925f8d23d1b327f738cf3cfaaaee5754b0f0dbbb2b8dbc63037d93d53de58",
+      "bytes": 180383
+    },
+    {
+      "file": "INFINITE-AI-SA-W04_EARLY-WARNING-BOARD.html",
+      "widgetId": "SA-W04",
+      "version": "0.1.0",
+      "sha256": "fe4db2f5d4e3b1f79341b1e1399eb6aa0c611d19c205072b959fa8367364f058",
+      "bytes": 175578
+    },
+    {
+      "file": "INFINITE-AI-SA-W05_SIAS-LEARNER-PROFILE-&-SUPPORT-NEEDS-FORM-FILLER.html",
+      "widgetId": "SA-W05",
+      "version": "0.1.0",
+      "sha256": "cddd729359fd91e4d83c3f275bc1203cde565afbfd17b7808e926b63bcec8d68",
+      "bytes": 194631
+    },
+    {
+      "file": "INFINITE-AI-SA-W06_INTERVENTION-&-SUPPORT-PLAN-BUILDER.html",
+      "widgetId": "SA-W06",
+      "version": "0.1.0",
+      "sha256": "1f843d0b9f832b486b68b7a279c7e3f7a4aa5398a94bead45862fd05f6a375e0",
+      "bytes": 184468
+    },
+    {
+      "file": "INFINITE-AI-SA-W07_PROGRESS-MOITOR.html",
+      "widgetId": "SA-W07",
+      "version": "0.1.0",
+      "sha256": "3a83679fcd2503ff7ee261bb61d4aa9af894ac23e7bf3772539554d2145214dc",
+      "bytes": 168705
+    },
+    {
+      "file": "INFINITE-AI-SA-W08_FIDELITY-LOG.html",
+      "widgetId": "SA-W08",
+      "version": "0.1.0",
+      "sha256": "8212265df31e22d24e2a8d5f29d4628ae302397b0dabc3cfe993341c4bf991fd",
+      "bytes": 168142
+    },
+    {
+      "file": "INFINITE-AI-SA-W09_SBST-MEETING-SCRIBE.html",
+      "widgetId": "SA-W09",
+      "version": "0.1.0",
+      "sha256": "7186db28227630f1a9e683736836191547b8a45792b1f2e3a57c8d76a9d1a6a0",
+      "bytes": 177935
+    },
+    {
+      "file": "INFINITE-AI-SA-W10_SIAS-REFERRAL-PACK-COMPILER.html",
+      "widgetId": "SA-W10",
+      "version": "0.1.0",
+      "sha256": "1a78c24c577ff02d16c13fcb5a75691314bdce30e5da4d347ea1715b628ba32d",
+      "bytes": 190936
+    },
+    {
+      "file": "INFINITE-AI-SA-W11_PARENT-PROGRESS-LETTER-WRITER.html",
+      "widgetId": "SA-W11",
+      "version": "0.1.0",
+      "sha256": "a88343b62a495e7e6d947b05ade523893430cab08e9c3fd86a2629e92cce8d70",
+      "bytes": 173238
+    },
+    {
+      "file": "INFINITE-AI-SA-W12_EARLY-GRADE-READING-SCREENING-CALCULATOR.html",
+      "widgetId": "SA-W12",
+      "version": "0.1.0",
+      "sha256": "5d9f9d841c4564bd0a0081db6155ed1d6db64dc53149157536b73bf9df4ad6c9",
+      "bytes": 163440
+    },
+    {
+      "file": "INFINITE-AI-TB-W01.html",
+      "widgetId": "TB-W01",
+      "version": "0.1.0",
+      "sha256": "aa90cece56edf856e3318f27d39ac514a500e86be243d74d86f4e416460a3d6a",
+      "bytes": 174379
+    },
+    {
+      "file": "INFINITE-AI-TB-W02.html",
+      "widgetId": "TB-W02",
+      "version": "0.1.0",
+      "sha256": "8335328ccd5cf8e562db784bc69691be7bdcb7becb99d597050dd69c5a90fcaf",
+      "bytes": 178750
+    },
+    {
+      "file": "INFINITE-AI-TB-W03.html",
+      "widgetId": "TB-W03",
+      "version": "0.1.0",
+      "sha256": "0f27d895e06d3fda13686b6cde53d229ab23c7bd4bcba7f052c1ad557802da32",
+      "bytes": 173665
+    },
+    {
+      "file": "INFINITE-AI-TB-W04.html",
+      "widgetId": "TB-W04",
+      "version": "0.1.0",
+      "sha256": "c964ce6a9392664569ce0ac2e882f65ffdec6713df3f72ccde669d3811f1faa4",
+      "bytes": 177254
+    },
+    {
+      "file": "INFINITE-AI-TB-W05.html",
+      "widgetId": "TB-W05",
+      "version": "0.1.0",
+      "sha256": "1258bb2c03c5cb076251da7701cc57e20b588e8fe8f6e7e89474bbf6302a406f",
+      "bytes": 172801
+    },
+    {
+      "file": "INFINITE-AI-TB-W06.html",
+      "widgetId": "TB-W06",
+      "version": "0.1.0",
+      "sha256": "7a37ddb63c89cc42bf999fe76c130a7b31d153e160c1fc1641915bb270be9d9d",
+      "bytes": 175314
+    },
+    {
+      "file": "INFINITE-AI-TB-W07.html",
+      "widgetId": "TB-W07",
+      "version": "0.1.0",
+      "sha256": "4e37405fe9cb965dd7afdc48feeeb67f75ee2445199649e7e676c5f225db8134",
+      "bytes": 177084
+    },
+    {
+      "file": "INFINITE-AI-TB-W08.html",
+      "widgetId": "TB-W08",
+      "version": "0.1.0",
+      "sha256": "8e39192a4391a483d8a00db240d9f3c9e091471f35bab3458e7ad5c95eb6879d",
+      "bytes": 178331
+    },
+    {
+      "file": "INFINITE-AI-TB-W09.html",
+      "widgetId": "TB-W09",
+      "version": "0.1.0",
+      "sha256": "5f400f378e4679bd65f279b8d9eabba25b27355a3bc093e370dd65ceafca3548",
+      "bytes": 174423
+    },
+    {
+      "file": "INFINITE-AI-TB-W10.html",
+      "widgetId": "TB-W10",
+      "version": "0.1.0",
+      "sha256": "d76e2377ca4548dc622a51f5be919cdd9bfacfe65f5be7222021f3f2c905ccb6",
+      "bytes": 178078
+    },
+    {
+      "file": "INFINITE-AI-TB-W11.html",
+      "widgetId": "TB-W11",
+      "version": "0.1.0",
+      "sha256": "73d93b70f7fcf8bb7435ca2fb51f1e4d204963e3a95bbbbc51d2697abfffd0b8",
+      "bytes": 172153
+    },
+    {
+      "file": "INFINITE-AI-TB-W12.html",
+      "widgetId": "TB-W12",
+      "version": "0.1.0",
+      "sha256": "76b2e3a9bb0df21db54bafe785d15992e9aa8c8fa10aca001e1dcaf871ee89e9",
+      "bytes": 171740
+    },
+    {
+      "file": "INFINITE-AI-TB-W13.html",
+      "widgetId": "TB-W13",
+      "version": "0.1.0",
+      "sha256": "642681b1b18aa5bd519499241e9c37195c06e5bdea225afb243da3f43b3f30c4",
+      "bytes": 174315
+    },
+    {
+      "file": "INFINITE-AI-TB-W14.html",
+      "widgetId": "TB-W14",
+      "version": "0.1.0",
+      "sha256": "33a025f9682589375a9110628fe54e2e91f5f3a3ce7cf4b8192d4dad86ef7f7e",
+      "bytes": 225538
+    },
+    {
+      "file": "INFINITE-AI-TB-W15.html",
+      "widgetId": "TB-W15",
+      "version": "0.1.0",
+      "sha256": "ac73e59b9631ca03d6e3c6908ea83e34c28d6c375f01c0a654d25e5d04d011b6",
+      "bytes": 224009
+    },
+    {
+      "file": "INFINITE-AI-TB-W16.html",
+      "widgetId": "TB-W16",
+      "version": "0.1.0",
+      "sha256": "476f9821a8843d892a08523dbaf57993618ecab5f993dd3cbe757f96fb545fb0",
+      "bytes": 226697
+    },
+    {
+      "file": "INFINITE-AI-TB-W17.html",
+      "widgetId": "TB-W17",
+      "version": "0.1.0",
+      "sha256": "c54693ef4c638a67c5bf581cfb72698bc1c6f039f1cd84c56ab1a4559089d0dd",
+      "bytes": 225035
+    },
+    {
+      "file": "INFINITE-AI-TB-W18.html",
+      "widgetId": "TB-W18",
+      "version": "0.1.0",
+      "sha256": "ca80f05d03a4de9d12feb7176570c1a1eeebee7817928d616f1774e2340406f9",
+      "bytes": 223045
+    },
+    {
+      "file": "INFINITE-AI-TB-W19.html",
+      "widgetId": "TB-W19",
+      "version": "0.1.0",
+      "sha256": "5d1a81bc4cdb6e710221690edc2a27fa1a86a6be966b6c0061da69cf37569bf3",
+      "bytes": 223509
+    },
+    {
+      "file": "INFINITE-AI-TB-W20.html",
+      "widgetId": "TB-W20",
+      "version": "0.1.0",
+      "sha256": "734e8a31cba6ca08a54b61f94ed3a28cde89798897c377039a83e8fc65baf831",
+      "bytes": 223190
+    }
+  ]
+}

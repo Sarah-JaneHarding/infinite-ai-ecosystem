@@ -49,6 +49,15 @@ invents a value. `tenantId` is filled by the platform on ingest. Adapters exist 
    testing, editing to the school's template, ratification by that school's named person, then wiring.
 4. New platform features ship the same way; a school may decline.
 
+## Where the widgets live
+
+`widgets/` holds the built browser widgets (80 files in `widgets/built/`), the Studio build kit (`widgets/studio-kit/`),
+the classroom-tool sources (`widgets/classroom-tools/`) and `widgets/MANIFEST.json`, a SHA-256 list of every built widget
+with its id and version. `pnpm widgets:manifest` rewrites the manifest after a deliberate change. The registry test
+`test/widget-files.spec.ts` fails when a file and the manifest disagree, and checks that TB-W14 to TB-W20 make no network
+call, run no dynamic code, load nothing from outside and use no microphone. `src/catalogue.ts` holds the classroom toolbox
+catalogue as typed data. Hosting, size and build reproducibility are OQ-044.
+
 ## What this design will not do until decided
 
 - Show a widget to other schools unless school-specific information was removed and a person confirmed it (OQ-037, decided).

@@ -637,3 +637,35 @@ Checked while ingesting the supplied Provider Setup Guide and Provider Hub again
    not work end to end. Test it against a real resource before telling a school to use it.
 4. **Price card.** The billing code, `docs/COST_MODEL.md` and `docs/financial-model.html` carry different price cards.
    **Needs a human:** choose one, then update `packages/billing/src/tiers.ts` and the documents together.
+
+### OQ-044 — where the browser widgets are hosted, and whether 15 MB of generated HTML belongs in this public repo · 2026-11-10
+
+Ingesting the Studio, the Wiring Board and the classroom tools put 80 single-file widgets (about 15 MB) under `widgets/built/`,
+with a SHA-256 manifest and a test that fails if a file and the manifest disagree. This repository is public.
+
+1. **Size and review.** Each widget is generated markup of 100 to 450 KB. A diff of one is not reviewable by eye; the hash
+   check proves a file is the one that was supplied, not that it is correct. **Needs a human:** keep the built files in this
+   repo, or keep them in a private store (a release asset or bucket) with only the manifest in git?
+2. **Not reproducible from git.** `widgets/studio-kit/build_studio.py` and `tcls.py` read from the author's machine paths
+   (`/home/claude/widgets/dist`, `/mnt/user-data/...`). They are kept as supplied, as the record of how the files were made.
+   The widgets' own source before the Studio layer is not in this repo (only the 39 base widgets that arrived already built).
+   **Needs a human:** supply the widget sources so the build can run from a clean checkout, or accept the built files as the
+   source of truth.
+3. **Serving.** Nothing serves `widgets/` yet. Schools open the files from disk or from the platform. **Needs a human:** where
+   do schools get them, and under whose sign-in (OQ-038)?
+
+### OQ-045 — classroom toolbox: order of the next batch, and the microphone meter · 2026-11-10
+
+`docs/TOOLBOX_CATALOGUE.md` (64 tools; 12 built, 17 P1, 18 P2, 10 P3, 7 not to be built) is now data in
+`packages/widget-registry/src/catalogue.ts`. Two things need a decision before the next batch:
+
+1. **T14 sound level meter** needs the microphone. The supplied catalogue marks it P3 and would measure level only and record
+   nothing. The classroom kit's Noise Levels tool (TB-W19) deliberately uses no microphone, and a test now enforces that for
+   TB-W14 to TB-W20. **Needs a human:** confirm the microphone stays out, or write the consent and notice design first.
+2. **Build order.** The 17 P1 tools are listed in `docs/TOOLBOX_CATALOGUE.md`. **Needs a human:** confirm the order, or say
+   which three to build first. T09 (school terms) is held until a ratified DBE source is supplied.
+
+### OQ-046 — where `staleAfterDays` lives and who may change it · 2026-11-10
+
+AC-11 treats a source as stale after a number of days. **Needs a human:** is that a platform constant or a per-school setting,
+and if it is a school setting, which role may change it and does the change need ratification?
