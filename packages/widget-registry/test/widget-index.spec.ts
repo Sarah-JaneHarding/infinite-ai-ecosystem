@@ -69,3 +69,33 @@ describe('classroom tools TB-W14 to TB-W20', () => {
     }
   });
 });
+
+describe('toolbox catalogue', () => {
+  const catalogue = JSON.parse(
+    readFileSync(
+      join(__dirname, '..', '..', '..', 'docs', 'data', 'toolbox-catalogue.json'),
+      'utf8',
+    ),
+  ) as { tools: { id: string; priority: string; note: string }[] };
+
+  it('has 64 tools with the stated split', () => {
+    const n = (p: string): number =>
+      catalogue.tools.filter((t) => t.priority === p).length;
+    expect(catalogue.tools).toHaveLength(64);
+    expect([n('BUILT'), n('P1'), n('P2'), n('P3'), n('NO')]).toEqual([12, 17, 18, 10, 7]);
+  });
+
+  it('only names widgets that exist in the archive', () => {
+    const ids = new Set(index.widgets.map((w) => w.widgetId));
+    for (const t of catalogue.tools) {
+      for (const ref of t.note.match(/TB-W\d{2}/g) ?? [])
+        expect(ids.has(ref), `${t.id} ${ref}`).toBe(true);
+    }
+  });
+
+  it('points every BUILT tool at a widget or the shared classroom kit', () => {
+    for (const t of catalogue.tools.filter((x) => x.priority === 'BUILT')) {
+      expect(/TB-W\d{2}|classroom kit/.test(t.note), t.id).toBe(true);
+    }
+  });
+});
