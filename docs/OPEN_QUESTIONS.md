@@ -710,7 +710,7 @@ Recorded from the owner's instructions. Each is a decision, not yet built unless
 | D-4    | Pilot schools #2 and #3 are deferred until pre-pilot testing with school #1 is complete.                                                                         |
 | D-5    | Founder salary R35,000 per month during the pre-pilot and pilot phases, half-time commitment. Reviewed after the pilot phase.                                    |
 | D-6    | Voluntary VAT registration from launch, subject to the accountant.                                                                                               |
-| OQ-033 | Build first. Steps 2 and 3a are in pull requests that need rebasing and renumbering (Stage 114 is already used by AC-11).                                        |
+| OQ-033 | Build first. Built: provisioning steps 1 to 3b, in Stages 112, 113 and 115 to 119 (the `NULL` gap in `user_invitation.roles` closed in Stage 119).               |
 | OQ-036 | Build second. Correct `SECURITY.md` section 7. Keycloak OTP and email verification, with a drift test.                                                           |
 | OQ-016 | December-holiday labelling sprint with Primary school staff. Two people label a sample to measure agreement.                                                     |
 | OQ-017 | Apply Terraform to a small staging environment in Nov-Dec, then run k6.                                                                                          |
