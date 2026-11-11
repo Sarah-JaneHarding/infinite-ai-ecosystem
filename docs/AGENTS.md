@@ -29,7 +29,7 @@ failure, not a warning.
 
 ## 3. The agent roster
 
-Fifty-five agents across five modules plus the Learning Engine. Each is documented here as
+Fifty-six agents across five modules plus the Learning Engine. Each is documented here as
 it is built; the table below is the plan, not a claim of completion.
 
 ### MOD-01 Curriculum Engine — Stage 08
@@ -258,18 +258,19 @@ memory.
 
 ### MOD-02 Support Analytics Centre — Stage 10
 
-| ID    | Agent                | Output                                                              |
-| ----- | -------------------- | ------------------------------------------------------------------- |
-| AC-01 | Universal Screener   | Termly screen: literacy, numeracy, attendance, behaviour, wellbeing |
-| AC-02 | Core-Health Analyst  | Is Tier 1 sufficient for ≥ 80%? Blocks mass referral when not       |
-| AC-03 | Tier Recommender     | Proposed tier with the evidence that justified it                   |
-| AC-04 | Early Warning Agent  | Daily risk signals                                                  |
-| AC-05 | Intervention Planner | Goal, strategy, dosage, duration, owner                             |
-| AC-06 | Progress Monitor     | Trend line against goal line; continue / intensify / exit           |
-| AC-07 | Fidelity Checker     | Did the intervention run as planned                                 |
-| AC-08 | SBST Meeting Scribe  | Agenda, minutes, decisions, next steps                              |
-| AC-09 | SIAS Compiler        | Support-needs documentation pack for referral                       |
-| AC-10 | Parent Report Writer | Plain-language progress letters in the family's home language       |
+| ID    | Agent                   | Output                                                              |
+| ----- | ----------------------- | ------------------------------------------------------------------- |
+| AC-01 | Universal Screener      | Termly screen: literacy, numeracy, attendance, behaviour, wellbeing |
+| AC-02 | Core-Health Analyst     | Is Tier 1 sufficient for ≥ 80%? Blocks mass referral when not       |
+| AC-03 | Tier Recommender        | Proposed tier with the evidence that justified it                   |
+| AC-04 | Early Warning Agent     | Daily risk signals                                                  |
+| AC-05 | Intervention Planner    | Goal, strategy, dosage, duration, owner                             |
+| AC-06 | Progress Monitor        | Trend line against goal line; continue / intensify / exit           |
+| AC-07 | Fidelity Checker        | Did the intervention run as planned                                 |
+| AC-08 | SBST Meeting Scribe     | Agenda, minutes, decisions, next steps                              |
+| AC-09 | SIAS Compiler           | Support-needs documentation pack for referral                       |
+| AC-10 | Parent Report Writer    | Plain-language progress letters in the family's home language       |
+| AC-11 | Analytics Data Screener | Is a rollup fit to report on: fresh, covered, large enough          |
 
 **AC-02 gates AC-03.** If core health fails for a class, tier recommendations for that
 class are suppressed and a Tier 1 improvement task is raised instead.
@@ -516,6 +517,38 @@ at or below `targetReadabilityGrade + 1` Flesch-Kincaid grade level.
 never uses diagnostic or clinical language, never names the learner, and never quotes raw
 percentile scores — the trend is translated into everyday language. All evidence IDs pass
 through unchanged.
+
+#### AC-11 — Analytics Data Screener
+
+| Field           | Value                                                                                                                                                                                                                                                                |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Module          | MOD-02                                                                                                                                                                                                                                                               |
+| Purpose         | `reporting_district`                                                                                                                                                                                                                                                 |
+| Input           | `AC11Input`: tenantId, reportScope (class / grade / school), scopeId, termId, learnerCount, coveredDomains[], mostRecentDataAgeInDays, **staleAfterDays** (the school's own threshold, integer ≥ 1, no platform default), hasSuppressionFlag, evidenceIds[]          |
+| Output          | `AC11Result`: `{ status: "ready", screenId, reportScope, scopeId, termId, learnerCount, coveredDomainCount, evidenceIds[] }` · `{ status: "suppressed", suppressionReason: "cohort_too_small" or "sub_bucket_suppressed", … }` · `{ status: "needs_input", detail }` |
+| Model           | `analytics.screen`                                                                                                                                                                                                                                                   |
+| Guardrails      | `pii_guard`                                                                                                                                                                                                                                                          |
+| Budget          | 600 tokens · $0.001 per run                                                                                                                                                                                                                                          |
+| Eval set        | `AC-11` (25 cases: ready at class, grade and school scope; boundaries at 5 learners and at data age equal to the threshold; school-set thresholds; duplicate domains counted once; suppression; fixed check order; instruction text inside an evidence id)           |
+| Approval gate   | None — it screens a snapshot and releases nothing to a person                                                                                                                                                                                                        |
+| Writes to Brain | No — a screen result is a gate decision, not a versioned fact                                                                                                                                                                                                        |
+| Prompt          | `packages/prompts/src/AC-11/1.1.0.prompt.md`                                                                                                                                                                                                                         |
+| Contract        | `packages/agents/src/mod-02/AC-11.contract.ts`                                                                                                                                                                                                                       |
+| Rules           | `packages/analytics/src/data-screener.ts` (`screenRollup`)                                                                                                                                                                                                           |
+
+AC-11 is the pre-flight check before an `analytics.report` run. Checks run in a fixed
+order and the first that applies decides: (1) stale: `mostRecentDataAgeInDays >
+staleAfterDays` gives `needs_input` / `DATA_STALE`; (2) coverage: no distinct domain
+gives `needs_input` / `NO_DOMAIN_DATA`; (3) suppression: fewer than `MIN_COHORT_SIZE` (5)
+learners gives `suppressed` / `cohort_too_small`, otherwise a sub-bucket flag gives
+`suppressed` / `sub_bucket_suppressed` (both together report `cohort_too_small`); (4)
+otherwise `ready`. The staleness threshold belongs to each school; the platform supplies
+no default. A domain listed twice counts once. Output fields are codes and ids only, and
+the tenant id is never echoed.
+
+**Not yet in a pipeline.** The `analytics.report` agent it is meant to gate does not exist
+yet, so nothing calls AC-11 in production. Whoever builds that pipeline must read the
+school's staleness setting and pass it as `staleAfterDays`.
 
 ### MOD-03 Data Collection & Warehouse — Stage 09
 

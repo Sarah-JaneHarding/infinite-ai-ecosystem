@@ -11173,3 +11173,42 @@ or the audit chain); the database lock for the race is step 3.
 | No self-grant; no platform / guardian / learner role; confirmation rule | PASS (tests)      |
 | Last administrator cannot be removed by a single change                 | PASS (exhaustive) |
 | Last administrator safe under concurrency                               | OPEN (step 3)     |
+## Stage 114 — AC-11 Analytics Data Screener completed (OPQ-005)
+
+**Task.** AC-11 had a contract file but no export, no worker registration, no executor, no eval set and no champion,
+so the roster said 55 agents while 56 contract files existed. Decision from the owner: the 45-day staleness figure
+was a demo value, and each school sets its own.
+
+**What changed.**
+
+- `packages/analytics`: `AC11Input` gains a required `staleAfterDays` (integer ≥ 1, no default). New pure
+  `screenRollup` in `data-screener.ts` holds the rules (stale, then coverage, then suppression, then ready); distinct
+  domains are counted once.
+- `packages/prompts`: `AC-11/1.1.0.prompt.md` (no hardcoded 45; distinct-domain rule). 1.0.0 is untouched; one new
+  `prompt-lock.json` entry. The contract's `promptRef` points at 1.1.0.
+- `packages/agents`: `AC11Contract` exported; contract test file added.
+- `apps/worker`: `AC11Contract` registered. `scripts/register-ac-executors.ts`: AC-11 executor calls `screenRollup`.
+- `packages/evals`: `sets/AC-11/data-screener.json` (25 cases, 6 adversarial, 4 must-not-regress) and
+  `champions/AC-11.json`.
+- Docs: `docs/AGENTS.md` roster row, detail block, "Fifty-six"; `docs/FREE_LOCAL_TESTING.md` "56 agents".
+
+**Not added.** No pipeline step: the `analytics.report` agent it would gate does not exist. The schema cannot express
+a `json_schema` expectation in a JSON eval file (it takes a Zod instance), so schema conformance is covered in the
+analytics unit tests instead.
+
+**Tests.** analytics: 23 new (`data-screener.spec.ts`); agents: 12 new (suite 460 to 472); prompts lock test passes.
+AC-11 eval set 25/25 and the eval gate passes. Mutation-checked: re-hardcoding 45, counting duplicate domains twice and
+checking suppression before staleness each fail the set. All 56 eval sets before and after: identical except the new
+AC-11 line. eslint and prettier clean.
+
+**Not verified.** `prisma generate` was blocked in the authoring sandbox, so `pnpm evals:run` / `evals:promote` were not
+run as written; an equivalent run of the same harness for AC-11 produced the champion, using a local stub for the
+Prisma client. Re-run `pnpm evals:run --agent AC-11` and expect 25/25.
+
+| Exit gate item                                            | Result                     |
+| --------------------------------------------------------- | -------------------------- |
+| Contract exported, registered in the worker               | PASS (tests)               |
+| Executor calls the real rules function                    | PASS                       |
+| Eval set and champion present, gate passes                | PASS (equivalent harness)  |
+| Real `pnpm evals:run --agent AC-11` with Prisma generated | NOT RUN                    |
+| AC-11 in a reporting pipeline                             | OPEN (no report agent yet) |

@@ -228,16 +228,14 @@ export async function driveRun(
 ): Promise<RunInspection> {
   const deadline = ports.now() + options.timeoutMs;
   let skipped = 0;
-  let last: RunInspection | null = null;
   for (;;) {
     skipped += await ports.advance();
     const run = await ports.read();
     if (run === null)
       throw new PipelineRunnerError('The run disappeared while it was being driven.');
-    last = run;
     options.onUpdate(run, skipped);
     if (TERMINAL_RUN_STATUSES.includes(run.status)) return run;
-    if (ports.now() >= deadline) return last;
+    if (ports.now() >= deadline) return run;
     await ports.sleep(options.pollMs);
   }
 }

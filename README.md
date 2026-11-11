@@ -99,3 +99,5 @@ This is not yet pilot-ready. A number of items are blocked on a human decision o
 credential this build cannot supply itself — a paging integration for safeguarding
 escalation, LLM-judge calibration data, load-test results from a live environment, and
 identifying actual pilot schools among them — tracked in `docs/OPEN_QUESTIONS.md`.
+
+ 

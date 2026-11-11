@@ -1,0 +1,1999 @@
+<!doctype html>
+<html lang="en-ZA"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PD-W10 CPTD Tick Sheet &amp; Year Totals · INFINITE-AI</title>
+<style>:root{--ink:#05070F;--panel:#0C1224;--panel2:#111A36;--violet:#7C5CFF;--cyan:#2DD4BF;--gold:#F5B841;--rose:#FB7185;--text:#E9EDF8;--muted:#8FA0C2;--line:rgba(143,160,194,.22);--arc:linear-gradient(90deg,#7C5CFF,#2DD4BF);--head:"Space Grotesk",system-ui,sans-serif;--body:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--text);font:15px/1.55 var(--body)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 80px}
+header.top{position:sticky;top:0;z-index:20;background:rgba(5,7,15,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mark{width:44px;height:22px;flex:none}
+.ttl{font:600 1.05rem var(--head);margin:0}
+.sp{flex:1}
+.chip{display:inline-block;font:600 .66rem var(--body);letter-spacing:.12em;text-transform:uppercase;padding:.2rem .55rem;border-radius:99px;border:1px solid var(--line);color:var(--muted);max-width:100%}
+.chip.v{color:#b7a6ff;border-color:rgba(124,92,255,.5)}.chip.c{color:var(--cyan);border-color:rgba(45,212,191,.5)}.chip.g{color:var(--gold);border-color:rgba(245,184,65,.5)}.chip.r{color:var(--rose);border-color:rgba(251,113,133,.5)}
+.syn{background:rgba(245,184,65,.12)}
+h1{font:700 clamp(1.6rem,4vw,2.3rem) var(--head);margin:1.4rem 0 .2rem;letter-spacing:-.01em}
+h1 .arc{background:var(--arc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);max-width:70ch;margin:.2rem 0 1rem}
+.tag{font:italic 500 .85rem var(--head);color:var(--gold)}
+section.zone{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:16px 0}
+section.zone>h2{font:600 .7rem var(--body);letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 .8rem}
+h3{font:600 1rem var(--head);margin:1rem 0 .4rem}
+button,.btn{font:600 .85rem var(--body);color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:.5rem .85rem;cursor:pointer;min-height:38px}
+button:hover{border-color:var(--violet)}
+button.pri{background:var(--arc);color:#05070F;border:0}
+button.ok{border-color:rgba(45,212,191,.6);color:var(--cyan)}button.no{border-color:rgba(251,113,133,.6);color:var(--rose)}button.ed{border-color:rgba(245,184,65,.6);color:var(--gold)}
+button:disabled{opacity:.4;cursor:not-allowed}
+input,select,textarea{font:inherit;color:var(--text);background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:.5rem .65rem;max-width:100%}
+textarea{width:100%;min-height:120px;font:.8rem/1.45 ui-monospace,Menlo,Consolas,monospace}
+label{font-size:.82rem;color:var(--muted);display:block;margin:.5rem 0 .2rem}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.cap{font-size:.8rem;color:var(--muted)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.84rem}
+th,td{text-align:left;padding:.5rem .65rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 .62rem var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+code,pre{font:.78rem ui-monospace,Menlo,Consolas,monospace}
+pre{background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;overflow:auto;max-height:340px;margin:.4rem 0;white-space:pre-wrap;word-break:break-word}
+.pass{color:var(--cyan)}.fail{color:var(--rose)}.warn{color:var(--gold)}
+.drop{border:1.5px dashed var(--line);border-radius:12px;padding:12px;text-align:center;font-size:.85rem;color:var(--muted);transition:.15s}
+.drop.over{border-color:var(--violet);background:rgba(124,92,255,.08)}
+.drop b{display:block;margin-bottom:2px}
+.dec{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border:1px solid rgba(245,184,65,.4);border-radius:12px;background:rgba(245,184,65,.06)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+details{margin:.4rem 0}summary{cursor:pointer;color:var(--muted);font-size:.85rem}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--violet);padding:.5rem .9rem;border-radius:10px;z-index:50;font-size:.85rem}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:2px 12px;font-size:.84rem}.kv dt{color:var(--muted)}.kv dd{margin:0;word-break:break-word}
+@media print{header.top button,.dec,.drop{display:none}body{background:#fff;color:#000}}
+ .cardx{display:inline-block;border:2px solid #111;background:#fff;color:#111;width:120px;height:120px;margin:6px;position:relative;font-family:Arial}.cardx b{position:absolute;font-size:22px}.cardx .t{top:2px;left:50%;transform:translateX(-50%)}.cardx .r{right:6px;top:50%;transform:translateY(-50%) rotate(90deg)}.cardx .b{bottom:2px;left:50%;transform:translateX(-50%) rotate(180deg)}.cardx .l{left:6px;top:50%;transform:translateY(-50%) rotate(-90deg)}.cardx i{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-style:normal;font-size:30px;color:#888}@media print{.cardx{page-break-inside:avoid}}</style></head><body><div id="app"></div>
+<script type="application/json" id="iai-manifest">
+{
+ "widgetId": "PD-W10",
+ "version": "0.1.0",
+ "module": "MOD-05 Teaching Analytics & PD Studio",
+ "name": "CPTD Tick Sheet & Year Totals",
+ "agentId": "PD-10",
+ "humanGate": {
+  "role": "PD coordinator",
+  "roles": [
+   "PD coordinator",
+   "Teacher"
+  ]
+ },
+ "inputSchema": {
+  "type": "object",
+  "required": [
+   "upText",
+   "teacherCode",
+   "ticksText"
+  ],
+  "properties": {
+   "upText": {
+    "type": "string"
+   },
+   "teacherCode": {
+    "type": "string"
+   },
+   "ticksText": {
+    "type": "string"
+   }
+  }
+ },
+ "outputSchema": {
+  "type": "object",
+  "properties": {
+   "flags": {
+    "type": "array"
+   }
+  }
+ },
+ "upstream": {
+  "events": [
+   "pd.schedule.registered"
+  ],
+  "requiredPayload": []
+ },
+ "ingest": [],
+ "templateSlots": [],
+ "sources": [],
+ "acceptsEvents": [
+  "pd.schedule.registered"
+ ],
+ "emits": [
+  "pd.cptd.ticks.approved"
+ ],
+ "popia": {
+  "purpose": "Work out one teacher's CPTD points from ticks against the registered schedule, exactly as the school's tick-sheet workbook does: points by type and year, pace against the yearly target, and whether all three types have entries. Staff code only, never a name. Points are claimed, not yet evidenced.",
+  "personalInfo": false,
+  "retention": "Nothing is kept. Download the approved output before closing the page."
+ }
+}
+</script>
+<script>/* INFINITE-AI widget kit, part 1: utilities, PII scan, diff, zip, file reading */
+(function () {
+  'use strict';
+  var IAI = window.IAI = window.IAI || {};
+  IAI.LABELS = ['SOURCE DOCUMENT', 'SCHOOL TEMPLATE', 'OUTPUT EXAMPLE'];
+  var $ = IAI.$ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = IAI.$$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
+  var esc = IAI.esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  IAI.toast = function (m) { var t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = m; document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2600); };
+  IAI.uid = function (p) { return (p || 'id') + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7); };
+  IAI.nowIso = function () { return new Date().toISOString(); };
+  IAI.hash32 = function (s) { s = String(s); var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ('00000000' + (h >>> 0).toString(16)).slice(-8); };
+  IAI.stable = function (o) { if (o === null || typeof o !== 'object') return JSON.stringify(o); if (Array.isArray(o)) return '[' + o.map(IAI.stable).join(',') + ']'; return '{' + Object.keys(o).sort().map(function (k) { return JSON.stringify(k) + ':' + IAI.stable(o[k]); }).join(',') + '}'; };
+  IAI.sha256 = function (buf) { return crypto.subtle.digest('SHA-256', buf).then(function (d) { return [].map.call(new Uint8Array(d), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }); };
+  IAI.clone = function (o) { return o === undefined ? undefined : JSON.parse(JSON.stringify(o)); };
+  IAI.download = function (name, text, type) { var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: type || 'application/json' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
+  IAI.copy = function (t) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { IAI.toast('Copied'); }, function () { var ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); IAI.toast('Copied'); } catch (e) { IAI.toast('Copy failed'); } ta.remove(); }); };
+
+  /* ---------- path helpers and diff ---------- */
+  IAI.flatten = function (o, pre, out) {
+    out = out || {}; pre = pre || '';
+    if (o !== null && typeof o === 'object') {
+      var keys = Array.isArray(o) ? o.map(function (_, i) { return i; }) : Object.keys(o);
+      if (!keys.length) out[pre || '$'] = Array.isArray(o) ? [] : {};
+      keys.forEach(function (k) { IAI.flatten(o[k], pre ? pre + (Array.isArray(o) ? '[' + k + ']' : '.' + k) : (Array.isArray(o) ? '[' + k + ']' : String(k)), out); });
+    } else out[pre || '$'] = o;
+    return out;
+  };
+  IAI.diffObjects = function (a, b) {
+    var fa = IAI.flatten(a), fb = IAI.flatten(b), out = [];
+    Object.keys(fa).forEach(function (k) { if (!(k in fb)) out.push({ path: k, change: 'removed', before: fa[k], after: undefined }); else if (JSON.stringify(fa[k]) !== JSON.stringify(fb[k])) out.push({ path: k, change: 'changed', before: fa[k], after: fb[k] }); });
+    Object.keys(fb).forEach(function (k) { if (!(k in fa)) out.push({ path: k, change: 'added', before: undefined, after: fb[k] }); });
+    return out;
+  };
+  IAI.stringValues = function (o) { var f = IAI.flatten(o), out = []; Object.keys(f).forEach(function (k) { if (typeof f[k] === 'string') out.push({ path: k, value: f[k] }); }); return out; };
+  IAI.getPath = function (o, path) { var parts = String(path).replace(/\[(\d+)\]/g, '.$1').split('.').filter(Boolean), cur = o; for (var i = 0; i < parts.length; i++) { if (cur == null) return undefined; cur = cur[parts[i]]; } return cur; };
+  IAI.setPath = function (o, path, val) { var parts = String(path).replace(/\[(\d+)\]/g, '.$1').split('.').filter(Boolean), cur = o; for (var i = 0; i < parts.length - 1; i++) { if (cur[parts[i]] == null) cur[parts[i]] = /^\d+$/.test(parts[i + 1]) ? [] : {}; cur = cur[parts[i]]; } cur[parts[parts.length - 1]] = val; return o; };
+  IAI.delPath = function (o, path) { var parts = String(path).replace(/\[(\d+)\]/g, '.$1').split('.').filter(Boolean), cur = o; for (var i = 0; i < parts.length - 1; i++) { if (cur == null) return o; cur = cur[parts[i]]; } if (cur != null) { if (Array.isArray(cur)) cur.splice(+parts[parts.length - 1], 1); else delete cur[parts[parts.length - 1]]; } return o; };
+  IAI.lineDiff = function (a, b) { /* LCS line diff */
+    var x = String(a).split('\n'), y = String(b).split('\n'), n = x.length, m = y.length;
+    if (n * m > 4e6) return [{ t: 'chg', a: 'Text too large for a line diff', b: '' }];
+    var L = [], i, j; for (i = 0; i <= n; i++) { L.push(new Array(m + 1).fill(0)); }
+    for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--) L[i][j] = x[i] === y[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    var out = []; i = 0; j = 0;
+    while (i < n && j < m) { if (x[i] === y[j]) { out.push({ t: 'same', a: x[i], b: y[j] }); i++; j++; } else if (L[i + 1][j] >= L[i][j + 1]) { out.push({ t: 'del', a: x[i++] }); } else { out.push({ t: 'add', b: y[j++] }); } }
+    while (i < n) out.push({ t: 'del', a: x[i++] }); while (j < m) out.push({ t: 'add', b: y[j++] });
+    return out;
+  };
+
+  /* ---------- personal-information scan ---------- */
+  var STOP = {}; ('January February March April May June July August September October November December Monday Tuesday Wednesday Thursday Friday Saturday Sunday Grade Term Week Day Mathematics Maths English Afrikaans Zulu Xhosa Life Skills Home Language First Additional Natural Sciences Social Technology Creative Arts Physical Education Department Basic Annual Teaching Plan Curriculum Foundation Phase Intermediate Senior South Africa African National Protocol Assessment Learner Learners Teacher Teachers Principal School Class Lesson Unit Topic Subject Source Document Template Output Example Widget Approval Gate Brain Memory Edit Capture Wiring Board Check Panel Ingester Slot Mapper Report Card Time Table Weekly Overview Daily Schedule Reflection Term Planner Year Planner Map Generator Designer Builder Version Versions Rubric Memo Differentiated Coverage Tracker Auditor Consent Purpose Register Import Field Quality Sentinel Marks Attendance Insight Next Step Early Warning Screening Tier Support Plan Referral Pack Parent Progress Letter Fidelity Log Monitor Meeting Scribe Reading Passage Worksheet Item Writer Slide Deck Adapter Remediation Extension Enrichment Activity Planner Visual Brief Quiz Card Rewards Learning Pacing Observation Notes Analyst Practice Signal Aggregator Gap Detector Course Composer Coaching Journal Platform Admin Demo Producer Consumer Fixture Fixtures Head Deputy Subject Advisor District Official Government Republic Policy Guidelines Policies Protection Personal Information Act Records Data Summary Total Mark Marks Sample Synthetic Test Bench Preview Self Check Pass Fail Open Close Save Load Add Remove Delete Edit Edited Draft Final Approved Rejected Pending Status Name Title Date Time Notes Comments Resources Introduction Consolidation Differentiation Assessment Objectives Outcomes Outcome Content Skills Concepts Activities Activity Reflection Evaluation Homework Revision Practice Exercise Exercises Question Questions Answer Answers Memorandum Page Pages Section Sections Chapter Chapters Part Parts Item Items').split(/\s+/).forEach(function (w) { if (w) STOP[w.toLowerCase()] = 1; });
+  function validSAId(s) { var yy = +s.slice(0, 2), mm = +s.slice(2, 4), dd = +s.slice(4, 6); if (mm < 1 || mm > 12 || dd < 1 || dd > 31) return false; var sum = 0; for (var i = 0; i < 13; i++) { var d = +s[12 - i]; if (i % 2 === 1) { d *= 2; if (d > 9) d -= 9; } sum += d; } return sum % 10 === 0; }
+  IAI.scanPII = function (text) {
+    text = String(text == null ? '' : text); var out = [], seen = {};
+    function add(type, sev, m) { var k = type + '|' + m; if (seen[k] || out.length > 40) return; seen[k] = 1; out.push({ type: type, severity: sev, match: m.length > 40 ? m.slice(0, 37) + '...' : m }); }
+    var re, m;
+    re = /\b\d{13}\b/g; while ((m = re.exec(text))) add(validSAId(m[0]) ? 'SA ID number' : '13-digit number (possible ID)', 'hard', m[0]);
+    re = /(?:\+27|0027|\b0)[\s-]?\(?\d{2}\)?[\s-]?\d{3}[\s-]?\d{4}\b/g; while ((m = re.exec(text))) add('Phone number', 'hard', m[0]);
+    re = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g; while ((m = re.exec(text))) add('Email address', 'hard', m[0]);
+    re = /\b\d{1,5}\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?\s+(?:Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Crescent|Close|Way)\b/g; while ((m = re.exec(text))) add('Street address', 'hard', m[0]);
+    re = /\b(?:Learner|Pupil|Student|Child|Parent|Guardian|Mother|Father|Caregiver|Name|Surname|First name|Teacher|Educator)(?:\s+name)?\s*[:=]\s*([A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+){0,2})/g; while ((m = re.exec(text))) { if (!STOP[m[1].split(' ')[0].toLowerCase()]) add('Name after a label', 'hard', m[0]); }
+    re = /\b(?:Mr|Mrs|Ms|Miss|Dr|Prof|Mx)\.?\s+[A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+)?/g; while ((m = re.exec(text))) add('Titled name', 'hard', m[0]);
+    re = /\b[A-Z][a-z]{2,}(?:\s+[A-Z][a-z]{2,}){1,2}\b/g; while ((m = re.exec(text))) { var ws = m[0].split(/\s+/); if (ws.some(function (w) { return STOP[w.toLowerCase()]; })) continue; add('Possible name (please check)', 'soft', m[0]); }
+    return out;
+  };
+  IAI.hardPII = function (list) { return list.filter(function (x) { return x.severity === 'hard'; }); };
+  IAI.scanInput = function (o) { var all = []; IAI.stringValues(o).forEach(function (sv) { IAI.scanPII(sv.value).forEach(function (f) { f.path = sv.path; all.push(f); }); }); return all; };
+
+  /* ---------- zip ---------- */
+  function inflateRaw(u8, fmt) { return new Response(new Blob([u8]).stream().pipeThrough(new DecompressionStream(fmt || 'deflate-raw'))).arrayBuffer().then(function (b) { return new Uint8Array(b); }); }
+  IAI.inflate = inflateRaw;
+  IAI.unzip = function (buf) {
+    var u8 = new Uint8Array(buf), dv = new DataView(buf), i = u8.length - 22;
+    while (i >= 0 && dv.getUint32(i, true) !== 0x06054b50) i--;
+    if (i < 0) return Promise.reject(new Error('Not a zip file'));
+    var n = dv.getUint16(i + 10, true), p = dv.getUint32(i + 16, true), ents = {}, names = [], dec = new TextDecoder();
+    for (var k = 0; k < n; k++) {
+      if (dv.getUint32(p, true) !== 0x02014b50) break;
+      var method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true), nlen = dv.getUint16(p + 28, true), elen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true), lho = dv.getUint32(p + 42, true), name = dec.decode(u8.subarray(p + 46, p + 46 + nlen));
+      ents[name] = { method: method, csize: csize, lho: lho }; if (name.slice(-1) !== '/') names.push(name); p += 46 + nlen + elen + clen;
+    }
+    return Promise.resolve({
+      names: names,
+      get: function (name) { var e = ents[name]; if (!e) return Promise.resolve(null); var nl = dv.getUint16(e.lho + 26, true), el = dv.getUint16(e.lho + 28, true), s = e.lho + 30 + nl + el, d = u8.subarray(s, s + e.csize); return e.method === 0 ? Promise.resolve(d) : inflateRaw(d); },
+      getText: function (name) { return this.get(name).then(function (d) { return d ? new TextDecoder('utf-8').decode(d) : null; }); }
+    });
+  };
+
+  /* ---------- file reading ---------- */
+  function ext(n) { var m = /\.([A-Za-z0-9]+)$/.exec(n || ''); return m ? m[1].toLowerCase() : ''; }
+  function xml(s) { return new DOMParser().parseFromString(s, 'application/xml'); }
+  function kids(el, tag) { return [].filter.call(el.children, function (c) { return c.nodeName === tag; }); }
+  function tt(el) { return el ? el.textContent : ''; }
+  var PH = /\{\{\s*([^}]+?)\s*\}\}|\[([A-Za-z][A-Za-z0-9 /&'-]{1,40})\]|<<\s*([^>]+?)\s*>>/g;
+  function structFromText(text, struct) {
+    struct = struct || {}; struct.placeholders = struct.placeholders || []; var m;
+    PH.lastIndex = 0; while ((m = PH.exec(text))) { var v = (m[1] || m[2] || m[3]).trim(); if (struct.placeholders.indexOf(v) < 0) struct.placeholders.push(v); }
+    struct.labels = struct.labels || []; text.split('\n').forEach(function (l) { var mm = /^\s*([A-Z][A-Za-z0-9 \/&()'-]{2,40}?)\s*:\s*(?:_{2,}|\.{3,}|…+)?\s*$/.exec(l); if (mm && struct.labels.indexOf(mm[1]) < 0) struct.labels.push(mm[1]); });
+    return struct;
+  }
+  function wrapDocx(zip) {
+    return zip.getText('word/document.xml').then(function (s) {
+      if (!s) throw new Error('No word/document.xml'); var d = xml(s), body = d.getElementsByTagName('w:body')[0], lines = [], heads = [], tables = [];
+      function ptext(p) { var t = ''; [].forEach.call(p.getElementsByTagName('*'), function (e) { if (e.nodeName === 'w:t') t += e.textContent; else if (e.nodeName === 'w:tab') t += '\t'; else if (e.nodeName === 'w:br') t += '\n'; }); return t; }
+      [].forEach.call(body ? body.children : [], function (c) {
+        if (c.nodeName === 'w:p') { var t = ptext(c), st = c.getElementsByTagName('w:pStyle')[0], sv = st ? (st.getAttribute('w:val') || '') : '', hm = /^(?:Heading|heading)\s*(\d)/.exec(sv) || (/^Title$/i.test(sv) ? [0, 1] : null); if (t.trim()) { lines.push(t); if (hm) heads.push({ level: +hm[1], text: t.trim() }); } }
+        else if (c.nodeName === 'w:tbl') { var rows = []; [].forEach.call(c.getElementsByTagName('w:tr'), function (tr) { var cells = []; [].forEach.call(tr.children, function (tc) { if (tc.nodeName === 'w:tc') cells.push([].map.call(tc.getElementsByTagName('w:p'), ptext).join(' ').trim()); }); rows.push(cells); }); tables.push({ rows: rows }); rows.forEach(function (r) { lines.push(r.join(' | ')); }); }
+      });
+      var text = lines.join('\n'); return { text: text, structure: structFromText(text, { headings: heads, tables: tables }) };
+    });
+  }
+  function colIdx(ref) { var m = /^([A-Z]+)/.exec(ref || ''); if (!m) return 0; var n = 0; for (var i = 0; i < m[1].length; i++) n = n * 26 + m[1].charCodeAt(i) - 64; return n - 1; }
+  function wrapXlsx(zip) {
+    return zip.getText('xl/sharedStrings.xml').then(function (ss) {
+      var shared = []; if (ss) { [].forEach.call(xml(ss).getElementsByTagName('si'), function (si) { shared.push([].map.call(si.getElementsByTagName('t'), tt).join('')); }); }
+      return zip.getText('xl/workbook.xml').then(function (wb) {
+        var names = []; if (wb) [].forEach.call(xml(wb).getElementsByTagName('sheet'), function (s) { names.push(s.getAttribute('name')); });
+        var files = zip.names.filter(function (n) { return /^xl\/worksheets\/sheet\d+\.xml$/.test(n); }).sort(function (a, b) { return parseInt(a.match(/\d+/)[0]) - parseInt(b.match(/\d+/)[0]); });
+        return Promise.all(files.map(function (f) { return zip.getText(f); })).then(function (xs) {
+          var sheets = [], lines = [];
+          xs.forEach(function (x, i) {
+            var rows = []; [].forEach.call(xml(x).getElementsByTagName('row'), function (r, ri) { if (ri > 300) return; var arr = []; [].forEach.call(r.getElementsByTagName('c'), function (c) { var v = c.getElementsByTagName('v')[0], t = c.getAttribute('t'), val = ''; if (t === 's' && v) val = shared[+v.textContent] || ''; else if (t === 'inlineStr') val = tt(c); else if (v) val = v.textContent; arr[colIdx(c.getAttribute('r'))] = val; }); rows.push(Array.from(arr, function (x) { return x == null ? '' : x; })); });
+            var nm = names[i] || ('Sheet' + (i + 1)); sheets.push({ name: nm, rows: rows }); lines.push('## ' + nm); rows.forEach(function (r) { if (r.some(Boolean)) lines.push(r.join(' | ')); });
+          });
+          var text = lines.join('\n'); return { text: text, structure: structFromText(text, { sheets: sheets, headers: sheets.length && sheets[0].rows.length ? sheets[0].rows.find(function (r) { return r.some(Boolean); }) || [] : [] }) };
+        });
+      });
+    });
+  }
+  function wrapPptx(zip) {
+    var files = zip.names.filter(function (n) { return /^ppt\/slides\/slide\d+\.xml$/.test(n); }).sort(function (a, b) { return parseInt(a.match(/\d+/)[0]) - parseInt(b.match(/\d+/)[0]); });
+    return Promise.all(files.map(function (f) { return zip.getText(f); })).then(function (xs) {
+      var slides = [], lines = []; xs.forEach(function (x, i) {
+        var d = xml(x), texts = [], title = '';
+        [].forEach.call(d.getElementsByTagName('p:sp'), function (sp) { var ph = sp.getElementsByTagName('p:ph')[0], isT = ph && /title/i.test(ph.getAttribute('type') || ''); var ps = [].map.call(sp.getElementsByTagName('a:p'), function (p) { return [].map.call(p.getElementsByTagName('a:t'), tt).join(''); }).filter(Boolean); if (isT && ps.length && !title) title = ps.join(' '); ps.forEach(function (p) { texts.push(p); }); });
+        if (!title && texts.length) title = texts[0]; slides.push({ n: i + 1, title: title, texts: texts }); lines.push('## Slide ' + (i + 1) + (title ? ': ' + title : '')); texts.forEach(function (t) { lines.push(t); });
+      });
+      var text = lines.join('\n'); return { text: text, structure: structFromText(text, { slides: slides, headings: slides.map(function (s) { return { level: 1, text: s.title }; }).filter(function (h) { return h.text; }) }) };
+    });
+  }
+  function wrapOdf(zip) {
+    return zip.getText('content.xml').then(function (s) {
+      if (!s) throw new Error('No content.xml'); var d = xml(s), lines = [], heads = [], tables = [];
+      var body = d.getElementsByTagName('office:body')[0] || d.documentElement;
+      (function walk(n) { [].forEach.call(n.children, function (c) { var nm = c.nodeName; if (nm === 'text:h') { var t = c.textContent.trim(); if (t) { lines.push(t); heads.push({ level: +(c.getAttribute('text:outline-level') || 1), text: t }); } } else if (nm === 'text:p') { var t2 = c.textContent.trim(); if (t2) lines.push(t2); } else if (nm === 'table:table') { var rows = []; [].forEach.call(c.getElementsByTagName('table:table-row'), function (tr, ri) { if (ri > 300) return; var cells = [].map.call(tr.getElementsByTagName('table:table-cell'), function (tc) { return tc.textContent.trim(); }); rows.push(cells); if (cells.some(Boolean)) lines.push(cells.join(' | ')); }); tables.push({ name: c.getAttribute('table:name'), rows: rows }); } else walk(c); }); })(body);
+      var text = lines.join('\n'); return { text: text, structure: structFromText(text, { headings: heads, tables: tables }) };
+    });
+  }
+  function wrapHtml(s) {
+    var d = new DOMParser().parseFromString(s, 'text/html'); [].forEach.call(d.querySelectorAll('script,style,noscript'), function (e) { e.remove(); });
+    var heads = [].map.call(d.querySelectorAll('h1,h2,h3,h4,h5,h6'), function (h) { return { level: +h.tagName[1], text: h.textContent.trim() }; }).filter(function (h) { return h.text; });
+    var tables = [].map.call(d.querySelectorAll('table'), function (t) { return { rows: [].map.call(t.rows, function (r) { return [].map.call(r.cells, function (c) { return c.textContent.trim(); }); }) }; });
+    [].forEach.call(d.querySelectorAll('p,div,li,tr,h1,h2,h3,h4,h5,h6,br'), function (e) { e.appendChild(d.createTextNode('\n')); });
+    var text = (d.body ? d.body.textContent : '').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+    return { text: text, structure: structFromText(text, { headings: heads, tables: tables }) };
+  }
+  function pdfText(buf) {
+    var u8 = new Uint8Array(buf), s = ''; for (var i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192));
+    if (/\/Encrypt\b/.test(s.slice(-4000))) return Promise.resolve('');
+    var objs = {}, re = /(\d+)\s+(\d+)\s+obj\b/g, m;
+    while ((m = re.exec(s))) { var st = re.lastIndex, en = s.indexOf('endobj', st); if (en < 0) en = s.length; var body = s.slice(st, en), sm = /\bstream\r?\n/.exec(body), o = { num: +m[1] }; if (sm) { o.dict = body.slice(0, sm.index); var a0 = st + sm.index + sm[0].length, a1 = s.indexOf('endstream', a0); if (a1 < 0) a1 = en; o.a = a0; o.b = a1; } else o.dict = body; objs[o.num] = o; re.lastIndex = en; }
+    function a85(u) { var t = ''; for (var i = 0; i < u.length; i++) t += String.fromCharCode(u[i]); var e = t.indexOf('~>'); if (e >= 0) t = t.slice(0, e); t = t.replace(/^\s*<~/, '').replace(/\s+/g, ''); var out = [], grp = [], k; for (k = 0; k < t.length; k++) { var c = t[k]; if (c === 'z' && !grp.length) { out.push(0, 0, 0, 0); continue; } grp.push(t.charCodeAt(k) - 33); if (grp.length === 5) { var v = 0; grp.forEach(function (g) { v = v * 85 + g; }); out.push((v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255); grp = []; } } if (grp.length > 1) { var n = grp.length; while (grp.length < 5) grp.push(84); var v2 = 0; grp.forEach(function (g) { v2 = v2 * 85 + g; }); var b4 = [(v2 >>> 24) & 255, (v2 >>> 16) & 255, (v2 >>> 8) & 255, v2 & 255]; for (k = 0; k < n - 1; k++) out.push(b4[k]); } return new Uint8Array(out); }
+    function hexd(u) { var t = ''; for (var i = 0; i < u.length; i++) t += String.fromCharCode(u[i]); t = t.replace(/>.*$/, '').replace(/\s+/g, ''); if (t.length % 2) t += '0'; var out = new Uint8Array(t.length / 2); for (var k = 0; k < out.length; k++) out[k] = parseInt(t.substr(k * 2, 2), 16); return out; }
+    var cache = {};
+    function bytesOf(o) { if (cache[o.num]) return cache[o.num]; if (o.a === undefined) return (cache[o.num] = Promise.resolve(null)); var raw = u8.subarray(o.a, o.b), fl = /\/Filter\s*(\[[^\]]*\]|\/\w+)/.exec(o.dict), names = fl ? (fl[1].match(/\/\w+/g) || []) : []; var p = Promise.resolve(raw); names.forEach(function (n) { p = p.then(function (d) { if (!d) return null; if (n === '/FlateDecode' || n === '/Fl') return inflateRaw(d, 'deflate').catch(function () { var d1 = d.subarray(0, d.length - 1); return inflateRaw(d1, 'deflate').catch(function () { return inflateRaw(d.subarray(0, d.length - 2), 'deflate').catch(function () { return null; }); }); }); if (n === '/ASCII85Decode' || n === '/A85') return a85(d); if (n === '/ASCIIHexDecode' || n === '/AHx') return hexd(d); return null; }); }); return (cache[o.num] = p); }
+    function latin(d) { var t = ''; for (var i = 0; i < d.length; i += 8192) t += String.fromCharCode.apply(null, d.subarray(i, Math.min(i + 8192, d.length))); return t; }
+    function textOf(o) { return bytesOf(o).then(function (d) { return d ? latin(d) : ''; }); }
+    var pre = Promise.resolve();
+    Object.keys(objs).forEach(function (k) { var o = objs[k]; if (/\/Type\s*\/ObjStm/.test(o.dict)) pre = pre.then(function () { return textOf(o).then(function (t) { var n = +(/\/N\s+(\d+)/.exec(o.dict) || [])[1], f = +(/\/First\s+(\d+)/.exec(o.dict) || [])[1]; if (!n || !f) return; var nums = t.slice(0, f).trim().split(/\s+/).map(Number); for (var i = 0; i < n; i++) { var num = nums[i * 2], off = nums[i * 2 + 1], nxt = i + 1 < n ? nums[(i + 1) * 2 + 1] : t.length - f; if (!(num in objs)) objs[num] = { num: num, dict: t.slice(f + off, f + nxt) }; } }); }); });
+    function refOf(txt, key) { var r = new RegExp('/' + key + '\\s+(\\d+)\\s+\\d+\\s+R').exec(txt); return r ? +r[1] : null; }
+    function dictAfter(txt, key) { var i = txt.search(new RegExp('/' + key + '\\b')); if (i < 0) return null; var j = i + key.length + 1; while (/\s/.test(txt[j])) j++; if (txt.substr(j, 2) === '<<') { var d = 0, k = j; for (; k < txt.length; k++) { if (txt.substr(k, 2) === '<<') { d++; k++; } else if (txt.substr(k, 2) === '>>') { d--; k++; if (!d) { k++; break; } } } return txt.slice(j, k); } var r = /^(\d+)\s+\d+\s+R/.exec(txt.slice(j)); return r && objs[r[1]] ? objs[r[1]].dict : null; }
+    function parseCmap(t) { var map = {}, w = 1, cs = /begincodespacerange\s*<([0-9A-Fa-f]+)>/.exec(t); if (cs) w = cs[1].length / 2; function u16(h) { var r = ''; for (var i = 0; i < h.length; i += 4) r += String.fromCharCode(parseInt(h.substr(i, 4), 16)); return r; } var bc = /beginbfchar([\s\S]*?)endbfchar/g, mm; while ((mm = bc.exec(t))) { var pr = /<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>/g, q; while ((q = pr.exec(mm[1]))) map[parseInt(q[1], 16)] = u16(q[2]); } var br = /beginbfrange([\s\S]*?)endbfrange/g; while ((mm = br.exec(t))) { var pr2 = /<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s*(<([0-9A-Fa-f]+)>|\[([^\]]*)\])/g, q2; while ((q2 = pr2.exec(mm[1]))) { var lo = parseInt(q2[1], 16), hi = parseInt(q2[2], 16); if (q2[4]) { var base = q2[4]; for (var c = lo; c <= hi && c - lo < 70000; c++) { var cp = parseInt(base, 16) + (c - lo); map[c] = base.length <= 4 ? String.fromCharCode(cp) : u16(cp.toString(16).padStart(base.length, '0')); } } else { var arr = q2[5].match(/<([0-9A-Fa-f]+)>/g) || []; for (var c2 = lo; c2 <= hi && c2 - lo < arr.length; c2++) map[c2] = u16(arr[c2 - lo].slice(1, -1)); } } } return { map: map, w: w }; }
+    function fontMaps(resTxt) { var out = {}, ps = []; var fd = resTxt ? dictAfter(resTxt, 'Font') : null; if (!fd) return Promise.resolve(out); var fr = /\/([^\s\/<>\[\]()]+)\s+(\d+)\s+\d+\s+R/g, q; while ((q = fr.exec(fd))) (function (nm, num) { var fo = objs[num]; if (!fo) return; var tu = refOf(fo.dict, 'ToUnicode'); out[nm] = { map: null, w: 1 }; if (tu && objs[tu]) ps.push(textOf(objs[tu]).then(function (t) { out[nm] = parseCmap(t); })); else if (/Identity-H/.test(fo.dict)) out[nm] = { map: null, w: 2 }; })(q[1], q[2]); return Promise.all(ps).then(function () { return out; }); }
+    function interpret(cs, fonts) {
+      var out = [], line = '', font = null, i = 0, n = cs.length, stack = [];
+      function flush() { if (line.trim()) out.push(line.replace(/\s+$/, '')); line = ''; }
+      function decode(bytes) { var f = font, r = ''; if (f && f.map) { for (var k = 0; k + f.w <= bytes.length; k += f.w) { var c = 0; for (var z = 0; z < f.w; z++) c = c * 256 + bytes[k + z]; r += f.map[c] !== undefined ? f.map[c] : ''; } return r; } if (f && f.w === 2) { for (var k2 = 0; k2 + 1 < bytes.length; k2 += 2) r += String.fromCharCode(bytes[k2] * 256 + bytes[k2 + 1]); return r; } for (var k3 = 0; k3 < bytes.length; k3++) r += String.fromCharCode(bytes[k3]); return r; }
+      function readStr() { var d = 1, b = []; i++; while (i < n && d) { var c = cs[i]; if (c === '\\') { var nx = cs[i + 1]; if (/[0-7]/.test(nx)) { var o = nx; i++; if (/[0-7]/.test(cs[i + 1])) { o += cs[++i]; if (/[0-7]/.test(cs[i + 1])) o += cs[++i]; } b.push(parseInt(o, 8) & 255); } else { var mp = { n: 10, r: 13, t: 9, b: 8, f: 12 }; if (nx === '\n' || nx === '\r') { } else b.push(mp[nx] !== undefined ? mp[nx] : nx.charCodeAt(0)); i++; } } else if (c === '(') { d++; b.push(40); } else if (c === ')') { d--; if (d) b.push(41); } else b.push(c.charCodeAt(0) & 255); i++; } return { t: 's', b: b }; }
+      function readHex() { var j = cs.indexOf('>', i), h = cs.slice(i + 1, j < 0 ? n : j).replace(/\s+/g, ''); i = (j < 0 ? n : j) + 1; if (h.length % 2) h += '0'; var b = []; for (var k = 0; k < h.length; k += 2) b.push(parseInt(h.substr(k, 2), 16)); return { t: 's', b: b }; }
+      while (i < n) {
+        var c = cs[i];
+        if (/\s/.test(c)) { i++; continue; }
+        if (c === '%') { while (i < n && cs[i] !== '\n' && cs[i] !== '\r') i++; continue; }
+        if (c === '(') { stack.push(readStr()); continue; }
+        if (c === '<') { if (cs[i + 1] === '<') { var dd = 1; i += 2; while (i < n && dd) { if (cs.substr(i, 2) === '<<') { dd++; i += 2; } else if (cs.substr(i, 2) === '>>') { dd--; i += 2; } else i++; } stack.push({ t: 'd' }); continue; } stack.push(readHex()); continue; }
+        if (c === '[') { var arr = []; i++; while (i < n && cs[i] !== ']') { var ch = cs[i]; if (/\s/.test(ch)) { i++; continue; } if (ch === '(') arr.push(readStr()); else if (ch === '<' && cs[i + 1] !== '<') arr.push(readHex()); else { var j = i; while (j < n && !/[\s\]\[()<>\/]/.test(cs[j])) j++; var num = parseFloat(cs.slice(i, j)); if (j === i) j++; arr.push({ t: 'n', v: num }); i = j; } } i++; stack.push({ t: 'a', v: arr }); continue; }
+        if (c === '/') { var j2 = i + 1; while (j2 < n && !/[\s\]\[()<>\/]/.test(cs[j2])) j2++; stack.push({ t: 'name', v: cs.slice(i + 1, j2) }); i = j2; continue; }
+        var j3 = i; while (j3 < n && !/[\s\]\[()<>\/]/.test(cs[j3])) j3++; if (j3 === i) { i++; continue; } var tok = cs.slice(i, j3); i = j3;
+        if (/^[+-]?\d*\.?\d+$/.test(tok)) { stack.push({ t: 'n', v: parseFloat(tok) }); continue; }
+        switch (tok) {
+          case 'Tf': var nm = stack[stack.length - 2]; font = nm && nm.t === 'name' ? (fonts[nm.v] || null) : null; break;
+          case 'Tj': case "'": case '"': var sx = stack[stack.length - 1]; if (tok !== 'Tj') flush(); if (sx && sx.t === 's') line += decode(sx.b); break;
+          case 'TJ': var ar = stack[stack.length - 1]; if (ar && ar.t === 'a') ar.v.forEach(function (e) { if (e.t === 's') line += decode(e.b); else if (e.t === 'n' && e.v < -250) line += ' '; }); break;
+          case 'Td': case 'TD': case 'T*': case 'Tm': case 'ET': case 'BT': var ty = stack[stack.length - 1]; if (tok === 'Td' || tok === 'TD') { if (ty && ty.t === 'n' && Math.abs(ty.v) > 0.5) flush(); else if (line && !/\s$/.test(line)) line += ' '; } else if (tok === 'Tm') { if (ty && ty.t === 'n') flush(); } else flush(); break;
+        }
+        stack = [];
+      }
+      flush(); return out.join('\n');
+    }
+    return pre.then(function () {
+      var pages = Object.keys(objs).map(function (k) { return objs[k]; }).filter(function (o) { return /\/Type\s*\/Page\b(?!s)/.test(o.dict); });
+      var root = Object.keys(objs).map(function (k) { return objs[k]; }).filter(function (o) { return /\/Type\s*\/Pages\b/.test(o.dict) && !/\/Parent/.test(o.dict); })[0], order = [];
+      (function walk(o, depth) { if (!o || depth > 12) return; var kd = /\/Kids\s*\[([^\]]*)\]/.exec(o.dict); if (!kd) { if (/\/Type\s*\/Page\b(?!s)/.test(o.dict)) order.push(o); return; } (kd[1].match(/(\d+)\s+\d+\s+R/g) || []).forEach(function (r) { walk(objs[parseInt(r, 10)], depth + 1); }); })(root, 0);
+      if (!order.length) order = pages.sort(function (a, b) { return a.num - b.num; });
+      function resFor(pg, d) { if (!pg || d > 8) return null; var r = dictAfter(pg.dict, 'Resources'); if (r) return r; var par = refOf(pg.dict, 'Parent'); return par ? resFor(objs[par], d + 1) : null; }
+      var chain = Promise.resolve(), texts = [];
+      order.slice(0, 400).forEach(function (pg, idx) { chain = chain.then(function () { return fontMaps(resFor(pg, 0)).then(function (fonts) { var cd = /\/Contents\s*(\[[^\]]*\]|\d+\s+\d+\s+R)/.exec(pg.dict), refs = cd ? (cd[1].match(/(\d+)\s+\d+\s+R/g) || []).map(function (r) { return parseInt(r, 10); }) : []; return Promise.all(refs.map(function (r) { return objs[r] ? textOf(objs[r]) : ''; })).then(function (parts) { var t = interpret(parts.join('\n'), fonts); if (t.trim()) texts.push(t); }); }); }); });
+      return chain.then(function () { return texts.join('\n\n'); });
+    }).catch(function () { return ''; });
+  }
+  IAI.pdfText = pdfText;
+  IAI.structFromText = structFromText;
+  var TEXTY = { txt: 1, md: 1, markdown: 1, csv: 1, tsv: 1, json: 1, xml: 1, html: 1, htm: 1, rtf: 1, svg: 1, yaml: 1, yml: 1 };
+  IAI.readFile = function (file) {
+    var e = ext(file.name), base = { id: IAI.uid('f'), fileName: file.name, fileType: e || (file.type || 'unknown'), sizeKB: Math.max(1, Math.round(file.size / 1024)), label: null, addedAt: IAI.nowIso(), parseStatus: 'needs_extraction', note: '', text: '', structure: {}, pii: [], edited: false };
+    function done(r, status, note) { base.text = (r.text || '').replace(/\u0000/g, ''); base.structure = r.structure || structFromText(base.text, {}); base.parseStatus = base.text.trim() ? status : 'needs_extraction'; base.note = base.text.trim() ? (note || '') : (note || 'No text could be read.'); return base; }
+    return file.arrayBuffer().then(function (buf) {
+      return IAI.sha256(buf).then(function (h) {
+        base.sha256 = h;
+        var dec = function () { return new TextDecoder('utf-8').decode(buf); };
+        if (TEXTY[e]) {
+          var t = dec(); if (e === 'html' || e === 'htm') { base.raw = t; var wr = wrapHtml(t); if (!wr.text.trim() && t.length > 200) { wr.text = '[HTML file with no static text. It builds its own page with scripts. ' + Math.round(t.length / 1024) + ' KB.]'; return [done(wr, 'read', 'No visible text. Widget files are read from the raw HTML.')]; } return [done(wr, 'read')]; }
+          if (e === 'json') { try { t = JSON.stringify(JSON.parse(t), null, 2); } catch (x) { } }
+          if (e === 'rtf') t = t.replace(/\\'[0-9a-f]{2}/gi, ' ').replace(/\\[a-z]+-?\d* ?/gi, '').replace(/[{}]/g, '');
+          if (e === 'xml' || e === 'svg') { try { t = new DOMParser().parseFromString(t, 'application/xml').documentElement.textContent.replace(/\s+/g, ' ').trim() || t; } catch (x) { } }
+          return [done({ text: t }, 'read')];
+        }
+        if (e === 'docx' || e === 'xlsx' || e === 'pptx' || e === 'odt' || e === 'ods' || e === 'odp') {
+          return IAI.unzip(buf).then(function (z) { var f = e === 'docx' ? wrapDocx : e === 'xlsx' ? wrapXlsx : e === 'pptx' ? wrapPptx : wrapOdf; return f(z).then(function (r) { return [done(r, 'read')]; }); }).catch(function (x) { base.note = 'Could not open this ' + e + ' file (' + x.message + '). Paste its text below.'; base.parseStatus = 'needs_extraction'; return [base]; });
+        }
+        if (e === 'pdf') return pdfText(buf).then(function (t) { if (t.replace(/\s/g, '').length < 40) { base.note = 'No usable text layer found (a scan, or an unusual font encoding). Paste the text below.'; return [base]; } return [done({ text: t }, 'read_partial', 'Best-effort PDF text. Check it against the original before relying on it.')]; });
+        if (e === 'zip') {
+          return IAI.unzip(buf).then(function (z) {
+            var inner = z.names.filter(function (n) { return !/(^|\/)(\.|__MACOSX)/.test(n); }).slice(0, 40);
+            return Promise.all(inner.map(function (n) { return z.get(n).then(function (d) { if (!d) return null; var f = new File([d], n.split('/').pop(), { type: '' }); return IAI.readFile(f).then(function (rs) { rs.forEach(function (r) { r.fromZip = file.name + ' > ' + n; }); return rs; }); }); })).then(function (all) { var flat = [].concat.apply([], all.filter(Boolean)); if (!flat.length) { base.note = 'Empty or unreadable zip.'; return [base]; } return flat; });
+          }).catch(function (x) { base.note = 'Could not open the zip (' + x.message + ').'; return [base]; });
+        }
+        if (/^(png|jpg|jpeg|gif|webp|bmp|tif|tiff|heic)$/.test(e)) { base.note = 'This is an image or scan. Type or paste the text it contains below.'; return [base]; }
+        if (/^(doc|xls|ppt)$/.test(e)) { base.note = 'Old Office format. Save it as .docx, .xlsx or .pptx, or paste the text below.'; return [base]; }
+        if (/^(gdoc|gsheet|gslides)$/.test(e)) { base.note = 'Google files cannot be read directly. Download as .docx, .xlsx, .pptx or .pdf, or paste the text below.'; return [base]; }
+        base.note = 'Unknown file type. Paste the text below if you want it used.'; return [base];
+      });
+    });
+  };
+  IAI.detectFields = function (rec) {
+    var s = rec.structure || {}, out = [], seen = {}; function add(n, src) { n = String(n || '').trim().replace(/\s+/g, ' ').replace(/[:*]+$/, ''); if (!n || n.length > 60 || seen[n.toLowerCase()]) return; seen[n.toLowerCase()] = 1; out.push({ name: n, from: src }); }
+    (s.placeholders || []).forEach(function (p) { add(p, 'placeholder'); });
+    (s.labels || []).forEach(function (p) { add(p, 'label'); });
+    (s.headings || []).forEach(function (h) { add(h.text, 'heading'); });
+    (s.tables || []).forEach(function (t, i) { var r = (t.rows || [])[0] || []; var nonNum = r.filter(function (c) { return c && !/^[\d.,%\s-]+$/.test(c); }); if (nonNum.length >= 2 && nonNum.length >= r.length / 2) r.forEach(function (c) { add(c, 'table ' + (i + 1) + ' header'); }); });
+    (s.headers || []).forEach(function (c) { add(c, 'spreadsheet header'); });
+    return out;
+  };
+  IAI.labelWarning = function (rec) {
+    var t = rec.text || ''; if (!rec.label || !t.trim()) return '';
+    var us = (t.match(/_{3,}|\.{4,}|…{2,}/g) || []).length, words = (t.match(/[A-Za-z]{3,}/g) || []).length, ph = ((rec.structure || {}).placeholders || []).length, lb = ((rec.structure || {}).labels || []).length;
+    if (rec.label === 'SOURCE DOCUMENT' && (us >= 5 || ph >= 5) && words < 400) return 'This looks like a blank form. Should it be a SCHOOL TEMPLATE?';
+    if (rec.label === 'SCHOOL TEMPLATE' && words > 1500 && us + ph + lb < 3) return 'This looks like a long finished document with no fill-in fields. Should it be a SOURCE DOCUMENT or OUTPUT EXAMPLE?';
+    return '';
+  };
+})();
+
+/* INFINITE-AI widget kit, part 2: envelope, core, ingest panel, page framework, self-test, handoff tests */
+(function () {
+  'use strict';
+  var IAI = window.IAI, $ = IAI.$, $$ = IAI.$$, esc = IAI.esc;
+  var STATUS = ['draft', 'edited', 'approved', 'rejected'];
+
+  /* ---------- envelope ---------- */
+  IAI.validateEnvelope = function (e) {
+    var er = []; if (!e || typeof e !== 'object') return ['Not an object.'];
+    ['widgetId', 'runId', 'event'].forEach(function (k) { if (!e[k] || typeof e[k] !== 'string') er.push('Missing "' + k + '".'); });
+    if (!e.gate || typeof e.gate !== 'object') er.push('Missing "gate".'); else { if (STATUS.indexOf(e.gate.status) < 0) er.push('gate.status must be one of ' + STATUS.join(', ') + '.'); if (e.gate.status === 'approved' && (!e.gate.role || !e.gate.time)) er.push('An approved gate needs role and time.'); }
+    if (!('payload' in e) || e.payload == null) er.push('Missing "payload".');
+    if (!Array.isArray(e.sourceRefs)) er.push('"sourceRefs" must be a list.');
+    return er;
+  };
+  IAI.itemsMissingRef = function (payload) { var bad = []; (function walk(o, p) { if (Array.isArray(o)) o.forEach(function (x, i) { if (x && typeof x === 'object' && !Array.isArray(x) && Object.keys(x).length > 1 && 'sourceRef' in x === false && p.match(/(^|\.)(items|rows|entries|lessons|topics|tasks)$/)) bad.push(p + '[' + i + ']'); walk(x, p + '[' + i + ']'); }); else if (o && typeof o === 'object') Object.keys(o).forEach(function (k) { walk(o[k], p ? p + '.' + k : k); }); })(payload, ''); return bad; };
+  IAI.acceptEnvelope = function (e, rules) {
+    rules = rules || {}; var er = IAI.validateEnvelope(e);
+    if (e && e.gate) {
+      if (e.gate.status !== 'approved') er.push('Refused: the gate status is "' + e.gate.status + '". Only approved outputs are accepted.');
+      else if (e.gate.testHarness && !rules.allowTestHarness) er.push('Refused: this envelope was approved by a test harness, not a person.');
+    }
+    if (rules.events && e && e.event && rules.events.indexOf(e.event) < 0) er.push('Refused: event "' + e.event + '" is not one this widget accepts (' + rules.events.join(', ') + ').');
+    (rules.requiredPayload || []).forEach(function (p) { var v = e && e.payload ? IAI.getPath(e.payload, p) : undefined; if (v === undefined || v === null || v === '') er.push('Missing required field "' + p + '".'); });
+    if (e && Array.isArray(e.sourceRefs) && !e.sourceRefs.length && rules.needSourceRefs !== false) er.push('No source reference: nothing in this output can be traced.');
+    var miss = e && e.payload ? IAI.itemsMissingRef(e.payload) : []; if (miss.length) er.push('Item without a sourceRef: ' + miss.slice(0, 3).join(', ') + (miss.length > 3 ? ' and ' + (miss.length - 3) + ' more' : '') + '.');
+    var hp = IAI.hardPII(IAI.scanInput(e ? e.payload : {})); if (hp.length) er.push('Personal information found in the payload (' + hp[0].type + '). Remove it before passing it on.');
+    return { ok: !er.length, errors: er };
+  };
+  IAI.mask = function (s) { s = String(s); return s.length <= 3 ? '***' : s.slice(0, 2) + '***' + s.slice(-1); };
+
+  /* ---------- core: run, edit, decide, emit ---------- */
+  IAI.makeCore = function (cfg, emitFn) {
+    var man = cfg.manifest, st = { input: null, env: null, decisions: [], edits: [], emitted: {}, emitCount: 0, stale: [], lastApproved: null };
+    var core = { st: st };
+    core.run = function (input, files) {
+      var errs = cfg.validateInput ? cfg.validateInput(input, files) : [];
+      var inPII = IAI.scanInput(input), hardIn = IAI.hardPII(inPII);
+      if (errs.length) return Promise.resolve({ ok: false, errors: errs, pii: inPII });
+      return Promise.resolve(cfg.run(IAI.clone(input), { files: files || [], core: core })).then(function (res) {
+        if (res && res.blocked) return { ok: false, errors: res.errors || ['Blocked.'], needs: res.needs };
+        var env = { widgetId: man.widgetId, runId: IAI.uid('run'), event: res.event || (man.emits || [])[0] || (man.widgetId + '.done'), gate: { status: 'draft', role: man.humanGate ? man.humanGate.role : null, time: null }, capsTopicId: res.capsTopicId || null, sourceRefs: res.sourceRefs || [], payload: res.payload, createdAt: IAI.nowIso() };
+        var outPII = IAI.scanInput(env.payload), hard = IAI.hardPII((cfg.piiInputExempt ? [] : inPII).concat(outPII));
+        env.popia = { personalInfoFound: hard.length > 0, hard: hard.length, soft: inPII.concat(outPII).filter(function (x) { return x.severity === 'soft'; }).length };
+        env.payloadHash = IAI.hash32(IAI.stable(env.payload));
+        if (st.env && st.env.gate.status === 'approved' && st.env.payloadHash !== env.payloadHash) { st.stale.push({ runId: st.env.runId, reason: 'A new run changed the output after it was approved.', time: IAI.nowIso() }); st.env.stale = true; }
+        st.input = IAI.clone(input); st.env = env; st.edits = []; st.piiFindings = inPII.concat(outPII);
+        return { ok: true, env: env, pii: st.piiFindings };
+      });
+    };
+    core.edit = function (newPayload, role, reason) {
+      if (!st.env) return { ok: false, errors: ['Nothing to edit yet.'] };
+      var before = st.env.payload, d = IAI.diffObjects(before, newPayload); if (!d.length) return { ok: false, errors: ['No change.'] };
+      var wasApproved = st.env.gate.status === 'approved'; if (wasApproved) { st.stale.push({ runId: st.env.runId, reason: 'Edited after approval.', time: IAI.nowIso() }); st.env.stale = true; st.env = IAI.clone(st.env); st.env.stale = false; st.env.runId = IAI.uid('run'); }
+      var t = IAI.nowIso(); d.forEach(function (x) { st.edits.push({ time: t, role: role || null, path: x.path, change: x.change, before: x.before, after: x.after, reason: reason || null }); });
+      st.env.payload = IAI.clone(newPayload); st.env.payloadHash = IAI.hash32(IAI.stable(st.env.payload)); st.env.gate = { status: 'edited', role: man.humanGate ? man.humanGate.role : null, time: null };
+      var hard = IAI.hardPII(IAI.scanInput(st.env.payload)); st.env.popia = { personalInfoFound: hard.length > 0, hard: hard.length, soft: 0 };
+      st.decisions.push({ decision: 'edited', role: role || null, time: t, reason: reason || null, runId: st.env.runId, changes: d.length });
+      return { ok: true, changes: d.length };
+    };
+    core.decide = function (kind, role, reason) {
+      var e = st.env; if (!e) return { ok: false, errors: ['Nothing to decide on yet.'] };
+      var roles = man.humanGate && man.humanGate.roles || [];
+      if (!role || roles.indexOf(role) < 0) return { ok: false, errors: ['Choose the role that is allowed to decide: ' + roles.join(', ') + '.'] };
+      if (kind === 'reject') { if (!reason || !reason.trim()) return { ok: false, errors: ['Give a reason for rejecting.'] }; e.gate = { status: 'rejected', role: role, time: IAI.nowIso() }; st.decisions.push({ decision: 'rejected', role: role, time: e.gate.time, reason: reason.trim(), runId: e.runId }); return { ok: true, emitted: false }; }
+      if (kind !== 'approve') return { ok: false, errors: ['Unknown decision.'] };
+      if (e.popia && e.popia.personalInfoFound) return { ok: false, errors: ['Personal information is still in this output. Remove it, then approve.'] };
+      if (e.stale) return { ok: false, errors: ['This output is stale. Run again, then approve.'] };
+      if (e.payload && Array.isArray(e.payload.blockApproval) && e.payload.blockApproval.length) return { ok: false, errors: ['Approval is blocked: ' + e.payload.blockApproval.join(' ')] };
+      if (e.payload && e.payload.requireRole && role !== e.payload.requireRole) return { ok: false, errors: ['This output must be approved by the ' + e.payload.requireRole + '.'] };
+      e.gate = { status: 'approved', role: role, time: IAI.nowIso() };
+      st.decisions.push({ decision: 'approved', role: role, time: e.gate.time, reason: (reason || '').trim() || null, runId: e.runId, payloadHash: e.payloadHash });
+      st.lastApproved = IAI.clone(e);
+      if (st.emitted[e.runId]) return { ok: true, emitted: false, duplicate: true };
+      st.emitted[e.runId] = true; st.emitCount++; if (emitFn) emitFn(IAI.clone(e)); return { ok: true, emitted: true };
+    };
+    core.tryEmit = function () { var e = st.env; if (!e || e.gate.status !== 'approved') return false; if (st.emitted[e.runId]) return false; st.emitted[e.runId] = true; st.emitCount++; if (emitFn) emitFn(IAI.clone(e)); return true; };
+    return core;
+  };
+
+  /* ---------- ingest panel ---------- */
+  IAI.ingest = function (mount, man, onChange) {
+    var files = [], slots = (man.ingest || []), byLabel = {}; slots.forEach(function (s) { byLabel[s.label] = s; });
+    var api = { files: files };
+    var ACC = '.pdf,.docx,.doc,.xlsx,.xls,.csv,.tsv,.pptx,.ppt,.odt,.ods,.odp,.html,.htm,.md,.txt,.rtf,.json,.xml,.png,.jpg,.jpeg,.zip,.gdoc,.gsheet,.gslides';
+    function usable(f) { return f.label && byLabel[f.label] && f.text && f.text.trim() && (!f.hardPII || f.piiOverride); }
+    api.usable = function (label) { return files.filter(function (f) { return usable(f) && (!label || f.label === label); }); };
+    function rescan(f) { f.pii = IAI.scanPII(f.text); var hard = IAI.hardPII(f.pii); f.hardPII = hard.length > 0; f.overridable = hard.every(function (x) { return /name/i.test(x.type); }); if (!f.hardPII) f.piiOverride = null; }
+    function badge(f) {
+      if (!f.label) return '<span class="chip r">No label: not used</span>';
+      if (!byLabel[f.label]) return '<span class="chip r">Not used by this widget</span>';
+      if (f.parseStatus === 'needs_extraction') return '<span class="chip r">needs_extraction</span>';
+      return '<span class="chip ' + (f.parseStatus === 'read' ? 'c' : f.parseStatus === 'read_manual' ? 'g' : 'g') + '">' + esc(f.parseStatus) + '</span>';
+    }
+    function render() {
+      var h = '';
+      h += '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">';
+      IAI.LABELS.forEach(function (L) { var s = byLabel[L]; h += '<div class="drop" data-label="' + esc(L) + '" ' + (s ? '' : 'style="opacity:.45"') + '><b><span class="chip ' + (L[0] === 'S' && L[1] === 'O' ? 'c' : L[1] === 'C' ? 'g' : 'v') + '">' + esc(L) + '</span></b>' + (s ? esc(s.note || '') + (s.required ? ' <span class="warn">(required)</span>' : ' (optional)') + '<br><button type="button" class="pick">Choose files</button>' : 'Not used by this widget') + '</div>'; });
+      h += '</div><p class="cap">Any format: PDF, Word, Excel, PowerPoint, OpenDocument, CSV, HTML, text, JSON, XML, images and scans, zip bundles. Google Docs, Sheets and Slides: download as .docx, .xlsx, .pptx or .pdf first, or paste the text. Drop files on a label above, or <button type="button" class="pickAny">add files and label each one</button>. A file with no label is never used.</p>';
+      h += '<input type="file" id="iaiPick" multiple accept="' + ACC + '" style="display:none">';
+      if (!files.length) h += '<p class="cap">No files yet.</p>';
+      else {
+        h += '<div class="tw"><table><thead><tr><th>File</th><th>Label (choose one)</th><th>Status</th><th></th></tr></thead><tbody>';
+        files.forEach(function (f, i) {
+          var w = IAI.labelWarning(f);
+          h += '<tr data-i="' + i + '"><td><strong>' + esc(f.fileName) + '</strong><br><span class="cap">' + esc(f.fileType) + ' · ' + f.sizeKB + ' KB' + (f.fromZip ? ' · in ' + esc(f.fromZip.split(' > ')[0]) : '') + (f.synthetic ? ' · <span class="warn">SYNTHETIC</span>' : '') + '</span></td>';
+          h += '<td><select class="lab" aria-label="Label for ' + esc(f.fileName) + '"><option value="">Choose a label…</option>' + IAI.LABELS.map(function (L) { return '<option' + (f.label === L ? ' selected' : '') + '>' + L + '</option>'; }).join('') + '</select>' + (w ? '<br><span class="warn cap">' + esc(w) + '</span>' : '') + '</td>';
+          h += '<td>' + badge(f) + (f.hardPII ? '<br><span class="chip r">Personal information</span>' : f.pii && f.pii.length ? '<br><span class="chip g">' + f.pii.length + ' name(s) to check</span>' : '') + (f.piiOverride ? '<br><span class="cap">Reviewed: ' + esc(f.piiOverride.role) + '</span>' : '') + '<br><span class="cap">' + esc(f.note || '') + '</span></td>';
+          h += '<td><button type="button" class="rm">Remove</button></td></tr>';
+          h += '<tr data-i="' + i + '"><td colspan="4"><details' + (f.parseStatus === 'needs_extraction' || f.hardPII ? ' open' : '') + '><summary>' + (f.parseStatus === 'needs_extraction' ? 'Paste or type the text of this file' : 'Show and correct the text that was read') + '</summary>';
+          if (f.pii && f.pii.length) h += '<p class="cap ' + (f.hardPII ? 'fail' : 'warn') + '">Found: ' + f.pii.slice(0, 6).map(function (x) { return esc(x.type) + ' (' + esc(IAI.mask(x.match)) + ')'; }).join('; ') + '. ' + (f.hardPII ? 'This file is blocked until the text below is cleaned' + (f.overridable ? ', or you confirm these are public office-bearers in an official document.' : '.') : 'Soft matches do not block, but please check.') + '</p>';
+          if (f.hardPII && f.overridable) h += '<p><label for="ov' + i + '">I am reviewing as</label><select id="ov' + i + '" class="ovrole">' + (man.humanGate ? man.humanGate.roles : ['Reviewer']).map(function (r) { return '<option>' + esc(r) + '</option>'; }).join('') + '</select> <button type="button" class="ovbtn">Confirm: public office-bearers only, no learner or staff personal data</button></p>';
+          h += '<textarea class="txt" aria-label="Text of ' + esc(f.fileName) + '">' + esc(f.text) + '</textarea><div class="row"><button type="button" class="apply">Use this text</button></div></details></td></tr>';
+        });
+        h += '</tbody></table></div>';
+      }
+      mount.innerHTML = h; wire();
+    }
+    function addRecords(recs, label) { recs.forEach(function (r) { if (label && !r.label) r.label = label; if (r.parseStatus !== 'needs_extraction' || r.text) rescan(r); files.push(r); }); render(); onChange && onChange(api); }
+    function wire() {
+      var pick = $('#iaiPick', mount), pendLabel = null;
+      $$('.pick', mount).forEach(function (b) { b.onclick = function () { pendLabel = b.closest('.drop').dataset.label; pick.click(); }; });
+      var pa = $('.pickAny', mount); if (pa) pa.onclick = function () { pendLabel = null; pick.click(); };
+      pick.onchange = function () { handle([].slice.call(pick.files), pendLabel); pick.value = ''; };
+      $$('.drop', mount).forEach(function (d) { if (!byLabel[d.dataset.label]) return; ['dragover', 'dragenter'].forEach(function (ev) { d.addEventListener(ev, function (e) { e.preventDefault(); d.classList.add('over'); }); }); ['dragleave', 'drop'].forEach(function (ev) { d.addEventListener(ev, function (e) { e.preventDefault(); d.classList.remove('over'); }); }); d.addEventListener('drop', function (e) { handle([].slice.call(e.dataTransfer.files), d.dataset.label); }); });
+      $$('tr[data-i] .lab', mount).forEach(function (s) { s.onchange = function () { var f = files[+s.closest('tr').dataset.i]; f.label = s.value || null; render(); onChange && onChange(api); }; });
+      $$('.rm', mount).forEach(function (b) { b.onclick = function () { files.splice(+b.closest('tr').dataset.i, 1); render(); onChange && onChange(api); }; });
+      $$('.apply', mount).forEach(function (b) { b.onclick = function () { var f = files[+b.closest('tr').dataset.i], t = b.closest('td').querySelector('textarea').value; f.text = t; f.edited = true; f.structure = {}; if (f.parseStatus === 'needs_extraction' && t.trim()) { f.parseStatus = 'read_manual'; f.note = 'Text typed or pasted by you.'; } rescan(f); f.piiOverride = null; render(); onChange && onChange(api); }; });
+      $$('.ovbtn', mount).forEach(function (b) { b.onclick = function () { var f = files[+b.closest('tr').dataset.i]; f.piiOverride = { role: b.parentNode.querySelector('select').value, time: IAI.nowIso() }; render(); onChange && onChange(api); }; });
+    }
+    function handle(list, label) { if (!list.length) return; Promise.all(list.map(function (f) { return IAI.readFile(f).catch(function (x) { return [{ id: IAI.uid('f'), fileName: f.name, fileType: '?', sizeKB: 1, label: null, parseStatus: 'needs_extraction', note: 'Could not read (' + x.message + '). Paste the text.', text: '', structure: {}, pii: [] }]; }); })).then(function (all) { addRecords([].concat.apply([], all), label); }); }
+    api.addSynthetic = function (list) { list.forEach(function (x) { var r = { id: IAI.uid('f'), fileName: x.fileName, fileType: x.fileType || 'txt', sizeKB: 1, label: x.label, addedAt: IAI.nowIso(), parseStatus: 'read', note: 'Synthetic sample', text: x.text, structure: x.structure || {}, pii: [], synthetic: true, raw: x.raw }; r.structure = r.structure && Object.keys(r.structure).length ? r.structure : IAI.structFromText(r.text || '', { headings: [] }); rescan(r); files.push(r); }); render(); onChange && onChange(api); };
+    api.clear = function () { files.length = 0; render(); onChange && onChange(api); };
+    api.summary = function () { return files.map(function (f) { return { fileName: f.fileName, fileType: f.fileType, sizeKB: f.sizeKB, label: f.label, addedAt: f.addedAt, parseStatus: f.parseStatus, sha256: f.sha256 || null, synthetic: !!f.synthetic, piiOverride: f.piiOverride || null }; }); };
+    api.render = render; render(); return api;
+  };
+
+  /* ---------- self-test and handoff tests ---------- */
+  function resultRow(n, ok, d) { return { name: n, ok: ok === true ? 'pass' : ok === false ? 'fail' : 'warn', detail: d || '' }; }
+  function table(rows) { return '<div class="tw"><table><thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead><tbody>' + rows.map(function (r) { return '<tr><td>' + esc(r.name) + '</td><td class="' + r.ok + '"><strong>' + r.ok.toUpperCase() + '</strong></td><td>' + esc(r.detail) + '</td></tr>'; }).join('') + '</tbody></table></div>'; }
+  IAI.table = table;
+  IAI.manifestChecks = function (man) { var miss = ['widgetId', 'version', 'module', 'name', 'humanGate', 'inputSchema', 'outputSchema', 'ingest', 'popia'].filter(function (k) { return !(k in man); }); return resultRow('Manifest complete', !miss.length, miss.length ? 'Missing: ' + miss.join(', ') : 'All required keys present.'); };
+  IAI.a11yChecks = function () {
+    var bad = []; if (!document.documentElement.lang) bad.push('html lang missing'); if (!$('h1')) bad.push('no h1'); $$('img').forEach(function (i) { if (!i.hasAttribute('alt')) bad.push('img without alt'); });
+    $$('button').forEach(function (b) { if (!b.textContent.trim() && !b.getAttribute('aria-label')) bad.push('unnamed button'); });
+    $$('input,select,textarea').forEach(function (e) { if (e.type === 'file' || e.type === 'hidden') return; var named = e.getAttribute('aria-label') || e.getAttribute('aria-labelledby') || e.title || (e.id && $('label[for="' + e.id + '"]')) || e.closest('label') || e.placeholder; if (!named) bad.push('unlabelled ' + e.tagName.toLowerCase()); });
+    return resultRow('Accessibility basics', !bad.length, bad.length ? bad.slice(0, 4).join('; ') : 'Language, heading, button names and field labels present.');
+  };
+
+  IAI.runHandoffTests = function (cfg) {
+    var man = cfg.manifest, out = [], role = man.humanGate.roles[0];
+    var emitted = []; function mk() { return IAI.makeCore(cfg, function (e) { emitted.push(e); }); }
+    var sample = cfg.sample(); var files = cfg.sampleFilesForTest ? cfg.sampleFilesForTest() : [];
+    var c1 = mk();
+    return c1.run(sample, files).then(function (r) {
+      var envOk = r.ok && !IAI.validateEnvelope(r.env).length;
+      if (cfg.upstream && cfg.upstreamSample) { var acc = IAI.acceptEnvelope(cfg.upstreamSample(), cfg.upstream); out.push(resultRow('1 Accept', envOk && acc.ok, envOk ? (acc.ok ? 'Upstream golden file accepted; output envelope valid.' : acc.errors.join(' ')) : (r.errors || IAI.validateEnvelope(r.env)).join(' '))); }
+      else out.push(resultRow('1 Accept', envOk, envOk ? 'Synthetic input runs and the output envelope is valid.' + (cfg.upstream ? '' : ' (This widget takes files or typed input, not an upstream envelope.)') : (r.errors || []).join(' ')));
+      if (!r.ok) return out;
+      var before = emitted.length; c1.tryEmit(); var drafted = emitted.length === before;
+      c1.decide('reject', role, 'test'); c1.tryEmit(); var rejected = emitted.length === before;
+      out.push(resultRow('2 Gate', drafted && rejected, drafted && rejected ? 'A draft and a rejected output were not passed on (0 emitted).' : 'Something was emitted before approval.'));
+      var okDecide = c1.run(sample, files).then(function (r2) {
+        var d1 = c1.decide('approve', role, 'test'), d2 = c1.decide('approve', role, 'again');
+        var n = emitted.length - before;
+        return { r2: r2, d1: d1, n: n };
+      });
+      return okDecide.then(function (z) {
+        // Break: remove each required field
+        var req = cfg.requiredInput || [], brk = [], c3 = mk();
+        var chain = Promise.resolve();
+        req.forEach(function (p) { chain = chain.then(function () { var bad = IAI.clone(sample); IAI.delPath(bad, p); return c3.run(bad, files).then(function (rr) { brk.push({ p: p, refused: !rr.ok && rr.errors && rr.errors.length }); }).catch(function () { brk.push({ p: p, refused: false, threw: true }); }); }); });
+        return chain.then(function () {
+          var allRef = brk.every(function (b) { return b.refused; });
+          out.push(resultRow('3 Break', req.length ? allRef : true, req.length ? (allRef ? 'Removing each of ' + req.length + ' required field(s) gave a plain error, no crash.' : 'These did not give a clean refusal: ' + brk.filter(function (b) { return !b.refused; }).map(function (b) { return b.p; }).join(', ')) : 'No required typed fields (files only).'));
+          out.push(resultRow('4 Fire once', z.d1.ok && z.n === 1, 'Approved twice with the same runId; emitted ' + z.n + ' time(s).'));
+          var c5 = mk(), s2 = IAI.clone(sample); var tgt = cfg.changeTarget; if (tgt) IAI.setPath(s2, tgt.path, tgt.value);
+          return c5.run(sample, files).then(function () { c5.decide('approve', role, 't'); return c5.run(s2, files); }).then(function (rb) {
+            var stale = c5.st.stale.length > 0 || (rb.ok && rb.env.payloadHash === c5.st.lastApproved.payloadHash);
+            out.push(resultRow('5 Change', tgt ? c5.st.stale.length > 0 : true, tgt ? (c5.st.stale.length ? 'Changing the input after approval marked the earlier output stale.' : 'The earlier approved output was not marked stale.') : 'No changeable input defined for this widget.'));
+            if (cfg.piiTest) return cfg.piiTest(mk, role, files, sample).then(function (row) { out.push(row); return out; });
+            var s3 = IAI.clone(sample), pt = cfg.piiTarget; if (pt) IAI.setPath(s3, pt, 'Learner: Thandi Mokoena 0821234567 ' + '8001015009087');
+            var found = IAI.hardPII(IAI.scanInput(s3)); var c6 = mk();
+            return c6.run(s3, files).then(function (rp) {
+              var blocked = rp.ok ? (rp.env.popia.personalInfoFound && !c6.decide('approve', role, 't').ok) : true;
+              out.push(resultRow('6 Personal information', pt ? (found.length >= 2 && blocked) : (IAI.hardPII(IAI.scanPII('Learner: Thandi Mokoena 0821234567 8001015009087')).length >= 2), pt ? (blocked ? 'Fake name, phone and ID were flagged and approval was blocked.' : 'Personal information was not blocked.') : 'The scanner flags a fake name, phone and ID (no typed text field in this widget).'));
+              return out;
+            });
+          });
+        });
+      });
+    });
+  };
+
+  IAI.selfTest = function (cfg, core, ing) {
+    var man = cfg.manifest, rows = [], st = core ? core.st : null, env = st && st.env;
+    rows.push(IAI.manifestChecks(man));
+    if (env) {
+      var ve = IAI.validateEnvelope(env); rows.push(resultRow('Envelope valid', !ve.length, ve.length ? ve.join(' ') : 'All required keys present.'));
+      var miss = IAI.itemsMissingRef(env.payload); rows.push(resultRow('Every item has a sourceRef', !miss.length && (env.sourceRefs.length > 0 || cfg.noSourceRefs), miss.length ? miss.slice(0, 3).join(', ') : (env.sourceRefs.length || cfg.noSourceRefs ? env.sourceRefs.length + ' source reference(s) on the envelope.' : 'The envelope has no sourceRefs.')));
+      var hp = IAI.hardPII(IAI.scanInput(env.payload)); rows.push(resultRow('No personal-information patterns', !hp.length, hp.length ? hp[0].type + ' in ' + hp[0].path : 'None found in the payload.'));
+      rows.push(resultRow('Gate present', !!(env.gate && man.humanGate), 'Gate status: ' + env.gate.status + '; approving role(s): ' + man.humanGate.roles.join(', ')));
+      var fireOk = st.emitCount === Object.keys(st.emitted).length && (env.gate.status === 'approved' || !st.emitted[env.runId]); rows.push(resultRow('Trigger fires once and only when approved', fireOk, 'Emitted ' + st.emitCount + ' time(s) this session.'));
+    } else rows.push(resultRow('Run to see output checks', null, 'Load the synthetic sample and press Run.'));
+    if (ing) { var fs = ing.files, unl = fs.filter(function (f) { return !f.label; }), nx = fs.filter(function (f) { return f.label && f.parseStatus === 'needs_extraction'; }); rows.push(resultRow('Every file labelled and read or flagged', !unl.length, fs.length ? (unl.length ? unl.length + ' file(s) have no label and are not used.' : fs.length + ' file(s) labelled' + (nx.length ? '; ' + nx.length + ' flagged needs_extraction.' : '.')) : 'No files attached.')); }
+    if (cfg.templateState) rows.push(resultRow('Template state', cfg.templateState() !== 'needs_template' ? true : null, cfg.templateState()));
+    if (cfg.upstream) { var r1 = IAI.acceptEnvelope({ widgetId: 'x', runId: 'y', event: (cfg.upstream.events || [])[0] || 'x.y.z', gate: { status: 'draft' }, sourceRefs: [{}], payload: {} }, cfg.upstream); rows.push(resultRow('Unapproved input refused', !r1.ok, r1.errors[0] || 'It was accepted.')); }
+    rows.push(IAI.a11yChecks());
+    return rows;
+  };
+})();
+
+/* INFINITE-AI widget kit, part 3: page framework and messaging */
+(function () {
+  'use strict';
+  var IAI = window.IAI, $ = IAI.$, $$ = IAI.$$, esc = IAI.esc;
+  var MARK = '<svg class="mark" viewBox="0 0 64 32" role="img" aria-label="INFINITE-AI mark"><defs><linearGradient id="arcg" x1="0" x2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#2DD4BF"/></linearGradient></defs><path d="M16 8 C 5 8 5 24 16 24 C 27 24 37 8 48 8 C 59 8 59 24 48 24 C 37 24 27 8 16 8 Z" fill="none" stroke="url(#arcg)" stroke-width="3.2" stroke-linecap="round"/></svg>';
+
+  IAI.page = function (cfg) {
+    var man = cfg.manifest = JSON.parse($('#iai-manifest').textContent); IAI.manifest = man;
+    document.documentElement.lang = 'en-ZA'; document.title = man.name + ' · INFINITE-AI';
+    var app = $('#app'); app.innerHTML = '';
+    var top = document.createElement('header'); top.className = 'top';
+    top.innerHTML = '<div class="in">' + MARK + '<p class="ttl">INFINITE-AI · ' + esc(man.name) + '</p><span class="chip v">' + esc(man.widgetId) + '</span><span class="chip">' + esc(man.module) + '</span><span class="chip g syn">Test data is SYNTHETIC</span><span class="sp"></span><span class="chip c" id="gateChip">No output yet</span></div>';
+    app.appendChild(top);
+    var wrap = document.createElement('main'); wrap.className = 'wrap'; app.appendChild(wrap);
+    wrap.innerHTML = '<h1>' + cfg.title + '</h1><p class="lead">' + cfg.lead + '</p><p class="tag">AI drafts. The teacher decides. Always.</p>';
+    var ctx = { man: man, wrap: wrap };
+    ctx.zone = function (title, id, html) { var s = document.createElement('section'); s.className = 'zone'; s.id = id; s.innerHTML = '<h2>' + esc(title) + '</h2>' + (html || ''); wrap.appendChild(s); return s; };
+    ctx.footer = function () {
+      var z = ctx.zone('4 · Self-test and handoff tests', 'z-test', '<div class="row"><button type="button" id="btnSelf" class="ok">Run self-test</button><button type="button" id="btnHand" class="ok">Run the six handoff tests</button></div><p class="cap">The six handoff tests are accept, gate, break, fire once, change and personal information. They run on synthetic data only and do not touch what is on screen.</p><div id="testOut"></div>');
+      var z5 = ctx.zone('5 · Manifest and wiring', 'z-man', '<p class="cap">This widget talks to others with postMessage. It accepts <code>iai.input</code> and answers with <code>iai.output</code>. It makes no network calls and keeps nothing outside this page.</p><dl class="kv"><dt>Accepts events</dt><dd>' + esc((man.acceptsEvents || []).join(', ') || 'none (takes files or typed input)') + '</dd><dt>Emits events</dt><dd>' + esc((man.emits || []).join(', ')) + '</dd><dt>Human gate</dt><dd>' + esc(man.humanGate.roles.join(' or ')) + '</dd><dt>Purpose</dt><dd>' + esc(man.popia.purpose) + '</dd><dt>Retention</dt><dd>' + esc(man.popia.retention) + '</dd></dl><details><summary>Show manifest JSON</summary><pre id="manPre"></pre></details><h3>Messages sent by this widget</h3><div id="emitLog" class="cap">Nothing sent yet.</div>');
+      $('#manPre').textContent = JSON.stringify(man, null, 2);
+      $('#btnSelf').onclick = function () { var rows = cfg.selfTests ? cfg.selfTests() : []; $('#testOut').innerHTML = '<h3>Self-test</h3>' + IAI.table(rows); };
+      $('#btnHand').onclick = function () { $('#testOut').innerHTML = '<p class="cap">Running…</p>'; (cfg.handoffTests ? cfg.handoffTests() : IAI.runHandoffTests(cfg)).then(function (rows) { var bad = rows.filter(function (r) { return r.ok === 'fail'; }).length; $('#testOut').innerHTML = '<h3>Handoff tests</h3>' + IAI.table(rows) + '<p class="' + (bad ? 'fail' : 'pass') + '">' + (bad ? bad + ' test(s) failed.' : 'All handoff tests passed.') + '</p>'; }).catch(function (e) { $('#testOut').innerHTML = '<p class="fail">Test error: ' + esc(e.message) + '</p>'; }); };
+    };
+    ctx.logEmit = function (env) { var el = $('#emitLog'); if (!el) return; var line = '<div>' + esc(new Date().toLocaleTimeString()) + ' · <code>iai.output</code> · ' + esc(env.event) + ' · run ' + esc(env.runId) + '</div>'; el.innerHTML = (el.dataset.n ? el.innerHTML : '') + line; el.dataset.n = 1; };
+    ctx.sendOut = function (env) { try { if (window.parent !== window) window.parent.postMessage({ type: 'iai.output', widgetId: man.widgetId, payload: env }, '*'); } catch (e) { } ctx.logEmit(env); };
+    ctx.setGate = function (env) { var c = $('#gateChip'); if (!c) return; if (!env) { c.className = 'chip'; c.textContent = 'No output yet'; return; } var s = env.gate.status; c.className = 'chip ' + (s === 'approved' ? 'c' : s === 'rejected' ? 'r' : 'g'); c.textContent = 'Gate: ' + s + (env.stale ? ' (stale)' : ''); };
+    return ctx;
+  };
+
+  /* output zone with decision bar (shared by generic and custom widgets) */
+  IAI.decisionZone = function (ctx, cfg, ref, hooks) {
+    hooks = hooks || {}; var man = cfg.manifest;
+    ctx.zone('3 · Output: read it, edit it, then decide', 'z-out', '<div id="outSum"><p class="cap">No output yet.</p></div><details open><summary>Output JSON (editable payload)</summary><textarea id="outJson" spellcheck="false" aria-label="Output payload JSON"></textarea><div class="row"><button type="button" id="btnApplyJson" class="ed">Save my edit</button><button type="button" id="btnCopyJson">Copy envelope JSON</button><button type="button" id="btnGolden" disabled>Download approved output (.json)</button></div></details><div class="dec" style="margin-top:10px"><label for="decRole" style="margin:0">Deciding as</label><select id="decRole">' + man.humanGate.roles.map(function (r) { return '<option>' + esc(r) + '</option>'; }).join('') + '</select><input id="decReason" placeholder="Reason (needed to reject)" aria-label="Reason" style="flex:1;min-width:160px"><button type="button" class="ok" id="btnApprove">Approve</button><button type="button" class="no" id="btnReject">Reject</button></div><div id="decMsg" role="status" aria-live="polite"></div><h3>Decision record</h3><div id="decRec" class="cap">None yet.</div><h3>Edit log</h3><div id="editLog" class="cap">None yet.</div>');
+    function msg(id, t, cls) { var e = $(id); e.className = cls || ''; e.textContent = t; }
+    function showEnv() {
+      var core = ref.core, e = core.st.env; ctx.setGate(e); if (!e) { $('#outSum').innerHTML = '<p class="cap">No output yet.</p>'; return; }
+      if (hooks.onShow) hooks.onShow(e);
+      $('#outSum').innerHTML = (cfg.renderOutput ? cfg.renderOutput(e) : '') + '<dl class="kv"><dt>Event</dt><dd><code>' + esc(e.event) + '</code></dd><dt>Run</dt><dd>' + esc(e.runId) + '</dd><dt>Gate</dt><dd>' + esc(e.gate.status) + (e.gate.role ? ' by ' + esc(e.gate.role) : '') + (e.stale ? ' · <span class="warn">STALE</span>' : '') + '</dd><dt>Source references</dt><dd>' + (e.sourceRefs.length ? e.sourceRefs.map(function (s) { return esc(s.source || s.sourceId || JSON.stringify(s)) + (s.locator ? ' (' + esc(s.locator) + ')' : ''); }).join('; ') : '<span class="fail">none</span>') + '</dd><dt>Personal information</dt><dd>' + (e.popia.personalInfoFound ? '<span class="fail">FOUND (' + e.popia.hard + '). Approval is blocked.</span>' : '<span class="pass">none found</span>' + (e.popia.soft ? ' · ' + e.popia.soft + ' possible name(s) to check' : '')) + '</dd></dl>';
+      if (document.activeElement !== $('#outJson')) $('#outJson').value = JSON.stringify(e.payload, null, 2);
+      $('#btnGolden').disabled = e.gate.status !== 'approved'; $('#decRec').innerHTML = core.st.decisions.length ? core.st.decisions.map(function (d) { return '<div>' + esc(d.time || '') + ' · <strong>' + esc(d.decision) + '</strong> · ' + esc(d.role || '') + (d.reason ? ' · ' + esc(d.reason) : '') + '</div>'; }).join('') : 'None yet.';
+      $('#editLog').innerHTML = core.st.edits.length ? core.st.edits.map(function (d) { return '<div>' + esc(d.path) + ': <code>' + esc(JSON.stringify(d.before)) + '</code> → <code>' + esc(JSON.stringify(d.after)) + '</code>' + (d.reason ? ' · ' + esc(d.reason) : '') + '</div>'; }).join('') : 'None yet.';
+    }
+    $('#btnApplyJson').onclick = function () { var p; try { p = JSON.parse($('#outJson').value); } catch (e) { msg('#decMsg', 'That is not valid JSON: ' + e.message, 'fail'); return; } var r = ref.core.edit(p, $('#decRole').value, $('#decReason').value); if (!r.ok) msg('#decMsg', r.errors.join(' '), 'warn'); else msg('#decMsg', 'Edit saved (' + r.changes + ' change(s)). Approve to release it.', 'pass'); showEnv(); };
+    $('#btnApprove').onclick = function () { var r = ref.core.decide('approve', $('#decRole').value, $('#decReason').value); if (!r.ok) msg('#decMsg', r.errors.join(' '), 'fail'); else msg('#decMsg', r.duplicate ? 'Already approved and sent once. Nothing sent again.' : 'Approved and sent.', 'pass'); showEnv(); };
+    $('#btnReject').onclick = function () { var r = ref.core.decide('reject', $('#decRole').value, $('#decReason').value); if (!r.ok) msg('#decMsg', r.errors.join(' '), 'fail'); else msg('#decMsg', 'Rejected. Nothing was sent.', 'warn'); showEnv(); };
+    $('#btnCopyJson').onclick = function () { if (ref.core.st.env) IAI.copy(JSON.stringify(ref.core.st.env, null, 2)); };
+    $('#btnGolden').onclick = function () { var e = ref.core.st.env; if (e && e.gate.status === 'approved') IAI.download(man.widgetId + '.golden.json', JSON.stringify(e, null, 2)); };
+    return { showEnv: showEnv, msg: msg };
+  };
+
+  /* message handling shared by generic and custom widgets */
+  IAI.listen = function (cfg, api, extra) {
+    var man = cfg.manifest, seen = {}, lastBy = {};
+    window.addEventListener('message', function (ev) {
+      var m = ev.data; if (!m || typeof m !== 'object' || !ev.source || typeof m.type !== 'string' || m.type.indexOf('iai.') !== 0) return;
+      var reply = function (o) { o.widgetId = man.widgetId; ev.source.postMessage(o, '*'); };
+      if (m.type === 'iai.hello') reply({ type: 'iai.manifest', manifest: man });
+      else if (m.type === 'iai.sample') reply({ type: 'iai.sample.result', input: cfg.sample ? cfg.sample() : null, files: cfg.sampleFiles ? cfg.sampleFiles() : [], upstream: cfg.upstreamSample ? cfg.upstreamSample() : null });
+      else if (m.type === 'iai.selftest') { (cfg.handoffTests ? cfg.handoffTests() : IAI.runHandoffTests(cfg)).then(function (rows) { reply({ type: 'iai.selftest.result', rows: rows, self: cfg.selfTests ? cfg.selfTests() : [] }); }); }
+      else if (m.type === 'iai.input' && m.payload) {
+        var p = m.payload;
+        if (p.kind === 'envelope') {
+          var env = p.envelope || {}, rules = Object.assign({}, cfg.upstream || {}, { allowTestHarness: !!p.testMode });
+          var a = cfg.upstream ? IAI.acceptEnvelope(env, rules) : { ok: false, errors: ['This widget takes files or typed input, not upstream envelopes.'] };
+          var key = (p.testMode ? 't:' : '') + (env.runId || ''), dup = a.ok && !!seen[key]; if (a.ok) seen[key] = 1;
+          var sk = (p.testMode ? 't:' : '') + (env.widgetId || '') + '|' + (env.event || ''), prev = a.ok && !dup ? lastBy[sk] || null : null; if (a.ok && !dup) lastBy[sk] = env.runId;
+          reply({ type: 'iai.ack', runId: env.runId || null, accepted: a.ok, duplicate: dup, supersedes: prev, errors: a.errors });
+          if (a.ok && !dup && !p.testMode && cfg.onEnvelope) cfg.onEnvelope(env, api);
+        } else if (p.kind === 'run' && cfg.run) {
+          var c = IAI.makeCore(cfg, null), fl = (p.files || []).map(function (f) { return { fileName: f.fileName, label: f.label, text: f.text, raw: f.raw, structure: f.structure || {}, parseStatus: 'read' }; });
+          c.run(p.input, fl).then(function (r) { reply({ type: 'iai.output', draft: true, ok: r.ok, errors: r.errors || [], payload: r.ok ? r.env : null }); });
+        } else if (extra && extra(p, reply, m)) { /* handled */ }
+        else reply({ type: 'iai.ack', accepted: false, errors: ['Unknown input kind: ' + p.kind] });
+      }
+    });
+  };
+
+  /* generic widget: preview / bench / output with decision bar */
+  IAI.init = function (cfg) {
+    var ctx = IAI.page(cfg), man = cfg.manifest, ing = null, ref = { core: null };
+    ref.core = IAI.makeCore(cfg, function (e) { ctx.sendOut(e); });
+    ctx.zone('1 · Preview: how it looks to the person who uses it', 'z-prev', '<div id="prev"><p class="cap">Nothing to show yet. Load the synthetic sample and press Run.</p></div>');
+    ctx.zone('2 · Test bench: try it before it is wired in', 'z-bench', '<p class="cap">Everything here is <strong>SYNTHETIC</strong>. Do not type real learner or staff details.</p>' + ((man.ingest || []).length ? '<div id="ingest"></div>' : '') + '<div id="bench"></div><div class="row" style="margin-top:10px"><button type="button" id="btnSample">Load synthetic sample</button><button type="button" id="btnRun" class="pri">Run</button><button type="button" id="btnReset">Reset</button></div><div id="runMsg" role="status" aria-live="polite"></div>');
+    if ((man.ingest || []).length) { ing = IAI.ingest($('#ingest'), man, function () { if (cfg.onFilesChanged) cfg.onFilesChanged(ing); }); cfg.ing = ing; }
+    cfg.buildBench($('#bench'), { core: ref.core, ing: ing });
+    var dz = IAI.decisionZone(ctx, cfg, ref, { onShow: function (e) { if (cfg.renderPreview) cfg.renderPreview(e, $('#prev'), ing); } });
+    var msg = dz.msg, showEnv = dz.showEnv;
+    function run() {
+      var files = ing ? ing.files : [];
+      if (ing) {
+        var need = []; (man.ingest || []).forEach(function (s) { if (s.required && !ing.usable(s.label).length) need.push(s); });
+        if (need.length) { var s = need[0], state = s.label === 'SCHOOL TEMPLATE' ? 'needs_template' : 'needs_source'; msg('#runMsg', state + ': attach ' + (s.note || s.label) + ' as ' + s.label + '. Nothing was generated.', 'fail'); ctx.setGate(null); return; }
+        var held = files.filter(function (f) { return f.label && f.hardPII && !f.piiOverride; }); if (held.length) msg('#runMsg', held.length + ' file(s) are blocked for personal information and are not used. Clean the text or remove them.', 'warn');
+      }
+      var input = cfg.collectInput ? cfg.collectInput(ing) : {};
+      var usable = ing ? ing.files.filter(function (f) { return f.label && f.text && f.text.trim() && (!f.hardPII || f.piiOverride); }) : [];
+      ref.core.run(input, usable).then(function (r) {
+        if (!r.ok) { msg('#runMsg', (r.errors || []).join(' '), 'fail'); showEnv(); return; }
+        msg('#runMsg', 'Draft ready. Read it, then approve, edit or reject.', 'pass'); showEnv();
+      }).catch(function (e) { msg('#runMsg', 'Error: ' + e.message, 'fail'); });
+    }
+    $('#btnRun').onclick = run;
+    $('#btnSample').onclick = function () { var s = cfg.sample(); cfg.fillInput && cfg.fillInput(s); if (ing && cfg.sampleFiles) { ing.clear(); ing.addSynthetic(cfg.sampleFiles()); } msg('#runMsg', 'Synthetic sample loaded. Press Run.', 'cap'); };
+    $('#btnReset').onclick = function () { ref.core = IAI.makeCore(cfg, function (e) { ctx.sendOut(e); }); if (ing) ing.clear(); cfg.reset && cfg.reset(); $('#prev').innerHTML = '<p class="cap">Nothing to show yet.</p>'; $('#outJson').value = ''; $('#decRec').textContent = 'None yet.'; $('#editLog').textContent = 'None yet.'; $('#runMsg').textContent = ''; $('#decMsg').textContent = ''; showEnv(); ctx.setGate(null); };
+    cfg.selfTests = function () { return IAI.selfTest(cfg, ref.core, ing).concat(cfg.extraSelfTests ? cfg.extraSelfTests(ref.core, ing) : []); };
+    ctx.footer();
+    var api = { ref: ref, ing: ing, ctx: ctx, showEnv: showEnv, run: run };
+    IAI.listen(cfg, api);
+    window.IAI.run = function (input, files) { return ref.core.run(input, files || []); };
+    window.IAI.validate = IAI.validateEnvelope; window.IAI.reset = function () { $('#btnReset').click(); };
+    return api;
+  };
+})();
+</script>
+<script>/* INFINITE-AI Curriculum Engine helpers (shared by CE-W01 to CE-W06) */
+(function () {
+  'use strict';
+  var IAI = window.IAI, esc = IAI.esc;
+  var CE = IAI.CE = {};
+  CE.DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  CE.DAYLONG = { Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday' };
+  function splitCsv(l) { var out = [], cur = '', q = false, i, ch; for (i = 0; i < l.length; i++) { ch = l[i]; if (q) { if (ch === '"' && l[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch; } else if (ch === '"') q = true; else if (ch === ',') { out.push(cur); cur = ''; } else cur += ch; } out.push(cur); return out; }
+  /* rows: split on | or tab (or commas when the line has enough of them) */
+  CE.lines = function (text, minCells) {
+    var out = []; String(text || '').split(/\r?\n/).forEach(function (l, i) {
+      var t = l.trim(); if (!t || /^(#|\/\/)/.test(t)) return; var c;
+      if (t.indexOf('|') >= 0) c = t.split('|'); else if (t.indexOf('\t') >= 0) c = t.split('\t'); else if (minCells > 1 && (t.match(/,/g) || []).length >= minCells - 1) c = splitCsv(t); else c = [t];
+      out.push({ n: i + 1, cells: c.map(function (x) { return x.trim(); }), raw: t });
+    }); return out;
+  };
+  CE.norm = function (s) { return String(s || '').toLowerCase().replace(/[‘’“”]/g, "'").replace(/[^a-z0-9]+/g, ' ').trim(); };
+  CE.slug = function (s) { return String(s || '').trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); };
+  CE.isDate = function (s) { if (!/^\d{4}-\d{2}-\d{2}$/.test(s || '')) return false; var d = new Date(s + 'T00:00:00Z'); return !isNaN(d) && d.toISOString().slice(0, 10) === s; };
+  CE.addDays = function (s, n) { var d = new Date(s + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+  CE.dow = function (s) { return new Date(s + 'T00:00:00Z').getUTCDay(); };
+  CE.dayName = function (s) { return CE.DAYS[CE.dow(s)]; };
+  CE.diffDays = function (a, b) { return Math.round((new Date(b + 'T00:00:00Z') - new Date(a + 'T00:00:00Z')) / 86400000); };
+  CE.weekRange = function (s) { var m = String(s || '').match(/^\s*(?:week\s*)?(\d{1,2})(?:\s*[-–]\s*(\d{1,2}))?\s*$/i); if (!m) return null; var a = +m[1], b = m[2] ? +m[2] : a; return b >= a ? [a, b] : null; };
+  CE.minutes = function (hhmm) { var m = String(hhmm || '').match(/^(\d{1,2}):(\d{2})$/); return m && +m[1] < 24 && +m[2] < 60 ? +m[1] * 60 + +m[2] : null; };
+  CE.gradeCode = function (g) { var m = String(g || '').match(/(?:grade\s*)?(R|\d{1,2})\b/i); return m ? m[1].toUpperCase() : CE.slug(g).slice(0, 3).toUpperCase(); };
+  CE.subjCode = function (s) { var w = String(s || '').trim().split(/\s+/).filter(Boolean); if (!w.length) return 'SUBJ'; return (w.length > 1 ? w.map(function (x) { return x[0]; }).join('').slice(0, 4) : w[0].slice(0, 4)).toUpperCase().replace(/[^A-Z0-9]/g, 'X'); };
+  /* paste box of one envelope or a list of them */
+  CE.parseEnvs = function (text) {
+    var t = String(text || '').trim(); if (!t) return { list: [], error: null };
+    try { var o = JSON.parse(t); return { list: Array.isArray(o) ? o : [o], error: null }; } catch (e) { return { list: [], error: 'The pasted upstream text is not valid JSON (' + e.message + ').' }; }
+  };
+  CE.envLabel = function (e) { return (e && e.widgetId ? e.widgetId : 'an output') + ' (' + (e && e.event ? e.event : 'no event') + ')'; };
+  /* school template: use a template.mapped output to order and name the columns */
+  CE.template = function (text, defaults) {
+    var def = { name: 'DEFAULT - not school-approved', isDefault: true, columns: defaults.map(function (c) { return { key: c.key, label: c.label }; }), notes: [] };
+    var t = String(text || '').trim(); if (!t) return def;
+    var env; try { env = JSON.parse(t); } catch (e) { def.notes.push('The school template text is not valid JSON, so the default layout was used.'); return def; }
+    var a = IAI.acceptEnvelope(env, { events: ['template.mapped'], allowTestHarness: false, needSourceRefs: false });
+    if (!a.ok) { def.notes.push('The school template was not used: ' + a.errors[0]); return def; }
+    var sm = (env.payload && env.payload.slotMap) || [], cols = [], skipped = [];
+    sm.forEach(function (m) { if (m.status === 'unmapped' || !m.field) return; var d = defaults.filter(function (c) { return CE.norm(c.label) === CE.norm(m.slot) || CE.norm(c.key) === CE.norm(m.slot); })[0]; if (d) cols.push({ key: d.key, label: m.field }); else skipped.push(m.slot); });
+    if (!cols.length) { def.notes.push('None of the school template columns match this widget, so the default layout was used.'); return def; }
+    var left = defaults.filter(function (c) { return !cols.some(function (x) { return x.key === c.key; }); }).map(function (c) { return c.label; });
+    return { name: (env.payload.label || 'School template') + ' v' + (env.payload.templateVersion || '?'), isDefault: false, columns: cols, notes: (left.length ? ['Not shown in the school layout (still in the JSON): ' + left.join(', ') + '.'] : []).concat(skipped.length ? ['Template columns this widget does not fill: ' + skipped.join(', ') + '.'] : []) };
+  };
+  CE.table = function (cols, rows, cls) {
+    return '<div class="tw"><table class="' + (cls || '') + '"><thead><tr>' + cols.map(function (c) { return '<th>' + esc(c.label) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows.map(function (r) { return '<tr' + (r._cls ? ' class="' + r._cls + '"' : '') + '>' + cols.map(function (c) { var v = r[c.key]; return '<td>' + (v && v.html ? v.html : esc(v == null ? '' : v)) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+  };
+  CE.checks = function (list) { return '<ul class="cap" style="padding-left:1.1rem">' + list.map(function (c) { return '<li class="' + (c.ok === true ? 'pass' : c.ok === false ? 'fail' : 'warn') + '">' + (c.ok === true ? 'OK' : c.ok === false ? 'Check' : 'Note') + ': ' + esc(c.text) + '</li>'; }).join('') + '</ul>'; };
+  CE.printBtn = function () { return '<p class="row"><button type="button" onclick="window.print()">Print this page</button></p>'; };
+  CE.safeJson = function (id) { var el = document.getElementById(id); try { return JSON.parse(el.value); } catch (e) { return null; } };
+  /* approved upstream envelopes: check each one and say plainly what is wrong */
+  CE.needUpstream = function (text, label, events) {
+    var p = CE.parseEnvs(text), er = [];
+    if (p.error) return { list: [], errors: [p.error] };
+    if (!p.list.length) return { list: [], errors: ['Missing input: add the approved ' + label + ' output (' + events.join(' or ') + ').'] };
+    p.list.forEach(function (e) { var a = IAI.acceptEnvelope(e, { events: events, allowTestHarness: false }); if (!a.ok) er.push(CE.envLabel(e) + ': ' + a.errors.join(' ')); });
+    return { list: p.list, errors: er };
+  };
+
+  /* "## Heading" blocks of free text */
+  CE.blocks = function (text) { var out = [], cur = null; String(text || '').split(/\r?\n/).forEach(function (l) { var m = l.match(/^\s*##\s*(.+?)\s*$/); if (m) { cur = { name: m[1], lines: [] }; out.push(cur); } else if (cur && l.trim()) cur.lines.push(l.trim()); }); out.forEach(function (b) { b.text = b.lines.join('\n'); }); return out; };
+  /* school template for a document with headings: ordered headings, each tied to one of our parts or left blank */
+  CE.headings = function (templateText, slots) {
+    var def = { name: 'DEFAULT - not school-approved', isDefault: true, headings: slots.map(function (s) { return { heading: s, slot: s }; }), notes: [], dropped: [] };
+    var t = String(templateText || '').trim(); if (!t) return def;
+    var env; try { env = JSON.parse(t); } catch (e) { def.notes.push('The school template text is not valid JSON, so the default headings were used.'); return def; }
+    var a = IAI.acceptEnvelope(env, { events: ['template.mapped'], allowTestHarness: false, needSourceRefs: false });
+    if (!a.ok) { def.notes.push('The school template was not used: ' + a.errors[0]); return def; }
+    var p = env.payload, sm = (p.slotMap || []).filter(function (m) { return m.status !== 'unmapped' && m.field; }), det = (p.detectedFields || []).slice();
+    if (!sm.length) { def.notes.push('The school template maps none of the plan parts, so the default headings were used.'); return def; }
+    var order = det.length ? det : sm.map(function (m) { return m.field; }), hs = [];
+    order.forEach(function (f) { var m = sm.filter(function (x) { return x.field === f; })[0]; hs.push({ heading: f, slot: m ? m.slot : null }); });
+    sm.forEach(function (m) { if (!hs.some(function (h) { return h.slot === m.slot; })) hs.push({ heading: m.field, slot: m.slot }); });
+    var dropped = slots.filter(function (s) { return !hs.some(function (h) { return h.slot === s; }); });
+    var blanks = hs.filter(function (h) { return !h.slot; }).map(function (h) { return h.heading; });
+    return { name: (p.label || 'School template') + ' v' + (p.templateVersion || '?'), isDefault: false, headings: hs, notes: blanks.length ? ['School headings with no matching plan part, kept in order and left for the teacher: ' + blanks.join(', ') + '.'] : [], dropped: dropped };
+  };
+  /* arithmetic from text, evaluated without eval */
+  CE.evalArith = function (s) {
+    var t = String(s || '').replace(/[×xX]/g, '*').replace(/[÷]/g, '/').replace(/−/g, '-'), i = 0;
+    function ws() { while (t[i] === ' ') i++; }
+    function num() { ws(); var m = t.slice(i).match(/^\d+(\.\d+)?/); if (!m) throw 0; i += m[0].length; return parseFloat(m[0]); }
+    function fac() { ws(); if (t[i] === '(') { i++; var v = expr(); ws(); if (t[i] !== ')') throw 0; i++; return v; } return num(); }
+    function term() { var v = fac(); for (;;) { ws(); var c = t[i]; if (c === '*') { i++; v *= fac(); } else if (c === '/') { i++; var d = fac(); if (d === 0) throw 0; v /= d; } else return v; } }
+    function expr() { var v = term(); for (;;) { ws(); var c = t[i]; if (c === '+') { i++; v += term(); } else if (c === '-') { i++; v -= term(); } else return v; } }
+    try { var r = expr(); ws(); return i === t.length ? r : null; } catch (e) { return null; }
+  };
+  CE.findArith = function (text) { var m = String(text || '').match(/\d[\d\s+\-−*×xX÷\/().]*\d/g) || []; for (var k = 0; k < m.length; k++) { if (!/[+\-−*×xX÷\/]/.test(m[k])) continue; var v = CE.evalArith(m[k]); if (v != null) return { expr: m[k].trim(), value: v }; } return null; };
+  CE.DIAG = /\b(dyslexi\w*|adhd|autis\w*|down'?s syndrome|slow learners?|remedial|retard\w*|backward|weak (learners?|group)|special needs|barrier\w* to learning|disorder|disabilit\w*)\b/i;
+  var st = document.createElement('style'); st.textContent = '@media print{.zone:not(#z-prev),h1,.lead,.tag{display:none!important}#z-prev{border:0}}.ce-cell-sm{font-size:.82rem}.ce-hol{background:rgba(251,113,133,.12)}.ce-ass{background:rgba(245,184,65,.12)}.ce-need{color:var(--gold)}'; document.head.appendChild(st);
+})();
+</script>
+<script>/* INFINITE-AI Data Spine helpers (shared by DW-W01 to DW-W09). No network, no storage. */
+(function () {
+  'use strict';
+  var IAI = window.IAI, esc = IAI.esc;
+  var DW = IAI.DW = {};
+  DW.CODE = /^[A-Za-z]{1,2}\d{2,4}$/;
+  DW.GRADES = ['R', '1', '2', '3', '4', '5', '6', '7'];
+  /* quote-aware CSV: comma, semicolon or tab; BOM stripped; never throws */
+  DW.csv = function (text) {
+    var t = String(text == null ? '' : text).replace(/^﻿/, ''), out = { headers: [], rows: [], errors: [], delimiter: ',' };
+    if (!t.trim()) { out.errors.push('The CSV is empty. Paste or open the export file.'); return out; }
+    var first = t.split(/\r?\n/)[0], best = ',', bc = -1; [',', ';', '\t'].forEach(function (d) { var c = first.split(d).length; if (c > bc) { bc = c; best = d; } }); out.delimiter = best;
+    var rows = [], row = [], cur = '', q = false, i, ch, line = 1, startLine = 1;
+    for (i = 0; i < t.length; i++) {
+      ch = t[i];
+      if (q) { if (ch === '"' && t[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else { if (ch === '\n') line++; cur += ch; } }
+      else if (ch === '"') q = true;
+      else if (ch === best) { row.push(cur); cur = ''; }
+      else if (ch === '\n' || ch === '\r') { if (ch === '\r' && t[i + 1] === '\n') i++; row.push(cur); cur = ''; if (row.some(function (c) { return c.trim() !== ''; })) rows.push({ n: startLine, cells: row }); row = []; line++; startLine = line; }
+      else cur += ch;
+    }
+    if (q) out.errors.push('A quote opened and was never closed, so the last row may be cut short.');
+    row.push(cur); if (row.some(function (c) { return c.trim() !== ''; })) rows.push({ n: startLine, cells: row });
+    if (!rows.length) { out.errors.push('The CSV has no rows.'); return out; }
+    out.headers = rows[0].cells.map(function (h) { return h.trim(); });
+    var seen = {}; out.headers.forEach(function (h, k) { if (!h) out.errors.push('Column ' + (k + 1) + ' has no heading.'); else if (seen[h.toLowerCase()]) out.errors.push('The heading "' + h + '" appears twice.'); seen[h.toLowerCase()] = 1; });
+    out.rows = rows.slice(1).map(function (r) { return { n: r.n, cells: r.cells.map(function (c) { return c.trim(); }), ragged: r.cells.length !== out.headers.length }; });
+    if (!out.rows.length) out.errors.push('The CSV has a heading row but no learner rows.');
+    return out;
+  };
+  /* small synchronous SHA-256 (hex) for the append-only chain */
+  DW.sha256 = function (str) {
+    var K = [], H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19], p = 2, n = 0, i, j;
+    function isP(x) { for (var k = 2; k * k <= x; k++) if (x % k === 0) return false; return true; }
+    while (n < 64) { if (isP(p)) { K[n++] = (Math.pow(p, 1 / 3) % 1) * 4294967296 | 0; } p++; }
+    var b = unescape(encodeURIComponent(str)), w = [], l = b.length * 8;
+    for (i = 0; i < b.length; i++) w[i >> 2] |= b.charCodeAt(i) << (24 - (i % 4) * 8);
+    w[l >> 5] |= 0x80 << (24 - l % 32); w[(((l + 64) >> 9) << 4) + 15] = l;
+    function rr(x, c) { return (x >>> c) | (x << (32 - c)); }
+    for (j = 0; j < w.length; j += 16) {
+      var W = [], a = H.slice(), q; for (q = 0; q < 16; q++) W[q] = w[j + q] | 0;
+      for (i = 0; i < 64; i++) {
+        if (i >= 16) { var s0 = rr(W[i - 15], 7) ^ rr(W[i - 15], 18) ^ (W[i - 15] >>> 3), s1 = rr(W[i - 2], 17) ^ rr(W[i - 2], 19) ^ (W[i - 2] >>> 10); W[i] = (W[i - 16] + s0 + W[i - 7] + s1) | 0; }
+        var S1 = rr(a[4], 6) ^ rr(a[4], 11) ^ rr(a[4], 25), ch2 = (a[4] & a[5]) ^ (~a[4] & a[6]), t1 = (a[7] + S1 + ch2 + K[i] + W[i]) | 0, S0 = rr(a[0], 2) ^ rr(a[0], 13) ^ rr(a[0], 22), mj = (a[0] & a[1]) ^ (a[0] & a[2]) ^ (a[1] & a[2]), t2 = (S0 + mj) | 0;
+        a = [(t1 + t2) | 0, a[0], a[1], a[2], (a[3] + t1) | 0, a[4], a[5], a[6]];
+      }
+      for (i = 0; i < 8; i++) H[i] = (H[i] + a[i]) | 0;
+    }
+    return H.map(function (x) { return ('00000000' + (x >>> 0).toString(16)).slice(-8); }).join('');
+  };
+  /* attach a file picker to a textarea (the file is read in the browser only) */
+  DW.filePicker = function (taId, label) {
+    var ta = document.getElementById(taId), box = document.createElement('div'); box.className = 'row';
+    box.innerHTML = '<label class="cap" style="display:inline-block">' + esc(label || 'Open a file') + ' <input type="file" accept=".csv,.txt,.json,text/*,application/json" style="max-width:100%"></label>';
+    ta.parentNode.insertBefore(box, ta.nextSibling);
+    box.querySelector('input').onchange = function (e) { var f = e.target.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { ta.value = String(r.result); ta.dispatchEvent(new Event('input', { bubbles: true })); IAI.toast('Read ' + f.name + ' in this browser. Nothing was sent anywhere.'); }; r.readAsText(f); };
+  };
+  DW.ageOn = function (dob, asAt) { var a = dob.split('-').map(Number), b = asAt.split('-').map(Number), y = b[0] - a[0]; if (b[1] < a[1] || (b[1] === a[1] && b[2] < a[2])) y--; return y; };
+  DW.isDate = function (s) { return /^\d{4}-\d{2}-\d{2}$/.test(s || '') && IAI.CE.isDate(s); };
+
+  /* ---------- de-identification ---------- */
+  var STOP = {}; ('January February March April May June July August September October November December Monday Tuesday Wednesday Thursday Friday Saturday Sunday Grade Term Week Day Mathematics English Afrikaans Zulu Xhosa Life Skills Home Language First Additional Natural Sciences Social Technology Creative Arts Physical Education Department Basic Annual Teaching Plan Curriculum Foundation Phase Intermediate Senior Class Learner Teacher Parent School Principal Counters Number Addition Subtraction Counting Shapes Reading Writing Phonics Library Check Attendance Meet Ask Review Share Agree Compare Discuss Plan Keep Practise Practice Well Work Great Excellent Rate Mark Marks Report Register Insight Insights Action Owner Step Steps Please Thank Thanks Good Very Needs Support Extension').split(' ').forEach(function (w) { STOP[w.toLowerCase()] = 1; });
+  var VERBS = 'did|was|is|has|had|needs?|needed|struggled|struggles|could|couldn\'?t|can|kept|got|found|finished|understood|refused|cried|talked|worked|works|managed|will|would|always|never|still|read|reads|wrote|writes|asked|said|says|seems|seemed|enjoys|enjoyed|loves|likes|missed|misses|arrived|lives|stays';
+  DW.deid = function (text, opts) {
+    opts = opts || {}; text = String(text == null ? '' : text);
+    var found = [], m, re, known = (opts.known || []).map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 1; });
+    function add(type, s, e, norm) { found.push({ type: type, start: s, end: e, norm: (norm || text.slice(s, e)).toLowerCase().replace(/\s+/g, ' ') }); }
+    re = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g; while ((m = re.exec(text))) add('EMAIL', m.index, m.index + m[0].length);
+    re = /\b\d{13}\b/g; while ((m = re.exec(text))) add('ID', m.index, m.index + 13);
+    re = /(?:\+27|0027|\b0)[\s-]?\(?\d{2}\)?[\s-]?\d{3}[\s-]?\d{4}\b/g; while ((m = re.exec(text))) add('PHONE', m.index, m.index + m[0].length, m[0].replace(/[^\d]/g, ''));
+    re = /\b\d{1,5}\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?\s+(?:Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Crescent|Close|Way)\b|\bP\.?O\.? Box \d+\b|\bFlat \d+\b/g; while ((m = re.exec(text))) add('ADDRESS', m.index, m.index + m[0].length);
+    known.forEach(function (k) { var r = new RegExp('(^|[^A-Za-z])(' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(?![A-Za-z])', 'gi'); while ((m = r.exec(text))) add('NAME', m.index + m[1].length, m.index + m[1].length + m[2].length); });
+    re = /\b(?:Learner|Pupil|Student|Child|Parent|Guardian|Mother|Father|Caregiver|Name|Surname|First name|Teacher|Educator)(?:\s+name)?\s*[:=]\s*([A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+){0,2})/g; while ((m = re.exec(text))) { var s0 = m.index + m[0].lastIndexOf(m[1]); add('NAME', s0, s0 + m[1].length); }
+    re = /\b(?:Mr|Mrs|Ms|Miss|Dr|Prof|Mx)\.?\s+([A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+)?)/g; while ((m = re.exec(text))) { var s1 = m.index + m[0].lastIndexOf(m[1]); add('NAME', s1, s1 + m[1].length); }
+    re = /\b[A-Z][a-z]{2,}(?:\s+[A-Z][a-z]{2,}){1,2}\b/g; while ((m = re.exec(text))) { var ws = m[0].split(/\s+/); if (ws.some(function (w) { return STOP[w.toLowerCase()]; })) continue; add('NAME', m.index, m.index + m[0].length); }
+    re = new RegExp('(?:^|[.!?]\\s+|\\n)([A-Z][a-z]{2,})\\s+(?:' + VERBS + ')\\b', 'g'); while ((m = re.exec(text))) { if (STOP[m[1].toLowerCase()]) continue; var s2 = m.index + m[0].indexOf(m[1]); add('NAME', s2, s2 + m[1].length); }
+    found.sort(function (a, b) { return a.start - b.start || (b.end - b.start) - (a.end - a.start); });
+    var kept = [], last = -1; found.forEach(function (f) { if (f.start >= last) { kept.push(f); last = f.end; } });
+    var ids = {}, counts = {}, after = '', pos = 0, spans = [];
+    kept.forEach(function (f) { var key = f.type + '|' + f.norm; if (!ids[key]) { ids[key] = Object.keys(ids).filter(function (k) { return k.indexOf(f.type + '|') === 0; }).length + 1; } var tok = '[' + f.type + '-' + ids[key] + ']'; counts[tok] = (counts[tok] || 0) + 1; after += text.slice(pos, f.start) + tok; pos = f.end; spans.push({ token: tok, original: text.slice(f.start, f.end), start: f.start, end: f.end }); });
+    after += text.slice(pos);
+    /* verify: putting the originals back (in memory only) must give the exact input */
+    var rebuilt = '', p2 = 0, a2 = after; spans.forEach(function (s) { var at = a2.indexOf(s.token, p2); rebuilt += a2.slice(p2, at) + s.original; p2 = at + s.token.length; }); rebuilt += a2.slice(p2);
+    var residual = IAI.scanPII(after).map(function (x) { return { type: x.type, severity: x.severity }; });
+    known.forEach(function (k) { if (new RegExp('(^|[^A-Za-z])' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![A-Za-z])', 'i').test(after)) residual.push({ type: 'Known name still present', severity: 'hard' }); });
+    var maybe = [], wre = /\b[A-Z][a-z]{2,}\b/g, wm; while ((wm = wre.exec(after))) { var pre = after.slice(0, wm.index).replace(/\s+$/, ''); if (!pre || /[.!?:]$/.test(pre) || STOP[wm[0].toLowerCase()]) continue; if (maybe.indexOf(wm[0]) < 0) maybe.push(wm[0]); }
+    return { maybe: maybe, after: after, tokens: Object.keys(counts).map(function (t) { return { token: t, type: t.slice(1, t.indexOf('-')), count: counts[t] }; }), spans: spans, verified: rebuilt === text, residual: residual };
+  };
+  /* before view with the caught spans marked (screen only; never put in the payload) */
+  DW.markBefore = function (text, spans) { var h = '', pos = 0; spans.forEach(function (s) { h += esc(text.slice(pos, s.start)) + '<mark style="background:#FB718555;color:inherit;border-radius:3px;padding:0 2px">' + esc(text.slice(s.start, s.end)) + '</mark>'; pos = s.end; }); return h + esc(text.slice(pos)); };
+})();
+</script>
+<script>/* Shared helpers for the screening-to-support (SIAS) widgets. */
+(function () {
+  'use strict';
+  var IAI = window.IAI, CE = IAI.CE, DW = IAI.DW, esc = IAI.esc, SA = IAI.SA = {};
+  SA.ROSE = '#FB7185';
+  SA.num = function (s) { s = String(s == null ? '' : s).trim(); return /^-?\d+(\.\d+)?$/.test(s) ? Number(s) : null; };
+  SA.code = function (s) { return DW.CODE.test(String(s || '').trim()); };
+  SA.staff = function (s) { return /^T\d{2,3}$/.test(String(s || '').trim()); };
+  SA.csvList = function (s) { return String(s || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean); };
+  SA.uniq = function (a) { var o = {}; return a.filter(function (x) { return o[x] ? false : (o[x] = 1); }); };
+  /* terms a letter to parents must never contain (DEMO list: the SBST adds to it) */
+  SA.DIAG = ['dyslexi', 'dyscalculi', 'dysgraphi', 'dyspraxi', 'adhd', 'add/adhd', 'autis', 'asperger', 'intellectual disab', 'learning disab', 'disorder', 'syndrome', 'special needs', 'handicap', 'retard', 'slow learner', 'mentally', 'impair', 'deficit', 'behaviour problem', 'diagnos', 'low iq', 'iq', 'disleksie', 'diskalkulie', 'outisme', 'agterlik'];
+  SA.diagFound = function (text) { var t = String(text || '').toLowerCase(); return SA.DIAG.filter(function (d) { return new RegExp('\\b' + d.replace(/[\/.]/g, '\\$&') + (d === 'iq' ? '\\b' : '')).test(t); }); };
+  SA.proposal = function (txt) { return '<p class="cap" style="border:1px solid #F5B841;border-radius:8px;padding:.5rem .7rem;color:#F5B841"><b>PROPOSAL.</b> ' + esc(txt || 'Nothing changes until the School-Based Support Team ratifies it.') + '</p>'; };
+  SA.rose = function (txt) { return '<span style="color:' + SA.ROSE + ';font-weight:700">' + esc(txt) + '</span>'; };
+  /* an approved sa.decision.ratified must be present and from a ratified gate */
+  SA.needRatified = function (text, label) {
+    var a = CE.needUpstream(text, label || 'ratified SBST decision', ['sa.decision.ratified']);
+    if (a.errors.length) return a;
+    a.list.forEach(function (e) { if (e.gate.role !== 'SBST chairperson') a.errors.push('The SBST decision was approved by "' + e.gate.role + '", not by the SBST chairperson.'); });
+    return a;
+  };
+  SA.rows = function (text, kinds) { /* rows whose first cell is one of the kinds */
+    return CE.lines(text, 1).filter(function (r) { return kinds.indexOf((r.cells[0] || '').toLowerCase()) >= 0; });
+  };
+  SA.cmp = function (op, score, v) { return op === 'below' ? score < v : op === 'atleast' ? score >= v : op === 'above' ? score > v : op === 'atmost' ? score <= v : null; };
+  SA.OPS = ['below', 'atleast', 'above', 'atmost'];
+})();
+</script>
+<script>/* Shared helpers for the teaching and learning toolbox widgets. */
+(function () {
+  'use strict';
+  var IAI = window.IAI, CE = IAI.CE, SA = IAI.SA, esc = IAI.esc, TB = IAI.TB = {};
+  TB.words = function (s) { return String(s || '').toLowerCase().match(/[a-z']+/g) || []; };
+  TB.sentences = function (s) { return (String(s || '').match(/[^.!?]+[.!?]*/g) || []).filter(function (x) { return x.trim(); }).length; };
+  TB.imageLike = function (t) { return /data:image|base64,|<img|https?:\/\/\S+\.(png|jpe?g|gif|svg|webp)/i.test(String(t || '')); };
+  TB.letters = ['A', 'B', 'C', 'D'];
+  TB.opts = function (s) { var o = {}; String(s || '').split(';').forEach(function (x) { var m = /^\s*([A-D])\s*=\s*(.+?)\s*$/.exec(x); if (m) o[m[1]] = m[2]; }); return o; };
+  TB.lesson = function (text) {
+    var a = CE.needUpstream(text, 'approved lesson', ['ce.lesson.approved']); if (a.errors.length) return { errors: a.errors };
+    if (a.list.length !== 1) return { errors: ['Give one approved lesson at a time.'] };
+    var e = a.list[0], p = e.payload; if (!p.capsTopicId || !p.lessonId) return { errors: ['The lesson has no capsTopicId or lessonId, so nothing can be made from it.'] };
+    return { env: e, p: p };
+  };
+  TB.section = function (p, heading) { var s = (p.sections || []).filter(function (x) { return x.heading.toLowerCase() === heading.toLowerCase(); })[0]; return s || null; };
+  /* every translatable line of a resource, in a fixed order */
+  var KEYS = ['text', 'instruction', 'question', 'prompt', 'heading', 'title', 'topic', 'sentence', 'step', 'task', 'description', 'speakerNotes', 'notes', 'line', 'doing', 'learners', 'teacher'];
+  TB.flat = function (obj) {
+    var out = [];
+    (function walk(v, path) {
+      if (Array.isArray(v)) v.forEach(function (x, i) { walk(x, path + '[' + i + ']'); });
+      else if (v && typeof v === 'object') Object.keys(v).forEach(function (k) { if (typeof v[k] === 'string' && KEYS.indexOf(k) >= 0 && v[k].trim() && !/sourceRef|runId/i.test(k)) out.push({ path: path + '.' + k, text: v[k] }); else if (typeof v[k] === 'object') walk(v[k], path + '.' + k); });
+    })(obj, 'payload');
+    return out.map(function (x, i) { return { n: i + 1, path: x.path, text: x.text }; });
+  };
+  TB.RES = ['tb.items.approved', 'tb.memo.approved', 'tb.worksheet.approved', 'tb.passage.approved', 'tb.deck.approved', 'tb.remediation.approved', 'tb.extension.approved', 'tb.lowresource.approved'];
+  TB.rowsBy = function (text, kind) { return CE.lines(text, 1).filter(function (r) { return (r.cells[0] || '').toLowerCase() === kind; }); };
+  TB.jaccard = function (a, b) { var A = TB.words(a), B = TB.words(b), s = {}; A.forEach(function (w) { s[w] = 1; }); var i = 0, u = Object.keys(s).length; B.forEach(function (w, k) { if (s[w] === 1) { i++; s[w] = 2; } else if (!s[w]) { s[w] = 3; u++; } }); return u ? i / u : 0; };
+  TB.slideHtml = function (title, slides) {
+    return '<!doctype html><html lang="en-ZA"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(title) + '</title><style>body{margin:0;background:#05070F;color:#fff;font-family:Arial,sans-serif}section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:2rem;box-sizing:border-box;border-bottom:4px solid #7C5CFF}h1{font-size:4.5rem;margin:0 0 1rem}.alt{border:3px dashed #2DD4BF;padding:1.5rem 2rem;margin:1rem;font-size:1.4rem}.n{position:absolute;right:1rem;bottom:.5rem;opacity:.5}@media print{section{page-break-after:always;color:#000;background:#fff}}</style></head><body>' + slides.map(function (s) { return '<section aria-label="Slide ' + s.n + '"><h1>' + esc(s.text) + '</h1>' + (s.imageAlt ? '<div class="alt" role="img" aria-label="' + esc(s.imageAlt) + '">Picture: ' + esc(s.imageAlt) + '</div>' : '') + '<span class="n">' + s.n + '</span></section>'; }).join('') + '</body></html>';
+  };
+})();
+(function () {
+  var IAI = window.IAI, CE = IAI.CE, TB = IAI.TB;
+  TB.items = function (text) { return TB.one(text, 'approved items', ['tb.items.approved']); };
+  TB.one = function (text, label, events) {
+    var a = CE.needUpstream(text, label, events); if (a.errors.length) return { errors: a.errors };
+    if (a.list.length !== 1) return { errors: ['Give one ' + label + ' at a time.'] };
+    var e = a.list[0], p = e.payload; return { errors: [], env: e, p: p };
+  };
+})();
+</script>
+<script>/* Shared helpers for the Teaching Analytics and PD Studio widgets. */
+(function () {
+  'use strict';
+  var IAI = window.IAI, CE = IAI.CE, esc = IAI.esc, PD = IAI.PD = {};
+  PD.MIN_GROUP = 5;
+  var STOP = ('grade term phase foundation english mathematics maths life skills home language afrikaans zulu xhosa sesotho monday tuesday wednesday thursday friday saturday sunday january february march april may june july august september october november december ' +
+    'benjamin pine primary school durban south africa department basic education national curriculum lesson class group reading library teacher teachers learners learner principal head hod smt caps atp dbe sace pd cptd the a an i we they he she it our their this that these those when while after before during then also but and or so if ' +
+    'good morning today tomorrow yesterday some many most all each every one two three four five six seven eight nine ten gr r hl fal lolt ai okay yes no not').split(/\s+/).reduce(function (o, w) { o[w] = 1; return o; }, {});
+  var FIRST = ('thandi sipho nomsa lindiwe zanele sarah john pieter johan priya fatima naledi themba bongani thabo mpho ayanda siphiwe nokuthula sibusiso lerato refilwe anele lungile mandla nomvula busisiwe thulani zinhle ' +
+    'david james peter mary susan anna maria jane michael thomas linda patricia nandi khanyi sandile precious ruth grace joy hope lucky mbali vusi mondli kagiso lebo palesa tumi ashwin kavitha yusuf aisha zodwa').split(/\s+/).reduce(function (o, w) { o[w] = 1; return o; }, {});
+  var TITLE = /\b(?:Mr|Mrs|Ms|Miss|Mx|Dr|Prof|Mam|Madam|Sir|Ma'am)\.?\s+[A-Z][A-Za-z'-]+(?:\s+[A-Z][A-Za-z'-]+)?/g;
+  PD.names = function (text) {
+    var t = String(text || ''), found = [];
+    var out = t.replace(TITLE, function (m) { found.push(m); return '[name removed]'; });
+    out = out.replace(/\bL\d{3,4}\b/g, function (m) { found.push(m); return '[learner code removed]'; });
+    out = out.replace(/([A-Za-z][A-Za-z'-]*)/g, function (w, _, off) {
+      var lw = w.toLowerCase();
+      if (/^T\d{2,3}$/.test(w)) return w;
+      if (FIRST[lw] && /^[A-Z]/.test(w)) { found.push(w); return '[name removed]'; }
+      if (/^[A-Z][a-z]+$/.test(w) && !STOP[lw]) {
+        var before = out.slice(0, off).replace(/\s+$/, '');
+        var midSentence = before.length > 0 && !/[.!?:\n]$/.test(before) && !/\[name removed\]$/.test(before);
+        if (midSentence) { found.push(w); return '[name removed]'; }
+      }
+      return w;
+    });
+    out = out.replace(/(\[name removed\]\s*)+/g, '[name removed] ');
+    return { clean: out.replace(/\s+$/, ''), found: found, count: found.length };
+  };
+  PD.many = function (text, label, events) { return CE.needUpstream(text, label, events); };
+  PD.one = function (text, label, events) {
+    var a = CE.needUpstream(text, label, events); if (a.errors.length) return { errors: a.errors };
+    if (a.list.length !== 1) return { errors: ['Give one ' + label + ' at a time.'] };
+    return { errors: [], env: a.list[0], p: a.list[0].payload };
+  };
+  PD.people = function (v, label) { var n = +v; if (!isFinite(n) || n < 1 || n !== Math.floor(n) || n > 500) return label + ': enter how many staff the data covers, as a whole number from 1 (a count only, no names).'; return null; };
+  PD.round = function (x, d) { var m = Math.pow(10, d == null ? 2 : d); return Math.round(x * m) / m; };
+
+  /* ---------- CPTD helpers (schedule register, tick sheet, record sheet, roll-up) ---------- */
+  PD.TYPES = { 1: 'Teacher Initiated', 2: 'School Initiated', 3: 'Externally Initiated' };
+  PD.numStr = function (v) { v = String(v == null ? '' : v).trim(); return /^\d+(\.\d+)?$/.test(v) ? +v : null; };
+  PD.sheetPicker = function (taId, label) {
+    var ta = document.getElementById(taId), box = document.createElement('div'); box.className = 'row';
+    box.innerHTML = '<label class="cap" style="display:inline-block">' + esc(label || 'Open a file') + ' <input type="file" accept=".xlsx,.csv,.txt,.json,text/*" style="max-width:100%"></label>';
+    ta.parentNode.insertBefore(box, ta.nextSibling);
+    box.querySelector('input').onchange = function (e) {
+      var f = e.target.files[0]; if (!f) return;
+      IAI.readFile(f).then(function (recs) { ta.value = recs.map(function (r) { return r.text || ''; }).join('\n'); ta.dispatchEvent(new Event('input', { bubbles: true })); IAI.toast('Read ' + f.name + ' in this browser. Nothing was sent anywhere.'); })
+        .catch(function (x) { IAI.toast('Could not read the file (' + x.message + '). Paste the text instead.'); });
+    };
+  };
+  /* rows of one sheet of an opened workbook: text read by the kit has "## Sheet name" headings and " | cell | cell" rows */
+  PD.sheet = function (text, name) {
+    var any = /^##\s/m.test(text), on = !any, out = [];
+    String(text || '').split(/\r?\n/).forEach(function (l) {
+      if (/^##\s+/.test(l)) { on = l.replace(/^##\s+/, '').trim().toLowerCase() === name.toLowerCase(); return; }
+      if (!on || !l.trim()) return;
+      var c = l.split('|').map(function (x) { return x.trim(); }); if (any && c.length > 1 && c[0] === '') c = c.slice(1);
+      out.push(c);
+    });
+    return out;
+  };
+  function titleCase(s) { return String(s).toLowerCase().replace(/\b[a-z]/g, function (m) { return m.toUpperCase(); }); }
+  PD.parseRegister = function (text) {
+    var errs = [], types = {}, acts = [], stated = {}, cur = null, last = null, sheet = /^##\s/m.test(text || '');
+    function pushAct(typeNo, noRaw, name, mx, cont, line) {
+      var m = /^(\d+)(b?)$/i.exec(noRaw);
+      if (!m) { errs.push(line + 'the number "' + noRaw + '" is not a whole number (add b for a second tick row).'); return; }
+      var id = 'T' + typeNo + '-' + (m[1].length < 2 ? '0' + m[1] : m[1]) + (m[2] ? 'b' : '');
+      if (acts.some(function (a) { return a.id === id; })) { errs.push(line + 'activity ' + id + ' appears twice.'); return; }
+      acts.push({ id: id, typeNo: typeNo, no: +m[1], name: name, maxPoints: mx, continuation: !!cont }); last = acts[acts.length - 1];
+    }
+    if (sheet) {
+      PD.sheet(text, 'Overview').forEach(function (c) { var m = /^Type\s*(\d)/i.exec(c[0] || ''), n = /(\d+)\s+activities/i.exec(c.join(' ')); if (m && n) stated[m[1]] = +n[1]; });
+      PD.sheet(text, 'Tick Sheet').forEach(function (c, i) {
+        var at = 'Tick Sheet row ' + (i + 1) + ': ', th = /^TYPE\s*(\d)\s*[—–-]+\s*(.+)$/i.exec(c[0] || '');
+        if (th) { cur = +th[1]; types[cur] = { typeNo: cur, label: titleCase(th[2].replace(/\s*ACTIVITIES\s*$/i, '')) }; last = null; return; }
+        if (!cur) return; var mx = PD.numStr(c[2]);
+        if (/^\d+$/.test(c[0] || '') && c[1] && mx !== null) pushAct(cur, c[0], c[1], mx, false, at);
+        else if (!c[0] && !c[1] && mx !== null && last && last.typeNo === cur) pushAct(cur, last.no + 'b', last.name + ' (second tick row)', mx, true, at);
+      });
+    } else {
+      CE.lines(text, 1).forEach(function (r) {
+        var c = r.cells, k = (c[0] || '').toLowerCase(), at = 'Line ' + r.n + ': ';
+        if (k === 'type') { var tn = PD.numStr(c[1]); if (tn === null || tn < 1 || tn > 3 || !c[2]) { errs.push(at + 'give type | 1, 2 or 3 | name.'); return; } types[tn] = { typeNo: tn, label: c[2] }; }
+        else if (k === 'activity') {
+          var t = PD.numStr(c[1]), mx = PD.numStr(c[4]);
+          if (t === null || t < 1 || t > 3 || !c[2] || !c[3] || mx === null) { errs.push(at + 'give activity | type 1-3 | number | name | max points.'); return; }
+          if (!types[t]) types[t] = { typeNo: t, label: PD.TYPES[t] };
+          var cont = c[3] === '='; var nm = c[3];
+          if (cont) { if (!last || last.typeNo !== t) { errs.push(at + 'a second tick row must follow its first row.'); return; } nm = last.name + ' (second tick row)'; }
+          pushAct(t, c[2], nm, mx, cont, at);
+        } else if (k === 'stated') { var st = PD.numStr(c[1]), sv = PD.numStr(c[2]); if (st === null || sv === null) errs.push(at + 'give stated | type | activities.'); else stated[st] = sv; }
+        else errs.push(at + 'start with type, activity or stated.');
+      });
+    }
+    return { types: types, acts: acts, stated: stated, errors: errs, sheet: sheet };
+  };
+  PD.cptdStatus = function (pts, rules) { return pts >= rules.annualPace ? 'On track' : pts >= rules.attentionFloor ? 'Needs attention' : 'Behind pace'; };
+  PD.minStated = function (name) { var m = /(?:at least|min\.?|minimum)\s+(\d+)/i.exec(name || ''); return m ? +m[1] : null; };
+  PD.mask = function (n) { return n === 0 ? 0 : n < 5 ? '<5' : n; };
+})();
+
+</script>
+<script>window.__IAI_STUDIO={"widgetId": "PD-W10", "version": "0.1.0", "name": "CPTD Tick Sheet & Year Totals"};</script>
+<script>/* INFINITE-AI Studio add-on: output file pane, schema revisions, named ratification, release packages, version history and rollback,
+   and a check of the output against the agent contract in the repo. Added to every widget. Nothing is stored or sent. */
+(function () {
+  'use strict';
+  var IAI = window.IAI; if (!IAI || IAI.__studio) return; IAI.__studio = true;
+  var CORES = [], origMake = IAI.makeCore;
+  IAI.makeCore = function () { var c = origMake.apply(this, arguments); CORES.push(c); return c; };
+  function core() { return CORES[CORES.length - 1]; }
+  function $(s, r) { return (r || document).querySelector(s); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  var CFG = window.__IAI_STUDIO || {}, NIL = '00000000-0000-4000-8000-000000000000';
+  var ROLES = ['Principal', 'Deputy Principal', 'Head of Department', 'HoD', 'SMT', 'School Management Team', 'PD coordinator', 'Information Officer', 'SBST chairperson', 'Teacher'];
+  var S = { extra: {}, ids: {}, rev: 0, version: CFG.version || '0.1.0', history: [], pending: null, ratified: null, loaded: [], lastHash: null };
+
+  /* ---------- JSON Schema subset validator (what zod emits) ---------- */
+  function validate(schema, v, root, path, errs) {
+    root = root || schema; path = path || ''; errs = errs || [];
+    if (!schema || schema === true) return errs;
+    if (schema.$ref) { var t = String(schema.$ref).replace(/^#\//, '').split('/').reduce(function (o, k) { return o && o[k]; }, root); return validate(t, v, root, path, errs); }
+    if (schema.allOf) { schema.allOf.forEach(function (s) { validate(s, v, root, path, errs); }); }
+    var alts = schema.oneOf || schema.anyOf;
+    if (alts) {
+      var best = null;
+      for (var i = 0; i < alts.length; i++) { var e2 = validate(alts[i], v, root, path, []); if (!e2.length) { best = null; break; } if (!best || e2.length < best.length) best = e2; }
+      if (best) errs.push.apply(errs, best.length > 3 ? best.slice(0, 3).concat([{ path: path, msg: 'no option of ' + alts.length + ' matched (closest option shown)' }]) : best);
+      return errs;
+    }
+    var type = Array.isArray(schema.type) ? schema.type : schema.type ? [schema.type] : null;
+    function is(t) { return t === 'null' ? v === null : t === 'array' ? Array.isArray(v) : t === 'object' ? (v !== null && typeof v === 'object' && !Array.isArray(v)) : t === 'integer' ? (typeof v === 'number' && isFinite(v) && v === Math.floor(v)) : t === 'number' ? (typeof v === 'number' && isFinite(v)) : typeof v === t; }
+    if (v === undefined) { errs.push({ path: path, msg: 'missing' }); return errs; }
+    if (type && !type.some(is)) { errs.push({ path: path, msg: 'should be ' + type.join(' or ') + (v === null ? ', is null' : '') }); return errs; }
+    if ('const' in schema && JSON.stringify(schema.const) !== JSON.stringify(v)) errs.push({ path: path, msg: 'must be ' + JSON.stringify(schema.const) });
+    if (schema.enum && schema.enum.map(function (x) { return JSON.stringify(x); }).indexOf(JSON.stringify(v)) < 0) errs.push({ path: path, msg: 'must be one of ' + schema.enum.slice(0, 8).join(', ') });
+    if (typeof v === 'string') {
+      if (schema.minLength != null && v.length < schema.minLength) errs.push({ path: path, msg: 'is empty or too short' });
+      if (schema.maxLength != null && v.length > schema.maxLength) errs.push({ path: path, msg: 'is too long' });
+      if (schema.format === 'uuid' && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)) errs.push({ path: path, msg: 'must be a UUID' });
+      else if (schema.format === 'date-time' && !(/^\d{4}-\d{2}-\d{2}T/.test(v) && !isNaN(Date.parse(v)))) errs.push({ path: path, msg: 'must be an ISO date-time' });
+      else if (schema.pattern && !new RegExp(schema.pattern).test(v)) errs.push({ path: path, msg: 'has the wrong format' });
+    }
+    if (typeof v === 'number') {
+      if (schema.minimum != null && v < schema.minimum) errs.push({ path: path, msg: 'is below ' + schema.minimum });
+      if (schema.maximum != null && v > schema.maximum) errs.push({ path: path, msg: 'is above ' + schema.maximum });
+      if (schema.exclusiveMinimum != null && v <= schema.exclusiveMinimum) errs.push({ path: path, msg: 'must be above ' + schema.exclusiveMinimum });
+    }
+    if (Array.isArray(v)) {
+      if (schema.minItems != null && v.length < schema.minItems) errs.push({ path: path, msg: 'needs at least ' + schema.minItems + ' item(s)' });
+      if (schema.maxItems != null && v.length > schema.maxItems) errs.push({ path: path, msg: 'allows at most ' + schema.maxItems + ' item(s)' });
+      if (schema.items) v.forEach(function (x, i) { validate(schema.items, x, root, path + '[' + i + ']', errs); });
+    } else if (v && typeof v === 'object') {
+      (schema.required || []).forEach(function (k) { if (v[k] === undefined) errs.push({ path: path ? path + '.' + k : k, msg: 'is required by the agent contract and is missing' }); });
+      var pr = schema.properties || {};
+      Object.keys(pr).forEach(function (k) { if (v[k] !== undefined) validate(pr[k], v[k], root, path ? path + '.' + k : k, errs); });
+      if (schema.additionalProperties === false) Object.keys(v).forEach(function (k) { if (!(k in pr)) errs.push({ path: path ? path + '.' + k : k, msg: 'is not part of the agent contract' }); });
+      else if (schema.additionalProperties && typeof schema.additionalProperties === 'object') Object.keys(v).forEach(function (k) { if (!(k in pr)) validate(schema.additionalProperties, v[k], root, path + '.' + k, errs); });
+    }
+    return errs;
+  }
+  IAI.studioValidate = validate;
+
+  /* ---------- small helpers ---------- */
+  function uuid() { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, function () { return (Math.random() * 16 | 0).toString(16); }); }
+  function sha(text) { var b = new TextEncoder().encode(text); if (window.crypto && crypto.subtle) return crypto.subtle.digest('SHA-256', b).then(function (d) { return 'sha256:' + Array.prototype.map.call(new Uint8Array(d), function (x) { return ('0' + x.toString(16)).slice(-2); }).join(''); }); return Promise.resolve('fnv32:' + IAI.hash32(text)); }
+  function human(k) { return String(k).replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ').replace(/^./, function (c) { return c.toUpperCase(); }); }
+  function bump(v) { var p = String(v).split('.').map(Number); if (p.length !== 3 || p.some(isNaN)) return '0.1.1'; p[2]++; return p.join('.'); }
+  function download(name, text, mime) { var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: mime || 'application/json' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+  function infer(v) {
+    if (v === null) return { type: 'null' }; if (Array.isArray(v)) { var o = v.length ? infer(v[0]) : {}; return { type: 'array', items: o }; }
+    if (typeof v === 'object') { var pr = {}; Object.keys(v).sort().forEach(function (k) { pr[k] = infer(v[k]); }); return { type: 'object', properties: pr }; }
+    return { type: typeof v === 'number' ? (v === Math.floor(v) ? 'integer' : 'number') : typeof v };
+  }
+  function who() { var i = window.IAI_IDENTITY; return i && i.accountId && i.name ? i : null; }
+  function env() { var c = core(); return c && c.st && c.st.env; }
+  function mainArray(p) {
+    var best = null, bp = null; (function walk(o, path) { if (!o || typeof o !== 'object') return; if (Array.isArray(o)) { if (o.length && o.every(function (x) { return x && typeof x === 'object' && !Array.isArray(x); })) { if (!best || o.length * Object.keys(o[0]).length > best.length * Object.keys(best[0]).length) { best = o; bp = path; } } return; } Object.keys(o).forEach(function (k) { walk(o[k], path ? path + '.' + k : k); }); })(p, '');
+    return best ? { path: bp, rows: best } : null;
+  }
+
+  /* ---------- format converters ---------- */
+  function flatCell(v) { return v == null ? '' : typeof v === 'object' ? JSON.stringify(v) : String(v); }
+  function toCSV(p) {
+    var m = mainArray(p); if (!m) return 'field,value\n' + Object.keys(p).map(function (k) { return q(k) + ',' + q(flatCell(p[k])); }).join('\n');
+    var cols = []; m.rows.forEach(function (r) { Object.keys(r).forEach(function (k) { if (cols.indexOf(k) < 0) cols.push(k); }); });
+    return cols.map(q).join(',') + '\n' + m.rows.map(function (r) { return cols.map(function (c) { return q(flatCell(r[c])); }).join(','); }).join('\n');
+    function q(s) { s = String(s); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+  }
+  function parseCSV(t) {
+    var rows = [], row = [], cur = '', inq = false;
+    for (var i = 0; i < t.length; i++) { var c = t[i]; if (inq) { if (c === '"' && t[i + 1] === '"') { cur += '"'; i++; } else if (c === '"') inq = false; else cur += c; } else if (c === '"') inq = true; else if (c === ',') { row.push(cur); cur = ''; } else if (c === '\n' || c === '\r') { if (c === '\r' && t[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; } else cur += c; }
+    if (cur !== '' || row.length) { row.push(cur); rows.push(row); } return rows;
+  }
+  function toMD(p, lvl) {
+    lvl = lvl || 2; var out = [];
+    Object.keys(p).forEach(function (k) {
+      var v = p[k]; if (v === null || v === undefined) return;
+      if (Array.isArray(v)) {
+        if (!v.length) return; out.push(new Array(lvl + 1).join('#') + ' ' + human(k));
+        if (v.every(function (x) { return x && typeof x === 'object' && !Array.isArray(x); })) { var cols = []; v.forEach(function (r) { Object.keys(r).forEach(function (c) { if (cols.indexOf(c) < 0) cols.push(c); }); }); out.push('| ' + cols.map(human).join(' | ') + ' |', '|' + cols.map(function () { return '---'; }).join('|') + '|'); v.forEach(function (r) { out.push('| ' + cols.map(function (c) { return flatCell(r[c]).replace(/\|/g, '/').replace(/\n/g, ' '); }).join(' | ') + ' |'); }); }
+        else v.forEach(function (x) { out.push('- ' + flatCell(x)); });
+        out.push('');
+      } else if (typeof v === 'object') { out.push(new Array(lvl + 1).join('#') + ' ' + human(k), toMD(v, Math.min(lvl + 1, 6)), ''); }
+      else out.push('**' + human(k) + ':** ' + v);
+    });
+    return out.join('\n');
+  }
+  function toHTML(p, title) {
+    var css = 'body{font:16px/1.5 Inter,system-ui,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;color:#111}h1,h2,h3{font-family:Space Grotesk,system-ui,sans-serif}table{border-collapse:collapse;width:100%;margin:.5rem 0}td,th{border:1px solid #bbb;padding:.35rem .5rem;text-align:left;vertical-align:top}th{background:#eee}footer{margin-top:2rem;color:#555;font-size:.85rem}';
+    return '<!doctype html><html lang="en-ZA"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(title) + '</title><style>' + css + '</style></head><body><h1>' + esc(title) + '</h1>' + body(p, 2) + '<footer>AI drafts. The teacher decides. Always.</footer></body></html>';
+    function body(o, l) {
+      var h = ''; Object.keys(o).forEach(function (k) {
+        var v = o[k]; if (v === null || v === undefined) return;
+        if (Array.isArray(v)) { if (!v.length) return; h += '<h' + l + '>' + esc(human(k)) + '</h' + l + '>'; if (v.every(function (x) { return x && typeof x === 'object' && !Array.isArray(x); })) { var cols = []; v.forEach(function (r) { Object.keys(r).forEach(function (c) { if (cols.indexOf(c) < 0) cols.push(c); }); }); h += '<table><thead><tr>' + cols.map(function (c) { return '<th>' + esc(human(c)) + '</th>'; }).join('') + '</tr></thead><tbody>' + v.map(function (r) { return '<tr>' + cols.map(function (c) { return '<td>' + esc(flatCell(r[c])) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>'; } else h += '<ul>' + v.map(function (x) { return '<li>' + esc(flatCell(x)) + '</li>'; }).join('') + '</ul>'; }
+        else if (typeof v === 'object') h += '<h' + l + '>' + esc(human(k)) + '</h' + l + '>' + body(v, Math.min(l + 1, 6));
+        else h += '<p><strong>' + esc(human(k)) + ':</strong> ' + esc(v) + '</p>';
+      }); return h;
+    }
+  }
+
+  /* ---------- editable document view ---------- */
+  var FIELD_N = 0;
+  function docView(o, path, depth) {
+    var h = ''; var keys = Object.keys(o);
+    keys.forEach(function (k) {
+      var v = o[k], p = path ? path + '.' + k : k;
+      if (v === null || v === undefined) { h += field(k, p, '', 'null'); return; }
+      if (Array.isArray(v)) {
+        h += '<h4 class="stH">' + esc(human(k)) + ' <span class="cap">(' + v.length + ')</span></h4>';
+        if (v.length && v.every(function (x) { return x && typeof x === 'object' && !Array.isArray(x); })) {
+          var cols = []; v.forEach(function (r) { Object.keys(r).forEach(function (c) { if (cols.indexOf(c) < 0) cols.push(c); }); });
+          h += '<div class="tw"><table><thead><tr>' + cols.map(function (c) { return '<th>' + esc(human(c)) + '</th>'; }).join('') + '</tr></thead><tbody>' + v.map(function (r, i) { return '<tr>' + cols.map(function (c) { var cv = r[c]; if (cv !== null && typeof cv === 'object') return '<td><span class="cap">' + esc(JSON.stringify(cv).slice(0, 80)) + '</span></td>'; return '<td>' + cell(p + '.' + i + '.' + c, cv) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+        } else h += '<ul>' + v.map(function (x, i) { return '<li>' + (x !== null && typeof x === 'object' ? '<span class="cap">' + esc(JSON.stringify(x).slice(0, 120)) + '</span>' : cell(p + '.' + i, x)) + '</li>'; }).join('') + '</ul>';
+      } else if (typeof v === 'object') { h += '<h4 class="stH">' + esc(human(k)) + '</h4><div class="stInd">' + docView(v, p, depth + 1) + '</div>'; }
+      else h += field(k, p, v, typeof v);
+    }); return h;
+  }
+  function cell(p, v) { return '<span class="stEd" contenteditable="true" spellcheck="true" data-path="' + esc(p) + '" data-type="' + (v === null ? 'null' : typeof v) + '">' + esc(v == null ? '' : v) + '</span>'; }
+  function field(k, p, v, t) { return '<p class="stF"><strong>' + esc(human(k)) + ':</strong> ' + cell(p, v).replace('data-type="null"', 'data-type="' + t + '"') + '</p>'; }
+  function applyDocEdits(root) {
+    var e = env(); if (!e) return null; var out = IAI.clone(e.payload), changed = 0, bad = [];
+    root.querySelectorAll('.stEd').forEach(function (n) {
+      var path = n.getAttribute('data-path'), t = n.getAttribute('data-type'), raw = n.textContent, before = IAI.getPath(e.payload, path), val = raw;
+      if (t === 'number') { var x = Number(raw.trim()); if (raw.trim() === '' || isNaN(x)) { bad.push(path + ' must be a number'); return; } val = x; }
+      else if (t === 'boolean') { var s = raw.trim().toLowerCase(); if (s !== 'true' && s !== 'false') { bad.push(path + ' must be true or false'); return; } val = s === 'true'; }
+      else if (t === 'null') { if (raw.trim() === '') val = null; }
+      if (JSON.stringify(val) !== JSON.stringify(before)) { IAI.setPath(out, path, val); changed++; }
+    });
+    return { payload: out, changed: changed, bad: bad };
+  }
+
+  /* ---------- the panel ---------- */
+  var UI = null;
+  function build() {
+    var host = $('#app'); if (!host || !$('#outJson') || $('#studioZone')) return false;
+    var sec = document.createElement('section'); sec.id = 'studioZone'; sec.className = 'zone z-out'; sec.setAttribute('aria-label', 'Studio');
+    sec.innerHTML = '<style>#studioZone .stTabs{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}#studioZone .stTabs button{padding:.4rem .7rem}#studioZone .stTabs button[aria-pressed=true]{outline:2px solid var(--violet,#7C5CFF)}#studioZone .stEd{display:inline-block;min-width:2ch;padding:0 .2rem;border-bottom:1px dashed var(--muted,#8FA0C2);outline-offset:2px}#studioZone .stEd:focus{background:rgba(124,92,255,.15)}#studioZone .stH{margin:.8rem 0 .3rem;font-family:"Space Grotesk",system-ui,sans-serif}#studioZone .stInd{margin-left:.8rem;padding-left:.6rem;border-left:2px solid rgba(143,160,194,.3)}#studioZone .stBox{max-height:28rem;overflow:auto;border:1px solid rgba(143,160,194,.25);border-radius:8px;padding:.6rem;background:rgba(255,255,255,.02)}#studioZone textarea{width:100%;min-height:12rem;font-family:monospace}#studioZone .stRow{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.6rem}#studioZone .stOk{color:var(--cyan,#2DD4BF)}#studioZone .stBad{color:var(--rose,#FB7185)}#studioZone .stGold{color:var(--gold,#F5B841)}#studioZone table{font-size:.9rem}</style>' +
+      '<h2>4 · Studio: file, schema, ratify, release</h2><p class="cap">View the output as a file, change it, and save. A saved change makes a new schema revision. A named person must ratify the revision before it can be sent to code. Nothing is stored here; the release package is a file you download.</p>' +
+      '<div class="stTabs" role="tablist"><button type="button" class="btn secondary" data-tab="doc" aria-pressed="true">Document view</button><button type="button" class="btn secondary" data-tab="file" aria-pressed="false">File view</button><button type="button" class="btn secondary" data-tab="contract" aria-pressed="false">Agent contract</button><button type="button" class="btn secondary" data-tab="rev" aria-pressed="false">Revision and ratification</button><button type="button" class="btn secondary" data-tab="hist" aria-pressed="false">Versions and rollback</button></div>' +
+      '<div data-pane="doc"><p class="cap" id="stDocCap">Run the widget to see its output here.</p><div class="stBox" id="stDoc"></div><p><label for="stWhy1">Reason for this change</label><input id="stWhy1" style="width:100%"></p><p><button type="button" class="btn" id="stSave">Save my edits</button> <span id="stSaveMsg" role="status"></span></p></div>' +
+      '<div data-pane="file" hidden><div class="stRow"><div><label for="stFmt">File type</label><select id="stFmt"><option value="json">JSON (.json)</option><option value="csv">Table (.csv)</option><option value="md">Document (.md)</option><option value="html">Web page (.html)</option></select></div></div><textarea id="stFile" spellcheck="false" aria-label="File contents"></textarea><p class="cap" id="stFileCap"></p><p><button type="button" class="btn secondary" id="stApplyFile">Use my changes to this file</button> <button type="button" class="btn secondary" id="stDl">Download this file</button> <span id="stFileMsg" role="status"></span></p></div>' +
+      '<div data-pane="contract" hidden id="stContract"></div>' +
+      '<div data-pane="rev" hidden><div id="stRev"></div><div class="stRow"><div><label for="stName">Name of the person ratifying</label><input id="stName" autocomplete="off" placeholder="First name and surname"></div><div><label for="stRole">Role</label><select id="stRole">' + ROLES.map(function (r) { return '<option>' + r + '</option>'; }).join('') + '</select></div></div><p><label for="stWhy2">Reason (what changed and why)</label><input id="stWhy2" style="width:100%"></p><p><button type="button" class="btn" id="stRatify">Ratify this revision</button> <button type="button" class="btn" id="stSend" disabled>Send to code (download release package)</button> <span id="stRevMsg" role="status"></span></p></div>' +
+      '<div data-pane="hist" hidden><p class="cap">Load earlier release packages (.json) of this widget. To roll back, choose a version and give your name and a reason; the roll-back becomes a new revision that a named person must ratify, like any other change.</p><input type="file" id="stLoad" accept=".json,application/json" multiple aria-label="Load release packages"><div id="stHist"></div></div>';
+    var z = $('#z-out') || $('main') || host; (z.parentNode || host).insertBefore(sec, z.nextSibling); UI = sec; wire(sec); return true;
+  }
+  function lockWho() { var id = who(); if (!id || !UI) return; var n = $('#stName', UI); n.value = id.name; n.readOnly = true; if (id.role) { var r = $('#stRole', UI); if (!Array.prototype.some.call(r.options, function (o) { return o.value === id.role; })) r.add(new Option(id.role)); r.value = id.role; r.disabled = true; } }
+  function show(tab) { lockWho(); UI.querySelectorAll('[data-pane]').forEach(function (p) { p.hidden = p.getAttribute('data-pane') !== tab; }); UI.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-tab') === tab ? 'true' : 'false'); }); if (tab === 'file') fillFile(); if (tab === 'contract') renderContract(); if (tab === 'rev') renderRev(); if (tab === 'hist') renderHist(); }
+  function msg(id, t, cls) { var n = $(id, UI); n.className = cls || ''; n.textContent = t; }
+  function name() { return (CFG.name || (window.__man && window.__man.name) || CFG.widgetId || 'Widget') + ' output'; }
+  function manifest() { try { return JSON.parse($('#iai-manifest').textContent); } catch (e) { return {}; } }
+
+  function pushEdit(payload, reason, source) {
+    var oldIn = $('#outJson').value, why = $('#decReason'); $('#outJson').value = JSON.stringify(payload, null, 2);
+    var roleSel = $('#decRole'); var prevRole = roleSel && roleSel.value; if (roleSel && !roleSel.value && roleSel.options.length > 1) roleSel.selectedIndex = 1;
+    if (why) why.value = reason; $('#btnApplyJson').click();
+    var m = $('#decMsg') ? $('#decMsg').textContent : ''; if (/not valid JSON|Choose the role|Give a reason|No change/i.test(m)) { $('#outJson').value = oldIn; return { ok: false, text: m }; }
+    return { ok: true, text: m };
+  }
+
+  function wire(root) {
+    root.querySelectorAll('[data-tab]').forEach(function (b) { b.onclick = function () { show(b.getAttribute('data-tab')); }; });
+    $('#stSave', root).onclick = function () {
+      var why = $('#stWhy1', root).value.trim(); if (!env()) { msg('#stSaveMsg', 'Run the widget first.', 'stBad'); return; }
+      var r = applyDocEdits($('#stDoc', root)); if (r.bad.length) { msg('#stSaveMsg', r.bad.join('; '), 'stBad'); return; } if (!r.changed) { msg('#stSaveMsg', 'No change to save.', 'stGold'); return; }
+      if (!why) { msg('#stSaveMsg', 'Give the reason for the change.', 'stBad'); return; }
+      var res = pushEdit(r.payload, why); if (!res.ok) { msg('#stSaveMsg', res.text, 'stBad'); return; }
+      newRevision(why, 'edit'); msg('#stSaveMsg', r.changed + ' change(s) saved as revision ' + S.rev + '. Open "Revision and ratification" to ratify it.', 'stOk');
+    };
+    $('#stFmt', root).onchange = fillFile;
+    $('#stDl', root).onclick = function () { var f = $('#stFmt', root).value, e = env(); if (!e) return; var mime = { json: 'application/json', csv: 'text/csv', md: 'text/markdown', html: 'text/html' }[f]; var t = f === 'json' ? JSON.stringify(e.payload, null, 2) : f === 'csv' ? toCSV(e.payload) : f === 'md' ? '# ' + name() + '\n\n' + toMD(e.payload) : toHTML(e.payload, name()); download((CFG.widgetId || 'widget') + '-output.' + f, t, mime); };
+    $('#stApplyFile', root).onclick = function () {
+      var f = $('#stFmt', root).value, e = env(), why = $('#stWhy1', root).value.trim(); if (!e) return;
+      if (f === 'md' || f === 'html') { msg('#stFileMsg', 'Edit Markdown and web page output in the Document view, where each field is checked. This file view is for reading and download.', 'stGold'); return; }
+      if (!why) { msg('#stFileMsg', 'Give the reason for the change in the Document view box first.', 'stBad'); return; }
+      var out = IAI.clone(e.payload), txt = $('#stFile', root).value;
+      try {
+        if (f === 'json') out = JSON.parse(txt);
+        else { var m = mainArray(e.payload); if (!m) throw new Error('This output has no table to read back.'); var rows = parseCSV(txt); var cols = rows.shift(); var orig = m.rows; if (rows.length !== orig.length) throw new Error('The table has ' + rows.length + ' rows, the output has ' + orig.length + '. Add or remove rows in the JSON instead.'); var arr = rows.map(function (r, i) { var o = IAI.clone(orig[i]); cols.forEach(function (c, j) { var ov = orig[i][c]; var s = r[j]; if (ov !== null && typeof ov === 'object') return; o[c] = typeof ov === 'number' ? (s.trim() === '' || isNaN(Number(s)) ? (function () { throw new Error('Row ' + (i + 2) + ', ' + c + ' must be a number.'); })() : Number(s)) : typeof ov === 'boolean' ? s.trim().toLowerCase() === 'true' : s; }); return o; }); IAI.setPath(out, m.path, arr); }
+      } catch (err) { msg('#stFileMsg', 'Could not read the file: ' + err.message, 'stBad'); return; }
+      var res = pushEdit(out, why); if (!res.ok) { msg('#stFileMsg', res.text, 'stBad'); return; } newRevision(why, 'edit'); msg('#stFileMsg', 'Saved as revision ' + S.rev + '.', 'stOk');
+    };
+    $('#stRatify', root).onclick = ratify;
+    $('#stSend', root).onclick = sendToCode;
+    $('#stLoad', root).onchange = loadPackages;
+  }
+
+  function fillFile() {
+    var e = env(), f = $('#stFmt', UI).value, ta = $('#stFile', UI); if (!e) { ta.value = ''; $('#stFileCap', UI).textContent = 'Run the widget first.'; return; }
+    ta.value = f === 'json' ? JSON.stringify(e.payload, null, 2) : f === 'csv' ? toCSV(e.payload) : f === 'md' ? '# ' + name() + '\n\n' + toMD(e.payload) : toHTML(e.payload, name());
+    ta.readOnly = f === 'md' || f === 'html'; $('#stFileCap', UI).textContent = f === 'csv' ? 'The first table in the output, one row for each item. Change a cell and use the button below.' : f === 'json' ? 'The full output. You can edit it here.' : 'Read and download here. Edit in the Document view.';
+  }
+
+  /* ---------- contract ---------- */
+  function adapted() {
+    var e = env(); if (!e) return null; var a = CFG.adapter;
+    if (typeof a !== 'function') return { status: 'noadapter' };
+    var ctx = { extra: S.extra, idFor: function (k) { return S.ids[k] || (S.ids[k] = uuid()); }, uuid: uuid, now: function () { return new Date().toISOString(); }, tenantId: NIL };
+    try { var out = a(IAI.clone(e.payload), e, ctx); return { status: 'ok', out: out }; } catch (err) { return { status: 'error', msg: String(err && err.message || err) }; }
+  }
+  function contractCheck() {
+    var ag = CFG.agent; if (!ag) return { applies: false };
+    var ad = adapted(); if (!ad) return { applies: true, noOutput: true };
+    if (ad.status === 'noadapter') return { applies: true, noAdapter: true };
+    if (ad.status === 'error') return { applies: true, error: ad.msg };
+    var errs = [], list = Array.isArray(ad.out) ? ad.out : [ad.out]; list.forEach(function (r, i) { validate(CFG.outputSchema, r, CFG.outputSchema, Array.isArray(ad.out) ? '[' + i + ']' : '', []).forEach(function (x) { errs.push(x); }); }); return { applies: true, out: ad.out, errs: errs };
+  }
+  function renderContract() {
+    var h = '<p class="cap">The repo gives each agent a contract. This checks the output, laid out the way the contract asks, against it. The tenant id is filled in by the platform when the output is ingested.</p>', ag = CFG.agent;
+    if (!ag) { $('#stContract', UI).innerHTML = h + '<p>This widget has no agent in the repo. It is a platform function or a new widget, so no contract applies. The Wiring Board checks its own contract rules.</p>'; return; }
+    h += '<dl class="kv"><dt>Agent</dt><dd>' + esc(ag.id) + ' · version ' + esc(ag.version) + ' · ' + esc(ag.module || '') + '</dd><dt>Human approval required by the agent</dt><dd>' + (ag.requiresApproval ? 'yes' : 'no') + '</dd><dt>Guardrails</dt><dd>' + esc((ag.guardrails || []).join(', ') || 'none listed') + '</dd><dt>Model use</dt><dd>' + esc(ag.model || 'none') + '</dd></dl>';
+    var c = contractCheck();
+    if (c.noOutput) h += '<p>Run the widget to check its output.</p>';
+    else if (c.noAdapter && CFG.blocked) { h += '<p class="stGold">Cannot be laid out in the agent\'s shape from this page.</p><p>' + esc(CFG.blocked) + '</p>'; }
+    else if (c.noAdapter) {
+      h += '<p class="stGold">No adapter yet: this widget\'s output has not been laid out in the agent\'s shape. Its own JSON is unchanged. The comparison below shows what the agent contract asks for.</p>';
+      var br = CFG.outputSchema && (CFG.outputSchema.oneOf || CFG.outputSchema.anyOf || [CFG.outputSchema]).filter(function (b) { return b.properties && b.properties.status && b.properties.status.const === 'ok'; })[0] || CFG.outputSchema && (CFG.outputSchema.oneOf || [CFG.outputSchema])[0], e0 = env();
+      if (br && br.properties && e0) { var skip = { tenantId: 1, generatedAt: 1, status: 1 }, have = Object.keys(e0.payload || {}), low = have.map(function (k) { return k.toLowerCase(); }), want = Object.keys(br.properties).filter(function (k) { return !skip[k]; }), req = br.required || [], same = want.filter(function (k) { return low.indexOf(k.toLowerCase()) >= 0; }), lack = want.filter(function (k) { return low.indexOf(k.toLowerCase()) < 0; });
+        h += '<p><strong>The agent contract asks for:</strong> ' + want.map(function (k) { return '<code>' + esc(k) + '</code>' + (req.indexOf(k) >= 0 ? '' : ' (optional)'); }).join(', ') + '</p><p><strong>This output already has under the same name:</strong> ' + (same.length ? same.map(function (k) { return '<code>' + esc(k) + '</code>'; }).join(', ') : 'none') + '</p><p><strong>Not in this output:</strong> ' + (lack.length ? lack.map(function (k) { return '<code>' + esc(k) + '</code>'; }).join(', ') : 'none') + '</p><p class="cap">An adapter will map these without inventing values. Where the widget cannot supply a field, the adapter will answer "needs input" and name it.</p>'; }
+    }
+    else if (c.error) h += '<p class="stBad">The adapter could not run: ' + esc(c.error) + '</p>';
+    else if (!c.errs.length) h += '<p class="stOk">The output matches the agent contract.</p>';
+    else h += '<p class="stBad">' + c.errs.length + ' difference(s) from the agent contract:</p><ul>' + c.errs.slice(0, 25).map(function (x) { return '<li><code>' + esc(x.path || '(top level)') + '</code> ' + esc(x.msg) + '</li>'; }).join('') + '</ul>';
+    if (c.out && !Array.isArray(c.out) && c.out.status === 'needs_input') {
+      var simple = (c.out.missingFields || []).filter(function (f) { return /^[A-Za-z][A-Za-z0-9_.]*$/.test(f); });
+      if (simple.length) h += '<p class="cap">The agent needs details the widget does not hold. Type them here (not stored; they go into the agent-shaped result only):</p>' + simple.map(function (f) { return '<p><label>' + esc(human(f)) + ' <input data-extra="' + esc(f) + '" value="' + esc(S.extra[f] || '') + '"' + (/date|start|end/i.test(f) ? ' placeholder="YYYY-MM-DD"' : '') + '></label></p>'; }).join('') + '<p><button type="button" class="btn secondary" id="stExtra">Use these details</button></p>';
+    }
+    if (c.out) h += '<details><summary>Output in the agent\'s shape</summary><pre style="white-space:pre-wrap;max-height:18rem;overflow:auto">' + esc(JSON.stringify(c.out, null, 2)) + '</pre></details><p><button type="button" class="btn secondary" id="stDlC">Download the agent-shaped output (.json)</button></p>';
+    $('#stContract', UI).innerHTML = h; var bx = $('#stExtra', UI); if (bx) bx.onclick = function () { UI.querySelectorAll('[data-extra]').forEach(function (i) { if (i.value.trim()) S.extra[i.getAttribute('data-extra')] = i.value.trim(); }); renderContract(); };
+    var b = $('#stDlC', UI); if (b) b.onclick = function () { download((CFG.widgetId || 'widget') + '-' + ag.id + '-result.json', JSON.stringify(c.out, null, 2)); };
+  }
+
+  /* ---------- revisions, ratification, release ---------- */
+  function newRevision(reason, kind, extra) {
+    var e = env(); if (!e) return; S.rev++; S.ratified = null;
+    S.pending = { revision: S.rev, changeKind: kind, reason: reason, createdAt: new Date().toISOString(), payload: IAI.clone(e.payload), outputSchema: infer(e.payload), extra: extra || null };
+    renderRev();
+  }
+  function renderRev() {
+    var box = $('#stRev', UI), p = S.pending, h = '';
+    if (!p) { h = '<p class="cap">No revision yet. Save an edit in the Document or File view, or choose a roll-back. The widget\'s published schema is version ' + esc(S.version) + '.</p>'; $('#stSend', UI).disabled = true; }
+    else {
+      var diff = IAI.diffObjects(S.base || {}, p.payload || {}); h = '<p><strong>Revision ' + p.revision + '</strong> · ' + esc(p.changeKind) + ' · will be version <code>' + esc(bump(S.version)) + '</code></p><p class="cap">Reason: ' + esc(p.reason) + '</p><p>Output schema now has ' + Object.keys((p.outputSchema.properties) || {}).length + ' top-level fields. The edited output becomes the widget\'s new example output.</p>';
+      h += S.ratified ? '<p class="stOk">Ratified by ' + esc(S.ratified.name) + ' (' + esc(S.ratified.role) + ') at ' + esc(S.ratified.time) + '. It can be sent to code.</p>' + (S.ratified.identityVerified ? '<p class="cap">Recorded against the signed-in account.</p>' : '<p class="stGold">No signed-in account is connected to this page, so this is a typed name only. The registry will not accept it as ratified until a signed-in account ratifies it.</p>') : '<p class="stGold">Waiting for a named person to ratify. It cannot be sent to code until then.</p>';
+      $('#stSend', UI).disabled = !S.ratified;
+    }
+    box.innerHTML = h;
+  }
+  function nameErr(n) { n = (n || '').trim(); if (n.length < 3 || !/[A-Za-z]/.test(n)) return 'Type the name of the person ratifying.'; if (/^[A-Za-z]{1,2}\d+$/.test(n) || /\d{6,}/.test(n)) return 'Type a name, not a code or number.'; if (!/\s/.test(n)) return 'Type first name and surname.'; return null; }
+  function ratify() {
+    var p = S.pending; if (!p) { msg('#stRevMsg', 'There is nothing to ratify yet.', 'stBad'); return; }
+    var id = who(), n = id ? id.name : $('#stName', UI).value, role = id && id.role ? id.role : $('#stRole', UI).value, why = $('#stWhy2', UI).value.trim() || p.reason, ne = nameErr(n);
+    if (ne) { msg('#stRevMsg', ne, 'stBad'); return; } if (!why) { msg('#stRevMsg', 'Give the reason.', 'stBad'); return; }
+    var hard = IAI.hardPII(IAI.scanInput(p.payload)); if (hard.length) { msg('#stRevMsg', 'The output still has personal information (' + hard[0].type + '). Remove it first.', 'stBad'); return; }
+    var c = contractCheck(); if (c.applies && c.errs && c.errs.length) { msg('#stRevMsg', 'Ratified, with ' + c.errs.length + ' difference(s) from the agent contract shown in the contract tab.', 'stGold'); }
+    sha(JSON.stringify({ w: CFG.widgetId, r: p.revision, s: p.outputSchema, e: p.payload })).then(function (h) {
+      S.ratified = { name: n.trim(), role: role, accountId: id ? id.accountId : null, identityVerified: !!id, time: new Date().toISOString(), reason: why, revisionHash: h }; renderRev(); if (!c.errs || !c.errs.length) msg('#stRevMsg', 'Ratified.', 'stOk');
+    });
+  }
+  function sendToCode() {
+    var p = S.pending, r = S.ratified; if (!p || !r) return; var mf = manifest(), c = contractCheck(), ver = bump(S.version);
+    var pkg = { kind: 'iai.widget.release', packageVersion: 1, widgetId: CFG.widgetId || mf.widgetId, name: mf.name, version: ver, parentVersion: S.version, revision: p.revision, changeKind: p.changeKind, reason: r.reason, rollbackOf: p.extra && p.extra.rollbackOf || null, createdAt: p.createdAt,
+      ratification: { name: r.name, role: r.role, accountId: r.accountId, identityVerified: r.identityVerified, time: r.time, revisionHash: r.revisionHash },
+      manifest: Object.assign({}, mf, { version: ver, outputSchema: p.outputSchema }), exampleOutput: p.payload,
+      contract: CFG.agent ? { agent: CFG.agent.id, agentVersion: CFG.agent.version, adapter: typeof CFG.adapter === 'function', matches: c.errs ? c.errs.length === 0 : null, differences: c.errs ? c.errs.slice(0, 50) : null, result: c.out || null } : null,
+      status: r.identityVerified ? 'ratified_awaiting_wiring' : 'ratified_unverified_identity', popia: { personalInfoFound: false, note: 'Staff name is recorded as the ratifier. No learner information.' } };
+    sha(JSON.stringify(pkg)).then(function (h) { pkg.contentHash = h; download(pkg.widgetId + '-release-v' + ver + '.json', JSON.stringify(pkg, null, 2)); S.history.push({ version: ver, pkg: pkg }); S.version = ver; S.base = IAI.clone(p.payload); S.pending = null; S.ratified = null; renderRev(); msg('#stRevMsg', 'Release package v' + ver + ' downloaded. Give it to the Wiring Board or commit it to the registry. Nothing was sent anywhere.', 'stOk'); });
+  }
+
+  /* ---------- history and rollback ---------- */
+  function loadPackages(ev) {
+    var files = Array.prototype.slice.call(ev.target.files || []), n = 0;
+    files.forEach(function (f) { var rd = new FileReader(); rd.onload = function () { try { var j = JSON.parse(rd.result); if (j.kind !== 'iai.widget.release' || j.widgetId !== (CFG.widgetId || manifest().widgetId)) throw new Error('Not a release package for this widget.'); if (!S.loaded.some(function (x) { return x.version === j.version; })) S.loaded.push(j); } catch (err) { $('#stHist', UI).innerHTML = '<p class="stBad">' + esc(f.name) + ': ' + esc(err.message) + '</p>'; return; } if (++n === files.length) renderHist(); }; rd.readAsText(f); });
+  }
+  function vcmp(a, b) { var x = a.split('.').map(Number), y = b.split('.').map(Number); for (var i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] - y[i]; return 0; }
+  function renderHist() {
+    var all = S.loaded.concat(S.history.map(function (h) { return h.pkg; })).filter(function (v, i, a) { return a.findIndex(function (x) { return x.version === v.version; }) === i; }).sort(function (a, b) { return vcmp(b.version, a.version); });
+    var box = $('#stHist', UI); if (!all.length) { box.innerHTML = '<p class="cap">No packages loaded. Current version: ' + esc(S.version) + '.</p>'; return; }
+    box.innerHTML = '<div class="tw"><table><thead><tr><th>Version</th><th>Kind</th><th>Ratified by</th><th>Reason</th><th></th></tr></thead><tbody>' + all.map(function (p) { return '<tr><td>' + esc(p.version) + '</td><td>' + esc(p.changeKind) + (p.rollbackOf ? ' of ' + esc(p.rollbackOf) : '') + '</td><td>' + esc(p.ratification && p.ratification.name || '') + '</td><td>' + esc(p.reason || '') + '</td><td>' + (p.version === S.version ? 'current' : '<button type="button" class="btn secondary" data-rb="' + esc(p.version) + '">Roll back to this</button>') + '</td></tr>'; }).join('') + '</tbody></table></div><p class="cap">Give your name and the reason in the ratification tab fields, then press Roll back. Then ratify the new revision.</p>';
+    box.querySelectorAll('[data-rb]').forEach(function (b) { b.onclick = function () { var v = b.getAttribute('data-rb'), pk = all.filter(function (x) { return x.version === v; })[0]; var why = $('#stWhy2', UI).value.trim(), nm = $('#stName', UI).value, ne = nameErr(nm); if (ne || !why) { show('rev'); msg('#stRevMsg', (ne || 'Give the reason for the roll-back.') + ' Then press Roll back again.', 'stBad'); return; } var ex = pk.exampleOutput; S.rev++; S.ratified = null; S.pending = { revision: S.rev, changeKind: 'rollback', reason: why, createdAt: new Date().toISOString(), payload: IAI.clone(ex), outputSchema: IAI.clone(pk.manifest && pk.manifest.outputSchema || infer(ex)), extra: { rollbackOf: pk.version, rolledBackBy: nm.trim() } }; show('rev'); msg('#stRevMsg', 'Roll back to ' + pk.version + ' prepared as revision ' + S.rev + '. Ratify it to send it to code.', 'stGold'); }; });
+  }
+
+  /* ---------- refresh ---------- */
+  var lastKey = '';
+  function refresh() {
+    if (!UI) return; var e = env(), key = e ? e.runId + ':' + e.payloadHash : '';
+    if (key === lastKey) return; lastKey = key; var doc = $('#stDoc', UI);
+    if (!e) { doc.innerHTML = ''; $('#stDocCap', UI).textContent = 'Run the widget to see its output here.'; return; }
+    if (!S.base) S.base = IAI.clone(e.payload);
+    var m = mainArray(e.payload); $('#stDocCap', UI).textContent = (m ? 'Shown as a document with a table (' + m.rows.length + ' rows). ' : 'Shown as a document. ') + 'Click any text to change it. Fields that hold lists of objects inside a row stay as they are; change them in the File view.';
+    if (document.activeElement && doc.contains(document.activeElement)) return; doc.innerHTML = docView(e.payload, '', 0);
+    if (!$('#stContract', UI).hidden) renderContract(); if (!$('[data-pane=file]', UI).hidden) fillFile();
+  }
+  function start() { var tries = 0, t = setInterval(function () { if (build()) { clearInterval(t); setInterval(refresh, 500); refresh(); } else if (++tries > 120) clearInterval(t); }, 150); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  IAI.studio = { validate: validate, toCSV: toCSV, toMD: toMD, toHTML: toHTML, infer: infer, state: S, check: function () { return contractCheck(); } };
+})();
+
+</script>
+<script>
+(function () {
+  'use strict';
+  var IAI = window.IAI, $ = IAI.$, esc = IAI.esc, CE = IAI.CE, SA = IAI.SA, TB = IAI.TB, PD = IAI.PD;
+  var man = JSON.parse($('#iai-manifest').textContent);
+  var G9 = {
+  "widgetId": "PD-W09",
+  "runId": "run-mvlvu96p-nu94p",
+  "event": "pd.schedule.registered",
+  "gate": {
+    "status": "approved",
+    "role": "PD coordinator",
+    "time": "2026-10-24T04:12:12.884Z"
+  },
+  "capsTopicId": null,
+  "sourceRefs": [
+    {
+      "source": "CPTD Points.xlsx (supplied by the school)",
+      "locator": "Tick Sheet"
+    },
+    {
+      "source": "CPTD Points.xlsx (supplied by the school)",
+      "locator": "Overview"
+    }
+  ],
+  "payload": {
+    "source": "CPTD Points.xlsx (supplied by the school)",
+    "readFrom": "typed lines",
+    "rules": {
+      "cyclePoints": 150,
+      "annualPace": 50,
+      "attentionFloor": 25,
+      "years": 3,
+      "requireAllThreeTypes": true,
+      "pointsOnTick": "A tick for a year gives the full maximum points for that activity, as in the workbook."
+    },
+    "types": [
+      {
+        "typeNo": 1,
+        "label": "Teacher Initiated",
+        "activities": 30,
+        "tickRows": 30,
+        "maxPointsAllRows": 286,
+        "statedActivities": 30,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Type 1"
+      },
+      {
+        "typeNo": 2,
+        "label": "School Initiated",
+        "activities": 9,
+        "tickRows": 9,
+        "maxPointsAllRows": 130,
+        "statedActivities": 9,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Type 2"
+      },
+      {
+        "typeNo": 3,
+        "label": "Externally Initiated",
+        "activities": 10,
+        "tickRows": 12,
+        "maxPointsAllRows": 98,
+        "statedActivities": 10,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Type 3"
+      }
+    ],
+    "activities": [
+      {
+        "id": "T1-01",
+        "typeNo": 1,
+        "no": 1,
+        "name": "Reading Educational Material (at least 4 articles per annum)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 1"
+      },
+      {
+        "id": "T1-02",
+        "typeNo": 1,
+        "no": 2,
+        "name": "Engaging in Electronic Media Educational Activities (8 activities, 30\u201360 min each)",
+        "maxPoints": 12,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 2"
+      },
+      {
+        "id": "T1-03",
+        "typeNo": 1,
+        "no": 3,
+        "name": "Participating in Online PD Activity (61 minutes or more, per activity)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 3"
+      },
+      {
+        "id": "T1-04",
+        "typeNo": 1,
+        "no": 4,
+        "name": "Attending Educational Meetings \u2014 Unions/SACE (8 meetings, 1 hr+)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 4"
+      },
+      {
+        "id": "T1-05",
+        "typeNo": 1,
+        "no": 5,
+        "name": "Attending Educational Conference/Workshop \u2014 Half Day (2\u20135 hrs)",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 5"
+      },
+      {
+        "id": "T1-06",
+        "typeNo": 1,
+        "no": 6,
+        "name": "Attending Educational Conference/Workshop \u2014 Full Day to 1.5 Days",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 6"
+      },
+      {
+        "id": "T1-07",
+        "typeNo": 1,
+        "no": 7,
+        "name": "Attending Educational Conference/Workshop \u2014 2 Full Days or more",
+        "maxPoints": 15,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 7"
+      },
+      {
+        "id": "T1-08",
+        "typeNo": 1,
+        "no": 8,
+        "name": "Mentoring & Coaching (8 sessions learners / 6 sessions novice teachers)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 8"
+      },
+      {
+        "id": "T1-09",
+        "typeNo": 1,
+        "no": 9,
+        "name": "Facilitating two or more workshops/training sessions per annum",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 9"
+      },
+      {
+        "id": "T1-10",
+        "typeNo": 1,
+        "no": 10,
+        "name": "Secondment for 6 months in an educational project",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 10"
+      },
+      {
+        "id": "T1-11",
+        "typeNo": 1,
+        "no": 11,
+        "name": "Secondment for 1 year or more in an educational project",
+        "maxPoints": 15,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 11"
+      },
+      {
+        "id": "T1-12",
+        "typeNo": 1,
+        "no": 12,
+        "name": "Responding to min. 2 developmental needs (IQMS/Diagnostic reports)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 12"
+      },
+      {
+        "id": "T1-13",
+        "typeNo": 1,
+        "no": 13,
+        "name": "Participating in subject Book Clubs (min. 4 books per year)",
+        "maxPoints": 12,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 13"
+      },
+      {
+        "id": "T1-14",
+        "typeNo": 1,
+        "no": 14,
+        "name": "Self-funded PD activity responding to national priorities",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 14"
+      },
+      {
+        "id": "T1-15",
+        "typeNo": 1,
+        "no": 15,
+        "name": "Organising a Half-Day Workshop/Seminar",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 15"
+      },
+      {
+        "id": "T1-16",
+        "typeNo": 1,
+        "no": 16,
+        "name": "Organising a 1\u20132 Day Workshop/Seminar",
+        "maxPoints": 7,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 16"
+      },
+      {
+        "id": "T1-17",
+        "typeNo": 1,
+        "no": 17,
+        "name": "Organising a 2\u20133 Day Conference/Summit",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 17"
+      },
+      {
+        "id": "T1-18",
+        "typeNo": 1,
+        "no": 18,
+        "name": "Organising a 1\u20135 Hours Meeting",
+        "maxPoints": 3,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 18"
+      },
+      {
+        "id": "T1-19",
+        "typeNo": 1,
+        "no": 19,
+        "name": "Organising a 6 Hours or more Meeting",
+        "maxPoints": 6,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 19"
+      },
+      {
+        "id": "T1-20",
+        "typeNo": 1,
+        "no": 20,
+        "name": "Membership in a Professional Learning Community outside school (6\u201312 months)",
+        "maxPoints": 12,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 20"
+      },
+      {
+        "id": "T1-21",
+        "typeNo": 1,
+        "no": 21,
+        "name": "Membership in a Subject Committee/Professional Association (12 months)",
+        "maxPoints": 12,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 21"
+      },
+      {
+        "id": "T1-22",
+        "typeNo": 1,
+        "no": 22,
+        "name": "Undertaking 12-month Research on Teaching and Learning",
+        "maxPoints": 20,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 22"
+      },
+      {
+        "id": "T1-23",
+        "typeNo": 1,
+        "no": 23,
+        "name": "Researching & Writing an Article for a Newsletter/Journal (within 6 months)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 23"
+      },
+      {
+        "id": "T1-24",
+        "typeNo": 1,
+        "no": 24,
+        "name": "Researching & Developing Material for Teaching and Learning (within 6 months)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 24"
+      },
+      {
+        "id": "T1-25",
+        "typeNo": 1,
+        "no": 25,
+        "name": "Kick-starting a Material Development Project (6 months)",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 25"
+      },
+      {
+        "id": "T1-26",
+        "typeNo": 1,
+        "no": 26,
+        "name": "Kick-starting a Learner Support Saturday Project (throughout year)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 26"
+      },
+      {
+        "id": "T1-27",
+        "typeNo": 1,
+        "no": 27,
+        "name": "Initiating/Participating in Community Project (6 months)",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 27"
+      },
+      {
+        "id": "T1-28",
+        "typeNo": 1,
+        "no": 28,
+        "name": "External Marking and Assessing (NSC or ANA)",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 28"
+      },
+      {
+        "id": "T1-29",
+        "typeNo": 1,
+        "no": 29,
+        "name": "External Examiner/Moderator in a year",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 29"
+      },
+      {
+        "id": "T1-30",
+        "typeNo": 1,
+        "no": 30,
+        "name": "Bonus: Completed Professional Development Portfolio (PDP) in Year",
+        "maxPoints": 12,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 1 no. 30"
+      },
+      {
+        "id": "T2-01",
+        "typeNo": 2,
+        "no": 1,
+        "name": "School Meetings (Staff/SGB/SMT/Cluster) \u2014 min. 10 meetings, 1 hr+",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 2 no. 1"
+      },
+      {
+        "id": "T2-02",
+        "typeNo": 2,
+        "no": 2,
+        "name": "Participating in 8 school-based workshops/support sessions per annum",
+        "maxPoints": 40,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 2 no. 2"
+      },
+      {
+        "id": "T2-03",
+        "typeNo": 2,
+        "no": 3,
+        "name": "Participating in 1 school-based workshop/support session",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 2 no. 3"
+      },
+      {
+        "id": "T2-04",
+        "typeNo": 2,
+        "no": 4,
+        "name": "School-based activity responding to national priorities",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 2 no. 4"
+      },
+      {
+        "id": "T2-05",
+        "typeNo": 2,
+        "no": 5,
+        "name": "Undertaking School Research and Development Project",
+        "maxPoints": 20,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 2 no. 5"
+      },
+      {
+        "id": "T2-06",
+        "typeNo": 2,
+        "no": 6,
+        "name": "Participating in School Projects (HIV/AIDS, nutrition, sports, twinning)",
+        "maxPoints": 15,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 2 no. 6"
+      },
+      {
+        "id": "T2-07",
+        "typeNo": 2,
+        "no": 7,
+        "name": "Implementing intervention responding to School Diagnostic Report (ANA/NSC)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 2 no. 7"
+      },
+      {
+        "id": "T2-08",
+        "typeNo": 2,
+        "no": 8,
+        "name": "Participation in Professional Learning Community at school (6\u201312 months)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 2 no. 8"
+      },
+      {
+        "id": "T2-09",
+        "typeNo": 2,
+        "no": 9,
+        "name": "Addressing 2 needs identified in School Improvement Plan/WSDP",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 2 no. 9"
+      },
+      {
+        "id": "T3-01",
+        "typeNo": 3,
+        "no": 1,
+        "name": "Attending Educational Meetings by PEDs/SGB/Independent Boards (4 meetings, 1 hr+)",
+        "maxPoints": 6,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 1"
+      },
+      {
+        "id": "T3-02",
+        "typeNo": 3,
+        "no": 2,
+        "name": "Attending Workshop by Employer/Provider \u2014 Half Day (2\u20135 hrs)",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 2"
+      },
+      {
+        "id": "T3-02b",
+        "typeNo": 3,
+        "no": 2,
+        "name": "Attending Workshop by Employer/Provider \u2014 Half Day (2\u20135 hrs) (second tick row)",
+        "maxPoints": 5,
+        "continuation": true,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 2b"
+      },
+      {
+        "id": "T3-03",
+        "typeNo": 3,
+        "no": 3,
+        "name": "Attending Workshop by Employer/Provider \u2014 1 Day (6\u20138 hrs)",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 3"
+      },
+      {
+        "id": "T3-03b",
+        "typeNo": 3,
+        "no": 3,
+        "name": "Attending Workshop by Employer/Provider \u2014 1 Day (6\u20138 hrs) (second tick row)",
+        "maxPoints": 10,
+        "continuation": true,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 3b"
+      },
+      {
+        "id": "T3-04",
+        "typeNo": 3,
+        "no": 4,
+        "name": "Attending Workshop by Employer/Provider \u2014 2\u20135 Days",
+        "maxPoints": 15,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 4"
+      },
+      {
+        "id": "T3-05",
+        "typeNo": 3,
+        "no": 5,
+        "name": "One-on-One Onsite Support by Office-based Officials (20 min+, per session)",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 5"
+      },
+      {
+        "id": "T3-06",
+        "typeNo": 3,
+        "no": 6,
+        "name": "Onsite Support for a Group of Teachers/Phase (20 min+, per session)",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 6"
+      },
+      {
+        "id": "T3-07",
+        "typeNo": 3,
+        "no": 7,
+        "name": "Conferences/Seminars/Summits \u2014 Half Day (2\u20135 hrs)",
+        "maxPoints": 5,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 7"
+      },
+      {
+        "id": "T3-08",
+        "typeNo": 3,
+        "no": 8,
+        "name": "Conferences/Seminars/Summits \u2014 Full Day to 1.5 Days",
+        "maxPoints": 10,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 8"
+      },
+      {
+        "id": "T3-09",
+        "typeNo": 3,
+        "no": 9,
+        "name": "Conferences/Seminars/Summits \u2014 2 Days or more",
+        "maxPoints": 15,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 9"
+      },
+      {
+        "id": "T3-10",
+        "typeNo": 3,
+        "no": 10,
+        "name": "Completing Online Self-Diagnostic Assessment (English Proficiency/Maths, per activity)",
+        "maxPoints": 7,
+        "continuation": false,
+        "sourceRef": "CPTD Points.xlsx (supplied by the school) \u00b7 Tick Sheet \u00b7 Type 3 no. 10"
+      }
+    ],
+    "counts": {
+      "activities": 49,
+      "tickRows": 51,
+      "secondTickRows": 2
+    },
+    "flags": [
+      {
+        "type": "second_tick_row",
+        "activityId": "T3-02b",
+        "text": "T3-02b is a second tick row under \"Attending Workshop by Employer/Provider \u2014 Half Day (2\u20135 hrs)\". The workbook gives it its own tick and 5 points, so ticking both rows in a year would count the points twice. Check the official SACE schedule to see whether that is intended."
+      },
+      {
+        "type": "second_tick_row",
+        "activityId": "T3-03b",
+        "text": "T3-03b is a second tick row under \"Attending Workshop by Employer/Provider \u2014 1 Day (6\u20138 hrs)\". The workbook gives it its own tick and 10 points, so ticking both rows in a year would count the points twice. Check the official SACE schedule to see whether that is intended."
+      },
+      {
+        "type": "check_source",
+        "text": "The maximum points come from the workbook as supplied. Compare them with the official SACE Professional Development Points Schedule before the school relies on them."
+      }
+    ],
+    "rulesNote": "Activities, types and maximum points are copied from the source named above. The widget invents no points."
+  },
+  "createdAt": "2026-10-24T04:12:11.906Z",
+  "popia": {
+    "personalInfoFound": false,
+    "hard": 0,
+    "soft": 94
+  },
+  "payloadHash": "4f89dad3"
+};
+  var TICKS = '# tick | activity id | year (1, 2 or 3) | Y or N. Only Y scores, as in the workbook. Use a staff code, never a name.\ntick | T1-01 | 1 | Y\ntick | T1-03 | 1 | Y\ntick | T1-12 | 1 | Y\ntick | T2-01 | 1 | Y\ntick | T2-03 | 1 | Y\ntick | T2-08 | 1 | Y\ntick | T3-02 | 1 | Y\ntick | T3-07 | 1 | Y\ntick | T1-05 | 1 | N\ntick | T1-01 | 2 | Y\ntick | T2-03 | 2 | Y\ntick | T3-02 | 2 | Y';
+  function sample() { return { upText: JSON.stringify(G9, null, 2), teacherCode: 'T01', cycleStart: '2026-01-01', ticksText: TICKS }; }
+  var cfg = {
+    title: 'The tick sheet and year totals, <span class="arc">worked out exactly as the workbook does.</span>',
+    lead: 'Take the registered schedule, give a staff code, and enter a tick for each activity and year. A tick gives the full maximum points for that year. The widget shows points by type and by year, the pace against the yearly target, and whether all three types have entries. These points are claimed, not yet backed by records. The next widget checks the records.',
+    upstream: man.upstream, upstreamSample: function () { return G9; }, requiredInput: ['upText', 'teacherCode', 'ticksText'], piiTarget: 'ticksText', changeTarget: { path: 'teacherCode', value: 'T02' },
+    buildBench: function (el) {
+      el.innerHTML = '<label for="up">The registered schedule (<code>pd.schedule.registered</code>, from PD-W09)</label><textarea id="up" spellcheck="false" style="min-height:90px"></textarea><label for="tc">Staff code (T01 style, no names)</label><input id="tc" style="width:100%"><label for="cs">First day of the cycle (YYYY-MM-DD, optional). Year 1 starts here. The record sheet uses it to check dates.</label><input id="cs" style="width:100%"><label for="tk">Ticks: tick | activity id | year | Y or N</label><textarea id="tk" spellcheck="false" style="min-height:140px"></textarea>';
+    },
+    sample: sample,
+    fillInput: function (s) { $('#up').value = s.upText || ''; $('#tc').value = s.teacherCode || ''; $('#cs').value = s.cycleStart || ''; $('#tk').value = s.ticksText || ''; },
+    reset: function () { ['#up', '#tc', '#cs', '#tk'].forEach(function (i) { $(i).value = ''; }); },
+    collectInput: function () { return { upText: $('#up').value, teacherCode: $('#tc').value.trim(), cycleStart: $('#cs').value.trim(), ticksText: $('#tk').value }; },
+    validateInput: function (i) {
+      var e = PD.one(i.upText, 'point schedule', ['pd.schedule.registered']).errors.slice();
+      if (!i.teacherCode) e.push('Missing input: add the staff code.'); if (!(i.ticksText || '').trim()) e.push('Missing input: add the ticks.'); return e;
+    },
+    run: function (input) {
+      var errs = [], flags = [], R = PD.one(input.upText, 'point schedule', ['pd.schedule.registered']);
+      if (R.errors.length) return { blocked: true, errors: R.errors };
+      if (!/^T\d{2,3}$/.test(input.teacherCode)) errs.push('Use a staff code like T01. Do not type a name.');
+      if (input.cycleStart && !CE.isDate(input.cycleStart)) errs.push('The first day of the cycle must be YYYY-MM-DD.');
+      var reg = R.p, byId = {}; reg.activities.forEach(function (a) { byId[a.id] = a; });
+      var ticks = [], seen = {};
+      CE.lines(input.ticksText, 1).forEach(function (r) {
+        var c = r.cells, at = 'Tick line ' + r.n + ': ';
+        if ((c[0] || '').toLowerCase() !== 'tick' || c.length < 4) { errs.push(at + 'give tick | activity id | year | Y or N.'); return; }
+        var a = byId[c[1]], y = PD.numStr(c[2]), v = String(c[3] || '').trim().toUpperCase();
+        if (!a) { errs.push(at + c[1] + ' is not an activity in the registered schedule.'); return; }
+        if (y === null || [1, 2, 3].indexOf(y) < 0) { errs.push(at + 'the year must be 1, 2 or 3.'); return; }
+        if (v !== 'Y' && v !== 'N') { errs.push(at + 'write Y or N.'); return; }
+        var k = c[1] + '|' + y; if (seen[k]) { errs.push(at + c[1] + ' is ticked twice for year ' + y + '.'); return; } seen[k] = 1;
+        if (v === 'Y') ticks.push({ activityId: a.id, typeNo: a.typeNo, name: a.name, year: y, points: a.maxPoints, continuation: a.continuation, line: r.n, sourceRef: a.sourceRef + ' · tick line ' + r.n });
+      });
+      if (errs.length) return { blocked: true, errors: errs };
+      var rules = reg.rules, years = [1, 2, 3].map(function (y) {
+        var bt = { 1: 0, 2: 0, 3: 0 }, n = 0, tot = 0; ticks.forEach(function (t) { if (t.year === y) { bt[t.typeNo] += t.points; tot += t.points; n++; } });
+        return { year: y, ticks: n, points: tot, byType: bt, annualPace: rules.annualPace, gap: tot - rules.annualPace, percentOfPace: Math.round(100 * tot / rules.annualPace), status: PD.cptdStatus(tot, rules) };
+      });
+      var byType = { 1: 0, 2: 0, 3: 0 }, total = 0; years.forEach(function (y) { [1, 2, 3].forEach(function (t) { byType[t] += y.byType[t]; }); total += y.points; });
+      var allTypes = byType[1] > 0 && byType[2] > 0 && byType[3] > 0;
+      ticks.filter(function (t) { return t.continuation; }).forEach(function (t) { flags.push({ type: 'second_tick_row', text: t.activityId + ' (year ' + t.year + ') is a second tick row. Its ' + t.points + ' points count as well as the first row\'s, as in the workbook. Check this is right.' }); });
+      if (!ticks.length) flags.push({ type: 'no_ticks', text: 'No activity is ticked Y, so every year scores 0.' });
+      if (!allTypes) flags.push({ type: 'type_missing', text: 'Not every type has entries yet (' + [1, 2, 3].filter(function (t) { return byType[t] === 0; }).map(function (t) { return 'Type ' + t + ' ' + PD.TYPES[t]; }).join(', ') + '). The workbook says all three types must be present.' });
+      if (total > rules.cyclePoints) flags.push({ type: 'over_target', text: 'Claimed points (' + total + ') are above the cycle target of ' + rules.cyclePoints + '. The workbook still shows them.' });
+      return { event: 'pd.cptd.ticks.approved', capsTopicId: null, payload: { teacherCode: input.teacherCode, cycleStart: input.cycleStart || null, registerRunId: R.env.runId, scheduleSource: reg.source, rules: { cyclePoints: rules.cyclePoints, annualPace: rules.annualPace, attentionFloor: rules.attentionFloor }, ticks: ticks, years: years, totals: { claimedPoints: total, byType: byType, percentOfCycle: Math.round(100 * total / rules.cyclePoints), remaining: Math.max(0, rules.cyclePoints - total), allThreeTypes: allTypes }, flags: flags, rulesNote: 'These are claimed points. A tick gives the full maximum points for the year, as in the workbook. They are backed by records only after the record sheet is checked.' }, sourceRefs: [{ source: reg.source, locator: 'register run ' + R.env.runId }] };
+    },
+    renderPreview: function (env, el) {
+      var p = env.payload, h = '<h3>Tick sheet · ' + esc(p.teacherCode) + '</h3><p><b>' + p.totals.claimedPoints + '</b> of ' + p.rules.cyclePoints + ' points claimed (' + p.totals.percentOfCycle + '%) · ' + p.totals.remaining + ' to go · all three types: ' + (p.totals.allThreeTypes ? 'yes' : 'no') + '</p>';
+      h += CE.table([{ key: 'y', label: 'Year' }, { key: 't1', label: 'Type 1' }, { key: 't2', label: 'Type 2' }, { key: 't3', label: 'Type 3' }, { key: 'p', label: 'Points' }, { key: 'g', label: 'Against ' + p.rules.annualPace }, { key: 's', label: 'Status' }], p.years.map(function (y) { return { y: 'Year ' + y.year, t1: y.byType[1], t2: y.byType[2], t3: y.byType[3], p: y.points, g: (y.gap >= 0 ? '+' : '') + y.gap, s: y.status, _cls: y.status === 'Behind pace' ? 'ce-need' : '' }; }));
+      h += CE.table([{ key: 'y', label: 'Year' }, { key: 'i', label: 'Activity' }, { key: 'n', label: 'Name' }, { key: 'p', label: 'Points' }], p.ticks.map(function (t) { return { y: t.year, i: t.activityId, n: t.name, p: t.points }; }));
+      el.innerHTML = h + (p.flags.length ? CE.checks(p.flags.map(function (f) { return { ok: false, text: f.text }; })) : '') + '<p class="cap">' + esc(p.rulesNote) + '</p>';
+    },
+    renderOutput: function (e) { return '<p>' + e.payload.totals.claimedPoints + ' points claimed by ' + esc(e.payload.teacherCode) + '. Approving releases <code>pd.cptd.ticks.approved</code>.</p>'; },
+    onEnvelope: function (env) { if (env.event === 'pd.schedule.registered') $('#up').value = JSON.stringify(env, null, 2); }
+  };
+  IAI.init(cfg);
+})();
+</script></body></html>

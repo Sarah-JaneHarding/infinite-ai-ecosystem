@@ -502,6 +502,45 @@ export {
 } from './curriculum/sources/caps-english-hl-fp-gr-r3.js';
 
 export {
+  CAPS_SEPEDI_HL_FP_CONTENT_AREAS,
+  CAPS_SEPEDI_HL_FP_DOC_ID,
+  CAPS_SEPEDI_HL_FP_FORMAL_TASKS_PER_TERM,
+  CAPS_SEPEDI_HL_FP_ISBN,
+  CAPS_SEPEDI_HL_FP_METADATA,
+  CAPS_SEPEDI_HL_FP_TOPIC_PROGRESSIONS,
+  CAPS_SEPEDI_HL_FP_VERSION,
+  CAPS_SEPEDI_HL_FP_WEEKLY_HOURS,
+  type CapsSepediHlFpContentArea,
+  type CapsSepediHlFpTopicProgression,
+} from './curriculum/sources/caps-sepedi-hl-fp-gr-r3.js';
+
+export {
+  CAPS_SESOTHO_HL_FP_CONTENT_AREAS,
+  CAPS_SESOTHO_HL_FP_DOC_ID,
+  CAPS_SESOTHO_HL_FP_FORMAL_TASKS_PER_TERM,
+  CAPS_SESOTHO_HL_FP_ISBN,
+  CAPS_SESOTHO_HL_FP_METADATA,
+  CAPS_SESOTHO_HL_FP_TOPIC_PROGRESSIONS,
+  CAPS_SESOTHO_HL_FP_VERSION,
+  CAPS_SESOTHO_HL_FP_WEEKLY_HOURS,
+  type CapsSesothoHlFpContentArea,
+  type CapsSesothoHlFpTopicProgression,
+} from './curriculum/sources/caps-sesotho-hl-fp-gr-r3.js';
+
+export {
+  CAPS_SETSWANA_HL_FP_CONTENT_AREAS,
+  CAPS_SETSWANA_HL_FP_DOC_ID,
+  CAPS_SETSWANA_HL_FP_FORMAL_TASKS_PER_TERM,
+  CAPS_SETSWANA_HL_FP_ISBN,
+  CAPS_SETSWANA_HL_FP_METADATA,
+  CAPS_SETSWANA_HL_FP_TOPIC_PROGRESSIONS,
+  CAPS_SETSWANA_HL_FP_VERSION,
+  CAPS_SETSWANA_HL_FP_WEEKLY_HOURS,
+  type CapsSetswanaHlFpContentArea,
+  type CapsSetswanaHlFpTopicProgression,
+} from './curriculum/sources/caps-setswana-hl-fp-gr-r3.js';
+
+export {
   CAPS_FAL_FP_CONTENT_AREAS,
   CAPS_FAL_FP_DOC_ID,
   CAPS_FAL_FP_METADATA,

@@ -3,7 +3,7 @@
 // Pre-flight check for the analytics.report pipeline: receives a class, grade,
 // or school rollup snapshot and determines whether the data is ready for the full
 // reporting pass. All decisions are deterministic (cohort suppression rules,
-// staleness threshold, domain coverage count) — no generative prose, no free text
+// the school's own staleness threshold, domain coverage count) — no generative prose, no free text
 // in the output. Backed by analytics.screen (Gemini Flash primary).
 //
 // Runs before every analytics.report call; a 'suppressed' result stops the report
@@ -20,7 +20,7 @@ export const AC11Contract = validateAgentContract({
   purpose: 'reporting_district',
   inputSchema: AC11Input,
   outputSchema: AC11Result,
-  promptRef: { agent: 'AC-11', version: '1.0.0' },
+  promptRef: { agent: 'AC-11', version: '1.1.0' },
   /** analytics.screen: Flash-primary; deterministic cohort checks, no reasoning prose. */
   model: 'analytics.screen',
   tools: [],

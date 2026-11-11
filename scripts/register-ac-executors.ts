@@ -1,5 +1,5 @@
-// Side-effect module: registers AC-01 through AC-10 eval-harness executors.
-// Import once from evals-run.ts and evals-gate.ts so all ten executors are
+// Side-effect module: registers AC-01 through AC-11 eval-harness executors.
+// Import once from evals-run.ts and evals-gate.ts so all eleven executors are
 // discoverable by the harness.
 //
 // Unlike CE and DW executors, AC agents are pure analytics functions — no model
@@ -9,7 +9,7 @@
 
 import { randomUUID } from 'node:crypto';
 
-import { assignTier, checkDataSufficiency } from '@infinite-ai/analytics';
+import { assignTier, checkDataSufficiency, screenRollup } from '@infinite-ai/analytics';
 import type {
   AC01Input,
   AC02Input,
@@ -21,6 +21,7 @@ import type {
   AC08Input,
   AC09Input,
   AC10Input,
+  AC11Input,
 } from '@infinite-ai/analytics';
 import { registerAgentExecutor, type EvalCase } from '@infinite-ai/evals';
 
@@ -774,4 +775,20 @@ registerAgentExecutor('AC-10', async (evalCase: EvalCase) => {
       evidenceIds,
     },
   };
+});
+
+// ---------------------------------------------------------------------------
+// AC-11 Analytics Data Screener
+//
+// Pre-flight check on a class, grade or school rollup before it enters the
+// reporting pass. The rules live in `screenRollup` (@infinite-ai/analytics): fixed
+// order staleness → domain coverage → suppression → ready, with the staleness
+// threshold supplied by the school on each input. The executor only supplies a
+// fresh screenId, so the cases exercise the real rules.
+// ---------------------------------------------------------------------------
+
+registerAgentExecutor('AC-11', async (evalCase: EvalCase) => {
+  const input = evalCase.input as AC11Input;
+  void ctx(evalCase);
+  return { output: screenRollup(input, randomUUID()) };
 });
