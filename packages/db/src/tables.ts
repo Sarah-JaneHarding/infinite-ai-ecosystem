@@ -51,6 +51,7 @@ export const TENANT_OWNED_TABLES = [
   'user_account',
   // OQ-033 — provisioning (docs/PROVISIONING_DESIGN.md)
   'user_invitation',
+  'role_grant_request',
   // Stage 17 — tenant lifecycle, provisioning, billing
   'metering_period',
   'provisioning_record',

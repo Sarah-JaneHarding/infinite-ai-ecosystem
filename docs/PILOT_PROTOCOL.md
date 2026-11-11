@@ -4,8 +4,10 @@ This document defines the success metrics, weekly review cadence, and escalation
 for the INFINITE-AI pilot programme.
 
 **OQ-019 resolved 2026-09-09.** Benjamin Pine Primary School is confirmed as pilot
-school #1. See the confirmed cohort table below. Schools #2 and #3 are still to be
-identified before the full cohort target of three is met.
+school #1. See the confirmed cohort table below. **Decision D-4, 2026-11-11:** schools #2
+and #3 are deferred until pre-pilot testing with school #1 is complete. The metrics below
+that count "of 3" schools apply once the cohort is three; until then they are read against
+school #1 alone.
 
 ---
 
@@ -13,11 +15,11 @@ identified before the full cohort target of three is met.
 
 Target: 3 schools in the first pilot cohort. Pilot start: **Term 4 2026 (2026-10-06).**
 
-| #   | School                       | Profile                                  | Tier         | LoLT | Implementation partner        | Status                   |
+| #   | School                       | Profile                                  | Size band    | LoLT | Implementation partner        | Status                   |
 | --- | ---------------------------- | ---------------------------------------- | ------------ | ---- | ----------------------------- | ------------------------ |
 | 1   | Benjamin Pine Primary School | Small primary, Grades R–7, Afrikaans FAL | Starter      | en   | mrsharding@benjaminpine.co.za | **Confirmed 2026-09-09** |
-| 2   | _(to be identified)_         | Large primary (≈ 500 learners)           | Professional | —    | —                             | Pending                  |
-| 3   | _(to be identified)_         | School group (≥ 2 campuses)              | Enterprise   | —    | —                             | Pending                  |
+| 2   | _(to be identified)_         | Large primary (≈ 500 learners)           | Professional | —    | —                             | Deferred (D-4)           |
+| 3   | _(to be identified)_         | School group (≥ 2 campuses)              | Enterprise   | —    | —                             | Deferred (D-4)           |
 
 Each pilot school is assigned an implementation partner contact and an on-call engineer.
 Tenant provisioning for confirmed schools uses `packages/provisioning`'s `PILOT_COHORT`

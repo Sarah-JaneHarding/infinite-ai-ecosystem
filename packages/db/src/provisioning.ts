@@ -50,8 +50,10 @@ export type RuleDecision =
     }
   | { readonly allowed: false; readonly reason: string };
 
+// Property (not method) syntax on purpose: method parameters are checked bivariantly, which would
+// let a rule with the wrong input shape satisfy this interface unnoticed.
 export interface ProvisioningRules {
-  conferral(input: {
+  readonly conferral: (input: {
     readonly actorAccountId: string;
     readonly target:
       | { readonly kind: 'account'; readonly accountId: string }
@@ -59,18 +61,18 @@ export interface ProvisioningRules {
     readonly roles: readonly string[];
     readonly admins: AdminStateInput;
     readonly confirmedByAccountId?: string | null;
-  }): RuleDecision;
-  revocation(input: {
+  }) => RuleDecision;
+  readonly revocation: (input: {
     readonly actorAccountId: string;
     readonly targetAccountId: string;
     readonly role: string;
     readonly admins: AdminStateInput;
-  }): RuleDecision;
-  statusChange(input: {
+  }) => RuleDecision;
+  readonly statusChange: (input: {
     readonly actorAccountId: string;
     readonly targetAccountId: string;
     readonly admins: AdminStateInput;
-  }): RuleDecision;
+  }) => RuleDecision;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -113,7 +115,7 @@ export function normaliseEmail(raw: string): string | null {
   return email;
 }
 
-async function currentTenantId(tx: TenantClient): Promise<string> {
+export async function currentTenantId(tx: TenantClient): Promise<string> {
   const rows = await tx.$queryRaw<
     { tenant_id: string }[]
   >`SELECT current_setting('app.tenant_id', false) AS tenant_id`;

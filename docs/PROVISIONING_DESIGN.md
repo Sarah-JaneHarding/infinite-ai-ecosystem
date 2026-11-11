@@ -193,6 +193,113 @@ This needs the tenant-creation path in `packages/provisioning` to produce the in
 operator-only entry point. It also forces a decision on what the platform may write into a school
 (§10, question 7).
 
+### 4.7 Granting `admin` or `smt` to an existing account (step 3b — built, Stage 118)
+
+**The gap.** Inviting a new person into `admin` or `smt` works (§4.1, Stage 115): the invitation is created
+`AWAITING`, a second administrator confirms it as themselves, and only then can it be accepted. Granting the same roles
+to someone who **already has an account** has no equivalent, because there is no row to hold "proposed, not yet
+confirmed". Today no function does it, so it fails closed: nobody can be promoted to `admin` or `smt` once they have
+signed in once. That is safe, and unusable (a teacher who becomes deputy principal cannot be made `smt`).
+
+**What the stored record must do.** A confirmation the caller merely asserts is no confirmation (the same reasoning as
+the invitation's `confirmed_by`). So the proposal must be a durable act by the first administrator, and the
+confirmation a separate durable act by the second, each as themselves, and the two must be different people on the
+face of the record.
+
+**Proposed: a `role_grant_request` table**, tenant-owned, row-level security forced, registered in `tables.ts`, with a
+forward migration and a tested `rollback.sql` (rules 5 and 10).
+
+| Column                       | Meaning                                                                     |
+| ---------------------------- | --------------------------------------------------------------------------- |
+| `id`, `tenant_id`            | as every tenant-owned table                                                 |
+| `target_account_id`          | the existing account that would receive the roles                           |
+| `roles` (text[])             | non-empty, each one of `admin` or `smt` — nothing else ever needs a request |
+| `school_id` (nullable)       | the optional scope the assignments would carry, as on an invitation         |
+| `requested_by`, `created_at` | the proposing administrator                                                 |
+| `expires_at`                 | a request that is never decided must not linger as standing authority       |
+| `status`                     | `PENDING`, `APPLIED`, `DECLINED`, `CANCELLED`, `EXPIRED`                    |
+| `decided_by`, `decided_at`   | the second administrator (for `APPLIED` / `DECLINED`) or whoever cancelled  |
+
+**Constraints held in the database, not only in code:**
+
+- `target_account_id <> requested_by` — nobody proposes roles for themselves;
+- `decided_by` is not null exactly when `status` is `APPLIED` or `DECLINED`, and then
+  `decided_by <> requested_by` and `decided_by <> target_account_id` — **the two-person rule is a CHECK**, so a
+  bug in a caller cannot record a self-confirmed grant;
+- one `PENDING` request per target account (a partial unique index, which Prisma cannot express, so SQL only);
+- `roles` limited to the sensitive pair, with a drift test against `CONFIRMATION_REQUIRED_ROLES` in policy, as the
+  invitation's role list has against `SCHOOL_STAFF_ROLES`.
+
+**Lifecycle — confirming applies the grant in the same transaction.** There is deliberately no "confirmed but not yet
+applied" state: a second administrator's confirmation creates the `role_assignment` rows and marks the request
+`APPLIED` together, or does neither.
+
+1. **Request** (`requestRoleGrant`, any active administrator): under the provisioning lock, the rules
+   (`evaluateRoleConferral` with an `account` target) decide. `confirmation_required` stores a `PENDING` request;
+   `waived_sole_admin` (the school has one administrator) applies the grant immediately and audits the waiver, exactly
+   as for an invitation; every other refusal is returned and nothing is stored. A target who is not `ACTIVE` is refused.
+2. **Confirm** (`confirmRoleGrant`, a different active administrator): under the lock, re-read the administrators and
+   re-run the rules with `confirmedByAccountId`; require the proposer is still an administrator, the target still
+   `ACTIVE`, the request `PENDING` and unexpired; then write the assignments and mark `APPLIED`.
+3. **Decline** (a different administrator) records `DECLINED` so the proposer can see it was refused;
+   **Cancel** (the proposer, or any administrator) records `CANCELLED`. Neither takes free text, so no personal
+   information is stored in the record.
+4. **Expire** lazily, as invitations do: found past `expires_at` when read or confirmed, marked `EXPIRED`, refused.
+
+All four steps take the same provisioning lock as the rest of step 3 and append an audit event in the transaction
+(`role_grant.requested`, `.applied`, `.declined`, `.cancelled`, `.expired`), carrying ids, roles and states — never an
+address. A suspended or offboarded proposer or target leaves a `PENDING` request that can no longer be confirmed (the
+rules refuse a non-administrator actor and the function refuses a non-active target); it is cancelled by the next
+administrator who looks, or expires.
+
+**Alternatives considered, and why not.**
+
+- _Reuse the audit chain as the proposal_ (the confirmation is a later audit event that cites the first). Rejected: the
+  chain is append-only and holds no mutable state, so "one pending per target", expiry and a database-enforced
+  two-person CHECK all become reconstructions from history rather than constraints.
+- _Reuse `user_invitation` with an account id._ Rejected: an invitation is, by definition, for a person who has no
+  account and carries an address that is personal information. Overloading it would blur what its constraints mean and
+  put an address-bearing table on the path for people who do not need one.
+- _A confirmation token the second administrator presents._ Rejected: a bearer secret is a new thing to leak, and it
+  proves possession rather than that an administrator, signed in as themselves, agreed.
+- _Allow `admin`/`smt` grants to existing accounts only through the sole-administrator waiver._ This is today's
+  behaviour and is the safe fallback if this proposal is not accepted.
+
+**What this does not change.** Granting any other staff role (`teacher`, `hod`, `sbst`) to an existing account is not
+sensitive and needs no confirmation; that path (a plain grant by one administrator) is a small separate function and not
+part of this table. Revoking authority needs no confirmation (§4.5). No platform role is ever involved.
+
+**As built (Stage 118)** — the four decisions below were answered "go ahead with my recommendations": a 7-day request
+lifetime, an optional school scope, and the proposer may cancel their own request (as may any other administrator).
+The functions are in `packages/db/src/role-grant.ts` (`requestRoleGrant`, `confirmRoleGrant`, `declineRoleGrant`,
+`cancelRoleGrant`); the table is `role_grant_request` (migrations `20261111100000_oq033_role_grant_request` and
+`…100100_…_rls`, with a `rollback.sql`). Two points differ from the text above, and a third was found while testing:
+
+- **`decided_by` / `decided_at` are also set when a request is `CANCELLED`** (the proposer included), so the row says who
+  withdrew it. The two-person CHECK therefore applies to `APPLIED` and `DECLINED` only, not to every decided status.
+- **A request that names the same target as an expired `PENDING` one** closes the old request (`EXPIRED`, audited) and
+  then stores the new one, in the same transaction, so the one-live-request index never blocks a fresh proposal.
+- **The `roles` CHECK is explicit about `NULL`.** The column is nullable (as Prisma generates list columns), and a CHECK
+  that evaluates to `NULL` passes, so `cardinality(NULL) >= 1` let a `NULL` through. Found by trying it in a local Postgres;
+  the new table's CHECK starts with `"roles" IS NOT NULL`. **`user_invitation.roles` had the same gap** and was fixed separately (Stage 119).
+
+**Decisions that were put to the owner (answered as recommended):**
+
+1. Is a stored request record the right shape (this proposal), or should existing-account promotion stay
+   waiver-only for now?
+2. Request lifetime. Recommended **7 days**, shorter than an invitation's 14: this one decides authority and the person
+   already works at the school, so there is less reason to wait.
+3. Should a request carry an optional school scope (`school_id`), as an invitation does? Recommended **yes**, for
+   parity; a tenant-wide grant is `school_id` null.
+4. May the proposer cancel their own request? Recommended **yes** (withdrawing a proposal narrows nothing), with any other
+   administrator also able to cancel.
+
+**Tests this implies** (so the cost is visible): the constraints above, each by an insert that violates it; every
+refusal; request/confirm/decline/cancel/expire paths; no address in any audit diff; cross-tenant isolation (generic
+suite picks the table up from `tables.ts`); the concurrency cases — two administrators confirming the same request
+at once yields one `APPLIED` and one refusal, and a request racing the proposer's own demotion cannot apply; and the
+rollback test.
+
 ## 5. The identity-provider side
 
 Today Keycloak users, their `tenant_id` attribute and their realm roles are created by hand. That
@@ -298,9 +405,11 @@ must keep resolving **no** actor, and a test should pin that.
    suspend/offboard, all behind one per-tenant advisory lock taken before the audit lock, with the
    rules injected (`ProvisioningRules`) because db may not import policy. The second
    administrator's confirmation is persisted on the invitation (`confirmation`, `confirmed_by`).
-   Not built (3b): granting `admin`/`smt` to an EXISTING account when the school has two or more
-   administrators — it needs a persisted request/confirmation record like the invitation's, and
-   until then there is no function that does it, so it fails closed._
+   The web layer binds the real rules in `apps/web/src/lib/provisioning-rules.ts` (Stage 117).
+   Built (3b, Stage 118, §4.7): granting `admin`/`smt` to an EXISTING account when the school has
+   two or more administrators, through a stored `role_grant_request` that a different administrator
+   confirms (applying the grant in the same transaction), declines or cancels, in
+   `packages/db/src/role-grant.ts`._
 4. **Sign-in integration**: §4.3 and §4.4 in the `jwt` callback; refusal reasons; tests for every row
    of the table in §4.3 and for platform sign-ins resolving no actor.
 5. **Admin UI** (`/admin/staff`): invite, revoke, list, role changes; wired to the routes.

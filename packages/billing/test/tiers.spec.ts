@@ -8,10 +8,6 @@ describe('SUBSCRIPTION_TIERS', () => {
     );
   });
 
-  it('starter tier has zero monthly base cost', () => {
-    expect(getTier('starter').monthlyBaseCents).toBe(0);
-  });
-
   it('enterprise tier has zero per-kilo-token overage cost', () => {
     expect(getTier('enterprise').perKiloTokenOverageCents).toBe(0);
   });
@@ -24,21 +20,21 @@ describe('SUBSCRIPTION_TIERS', () => {
     expect(standard.monthlyTokenLimit).toBeLessThan(enterprise.monthlyTokenLimit);
   });
 
-  it('each tier has strictly increasing included learner counts', () => {
-    const starter = getTier('starter');
-    const standard = getTier('standard');
-    const enterprise = getTier('enterprise');
-    expect(starter.includedLearners).toBeLessThan(standard.includedLearners);
-    expect(standard.includedLearners).toBeLessThan(enterprise.includedLearners);
+  it('tiers carry no seat prices: seats follow the per-school formula (OQ-043)', () => {
+    for (const tier of Object.values(SUBSCRIPTION_TIERS) as SubscriptionTier[]) {
+      expect(Object.keys(tier).sort()).toEqual([
+        'monthlyTokenLimit',
+        'name',
+        'perKiloTokenOverageCents',
+      ]);
+    }
   });
 
   it('all monetary values are non-negative integers', () => {
     for (const tier of Object.values(SUBSCRIPTION_TIERS) as SubscriptionTier[]) {
-      expect(tier.monthlyBaseCents).toBeGreaterThanOrEqual(0);
-      expect(Number.isInteger(tier.monthlyBaseCents)).toBe(true);
-      expect(tier.perExtraLearnerCents).toBeGreaterThanOrEqual(0);
-      expect(tier.perExtraEducatorCents).toBeGreaterThanOrEqual(0);
       expect(tier.perKiloTokenOverageCents).toBeGreaterThanOrEqual(0);
+      expect(Number.isInteger(tier.perKiloTokenOverageCents)).toBe(true);
+      expect(Number.isInteger(tier.monthlyTokenLimit)).toBe(true);
     }
   });
 });

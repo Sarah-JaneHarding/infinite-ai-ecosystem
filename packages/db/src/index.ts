@@ -194,3 +194,18 @@ export {
   type SetAccountStatusInput,
   type SetAccountStatusResult,
 } from './provisioning.js';
+export {
+  DEFAULT_ROLE_GRANT_LIFETIME_DAYS,
+  SENSITIVE_ROLES,
+  cancelRoleGrant,
+  confirmRoleGrant,
+  declineRoleGrant,
+  defaultRoleGrantExpiry,
+  requestRoleGrant,
+  type ConfirmRoleGrantInput,
+  type ConfirmRoleGrantResult,
+  type DecideRoleGrantInput,
+  type DecideRoleGrantResult,
+  type RequestRoleGrantInput,
+  type RequestRoleGrantResult,
+} from './role-grant.js';
