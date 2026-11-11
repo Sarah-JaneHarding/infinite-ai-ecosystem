@@ -11259,7 +11259,7 @@ or the audit chain); the database lock for the race is step 3.
 | Last administrator cannot be removed by a single change                 | PASS (exhaustive) |
 | Last administrator safe under concurrency                               | OPEN (step 3)     |
 
-## Stage 116 — OQ-043 per-school price formula (decided 2026-11-11, provisional)
+## Stage 117 — OQ-043 per-school price formula (decided 2026-11-11, provisional)
 
 `packages/billing/src/pricing.ts` (new): `priceBreakdown`, `splitVat`, `annualPrepayCents` and the constants (R300, R75, R4.00 /
 R1.50 above 500, R750 minimum, 50 % community, 10 % prepay, 15 % VAT). Integer cents throughout; negative or fractional counts
@@ -11269,7 +11269,7 @@ minimum top-up, community reduction, token overage.
 
 Docs updated in the same change: `COST_MODEL.md` (also withdraws the "35 %" starter margin, computed on the retired card, and
 points at OQ-018), `ONBOARDING_GUIDE.md` Step 7, `AWS_MIGRATION_AUDIT.md`, `financial-model.html` (pills and default),
-`OPEN_QUESTIONS.md` (OQ-043 decided; 11 Nov decisions table).
+`OPEN_QUESTIONS.md` (OQ-043 decided; 11 Nov decisions table), `PILOT_PROTOCOL.md` (schools #2 and #3 deferred, D-4).
 
 **Tests.** Billing 77 (from 71 at the start of the change): formula reference prices R1,380 / R3,100 / R7,925, the 500-learner
 step, the minimum and its top-up, community rate, VAT rounding, invoice lines summing to the subtotal, and
