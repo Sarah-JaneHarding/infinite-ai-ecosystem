@@ -564,6 +564,8 @@ action, keyed on what), and is email verification required? If yes, record where
 `SECURITY.md`. Until answered, treat MFA as not enforced. The provisioning design's step 7 will add the realm
 configuration to the repository with a drift test, so this does not depend on memory again.
 
+**Decided 2026-11-11 (Sarah-Jane Harding): build second, after OQ-033.** Keycloak OTP and email verification, with a drift test, and `SECURITY.md` §7 corrected. **Built (Stage 121):** `realm.json` now sets `verifyEmail`, the `browser-mfa` flow with one conditional OTP step per role (`admin`, `smt`, `platform_support`, `platform_admin`), and the `CONFIGURE_TOTP` and `VERIFY_EMAIL` required actions; `keycloak-realm-mfa.spec.ts` guards it. **Still to do, needs a running Keycloak:** (1) `docker compose -f infra/docker/compose.dev.yml up -d keycloak`, wait for `healthy`; (2) sign in as `admin.dev`, confirm Keycloak asks you to set up an authenticator app and then for a code; (3) sign in as `teacher.dev`, confirm no code is asked; (4) record the result here. The production realm must be created from this file (or its differences recorded) before `SECURITY.md` may claim production enforcement. The configuration was written without a live Keycloak and has not been run.
+
 **Recommended way to answer it** (detail in `docs/PROVISIONING_DESIGN.md` §12.2): export the production realm and check four things — OTP required for `admin`, `smt` and the platform roles (or `CONFIGURE_TOTP` on creation), Verify email on, brute-force detection on, no federated provider that skips email verification — then commit the sanitised export with a drift test, or configure what is missing and correct `SECURITY.md`.
 
 ### OQ-037 — a public widget catalogue puts one school's code in front of other schools · 2026-10-25 · **decided 2026-10-26 (partly)**
@@ -702,13 +704,13 @@ Recorded from the owner's instructions. Each is a decision, not yet built unless
 
 | ID     | Decision                                                                                                                                                         |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D-1    | OQ-043 formula price adopted, provisional (above). Built in Stage 117.                                                                                           |
+| D-1    | OQ-043 formula price adopted, provisional (above). Built in Stage 120.                                                                                           |
 | D-2    | Prices are shown VAT-inclusive with the ex VAT split.                                                                                                            |
 | D-3    | Teacher training is part of the ecosystem, not a second product line.                                                                                            |
 | D-4    | Pilot schools #2 and #3 are deferred until pre-pilot testing with school #1 is complete.                                                                         |
 | D-5    | Founder salary R35,000 per month during the pre-pilot and pilot phases, half-time commitment. Reviewed after the pilot phase.                                    |
 | D-6    | Voluntary VAT registration from launch, subject to the accountant.                                                                                               |
-| OQ-033 | Build first. Steps 2 and 3a are in pull requests that need rebasing and renumbering (Stage 114 is already used by AC-11).                                        |
+| OQ-033 | Build first. Built: provisioning steps 1 to 3b, in Stages 112, 113 and 115 to 119 (the `NULL` gap in `user_invitation.roles` closed in Stage 119).               |
 | OQ-036 | Build second. Correct `SECURITY.md` section 7. Keycloak OTP and email verification, with a drift test.                                                           |
 | OQ-016 | December-holiday labelling sprint with Primary school staff. Two people label a sample to measure agreement.                                                     |
 | OQ-017 | Apply Terraform to a small staging environment in Nov-Dec, then run k6.                                                                                          |
