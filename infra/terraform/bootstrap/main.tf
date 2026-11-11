@@ -111,10 +111,21 @@ data "aws_iam_policy_document" "github_assume" {
     }
     # One condition value per allowed branch — a PR branch is never in this list, so a
     # workflow run on a PR cannot assume this role no matter what it requests.
+    #
+    # A job that declares `environment: X` is identified to AWS as
+    # `repo:<repo>:environment:X`, with NO branch in the subject, so the branch values
+    # above never match it. Each environment in var.github_environments is therefore
+    # trusted separately. Because that subject carries no branch, "only main can deploy"
+    # then rests on the GitHub environment's own deployment-branch rule (Settings >
+    # Environments > X > Deployment branches: main only) — set it, or any branch that can
+    # target the environment can assume this role.
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = [for b in var.github_branches : "repo:${var.github_repository}:ref:refs/heads/${b}"]
+      values   = concat(
+        [for b in var.github_branches : "repo:${var.github_repository}:ref:refs/heads/${b}"],
+        [for e in var.github_environments : "repo:${var.github_repository}:environment:${e}"],
+      )
     }
   }
 }

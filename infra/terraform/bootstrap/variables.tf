@@ -9,6 +9,12 @@ variable "github_branches" {
   default     = ["main"]
 }
 
+variable "github_environments" {
+  description = "GitHub Actions environments allowed to assume the deploy role via OIDC, e.g. [\"staging\"]. A job with `environment: X` presents the subject `repo:<repo>:environment:X`, which carries no branch, so each environment must be listed here to be trusted. Restrict each listed environment to the main branch in its GitHub settings (Deployment branches), otherwise any branch that can target it can deploy. Add \"production\" only as a separate, deliberate decision."
+  type        = list(string)
+  default     = ["staging"]
+}
+
 variable "tags" {
   type    = map(string)
   default = {}
