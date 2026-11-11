@@ -11421,3 +11421,52 @@ stack; step 7 and 8 bring the dev flow onto invitations); the db integration tes
 | `isTenantActive` against a real database                  | WRITTEN (CI runs)  |
 | §4.4 role intersection and chooser                        | NOT DONE (step 4b) |
 | End-to-end against a running Keycloak                     | NOT DONE           |
+## Stage 120 — OQ-043 per-school price formula (decided 2026-11-11, provisional)
+
+`packages/billing/src/pricing.ts` (new): `priceBreakdown`, `splitVat`, `annualPrepayCents` and the constants (R300, R75, R4.00 /
+R1.50 above 500, R750 minimum, 50 % community, 10 % prepay, 15 % VAT). Integer cents throughout; negative or fractional counts
+are refused. `tiers.ts` now carries only the token quota and token-overage rate. `computeOverage` returns token overage only
+(seats are priced by the formula). `buildInvoice` lines: platform fee, educators, learners (first 500), learners above 500,
+minimum top-up, community reduction, token overage.
+
+Docs updated in the same change: `COST_MODEL.md` (also withdraws the "35 %" starter margin, computed on the retired card, and
+points at OQ-018), `ONBOARDING_GUIDE.md` Step 7, `AWS_MIGRATION_AUDIT.md`, `financial-model.html` (pills and default),
+`OPEN_QUESTIONS.md` (OQ-043 decided; 11 Nov decisions table), `PILOT_PROTOCOL.md` (schools #2 and #3 deferred, D-4).
+
+**Tests.** Billing 77 (from 71 at the start of the change): formula reference prices R1,380 / R3,100 / R7,925, the 500-learner
+step, the minimum and its top-up, community rate, VAT rounding, invoice lines summing to the subtotal, and
+`price-parity.spec.ts`, which reads the three documents and fails on any drift (it failed once during this change on a leftover
+R1 200 card in `COST_MODEL.md`, which was then removed). Typecheck, eslint, prettier clean.
+
+**Not done.** `tiers` still exist as token quotas only; no UI selects a price; the community-rate eligibility rule (which schools
+qualify) is not defined and is not invented here. Provisional until three schools have seen the price.
+
+| Exit gate item                                 | Result        |
+| ---------------------------------------------- | ------------- |
+| Price formula in code, one source of truth     | PASS (tests)  |
+| Docs and financial model agree with code       | PASS (parity) |
+| Rollback: revert this commit; no schema change | PASS          |
+
+## Stage 121 — OQ-036 Keycloak OTP and email verification
+
+`infra/keycloak/realm.json`: `verifyEmail: true`; custom browser flow `browser-mfa` (cookie or password form, then one conditional
+sub-flow per role, each a `conditional-user-role` check plus a required `auth-otp-form` with first-login set-up) for `admin`, `smt`,
+`platform_support` and `platform_admin`; required actions `CONFIGURE_TOTP` and `VERIFY_EMAIL` enabled. Dev users were already
+`emailVerified`. `docs/SECURITY.md` §7 rewritten to say what is verified (the configuration) and what is not (a live import and
+a production realm).
+
+**Tests.** `packages/policy/test/keycloak-realm-mfa.spec.ts` (11): email verification on; both required actions enabled; the
+browser flow is custom, top-level and exists; every sub-flow and config an execution names exists; each of the four roles has an
+OTP sub-flow that is reached, required and sets itself up; password still comes first; roles exist in the realm; dev users verified.
+Mutation-checked: `verifyEmail` false fails 1, a role condition changed fails 1, conditional steps disabled fails 4.
+
+**Not done.** Never run against Keycloak (no Docker in the authoring sandbox); the steps are in OQ-036. The production realm is
+not in this repository. Two roles on one user would ask for a code twice (the sub-flows are independent); no user holds two of
+these roles today.
+
+| Exit gate item                                     | Result                       |
+| -------------------------------------------------- | ---------------------------- |
+| Realm configuration in the repository              | PASS (tests)                 |
+| Drift test guards it                               | PASS (mutation-checked)      |
+| `SECURITY.md` §7 matches what is evidenced         | PASS                         |
+| Keycloak imports the flow and prompts for the code | OPEN (needs a live Keycloak) |

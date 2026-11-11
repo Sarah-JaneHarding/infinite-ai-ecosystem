@@ -209,6 +209,11 @@ the account is resolved when you sign in, not on every request. A realm that was
 must be re-imported (the old users have random ids). `platform-support.dev` and `platform-admin.dev` have no tenant of
 their own and get no account.
 
+**One-time codes in dev (OQ-036).** The realm requires a one-time code for `admin.dev`, `smt.dev`, `platform-support.dev` and
+`platform-admin.dev`. The first time you sign in as one of them, Keycloak asks you to set up an authenticator app (any
+TOTP app; the QR code is on that screen) and then asks for a code on every later sign-in. The other dev users sign in with the
+password only. A realm imported before this change must be re-imported to pick up the flow.
+
 Optional, to see the approvals screens with something on them (`/approvals`, the HoD console, the SMT
 dashboard), open ten placeholder human gates. Run it as the migrator, like `db:seed`, after `db:seed`:
 
