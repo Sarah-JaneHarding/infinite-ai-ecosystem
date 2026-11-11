@@ -3,7 +3,7 @@
 //
 // Metering events are emitted by the Model Gateway on every completion or
 // embedding call. This module aggregates them into period summaries and
-// detects overages against the tenant's subscription tier.
+// detects token overages against the tenant's subscription tier.
 // ---------------------------------------------------------------------------
 
 import type { SubscriptionTier } from './tiers.js';
@@ -31,10 +31,6 @@ export interface PeriodUsage {
 export interface OverageBreakdown {
   readonly tokenOverageKilos: number;
   readonly tokenOverageCents: number;
-  readonly learnerOverageCount: number;
-  readonly learnerOverageCents: number;
-  readonly educatorOverageCount: number;
-  readonly educatorOverageCents: number;
   readonly totalOverageCents: number;
 }
 
@@ -70,9 +66,9 @@ export function aggregateMeteringEvents(
 }
 
 /**
- * Computes overage charges for a billing period against the tenant's tier.
- * All amounts are in ZAR cents. Returns zero overages when usage is within
- * the included limits.
+ * Computes token-overage charges for a billing period against the tenant's tier.
+ * Seat charges are not overages any more: they follow the per-school formula in
+ * ./pricing.ts. All amounts are in ZAR cents; zero when usage is within the quota.
  */
 export function computeOverage(
   usage: PeriodUsage,
@@ -83,23 +79,5 @@ export function computeOverage(
     Math.floor((usage.totalTokens - tier.monthlyTokenLimit) / 1_000),
   );
   const tokenOverageCents = tokenOverageKilos * tier.perKiloTokenOverageCents;
-
-  const learnerOverageCount = Math.max(0, usage.learnerCount - tier.includedLearners);
-  const learnerOverageCents = learnerOverageCount * tier.perExtraLearnerCents;
-
-  const educatorOverageCount = Math.max(0, usage.educatorCount - tier.includedEducators);
-  const educatorOverageCents = educatorOverageCount * tier.perExtraEducatorCents;
-
-  const totalOverageCents =
-    tokenOverageCents + learnerOverageCents + educatorOverageCents;
-
-  return {
-    tokenOverageKilos,
-    tokenOverageCents,
-    learnerOverageCount,
-    learnerOverageCents,
-    educatorOverageCount,
-    educatorOverageCents,
-    totalOverageCents,
-  };
+  return { tokenOverageKilos, tokenOverageCents, totalOverageCents: tokenOverageCents };
 }

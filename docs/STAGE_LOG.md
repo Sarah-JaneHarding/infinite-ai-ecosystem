@@ -11258,3 +11258,29 @@ or the audit chain); the database lock for the race is step 3.
 | No self-grant; no platform / guardian / learner role; confirmation rule | PASS (tests)      |
 | Last administrator cannot be removed by a single change                 | PASS (exhaustive) |
 | Last administrator safe under concurrency                               | OPEN (step 3)     |
+
+## Stage 116 — OQ-043 per-school price formula (decided 2026-11-11, provisional)
+
+`packages/billing/src/pricing.ts` (new): `priceBreakdown`, `splitVat`, `annualPrepayCents` and the constants (R300, R75, R4.00 /
+R1.50 above 500, R750 minimum, 50 % community, 10 % prepay, 15 % VAT). Integer cents throughout; negative or fractional counts
+are refused. `tiers.ts` now carries only the token quota and token-overage rate. `computeOverage` returns token overage only
+(seats are priced by the formula). `buildInvoice` lines: platform fee, educators, learners (first 500), learners above 500,
+minimum top-up, community reduction, token overage.
+
+Docs updated in the same change: `COST_MODEL.md` (also withdraws the "35 %" starter margin, computed on the retired card, and
+points at OQ-018), `ONBOARDING_GUIDE.md` Step 7, `AWS_MIGRATION_AUDIT.md`, `financial-model.html` (pills and default),
+`OPEN_QUESTIONS.md` (OQ-043 decided; 11 Nov decisions table).
+
+**Tests.** Billing 77 (from 71 at the start of the change): formula reference prices R1,380 / R3,100 / R7,925, the 500-learner
+step, the minimum and its top-up, community rate, VAT rounding, invoice lines summing to the subtotal, and
+`price-parity.spec.ts`, which reads the three documents and fails on any drift (it failed once during this change on a leftover
+R1 200 card in `COST_MODEL.md`, which was then removed). Typecheck, eslint, prettier clean.
+
+**Not done.** `tiers` still exist as token quotas only; no UI selects a price; the community-rate eligibility rule (which schools
+qualify) is not defined and is not invented here. Provisional until three schools have seen the price.
+
+| Exit gate item                                 | Result        |
+| ---------------------------------------------- | ------------- |
+| Price formula in code, one source of truth     | PASS (tests)  |
+| Docs and financial model agree with code       | PASS (parity) |
+| Rollback: revert this commit; no schema change | PASS          |
