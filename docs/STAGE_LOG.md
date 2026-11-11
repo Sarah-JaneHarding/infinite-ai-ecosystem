@@ -11366,3 +11366,58 @@ exposure was a hand-written insert only.
 | Forward migration + tested rollback; repeatable                   | PASS (local SQL) + CI |
 | Fails safe over an existing `NULL` row (original constraint kept) | PASS (local SQL)      |
 | Drift test covers the restated list; mutation-checked             | PASS (unit, mutation) |
+
+## Stage 120 — OQ-033 provisioning, step 4a: first sign-in links a verified address to its invitation
+
+`docs/PROVISIONING_DESIGN.md` §4.3 is now what a sign-in does. `apps/web/src/lib/actor-resolution.ts`
+(`resolveSignIn`, replacing `resolveActorId`) runs in one `withTenant` transaction: the tenant must be `ACTIVE`
+(new `isTenantActive`, `packages/db/src/tenant-status.ts`); an ACTIVE account for the subject resolves as before —
+no lock, no write, so ordinary sign-ins do not queue behind provisioning; otherwise `acceptInvitation` (Stage 115)
+links the verified address to a pending, unexpired, confirmed invitation, or refuses. The roles come from the
+invitation, never from the token. A person whose account is suspended or offboarded is never relinked.
+
+- **The reason is kept.** `SignInOutcome` (`existing`, `linked`, or why not) travels on the token and session; an older
+  token reads as `null`. A school role with no account now sees an explanation (`AccountNotice`) instead of empty
+  pages; platform staff, guardians and learners, who have no school account by design, see nothing. No message names
+  an address.
+- **`email_verified` counts only as the boolean `true`** (`profile-claims.ts`); a string `"true"` or `1` is unverified.
+- **Guard (decision 6, §12.2):** `packages/db/test/provisioning-writers.spec.ts` fails if any source file outside
+  `packages/db` writes `role_assignment`, `user_account`, `user_invitation` or `role_grant_request`, through Prisma or
+  raw SQL. Mutation-checked with a deliberate write from `apps/web`.
+
+**Where this differs from §4.3 as written — decisions for the owner, each easy to reverse:**
+
+1. **No hard refusal.** §4.3 says "refuse"; here a sign-in with no resolvable account still gets a session with no actor
+   (`userId ''`) and a reason, exactly as today, so pages show nothing and routes refuse to act. Reason: platform staff
+   and the dev guardian and learner users legitimately sign in with no school account (§8, §12.2 item 10), so a hard
+   refusal would lock them out; and the person gets an explanation either way. If the owner wants school roles
+   refused outright, it is a change in `signIn`.
+2. **`email_verified` is required to link, not to resolve an existing account.** The subject, not the address, finds an
+   existing account, so a verification claim adds nothing there and requiring it could lock out people whose realm does
+   not set it. Linking requires it (`acceptInvitation` refuses otherwise).
+3. **The tenant must be `ACTIVE` for existing accounts too.** A suspended or closed school resolves no actor. This is
+   new behaviour for existing accounts, in the safe direction.
+
+**Not done.** **4b — §4.4**: the session role as the intersection of the account's role assignments and the provider's
+claim, with the chooser (OQ-032). The role is still the first of ours in the provider's claim. It needs a page and
+OQ-032's answer, and is a change of its own.
+
+**Tests.** Web 518 passing: `actor-resolution.spec.ts` — every row of §4.3 (existing, linked, concurrent link,
+each refusal reason, unknown reason, tenant not active, no tenant, no subject, non-UUID tenant, database fault passed
+through, the subject never standing in as the actor); `profile-claims.spec.ts`; `sign-in-outcome.spec.ts`;
+`auth-callbacks.spec.ts` (identity handed in, outcome on token and session, older token); `account-notice.spec.ts`;
+`shell-layout.spec.ts` (notice shown, and not shown). db unit 265 (the writers guard, 4 tests, and the export surface) and an integration test of
+`isTenantActive` (ACTIVE, SUSPENDED, CLOSED, another school unaffected, no tenant row), run by CI. eslint, prettier,
+typecheck clean. **Not verified:** the whole path end to end against a running Keycloak and Postgres (needs the dev
+stack; step 7 and 8 bring the dev flow onto invitations); the db integration test has not run here.
+
+| Exit gate item                                            | Result             |
+| --------------------------------------------------------- | ------------------ |
+| Every row of §4.3 has a test                              | PASS (unit)        |
+| Platform sign-ins resolve no actor (and see no notice)    | PASS (unit)        |
+| Existing-account sign-in takes no lock and writes nothing | PASS (unit)        |
+| A verified address links; an unverified one never does    | PASS (unit)        |
+| Only `packages/db` writes the account tables              | PASS (mutation)    |
+| `isTenantActive` against a real database                  | WRITTEN (CI runs)  |
+| §4.4 role intersection and chooser                        | NOT DONE (step 4b) |
+| End-to-end against a running Keycloak                     | NOT DONE           |

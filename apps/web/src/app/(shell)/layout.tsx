@@ -4,6 +4,8 @@ import { authOptions } from '@/auth';
 import { Header } from '@/components/shell/Header';
 import { Nav } from '@/components/shell/Nav';
 import { ImpersonationBanner } from '@/components/shell/ImpersonationBanner';
+import { AccountNotice } from '@/components/shell/AccountNotice';
+import { accountNotice } from '@/lib/account-notice';
 import { ROLE_NAV } from '@/lib/roles';
 import { loadTenantLabel } from '@/lib/tenant-name-loader';
 import type { Role } from '@infinite-ai/policy';
@@ -27,6 +29,9 @@ export default async function ShellLayout({
   return (
     <div className="flex flex-col min-h-dvh">
       <ImpersonationBanner impersonating={null} />
+      <AccountNotice
+        message={accountNotice(role, session.userId, session.accountOutcome)}
+      />
       <Header role={role} tenantName={tenantName} userName={userName} approvalCount={0} />
       <div className="flex flex-1 overflow-hidden">
         <aside
