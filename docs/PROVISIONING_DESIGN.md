@@ -281,7 +281,7 @@ The functions are in `packages/db/src/role-grant.ts` (`requestRoleGrant`, `confi
   then stores the new one, in the same transaction, so the one-live-request index never blocks a fresh proposal.
 - **The `roles` CHECK is explicit about `NULL`.** The column is nullable (as Prisma generates list columns), and a CHECK
   that evaluates to `NULL` passes, so `cardinality(NULL) >= 1` let a `NULL` through. Found by trying it in a local Postgres;
-  the new table's CHECK starts with `"roles" IS NOT NULL`. **`user_invitation.roles` has the same gap** (see Stage 118).
+  the new table's CHECK starts with `"roles" IS NOT NULL`. **`user_invitation.roles` had the same gap** and was fixed separately (Stage 119).
 
 **Decisions that were put to the owner (answered as recommended):**
 

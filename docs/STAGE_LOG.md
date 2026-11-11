@@ -11303,13 +11303,13 @@ ids, roles and states only.
 - **Deviation from §4.7, recorded there:** `CANCELLED` also records who cancelled, so the two-person CHECK covers
   `APPLIED` and `DECLINED` only.
 
-**A defect found while verifying, and one left open.** Trying the SQL in a local Postgres (initdb; no Docker needed for
-this part) showed that `cardinality(roles) >= 1 AND roles <@ ARRAY[…]` **accepts a `NULL` `roles`**: the column is nullable,
-so the expression is `NULL`, and a CHECK that evaluates to `NULL` passes. The new table's CHECK now begins with
-`"roles" IS NOT NULL`, and the attempt that exposed it now fails. **`user_invitation.roles` (Stage 113) has the same gap**
-and is _not_ fixed here: it is a separate forward migration to a table that may already exist in an environment, and the
-fix is one `ALTER TABLE … DROP/ADD CONSTRAINT`. Nothing in the application writes a `NULL` (Prisma lists default to empty,
-which the CHECK refuses), so the exposure is a hand-written insert only. Recorded in `docs/OPEN_QUESTIONS.md`.
+**A defect found while verifying.** Trying the SQL in a local Postgres (initdb; no Docker needed for this part) showed that
+`cardinality(roles) >= 1 AND roles <@ ARRAY[…]` **accepts a `NULL` `roles`**: the column is nullable, so the expression is
+`NULL`, and a CHECK that evaluates to `NULL` passes. The new table's CHECK now begins with `"roles" IS NOT NULL`, and the
+attempt that exposed it now fails. **`user_invitation.roles` (Stage 113) had the same gap**; it was left out of this change
+(a separate forward migration to a table that may already exist in an environment) and **fixed in Stage 119**, merged
+before this. Nothing in the application writes a `NULL` (Prisma lists default to empty, which the CHECK refuses), so the
+exposure was a hand-written insert only.
 
 **Tests.** Unit: db export surface; a drift test that the db constant `SENSITIVE_ROLES`, the SQL CHECK and policy's
 `CONFIRMATION_REQUIRED_ROLES` are the same list (db and policy suites); `defaultRoleGrantExpiry`. Integration, run by CI:
@@ -11333,4 +11333,36 @@ pgvector is not installed locally so the full migration history cannot be replay
 | Confirming applies the grant atomically; sole-admin waiver recorded | WRITTEN (CI runs)     |
 | Races: double confirmation; proposer demoted during confirmation    | WRITTEN (CI runs)     |
 | Cross-tenant isolation of `role_grant_request`                      | WRITTEN (CI runs)     |
-| `user_invitation.roles` accepts `NULL`                              | OPEN (OQ-033 note)    |
+| `user_invitation.roles` accepts `NULL`                              | FIXED (Stage 119)     |
+
+## Stage 119 — OQ-033: `user_invitation.roles` no longer accepts `NULL`
+
+Found while building Stage 118 (`role_grant_request`): `user_invitation_roles_school_staff` was
+`CHECK (cardinality("roles") >= 1 AND "roles" <@ ARRAY[…])`. The column is nullable (Prisma generates list columns as
+plain `TEXT[]`), `cardinality(NULL)` is `NULL`, and a CHECK that evaluates to `NULL` **passes** — so a `NULL` `roles` was
+accepted, which is exactly what the constraint says no one can do ("no platform role can ever be invited, whoever writes
+the row"). Nothing in the application writes a `NULL` (Prisma lists default to empty, which the CHECK refuses), so the
+exposure was a hand-written insert only.
+
+- **Migration** `20261111110000_oq033_user_invitation_roles_not_null` (+ `rollback.sql`): drops and re-adds the constraint
+  with the same two tests plus an explicit `"roles" IS NOT NULL`, in one transaction. If an existing row had a `NULL` the
+  `ADD` fails and the migration stops with the original constraint intact — it does not repair data. No tenant context is
+  needed (a CHECK is validated by a direct scan, not through a foreign key to a table under `FORCE ROW LEVEL SECURITY`).
+- **Tests.** Integration (CI): a raw-SQL insert of `NULL::text[]` as `app_rw` is refused by name; the rollback spec rolls
+  the tightening back first (original constraint restored, no row changed) and checks the re-applied constraint has
+  `IS NOT NULL`. Unit (policy): the drift test now also reads the restated constraint and requires the same role list and
+  the `IS NOT NULL` — **mutation-checked** (deleting `IS NOT NULL` from the migration fails it). The drift test ignores SQL
+  comments after it first matched the example quoted in the migration's own header.
+- **Verified locally in a throwaway PostgreSQL 16** (stand-in table carrying the real original constraint text): the
+  original constraint accepts `NULL` (the gap reproduced); after the migration `NULL`, `{}`, a platform role, a platform role
+  mixed with a valid one and an unknown role are each refused and valid role lists accepted; existing rows are untouched;
+  the rollback restores the original constraint and changes no row; the migration re-applies; run as one transaction over an
+  existing `NULL` row it fails loudly and leaves the original constraint in place.
+- **Not verified:** the TypeScript integration specs have not run here (no Docker); CI's RLS job is their first run.
+
+| Exit gate item                                                    | Result                |
+| ----------------------------------------------------------------- | --------------------- |
+| `NULL` roles refused; valid lists still accepted                  | PASS (local SQL) + CI |
+| Forward migration + tested rollback; repeatable                   | PASS (local SQL) + CI |
+| Fails safe over an existing `NULL` row (original constraint kept) | PASS (local SQL)      |
+| Drift test covers the restated list; mutation-checked             | PASS (unit, mutation) |

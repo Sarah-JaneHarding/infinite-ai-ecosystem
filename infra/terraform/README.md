@@ -77,13 +77,30 @@ terraform/
    terraform init
    terraform apply \
      -var 'github_repository=Sarah-JaneHarding/infinite-ai-ecosystem' \
-     -var 'github_branches=["main"]'
+     -var 'github_branches=["main"]' \
+     -var 'github_environments=["staging"]'
    ```
+
+   `github_environments` lists the GitHub Actions environments the deploy role trusts. A
+   job that declares `environment: staging` is identified to AWS by environment, not by
+   branch, so the environment must be listed or the OIDC sign-in is refused with
+   "Not authorized to perform sts:AssumeRoleWithWebIdentity". In GitHub, set that
+   environment's Deployment branches to `main` only, since the role no longer checks the
+   branch for environment jobs. `production` is not trusted by default.
 
    Note the `state_bucket_name`, `lock_table_name`, and `github_deploy_role_arn` outputs —
    the first two go into each environment's `backend.hcl` (copy from
    `backend.hcl.example`); the role ARN goes into a future CD workflow's
    `aws-actions/configure-aws-credentials` step.
+
+   The bootstrap also creates a second, read-only role, `infinite-ai-github-plan`, for the
+   pull-request "Terraform plan" job only. The deploy role trusts no pull request, so plan
+   uses this one: it is trusted for pull requests, has `ReadOnlyAccess` plus read access to
+   secrets named `infinite-ai-*` and `rds!db-*`, and the job plans with `-lock=false`. Put
+   the `github_plan_role_arn` output into the repository variable `AWS_PLAN_ROLE_ARN`. It
+   can read the state file and those secrets, so anyone who can run a workflow on a branch
+   of this repository can read them: acceptable with a single writer, to be revisited
+   before others get write access.
 
 2. **Per environment**, e.g. dev:
 
