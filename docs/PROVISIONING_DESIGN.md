@@ -300,6 +300,88 @@ suite picks the table up from `tables.ts`); the concurrency cases — two admini
 at once yields one `APPLIED` and one refusal, and a request racing the proposer's own demotion cannot apply; and the
 rollback test.
 
+### 4.8 Choosing the active role (step 4b — proposal)
+
+**Already decided** (OQ-032, 2026-11-05; §12.1 item 3): an account may hold several roles, the person chooses the
+active one at sign-in, and every action is checked against that role. This section is how to build it, and what
+that last clause has to mean in the code.
+
+**Today.** `roleFromProfile` takes the first of our roles in the provider's claim, in an order that carries no
+meaning. `session.role` is that one role, and `proxy.ts` enforces `ROUTE_ACCESS` by it. `decideHumanGate` never sees it:
+it asks only whether the deciding account holds a live `role_assignment` for the gate's `requiredRole`
+(`hasActiveRoleAssignment`). So "checked against the active role" is true for pages and routes and **not** for gate
+decisions: a person signed in as `teacher` who also holds `smt` can decide an `smt` gate today. With one role per account
+that cannot matter; with several it is the case this section exists to close.
+
+**Proposal.**
+
+1. **Which roles a sign-in is eligible for.** For a school staff role (`teacher`, `hod`, `smt`, `sbst`, `admin`):
+   it must be in the provider's claim **and** the account must hold a live `role_assignment` for it (§4.4's
+   intersection). In the claim only → ignored (the claim grants nothing). In the database only → not available this
+   session, and logged with the account id and the role name, never an address (the provider is out of step; §5).
+   Roles that **have no database source** — `platform_support`, `platform_admin`, `guardian`, `learner` — stay eligible
+   from the claim alone, exactly as today: platform staff and the guardian and learner users hold no school account or
+   assignments by design (§8, §12.2 item 10), so intersecting them with the database would lock them out. No invitation
+   can grant any of them (the table refuses it), so a claim alone still cannot confer school authority.
+2. **Computed once, at sign-in, and carried in the token.** After `resolveSignIn`, a new database read
+   (`listActiveRoles(tx, accountId, now)`, tenant-scoped, live assignments only) gives the school roles; they are
+   intersected with the claim. The token carries `eligibleRoles`. The token is signed, so the list is the server's, not
+   the client's. `role` is set immediately when exactly one role is eligible, and is **absent** otherwise.
+3. **Three outcomes, one page.** A new `/choose-role` page handles all three: exactly one eligible role → no page, the
+   role is set; two or more → the person picks, listing each with its `ROLE_LABEL`; **none** → the page shows the
+   account explanation from 4a (`AccountNotice`) and a sign-out. The proxy lets a token with no active role reach only
+   `/choose-role`, the sign-in routes and sign-out, and sends everything else to `/choose-role`. A token with no active
+   role is therefore never "no token", and nothing is reachable by default (default deny, as now).
+4. **The server decides what a choice may be.** The page calls next-auth's `update({ role })`. The `jwt` callback, on
+   `trigger === 'update'`, accepts the role **only if it is in `token.eligibleRoles`**; the client supplies a name and
+   nothing else, and can never write the list. One active role per session; no ranking, no remembered default.
+5. **Every action is checked against the active role.** Routes and pages already are (the proxy). Gate decisions
+   become so: `decideHumanGate` takes an `actingAs` role and requires `actingAs === task.requiredRole` **and** the live
+   assignment it checks today. Equality, not hierarchy: nothing here ranks one role above another. The decide route
+   passes `token.role`. The assignment check stays, because the token's eligible list is a snapshot (item 7) and the
+   database is what knows a role has since been revoked. Effect to know about: a person who is both `hod` and `smt`
+   must be signed in as the gate's role to decide it.
+6. **Switching role** is not in 4b: sign out and in again. A later "switch role" re-runs the chooser and re-derives
+   the school roles from the database at that moment, never from the token's snapshot.
+7. **Stale roles.** `eligibleRoles` is fixed at sign-in, as the account is (§6). A role revoked mid-session stays the
+   session's active role until it ends — pages and routes will keep honouring it — but a gate decision is refused,
+   because item 5 re-checks the database. Shortening the session lifetime (§6) narrows the window for the rest.
+
+**What it touches.** `rolesFromProfile` (all of our roles in the claim) replaces `roleFromProfile`; the test that pins
+first-match behaviour and names OQ-032 is replaced by the intersection table. `Session.role` becomes `Role | null`, `null`
+only where the proxy sends a person to `/choose-role` — it is read in 25 places across 18 files, two of them `as Role`
+casts that become real narrowing. A new `listActiveRoles` in `packages/db`; an `actingAs` field on the human-gate input
+in `packages/orchestrator` and a pass-through in the decide route.
+
+**Suggested split, in this order.** (i) Eligibility, the token, the chooser page, the proxy state, `Session.role |
+null`. (ii) `actingAs` on gate decisions. Not the other way round: with first-match still in place (ii) alone would stop
+a multi-role person deciding any gate but the one role the claim happens to list first.
+
+**Threats considered.** A client forging `update({ role: 'admin' })` — refused, not in the signed list. A claim naming
+a school role the account was never assigned — ignored. A claim naming a platform role next to a school account — both
+offered, as today; the platform surface still has no actor. A token held past a revocation — covered for gates by item 5,
+for pages by §6. Nobody ever reaching a page with no role — covered by the proxy state and its test.
+
+**Tests this implies.** The intersection table exhaustively (claim only, database only, both, neither, for each school
+role, and the four claim-only roles); a forged update refused; one, two and none eligible (auto-select, chooser,
+explanation); the proxy letting a role-less token reach only `/choose-role`; a gate refused when the active role differs
+from the gate's, when the assignment has been revoked, and when both agree; an integration test for `listActiveRoles`
+(live, expired, another school's).
+
+**Decisions for the owner** (each with my recommendation):
+
+1. Do `platform_*`, `guardian` and `learner` stay claim-only, as today, rather than needing a database source?
+   **Recommended: yes** — they have none by design, and the alternative locks them out.
+2. When **no** role is eligible, is the person given a session that reaches only the explanation page, rather than being
+   refused outright? **Recommended: yes** — a session needs a role to exist, and this reuses the explanation 4a added.
+   (The same call as "no hard refusal" for step 4a, which the owner decided on 2026-11-11 — §12.1.)
+3. Must a gate decision be made **acting as the gate's own role** (`actingAs` equals `requiredRole`), rather than by
+   any role the person holds? **Recommended: yes** — it is what "every action is checked against that role" means; the
+   alternative keeps today's behaviour, where the active role is decoration for gates.
+4. No role switching without signing in again in 4b? **Recommended: yes**; add switching as its own change.
+5. Remember the last role chosen as the default? **Recommended: no** — a default is a quiet precedence, which OQ-032
+   decided against.
+
 ## 5. The identity-provider side
 
 Today Keycloak users, their `tenant_id` attribute and their realm roles are created by hand. That
@@ -414,9 +496,10 @@ must keep resolving **no** actor, and a test should pin that.
    of the table in §4.3 and for platform sign-ins resolving no actor. _Split: **4a built (Stage 120)** —
    §4.3 in the `jwt` callback through `resolveSignIn` (`apps/web/src/lib/actor-resolution.ts`), the reason
    carried on the token and session, an explanation shown to a school role with no account, a tenant-ACTIVE
-   check, and a guard that only `packages/db` writes the account tables. **4b not built** — §4.4: the
-   session role as the intersection of the account's role assignments and the provider's claim, and the
-   chooser (OQ-032). Until it ships the role is still the first of ours in the provider's claim._
+   check, and a guard that only `packages/db` writes the account tables. **4b not built — proposed in §4.8**:
+   the session role as the intersection of the account's role assignments and the provider's claim, the
+   chooser, and gate decisions checked against the active role (OQ-032). Until it ships the role is still
+   the first of ours in the provider's claim._
 5. **Admin UI** (`/admin/staff`): invite, revoke, list, role changes; wired to the routes.
 6. **Gate decision hardening** (§6): require an `ACTIVE` account in `decideHumanGate`.
 7. **Keycloak integration** (§5): Admin API client, mirrored roles, required actions; realm config
@@ -463,6 +546,15 @@ them. (Numbers refer to the list in §12.)
 | 8 — Is MFA configured anywhere?                                                                                  | **Not answerable by the implementer.** Until the owner confirms, **treat MFA as not enforced**. Recorded as **OQ-036**; `docs/SECURITY.md` §7 now carries a note.                                                                                                               | `SECURITY.md` says it is enforced, but `infra/keycloak/realm.json` configures none, and the production realm is not in the repository. The owner (or whoever operates Keycloak) has to look. Step 7 adds the realm configuration with a drift test, so the repository stops depending on memory.                                                              |
 
 Still open: 1 (lifetime; 14 days is the working default), 6, 7, 9, 10.
+
+**Decided 2026-11-11 (Sarah-Jane Harding)** — the three places where the step 4a sign-in (§4.3, Stage 120) differs from
+this document's earlier wording. They stand as built:
+
+- **No hard refusal.** A sign-in with no resolvable account still gets a session with no actor and a reason, rather
+  than being refused. Platform staff and the dev guardian and learner users legitimately have no school account.
+- **`email_verified` is required to link an invitation, not to resolve an existing account.** The subject, not the
+  address, finds an existing account.
+- **The tenant must be `ACTIVE` for existing accounts too.** A suspended or closed school resolves no actor.
 
 ## 12.2 Recommendations for the decisions still open
 
