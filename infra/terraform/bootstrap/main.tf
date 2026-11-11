@@ -122,7 +122,7 @@ data "aws_iam_policy_document" "github_assume" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = concat(
+      values = concat(
         [for b in var.github_branches : "repo:${var.github_repository}:ref:refs/heads/${b}"],
         [for e in var.github_environments : "repo:${var.github_repository}:environment:${e}"],
       )
