@@ -11216,3 +11216,70 @@ expected to fail without it.
 | Concurrency: demote-each-other and double sign-in      | WRITTEN (CI runs)     |
 | Migration + tested rollback for the confirmation state | WRITTEN (CI runs)     |
 | Web facade binding the real rules                      | NOT DONE (needs #159) |
+
+## Stage 116 — OQ-033 provisioning, step 2: who may confer and remove authority
+
+**Task.** "Start step 2" of `docs/PROVISIONING_DESIGN.md`. Nothing here is wired to a route yet; that is step 3.
+
+**What changed.**
+
+- `packages/policy/src/rbac.ts`: three new resource types — `user_account`, `role_assignment`, `user_invitation` — with
+  **admin-only** grants at tenant scope. Verbs: `user_account` read / update (suspend, offboard; **no create** — an account is
+  made by a first sign-in linking to an invitation); `role_assignment` read / create (grant) / delete (revoke) / approve
+  (confirm another administrator's grant); `user_invitation` read / create (invite) / update (revoke). The draft named two
+  resources; the invitation is a third because it holds an address.
+- `packages/policy/src/provisioning.ts` (new, pure): `SCHOOL_STAFF_ROLES` (the list the SQL CHECK also holds),
+  `evaluateRoleConferral` (invite or grant), `evaluateRoleRevocation`, `evaluateAccountStatusChange`, each returning a reason for
+  every refusal. Rules, in order: the actor is an active administrator; at least one role, every one a school staff role; nobody
+  changes their own roles (including inviting their own address); `admin` and `smt` need a second administrator's confirmation —
+  recorded as `confirmed` — unless the school has a single administrator, in which case it proceeds as `waived_sole_admin` so the
+  exception is visible in the audit. A confirmer must be an active administrator and neither the actor nor the person receiving
+  the role. Revocation and suspension: not yourself, and only by an administrator.
+- **The last administrator.** The draft listed "never remove the last admin" as a rule. Writing the tests showed it needs no
+  branch: the actor must be an administrator and cannot be the target, so removing an administrator always leaves the actor.
+  The unit test checks that over every small school instead. The real hazard is a **race** (two administrators demoting each
+  other at once, both passing against one snapshot); it is closed in step 3 by locking and re-counting inside the committing
+  transaction, with a concurrency test. This is recorded in the design doc (§4.5, §11).
+- `docs/PROVISIONING_DESIGN.md`: §4.5 updated, §11 marks step 2 built, and a new §12.2 with recommendations for the four
+  still-open decisions and for OQ-036. `docs/OPEN_QUESTIONS.md`: OQ-036 now carries the recommended check.
+
+**Tests.** Policy 301 (+75, from 226): the matrix (the nine admin actions and no others; no account `create`; every other role, including
+impersonating, refused every action; platform staff refused; another school's admin refused; a lapsed grant refused) and every
+guard-rail refusal and allowance, plus an exhaustive check that no single change can remove the last administrator, and a drift
+test that `SCHOOL_STAFF_ROLES` equals the SQL CHECK list. Mutation-checked: dropping the confirmation requirement fails 9; allowing
+self-grant fails 2; letting `smt` create role assignments fails the per-role refusal test. Typecheck, eslint, prettier clean.
+
+**Not done.** Nothing enforces these rules in a route yet (step 3); the confirmation is not persisted (step 3: a proposal record
+or the audit chain); the database lock for the race is step 3.
+
+| Exit gate item                                                          | Result            |
+| ----------------------------------------------------------------------- | ----------------- |
+| Provisioning resources in the matrix, admin-only                        | PASS (tests)      |
+| No self-grant; no platform / guardian / learner role; confirmation rule | PASS (tests)      |
+| Last administrator cannot be removed by a single change                 | PASS (exhaustive) |
+| Last administrator safe under concurrency                               | OPEN (step 3)     |
+
+## Stage 117 — OQ-033 provisioning, step 3: the web layer binds the real rules
+
+`apps/web/src/lib/provisioning-rules.ts` hands the policy package's three rule functions (`evaluateRoleConferral`,
+`evaluateRoleRevocation`, `evaluateAccountStatusChange`) to the db layer as a `ProvisioningRules`. This is the only place
+the real rules meet the transactions in `packages/db/src/provisioning.ts` (Stage 115); db may not import policy.
+
+- **Conformance is a compile-time check, and it needed tightening.** The first version of the db interface declared its
+  rules with method syntax, which TypeScript checks bivariantly: swapping `statusChange` for the revocation rule (which
+  needs an extra `role`) produced only an unused-import error, not a type error. The interface now uses property-function
+  syntax (with a comment saying why); the same swap now fails with "Property 'role' is missing". Mutation-checked.
+- **Nothing calls this yet.** No route or sign-in code uses the provisioning functions; steps 4–5 do.
+- **Still deferred (3b):** granting `admin`/`smt` to an existing account when a school has two or more administrators
+  needs a persisted request record. No function does it, so it fails closed.
+
+**Tests.** `apps/web/tests/unit/provisioning-rules.spec.ts` (8): the real rules through the db interface — invite with no
+confirmation, confirmation required with two administrators, waived for a sole administrator, confirmed by a second;
+refused for a non-administrator, a platform role, inviting your own address, revoking your own role, suspending yourself;
+one administrator may revoke and suspend another. Web typecheck, db typecheck, eslint, prettier clean.
+
+| Exit gate item                                 | Result               |
+| ---------------------------------------------- | -------------------- |
+| Real policy bound to the db interface          | PASS (tests)         |
+| Drift between the two fails the build          | PASS (mutation)      |
+| Provisioning reachable from a route or sign-in | NOT DONE (steps 4–5) |

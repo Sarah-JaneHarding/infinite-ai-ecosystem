@@ -93,6 +93,15 @@ terraform/
    `backend.hcl.example`); the role ARN goes into a future CD workflow's
    `aws-actions/configure-aws-credentials` step.
 
+   The bootstrap also creates a second, read-only role, `infinite-ai-github-plan`, for the
+   pull-request "Terraform plan" job only. The deploy role trusts no pull request, so plan
+   uses this one: it is trusted for pull requests, has `ReadOnlyAccess` plus read access to
+   secrets named `infinite-ai-*` and `rds!db-*`, and the job plans with `-lock=false`. Put
+   the `github_plan_role_arn` output into the repository variable `AWS_PLAN_ROLE_ARN`. It
+   can read the state file and those secrets, so anyone who can run a workflow on a branch
+   of this repository can read them: acceptable with a single writer, to be revisited
+   before others get write access.
+
 2. **Per environment**, e.g. dev:
 
    ```bash

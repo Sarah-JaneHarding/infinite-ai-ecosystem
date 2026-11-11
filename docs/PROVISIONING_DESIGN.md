@@ -161,7 +161,20 @@ New routes, each behind `authorize()`, each audited in the same transaction:
   second administrator to confirm (rule 6's spirit — authority over gates should not be a
   one-person decision).
 
-RBAC needs two new resource types, `user_account` and `role_assignment`, with admin-only grants.
+RBAC gained three resource types, all admin-only (built in step 2, `packages/policy/src/rbac.ts`): `user_account`
+(read; update = suspend / offboard — **no create**, because an account is made by a person's first sign-in linking
+to an invitation), `role_assignment` (read; create = grant; delete = revoke; approve = confirm another
+administrator's grant of `admin` or `smt`) and `user_invitation` (read; create = invite; update = revoke). The draft
+named two; the invitation is a third because it holds an address that should not be readable through account listing.
+The guard-rails are pure functions in `packages/policy/src/provisioning.ts`, one reason per refusal.
+
+**The last administrator.** A single change can never remove a school's last administrator, and no branch is needed
+to say so: the actor must be an active administrator and cannot be the target, so whenever the target is an
+administrator the actor is a second one. The unit test checks that exhaustively over every small school. The real
+hazard is a **race** — two administrators demoting each other at the same moment both pass against the same snapshot
+and leave none. That is closed where the change commits (step 3): the school's administrators are locked and
+re-counted inside the transaction, and the rules are evaluated against that count. Step 3 must carry a concurrency
+test for exactly this.
 The existing `staff_member` grant is not enough, and widening it would blur "a staff record" with
 "authority to act".
 
@@ -179,6 +192,99 @@ A tenant with no administrator cannot invite anyone. The bootstrap must not be a
 This needs the tenant-creation path in `packages/provisioning` to produce the invitation, and an
 operator-only entry point. It also forces a decision on what the platform may write into a school
 (§10, question 7).
+
+### 4.7 Granting `admin` or `smt` to an existing account (step 3b — proposal)
+
+**The gap.** Inviting a new person into `admin` or `smt` works (§4.1, Stage 115): the invitation is created
+`AWAITING`, a second administrator confirms it as themselves, and only then can it be accepted. Granting the same roles
+to someone who **already has an account** has no equivalent, because there is no row to hold "proposed, not yet
+confirmed". Today no function does it, so it fails closed: nobody can be promoted to `admin` or `smt` once they have
+signed in once. That is safe, and unusable (a teacher who becomes deputy principal cannot be made `smt`).
+
+**What the stored record must do.** A confirmation the caller merely asserts is no confirmation (the same reasoning as
+the invitation's `confirmed_by`). So the proposal must be a durable act by the first administrator, and the
+confirmation a separate durable act by the second, each as themselves, and the two must be different people on the
+face of the record.
+
+**Proposed: a `role_grant_request` table**, tenant-owned, row-level security forced, registered in `tables.ts`, with a
+forward migration and a tested `rollback.sql` (rules 5 and 10).
+
+| Column                       | Meaning                                                                     |
+| ---------------------------- | --------------------------------------------------------------------------- |
+| `id`, `tenant_id`            | as every tenant-owned table                                                 |
+| `target_account_id`          | the existing account that would receive the roles                           |
+| `roles` (text[])             | non-empty, each one of `admin` or `smt` — nothing else ever needs a request |
+| `school_id` (nullable)       | the optional scope the assignments would carry, as on an invitation         |
+| `requested_by`, `created_at` | the proposing administrator                                                 |
+| `expires_at`                 | a request that is never decided must not linger as standing authority       |
+| `status`                     | `PENDING`, `APPLIED`, `DECLINED`, `CANCELLED`, `EXPIRED`                    |
+| `decided_by`, `decided_at`   | the second administrator (for `APPLIED` / `DECLINED`) or whoever cancelled  |
+
+**Constraints held in the database, not only in code:**
+
+- `target_account_id <> requested_by` — nobody proposes roles for themselves;
+- `decided_by` is not null exactly when `status` is `APPLIED` or `DECLINED`, and then
+  `decided_by <> requested_by` and `decided_by <> target_account_id` — **the two-person rule is a CHECK**, so a
+  bug in a caller cannot record a self-confirmed grant;
+- one `PENDING` request per target account (a partial unique index, which Prisma cannot express, so SQL only);
+- `roles` limited to the sensitive pair, with a drift test against `CONFIRMATION_REQUIRED_ROLES` in policy, as the
+  invitation's role list has against `SCHOOL_STAFF_ROLES`.
+
+**Lifecycle — confirming applies the grant in the same transaction.** There is deliberately no "confirmed but not yet
+applied" state: a second administrator's confirmation creates the `role_assignment` rows and marks the request
+`APPLIED` together, or does neither.
+
+1. **Request** (`requestRoleGrant`, any active administrator): under the provisioning lock, the rules
+   (`evaluateRoleConferral` with an `account` target) decide. `confirmation_required` stores a `PENDING` request;
+   `waived_sole_admin` (the school has one administrator) applies the grant immediately and audits the waiver, exactly
+   as for an invitation; every other refusal is returned and nothing is stored. A target who is not `ACTIVE` is refused.
+2. **Confirm** (`confirmRoleGrant`, a different active administrator): under the lock, re-read the administrators and
+   re-run the rules with `confirmedByAccountId`; require the proposer is still an administrator, the target still
+   `ACTIVE`, the request `PENDING` and unexpired; then write the assignments and mark `APPLIED`.
+3. **Decline** (a different administrator) records `DECLINED` so the proposer can see it was refused;
+   **Cancel** (the proposer, or any administrator) records `CANCELLED`. Neither takes free text, so no personal
+   information is stored in the record.
+4. **Expire** lazily, as invitations do: found past `expires_at` when read or confirmed, marked `EXPIRED`, refused.
+
+All four steps take the same provisioning lock as the rest of step 3 and append an audit event in the transaction
+(`role_grant.requested`, `.applied`, `.declined`, `.cancelled`, `.expired`), carrying ids, roles and states — never an
+address. A suspended or offboarded proposer or target leaves a `PENDING` request that can no longer be confirmed (the
+rules refuse a non-administrator actor and the function refuses a non-active target); it is cancelled by the next
+administrator who looks, or expires.
+
+**Alternatives considered, and why not.**
+
+- _Reuse the audit chain as the proposal_ (the confirmation is a later audit event that cites the first). Rejected: the
+  chain is append-only and holds no mutable state, so "one pending per target", expiry and a database-enforced
+  two-person CHECK all become reconstructions from history rather than constraints.
+- _Reuse `user_invitation` with an account id._ Rejected: an invitation is, by definition, for a person who has no
+  account and carries an address that is personal information. Overloading it would blur what its constraints mean and
+  put an address-bearing table on the path for people who do not need one.
+- _A confirmation token the second administrator presents._ Rejected: a bearer secret is a new thing to leak, and it
+  proves possession rather than that an administrator, signed in as themselves, agreed.
+- _Allow `admin`/`smt` grants to existing accounts only through the sole-administrator waiver._ This is today's
+  behaviour and is the safe fallback if this proposal is not accepted.
+
+**What this does not change.** Granting any other staff role (`teacher`, `hod`, `sbst`) to an existing account is not
+sensitive and needs no confirmation; that path (a plain grant by one administrator) is a small separate function and not
+part of this table. Revoking authority needs no confirmation (§4.5). No platform role is ever involved.
+
+**Decisions for the owner before this is built:**
+
+1. Is a stored request record the right shape (this proposal), or should existing-account promotion stay
+   waiver-only for now?
+2. Request lifetime. Recommended **7 days**, shorter than an invitation's 14: this one decides authority and the person
+   already works at the school, so there is less reason to wait.
+3. Should a request carry an optional school scope (`school_id`), as an invitation does? Recommended **yes**, for
+   parity; a tenant-wide grant is `school_id` null.
+4. May the proposer cancel their own request? Recommended **yes** (withdrawing a proposal narrows nothing), with any other
+   administrator also able to cancel.
+
+**Tests this implies** (so the cost is visible): the constraints above, each by an insert that violates it; every
+refusal; request/confirm/decline/cancel/expire paths; no address in any audit diff; cross-tenant isolation (generic
+suite picks the table up from `tables.ts`); the concurrency cases — two administrators confirming the same request
+at once yields one `APPLIED` and one refusal, and a request racing the proposer's own demotion cannot apply; and the
+rollback test.
 
 ## 5. The identity-provider side
 
@@ -277,15 +383,15 @@ must keep resolving **no** actor, and a test should pin that.
 
 1. **Schema + migration + rollback** for `user_invitation`; register in `tables.ts`; RLS isolation
    test (a second tenant cannot read or accept the first's invitations).
-2. **RBAC**: `user_account` and `role_assignment` resources and admin grants; matrix tests; the
+2. **RBAC** _(built — Stage 116)_: `user_account` and `role_assignment` resources and admin grants; matrix tests; the
    guard-rails as pure functions with tests (no self-grant, no platform role, last admin).
-3. **DB functions**: create/revoke invitation, accept (link) transaction, grant/revoke role,
+3. **DB functions** (including the concurrency test for two administrators demoting each other, §4.5): create/revoke invitation, accept (link) transaction, grant/revoke role,
    suspend/offboard — each audited; concurrency test on acceptance. _Built (3a), in
    `packages/db/src/provisioning.ts`: invite, confirm, revoke, accept, revoke a role,
    suspend/offboard, all behind one per-tenant advisory lock taken before the audit lock, with the
    rules injected (`ProvisioningRules`) because db may not import policy. The second
    administrator's confirmation is persisted on the invitation (`confirmation`, `confirmed_by`).
-   Not built (3b): granting `admin`/`smt` to an EXISTING account when the school has two or more
+   The web layer binds the real rules in `apps/web/src/lib/provisioning-rules.ts` (Stage 117). Not built (3b — design proposed in §4.7): granting `admin`/`smt` to an EXISTING account when the school has two or more
    administrators — it needs a persisted request/confirmation record like the invitation's, and
    until then there is no function that does it, so it fails closed._
 4. **Sign-in integration**: §4.3 and §4.4 in the `jwt` callback; refusal reasons; tests for every row
@@ -314,7 +420,7 @@ migration tests are integration tests and run in CI.
 6. **The sign-in write path.** Accepting an invitation writes before the person has any account, so
    it cannot run as them. It needs a narrow database role or `SECURITY DEFINER` function limited to
    "accept the pending invitation matching this verified email in this tenant". That is a
-   security-boundary decision, like OQ-030's tenant directory.
+   security-boundary decision, like OQ-030's tenant directory. _(Refined in §12.2: it can in fact run as the application role inside the tenant context from the token's tenant claim, so the question is how much to narrow that role, not how to get around isolation.)_
 7. **What the platform operator may write into a school** to create the first administrator's
    invitation, and how that is audited.
 8. **MFA reality check** (§5): is it configured anywhere? Who owns fixing `SECURITY.md` or the realm?
@@ -336,6 +442,66 @@ them. (Numbers refer to the list in §12.)
 | 8 — Is MFA configured anywhere?                                                                                  | **Not answerable by the implementer.** Until the owner confirms, **treat MFA as not enforced**. Recorded as **OQ-036**; `docs/SECURITY.md` §7 now carries a note.                                                                                                               | `SECURITY.md` says it is enforced, but `infra/keycloak/realm.json` configures none, and the production realm is not in the repository. The owner (or whoever operates Keycloak) has to look. Step 7 adds the realm configuration with a drift test, so the repository stops depending on memory.                                                              |
 
 Still open: 1 (lifetime; 14 days is the working default), 6, 7, 9, 10.
+
+## 12.2 Recommendations for the decisions still open
+
+These are **recommendations, not decisions**; each says what it rests on and what it does not know.
+
+**6 — The sign-in write path.** Do it in the application for the pilot: one `acceptInvitation` function in
+`packages/db`, run inside `withTenant` as `app_rw` using the tenant claim, in a single transaction that locks the
+invitation row, refuses unless the provider asserted `email_verified`, and writes the account, role assignments and
+audit events together. Do **not** introduce a `SECURITY DEFINER` function yet. Why: (a) this corrects the draft — the
+tables are `FORCE ROW LEVEL SECURITY`, so a definer function owned by the table owner is _still_ bound by the tenant
+policy; it would add privilege separation, not an isolation bypass; (b) `app_rw` already has blanket DML on every
+table through default privileges (`infra/docker/initdb/02-roles.sh`), so narrowing it for these tables alone is a
+repository-wide hardening decision, and the migrations contain no `SECURITY DEFINER` precedent; (c) the database
+already enforces the invariants that matter whoever writes — the staff-role list, one pending invitation per address,
+acceptance consistency. The residual risk is that any code holding a tenant context could write `role_assignment`.
+Mitigate with a test that only the db package writes it (like the guard against `token.sub`), same-transaction
+audit, and — as a later hardening — a dedicated `provisioner` database role with `INSERT` on these tables that is
+revoked from `app_rw`. _Not known:_ whether a second connection pool is acceptable operationally.
+
+**7 — Bootstrapping a school's first administrator.** An operator-run command in `packages/provisioning`, run in the
+deploy environment — not a web route — that creates the tenant (the wizard's existing `create_tenant` step) and
+**one** `user_invitation` for the named principal with role `admin`, `created_by` null, with an audit event whose
+diff holds the invitation id and no address. Platform staff therefore gain no read access to the school by doing
+this, and need no RBAC grant for it. Because everything downstream trusts that one invitation, verify the principal
+out of band first: a written request on the school's letterhead and a call-back to the school's published number.
+Go-live readiness should then require **two** active administrators (principal plus a deputy), or an explicit,
+recorded acknowledgement of the sole-administrator exception from §12.1. _Also found:_ `docs/ONBOARDING_GUIDE.md`
+Step 4 uses role names that are not in the system (`principal`, `head_of_department`, `educator`, `support_educator`,
+`admin_staff`) and says accounts are created at that step; it should be reconciled with the real roles
+(`admin`, `hod`, `teacher`, `sbst`, `smt`) and with link-on-sign-in when step 5 builds the admin screen.
+
+**9 — Retention of invitations.** Keep a `PENDING` invitation until it is accepted, revoked or expires; then delete
+the row about 90 days after it reaches a terminal state. The durable record is the audit event (invitation id,
+roles, inviter, confirmer, outcome — no address), which the ledger rules already retain (OQ-007, OQ-022); an accepted
+invitation's address already lives in `user_account.email`, so deletion loses nothing needed. Hold it as a retention
+rule loaded through the school's schedule (`pnpm check:retention`), with a real `authority` and `ratifiedBy`, rather
+than hard-coding it; with the existing `RECORD_CREATED` anchor, roughly 120 days covers a 14-day invitation plus 90.
+**90 days is my working proposal, not a legal determination** — it is the school's to ratify (OQ-007). _Not
+verified:_ that the retention machinery can delete from this table; check before relying on it.
+
+**10 — Guardians and learners.** Commission separate designs, and for the pilot **issue neither a login.**
+Guardians: `guardian` and `guardian_link` already exist, `consent_source` already has `PAPER_FORM` and
+`STAFF_CAPTURED`, and the pilot's consent metric (`PILOT_PROTOCOL.md`) can be met by staff capturing consent from
+paper forms — so a guardian portal is not on the pilot's critical path. When it is designed, a guardian's access
+should come from the school's own guardian-to-learner link (which `guardianOfLearnerIds` already models), not from an
+administrator granting a role. Learners: the learner surface (`packages/learner-client`) works offline on school
+devices; whether a child has an individual login, with what identifier (no email), and who acts for a Foundation Phase
+child are POPIA special-care questions for the owner and the school's information officer, and I have found no
+source to design from. Until then the `guardian.dev` and `learner.dev` Keycloak users have no accounts and resolve no
+actor, which is the safe state.
+
+**OQ-036 — MFA (see `OPEN_QUESTIONS.md`).** Have someone with Keycloak admin access export the production realm
+(Admin console → Realm settings → Action → Partial export, or `kc.sh export`) and check four things: the browser
+authentication flow requires OTP for `admin`, `smt` and the platform roles (conditional on role) or sets the
+`CONFIGURE_TOTP` required action when the account is created; **Verify email** is on; brute-force detection is on; and
+no identity provider is federated that does not verify email. Then either commit the sanitised export (no secrets) so
+the repository finally describes the real realm, with a drift test like the dev-identities one, or configure what is
+missing and correct `SECURITY.md`. Until confirmed, treat MFA as absent: do not make the claim to schools, and limit who
+holds `admin` and `smt` in the pilot to named individuals. Do this before the pilot and before step 7. _Unverified:_
+the exact Keycloak 26 menu and flow names above are from my knowledge of the product and should be checked.
 
 ## 13. Not verified
 
