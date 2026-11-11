@@ -104,6 +104,23 @@ async function seedTwoTenants(): Promise<void> {
       const role = await tx.roleAssignment.create({
         data: { tenantId, userAccountId: user.id, role: 'teacher' },
       });
+      const proposer = await tx.userAccount.create({
+        data: {
+          tenantId,
+          subject: `oidc-${randomUUID()}`,
+          email: `admin@${tenantId.slice(0, 8)}.example`,
+          displayName: 'An Administrator',
+        },
+      });
+      const grantRequest = await tx.roleGrantRequest.create({
+        data: {
+          tenantId,
+          targetAccountId: user.id,
+          roles: ['smt'],
+          requestedBy: proposer.id,
+          expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+        },
+      });
       const invitation = await tx.userInvitation.create({
         data: {
           tenantId,
@@ -484,6 +501,7 @@ async function seedTwoTenants(): Promise<void> {
         phase: phase.id,
         provisioning_record: provRecord.id,
         role_assignment: role.id,
+        role_grant_request: grantRequest.id,
         school: school.id,
         staff_member: staff.id,
         raw_ingest_record: rawIngestRecord.id,

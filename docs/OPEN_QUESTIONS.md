@@ -500,6 +500,14 @@ a real school has no actor, so cannot decide a gate (fails closed, as intended).
 at sign-in, so suspending an account does not end an existing session; `decideHumanGate`'s role check does look the
 account up at decision time, but its status is not re-checked there.
 
+**Fixed 2026-11-11 (found in OQ-033 step 3b, closed in Stage 119):** the CHECK constraint on `user_invitation.roles`
+(`cardinality("roles") >= 1 AND "roles" <@ ARRAY[…]`, migration `20261024090000_oq033_user_invitation`) **accepted a `NULL`**: the
+column is nullable, the expression is then `NULL`, and a CHECK that evaluates to `NULL` passes. Nothing in the application wrote
+one (Prisma list columns default to empty, which the CHECK refuses), so the exposure was a hand-written insert only. Migration
+`20261111110000_oq033_user_invitation_roles_not_null` re-adds the constraint with an explicit `"roles" IS NOT NULL`, with a
+rollback, an integration test for the `NULL` insert, and a drift test; the `role_grant_request` table (Stage 118) was written
+with it from the start. Nothing remains open here.
+
 ### OQ-034 — what a district rollup would be, if the product wants one · 2026-10-08
 
 **Decision 2026-11-05 (Sarah-Jane Harding):** parked. No district page until a district office exists as a role. If revived, schools publish their own aggregates upward (no cross-school read of identifiable data); the minimum group size is still a policy number to be supplied.

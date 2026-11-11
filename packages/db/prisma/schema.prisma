@@ -50,6 +50,7 @@ model Tenant {
   settings             TenantSetting[]
   userAccounts         UserAccount[]
   userInvitations      UserInvitation[]
+  roleGrantRequests    RoleGrantRequest[]
   roleAssignments      RoleAssignment[]
   schools              School[]
   phases               Phase[]
@@ -161,6 +162,11 @@ model UserAccount {
   acceptedInvitation UserInvitation? @relation("InvitationAcceptedAccount")
   /// Invitations this account confirmed as the second administrator (OQ-033).
   confirmedInvitations UserInvitation[] @relation("InvitationConfirmer")
+  /// Role grant requests naming this account as the person who would receive the roles (OQ-033 3b).
+  grantRequestsAsTarget RoleGrantRequest[] @relation("RoleGrantTarget")
+  /// Role grant requests this account proposed, and ones it decided (OQ-033 3b).
+  grantRequestsProposed RoleGrantRequest[] @relation("RoleGrantRequester")
+  grantRequestsDecided  RoleGrantRequest[] @relation("RoleGrantDecider")
 
   @@unique([tenantId, subject])
   @@unique([tenantId, email])
@@ -265,6 +271,49 @@ enum UserInvitationStatus {
   @@map("user_invitation_status")
 }
 
+/// A proposal to grant `admin` and/or `smt` to an EXISTING account when the school has two or
+/// more administrators (OQ-033 step 3b, docs/PROVISIONING_DESIGN.md §4.7). A second
+/// administrator's confirmation applies the grant in the same transaction. The two-person rule
+/// is held by CHECK constraints in SQL: nobody proposes for themselves, and whoever applies or
+/// declines is neither the proposer nor the target. No personal information is stored here.
+model RoleGrantRequest {
+  id              String                 @id @default(uuid()) @db.Uuid
+  tenantId        String                 @map("tenant_id") @db.Uuid
+  targetAccountId String                 @map("target_account_id") @db.Uuid
+  /// Only `admin` and/or `smt`: nothing else ever needs a second administrator.
+  roles           String[]
+  schoolId        String?                @map("school_id") @db.Uuid
+  requestedBy     String                 @map("requested_by") @db.Uuid
+  status          RoleGrantRequestStatus @default(PENDING)
+  expiresAt       DateTime               @map("expires_at") @db.Timestamptz(6)
+  createdAt       DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  /// Who applied, declined or cancelled it; null while PENDING and when it EXPIRED.
+  decidedBy       String?                @map("decided_by") @db.Uuid
+  decidedAt       DateTime?              @map("decided_at") @db.Timestamptz(6)
+  version         Int                    @default(1)
+
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  school        School?     @relation(fields: [schoolId], references: [id])
+  targetAccount UserAccount @relation("RoleGrantTarget", fields: [targetAccountId], references: [id], onDelete: Cascade)
+  requester     UserAccount @relation("RoleGrantRequester", fields: [requestedBy], references: [id])
+  decider       UserAccount? @relation("RoleGrantDecider", fields: [decidedBy], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("role_grant_request")
+}
+
+enum RoleGrantRequestStatus {
+  PENDING
+  APPLIED
+  DECLINED
+  CANCELLED
+  EXPIRED
+
+  @@map("role_grant_request_status")
+}
+
 /// NOT_REQUIRED: no second administrator needed. AWAITING: one must confirm first.
 /// CONFIRMED: one did (`confirmed_by`). WAIVED_SOLE_ADMIN: the school had a single
 /// administrator, so none could — recorded so the exception stays visible.
@@ -302,6 +351,7 @@ model School {
   learners        Learner[]
   staffMembers    StaffMember[]
   userInvitations UserInvitation[]
+  roleGrantRequests RoleGrantRequest[]
   roleAssignments RoleAssignment[]
   academicYears   AcademicYear[]
 
