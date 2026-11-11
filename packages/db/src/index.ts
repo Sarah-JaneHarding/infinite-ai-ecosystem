@@ -209,3 +209,4 @@ export {
   type RequestRoleGrantInput,
   type RequestRoleGrantResult,
 } from './role-grant.js';
+export { isTenantActive } from './tenant-status.js';
