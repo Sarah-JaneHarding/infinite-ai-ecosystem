@@ -15,8 +15,8 @@ vi.mock('../../src/lib/env', () => ({
 
 // The account lookup is its own unit (actor-resolution.spec.ts); here it is a stand-in so
 // the callbacks can be driven without a database.
-const { resolveActorId } = vi.hoisted(() => ({ resolveActorId: vi.fn() }));
-vi.mock('../../src/lib/actor-resolution', () => ({ resolveActorId }));
+const { resolveSignIn } = vi.hoisted(() => ({ resolveSignIn: vi.fn() }));
+vi.mock('../../src/lib/actor-resolution', () => ({ resolveSignIn }));
 
 import { authOptions } from '../../src/auth.js';
 
@@ -59,8 +59,8 @@ describe('signIn', () => {
 
 describe('jwt', () => {
   beforeEach(() => {
-    resolveActorId.mockReset();
-    resolveActorId.mockResolvedValue(ACCOUNT_ID);
+    resolveSignIn.mockReset();
+    resolveSignIn.mockResolvedValue({ actorId: ACCOUNT_ID, outcome: 'existing' });
   });
 
   it('stores the role and tenant from the profile at sign-in', async () => {
@@ -81,7 +81,9 @@ describe('jwt', () => {
       profile: profileWith(['smt']),
       user: { id: SUB },
     });
-    expect(resolveActorId).toHaveBeenCalledWith({ tenantId: TENANT, subject: SUB });
+    expect(resolveSignIn).toHaveBeenCalledWith(
+      expect.objectContaining({ tenantId: TENANT, subject: SUB }),
+    );
     expect(token['userId']).toBe(ACCOUNT_ID);
     expect(token['userId']).not.toBe(SUB);
   });
@@ -89,14 +91,13 @@ describe('jwt', () => {
   it('prefers the verified profile’s subject over the token’s', async () => {
     const profile = { ...profileWith(['hod']), sub: 'profile-sub' } as unknown as Profile;
     await jwt({ token: { sub: SUB } as JWT, account, profile, user: { id: SUB } });
-    expect(resolveActorId).toHaveBeenCalledWith({
-      tenantId: TENANT,
-      subject: 'profile-sub',
-    });
+    expect(resolveSignIn).toHaveBeenCalledWith(
+      expect.objectContaining({ tenantId: TENANT, subject: 'profile-sub' }),
+    );
   });
 
   it('stores no actor when the person has no active account — the sign-in is not blocked', async () => {
-    resolveActorId.mockResolvedValue('');
+    resolveSignIn.mockResolvedValue({ actorId: '', outcome: 'no_invitation' });
     const token = await jwt({
       token: { sub: SUB } as JWT,
       account,
@@ -108,7 +109,7 @@ describe('jwt', () => {
   });
 
   it('fails the sign-in on a database fault instead of issuing a session without an actor', async () => {
-    resolveActorId.mockRejectedValue(new Error('db down'));
+    resolveSignIn.mockRejectedValue(new Error('db down'));
     await expect(
       jwt({
         token: { sub: SUB } as JWT,
@@ -119,13 +120,62 @@ describe('jwt', () => {
     ).rejects.toThrow('db down');
   });
 
+  it('hands the sign-in the verified identity — the address, whether it is verified, the name', async () => {
+    const profile = {
+      ...profileWith(['teacher']),
+      email: 'ada@example.invalid',
+      email_verified: true,
+      name: 'Ada',
+    } as unknown as Profile;
+    await jwt({ token: { sub: SUB } as JWT, account, profile, user: { id: SUB } });
+    expect(resolveSignIn).toHaveBeenCalledWith({
+      tenantId: TENANT,
+      subject: SUB,
+      email: 'ada@example.invalid',
+      emailVerified: true,
+      displayName: 'Ada',
+    });
+  });
+
+  it('treats a profile that does not assert a verified address as unverified', async () => {
+    await jwt({
+      token: { sub: SUB } as JWT,
+      account,
+      profile: profileWith(['teacher']),
+      user: { id: SUB },
+    });
+    expect(resolveSignIn).toHaveBeenCalledWith(
+      expect.objectContaining({ emailVerified: false, email: '' }),
+    );
+  });
+
+  it('stores why: the outcome of the sign-in travels on the token', async () => {
+    resolveSignIn.mockResolvedValue({ actorId: ACCOUNT_ID, outcome: 'linked' });
+    const linked = await jwt({
+      token: { sub: SUB } as JWT,
+      account,
+      profile: profileWith(['teacher']),
+      user: { id: SUB },
+    });
+    expect(linked['accountOutcome']).toBe('linked');
+    resolveSignIn.mockResolvedValue({ actorId: '', outcome: 'invitation_expired' });
+    const refused = await jwt({
+      token: { sub: SUB } as JWT,
+      account,
+      profile: profileWith(['teacher']),
+      user: { id: SUB },
+    });
+    expect(refused['userId']).toBe('');
+    expect(refused['accountOutcome']).toBe('invitation_expired');
+  });
+
   it('does not look the account up again on later requests', async () => {
     await jwt({
       token: { sub: SUB, role: 'hod' } as JWT,
       user: { id: SUB },
       account: null,
     });
-    expect(resolveActorId).not.toHaveBeenCalled();
+    expect(resolveSignIn).not.toHaveBeenCalled();
   });
 
   it('throws rather than inventing a role if signIn was somehow bypassed', async () => {
@@ -179,6 +229,25 @@ describe('session', () => {
       userId: '',
     })) as Session;
     expect(empty.userId).toBe('');
+  });
+
+  it('carries the outcome, and reads one it does not recognise — or none — as null', async () => {
+    const known = (await run({
+      sub: SUB,
+      role: 'hod',
+      tenantId: TENANT,
+      accountOutcome: 'no_invitation',
+    })) as Session;
+    expect(known.accountOutcome).toBe('no_invitation');
+    for (const accountOutcome of [undefined, 'made_up', 7]) {
+      const s = (await run({
+        sub: SUB,
+        role: 'hod',
+        tenantId: TENANT,
+        accountOutcome,
+      })) as Session;
+      expect(s.accountOutcome).toBeNull();
+    }
   });
 
   it.each([

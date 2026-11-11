@@ -8,17 +8,19 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import type { TenantClient } from '../src/client.js';
 import { readTenantName } from '../src/tenant-name.js';
+import { isTenantActive } from '../src/tenant-status.js';
 import { asTenant, startTestDatabase, type TestDatabase } from './support/database.js';
 
 let db: TestDatabase;
 let appRw: PrismaClient;
+let migrator: PrismaClient;
 const TENANT_A = randomUUID();
 const TENANT_B = randomUUID();
 const ACTOR = randomUUID();
 
 beforeAll(async () => {
   db = await startTestDatabase();
-  const migrator = db.clientFor('migrator');
+  migrator = db.clientFor('migrator');
   for (const [id, name] of [
     [TENANT_A, 'Sunridge Primary'],
     [TENANT_B, 'Hillcrest Primary'],
@@ -50,5 +52,30 @@ describe('readTenantName (real Postgres)', () => {
     await expect(
       asTenant(appRw, randomUUID(), ACTOR, (tx) => readTenantName(tx as TenantClient)),
     ).resolves.toBeNull();
+  });
+});
+
+describe('isTenantActive (real Postgres)', () => {
+  const active = (tenantId: string) =>
+    asTenant(appRw, tenantId, ACTOR, (tx) => isTenantActive(tx as TenantClient));
+
+  it('is true for an ACTIVE tenant', async () => {
+    await expect(active(TENANT_A)).resolves.toBe(true);
+  });
+
+  it('is false once the tenant is SUSPENDED or CLOSED, and only for that tenant', async () => {
+    await asTenant(migrator, TENANT_A, ACTOR, (tx) =>
+      tx.tenant.update({ where: { id: TENANT_A }, data: { status: 'SUSPENDED' } }),
+    );
+    await expect(active(TENANT_A)).resolves.toBe(false);
+    await expect(active(TENANT_B)).resolves.toBe(true); // another school is unaffected
+    await asTenant(migrator, TENANT_A, ACTOR, (tx) =>
+      tx.tenant.update({ where: { id: TENANT_A }, data: { status: 'CLOSED' } }),
+    );
+    await expect(active(TENANT_A)).resolves.toBe(false);
+  });
+
+  it('is false for a context that has no tenant row', async () => {
+    await expect(active(randomUUID())).resolves.toBe(false);
   });
 });

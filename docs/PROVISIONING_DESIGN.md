@@ -411,7 +411,12 @@ must keep resolving **no** actor, and a test should pin that.
    confirms (applying the grant in the same transaction), declines or cancels, in
    `packages/db/src/role-grant.ts`._
 4. **Sign-in integration**: §4.3 and §4.4 in the `jwt` callback; refusal reasons; tests for every row
-   of the table in §4.3 and for platform sign-ins resolving no actor.
+   of the table in §4.3 and for platform sign-ins resolving no actor. _Split: **4a built (Stage 120)** —
+   §4.3 in the `jwt` callback through `resolveSignIn` (`apps/web/src/lib/actor-resolution.ts`), the reason
+   carried on the token and session, an explanation shown to a school role with no account, a tenant-ACTIVE
+   check, and a guard that only `packages/db` writes the account tables. **4b not built** — §4.4: the
+   session role as the intersection of the account's role assignments and the provider's claim, and the
+   chooser (OQ-032). Until it ships the role is still the first of ours in the provider's claim._
 5. **Admin UI** (`/admin/staff`): invite, revoke, list, role changes; wired to the routes.
 6. **Gate decision hardening** (§6): require an `ACTIVE` account in `decideHumanGate`.
 7. **Keycloak integration** (§5): Admin API client, mirrored roles, required actions; realm config

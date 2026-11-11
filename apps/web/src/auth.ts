@@ -3,7 +3,9 @@ import type { JWT } from 'next-auth/jwt';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 import { getWebEnv } from './lib/env';
 import type { Role } from '@infinite-ai/policy';
-import { resolveActorId } from './lib/actor-resolution';
+import { resolveSignIn } from './lib/actor-resolution';
+import { readOutcome, type SignInOutcome } from './lib/sign-in-outcome';
+import { identityFromProfile } from './lib/profile-claims';
 import { readRole, roleFromProfile } from './lib/session-role';
 
 /** Extend next-auth types with our domain fields. */
@@ -18,6 +20,11 @@ declare module 'next-auth' {
      * refuse to act. It is never the OIDC `sub`.
      */
     userId: string;
+    /**
+     * Why this sign-in did or did not resolve an account (`'existing'` / `'linked'` when it did).
+     * `null` for a token issued before this existed. Shown to the person as an explanation.
+     */
+    accountOutcome: SignInOutcome | null;
   }
 }
 declare module 'next-auth/jwt' {
@@ -26,6 +33,8 @@ declare module 'next-auth/jwt' {
     tenantId?: string;
     /** The resolved `user_account.id`; `''` if none. See `Session.userId`. */
     userId?: string;
+    /** See `Session.accountOutcome`. */
+    accountOutcome?: SignInOutcome;
   }
 }
 
@@ -54,12 +63,17 @@ export const authOptions: AuthOptions = {
         const tenantId =
           (profile as Record<string, string> | undefined)?.['tenant_id'] ?? '';
         token['tenantId'] = tenantId;
-        // The OIDC `sub` proves who signed in; the actor is the school's own account for
-        // that subject, resolved once here (OQ-033). No account → '' → fail closed.
-        token['userId'] = await resolveActorId({
+        // The OIDC `sub` proves who signed in; the actor is the school's own account for that
+        // subject, resolved once here (OQ-033) — or, on a first sign-in, created from the pending
+        // invitation for the verified address (PROVISIONING_DESIGN §4.3). No account → '' → fail
+        // closed; the outcome says why, so the person can be told.
+        const resolution = await resolveSignIn({
           tenantId,
           subject: profile?.sub ?? token.sub ?? '',
+          ...identityFromProfile(profile),
         });
+        token['userId'] = resolution.actorId;
+        token['accountOutcome'] = resolution.outcome;
       }
       return token as JWT;
     },
@@ -72,6 +86,7 @@ export const authOptions: AuthOptions = {
       session.tenantId = (token['tenantId'] as string | undefined) ?? '';
       // Never `token.sub`: a session without a resolved account has no actor (OQ-033).
       session.userId = typeof token['userId'] === 'string' ? token['userId'] : '';
+      session.accountOutcome = readOutcome(token['accountOutcome']);
       return session;
     },
   },
