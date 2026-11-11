@@ -164,3 +164,33 @@ export {
 export { hasActiveRoleAssignment } from './roles.js';
 
 export const PACKAGE_NAME = '@infinite-ai/db' as const;
+export {
+  DEFAULT_INVITATION_LIFETIME_DAYS,
+  acceptInvitation,
+  confirmInvitation,
+  createInvitation,
+  defaultInvitationExpiry,
+  listActiveAdminAccountIds,
+  lockProvisioning,
+  normaliseEmail,
+  revokeInvitation,
+  revokeRole,
+  setAccountStatus,
+  type AcceptInvitationInput,
+  type AcceptInvitationResult,
+  type AdminStateInput,
+  type ConfirmInvitationInput,
+  type ConfirmInvitationResult,
+  type CreateInvitationInput,
+  type CreateInvitationResult,
+  type InvitationConfirmationState,
+  type ProvisioningRules,
+  type Refused,
+  type RevokeInvitationInput,
+  type RevokeInvitationResult,
+  type RevokeRoleInput,
+  type RevokeRoleResult,
+  type RuleDecision,
+  type SetAccountStatusInput,
+  type SetAccountStatusResult,
+} from './provisioning.js';

@@ -280,7 +280,14 @@ must keep resolving **no** actor, and a test should pin that.
 2. **RBAC**: `user_account` and `role_assignment` resources and admin grants; matrix tests; the
    guard-rails as pure functions with tests (no self-grant, no platform role, last admin).
 3. **DB functions**: create/revoke invitation, accept (link) transaction, grant/revoke role,
-   suspend/offboard — each audited; concurrency test on acceptance.
+   suspend/offboard — each audited; concurrency test on acceptance. _Built (3a), in
+   `packages/db/src/provisioning.ts`: invite, confirm, revoke, accept, revoke a role,
+   suspend/offboard, all behind one per-tenant advisory lock taken before the audit lock, with the
+   rules injected (`ProvisioningRules`) because db may not import policy. The second
+   administrator's confirmation is persisted on the invitation (`confirmation`, `confirmed_by`).
+   Not built (3b): granting `admin`/`smt` to an EXISTING account when the school has two or more
+   administrators — it needs a persisted request/confirmation record like the invitation's, and
+   until then there is no function that does it, so it fails closed._
 4. **Sign-in integration**: §4.3 and §4.4 in the `jwt` callback; refusal reasons; tests for every row
    of the table in §4.3 and for platform sign-ins resolving no actor.
 5. **Admin UI** (`/admin/staff`): invite, revoke, list, role changes; wired to the routes.
