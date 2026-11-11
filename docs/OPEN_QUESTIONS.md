@@ -440,7 +440,7 @@ design, the SIAS/MTSS tier rule, the SACE schedule, a minutes record). Each can 
 
 ### OQ-032 — which role wins when an account holds more than one · 2026-10-01
 
-**Decision 2026-11-05 (Sarah-Jane Harding):** multi-role accounts are allowed. The person chooses the active role at sign-in and every action is checked against that role. Not yet built; `roleFromProfile` keeps first-match until it is.
+**Decision 2026-11-05 (Sarah-Jane Harding):** multi-role accounts are allowed. The person chooses the active role at sign-in and every action is checked against that role. Not yet built; `roleFromProfile` keeps first-match until it is. **Proposal 2026-11-11:** how to build it, including what "every action is checked against that role" has to mean for human-gate decisions, is `docs/PROVISIONING_DESIGN.md` §4.8, with five decisions for the owner.
 
 Stage 99 removed the silent `teacher` default for accounts with no recognised role. It did not
 change how an account holding **several** of our roles is handled: the first one in Keycloak's
@@ -718,3 +718,23 @@ Recorded from the owner's instructions. Each is a decision, not yet built unless
 | OQ-020 | December, 30-45 minutes, using `HOW_TO_ADD_AN_AGENT.md`.                                                                                                         |
 | OQ-003 | Deferred until school onboarding. Ask the Benjamin Pine principal for the unit blueprint, assessment task, rubric/memo and parent report templates, with a date. |
 | OQ-044 | Decided: serve from the ecosystem app. Still to do: a gated route, a CSP decision (sandboxed iframe suggested) and sign-off.                                     |
+
+### OQ-046 — three human gates require roles that do not exist, so nobody can decide them · 2026-11-11
+
+Found while reading how gate decisions check roles (OQ-032, `docs/PROVISIONING_DESIGN.md` §4.8). `decideHumanGate` refuses
+unless the deciding account holds a live `role_assignment` for the gate's `requiredRole`. Three pipeline steps name roles
+that are not in the `Role` list and that provisioning cannot grant (an invitation, or a grant request, may carry only
+`teacher`, `hod`, `smt`, `sbst` and `admin`; the invitation table refuses anything else):
+
+- MOD-02 `parent-letter-review` — `requiredRole: 'lse'` (the Learning Support Educator; `packages/orchestrator/src/pipelines/mod-02.ts`)
+- MOD-02, the step at `requiredRole: 'sbst_chair'` (same file)
+- MOD-03 `requiredRole: 'data_manager'` (`pipelines/mod-03.ts`)
+
+Until these are decided, a run that reaches one of those gates waits for an approval no real account can give (it times out
+or stays open). The other gates use `teacher`, `hod`, `smt` and `sbst`, which exist. Nothing here is invented policy to fix:
+which school role should decide each is the school's and the owner's to say.
+
+**Needs a human:** for each of the three, which existing role decides it (for example `sbst` for the SBST chair step), or
+whether a new role is wanted, which is its own design (guardians and learners were treated that way in §12.2 item 10). A
+CI check that every pipeline's `requiredRole` is a role provisioning can grant would stop this recurring; it needs the
+answer above first, since today three steps would fail it.

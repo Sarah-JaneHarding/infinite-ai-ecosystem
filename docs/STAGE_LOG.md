@@ -11421,6 +11421,7 @@ stack; step 7 and 8 bring the dev flow onto invitations); the db integration tes
 | `isTenantActive` against a real database                  | WRITTEN (CI runs)  |
 | §4.4 role intersection and chooser                        | NOT DONE (step 4b) |
 | End-to-end against a running Keycloak                     | NOT DONE           |
+
 ## Stage 120 — OQ-043 per-school price formula (decided 2026-11-11, provisional)
 
 `packages/billing/src/pricing.ts` (new): `priceBreakdown`, `splitVat`, `annualPrepayCents` and the constants (R300, R75, R4.00 /
