@@ -16,8 +16,10 @@ const migrationsDir = join(__dirname, '..', 'prisma', 'migrations');
 const FORWARD = [
   '20261024090000_oq033_user_invitation/migration.sql',
   '20261024090100_oq033_user_invitation_rls/migration.sql',
+  '20261024100000_oq033_invitation_confirmation/migration.sql',
 ];
 const ROLLBACK = '20261024090000_oq033_user_invitation/rollback.sql';
+const ROLLBACK_CONFIRMATION = '20261024100000_oq033_invitation_confirmation/rollback.sql';
 
 let db: TestDatabase;
 let migrator: PrismaClient;
@@ -50,6 +52,15 @@ async function runSql(file: string): Promise<void> {
 const exists = async (relation: string): Promise<boolean> => {
   const rows = await migrator.$queryRaw<{ found: boolean }[]>`
     SELECT to_regclass(${`public."${relation}"`}) IS NOT NULL AS found`;
+  return rows[0]?.found === true;
+};
+
+const columnExists = async (column: string): Promise<boolean> => {
+  const rows = await migrator.$queryRaw<{ found: boolean }[]>`
+    SELECT EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_name = 'user_invitation' AND column_name = ${column}
+    ) AS found`;
   return rows[0]?.found === true;
 };
 
@@ -92,6 +103,23 @@ describe('user_invitation rollback', () => {
     expect(await typeExists('user_invitation_status')).toBe(true);
   });
 
+  it('rolls back the confirmation columns first, leaving the invitation and its row', async () => {
+    expect(await columnExists('confirmation')).toBe(true);
+    expect(await columnExists('confirmed_by')).toBe(true);
+    await runSql(ROLLBACK_CONFIRMATION);
+    expect(await columnExists('confirmation')).toBe(false);
+    expect(await columnExists('confirmed_by')).toBe(false);
+    expect(await typeExists('invitation_confirmation')).toBe(false);
+    expect(await exists('user_invitation')).toBe(true);
+    const rows = await asTenant(
+      migrator,
+      TENANT,
+      ACTOR,
+      (tx) => tx.$queryRaw<{ n: bigint }[]>`SELECT count(*) AS n FROM user_invitation`,
+    );
+    expect(Number(rows[0]?.n)).toBe(1);
+  });
+
   it('removes only the invitation objects, leaving every other table and row alone', async () => {
     await runSql(ROLLBACK);
     expect(await exists('user_invitation')).toBe(false);
@@ -119,5 +147,7 @@ describe('user_invitation rollback', () => {
     const policies = await migrator.$queryRaw<{ policyname: string }[]>`
       SELECT policyname FROM pg_policies WHERE tablename = 'user_invitation'`;
     expect(policies.map((p) => p.policyname)).toEqual(['tenant_isolation']);
+    expect(await columnExists('confirmation')).toBe(true);
+    expect(await typeExists('invitation_confirmation')).toBe(true);
   });
 });

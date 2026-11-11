@@ -11132,7 +11132,92 @@ and the CHECK constraints exist only in the SQL.
 | No platform / guardian / learner role can be invited                  | PASS (unit) + CI  |
 | Table registered as tenant-owned                                      | PASS (unit)       |
 
-## Stage 114 — OQ-033 provisioning, step 2: who may confer and remove authority
+## Stage 114 — AC-11 Analytics Data Screener completed (OPQ-005)
+
+**Task.** AC-11 had a contract file but no export, no worker registration, no executor, no eval set and no champion,
+so the roster said 55 agents while 56 contract files existed. Decision from the owner: the 45-day staleness figure
+was a demo value, and each school sets its own.
+
+**What changed.**
+
+- `packages/analytics`: `AC11Input` gains a required `staleAfterDays` (integer ≥ 1, no default). New pure
+  `screenRollup` in `data-screener.ts` holds the rules (stale, then coverage, then suppression, then ready); distinct
+  domains are counted once.
+- `packages/prompts`: `AC-11/1.1.0.prompt.md` (no hardcoded 45; distinct-domain rule). 1.0.0 is untouched; one new
+  `prompt-lock.json` entry. The contract's `promptRef` points at 1.1.0.
+- `packages/agents`: `AC11Contract` exported; contract test file added.
+- `apps/worker`: `AC11Contract` registered. `scripts/register-ac-executors.ts`: AC-11 executor calls `screenRollup`.
+- `packages/evals`: `sets/AC-11/data-screener.json` (25 cases, 6 adversarial, 4 must-not-regress) and
+  `champions/AC-11.json`.
+- Docs: `docs/AGENTS.md` roster row, detail block, "Fifty-six"; `docs/FREE_LOCAL_TESTING.md` "56 agents".
+
+**Not added.** No pipeline step: the `analytics.report` agent it would gate does not exist. The schema cannot express
+a `json_schema` expectation in a JSON eval file (it takes a Zod instance), so schema conformance is covered in the
+analytics unit tests instead.
+
+**Tests.** analytics: 23 new (`data-screener.spec.ts`); agents: 12 new (suite 460 to 472); prompts lock test passes.
+AC-11 eval set 25/25 and the eval gate passes. Mutation-checked: re-hardcoding 45, counting duplicate domains twice and
+checking suppression before staleness each fail the set. All 56 eval sets before and after: identical except the new
+AC-11 line. eslint and prettier clean.
+
+**Not verified.** `prisma generate` was blocked in the authoring sandbox, so `pnpm evals:run` / `evals:promote` were not
+run as written; an equivalent run of the same harness for AC-11 produced the champion, using a local stub for the
+Prisma client. Re-run `pnpm evals:run --agent AC-11` and expect 25/25.
+
+| Exit gate item                                            | Result                     |
+| --------------------------------------------------------- | -------------------------- |
+| Contract exported, registered in the worker               | PASS (tests)               |
+| Executor calls the real rules function                    | PASS                       |
+| Eval set and champion present, gate passes                | PASS (equivalent harness)  |
+| Real `pnpm evals:run --agent AC-11` with Prisma generated | NOT RUN                    |
+| AC-11 in a reporting pipeline                             | OPEN (no report agent yet) |
+
+## Stage 115 — OQ-033 provisioning, step 3a: the transactional functions
+
+`packages/db/src/provisioning.ts` — `createInvitation`, `confirmInvitation`, `revokeInvitation`, `acceptInvitation`,
+`revokeRole`, `setAccountStatus`, plus `lockProvisioning`, `listActiveAdminAccountIds`, `normaliseEmail`. Each runs in
+the caller's `withTenant` transaction, appends its audit event in that transaction, and returns a result (`ok` or a
+stable `reason`) rather than throwing for a refusal.
+
+- **One lock closes the race.** Every function first takes `pg_advisory_xact_lock(hashtext('provisioning:' || tenant))`,
+  then reads the administrators, then applies the rules. Two administrators demoting each other can no longer both see
+  "two administrators": the second waits, then sees one and is refused `actor_not_admin`. The audit lock (audit.ts) is
+  always taken after it, so the two never wait in a cycle; audit.ts's comment, which said no other advisory lock
+  existed, is corrected.
+- **Rules are injected.** db (L3) may not import policy (L5), so functions take a `ProvisioningRules` whose shapes mirror
+  policy's. The web facade that binds the real rules, with a compile-time conformance check, is **not in this PR**: it
+  needs PR #159 (the policy rules) and follows it.
+- **Confirmation is a recorded act.** Migration `20261024100000_oq033_invitation_confirmation` adds `confirmation`
+  (`NOT_REQUIRED | AWAITING | CONFIRMED | WAIVED_SOLE_ADMIN`) and `confirmed_by` to `user_invitation`, with CHECKs that
+  `CONFIRMED` iff a confirmer is recorded and that an `AWAITING` invitation can never be `ACCEPTED`. Rollback script
+  included.
+- **No address in the ledger.** Audit diffs carry ids, roles and states only.
+- **Acceptance** refuses an unverified address, an unknown or expired invitation (an expired one is marked `EXPIRED`),
+  an invitation still `AWAITING`, an address already held by another account, and any subject whose account is not
+  `ACTIVE`. Roles come from the invitation, never from the identity.
+- **Deferred (3b):** granting `admin`/`smt` to an existing account when there are two or more administrators; no function
+  does it yet, so it fails closed.
+
+**Tests.** Unit: export-surface updated (db). Integration, **written blind (no Docker in the authoring sandbox) and run
+by CI**: `provisioning.integration.spec.ts` (create/confirm/revoke/accept paths and refusals; audit without the address;
+cross-school isolation; same person signing in twice concurrently yields one account; two identities racing for one
+address yield one winner; a deterministic lock-blocking test; eight repeated demote-each-other races each ending with
+exactly one administrator); the rollback integration test now also rolls back the confirmation migration first.
+Typecheck and eslint clean.
+
+**Not verified.** None of the integration tests, the migration or either rollback have run against a live Postgres here.
+Mutation checks of the lock (removing `lockProvisioning`) need a database and are left to CI: the blocking test is
+expected to fail without it.
+
+| Exit gate item                                         | Result                |
+| ------------------------------------------------------ | --------------------- |
+| Invite, confirm, revoke, accept, revoke role, suspend  | WRITTEN (CI runs)     |
+| Each audited, no address in the ledger                 | WRITTEN (CI runs)     |
+| Concurrency: demote-each-other and double sign-in      | WRITTEN (CI runs)     |
+| Migration + tested rollback for the confirmation state | WRITTEN (CI runs)     |
+| Web facade binding the real rules                      | NOT DONE (needs #159) |
+
+## Stage 116 — OQ-033 provisioning, step 2: who may confer and remove authority
 
 **Task.** "Start step 2" of `docs/PROVISIONING_DESIGN.md`. Nothing here is wired to a route yet; that is step 3.
 
@@ -11173,43 +11258,3 @@ or the audit chain); the database lock for the race is step 3.
 | No self-grant; no platform / guardian / learner role; confirmation rule | PASS (tests)      |
 | Last administrator cannot be removed by a single change                 | PASS (exhaustive) |
 | Last administrator safe under concurrency                               | OPEN (step 3)     |
-
-## Stage 114 — AC-11 Analytics Data Screener completed (OPQ-005)
-
-**Task.** AC-11 had a contract file but no export, no worker registration, no executor, no eval set and no champion,
-so the roster said 55 agents while 56 contract files existed. Decision from the owner: the 45-day staleness figure
-was a demo value, and each school sets its own.
-
-**What changed.**
-
-- `packages/analytics`: `AC11Input` gains a required `staleAfterDays` (integer ≥ 1, no default). New pure
-  `screenRollup` in `data-screener.ts` holds the rules (stale, then coverage, then suppression, then ready); distinct
-  domains are counted once.
-- `packages/prompts`: `AC-11/1.1.0.prompt.md` (no hardcoded 45; distinct-domain rule). 1.0.0 is untouched; one new
-  `prompt-lock.json` entry. The contract's `promptRef` points at 1.1.0.
-- `packages/agents`: `AC11Contract` exported; contract test file added.
-- `apps/worker`: `AC11Contract` registered. `scripts/register-ac-executors.ts`: AC-11 executor calls `screenRollup`.
-- `packages/evals`: `sets/AC-11/data-screener.json` (25 cases, 6 adversarial, 4 must-not-regress) and
-  `champions/AC-11.json`.
-- Docs: `docs/AGENTS.md` roster row, detail block, "Fifty-six"; `docs/FREE_LOCAL_TESTING.md` "56 agents".
-
-**Not added.** No pipeline step: the `analytics.report` agent it would gate does not exist. The schema cannot express
-a `json_schema` expectation in a JSON eval file (it takes a Zod instance), so schema conformance is covered in the
-analytics unit tests instead.
-
-**Tests.** analytics: 23 new (`data-screener.spec.ts`); agents: 12 new (suite 460 to 472); prompts lock test passes.
-AC-11 eval set 25/25 and the eval gate passes. Mutation-checked: re-hardcoding 45, counting duplicate domains twice and
-checking suppression before staleness each fail the set. All 56 eval sets before and after: identical except the new
-AC-11 line. eslint and prettier clean.
-
-**Not verified.** `prisma generate` was blocked in the authoring sandbox, so `pnpm evals:run` / `evals:promote` were not
-run as written; an equivalent run of the same harness for AC-11 produced the champion, using a local stub for the
-Prisma client. Re-run `pnpm evals:run --agent AC-11` and expect 25/25.
-
-| Exit gate item                                            | Result                     |
-| --------------------------------------------------------- | -------------------------- |
-| Contract exported, registered in the worker               | PASS (tests)               |
-| Executor calls the real rules function                    | PASS                       |
-| Eval set and champion present, gate passes                | PASS (equivalent harness)  |
-| Real `pnpm evals:run --agent AC-11` with Prisma generated | NOT RUN                    |
-| AC-11 in a reporting pipeline                             | OPEN (no report agent yet) |
