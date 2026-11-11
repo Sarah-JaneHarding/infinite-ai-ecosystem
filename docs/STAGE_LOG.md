@@ -11258,3 +11258,28 @@ or the audit chain); the database lock for the race is step 3.
 | No self-grant; no platform / guardian / learner role; confirmation rule | PASS (tests)      |
 | Last administrator cannot be removed by a single change                 | PASS (exhaustive) |
 | Last administrator safe under concurrency                               | OPEN (step 3)     |
+
+## Stage 117 — OQ-033 provisioning, step 3: the web layer binds the real rules
+
+`apps/web/src/lib/provisioning-rules.ts` hands the policy package's three rule functions (`evaluateRoleConferral`,
+`evaluateRoleRevocation`, `evaluateAccountStatusChange`) to the db layer as a `ProvisioningRules`. This is the only place
+the real rules meet the transactions in `packages/db/src/provisioning.ts` (Stage 115); db may not import policy.
+
+- **Conformance is a compile-time check, and it needed tightening.** The first version of the db interface declared its
+  rules with method syntax, which TypeScript checks bivariantly: swapping `statusChange` for the revocation rule (which
+  needs an extra `role`) produced only an unused-import error, not a type error. The interface now uses property-function
+  syntax (with a comment saying why); the same swap now fails with "Property 'role' is missing". Mutation-checked.
+- **Nothing calls this yet.** No route or sign-in code uses the provisioning functions; steps 4–5 do.
+- **Still deferred (3b):** granting `admin`/`smt` to an existing account when a school has two or more administrators
+  needs a persisted request record. No function does it, so it fails closed.
+
+**Tests.** `apps/web/tests/unit/provisioning-rules.spec.ts` (8): the real rules through the db interface — invite with no
+confirmation, confirmation required with two administrators, waived for a sole administrator, confirmed by a second;
+refused for a non-administrator, a platform role, inviting your own address, revoking your own role, suspending yourself;
+one administrator may revoke and suspend another. Web typecheck, db typecheck, eslint, prettier clean.
+
+| Exit gate item                                 | Result               |
+| ---------------------------------------------- | -------------------- |
+| Real policy bound to the db interface          | PASS (tests)         |
+| Drift between the two fails the build          | PASS (mutation)      |
+| Provisioning reachable from a route or sign-in | NOT DONE (steps 4–5) |
