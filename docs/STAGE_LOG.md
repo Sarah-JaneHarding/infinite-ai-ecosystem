@@ -11485,3 +11485,16 @@ these roles today.
 | Prettier and ESLint clean on the changed file  | PASS                                                        |
 | The aggregate case still fails on a leak       | PASS by construction (a leak adds the other tenant's rows)  |
 | Integration suite passes against real Postgres | OPEN (needs Docker; proven in CI, not in the authoring box) |
+
+## Stage 123 — agent roster reconciled with the contracts (docs only)
+
+`docs/AGENTS.md` §3 said the roster was "the plan, not a claim of completion" and gave tables for only 28 of the 56 agents (MOD-04, MOD-05 and the Learning Engine were name lists). The 56 contract files, 56 prompts and 56 eval sets all exist.
+
+**Reconciled.** The IDs in the roster tables and in `packages/agents/src/*/*.contract.ts` match exactly: none missing, none extra. Every agent has a prompt at `packages/prompts/src/<id>/1.0.0.prompt.md` and an eval set under `packages/evals/sets/<id>/` of at least 20 cases. The intro now says all 56 are built; a registry-facts table lists module, model, approval, Brain-write and budget for each, copied from the contracts (12 require approval, 23 write to the Brain).
+
+| Exit gate item                                    | Result                                     |
+| ------------------------------------------------- | ------------------------------------------ |
+| Roster IDs equal contract IDs                     | PASS (56 of 56)                            |
+| Every agent has a prompt and a ≥ 20-case eval set | PASS                                       |
+| Prettier clean                                    | PASS                                       |
+| A test fails if a contract and the table disagree | OPEN (the table is copied by hand for now) |
