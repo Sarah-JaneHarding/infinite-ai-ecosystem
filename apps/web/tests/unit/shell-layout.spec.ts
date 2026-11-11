@@ -20,6 +20,7 @@ vi.mock('@/components/shell/Nav', () => ({ Nav: () => null }));
 vi.mock('@/components/shell/ImpersonationBanner', () => ({
   ImpersonationBanner: () => null,
 }));
+vi.mock('@/components/shell/AccountNotice', () => ({ AccountNotice: () => null }));
 
 import ShellLayout from '../../src/app/(shell)/layout.js';
 
@@ -76,5 +77,44 @@ describe('ShellLayout header', () => {
     getServerSession.mockResolvedValue(null);
     await expect(ShellLayout({ children: null })).rejects.toThrow('REDIRECT:/sign-in');
     expect(loadTenantLabel).not.toHaveBeenCalled();
+  });
+});
+
+/** The `message` handed to the account notice, wherever it sits in the tree. */
+function noticeMessage(node: unknown): string | null | undefined {
+  if (node === null || typeof node !== 'object') return undefined;
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      const found = noticeMessage(child);
+      if (found !== undefined) return found;
+    }
+    return undefined;
+  }
+  const props = (node as ReactElement).props as Record<string, unknown> | undefined;
+  if (!props) return undefined;
+  if ('message' in props) return props['message'] as string | null;
+  return noticeMessage(props['children']);
+}
+
+describe('ShellLayout account notice', () => {
+  beforeEach(() => {
+    getServerSession.mockReset();
+    loadTenantLabel.mockReset();
+    loadTenantLabel.mockResolvedValue('Sunridge Primary');
+  });
+
+  it('explains why a school role with no account sees nothing', async () => {
+    getServerSession.mockResolvedValue({
+      ...SESSION,
+      userId: '',
+      accountOutcome: 'no_invitation',
+    });
+    const message = noticeMessage(await ShellLayout({ children: null }));
+    expect(message).toMatch(/administrator to invite you/);
+  });
+
+  it('shows nothing to a person who has an account', async () => {
+    getServerSession.mockResolvedValue({ ...SESSION, accountOutcome: 'existing' });
+    expect(noticeMessage(await ShellLayout({ children: null }))).toBeNull();
   });
 });
