@@ -173,15 +173,21 @@ Anthropic LLM cost: **R3.20 per learner per month** (8 artefacts × avg R0.40/ar
 
 ## Per-School Economics & Gross Margin
 
-### Subscription tiers (ex VAT)
+### School price (ex VAT) — per-school formula (OQ-043, provisional)
 
-| Tier         | Learner cap | Price / month | Annual / school |
-| ------------ | ----------- | ------------- | --------------- |
-| Starter      | ≤150        | R1,200        | R14,400         |
-| Professional | ≤500        | R3,500        | R42,000         |
-| Enterprise   | Unlimited   | R8,500        | R102,000        |
+Monthly price = R300 platform fee + R75 per educator + R4.00 per learner (first 500) + R1.50 per
+learner above 500; minimum R750. See `COST_MODEL.md` for the full rules.
 
-VAT (15%) adds R180 / R525 / R1,275 per month respectively.
+| Reference school              | Price / month | Annual / school |
+| ----------------------------- | ------------- | --------------- |
+| 120 learners / 8 educators    | R1,380        | R16,560         |
+| 400 learners / 16 educators   | R3,100        | R37,200         |
+| 1,500 learners / 55 educators | R7,925        | R95,100         |
+
+VAT (15%) adds R207 / R465 / R1,188.75 per month respectively.
+
+> The gross-margin table below was computed on the retired R1,200 / R3,500 / R8,500 card and is
+> kept for the COGS figures only. Re-derive revenue from the table above before quoting margins.
 
 ### Gross margin by scale
 

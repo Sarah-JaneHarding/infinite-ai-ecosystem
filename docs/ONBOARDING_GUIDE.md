@@ -160,15 +160,21 @@ been ratified for it. See OQ-007 in `docs/OPEN_QUESTIONS.md`.
 ## Step 7 — Billing and subscription
 
 **What you fill in:** Your billing contact email, billing address, and VAT number (if
-registered). You will also select a subscription tier:
+registered). Your price is calculated from your school's size. There is no tier to pick for
+seats (OQ-043, provisional until three schools have seen it):
 
-| Tier         | Learner limit      | Price (ZAR)     |
-| ------------ | ------------------ | --------------- |
-| Starter      | Up to 150 learners | R 1 200 / month |
-| Professional | Up to 500 learners | R 3 500 / month |
-| Enterprise   | Unlimited          | R 8 500 / month |
+Monthly price ex VAT = R300 platform fee + R75 per educator + R4.00 per learner (first 500)
 
-All prices exclude 15 % VAT. Invoices are generated monthly in arrears.
+- R1.50 per learner above 500. Minimum R750 per month. Community rate: 50 % of the standard
+  price. Annual prepay: 10 % off.
+
+| Example school               | Ex VAT / month | VAT (15 %) | Inc VAT / month |
+| ---------------------------- | -------------- | ---------- | --------------- |
+| 120 learners, 8 educators    | R 1 380.00     | R 207.00   | R 1 587.00      |
+| 400 learners, 16 educators   | R 3 100.00     | R 465.00   | R 3 565.00      |
+| 1 500 learners, 55 educators | R 7 925.00     | R 1 188.75 | R 9 113.75      |
+
+Invoices show the ex VAT amount, the VAT and the total. Invoices are generated monthly in arrears.
 
 **What the system records:**
 
@@ -184,7 +190,7 @@ The wizard marks `provisioning_record.readiness = 100` and the platform is acces
 
 - Educators can log in and start creating artefacts immediately.
 - The first invoice is generated at the end of the month.
-- If a learner count changes tier, the new tier applies from the following billing period.
+- If your learner or educator count changes, the new price applies from the following billing period.
 - For help, contact your assigned implementation partner or open a support ticket in the
   platform.
 

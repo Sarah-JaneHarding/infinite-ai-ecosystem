@@ -657,6 +657,13 @@ Checked while ingesting the supplied Provider Setup Guide and Provider Hub again
 4. **Price card.** The billing code, `docs/COST_MODEL.md` and `docs/financial-model.html` carry different price cards.
    **Needs a human:** choose one, then update `packages/billing/src/tiers.ts` and the documents together.
 
+   **Decided 2026-11-11 (provisional).** Adopt the per-school formula as the working price: R300 platform fee + R75 per
+   educator + R4.00 per learner (first 500) + R1.50 per learner above 500, minimum R750, community rate 50 %, annual prepay
+   10 % off, VAT 15 % shown as an ex VAT split. Provisional until three schools have seen it. Implemented in
+   `packages/billing/src/pricing.ts`; `COST_MODEL.md`, `ONBOARDING_GUIDE.md`, `AWS_MIGRATION_AUDIT.md` and
+   `financial-model.html` updated in the same change; `packages/billing/test/price-parity.spec.ts` fails if they drift.
+   Funding effect: about R1.6m more in the Base case than the old card (business planning package v1.2).
+
 ### OQ-044 — the widget archive is not served, and the app's CSP would block it · 2026-11-10
 
 `apps/web/public/widgets/` holds 80 single-file widgets. Two things in the app stop a signed-in person opening them
@@ -680,3 +687,24 @@ ratifier would be ratifying.
 coordinator for PD, the teacher lead for TB), and whether the 7 deterministic classroom tools (no agent, no learner data)
 can be ratified as one batch. Ratification is done in the Studio panel by that person; the release packages are then added
 with `addRelease`.
+
+## Decisions recorded 2026-11-11
+
+Recorded from the owner's instructions. Each is a decision, not yet built unless stated.
+
+| ID     | Decision                                                                                                                                                         |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D-1    | OQ-043 formula price adopted, provisional (above). Built in Stage 117.                                                                                           |
+| D-2    | Prices are shown VAT-inclusive with the ex VAT split.                                                                                                            |
+| D-3    | Teacher training is part of the ecosystem, not a second product line.                                                                                            |
+| D-4    | Pilot schools #2 and #3 are deferred until pre-pilot testing with school #1 is complete.                                                                         |
+| D-5    | Founder salary R35,000 per month during the pre-pilot and pilot phases, half-time commitment. Reviewed after the pilot phase.                                    |
+| D-6    | Voluntary VAT registration from launch, subject to the accountant.                                                                                               |
+| OQ-033 | Build first. Steps 2 and 3a are in pull requests that need rebasing and renumbering (Stage 114 is already used by AC-11).                                        |
+| OQ-036 | Build second. Correct `SECURITY.md` section 7. Keycloak OTP and email verification, with a drift test.                                                           |
+| OQ-016 | December-holiday labelling sprint with Primary school staff. Two people label a sample to measure agreement.                                                     |
+| OQ-017 | Apply Terraform to a small staging environment in Nov-Dec, then run k6.                                                                                          |
+| OQ-018 | Log tokens per agent and per tenant from day one. After month one, check whether cost follows learners or educators.                                             |
+| OQ-020 | December, 30-45 minutes, using `HOW_TO_ADD_AN_AGENT.md`.                                                                                                         |
+| OQ-003 | Deferred until school onboarding. Ask the Benjamin Pine principal for the unit blueprint, assessment task, rubric/memo and parent report templates, with a date. |
+| OQ-044 | Decided: serve from the ecosystem app. Still to do: a gated route, a CSP decision (sandboxed iframe suggested) and sign-off.                                     |

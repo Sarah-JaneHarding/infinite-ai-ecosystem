@@ -6,6 +6,24 @@ export {
 } from './tiers.js';
 
 export {
+  PLATFORM_FEE_CENTS,
+  PER_EDUCATOR_CENTS,
+  PER_LEARNER_CENTS,
+  LEARNER_STEP_AT,
+  PER_LEARNER_ABOVE_STEP_CENTS,
+  MINIMUM_MONTHLY_CENTS,
+  COMMUNITY_RATE_PERCENT,
+  ANNUAL_PREPAY_DISCOUNT_PERCENT,
+  VAT_PERCENT,
+  priceBreakdown,
+  splitVat,
+  annualPrepayCents,
+  type SchoolSize,
+  type PriceBreakdown,
+  type VatSplit,
+} from './pricing.js';
+
+export {
   aggregateMeteringEvents,
   computeOverage,
   type MeteringEvent,
@@ -26,6 +44,7 @@ export {
   VAT_RATE,
   type Invoice,
   type InvoiceLineItem,
+  type InvoiceOptions,
 } from './invoicing.js';
 
 export {

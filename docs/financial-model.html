@@ -606,13 +606,16 @@
     </div>
   </div>
   <div class="control-group">
-    <span class="ctl-label">Monthly price / school</span>
+    <span class="ctl-label"
+      >Monthly price / school, ex VAT (per-school formula, OQ-043: R1,380 = 120 learners /
+      8 educators; R3,067 = plan-mix blend; R3,100 = 400 / 16)</span
+    >
     <div class="pill-row" id="price-pills">
-      <button class="pill" data-val="3000">R3,000</button>
-      <button class="pill" data-val="3500">R3,500</button>
+      <button class="pill" data-val="1380">R1,380</button>
+      <button class="pill" data-val="2000">R2,000</button>
+      <button class="pill active" data-val="3067">R3,067</button>
+      <button class="pill" data-val="3100">R3,100</button>
       <button class="pill" data-val="4000">R4,000</button>
-      <button class="pill active" data-val="4500">R4,500</button>
-      <button class="pill" data-val="5000">R5,000</button>
     </div>
   </div>
   <div class="control-group">
@@ -819,7 +822,7 @@
     PER_INFRA = 241;
   const VAR_FLOOR = PER_LLM + PER_INFRA; // 1074
 
-  const state = { schools: 25, price: 4500, email: 'ses' };
+  const state = { schools: 25, price: 3067, email: 'ses' };
 
   function compute(s) {
     const usePostmark = s.email === 'postmark';
@@ -1129,7 +1132,7 @@
   }
 
   // ─── Sensitivity matrix ───
-  const PRICES_SENS = [3000, 3500, 4000, 4500, 5000];
+  const PRICES_SENS = [1380, 2000, 3067, 3100, 4000];
   const SCHOOLS_SENS = [5, 10, 25, 50, 100];
 
   function marginBg(pct) {
