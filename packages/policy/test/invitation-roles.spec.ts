@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { SCHOOL_STAFF_ROLES } from '../src/provisioning.js';
+import { CONFIRMATION_REQUIRED_ROLES, SCHOOL_STAFF_ROLES } from '../src/provisioning.js';
 import { PLATFORM_ROLES, Role } from '../src/rbac.js';
 
 // OQ-033 drift guard. The invitation table's CHECK constraint lists the roles an invitation may
@@ -58,5 +58,31 @@ describe('roles an invitation may carry (user_invitation CHECK constraint)', () 
     // data. If one changes without the other, a role could be refused by the app but accepted
     // by the table (harmless) or — worse — accepted by the app and refused only at commit.
     expect([...invitableRolesInSql()].sort()).toEqual([...SCHOOL_STAFF_ROLES].sort());
+  });
+});
+
+// OQ-033 step 3b drift guard. The role grant request table accepts only the roles that need a
+// second administrator; that list is SQL, so nothing ties it to policy's rule. If the rule gains
+// or loses a role, or the SQL list changes alone, this fails first.
+describe('roles a role grant request may carry (role_grant_request CHECK constraint)', () => {
+  const grantMigration = readFileSync(
+    join(
+      __dirname,
+      '..',
+      '..',
+      'db',
+      'prisma',
+      'migrations',
+      '20261111100000_oq033_role_grant_request',
+      'migration.sql',
+    ),
+    'utf8',
+  );
+
+  it('are exactly the roles that need a second administrator', () => {
+    const match = /"roles" <@ ARRAY\[([^\]]+)\]::text\[\]/.exec(grantMigration);
+    if (match?.[1] === undefined) throw new Error('role list not found in the migration');
+    const inSql = match[1].split(',').map((r) => r.trim().replace(/^'|'$/g, ''));
+    expect([...inSql].sort()).toEqual([...CONFIRMATION_REQUIRED_ROLES].sort());
   });
 });

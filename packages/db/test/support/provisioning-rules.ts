@@ -30,6 +30,8 @@ export const testRules: ProvisioningRules = {
     if (confirmer === null) return { allowed: false, reason: 'confirmation_required' };
     if (confirmer === input.actorAccountId)
       return { allowed: false, reason: 'confirmer_is_actor' };
+    if (input.target.kind === 'account' && confirmer === input.target.accountId)
+      return { allowed: false, reason: 'confirmer_is_target' };
     if (!admins.includes(confirmer))
       return { allowed: false, reason: 'confirmer_not_admin' };
     return { allowed: true, confirmation: 'confirmed', confirmedBy: confirmer };

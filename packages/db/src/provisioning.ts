@@ -115,7 +115,7 @@ export function normaliseEmail(raw: string): string | null {
   return email;
 }
 
-async function currentTenantId(tx: TenantClient): Promise<string> {
+export async function currentTenantId(tx: TenantClient): Promise<string> {
   const rows = await tx.$queryRaw<
     { tenant_id: string }[]
   >`SELECT current_setting('app.tenant_id', false) AS tenant_id`;

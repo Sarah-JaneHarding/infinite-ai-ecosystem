@@ -11283,3 +11283,54 @@ one administrator may revoke and suspend another. Web typecheck, db typecheck, e
 | Real policy bound to the db interface          | PASS (tests)         |
 | Drift between the two fails the build          | PASS (mutation)      |
 | Provisioning reachable from a route or sign-in | NOT DONE (steps 4–5) |
+
+## Stage 118 — OQ-033 provisioning, step 3b: granting `admin` or `smt` to an existing account
+
+The design (§4.7, accepted with the recommended answers: 7-day lifetime, optional school scope, the proposer may cancel)
+is built: a stored `role_grant_request` and four functions in `packages/db/src/role-grant.ts` — `requestRoleGrant`,
+`confirmRoleGrant`, `declineRoleGrant`, `cancelRoleGrant` — each under the tenant's provisioning lock, each audited with
+ids, roles and states only.
+
+- **Migration** `20261111100000_oq033_role_grant_request` (+ `…100100_…_rls`, + `rollback.sql`): the table, a status enum,
+  four CHECK constraints, one partial unique index (one `PENDING` request per target), five foreign keys, row-level
+  security forced. Registered in `tables.ts`, so the isolation suites pick it up; the generic suite's fixture now seeds
+  one per tenant.
+- **The two-person rule is in the data, not only in code:** nobody proposes for themselves; an `APPLIED` or `DECLINED`
+  request has a decider who is neither the proposer nor the target; a decision is a `(decided_by, decided_at)` pair that
+  exists exactly for `APPLIED`, `DECLINED` and `CANCELLED`.
+- **Confirming applies the grant in the same transaction** — no "confirmed but not applied" state. A school with a single
+  administrator has no one to confirm, so the grant applies at once and the waiver is audited (no row is written).
+- **Deviation from §4.7, recorded there:** `CANCELLED` also records who cancelled, so the two-person CHECK covers
+  `APPLIED` and `DECLINED` only.
+
+**A defect found while verifying, and one left open.** Trying the SQL in a local Postgres (initdb; no Docker needed for
+this part) showed that `cardinality(roles) >= 1 AND roles <@ ARRAY[…]` **accepts a `NULL` `roles`**: the column is nullable,
+so the expression is `NULL`, and a CHECK that evaluates to `NULL` passes. The new table's CHECK now begins with
+`"roles" IS NOT NULL`, and the attempt that exposed it now fails. **`user_invitation.roles` (Stage 113) has the same gap**
+and is _not_ fixed here: it is a separate forward migration to a table that may already exist in an environment, and the
+fix is one `ALTER TABLE … DROP/ADD CONSTRAINT`. Nothing in the application writes a `NULL` (Prisma lists default to empty,
+which the CHECK refuses), so the exposure is a hand-written insert only. Recorded in `docs/OPEN_QUESTIONS.md`.
+
+**Tests.** Unit: db export surface; a drift test that the db constant `SENSITIVE_ROLES`, the SQL CHECK and policy's
+`CONFIRMATION_REQUIRED_ROLES` are the same list (db and policy suites); `defaultRoleGrantExpiry`. Integration, run by CI:
+`role-grant.integration.spec.ts` — every function's success and every refusal (unknown, finished, expired, wrong person,
+target inactive, role already held, rules that report no confirmation); each constraint by an insert that violates it,
+including the `NULL` case; and two races (two administrators confirming one request apply it once; a proposer demoted
+while a confirmation runs is never applied past the demotion). `role-grant-request-rollback.integration.spec.ts` applies
+the rollback to a database holding an applied request, checks the granted role survives, and re-applies the migrations.
+
+**Verified locally, outside the suite.** In a throwaway Postgres 16 with stand-in tables: both migrations apply; every
+constraint refuses what it should and accepts what it should (thirteen inserts); the policy errors with no tenant
+context, isolates tenants, and refuses a cross-tenant insert as `app_rw`; the rollback drops only the table and type; the
+migrations re-apply afterwards. **Not verified:** the TypeScript integration specs were not run here (no Docker, and
+pgvector is not installed locally so the full migration history cannot be replayed); CI's RLS job is their first run.
+
+| Exit gate item                                                      | Result                |
+| ------------------------------------------------------------------- | --------------------- |
+| Forward migration + RLS migration + rollback                        | PASS (local SQL) + CI |
+| Two-person rule held by the table                                   | PASS (local SQL) + CI |
+| Request / confirm / decline / cancel / expire, each audited         | WRITTEN (CI runs)     |
+| Confirming applies the grant atomically; sole-admin waiver recorded | WRITTEN (CI runs)     |
+| Races: double confirmation; proposer demoted during confirmation    | WRITTEN (CI runs)     |
+| Cross-tenant isolation of `role_grant_request`                      | WRITTEN (CI runs)     |
+| `user_invitation.roles` accepts `NULL`                              | OPEN (OQ-033 note)    |
