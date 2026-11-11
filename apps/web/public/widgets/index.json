@@ -1,0 +1,2189 @@
+{
+  "count": 80,
+  "widgets": [
+    {
+      "widgetId": "CE-W01",
+      "file": "CE-W01.html",
+      "name": "Curriculum Map Generator",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": "CE-01 CAPS Mapper",
+      "humanGate": {
+        "role": "HoD",
+        "roles": [
+          "HoD",
+          "SMT",
+          "Principal",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.map.approved"
+      ],
+      "upstream": [],
+      "studio": true,
+      "bytes": 149553,
+      "sha256": "9252cf857074acff84df2fd746798066fc64d5c1392466539a6594c281b775c5"
+    },
+    {
+      "widgetId": "CE-W02",
+      "file": "CE-W02.html",
+      "name": "ATP Year Planner",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": "CE-02 ATP Sequencer",
+      "humanGate": {
+        "role": "HoD",
+        "roles": [
+          "HoD",
+          "SMT",
+          "Principal",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.yearplan.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.map.approved"
+        ],
+        "requiredPayload": [
+          "term",
+          "topics"
+        ]
+      },
+      "studio": true,
+      "bytes": 154413,
+      "sha256": "3f7076619e2a1d592c2de1a8512a1933da427842d09aa1ec2b527af7baa986cc"
+    },
+    {
+      "widgetId": "CE-W03",
+      "file": "CE-W03.html",
+      "name": "Term Planner & Assessment Calendar",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": "CE-03 Term Planner",
+      "humanGate": {
+        "role": "HoD",
+        "roles": [
+          "HoD",
+          "SMT",
+          "Principal",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.termplan.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.yearplan.approved"
+        ],
+        "requiredPayload": [
+          "terms",
+          "subject"
+        ]
+      },
+      "studio": true,
+      "bytes": 167487,
+      "sha256": "357b8d5a2564c30f35d4de3b9eae0e1fdb25d3a474dd9f1a32c9ddbc1890d273"
+    },
+    {
+      "widgetId": "CE-W04",
+      "file": "CE-W04.html",
+      "name": "Timetable Generator",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "SMT",
+        "roles": [
+          "SMT",
+          "Principal",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.timetable.approved"
+      ],
+      "upstream": [],
+      "studio": true,
+      "bytes": 149778,
+      "sha256": "0b4cb4f9cd69c72c18f3ee98a6ccccb49c9327ca1de61a5e1c221446a2f92b10"
+    },
+    {
+      "widgetId": "CE-W05",
+      "file": "CE-W05.html",
+      "name": "Weekly Overview Generator",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD",
+          "SMT",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.week.published"
+      ],
+      "upstream": {
+        "events": [
+          "ce.termplan.approved",
+          "ce.timetable.approved",
+          "ce.reflection.confirmed"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 198806,
+      "sha256": "66226bfd3ae3134b77285285b631ea154c9826f4089e0ced50277ca876835320"
+    },
+    {
+      "widgetId": "CE-W06",
+      "file": "CE-W06.html",
+      "name": "Daily Schedule Generator",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD",
+          "SMT",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.day.published"
+      ],
+      "upstream": {
+        "events": [
+          "ce.timetable.approved",
+          "ce.week.published",
+          "ce.lesson.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 191074,
+      "sha256": "9d91c196bb93c7327839e12747afaeb99e2de780a6e992456b87c3fb0c55bcee"
+    },
+    {
+      "widgetId": "CE-W07",
+      "file": "CE-W07.html",
+      "name": "Unit Blueprint Builder",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": "CE-04 Unit Architect",
+      "humanGate": {
+        "role": "HoD",
+        "roles": [
+          "HoD",
+          "SMT",
+          "Principal",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.unit.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.termplan.approved"
+        ],
+        "requiredPayload": [
+          "weeks",
+          "tasks",
+          "subject"
+        ]
+      },
+      "studio": true,
+      "bytes": 171841,
+      "sha256": "9e30905c4a9da7eb2827c6d534055e76be7530847c15397e1ddd95fb0425d71c"
+    },
+    {
+      "widgetId": "CE-W08",
+      "file": "CE-W08.html",
+      "name": "Lesson Plan Generator",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": "CE-05 Lesson Plan Generator",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD",
+          "SMT",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.lesson.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.unit.approved",
+          "ce.timetable.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 189188,
+      "sha256": "dd5f6ef2e7e9314021fb497c46b4896c98cd0f098124367299ee236888a79b22"
+    },
+    {
+      "widgetId": "CE-W09",
+      "file": "CE-W09.html",
+      "name": "Assessment Task Designer",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": "CE-06 Assessment Designer",
+      "humanGate": {
+        "role": "HoD",
+        "roles": [
+          "HoD",
+          "SMT",
+          "Principal",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.task.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.termplan.approved",
+          "ce.unit.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 175466,
+      "sha256": "1b7dd9444d11b926ddc2415798f89c03cfa812d88145640d693a6255edfc893f"
+    },
+    {
+      "widgetId": "CE-W10",
+      "file": "CE-W10.html",
+      "name": "Rubric & Memo Builder",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": "CE-07 Rubric Builder",
+      "humanGate": {
+        "role": "HoD",
+        "roles": [
+          "HoD",
+          "SMT",
+          "Principal",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.memo.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.task.approved"
+        ],
+        "requiredPayload": [
+          "items",
+          "taskId"
+        ]
+      },
+      "studio": true,
+      "bytes": 155307,
+      "sha256": "b1bf56bda3144a0601a2aa5ff7107338a37a35c21c76751c766cd2017830974d"
+    },
+    {
+      "widgetId": "CE-W11",
+      "file": "CE-W11.html",
+      "name": "Differentiated Version Generator",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": "CE-08 Differentiation Agent",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD",
+          "SMT",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.versions.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.lesson.approved",
+          "ce.task.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 153725,
+      "sha256": "5a3926d6d9dcd815152784f633fdaf0e42009fb33e1f50d0912877744b2e8133"
+    },
+    {
+      "widgetId": "CE-W12",
+      "file": "CE-W12.html",
+      "name": "Daily Reflection Recorder & Processor",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.reflection.confirmed"
+      ],
+      "upstream": {
+        "events": [
+          "ce.day.published",
+          "ce.lesson.approved",
+          "ce.reflection.confirmed"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 157697,
+      "sha256": "2315e65108f0bcd162529a78054353a90e107e2cd35189f10e1443d58d1c7b22"
+    },
+    {
+      "widgetId": "CE-W13",
+      "file": "CE-W13.html",
+      "name": "Coverage Tracker & Auditor",
+      "module": "MOD-01 Curriculum Engine",
+      "version": "0.1.0",
+      "agentId": "CE-09",
+      "humanGate": {
+        "role": "HoD",
+        "roles": [
+          "HoD",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "ce.coverage.updated"
+      ],
+      "upstream": {
+        "events": [
+          "ce.termplan.approved",
+          "ce.reflection.confirmed"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 171369,
+      "sha256": "f5a88246a97dbb5de8ae3e02bd2a1523c15a728f27e5e1fafa6fcd6d9536e02a"
+    },
+    {
+      "widgetId": "DW-W01",
+      "file": "DW-W01.html",
+      "name": "Data Import & Field Mapper",
+      "module": "MOD-03 Data Collection & Warehouse",
+      "version": "0.1.0",
+      "agentId": "DW-01 Ingestion + DW-02 Schema Mapper",
+      "humanGate": {
+        "role": "School administrator",
+        "roles": [
+          "School administrator",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "dw.import.mapped"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 167135,
+      "sha256": "b2f575513a12650db419f1f2b4c12e5358c1eee36ad1fe208c9f836245afc0ce"
+    },
+    {
+      "widgetId": "DW-W02",
+      "file": "DW-W02.html",
+      "name": "Consent & Purpose Register",
+      "module": "MOD-03 Data Collection & Warehouse",
+      "version": "0.1.0",
+      "agentId": "DW-03 Consent Ledger Agent",
+      "humanGate": {
+        "role": "Information Officer",
+        "roles": [
+          "Information Officer",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "dw.consent.recorded"
+      ],
+      "upstream": {
+        "events": [
+          "dw.import.mapped",
+          "dw.consent.recorded"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 178321,
+      "sha256": "522a420877642f127b42f72cc9135a7e048268ac3f1c89bbed1c1260cfdd1128"
+    },
+    {
+      "widgetId": "DW-W03",
+      "file": "DW-W03.html",
+      "name": "De-identification Previewer",
+      "module": "MOD-03 Data Collection & Warehouse",
+      "version": "0.1.0",
+      "agentId": "DW-04 De-identification Agent",
+      "humanGate": {
+        "role": "School administrator",
+        "roles": [
+          "School administrator",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "dw.deid.ready"
+      ],
+      "upstream": {
+        "events": [
+          "dw.import.mapped"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 172653,
+      "sha256": "6e91bb87823bc16109dc60830e4b8fe0cc329528d492097c4a289f297822096e"
+    },
+    {
+      "widgetId": "DW-W04",
+      "file": "DW-W04.html",
+      "name": "Data Quality Sentinel",
+      "module": "MOD-03 Data Collection & Warehouse",
+      "version": "0.1.0",
+      "agentId": "DW-05 Data Quality Sentinel",
+      "humanGate": {
+        "role": "School administrator",
+        "roles": [
+          "School administrator",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "dw.quality.reported"
+      ],
+      "upstream": {
+        "events": [
+          "dw.import.mapped",
+          "dw.quality.reported"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 171913,
+      "sha256": "4d00ea5069cb1254292f910049d2f4c77d950f3a640ee575841f0ab567543108"
+    },
+    {
+      "widgetId": "DW-W05",
+      "file": "DW-W05.html",
+      "name": "Marks & Attendance Capture (SBA Record Sheet)",
+      "module": "MOD-03 Data Collection & Warehouse",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "dw.marks.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.termplan.approved",
+          "dw.import.mapped"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 193158,
+      "sha256": "4e5c18d686034d509d8d6ef8347512d2945517ed4b9b73111604d779256b3a89"
+    },
+    {
+      "widgetId": "DW-W06",
+      "file": "DW-W06.html",
+      "name": "Report Card Generator",
+      "module": "MOD-03 Data Collection & Warehouse",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD",
+          "Principal",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "dw.report.approved"
+      ],
+      "upstream": {
+        "events": [
+          "dw.marks.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 170507,
+      "sha256": "555035f2d0370bf3e9cd57826e963b16458a6f4204ee5e69559c9fb6dda21c3d"
+    },
+    {
+      "widgetId": "DW-W07",
+      "file": "DW-W07.html",
+      "name": "Learner-360 Viewer",
+      "module": "MOD-03 Data Collection & Warehouse",
+      "version": "0.1.0",
+      "agentId": "DW-06 Learner-360 Builder",
+      "humanGate": {
+        "role": "Role holding access",
+        "roles": [
+          "Role holding access",
+          "Information Officer",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "dw.view.logged"
+      ],
+      "upstream": {
+        "events": [
+          "dw.deid.ready",
+          "dw.consent.recorded",
+          "dw.view.logged"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 184730,
+      "sha256": "21bd59a3afa3b3704bb73cf0c4e101dc9025ce2b738e9c6a88a1ead4d50e669b"
+    },
+    {
+      "widgetId": "DW-W08",
+      "file": "DW-W08.html",
+      "name": "Insight Synthesiser",
+      "module": "MOD-03 Data Collection & Warehouse",
+      "version": "0.1.0",
+      "agentId": "DW-07 Insight Synthesiser",
+      "humanGate": {
+        "role": "School Management Team",
+        "roles": [
+          "School Management Team",
+          "Principal",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "dw.insight.approved"
+      ],
+      "upstream": {
+        "events": [
+          "dw.marks.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 173212,
+      "sha256": "4439cde6f931595f979e8575252cbb9a48db049c8754455a651d93f7932fe393"
+    },
+    {
+      "widgetId": "DW-W09",
+      "file": "DW-W09.html",
+      "name": "Next-Step Recommender",
+      "module": "MOD-03 Data Collection & Warehouse",
+      "version": "0.1.0",
+      "agentId": "DW-08 Next-Step Recommender",
+      "humanGate": {
+        "role": "Proposed owner",
+        "roles": [
+          "Proposed owner",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "dw.nextstep.approved"
+      ],
+      "upstream": {
+        "events": [
+          "dw.insight.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 165173,
+      "sha256": "480455610ec8d652e3c913447c2335a823edac1740953b210a5d635f059c165f"
+    },
+    {
+      "widgetId": "PD-W01",
+      "file": "PD-W01.html",
+      "name": "Coverage vs Pacing Analyst",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-01",
+      "humanGate": {
+        "role": "School Management Team",
+        "roles": [
+          "School Management Team"
+        ]
+      },
+      "emits": [
+        "pd.pacing.ready"
+      ],
+      "upstream": {
+        "events": [
+          "ce.coverage.updated"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 175659,
+      "sha256": "e3524d1d3586af0703a5499763fa10a07586ba93cb80d821edd959a88c97f41b"
+    },
+    {
+      "widgetId": "PD-W02",
+      "file": "PD-W02.html",
+      "name": "Assessment Quality Analyst",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-02",
+      "humanGate": {
+        "role": "Head of Department",
+        "roles": [
+          "Head of Department",
+          "School Management Team"
+        ]
+      },
+      "emits": [
+        "pd.itemquality.ready"
+      ],
+      "upstream": {
+        "events": [
+          "tb.quiz.completed",
+          "dw.marks.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 193339,
+      "sha256": "598b8597ef1b14501ab0dd217ddf20b43c222ac0c02091b0e9ac98fb44cc69f6"
+    },
+    {
+      "widgetId": "PD-W03",
+      "file": "PD-W03.html",
+      "name": "Observation Notes Analyser",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-03",
+      "humanGate": {
+        "role": "School Management Team",
+        "roles": [
+          "School Management Team"
+        ]
+      },
+      "emits": [
+        "pd.themes.ready"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 173438,
+      "sha256": "740eb2f40bb0358adc78b1306f273232474aea97d2f39fc85619d12ec4e809bd"
+    },
+    {
+      "widgetId": "PD-W04",
+      "file": "PD-W04.html",
+      "name": "Practice Signal Aggregator",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.2.0",
+      "agentId": "PD-04",
+      "humanGate": {
+        "role": "School Management Team",
+        "roles": [
+          "School Management Team"
+        ]
+      },
+      "emits": [
+        "pd.needprofile.ready"
+      ],
+      "upstream": {
+        "events": [
+          "pd.pacing.ready",
+          "pd.itemquality.ready",
+          "pd.themes.ready",
+          "pd.qmsneeds.ready",
+          "pd.cptdstatus.ready"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 191683,
+      "sha256": "8a3cd8d1f1219c219accf7be7a726643acea35f274bbe9ba21bc0f0a1b9c9085"
+    },
+    {
+      "widgetId": "PD-W05",
+      "file": "PD-W05.html",
+      "name": "PD Gap Detector",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.2.0",
+      "agentId": "PD-05",
+      "humanGate": {
+        "role": "School Management Team",
+        "roles": [
+          "School Management Team"
+        ]
+      },
+      "emits": [
+        "pd.gap.approved"
+      ],
+      "upstream": {
+        "events": [
+          "pd.needprofile.ready"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 182454,
+      "sha256": "c365d6cd91ba66c3181a76a97bfadb4df6b6c9e1e5c949ab844e59b028769dd1"
+    },
+    {
+      "widgetId": "PD-W06",
+      "file": "PD-W06.html",
+      "name": "Micro-Course Composer",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-06",
+      "humanGate": {
+        "role": "PD coordinator",
+        "roles": [
+          "PD coordinator",
+          "School Management Team"
+        ]
+      },
+      "emits": [
+        "pd.course.approved"
+      ],
+      "upstream": {
+        "events": [
+          "pd.gap.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 183488,
+      "sha256": "79db49d67935f22d7edb779211b34ad038ad4ed0f081d2bbade15437c15f16a0"
+    },
+    {
+      "widgetId": "PD-W07",
+      "file": "PD-W07.html",
+      "name": "Coaching Plan Builder",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-07",
+      "humanGate": {
+        "role": "Coach",
+        "roles": [
+          "Coach",
+          "Teacher"
+        ]
+      },
+      "emits": [
+        "pd.coaching.approved"
+      ],
+      "upstream": {
+        "events": [
+          "pd.gap.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 179041,
+      "sha256": "e03bc09adb2c573894e0c99c48706d92cb63d9114853549e304041805d687fc0"
+    },
+    {
+      "widgetId": "PD-W08",
+      "file": "PD-W08.html",
+      "name": "CPTD & PD Journal",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-08",
+      "humanGate": {
+        "role": "PD coordinator",
+        "roles": [
+          "PD coordinator",
+          "Teacher"
+        ]
+      },
+      "emits": [
+        "pd.journal.updated"
+      ],
+      "upstream": {
+        "events": [
+          "pd.coaching.approved",
+          "pd.course.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 177957,
+      "sha256": "b896c3fc5e5808e5982c46deab0c523d506db9dab9aa6fe7ad87b9ea473d5b74"
+    },
+    {
+      "widgetId": "PD-W09",
+      "file": "PD-W09.html",
+      "name": "CPTD Points Schedule Register",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-09",
+      "humanGate": {
+        "role": "PD coordinator",
+        "roles": [
+          "PD coordinator",
+          "School Management Team"
+        ]
+      },
+      "emits": [
+        "pd.schedule.registered"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 176769,
+      "sha256": "b0b65fafaa0ade3e3d6cd306bac108ef7237238a8535e021a1cfb72e7f888961"
+    },
+    {
+      "widgetId": "PD-W10",
+      "file": "PD-W10.html",
+      "name": "CPTD Tick Sheet & Year Totals",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-10",
+      "humanGate": {
+        "role": "PD coordinator",
+        "roles": [
+          "PD coordinator",
+          "Teacher"
+        ]
+      },
+      "emits": [
+        "pd.cptd.ticks.approved"
+      ],
+      "upstream": {
+        "events": [
+          "pd.schedule.registered"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 191875,
+      "sha256": "20580ec80b70ff1409b2893633b4a7e0443fd3de8bbe51fda8c2ffb18e2c1e14"
+    },
+    {
+      "widgetId": "PD-W11",
+      "file": "PD-W11.html",
+      "name": "CPTD Activity Record Sheet",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-11",
+      "humanGate": {
+        "role": "PD coordinator",
+        "roles": [
+          "PD coordinator",
+          "Teacher"
+        ]
+      },
+      "emits": [
+        "pd.cptd.records.approved"
+      ],
+      "upstream": {
+        "events": [
+          "pd.cptd.ticks.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 179820,
+      "sha256": "667162aaa21ff95bfdb028765007b7155c7e3342b4e906bc36ac11b55c72d0c1"
+    },
+    {
+      "widgetId": "PD-W12",
+      "file": "PD-W12.html",
+      "name": "School CPTD Status Roll-up",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-12",
+      "humanGate": {
+        "role": "School Management Team",
+        "roles": [
+          "School Management Team"
+        ]
+      },
+      "emits": [
+        "pd.cptdstatus.ready"
+      ],
+      "upstream": {
+        "events": [
+          "pd.cptd.records.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 208603,
+      "sha256": "499240c24e01fbbd6146d17e369383dbca2dfc757f6def6c08815a025f0b8e12"
+    },
+    {
+      "widgetId": "PD-W13",
+      "file": "PD-W13.html",
+      "name": "QMS Appraisal Sheet Checker",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-13",
+      "humanGate": {
+        "role": "Appraiser (SMT member)",
+        "roles": [
+          "Appraiser (SMT member)",
+          "Principal",
+          "Circuit Manager",
+          "Educator (own self-appraisal)"
+        ]
+      },
+      "emits": [
+        "pd.qms.sheet.approved"
+      ],
+      "upstream": {
+        "events": [
+          "pd.qms.workplan.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 215199,
+      "sha256": "8ff860b715aa25e3f6dd3ec193cc76520e11fa7931cc062c45e3ae5f107c5f6f"
+    },
+    {
+      "widgetId": "PD-W14",
+      "file": "PD-W14.html",
+      "name": "QMS Composite Score Sheet",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-14",
+      "humanGate": {
+        "role": "Principal",
+        "roles": [
+          "Principal",
+          "Circuit Manager"
+        ]
+      },
+      "emits": [
+        "pd.qms.composite.approved"
+      ],
+      "upstream": {
+        "events": [
+          "pd.qms.sheet.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 231306,
+      "sha256": "f20bac6b73319394e32f13154eca1677a1cf1952a223c13ed88e639aa4b64742"
+    },
+    {
+      "widgetId": "PD-W15",
+      "file": "PD-W15.html",
+      "name": "QMS Work Plan Checker",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-15",
+      "humanGate": {
+        "role": "Immediate supervisor (SMT)",
+        "roles": [
+          "Immediate supervisor (SMT)",
+          "Principal",
+          "Circuit Manager"
+        ]
+      },
+      "emits": [
+        "pd.qms.workplan.approved"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 217599,
+      "sha256": "ef1dc8b3e44788054a9942a10ecd6a82c6437891e57230a84efe529ec80129b7"
+    },
+    {
+      "widgetId": "PD-W16",
+      "file": "PD-W16.html",
+      "name": "QMS Management Plan and Calendar",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-16",
+      "humanGate": {
+        "role": "School Management Team",
+        "roles": [
+          "School Management Team",
+          "Principal"
+        ]
+      },
+      "emits": [
+        "pd.qms.plan.approved"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 215019,
+      "sha256": "693a938933c449cff6a47f27b0479598efc8e241c4140ee84e8516625aa936db"
+    },
+    {
+      "widgetId": "PD-W17",
+      "file": "PD-W17.html",
+      "name": "QMS Lesson Observation Record",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-17",
+      "humanGate": {
+        "role": "Immediate supervisor (SMT)",
+        "roles": [
+          "Immediate supervisor (SMT)",
+          "Principal",
+          "Circuit Manager"
+        ]
+      },
+      "emits": [
+        "pd.qms.observation.approved"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 213945,
+      "sha256": "dd0ce724bf9cb186c4c99c9e226375abea6df4ff92e15d339920af9cbf1b060a"
+    },
+    {
+      "widgetId": "PD-W18",
+      "file": "PD-W18.html",
+      "name": "QMS School Summative Scores (E1)",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-18",
+      "humanGate": {
+        "role": "Principal",
+        "roles": [
+          "Principal"
+        ]
+      },
+      "emits": [
+        "pd.qms.summative.approved"
+      ],
+      "upstream": {
+        "events": [
+          "pd.qms.composite.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 251668,
+      "sha256": "6707ada99ed02aa08fe00791f04710c78500670c9c3aad9d43f3b53e4e87d889"
+    },
+    {
+      "widgetId": "PD-W19",
+      "file": "PD-W19.html",
+      "name": "QMS Development Needs Profile",
+      "module": "MOD-05 Teaching Analytics & PD Studio",
+      "version": "0.1.0",
+      "agentId": "PD-19",
+      "humanGate": {
+        "role": "School Management Team",
+        "roles": [
+          "School Management Team"
+        ]
+      },
+      "emits": [
+        "pd.qmsneeds.ready"
+      ],
+      "upstream": {
+        "events": [
+          "pd.qms.sheet.approved",
+          "pd.qms.observation.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 442501,
+      "sha256": "b1a552f5ca94f9b490217fa4b15bcaf9ecbfe27721de117326bea715bbf79afd"
+    },
+    {
+      "widgetId": "PF-W01",
+      "file": "PF-W01.html",
+      "name": "Template Ingester & Slot Mapper",
+      "module": "Platform",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "HoD",
+        "roles": [
+          "HoD",
+          "SMT",
+          "Principal"
+        ]
+      },
+      "emits": [
+        "template.mapped"
+      ],
+      "upstream": [],
+      "studio": true,
+      "bytes": 141819,
+      "sha256": "24d9ac947a144ced762e6197931eaba361c009c9f3ceec80149aa74f9f7df601"
+    },
+    {
+      "widgetId": "PF-W02",
+      "file": "PF-W02.html",
+      "name": "Source Document Ingester",
+      "module": "Platform",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "SMT",
+        "roles": [
+          "SMT",
+          "HoD",
+          "Principal"
+        ]
+      },
+      "emits": [
+        "source.registered"
+      ],
+      "upstream": [],
+      "studio": true,
+      "bytes": 135725,
+      "sha256": "2be158b8d11c655aec2edeff29096f5fc15e40ca55e1006c33c33ad03c8b243c"
+    },
+    {
+      "widgetId": "PF-W03",
+      "file": "PF-W03.html",
+      "name": "Approval Gate Inbox",
+      "module": "Platform",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "The role named on each item",
+        "roles": [
+          "Teacher",
+          "HoD",
+          "SBST chair",
+          "SMT",
+          "Principal",
+          "Information officer",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "gate.decided"
+      ],
+      "upstream": [],
+      "studio": true,
+      "bytes": 146434,
+      "sha256": "676e7d5f9705ffa491c02cbdd6460a8cecbafb2117f7677cdedc100677b287d8"
+    },
+    {
+      "widgetId": "PF-W04",
+      "file": "PF-W04.html",
+      "name": "Brain Memory Browser",
+      "module": "Platform Foundation",
+      "version": "0.1.1",
+      "agentId": "PF-04",
+      "humanGate": {
+        "role": "School Management Team",
+        "roles": [
+          "School Management Team",
+          "Principal"
+        ]
+      },
+      "emits": [
+        "brain.superseded"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 178720,
+      "sha256": "3651ea160a04f946886d205752d5b5a043c09af85b2035a4e63c20aaa0f17337"
+    },
+    {
+      "widgetId": "PF-W05",
+      "file": "PF-W05.html",
+      "name": "Edit Capture & Diff Viewer",
+      "module": "Platform",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD",
+          "SMT",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "edit.captured"
+      ],
+      "upstream": [],
+      "studio": true,
+      "bytes": 135474,
+      "sha256": "5627af96b01185f3d5a85791740dbe0d3b85b1ea958721829d4bd63c2b40cbe4"
+    },
+    {
+      "widgetId": "PF-W06",
+      "file": "PF-W06.html",
+      "name": "Widget Wiring Board",
+      "module": "Platform",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Platform administrator",
+        "roles": [
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "wiring.tested"
+      ],
+      "upstream": [],
+      "studio": true,
+      "bytes": 425288,
+      "sha256": "18a1491d22e084d786aedbc4894e1994d2bcf4d62576c8877973f86c07b2d8c7"
+    },
+    {
+      "widgetId": "PF-W07",
+      "file": "PF-W07.html",
+      "name": "POPIA Check Panel",
+      "module": "Platform",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Information officer",
+        "roles": [
+          "Information officer",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "popia.checked"
+      ],
+      "upstream": [],
+      "studio": true,
+      "bytes": 138237,
+      "sha256": "5abf0674b8b05bf51a31e4e39e798c6e9d8cead2dc79377eb6794befbccc2496"
+    },
+    {
+      "widgetId": "SA-W01",
+      "file": "SA-W01.html",
+      "name": "Universal Screening Capture",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-01 Universal Screener",
+      "humanGate": {
+        "role": "School-Based Support Team",
+        "roles": [
+          "School-Based Support Team",
+          "SBST chairperson",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "sa.screening.recorded"
+      ],
+      "upstream": {
+        "events": [
+          "dw.import.mapped"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 171401,
+      "sha256": "bdac44943a00554360c96da7246c780716a19262449d9770ceaf2caeffc8aaf7"
+    },
+    {
+      "widgetId": "SA-W02",
+      "file": "SA-W02.html",
+      "name": "Core-Health (Tier 1) Analyst",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-02 Core-Health Analyst",
+      "humanGate": {
+        "role": "School-Based Support Team",
+        "roles": [
+          "School-Based Support Team",
+          "SBST chairperson",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "sa.core.assessed"
+      ],
+      "upstream": {
+        "events": [
+          "sa.screening.recorded"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 169205,
+      "sha256": "81e752eba9140c74d3c243f8d2460a570c6d86cf2cb04112d99027f9f1d9cfb4"
+    },
+    {
+      "widgetId": "SA-W03",
+      "file": "SA-W03.html",
+      "name": "Tier Recommender",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-03 Tier Recommender",
+      "humanGate": {
+        "role": "School-Based Support Team",
+        "roles": [
+          "School-Based Support Team",
+          "SBST chairperson",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "sa.tier.proposed"
+      ],
+      "upstream": {
+        "events": [
+          "sa.screening.recorded",
+          "sa.reading.scored"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 180383,
+      "sha256": "7ef925f8d23d1b327f738cf3cfaaaee5754b0f0dbbb2b8dbc63037d93d53de58"
+    },
+    {
+      "widgetId": "SA-W04",
+      "file": "SA-W04.html",
+      "name": "Early-Warning Board",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-04 Early Warning Agent",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "School-Based Support Team",
+          "SBST chairperson",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "sa.signal.raised"
+      ],
+      "upstream": {
+        "events": [
+          "dw.marks.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 175578,
+      "sha256": "fe4db2f5d4e3b1f79341b1e1399eb6aa0c611d19c205072b959fa8367364f058"
+    },
+    {
+      "widgetId": "SA-W05",
+      "file": "SA-W05.html",
+      "name": "SIAS Learner Profile & Support-Needs Form Filler",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "(none: mirrors the official DBE forms)",
+      "humanGate": {
+        "role": "School-Based Support Team",
+        "roles": [
+          "School-Based Support Team",
+          "SBST chairperson"
+        ]
+      },
+      "emits": [
+        "sa.form.completed"
+      ],
+      "upstream": {
+        "events": [
+          "sa.decision.ratified",
+          "template.mapped",
+          "dw.consent.recorded",
+          "dw.import.mapped"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 194631,
+      "sha256": "cddd729359fd91e4d83c3f275bc1203cde565afbfd17b7808e926b63bcec8d68"
+    },
+    {
+      "widgetId": "SA-W06",
+      "file": "SA-W06.html",
+      "name": "Intervention & Support Plan Builder",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-05 Intervention Planner",
+      "humanGate": {
+        "role": "School-Based Support Team",
+        "roles": [
+          "School-Based Support Team",
+          "SBST chairperson"
+        ]
+      },
+      "emits": [
+        "sa.plan.approved"
+      ],
+      "upstream": {
+        "events": [
+          "sa.decision.ratified",
+          "sa.form.completed"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 184468,
+      "sha256": "1f843d0b9f832b486b68b7a279c7e3f7a4aa5398a94bead45862fd05f6a375e0"
+    },
+    {
+      "widgetId": "SA-W07",
+      "file": "SA-W07.html",
+      "name": "Progress Monitor",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-06 Progress Monitor",
+      "humanGate": {
+        "role": "School-Based Support Team",
+        "roles": [
+          "School-Based Support Team",
+          "SBST chairperson"
+        ]
+      },
+      "emits": [
+        "sa.progress.proposed"
+      ],
+      "upstream": {
+        "events": [
+          "sa.plan.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 168705,
+      "sha256": "3a83679fcd2503ff7ee261bb61d4aa9af894ac23e7bf3772539554d2145214dc"
+    },
+    {
+      "widgetId": "SA-W08",
+      "file": "SA-W08.html",
+      "name": "Fidelity Log",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-07 Fidelity Checker",
+      "humanGate": {
+        "role": "School-Based Support Team",
+        "roles": [
+          "School-Based Support Team",
+          "SBST chairperson"
+        ]
+      },
+      "emits": [
+        "sa.fidelity.logged"
+      ],
+      "upstream": {
+        "events": [
+          "sa.plan.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 168142,
+      "sha256": "8212265df31e22d24e2a8d5f29d4628ae302397b0dabc3cfe993341c4bf991fd"
+    },
+    {
+      "widgetId": "SA-W09",
+      "file": "SA-W09.html",
+      "name": "SBST Meeting Scribe",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-08 SBST Meeting Scribe",
+      "humanGate": {
+        "role": "SBST chairperson",
+        "roles": [
+          "SBST chairperson"
+        ]
+      },
+      "emits": [
+        "sa.decision.ratified"
+      ],
+      "upstream": {
+        "events": [
+          "sa.tier.proposed",
+          "sa.signal.raised"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 177935,
+      "sha256": "7186db28227630f1a9e683736836191547b8a45792b1f2e3a57c8d76a9d1a6a0"
+    },
+    {
+      "widgetId": "SA-W10",
+      "file": "SA-W10.html",
+      "name": "SIAS Referral Pack Compiler",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-09 SIAS Compiler",
+      "humanGate": {
+        "role": "SBST chairperson",
+        "roles": [
+          "SBST chairperson"
+        ]
+      },
+      "emits": [
+        "sa.pack.ready"
+      ],
+      "upstream": {
+        "events": [
+          "sa.decision.ratified",
+          "sa.form.completed",
+          "sa.plan.approved",
+          "sa.progress.proposed"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 190936,
+      "sha256": "1a78c24c577ff02d16c13fcb5a75691314bdce30e5da4d347ea1715b628ba32d"
+    },
+    {
+      "widgetId": "SA-W11",
+      "file": "SA-W11.html",
+      "name": "Parent Progress Letter Writer",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-10 Parent Report Writer",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "School-Based Support Team",
+          "SBST chairperson"
+        ]
+      },
+      "emits": [
+        "sa.letter.approved"
+      ],
+      "upstream": {
+        "events": [
+          "sa.progress.proposed"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 173238,
+      "sha256": "a88343b62a495e7e6d947b05ade523893430cab08e9c3fd86a2629e92cce8d70"
+    },
+    {
+      "widgetId": "SA-W12",
+      "file": "SA-W12.html",
+      "name": "Early-Grade Reading Screening Calculator",
+      "module": "MOD-05 Screening & Support (SIAS)",
+      "version": "0.1.0",
+      "agentId": "AC-01 Universal Screener",
+      "humanGate": {
+        "role": "School-Based Support Team",
+        "roles": [
+          "School-Based Support Team",
+          "SBST chairperson",
+          "Platform administrator"
+        ]
+      },
+      "emits": [
+        "sa.reading.scored"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 163440,
+      "sha256": "5d9f9d841c4564bd0a0081db6155ed1d6db64dc53149157536b73bf9df4ad6c9"
+    },
+    {
+      "widgetId": "TB-W01",
+      "file": "TB-W01.html",
+      "name": "Worksheet Builder",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-01",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.worksheet.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.lesson.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 174379,
+      "sha256": "aa90cece56edf856e3318f27d39ac514a500e86be243d74d86f4e416460a3d6a"
+    },
+    {
+      "widgetId": "TB-W02",
+      "file": "TB-W02.html",
+      "name": "Reading Passage Generator",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-03",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.passage.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.lesson.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 178750,
+      "sha256": "8335328ccd5cf8e562db784bc69691be7bdcb7becb99d597050dd69c5a90fcaf"
+    },
+    {
+      "widgetId": "TB-W03",
+      "file": "TB-W03.html",
+      "name": "Assessment Item Writer",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-04",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.items.approved"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 173665,
+      "sha256": "0f27d895e06d3fda13686b6cde53d229ab23c7bd4bcba7f052c1ad557802da32"
+    },
+    {
+      "widgetId": "TB-W04",
+      "file": "TB-W04.html",
+      "name": "Memo & Marking Guide",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-05",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.memo.approved"
+      ],
+      "upstream": {
+        "events": [
+          "tb.items.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 177254,
+      "sha256": "c964ce6a9392664569ce0ac2e882f65ffdec6713df3f72ccde669d3811f1faa4"
+    },
+    {
+      "widgetId": "TB-W05",
+      "file": "TB-W05.html",
+      "name": "Board & Slide Deck Builder",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-02",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.deck.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.lesson.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 172801,
+      "sha256": "1258bb2c03c5cb076251da7701cc57e20b588e8fe8f6e7e89474bbf6302a406f"
+    },
+    {
+      "widgetId": "TB-W06",
+      "file": "TB-W06.html",
+      "name": "Home-Language Adapter",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-06",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "Fluent human reviewer"
+        ]
+      },
+      "emits": [
+        "tb.homelang.approved"
+      ],
+      "upstream": {
+        "events": [
+          "tb.items.approved",
+          "tb.memo.approved",
+          "tb.worksheet.approved",
+          "tb.passage.approved",
+          "tb.deck.approved",
+          "tb.remediation.approved",
+          "tb.extension.approved",
+          "tb.lowresource.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 175314,
+      "sha256": "7a37ddb63c89cc42bf999fe76c130a7b31d153e160c1fc1641915bb270be9d9d"
+    },
+    {
+      "widgetId": "TB-W07",
+      "file": "TB-W07.html",
+      "name": "Accessibility Adapter",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-07",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.access.approved"
+      ],
+      "upstream": {
+        "events": [
+          "tb.items.approved",
+          "tb.memo.approved",
+          "tb.worksheet.approved",
+          "tb.passage.approved",
+          "tb.deck.approved",
+          "tb.remediation.approved",
+          "tb.extension.approved",
+          "tb.lowresource.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 177084,
+      "sha256": "4e37405fe9cb965dd7afdc48feeeb67f75ee2445199649e7e676c5f225db8134"
+    },
+    {
+      "widgetId": "TB-W08",
+      "file": "TB-W08.html",
+      "name": "Remediation Pack Builder",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-08",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "School-Based Support Team",
+          "Teacher"
+        ]
+      },
+      "emits": [
+        "tb.remediation.approved"
+      ],
+      "upstream": {
+        "events": [
+          "sa.plan.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 178331,
+      "sha256": "8e39192a4391a483d8a00db240d9f3c9e091471f35bab3458e7ad5c95eb6879d"
+    },
+    {
+      "widgetId": "TB-W09",
+      "file": "TB-W09.html",
+      "name": "Extension & Enrichment Pack",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-09",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.extension.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.lesson.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 174423,
+      "sha256": "5f400f378e4679bd65f279b8d9eabba25b27355a3bc093e370dd65ceafca3548"
+    },
+    {
+      "widgetId": "TB-W10",
+      "file": "TB-W10.html",
+      "name": "Resource-Light Activity Planner",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-10",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.lowresource.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.lesson.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 178078,
+      "sha256": "d76e2377ca4548dc622a51f5be919cdd9bfacfe65f5be7222021f3f2c905ccb6"
+    },
+    {
+      "widgetId": "TB-W11",
+      "file": "TB-W11.html",
+      "name": "Visual Brief Writer",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-11",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.visualbrief.approved"
+      ],
+      "upstream": {
+        "events": [
+          "ce.lesson.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 172153,
+      "sha256": "73d93b70f7fcf8bb7435ca2fb51f1e4d204963e3a95bbbbc51d2697abfffd0b8"
+    },
+    {
+      "widgetId": "TB-W12",
+      "file": "TB-W12.html",
+      "name": "Low-Tech Card Quiz",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-12",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.quiz.completed"
+      ],
+      "upstream": {
+        "events": [
+          "tb.items.approved"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 171740,
+      "sha256": "76b2e3a9bb0df21db54bafe785d15992e9aa8c8fa10aca001e1dcaf871ee89e9"
+    },
+    {
+      "widgetId": "TB-W13",
+      "file": "TB-W13.html",
+      "name": "Learner Rewards",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": "TB-13",
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.reward.updated"
+      ],
+      "upstream": {
+        "events": [
+          "tb.quiz.completed",
+          "tb.reward.updated"
+        ],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 174315,
+      "sha256": "642681b1b18aa5bd519499241e9c37195c06e5bdea225afb243da3f43b3f30c4"
+    },
+    {
+      "widgetId": "TB-W14",
+      "file": "TB-W14.html",
+      "name": "Class Register and Lunch Count",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.register.recorded"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 225538,
+      "sha256": "33a025f9682589375a9110628fe54e2e91f5f3a3ce7cf4b8192d4dad86ef7f7e"
+    },
+    {
+      "widgetId": "TB-W15",
+      "file": "TB-W15.html",
+      "name": "Random Student Picker",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.picker.session"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 224009,
+      "sha256": "ac73e59b9631ca03d6e3c6908ea83e34c28d6c375f01c0a654d25e5d04d011b6"
+    },
+    {
+      "widgetId": "TB-W16",
+      "file": "TB-W16.html",
+      "name": "Random Group Maker",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.groups.formed"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 226697,
+      "sha256": "476f9821a8843d892a08523dbaf57993618ecab5f993dd3cbe757f96fb545fb0"
+    },
+    {
+      "widgetId": "TB-W17",
+      "file": "TB-W17.html",
+      "name": "Rotations Timer",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.rotations.run"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 225035,
+      "sha256": "c54693ef4c638a67c5bf581cfb72698bc1c6f039f1cd84c56ab1a4559089d0dd"
+    },
+    {
+      "widgetId": "TB-W18",
+      "file": "TB-W18.html",
+      "name": "Score Keeper",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.scores.recorded"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 223045,
+      "sha256": "ca80f05d03a4de9d12feb7176570c1a1eeebee7817928d616f1774e2340406f9"
+    },
+    {
+      "widgetId": "TB-W19",
+      "file": "TB-W19.html",
+      "name": "Noise Levels",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.noise.session"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 223509,
+      "sha256": "5d1a81bc4cdb6e710221690edc2a27fa1a86a6be966b6c0061da69cf37569bf3"
+    },
+    {
+      "widgetId": "TB-W20",
+      "file": "TB-W20.html",
+      "name": "Survey and Graph",
+      "module": "MOD-04 Teaching & Learning Toolbox",
+      "version": "0.1.0",
+      "agentId": null,
+      "humanGate": {
+        "role": "Teacher",
+        "roles": [
+          "Teacher",
+          "HoD"
+        ]
+      },
+      "emits": [
+        "tb.survey.tallied"
+      ],
+      "upstream": {
+        "events": [],
+        "requiredPayload": []
+      },
+      "studio": true,
+      "bytes": 223190,
+      "sha256": "734e8a31cba6ca08a54b61f94ed3a28cde89798897c377039a83e8fc65baf831"
+    }
+  ]
+}

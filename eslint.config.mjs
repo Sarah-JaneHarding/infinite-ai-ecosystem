@@ -36,6 +36,9 @@ export default tseslint.config(
       // hand-edited, and never reviewed. Linting it produces thousands of errors about
       // code nobody wrote.
       'packages/db/generated/**',
+      // Browser-side source for the single-file widgets (tools/widget-studio). It runs in a
+      // page, not in this codebase's runtime, and is covered by the widget tests.
+      'tools/widget-studio/**',
     ],
   },
 

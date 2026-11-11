@@ -646,6 +646,12 @@ export const AC11Input = z.object({
   /** Age in days of the most recently collected data point across all domains. */
   mostRecentDataAgeInDays: z.number().int().min(0),
   /**
+   * The oldest data (in days) this school accepts before a rollup counts as stale. Each
+   * school sets its own; the platform supplies no default, so a missing value is rejected
+   * at the schema rather than guessed.
+   */
+  staleAfterDays: z.number().int().min(1),
+  /**
    * True when any sub-bucket in this scope was suppressed by MIN_COHORT_SIZE during
    * rollup computation (see `packages/analytics/src/reporting.ts`).
    */

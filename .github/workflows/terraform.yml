@@ -71,9 +71,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
@@ -105,7 +105,7 @@ jobs:
       TF_VAR_alert_email: ${{ vars.TF_VAR_ALERT_EMAIL }}
       TF_VAR_langfuse_init_user_email: ${{ vars.TF_VAR_LANGFUSE_INIT_USER_EMAIL }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Verify required repository variables
         run: |
@@ -122,12 +122,12 @@ jobs:
             exit 1
           fi
 
-      - uses: aws-actions/configure-aws-credentials@v6.2.3
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
@@ -169,7 +169,7 @@ jobs:
         continue-on-error: true
 
       - name: Post plan as PR comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -247,7 +247,7 @@ jobs:
       TF_VAR_alert_email: ${{ vars.TF_VAR_ALERT_EMAIL }}
       TF_VAR_langfuse_init_user_email: ${{ vars.TF_VAR_LANGFUSE_INIT_USER_EMAIL }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Verify required repository variables
         run: |
@@ -264,12 +264,12 @@ jobs:
             exit 1
           fi
 
-      - uses: aws-actions/configure-aws-credentials@v6.2.3
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ env.TF_VERSION }}
 

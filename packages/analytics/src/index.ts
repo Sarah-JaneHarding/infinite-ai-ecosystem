@@ -112,6 +112,8 @@ export {
   type VisibleDistribution,
 } from './reporting.js';
 
+export { screenRollup } from './data-screener.js';
+
 export {
   BIAS_RATIO_THRESHOLD,
   MIN_POPULATION_FOR_BIAS_CHECK,

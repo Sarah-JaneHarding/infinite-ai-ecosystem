@@ -55,6 +55,7 @@ export { AC07Contract } from './mod-02/AC-07.contract.js';
 export { AC08Contract } from './mod-02/AC-08.contract.js';
 export { AC09Contract } from './mod-02/AC-09.contract.js';
 export { AC10Contract } from './mod-02/AC-10.contract.js';
+export { AC11Contract } from './mod-02/AC-11.contract.js';
 
 export { DW01Contract } from './mod-03/DW-01.contract.js';
 export { DW02Contract } from './mod-03/DW-02.contract.js';

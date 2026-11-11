@@ -1,0 +1,2654 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font:
+          14px -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: #faf9f5;
+        color: #141413;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden]:not([hidden='until-found' i]) {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    INFINITE-AI Ecosystem Website
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INFINITE-AI · The Educator's Ecosystem</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+    />
+    <style>
+      :root {
+        --ink: #0a0e27;
+        --ink-2: #141937;
+        --ink-3: #1d2350;
+        --violet: #6366f1;
+        --violet-2: #8b5cf6;
+        --amber: #f59e0b;
+        --amber-2: #fbbf24;
+        --emerald: #10b981;
+        --rose: #f43f5e;
+        --cyan: #22d3ee;
+        --cream: #fbf9f4;
+        --paper: #ffffff;
+        --line: rgba(10, 14, 39, 0.08);
+        --line-dark: rgba(255, 255, 255, 0.1);
+        --muted: #64748b;
+        --glow: 0 0 40px rgba(99, 102, 241, 0.25);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: var(--cream);
+        color: var(--ink);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: 'Space Grotesk', sans-serif;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+      a {
+        color: inherit;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      [contenteditable='true'] {
+        outline: none;
+        transition: background 0.2s;
+      }
+      [contenteditable='true']:hover {
+        background: rgba(245, 158, 11, 0.08);
+        border-radius: 4px;
+      }
+      [contenteditable='true']:focus {
+        background: rgba(245, 158, 11, 0.12);
+        border-radius: 4px;
+        box-shadow: 0 0 0 2px var(--amber);
+      }
+
+      /* SPECTRUM RULE */
+      .spectrum-rule {
+        position: sticky;
+        top: 0;
+        z-index: 101;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--violet),
+          var(--amber),
+          var(--emerald),
+          var(--cyan),
+          var(--violet-2),
+          var(--violet)
+        );
+        background-size: 200% 100%;
+        animation: spectrumFlow 8s linear infinite;
+      }
+      @keyframes spectrumFlow {
+        to {
+          background-position: 200% 0;
+        }
+      }
+
+      /* NAV */
+      nav.top {
+        position: sticky;
+        top: 4px;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 40px;
+        background: rgba(10, 14, 39, 0.92);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--line-dark);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        font-family: 'Space Grotesk';
+        cursor: pointer;
+        color: #fff;
+        text-decoration: none;
+        background: none;
+        border: none;
+        font-size: 15px;
+      }
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 24%;
+        overflow: hidden;
+        box-shadow: var(--glow);
+        flex-shrink: 0;
+      }
+      .brand-mark img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .nav-links {
+        display: flex;
+        gap: 22px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .nav-links button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: 'Inter';
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.62);
+        padding: 6px 2px;
+        position: relative;
+        transition: color 0.2s;
+      }
+      .nav-links button:hover {
+        color: #fff;
+      }
+      .nav-links button.active {
+        color: #fff;
+      }
+      .nav-links button.active::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--amber);
+        border-radius: 2px;
+      }
+      .nav-cta {
+        padding: 8px 16px;
+        border-radius: 100px;
+        background: var(--amber);
+        color: var(--ink) !important;
+        font-weight: 700 !important;
+      }
+      .nav-cta:hover {
+        background: var(--amber-2) !important;
+        color: var(--ink) !important;
+      }
+      .nav-cta.active::after {
+        display: none;
+      }
+      .nav-toggle {
+        display: none;
+        background: none;
+        border: 1px solid var(--line-dark);
+        color: #fff;
+        border-radius: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .btn {
+        padding: 11px 20px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s;
+        font-family: 'Inter';
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-primary {
+        background: var(--ink);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--violet);
+        transform: translateY(-1px);
+      }
+      .btn-amber {
+        background: var(--amber);
+        color: var(--ink);
+      }
+      .btn-amber:hover {
+        background: var(--amber-2);
+        transform: translateY(-1px);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .btn-ghost:hover {
+        border-color: #fff;
+      }
+      .btn-ghost-dark {
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .btn-ghost-dark:hover {
+        border-color: var(--ink);
+      }
+
+      /* PAGES */
+      .page {
+        display: none;
+      }
+      .page.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      section {
+        padding: 100px 40px;
+        position: relative;
+      }
+      .container {
+        max-width: 1240px;
+        margin: 0 auto;
+      }
+      .section-head {
+        margin: 0 auto 56px;
+        max-width: 760px;
+        text-align: center;
+      }
+      .section-num {
+        font-family: 'Space Mono', monospace;
+        font-size: 13px;
+        color: var(--violet);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        margin-bottom: 12px;
+      }
+      .dark-section .section-num {
+        color: var(--amber-2);
+      }
+      .section-head h2 {
+        font-size: clamp(30px, 4vw, 50px);
+        margin-bottom: 18px;
+      }
+      .section-head p {
+        font-size: 17px;
+        color: var(--muted);
+      }
+      .dark-section .section-head p {
+        color: rgba(255, 255, 255, 0.72);
+      }
+      .dark-section {
+        background: var(--ink);
+        color: rgba(255, 255, 255, 0.86);
+      }
+      .dark-section h2,
+      .dark-section h3,
+      .dark-section h4 {
+        color: #fff;
+      }
+      .light-section {
+        background: var(--cream);
+      }
+      .paper-section {
+        background: var(--paper);
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .reveal.in {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* HERO */
+      .hero {
+        min-height: auto;
+        padding: 110px 40px 70px;
+        position: relative;
+        background:
+          radial-gradient(circle at 18% 25%, rgba(99, 102, 241, 0.35), transparent 55%),
+          radial-gradient(circle at 85% 75%, rgba(245, 158, 11, 0.22), transparent 55%),
+          var(--ink);
+        color: #fff;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-start;
+      }
+      .hero-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+        max-width: 900px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .hero-grid .hero-sub,
+      .hero-grid .hero-cta,
+      .hero-grid .hero-meta {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .hero-grid .hero-cta,
+      .hero-grid .hero-meta {
+        justify-content: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 100px;
+        background: rgba(245, 158, 11, 0.14);
+        color: var(--amber-2);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+        font-family: 'Space Mono', monospace;
+      }
+      .eyebrow::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--amber-2);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(1.4);
+        }
+      }
+      .hero h1 {
+        font-size: clamp(38px, 5.6vw, 72px);
+        font-weight: 700;
+        margin-bottom: 22px;
+        color: #fff;
+      }
+      .hero h1 .accent {
+        background: linear-gradient(135deg, var(--violet-2), var(--amber));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-style: italic;
+      }
+      .hero-sub {
+        font-size: 19px;
+        color: rgba(255, 255, 255, 0.76);
+        max-width: 560px;
+        margin-bottom: 32px;
+      }
+      .hero-cta {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 44px;
+      }
+      .hero-meta {
+        display: flex;
+        gap: 32px;
+        padding-top: 28px;
+        border-top: 1px solid rgba(255, 255, 255, 0.14);
+        flex-wrap: wrap;
+      }
+      .meta-item {
+        display: flex;
+        flex-direction: column;
+      }
+      .meta-num {
+        font-family: 'Space Grotesk';
+        font-size: 28px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .meta-lbl {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.55);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      /* BRAIN VISUAL */
+      .brain-visual {
+        position: relative;
+        height: 480px;
+        width: 100%;
+        display: grid;
+        place-items: center;
+        margin-bottom: 8px;
+      }
+      .brain-core {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      .brain-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 1px dashed rgba(99, 102, 241, 0.35);
+        animation: spin 40s linear infinite;
+        z-index: 0;
+      }
+      .brain-ring.r2 {
+        inset: 30px;
+        border-color: rgba(245, 158, 11, 0.35);
+        animation-duration: 30s;
+        animation-direction: reverse;
+      }
+      .brain-ring.r3 {
+        inset: 60px;
+        border-color: rgba(16, 185, 129, 0.4);
+        animation-duration: 20s;
+      }
+      .brain-ring.r4 {
+        inset: -14px;
+        border: 1px solid rgba(139, 92, 246, 0.28);
+        animation:
+          spin 50s linear infinite reverse,
+          ringFlicker 3.6s ease-in-out infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes ringFlicker {
+        0%,
+        100% {
+          opacity: 0.4;
+        }
+        45% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+        55% {
+          opacity: 0.9;
+        }
+      }
+      /* the visible pathway the module icons travel along — sits behind the brain */
+      .orbit-path {
+        position: absolute;
+        border-radius: 50%;
+        border: 1px dashed rgba(255, 255, 255, 0.22);
+        z-index: 0;
+        pointer-events: none;
+        top: 50%;
+        left: 50%;
+        width: calc(var(--orbit-r, 235px) * 2);
+        height: calc(var(--orbit-r, 235px) * 2);
+        transform: translate(-50%, -50%);
+        animation: spin 60s linear infinite;
+      }
+      /* top-most logo badge — the full, unedited uploaded artwork, rounded-square, layered on top of the animated glyph */
+      .brain-logo {
+        position: absolute;
+        inset: 132px;
+        border-radius: 22%;
+        overflow: hidden;
+        z-index: 6;
+        box-shadow:
+          0 0 50px rgba(245, 158, 11, 0.4),
+          0 10px 30px rgba(0, 0, 0, 0.5);
+        border: 3px solid rgba(255, 255, 255, 0.4);
+        animation: breathe 4s ease-in-out infinite;
+      }
+      .brain-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: #05070f;
+      }
+      @keyframes breathe {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+      .brain-sparks {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+      .brain-sparks svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      .spark-line {
+        stroke: url(#sparkGrad);
+        stroke-width: 1.5;
+        fill: none;
+        stroke-dasharray: 6 10;
+        opacity: 0.55;
+        animation:
+          sparkFlow 1.4s linear infinite,
+          sparkFade 3.2s ease-in-out infinite;
+      }
+      @keyframes sparkFlow {
+        to {
+          stroke-dashoffset: -32;
+        }
+      }
+      @keyframes sparkFade {
+        0%,
+        100% {
+          opacity: 0.25;
+        }
+        50% {
+          opacity: 0.75;
+        }
+      }
+      .brain-orbit {
+        position: absolute;
+        inset: 0;
+        animation: orbitSpin 26s linear infinite;
+        z-index: 4;
+      }
+      .orbit-item {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        transform: rotate(var(--angle)) translateX(var(--orbit-r, 235px));
+      }
+      .brain-node {
+        position: absolute;
+        width: 56px;
+        height: 56px;
+        top: -28px;
+        left: -28px;
+        display: grid;
+        place-items: center;
+        animation: counterSpin 26s linear infinite;
+        filter: drop-shadow(0 6px 14px rgba(10, 14, 39, 0.45));
+      }
+      .brain-node img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      @keyframes orbitSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes counterSpin {
+        from {
+          transform: rotate(calc(-1 * var(--angle)));
+        }
+        to {
+          transform: rotate(calc(-1 * var(--angle) - 360deg));
+        }
+      }
+
+      /* MODULES GRID */
+      .modules-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+      }
+      .module-card {
+        background: var(--ink-2);
+        border: 1px solid var(--ink-3);
+        border-radius: 18px;
+        padding: 28px;
+        transition:
+          transform 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+      .module-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      }
+      .module-id {
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        color: var(--amber-2);
+        display: block;
+        margin-bottom: 12px;
+      }
+      .module-glyph {
+        font-size: 30px;
+        margin-bottom: 12px;
+      }
+      .module-card h3 {
+        font-size: 19px;
+        margin-bottom: 10px;
+        color: #fff;
+      }
+      .module-card p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.68);
+        margin: 0;
+      }
+      .module-card.brain-card {
+        background: linear-gradient(
+          135deg,
+          rgba(99, 102, 241, 0.18),
+          rgba(245, 158, 11, 0.1)
+        );
+        border-color: rgba(139, 92, 246, 0.4);
+      }
+
+      .adapt-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-top: 48px;
+      }
+      .adapt-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        backdrop-filter: blur(6px);
+      }
+      .adapt-icon {
+        font-size: 26px;
+        margin-bottom: 12px;
+      }
+      .adapt-card h4 {
+        font-size: 15px;
+        margin-bottom: 8px;
+        color: #fff;
+      }
+      .adapt-card p {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.65);
+        margin: 0;
+      }
+
+      /* STORY / FOUNDER */
+      .story-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: start;
+      }
+      .story-card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 8px 30px rgba(10, 14, 39, 0.05);
+      }
+      .story-card h3 {
+        font-size: 20px;
+        margin-bottom: 14px;
+      }
+      .story-card p {
+        color: var(--muted);
+        margin-bottom: 12px;
+        font-size: 15px;
+      }
+      .founder-card {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+        background: var(--paper);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(10, 14, 39, 0.06);
+        border: 1px solid var(--line);
+      }
+      .founder-img {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        box-shadow: 0 16px 40px rgba(99, 102, 241, 0.25);
+      }
+      .founder-info h3 {
+        font-size: 24px;
+        margin-bottom: 6px;
+      }
+      .founder-role {
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        color: var(--violet);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: block;
+      }
+      .founder-info p {
+        font-size: 15px;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+
+      /* TRUST / LAW CARDS */
+      .laws-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 8px;
+      }
+      .law-card {
+        background: var(--paper);
+        border-radius: 16px;
+        padding: 30px;
+        border: 1px solid var(--line);
+        box-shadow: 0 6px 20px rgba(10, 14, 39, 0.05);
+      }
+      .law-mark {
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--violet);
+        display: block;
+        margin-bottom: 12px;
+        font-weight: 700;
+      }
+      .law-card h3 {
+        font-size: 19px;
+        margin-bottom: 10px;
+      }
+      .law-card p {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0;
+      }
+      .highlight-box {
+        border-left: 4px solid var(--emerald);
+        background: rgba(16, 185, 129, 0.08);
+        border-radius: 0 12px 12px 0;
+        padding: 22px 26px;
+        font-size: 15px;
+        line-height: 1.7;
+        margin: 0 0 36px;
+      }
+      .honesty-box {
+        border-left: 4px solid var(--amber);
+        background: rgba(245, 158, 11, 0.08);
+        border-radius: 0 12px 12px 0;
+        padding: 22px 26px;
+        font-size: 14px;
+        line-height: 1.7;
+        margin: 36px 0 0;
+        color: var(--ink);
+      }
+
+      /* STAKEHOLDER / PERSONA CARDS */
+      .persona-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+      .persona-card {
+        background: var(--ink-2);
+        border: 1px solid var(--ink-3);
+        border-radius: 18px;
+        padding: 30px 26px;
+        transition: transform 0.25s ease;
+      }
+      .persona-card:hover {
+        transform: translateY(-5px);
+      }
+      .persona-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-size: 24px;
+        margin-bottom: 18px;
+      }
+      .persona-card h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #fff;
+      }
+      .persona-card p {
+        font-size: 13.5px;
+        color: rgba(255, 255, 255, 0.68);
+        margin-bottom: 18px;
+      }
+      .persona-card button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* ACCESS / OVERSIGHT */
+      .access-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+        margin-bottom: 48px;
+      }
+      .access-card {
+        background: var(--paper);
+        border-radius: 18px;
+        padding: 30px;
+        border: 1px solid var(--line);
+        box-shadow: 0 6px 20px rgba(10, 14, 39, 0.05);
+      }
+      .access-icon {
+        font-size: 26px;
+        margin-bottom: 14px;
+      }
+      .access-card h4 {
+        font-size: 17px;
+        margin-bottom: 10px;
+      }
+      .access-card p {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0;
+      }
+      .oversight-visual {
+        background: var(--ink);
+        border-radius: 20px;
+        padding: 40px;
+        color: #fff;
+      }
+      .oversight-tiers {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 18px;
+      }
+      .oversight-tier {
+        border-radius: 14px;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .tier1 {
+        background: rgba(99, 102, 241, 0.14);
+      }
+      .tier2 {
+        background: rgba(245, 158, 11, 0.12);
+      }
+      .tier3 {
+        background: rgba(16, 185, 129, 0.12);
+      }
+      .tier-label {
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 10px;
+      }
+      .tier-desc strong {
+        display: block;
+        font-size: 15px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .tier-desc span {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.65);
+      }
+
+      /* TIMELINE */
+      .timeline {
+        position: relative;
+        padding-left: 0;
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      .timeline::before {
+        content: '';
+        position: absolute;
+        left: 24px;
+        top: 8px;
+        bottom: 8px;
+        width: 2px;
+        background: linear-gradient(
+          180deg,
+          var(--amber-2),
+          var(--violet-2) 33%,
+          var(--emerald) 66%,
+          var(--rose)
+        );
+      }
+      .tl-item {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 28px;
+        margin-bottom: 56px;
+        align-items: flex-start;
+      }
+      .tl-item:last-child {
+        margin-bottom: 0;
+      }
+      .tl-dot {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--ink-2);
+        border: 3px solid var(--amber-2);
+        display: grid;
+        place-items: center;
+        font-family: 'Space Grotesk';
+        font-weight: 700;
+        color: #fff;
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+      }
+      .tl-item:nth-child(2) .tl-dot {
+        border-color: var(--violet-2);
+      }
+      .tl-item:nth-child(3) .tl-dot {
+        border-color: var(--emerald);
+      }
+      .tl-item:nth-child(4) .tl-dot {
+        border-color: var(--rose);
+      }
+      .tl-content {
+        background: var(--ink-2);
+        border: 1px solid var(--ink-3);
+        border-radius: 16px;
+        padding: 22px 26px;
+      }
+      .tl-stage {
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        color: var(--amber-2);
+        margin-bottom: 8px;
+      }
+      .tl-content h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+        color: #fff;
+      }
+      .tl-content p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.68);
+        margin: 0;
+      }
+
+      /* CONTACT FORM */
+      .contact-form-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1.3fr;
+        gap: 44px;
+        align-items: start;
+      }
+      .contact-form-side {
+        color: rgba(255, 255, 255, 0.82);
+      }
+      .contact-feature {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+      }
+      .contact-feature-icon {
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .contact-feature p {
+        margin: 0;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.68);
+      }
+      .contact-channels {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+      }
+      .contact-channel {
+        background: rgba(255, 255, 255, 0.06);
+        padding: 10px 16px;
+        border-radius: 100px;
+        font-size: 13px;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        color: #fff;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      form.lead-form {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 20px;
+        padding: 34px;
+        backdrop-filter: blur(8px);
+      }
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .field {
+        margin-bottom: 16px;
+      }
+      .field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .required-mark {
+        color: var(--rose);
+      }
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        font-family: 'Inter';
+        font-size: 14px;
+      }
+      .field select option {
+        color: #000;
+      }
+      .field input::placeholder,
+      .field textarea::placeholder {
+        color: rgba(255, 255, 255, 0.35);
+      }
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        outline: none;
+        border-color: var(--amber);
+      }
+      .field textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .form-note {
+        font-size: 12.5px;
+        line-height: 1.55;
+        opacity: 0.8;
+        margin: 0 0 14px;
+      }
+      .form-note a {
+        color: #fbbf24;
+      }
+      .notice-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 22px 24px;
+        margin-bottom: 16px;
+      }
+      .notice-card h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+      .notice-card p,
+      .notice-card li {
+        font-size: 15px;
+        line-height: 1.65;
+        margin: 0 0 8px;
+      }
+      .notice-card ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .notice-card a {
+        color: #fbbf24;
+      }
+      .form-status {
+        margin-top: 14px;
+        font-size: 13px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        display: none;
+      }
+      .form-status.show {
+        display: block;
+      }
+      .form-status.ok {
+        background: rgba(16, 185, 129, 0.15);
+        color: #6ee7b7;
+      }
+      .form-status.err {
+        background: rgba(244, 63, 94, 0.15);
+        color: #fda4af;
+      }
+      .setup-note {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px dashed rgba(245, 158, 11, 0.4);
+        border-radius: 12px;
+        padding: 16px 18px;
+        font-size: 12.5px;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 24px;
+      }
+      .setup-note code {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-family: 'Space Mono', monospace;
+      }
+
+      /* FOOTER */
+      footer {
+        background: var(--ink-2);
+        color: rgba(255, 255, 255, 0.55);
+        padding: 56px 40px 24px;
+      }
+      .footer-grid {
+        max-width: 1240px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 36px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--line-dark);
+      }
+      .footer-links-row {
+        display: flex;
+        gap: 60px;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+      }
+      .footer-col h5 {
+        color: #fff;
+        font-size: 13px;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .footer-col a {
+        display: block;
+        color: var(--amber-2);
+        text-decoration: none;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .footer-col a:hover {
+        color: #fff;
+      }
+      .footer-col button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        padding: 0;
+        display: block;
+        color: var(--amber-2);
+        font-family: 'Inter';
+        font-size: 14px;
+        margin-bottom: 10px;
+        transition: color 0.2s;
+      }
+      .footer-col button:hover {
+        color: #fff;
+      }
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .footer-brand img {
+        width: 32px;
+        height: 32px;
+        border-radius: 24%;
+        object-fit: cover;
+      }
+      .footer-brand span {
+        font-family: 'Space Grotesk';
+        font-weight: 700;
+        color: #fff;
+      }
+      .footer-bottom {
+        max-width: 1240px;
+        margin: 24px auto 0;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 12.5px;
+      }
+
+      .edit-hint {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--ink);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 100px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        z-index: 200;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.4s ease;
+        pointer-events: none;
+      }
+      .edit-hint.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .edit-hint .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--emerald);
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 1024px) {
+        .hero-grid,
+        .story-grid,
+        .contact-form-wrap {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .hero-grid {
+          text-align: center;
+        }
+        .hero-sub {
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .hero-cta,
+        .hero-meta {
+          justify-content: center;
+        }
+        .meta-item {
+          align-items: center;
+        }
+        .modules-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .adapt-grid,
+        .persona-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .laws-grid,
+        .access-grid {
+          grid-template-columns: 1fr;
+        }
+        .oversight-tiers {
+          grid-template-columns: 1fr;
+        }
+        .founder-card {
+          flex-direction: column;
+          text-align: center;
+        }
+        .footer-grid {
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        section {
+          padding: 70px 24px;
+        }
+        .hero {
+          padding: 100px 20px 50px;
+        }
+        .brain-visual {
+          height: 440px;
+        }
+        .brain-core {
+          width: 380px;
+          height: 380px;
+          --orbit-r: 200px;
+        }
+        .brain-logo {
+          inset: 114px;
+        }
+        .nav-links {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: rgba(10, 14, 39, 0.98);
+          flex-direction: column;
+          padding: 16px 24px;
+          gap: 4px;
+          border-bottom: 1px solid var(--line-dark);
+        }
+        .nav-links.open {
+          display: flex;
+        }
+        .nav-links button {
+          padding: 12px 4px;
+          width: 100%;
+          text-align: left;
+        }
+        .nav-toggle {
+          display: block;
+        }
+      }
+      @media (max-width: 640px) {
+        .hero h1 {
+          font-size: clamp(30px, 9vw, 40px);
+        }
+        .hero-sub {
+          font-size: 16px;
+        }
+        .section-head h2 {
+          font-size: clamp(24px, 7vw, 32px);
+        }
+        .modules-grid,
+        .adapt-grid,
+        .persona-grid {
+          grid-template-columns: 1fr;
+        }
+        .field-row {
+          grid-template-columns: 1fr;
+        }
+        form.lead-form {
+          padding: 22px;
+        }
+        .brain-visual {
+          height: 320px;
+        }
+        .brain-core {
+          width: 220px;
+          height: 220px;
+          --orbit-r: 100px;
+        }
+        .brain-logo {
+          inset: 78px;
+        }
+        .brain-node {
+          width: 40px;
+          height: 40px;
+          top: -20px;
+          left: -20px;
+        }
+        .hero-cta {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .contact-channels {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        nav.top {
+          padding: 14px 20px;
+        }
+      }
+
+      @media print {
+        nav.top,
+        .nav-toggle,
+        .edit-hint,
+        .spectrum-rule,
+        .hero-cta,
+        form.lead-form,
+        .setup-note {
+          display: none !important;
+        }
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+        .page {
+          display: block !important;
+        }
+        body {
+          background: #fff;
+        }
+        section {
+          padding: 30px 20px;
+          page-break-inside: avoid;
+        }
+        .dark-section,
+        .hero,
+        footer {
+          background: #fff !important;
+          color: #0a0e27 !important;
+        }
+        .dark-section h2,
+        .dark-section h3,
+        .dark-section h4,
+        .hero h1 {
+          color: #0a0e27 !important;
+        }
+        .module-card,
+        .persona-card,
+        .tl-content,
+        .oversight-visual {
+          background: #f8fafc !important;
+          border: 1px solid #e2e8f0 !important;
+          color: #0a0e27 !important;
+        }
+        .module-card p,
+        .persona-card p,
+        .tl-content p,
+        .adapt-card p {
+          color: #475569 !important;
+        }
+      }
+    </style>
+
+    <div class="spectrum-rule"></div>
+
+    <nav class="top">
+      <button class="brand" onclick="go('home')">
+        <span class="brand-mark"
+          ><img src="images/img-01-0996c6de.webp" alt="INFINITE-AI"
+        /></span>
+        <span>INFINITE-AI</span>
+      </button>
+      <button class="nav-toggle" id="navToggle" onclick="toggleNav()">☰</button>
+      <div class="nav-links" id="navLinks">
+        <button data-page="home" onclick="go('home')">Home</button>
+        <button data-page="story" onclick="go('story')">Our Story</button>
+        <button data-page="ecosystem" onclick="go('ecosystem')">The Ecosystem</button>
+        <button data-page="trust" onclick="go('trust')">Trust &amp; Security</button>
+        <button data-page="stakeholders" onclick="go('stakeholders')">For You</button>
+        <button data-page="access" onclick="go('access')">Cost &amp; Access</button>
+        <button data-page="roadmap" onclick="go('roadmap')">Roadmap</button>
+        <button data-page="contact" onclick="go('contact')" class="nav-cta">
+          Let's Talk
+        </button>
+      </div>
+    </nav>
+
+    <div id="app">
+      <!-- ============ PAGE: HOME ============ -->
+      <div class="page active" id="page-home">
+        <section class="hero">
+          <div class="hero-grid">
+            <div class="brain-visual reveal">
+              <div class="brain-core">
+                <div class="brain-sparks">
+                  <svg viewBox="0 0 320 320">
+                    <defs>
+                      <linearGradient id="sparkGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#8B5CF6" />
+                        <stop offset="100%" stop-color="#F59E0B" />
+                      </linearGradient>
+                    </defs>
+                    <line
+                      class="spark-line"
+                      x1="160"
+                      y1="160"
+                      x2="160"
+                      y2="6"
+                      style="animation-delay: 0s"
+                    />
+                    <line
+                      class="spark-line"
+                      x1="160"
+                      y1="160"
+                      x2="298"
+                      y2="86"
+                      style="animation-delay: 0.2s"
+                    />
+                    <line
+                      class="spark-line"
+                      x1="160"
+                      y1="160"
+                      x2="298"
+                      y2="234"
+                      style="animation-delay: 0.4s"
+                    />
+                    <line
+                      class="spark-line"
+                      x1="160"
+                      y1="160"
+                      x2="160"
+                      y2="314"
+                      style="animation-delay: 0.6s"
+                    />
+                    <line
+                      class="spark-line"
+                      x1="160"
+                      y1="160"
+                      x2="22"
+                      y2="234"
+                      style="animation-delay: 0.8s"
+                    />
+                    <line
+                      class="spark-line"
+                      x1="160"
+                      y1="160"
+                      x2="22"
+                      y2="86"
+                      style="animation-delay: 1s"
+                    />
+                  </svg>
+                </div>
+                <div class="brain-ring"></div>
+                <div class="brain-ring r2"></div>
+                <div class="brain-ring r3"></div>
+                <div class="brain-ring r4"></div>
+                <div class="orbit-path"></div>
+
+                <div class="brain-logo" title="INFINITE-AI">
+                  <img src="images/img-01-0996c6de.webp" alt="INFINITE-AI logo" />
+                </div>
+                <div class="brain-orbit">
+                  <div class="orbit-item" style="--angle: 0deg">
+                    <div class="brain-node n1" title="Curriculum Engine">
+                      <img src="images/img-02-ffec7fac.webp" alt="Curriculum Engine" />
+                    </div>
+                  </div>
+                  <div class="orbit-item" style="--angle: 72deg">
+                    <div class="brain-node n2" title="Support Analytics">
+                      <img src="images/img-03-fc4ff231.webp" alt="Support Analytics" />
+                    </div>
+                  </div>
+                  <div class="orbit-item" style="--angle: 144deg">
+                    <div class="brain-node n3" title="Data Warehouse">
+                      <img src="images/img-04-97755c0e.webp" alt="Data Warehouse" />
+                    </div>
+                  </div>
+                  <div class="orbit-item" style="--angle: 216deg">
+                    <div class="brain-node n4" title="Teaching Toolbox">
+                      <img src="images/img-05-325b13f8.webp" alt="Teaching Toolbox" />
+                    </div>
+                  </div>
+                  <div class="orbit-item" style="--angle: 288deg">
+                    <div class="brain-node n5" title="PD Studio">
+                      <img src="images/img-06-5cd55e25.webp" alt="PD Studio" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <span class="eyebrow reveal"
+                >Learning Reimagined · Built in South Africa</span
+              >
+              <h1 class="reveal" contenteditable="true">
+                Where South Africa's classrooms meet the
+                <span class="accent">infinite</span> future.
+              </h1>
+              <p class="hero-sub reveal" contenteditable="true">
+                One Brain. Five modules. A pipeline that never forgets a policy, a
+                learner, or a decision — CAPS-aligned, POPIA-safe, and built by a teacher
+                who has stood in front of learners at 7am and wrestled with ATP documents
+                at 11pm.
+              </p>
+              <div class="hero-cta reveal">
+                <button class="btn btn-amber" onclick="go('ecosystem')">
+                  🧠 Explore the Ecosystem
+                </button>
+                <button class="btn btn-ghost" onclick="go('contact')">
+                  📝 Start the Conversation
+                </button>
+              </div>
+              <div class="hero-meta reveal">
+                <div class="meta-item">
+                  <span class="meta-num">110+</span
+                  ><span class="meta-lbl">Build stages logged</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-num">5+1</span
+                  ><span class="meta-lbl">Modules · one Brain</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-num">POPIA</span
+                  ><span class="meta-lbl">Safe by design</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-num">Durban</span
+                  ><span class="meta-lbl">South Africa</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="paper-section">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="section-num">THE PROBLEM</div>
+              <h2 contenteditable="true">Four droughts, one classroom.</h2>
+              <p contenteditable="true">
+                Ask any teacher what makes the job hardest, and it's rarely the teaching
+                itself. It's everything that's supposed to hold teaching up — and quietly
+                doesn't.
+              </p>
+            </div>
+            <div class="laws-grid">
+              <div class="law-card reveal">
+                <span class="law-mark" style="color: var(--rose)">Drought 01</span>
+                <h3>📝 The Paperwork Drought</h3>
+                <p>
+                  Term plans, rubrics, memos and differentiated worksheets, rebuilt from
+                  scratch every year by every teacher, alone.
+                </p>
+              </div>
+              <div class="law-card reveal">
+                <span class="law-mark" style="color: var(--amber)">Drought 02</span>
+                <h3>🤫 The Learner Who Goes Quiet</h3>
+                <p>
+                  A child falling behind gradually and unnoticed, until the gap is too
+                  wide to close without a struggle.
+                </p>
+              </div>
+              <div class="law-card reveal">
+                <span class="law-mark" style="color: var(--violet)">Drought 03</span>
+                <h3>📊 Data Everywhere, Insight Nowhere</h3>
+                <p>
+                  Attendance, assessments and behaviour notes scattered across platforms
+                  nobody has time to reconcile.
+                </p>
+              </div>
+              <div class="law-card reveal">
+                <span class="law-mark" style="color: var(--emerald)">Drought 04</span>
+                <h3>🧑‍🏫 Teachers Growing in Isolation</h3>
+                <p>
+                  Generic, infrequent professional development that has nothing to do with
+                  what's actually happening in that classroom.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ PAGE: OUR STORY ============ -->
+      <div class="page" id="page-story">
+        <section class="light-section" style="padding-top: 64px">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="section-num">01 · WHO WE ARE</div>
+              <h2 contenteditable="true">From the staffroom, not the boardroom.</h2>
+              <p contenteditable="true">
+                Technology in education shouldn't feel like an imposition from above. It
+                should feel like a natural extension of a teacher's intuition. That's why
+                this was built from the inside out.
+              </p>
+            </div>
+
+            <div class="founder-card reveal">
+              <img
+                src="images/img-07-5da72513.webp"
+                alt="Sarah-Jane Harding"
+                class="founder-img"
+              />
+              <div class="founder-info">
+                <h3>Sarah-Jane Harding</h3>
+                <span class="founder-role">Founder &amp; Chief Architect</span>
+                <p contenteditable="true">
+                  Departmental Head and classroom Educator at a Durban primary school,
+                  Sarah-Jane is a self-taught AI practitioner and software engineer who
+                  built INFINITE-AI's engineering from the ground up — translating raw
+                  classroom insight into a working, multi-tenant SaaS platform.
+                </p>
+                <p contenteditable="true">
+                  Not a Silicon Valley startup guessing what teachers need — a South
+                  African education enterprise, built by an educator who has lived the
+                  paperwork, the quiet learners, and the isolation this ecosystem exists
+                  to solve.
+                </p>
+              </div>
+            </div>
+
+            <div class="story-grid" style="margin-top: 56px">
+              <div class="story-card reveal">
+                <h3>🌱 The origin</h3>
+                <p contenteditable="true">
+                  Every INFINITE-AI decision starts with a real classroom question: what
+                  would actually help on a Tuesday morning with 34 learners, a term plan
+                  due, and three who need something different from the rest?
+                </p>
+                <p contenteditable="true">
+                  That question shaped a system that drafts, but never decides — a
+                  teacher's judgement stays the final word, every time.
+                </p>
+              </div>
+              <div class="story-card reveal">
+                <h3>🔨 Built, not bought</h3>
+                <p contenteditable="true">
+                  INFINITE-AI is engineered end-to-end as a multi-tenant SaaS platform — a
+                  durable institutional memory (the Brain), five specialist modules, and a
+                  governance layer strict enough for a school to trust with real learner
+                  data.
+                </p>
+                <p contenteditable="true">
+                  It is a working codebase with a documented, dated build history — not a
+                  slide deck of promises.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ PAGE: THE ECOSYSTEM ============ -->
+      <div class="page" id="page-ecosystem">
+        <section class="dark-section" style="padding-top: 64px">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="section-num">02 · THE SYSTEM</div>
+              <h2 contenteditable="true">
+                One Brain. Five modules. A pipeline that never forgets.
+              </h2>
+              <p contenteditable="true">
+                Every subsystem shares one durable institutional memory, so a policy set
+                once — a CAPS document, a DBE Annual Teaching Plan, a school's own rule —
+                is never re-explained, contradicted, or lost.
+              </p>
+            </div>
+            <div class="modules-grid">
+              <div class="module-card brain-card reveal">
+                <span class="module-id">BRAIN</span>
+                <div class="module-glyph">🧠</div>
+                <h3>Infinite Brain</h3>
+                <p>
+                  Durable institutional memory (L0–L4) that never loses a policy or a
+                  decision — the single shared source of truth every module reads from.
+                </p>
+              </div>
+              <div class="module-card reveal">
+                <span class="module-id">MOD-01</span>
+                <div class="module-glyph">📚</div>
+                <h3>Curriculum Engine</h3>
+                <p>
+                  CAPS → ATP → term → unit → lesson → assessment, generated in minutes and
+                  grounded in the actual source documents, never invented.
+                </p>
+              </div>
+              <div class="module-card reveal">
+                <span class="module-id">MOD-02</span>
+                <div class="module-glyph">🎯</div>
+                <h3>Support Analytics Centre</h3>
+                <p>
+                  RTI / MTSS on DBE SIAS: screen, tier, intervene, monitor, report — so a
+                  learner who's struggling is seen early, not eventually.
+                </p>
+              </div>
+              <div class="module-card reveal">
+                <span class="module-id">MOD-03</span>
+                <div class="module-glyph">📊</div>
+                <h3>Data Collection &amp; Warehouse</h3>
+                <p>
+                  Ingest, conform, de-identify, Learner-360, insight, next step — one
+                  reconciled truth about every learner, POPIA-safe throughout.
+                </p>
+              </div>
+              <div class="module-card reveal">
+                <span class="module-id">MOD-04</span>
+                <div class="module-glyph">🧰</div>
+                <h3>Teaching &amp; Learning Toolbox</h3>
+                <p>
+                  Specialist agents that make real classroom materials — worksheets,
+                  resources, and differentiated content, on demand.
+                </p>
+              </div>
+              <div class="module-card reveal">
+                <span class="module-id">MOD-05</span>
+                <div class="module-glyph">🎓</div>
+                <h3>Teaching Analytics &amp; PD Studio</h3>
+                <p>
+                  Practice analytics, PD gap detection, and courses on demand —
+                  professional growth tied to what's actually happening in that classroom.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-head reveal" style="margin-top: 80px">
+              <div class="section-num">03 · BUILT TO TRAVEL</div>
+              <h2 contenteditable="true">Adaptable by design.</h2>
+              <p contenteditable="true">
+                The core system was engineered to be curriculum-agnostic from day one —
+                CAPS is the first, proven implementation, not the ceiling.
+              </p>
+            </div>
+            <div class="adapt-grid">
+              <div class="adapt-card reveal">
+                <div class="adapt-icon">🧩</div>
+                <h4>Curriculum-Agnostic Core</h4>
+                <p>
+                  The Brain, the orchestrator and the guardrail engine hold no hardcoded
+                  curriculum logic — CAPS documents are ingested as source data, not
+                  baked-in assumptions.
+                </p>
+              </div>
+              <div class="adapt-card reveal">
+                <div class="adapt-icon">⚙️</div>
+                <h4>Configurable Compliance Layer</h4>
+                <p>
+                  POPIA governs South African schools today; the same privacy and consent
+                  architecture is built to be reconfigured for another jurisdiction's
+                  rules.
+                </p>
+              </div>
+              <div class="adapt-card reveal">
+                <div class="adapt-icon">🌍</div>
+                <h4>Language &amp; Context Aware</h4>
+                <p>
+                  Built for South Africa's multilingual reality, with a source-document
+                  ingestion pipeline designed to extend to further official languages and
+                  contexts over time.
+                </p>
+              </div>
+              <div class="adapt-card reveal">
+                <div class="adapt-icon">🏫</div>
+                <h4>White-Label &amp; Ministry Ready</h4>
+                <p>
+                  Multi-tenant from the ground up, so a district, province, or ministry
+                  can run its own branded, governed instance of the same underlying
+                  engine.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ PAGE: TRUST & SECURITY ============ -->
+      <div class="page" id="page-trust">
+        <section class="paper-section" style="padding-top: 64px">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="section-num">04 · ENTERPRISE-GRADE ARCHITECTURE</div>
+              <h2 contenteditable="true">Unbending rules of trust.</h2>
+              <p contenteditable="true">
+                At the frontier of AI in education, trust isn't assumed — it's engineered,
+                with strict guardrails that don't bend for convenience.
+              </p>
+            </div>
+
+            <div class="highlight-box reveal">
+              <b
+                style="
+                  font-family: 'Space Grotesk';
+                  font-size: 20px;
+                  display: block;
+                  margin-bottom: 6px;
+                "
+                >AI drafts. The teacher decides.</b
+              >
+              At the heart of the system sits a single shared memory — every CAPS
+              document, every DBE Annual Teaching Plan, and a school's own policies,
+              planted as ground truth. Nothing is hallucinated or forgotten. The teacher
+              remains the final authority.
+            </div>
+
+            <div class="laws-grid">
+              <div class="law-card reveal">
+                <span class="law-mark">Unbending Rule 01</span>
+                <h3>POPIA Safe &amp; Local</h3>
+                <p>
+                  A dedicated privacy layer keeps every child's personal information
+                  detached from the core AI models. Sensitive data is designed to stay
+                  encrypted and hosted in South Africa (AWS af-south-1).
+                </p>
+              </div>
+              <div class="law-card reveal">
+                <span class="law-mark" style="color: var(--violet)"
+                  >Unbending Rule 02</span
+                >
+                <h3>Human-in-the-Loop</h3>
+                <p>
+                  A human being — the teacher, the HoD, the support team — must explicitly
+                  approve, edit or reject what the system drafts before it ever reaches a
+                  classroom.
+                </p>
+              </div>
+              <div class="law-card reveal">
+                <span class="law-mark" style="color: var(--amber)"
+                  >Unbending Rule 03</span
+                >
+                <h3>Immutable Audit Trails</h3>
+                <p>
+                  Every AI generation and human decision is dated, remembered and
+                  reversible. A school can trace the exact origin of any lesson plan or
+                  rubric with full transparency.
+                </p>
+              </div>
+              <div class="law-card reveal">
+                <span class="law-mark" style="color: var(--emerald)"
+                  >Unbending Rule 04</span
+                >
+                <h3>Bias-Checked, Guardrailed Growth</h3>
+                <p>
+                  The system refines itself strictly from verified human corrections,
+                  never assumptions — improvement that stays equitable and grounded in
+                  real, supplied source material.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ PAGE: FOR EVERY STAKEHOLDER ============ -->
+      <div class="page" id="page-stakeholders">
+        <section class="dark-section" style="padding-top: 64px">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="section-num">05 · BUILT FOR EVERY SEAT AT THE TABLE</div>
+              <h2 contenteditable="true">Whichever conversation you're here to have.</h2>
+              <p contenteditable="true">
+                INFINITE-AI touches every stakeholder in the system differently — here's
+                what matters most to you.
+              </p>
+            </div>
+            <div class="persona-grid">
+              <div class="persona-card reveal">
+                <div
+                  class="persona-icon"
+                  style="background: rgba(99, 102, 241, 0.18); color: var(--violet-2)"
+                >
+                  💼
+                </div>
+                <h3>Investors</h3>
+                <p contenteditable="true">
+                  A working, multi-tenant SaaS platform with a documented build history of
+                  more than 110 stages, an AI-first cost structure, and a founder embedded
+                  in the exact market she's building for.
+                </p>
+                <button
+                  class="btn btn-ghost"
+                  onclick="go('contact', 'Investor Pitch', 'Investor')"
+                >
+                  Start an investor conversation →
+                </button>
+              </div>
+              <div class="persona-card reveal">
+                <div
+                  class="persona-icon"
+                  style="background: rgba(245, 158, 11, 0.18); color: var(--amber-2)"
+                >
+                  🏛️
+                </div>
+                <h3>DBE &amp; Officials</h3>
+                <p contenteditable="true">
+                  CAPS and SIAS-aligned by design, POPIA-safe by architecture, with
+                  district and provincial oversight dashboards built in from the start —
+                  not bolted on later.
+                </p>
+                <button
+                  class="btn btn-ghost"
+                  onclick="go('contact', 'Request More Information', 'DBE')"
+                >
+                  Request more information →
+                </button>
+              </div>
+              <div class="persona-card reveal">
+                <div
+                  class="persona-icon"
+                  style="background: rgba(16, 185, 129, 0.18); color: var(--emerald)"
+                >
+                  🏫
+                </div>
+                <h3>Schools &amp; SMTs</h3>
+                <p contenteditable="true">
+                  Whole-school visibility, less duplicate admin, and a system priced to be
+                  genuinely affordable for a South African primary school budget.
+                </p>
+                <button
+                  class="btn btn-ghost"
+                  onclick="go('contact', 'Join the Pilot Waitlist', 'School')"
+                >
+                  Join the pilot waitlist →
+                </button>
+              </div>
+              <div class="persona-card reveal">
+                <div
+                  class="persona-icon"
+                  style="background: rgba(244, 63, 94, 0.18); color: var(--rose)"
+                >
+                  🧑‍🏫
+                </div>
+                <h3>Educators</h3>
+                <p contenteditable="true">
+                  Less time rebuilding term plans from scratch, more time with learners —
+                  with the final say on everything the system ever drafts.
+                </p>
+                <button
+                  class="btn btn-ghost"
+                  onclick="go('contact', 'Join the Pilot Waitlist', 'Educator')"
+                >
+                  Join the pilot waitlist →
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ PAGE: COST & ACCESS ============ -->
+      <div class="page" id="page-access">
+        <section class="light-section" style="padding-top: 64px">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="section-num">06 · DESIGNED TO REACH EVERYONE</div>
+              <h2 contenteditable="true">
+                Cost-effective for schools.
+                <em>Accessible for everyone. Built to scale.</em>
+              </h2>
+              <p contenteditable="true">
+                This isn't priced or engineered for a handful of well-resourced schools —
+                it's designed from the ground up to reach every school, teacher and
+                learner it can.
+              </p>
+            </div>
+            <div class="access-grid">
+              <div class="access-card reveal">
+                <div class="access-icon">💰</div>
+                <h4>Cost-Effective for Every School</h4>
+                <p>
+                  An AI-first cost structure built to keep pricing genuinely within reach
+                  of South African primary school budgets, not just well-funded ones.
+                </p>
+              </div>
+              <div class="access-card reveal">
+                <div class="access-icon">📱</div>
+                <h4>Accessible for Every Teacher &amp; Learner</h4>
+                <p>
+                  Designed for real classroom conditions — low-bandwidth-aware,
+                  mobile-friendly, and built around how South African teachers actually
+                  work.
+                </p>
+              </div>
+              <div class="access-card reveal">
+                <div class="access-icon">📈</div>
+                <h4>Scalable Oversight — SMT to Province</h4>
+                <p>
+                  The same underlying data model powers a dashboard at every level of
+                  oversight, from a single staffroom to a provincial office.
+                </p>
+              </div>
+            </div>
+            <div class="oversight-visual reveal">
+              <div
+                style="
+                  font-family: 'Space Mono', monospace;
+                  font-weight: 700;
+                  font-size: 12px;
+                  letter-spacing: 0.1em;
+                  color: rgba(255, 255, 255, 0.6);
+                  margin-bottom: 20px;
+                  text-align: center;
+                "
+              >
+                OVERSIGHT DASHBOARDS · BUILT FOR EACH LEVEL
+              </div>
+              <div class="oversight-tiers">
+                <div class="oversight-tier tier1">
+                  <div class="tier-label">SMT DASHBOARD</div>
+                  <div class="tier-desc">
+                    <strong>Whole-school view, daily</strong
+                    ><span
+                      >Attendance, coverage and intervention status across every class, in
+                      one place.</span
+                    >
+                  </div>
+                </div>
+                <div class="oversight-tier tier2">
+                  <div class="tier-label">DISTRICT DASHBOARD</div>
+                  <div class="tier-desc">
+                    <strong>Cross-school patterns, weekly</strong
+                    ><span
+                      >Where support is landing, and where a district should look
+                      next.</span
+                    >
+                  </div>
+                </div>
+                <div class="oversight-tier tier3">
+                  <div class="tier-label">PROVINCIAL DASHBOARD</div>
+                  <div class="tier-desc">
+                    <strong>System-level insight, monthly</strong
+                    ><span
+                      >Aggregate, de-identified trends to inform policy and resourcing
+                      decisions.</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ PAGE: ROADMAP ============ -->
+      <div class="page" id="page-roadmap">
+        <section class="dark-section" style="padding-top: 64px">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="section-num">07 · WHERE WE ARE · WHERE WE'RE GOING</div>
+              <h2 contenteditable="true">
+                More than 110 build stages logged. Pilot next.
+              </h2>
+              <p contenteditable="true">
+                More than 110 build stages logged, with strict typing, automated tests and
+                privacy guardrails enforced in code. The first pilot school is confirmed
+                for Term 4 2026. A small number of integration decisions remain open
+                before any school goes live — and we're working through them carefully,
+                not skipping past them.
+              </p>
+            </div>
+            <div class="timeline">
+              <div class="tl-item reveal">
+                <div class="tl-dot">1</div>
+                <div class="tl-content">
+                  <div class="tl-stage">STAGE 1 · NOW · TERM 4 2026</div>
+                  <h3>Pilot Launch</h3>
+                  <p>
+                    A pilot cohort of three schools. The first school is confirmed and the
+                    other two are being identified. We work through the remaining open
+                    questions with real, closely-supported users.
+                  </p>
+                </div>
+              </div>
+              <div class="tl-item reveal">
+                <div class="tl-dot">2</div>
+                <div class="tl-content">
+                  <div class="tl-stage">STAGE 2 · NEXT</div>
+                  <h3>District Rollout</h3>
+                  <p>
+                    Expand within a single district, proving the SMT-to-district oversight
+                    layer at real scale. Timing depends on how the pilot goes.
+                  </p>
+                </div>
+              </div>
+              <div class="tl-item reveal">
+                <div class="tl-dot">3</div>
+                <div class="tl-content">
+                  <div class="tl-stage">STAGE 3 · THEN</div>
+                  <h3>Provincial Rollout</h3>
+                  <p>
+                    Extend to province-level oversight and onboarding, deepening CAPS and
+                    SIAS coverage across grades and languages.
+                  </p>
+                </div>
+              </div>
+              <div class="tl-item reveal">
+                <div class="tl-dot">4</div>
+                <div class="tl-content">
+                  <div class="tl-stage">STAGE 4 · LATER</div>
+                  <h3>Africa Expansion</h3>
+                  <p>
+                    Carry the curriculum-agnostic core into new national curricula and
+                    languages across the continent.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ PAGE: CONTACT ============ -->
+      <div class="page" id="page-contact">
+        <section class="dark-section" style="padding-top: 64px">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="section-num">08 · LET'S TALK</div>
+              <h2 contenteditable="true">Tell us which conversation you want to have.</h2>
+              <p contenteditable="true">
+                Investor, DBE official, school leader, or educator — tell us who you are
+                and what you need, and we'll tailor the conversation to you.
+              </p>
+            </div>
+            <div class="contact-form-wrap">
+              <div class="contact-form-side reveal">
+                <div class="contact-feature">
+                  <span class="contact-feature-icon">🎯</span>
+                  <p>
+                    Tell us your role and purpose, and we'll route your enquiry to the
+                    right conversation.
+                  </p>
+                </div>
+                <div class="contact-feature">
+                  <span class="contact-feature-icon">🔒</span>
+                  <p>
+                    Your details go straight to the founder's inbox. They are not sold,
+                    and they are used only to reply to you. Read our
+                    <a
+                      href="#"
+                      onclick="
+                        go('privacy');
+                        return false;
+                      "
+                      >privacy notice</a
+                    >.
+                  </p>
+                </div>
+                <div class="contact-feature">
+                  <span class="contact-feature-icon">⚡</span>
+                  <p>Expect a personal reply, not an automated sequence.</p>
+                </div>
+                <div class="contact-channels">
+                  <a
+                    class="contact-channel"
+                    href="mailto:infinite-ai-ecosystem@protonmail.com"
+                    >✉️ infinite-ai-ecosystem@protonmail.com</a
+                  >
+                  <a class="contact-channel" href="tel:+27611939620"
+                    >📞 +27 61 193 9620</a
+                  >
+                </div>
+              </div>
+              <form class="lead-form reveal" id="leadForm">
+                <div class="field-row">
+                  <div class="field">
+                    <label>Name <span class="required-mark">*</span></label
+                    ><input type="text" id="lf-name" name="entry.100000001" required />
+                  </div>
+                  <div class="field">
+                    <label>Email <span class="required-mark">*</span></label
+                    ><input type="email" id="lf-email" name="entry.100000002" required />
+                  </div>
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label>Organisation / School</label
+                    ><input type="text" id="lf-org" name="entry.100000003" />
+                  </div>
+                  <div class="field">
+                    <label>Phone</label
+                    ><input type="tel" id="lf-phone" name="entry.100000004" />
+                  </div>
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label>I'm interested in <span class="required-mark">*</span></label>
+                    <select id="lf-purpose" name="entry.100000005" required>
+                      <option value="" disabled selected>Choose one…</option>
+                      <option>Investor Pitch</option>
+                      <option>Join the Pilot Waitlist</option>
+                      <option>Request More Information</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>I am a(n) <span class="required-mark">*</span></label>
+                    <select id="lf-stakeholder" name="entry.100000006" required>
+                      <option value="" disabled selected>Choose one…</option>
+                      <option>Investor</option>
+                      <option>DBE</option>
+                      <option>School</option>
+                      <option>Educator</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Message</label
+                  ><textarea
+                    id="lf-message"
+                    name="entry.100000007"
+                    placeholder="Tell us a little about what you need…"
+                  ></textarea>
+                </div>
+                <p class="form-note">
+                  Sending this opens your email app with these details so you can email
+                  us. We use them only to reply to you. Please do not include any
+                  learner's personal information.
+                  <a
+                    href="#"
+                    onclick="
+                      go('privacy');
+                      return false;
+                    "
+                    >Read the privacy notice</a
+                  >.
+                </p>
+                <button
+                  type="submit"
+                  class="btn btn-amber"
+                  style="width: 100%; justify-content: center"
+                >
+                  ✉️ Send &amp; Start the Conversation
+                </button>
+                <div class="form-status" id="formStatus"></div>
+              </form>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ PAGE: PRIVACY NOTICE ============ -->
+      <div class="page" id="page-privacy">
+        <section class="dark-section" style="padding-top: 64px">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="section-num">PRIVACY NOTICE</div>
+              <h2>How we handle what you send us.</h2>
+              <p>
+                This notice is given under the Protection of Personal Information Act 4 of
+                2013 (POPIA). It covers this website only. Last updated 5 November 2026.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>1 · Who is responsible</h3>
+              <p>
+                INFINITE-AI, Durban, South Africa. The founder, Sarah-Jane Harding, deals
+                with every enquiry herself. Email
+                <a href="mailto:infinite-ai-ecosystem@protonmail.com"
+                  >infinite-ai-ecosystem@protonmail.com</a
+                >
+                or phone <a href="tel:+27611939620">+27 61 193 9620</a>.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>2 · What we collect</h3>
+              <p>Only what you type into the contact form:</p>
+              <ul>
+                <li>Your name and email address (needed to reply).</li>
+                <li>
+                  What you are interested in and who you are, from the two dropdowns
+                  (needed to route your enquiry).
+                </li>
+                <li>
+                  Your organisation or school, your phone number and your message
+                  (optional).
+                </li>
+              </ul>
+              <p style="margin-top: 8px">
+                This website has no accounts, no cookies and no analytics or advertising
+                trackers.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>3 · Why we collect it</h3>
+              <p>
+                To read your enquiry and reply to you, and, if you ask, to arrange a
+                conversation, a place on the pilot waitlist or an investor discussion. We
+                do not add you to a marketing list, we do not sell or share your details,
+                and no automated decision is made about you.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>4 · How your details reach us</h3>
+              <p>
+                Pressing Send opens a message in your own email app, addressed to our
+                Proton Mail inbox, with your details filled in. You choose whether to send
+                it. This website does not store or transmit the form itself. Proton Mail
+                is based in Switzerland, so once you send the email it is held outside
+                South Africa.
+              </p>
+              <p>
+                This page loads its fonts from Google Fonts, so Google receives your IP
+                address and browser details when the page opens.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>5 · How long we keep it</h3>
+              <p>
+                Only as long as we need it to deal with your enquiry and any conversation
+                that follows. After that we delete it.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>6 · Please do not send learner information</h3>
+              <p>
+                This form is for adults. Do not put any learner's personal information in
+                it. If you do by mistake, tell us and we will delete it. When a school
+                uses INFINITE-AI, the school is the responsible party for its learners'
+                information and INFINITE-AI acts only as its operator, inside that
+                school's own separated space.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>7 · Your rights</h3>
+              <p>
+                You may ask us what we hold about you, ask us to correct or delete it, or
+                object to how we use it. Email us at the address above and we will reply
+                to you.
+              </p>
+            </div>
+            <div class="notice-card">
+              <h3>8 · Complaints</h3>
+              <p>
+                If you are unhappy with how we handled your information, you may complain
+                to the Information Regulator (South Africa):
+                <a
+                  href="https://inforegulator.org.za/complaints/"
+                  target="_blank"
+                  rel="noopener"
+                  >inforegulator.org.za/complaints</a
+                >,
+                <a href="mailto:enquiries@inforegulator.org.za"
+                  >enquiries@inforegulator.org.za</a
+                >, 010 023 5200.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <!-- /app -->
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="footer-brand">
+            <img src="images/img-01-0996c6de.webp" alt="INFINITE-AI" /><span
+              >INFINITE-AI</span
+            >
+          </div>
+          <p style="font-size: 15px; max-width: 100%; width: 100%">
+            An AI-first, POPIA-safe education ecosystem — built in South Africa, for South
+            African schools. One Brain, five modules, a pipeline that never forgets.
+          </p>
+          <p style="margin-top: 12px; opacity: 0.7; font-size: 13px">
+            Durban · South Africa<br />Designed for AWS af-south-1 (South Africa)
+          </p>
+        </div>
+        <div class="footer-links-row">
+          <div class="footer-col">
+            <h5>Explore</h5>
+            <button onclick="go('story')">Our Story</button>
+            <button onclick="go('ecosystem')">The Ecosystem</button>
+            <button onclick="go('trust')">Trust &amp; Security</button>
+            <button onclick="go('roadmap')">Roadmap</button>
+            <button onclick="go('privacy')">Privacy notice</button>
+          </div>
+          <div class="footer-col">
+            <h5>Get in touch</h5>
+            <a href="tel:+27611939620">📞 +27 61 193 9620</a>
+            <a href="mailto:infinite-ai-ecosystem@protonmail.com"
+              >✉️ infinite-ai-ecosystem@protonmail.com</a
+            >
+            <button onclick="go('contact')">Contact founder</button>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="edit-hint" id="editHint">
+      <span class="dot"></span>
+      <span
+        >Click any text to edit · Add new pages by copying a &lt;div class="page"&gt;
+        block</span
+      >
+    </div>
+
+    <script>
+      // ---- SPA navigation ----
+      const PAGES = [
+        'home',
+        'story',
+        'ecosystem',
+        'trust',
+        'stakeholders',
+        'access',
+        'roadmap',
+        'contact',
+        'privacy',
+      ];
+      function go(pageId, presetPurpose, presetStakeholder) {
+        if (PAGES.indexOf(pageId) === -1) pageId = 'home';
+        document.querySelectorAll('.page').forEach((p) => p.classList.remove('active'));
+        const target = document.getElementById('page-' + pageId);
+        if (target) target.classList.add('active');
+        document
+          .querySelectorAll('.nav-links button[data-page]')
+          .forEach((b) => b.classList.toggle('active', b.dataset.page === pageId));
+        document.getElementById('navLinks').classList.remove('open');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        history.replaceState(null, '', '#' + pageId);
+        setTimeout(() => {
+          if (target)
+            target.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
+        }, 40);
+        if (presetPurpose) {
+          const p = document.getElementById('lf-purpose');
+          if (p) p.value = presetPurpose;
+        }
+        if (presetStakeholder) {
+          const s = document.getElementById('lf-stakeholder');
+          if (s) s.value = presetStakeholder;
+        }
+      }
+      function toggleNav() {
+        document.getElementById('navLinks').classList.toggle('open');
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const initial = (location.hash || '#home').replace('#', '');
+        go(PAGES.indexOf(initial) !== -1 ? initial : 'home');
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('in');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
+        );
+        document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+        setTimeout(() => document.getElementById('editHint').classList.add('show'), 1200);
+        setTimeout(
+          () => document.getElementById('editHint').classList.remove('show'),
+          7000,
+        );
+      });
+
+      // ---- Contact form: opens the visitor's own email app (no third-party form service) ----
+      (function () {
+        const form = document.getElementById('leadForm');
+        if (!form) return;
+        const statusEl = document.getElementById('formStatus');
+        function showStatus(kind, text) {
+          statusEl.textContent = text;
+          statusEl.className = 'form-status show ' + kind;
+        }
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          const name = document.getElementById('lf-name').value.trim();
+          const email = document.getElementById('lf-email').value.trim();
+          const purpose = document.getElementById('lf-purpose').value;
+          const stakeholder = document.getElementById('lf-stakeholder').value;
+          if (!name || !email || !purpose || !stakeholder) {
+            showStatus(
+              'err',
+              'Please fill in your name, email, and both dropdowns before sending.',
+            );
+            return;
+          }
+          const org = document.getElementById('lf-org').value.trim();
+          const phone = document.getElementById('lf-phone').value.trim();
+          const message = document.getElementById('lf-message').value.trim();
+          const subject = encodeURIComponent(
+            'INFINITE-AI enquiry: ' + purpose + ' (' + stakeholder + ')',
+          );
+          const bodyLines = [
+            'Name: ' + name,
+            'Email: ' + email,
+            'Organisation: ' + (org || '—'),
+            'Phone: ' + (phone || '—'),
+            'Interested in: ' + purpose,
+            'Stakeholder type: ' + stakeholder,
+            '',
+            'Message:',
+            message || '—',
+          ];
+          const mailto =
+            'mailto:infinite-ai-ecosystem@protonmail.com?subject=' +
+            subject +
+            '&body=' +
+            encodeURIComponent(bodyLines.join('\n'));
+          showStatus(
+            'ok',
+            "Thanks — your email app should open to send this straight to Sarah-Jane. If it doesn't, email infinite-ai-ecosystem@protonmail.com directly and mention: " +
+              purpose +
+              '.',
+          );
+          window.location.href = mailto;
+          setTimeout(function () {
+            form.reset();
+          }, 400);
+        });
+      })();
+    </script>
+  </body>
+</html>

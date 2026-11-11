@@ -19,8 +19,8 @@
   },
   "devDependencies": {
     "@infinite-ai/config": "workspace:*",
-    "@vitest/coverage-v8": "5.0.5",
+    "@vitest/coverage-v8": "5.1.0",
     "typescript": "^6.0.3",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   }
 }

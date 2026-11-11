@@ -47,14 +47,32 @@ OQ-013 block current work: the build is still in Stage 05, and Phase 4 does not 
 before Stage 18 passes its exit gate. They are recorded now so they are decided
 deliberately, not defaulted into, when that time comes.
 
-| ID     | Raised     | Stage | Status              | Question                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ------ | ---------- | ----- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| OQ-008 | 2026-08-05 | 19    | OPEN                | Should the visual AI-workflow builder be its own package (`@infinite-ai/agent-builder`) or built inside `packages/agents`? A separate package is cleaner to maintain on its own timeline; integrating it avoids keeping workflow state in two places.                                                                                                                                                                                                                               |
-| OQ-009 | 2026-08-05 | 22    | OPEN                | Should live classroom quiz games (Stage 22) be a standalone product area, or folded into MOD-04's teaching-and-learning toolkit (Stage 11)? Standalone gets more visibility and dedicated resourcing; folding it in fits the module structure already in place.                                                                                                                                                                                                                     |
-| OQ-010 | 2026-08-05 | 25    | RESOLVED (Stage 26) | Should the learner-facing app (Stage 25) be a separate PWA, or built into the same `apps/web` every other role uses? **Decision: integrated into `apps/web`.** The `packages/learner-client` data model is UI-shell-agnostic; a native PWA shell can be added later (OQ-010b) if offline-first requirements harden. The integrated approach shares auth, the design system, and the shell without additional infrastructure. PWA manifest added at `apps/web/public/manifest.json`. |
-| OQ-011 | 2026-08-05 | 10/19 | OPEN                | Where should SIAS documentation and workflow live long-term — inside MOD-02 Support Analytics (Stage 10, where it is currently planned), or split into its own module for more room to grow independently?                                                                                                                                                                                                                                                                          |
-| OQ-012 | 2026-08-05 | 20/21 | OPEN                | Should the Master Prompt Builder (Stage 20) and System Prompt Builder (Stage 21) be one combined tool or two separate ones? Separate is clearer about what each does; combined is a simpler experience over shared infrastructure.                                                                                                                                                                                                                                                  |
-| OQ-013 | 2026-08-05 | 08    | OPEN                | Eight of South Africa's eleven official languages, and Grades 10-12 entirely, are still missing from the CAPS documents supplied so far (see OQ-002). Sepedi, Sesotho and Setswana would serve the largest remaining population. Prioritise sourcing these before Stage 08 is considered feature-complete, or launch with what's supplied and add the rest afterward?                                                                                                               |
+| ID     | Raised     | Stage | Status              | Question                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------ | ---------- | ----- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| OQ-008 | 2026-08-05 | 19    | OPEN                | Should the visual AI-workflow builder be its own package (`@infinite-ai/agent-builder`) or built inside `packages/agents`? A separate package is cleaner to maintain on its own timeline; integrating it avoids keeping workflow state in two places.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| OQ-009 | 2026-08-05 | 22    | OPEN                | Should live classroom quiz games (Stage 22) be a standalone product area, or folded into MOD-04's teaching-and-learning toolkit (Stage 11)? Standalone gets more visibility and dedicated resourcing; folding it in fits the module structure already in place.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| OQ-010 | 2026-08-05 | 25    | RESOLVED (Stage 26) | Should the learner-facing app (Stage 25) be a separate PWA, or built into the same `apps/web` every other role uses? **Decision: integrated into `apps/web`.** The `packages/learner-client` data model is UI-shell-agnostic; a native PWA shell can be added later (OQ-010b) if offline-first requirements harden. The integrated approach shares auth, the design system, and the shell without additional infrastructure. PWA manifest added at `apps/web/public/manifest.json`.                                                                                                                                                                                                                                                                                                                                               |
+| OQ-011 | 2026-08-05 | 10/19 | OPEN                | Where should SIAS documentation and workflow live long-term — inside MOD-02 Support Analytics (Stage 10, where it is currently planned), or split into its own module for more room to grow independently?                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| OQ-012 | 2026-08-05 | 20/21 | OPEN                | Should the Master Prompt Builder (Stage 20) and System Prompt Builder (Stage 21) be one combined tool or two separate ones? Separate is clearer about what each does; combined is a simpler experience over shared infrastructure.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| OQ-013 | 2026-08-05 | 08    | PARTIALLY ANSWERED  | Eight of South Africa's eleven official languages, and Grades 10-12 entirely, are still missing from the CAPS documents supplied so far (see OQ-002). Sepedi, Sesotho and Setswana would serve the largest remaining population. Prioritise sourcing these before Stage 08 is considered feature-complete, or launch with what's supplied and add the rest afterward? **Update 2026-11-05:** Sepedi, Sesotho and Setswana Home Language Grades R-3 are ingested (derived structure, `ratifiedBy` null, paraphrased in English; each needs a first-language reviewer before ratification). The Foundation Phase Home Language documents for isiXhosa, isiNdebele, Afrikaans, Xitsonga, Tshivenda, siSwati and isiZulu have been supplied and are next. Intermediate and Senior Phase languages and Grades 10-12 are still missing. |
+
+## Decisions recorded 2026-11-05 (table items)
+
+Decided by Sarah-Jane Harding. Each row stays in the table above until its work is done.
+
+| ID                     | Decision                                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| OQ-003                 | Benjamin Pine will supply the unit blueprint, assessment task, rubric/marking memo and parent progress report templates. Not yet supplied. |
+| OQ-006                 | SACE Type-1 activity-level point tables are not available yet. Stays open; nothing is computed.                                            |
+| OQ-008                 | The workflow builder is its own package.                                                                                                   |
+| OQ-009                 | Live quiz games are built inside MOD-04, the Teacher Toolbox.                                                                              |
+| OQ-011                 | SIAS stays inside MOD-02 until it needs its own data model.                                                                                |
+| OQ-012                 | Master and System Prompt Builders are two views over one engine.                                                                           |
+| OQ-013                 | Launch with the documents supplied. Source Sepedi, Sesotho and Setswana next and show which languages are covered.                         |
+| OQ-015                 | Use Benjamin Pine's own content or safeguarding policy, by grade band, as the checker. Policy not yet supplied.                            |
+| OQ-016                 | A spreadsheet of 50 real outputs per module is made for human labelling. Not yet made.                                                     |
+| OQ-017, OQ-018, OQ-020 | No decision needed. Each waits on a staging environment, the first pilot month, or a human recording.                                      |
+| OQ-030                 | Unchanged. This is the MOD-01 ratified-artefacts question. The tenant-directory question was renumbered OQ-042.                            |
 
 ## Resolved
 
@@ -384,7 +402,9 @@ Terraform — no code change needed to update routing per school.
 3. Subscribe the appropriate school contact(s) to the topic — SMS, email, or a PagerDuty
    HTTP endpoint — for each pilot school.
 
-### OQ-030 — a platform tenant directory has no sanctioned read path · 2026-10-01
+### OQ-042 — a platform tenant directory has no sanctioned read path · 2026-10-01 (first numbered OQ-030 by mistake; OQ-030 is the MOD-01 ratified-artefacts question in the table above)
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** yes, build a tenant directory for platform admins, with usage counts. Needs before building: a separate privileged read role and tested database policy, and a second declared purpose in `purpose.ts` for usage counts. No learner data. Not started.
 
 The shell linked platform admins to `/platform/tenants`, a page that never existed. It was
 removed from the navigation rather than built, because the data it implies cannot be read
@@ -398,6 +418,8 @@ which role and policy may read it. Until then, `platform_admin` reaches the Run 
 (still sample data) and the environment docs.
 
 ### OQ-031 — four navigation entries had no page and no data behind them · 2026-10-01
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** all four pages are wanted. HoD Coverage and SBST Meetings (minutes record only, no SIAS steps) can start now. SMT Tiers is blocked on the SIAS/MTSS tier rule and a school-level counting rule; SMT PD is blocked on SACE activity-level points (OQ-006). Neither will be built over invented data.
 
 `/hod/coverage`, `/smt/tiers`, `/smt/pd` and `/sbst/meetings` were linked from the shell but never
 existed. They were removed from the navigation rather than built, because each needs something this
@@ -418,6 +440,8 @@ design, the SIAS/MTSS tier rule, the SACE schedule, a minutes record). Each can 
 
 ### OQ-032 — which role wins when an account holds more than one · 2026-10-01
 
+**Decision 2026-11-05 (Sarah-Jane Harding):** multi-role accounts are allowed. The person chooses the active role at sign-in and every action is checked against that role. Not yet built; `roleFromProfile` keeps first-match until it is.
+
 Stage 99 removed the silent `teacher` default for accounts with no recognised role. It did not
 change how an account holding **several** of our roles is handled: the first one in Keycloak's
 `realm_access.roles` order wins, and that order is not meaningful. If the same account can be both,
@@ -431,6 +455,8 @@ what is the precedence (or should the person choose at sign-in)? Until then `rol
 first-match behaviour, pinned by a test that names this OQ.
 
 ### OQ-033 — no real person can decide an approval gate: identity mismatch and no provisioning · 2026-10-07
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** provisioning: the school administrator invites; first sign-in only links an invited account by verified email and never grants a role from a token claim. Still to build: invite flow, `email_verified` check, first-administrator route, session end on suspension.
 
 Found by approving a gate in a browser, not by any test. With the dev stack running and a gate genuinely open (run
 `WAITING_FOR_APPROVAL`), signing in as the SMT dev user and pressing **Approve** returns **HTTP 422**:
@@ -476,6 +502,8 @@ account up at decision time, but its status is not re-checked there.
 
 ### OQ-034 — what a district rollup would be, if the product wants one · 2026-10-08
 
+**Decision 2026-11-05 (Sarah-Jane Harding):** parked. No district page until a district office exists as a role. If revived, schools publish their own aggregates upward (no cross-school read of identifiable data); the minimum group size is still a policy number to be supplied.
+
 `/district` (reachable by both platform roles, no nav link) used to show three invented schools with learner counts and tier
 percentages under "Aggregated, de-identified data only. Minimum cohort size enforced." It now says it is not available. There is no
 district concept in the data model, no cross-school read in `packages/db`, and no cohort-size rule anywhere in the codebase; the
@@ -491,6 +519,8 @@ access matrix gives neither platform role any right to learner records or tier p
 Until decided, the page asserts no control it does not exercise.
 
 ### OQ-035 — the EGRA screening tab's benchmarks and tier rule have no supplied source · 2026-10-08
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** the tab shows scores against benchmarks the school types in, and recommends no tier. The SBST person assigns the tier. The built-in benchmark table and 0 / 1-2 / 3+ rule are to be removed. Not yet changed.
 
 Found while removing the sample data from the SBST tabs. `EgraScreeningView.tsx` carries a benchmark table (per grade, per subtest) and
 a rule that turns the number of below-benchmark subtests into a tier recommendation (0 → Tier 1, 1–2 → Tier 2, 3+ → Tier 3). Its
@@ -513,6 +543,8 @@ tier at all or only show scores against the school's own benchmarks. Until decid
 
 ### OQ-036 — is MFA actually enforced for `admin`, `smt` and the platform roles? · 2026-10-24
 
+**Decision 2026-11-05 (Sarah-Jane Harding):** treat MFA as **not enforced** until verified. Correct `docs/SECURITY.md` section 7 to say so, and add the Keycloak configuration to the repo with a drift test (provisioning step 7).
+
 `docs/SECURITY.md` §7 states that MFA is enforced in Keycloak for the `admin`, `smt` and `platform_*` roles. Nothing
 in the repository shows it: `infra/keycloak/realm.json` configures no OTP / required action / browser-flow step and
 no email verification, and the production realm is not stored here. Found while designing account provisioning
@@ -523,3 +555,126 @@ off a role that Keycloak still carries.
 action, keyed on what), and is email verification required? If yes, record where it is configured; if no, say so in
 `SECURITY.md`. Until answered, treat MFA as not enforced. The provisioning design's step 7 will add the realm
 configuration to the repository with a drift test, so this does not depend on memory again.
+
+### OQ-037 — a public widget catalogue puts one school's code in front of other schools · 2026-10-25 · **decided 2026-10-26 (partly)**
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** reviewed before public release by Infinite-AI appointed staff (see OQ-039), and every public widget runs in a sandbox with no network.
+
+**Decision (Sarah-Jane Harding):** yes, widgets may be shared publicly, but school-specific information is removed first. Built: the Wiring Board removes listed school details and contact patterns, a named SMT member confirms the cleaned version, and the offer file records counts only, never the removed words. `mayOfferToOtherSchools` refuses a public offer that is not marked cleaned. **Still open:** whether shared code runs only after platform review in a sandbox (see OQ-039), and how the platform detects school details a word list misses.
+
+The request is that a widget a school makes can be published "publicly" and offered to every school to accept or
+reject. A widget is HTML and JavaScript. Offering it across schools means one tenant's code running in another
+tenant's session, which `CLAUDE.md` rule 1 (a tenant never sees another tenant's data) and the security model
+do not currently cover: the code can read whatever the page can.
+
+**Needs a human:** decide what may be shared. Options: (a) share only a declarative description (manifest, schemas,
+agent contract) and let the platform build the widget from a reviewed kit; (b) share code only after the platform
+operator reviews and signs it, and run it sandboxed with no network; (c) do not offer cross-school code at all.
+Until decided, `packages/widget-registry` only models the states and does no cross-school work.
+
+### OQ-038 — a typed name is not the actor of record · 2026-10-25 · **decided 2026-10-26**
+
+**Decision (Sarah-Jane Harding):** the signed-in account is the actor of record. The typed name is display only. Built: the registry refuses a ratification, wiring or roll back with no `accountId`; the browser kit takes the signed-in identity from the host page (`window.IAI_IDENTITY`), locks the name field to it, and marks a package with no sign-in `ratified_unverified_identity`. **Still open:** the platform must supply that identity to the page (depends on OQ-033).
+
+The browser Studio asks the person ratifying to type a name and role. The repo's rule is that every decision records
+`user_account.id`, and OQ-033 already notes no real person can decide a gate yet. A typed name can be anyone's.
+
+**Needs a human:** accept a typed name only as a label beside the authenticated account, or require the signed-in
+`user_account.id` and treat the typed name as display text. The registry package already carries `accountId`
+(nullable while only the browser kit exists) and refuses codes and single words as names.
+
+### OQ-039 — who reviews a widget before it goes public · 2026-10-25 · **decided 2026-10-26**
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** you alone are the appointed reviewer to start. Public releases need two reviewers once a second person is appointed. The list is held by the platform, not by schools. Checklist (suggested, to confirm): school information left, POPIA, contract, no network or dynamic code.
+
+**Decision (Sarah-Jane Harding):** Infinite-AI appointed staff review it. Built: `applyPlatformReview` accepts a decision only from a signed-in account on the platform's appointed-reviewer list (a school cannot supply that list), with a reason; a public offer stays `submitted_for_platform_review` until then. **Still open:** who is appointed, how the list is kept, and what the reviewer checks (suggested: school information left, POPIA, contract, no network or dynamic code).
+
+A school-made widget that passes the automatic audit (POPIA scan, agent contract present) has still not been read
+by a person outside the school. The request names SMT ratification and public/private choice but no platform
+review before release to other schools.
+
+**Needs a human:** confirm a platform operator reviews before any public release, who that role is, and what it
+checks. Until then the design treats "public" as "submitted for platform review", not "live".
+
+### OQ-040 — widget output uses learner codes; agent results use platform record ids · 2026-10-26
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** the platform resolves learner codes and run ids to record ids at ingest, using a per-school mapping it holds. Widgets never hold real ids. Mapping store and ingest step not yet designed.
+
+Most MOD-02 agents (AC-01 to AC-10) and DW-06, DW-07, DW-08 return per-learner results naming `learnerId`, `termId`,
+`planId`, `insightId` or `sbstRatificationId` as UUIDs. The browser widgets only hold learner codes (for example
+`L001`) and run ids, by design (POPIA: no learner names, no real ids in a widget). A widget therefore cannot produce a
+schema-valid agent result, and inventing UUIDs would be wrong.
+
+**Needs a human:** confirm that the platform resolves learner codes and run ids to record ids when it ingests a
+widget's output (the same step that fills `tenantId`), and where that mapping lives. Until then the Studio marks these
+widgets "cannot be laid out from this page" and shows the reason. New artefact ids (worksheets, passages, plans) are
+minted by the adapter because the artefact is created there.
+
+### OQ-041 — CE agents cite sources by document id, version and clause; the widgets hold typed references · 2026-10-26
+
+**Decision 2026-11-05 (Sarah-Jane Harding):** CE widgets will let the teacher pick the ratified source document (id and version) from the Brain's L0 list and type the clause, so output cites properly. Not yet built.
+
+CE-01 to CE-09 cite every source as `{documentId, documentVersion, clause, page?, ratifiedBy}` taken from ratified L0
+documents. The CE widgets carry a typed source reference (for example "DEMO ATP Grade 2 Term 1, weeks 1-3"), which does
+not split into those three parts, and "ratifiedBy" is a Brain fact the widget does not have.
+
+**Needs a human:** decide whether CE widgets should take the ratified source documents as an input (from the Brain's
+L0 list, by id and version) so their output can cite them properly, or whether the platform resolves a typed reference
+to a document at ingest. Until then the Studio shows the reason and the fields the agent asks for.
+
+### OQ-042 — the marketing site and the reference links in the Unit Blueprint · 2026-11-05
+
+Nine HTML files were supplied to ingest. Six were already in the repo as identical copies (Parent Progress Report,
+Lesson Plan Blueprint, Marking Memorandum, Provider Setup Guide, Provider Hub, SBA Blueprint apart from one flag
+emoji, fixed). The CAPS Canon Console is already built as the admin page and registry. Two things need a person:
+
+1. **The marketing site** (`docs/marketing/educators-ecosystem/`) is archived, not served. On 2026-11-05 its stale
+   claims were corrected, the Google Form was removed (the form now only opens the visitor's email app) and a POPIA
+   privacy notice was added. Still open: the legal entity name and Information Officer registration for the notice,
+   a concrete retention period, whether to publish roadmap dates for stages 2 to 4, and where it is hosted.
+2. **The Unit Blueprint upload** has `[1]` reference links on its field labels that the repo copy lacks. Seven distinct
+   targets: three are DBE or DBE-style sources, the rest are Scribd, YouTube and a Brisk Teaching blog post.
+
+**Needs a human:** (a) where the marketing site is hosted, who approves its claims, and the entity and Information
+Officer details for its privacy notice; (b) whether the Unit Blueprint should carry the reference links, and if
+so only the DBE ones. Until then the site stays archived and the Unit Blueprint stays as it is.
+
+### OQ-043 — provider names in the Provider Hub, Azure wiring, and the price card · 2026-11-06
+
+Checked while ingesting the supplied Provider Setup Guide and Provider Hub against `apps/gateway/src/config/env.ts`.
+
+1. **Setup Guide: fixed.** Five variable names did not match what the gateway reads (`GEMINI_*`, `QWEN_*`, `LMSTUDIO_*`,
+   `AZURE_OPENAI_BASE_URL`). They are now `GOOGLE_*`, `DASHSCOPE_*`, `LM_STUDIO_*` and `AZURE_OPENAI_ENDPOINT`
+   (plus `AZURE_OPENAI_DEPLOYMENT`). Every variable the guide names is now in `env.ts`.
+2. **Provider Hub: not fixed.** It uses singular `*_API_KEY`, `GEMINI_API_KEY`, `QWEN_BASE_URL` and `*_MODEL_ID` names
+   (`LM_STUDIO_MODEL_ID`, `OLLAMA_MODEL_ID`, `QWEN_MODEL_ID`) that `env.ts` does not define. It is 300 KB of generated
+   markup, so it was left alone. **Needs a human:** is the Hub meant to produce a `.env` file? If so its names must change.
+3. **Azure.** `providers.ts` passes `AZURE_OPENAI_ENDPOINT` to the generic OpenAI-compatible adapter and uses the
+   deployment as the model name. No code builds Azure's `/openai/deployments/<name>/...?api-version=` path, so Azure may
+   not work end to end. Test it against a real resource before telling a school to use it.
+4. **Price card.** The billing code, `docs/COST_MODEL.md` and `docs/financial-model.html` carry different price cards.
+   **Needs a human:** choose one, then update `packages/billing/src/tiers.ts` and the documents together.
+
+### OQ-044 — the widget archive is not served, and the app's CSP would block it · 2026-11-10
+
+`apps/web/public/widgets/` holds 80 single-file widgets. Two things in the app stop a signed-in person opening them
+from the site: `src/lib/route-access.ts` denies every unlisted route (default deny), and `buildCsp` allows scripts only
+with the per-request nonce plus `strict-dynamic`, which blocks the widgets' inline `<script>`. The existing static pages
+under `public/` have the same property, so this follows the repo's current convention: the files are archived and handed
+to schools, not served.
+
+**Needs a human:** do schools open widgets from the platform, or as downloaded files? If from the platform, a gated route
+(for example `/teacher/tools/<id>`) and a CSP decision are needed, and the CSP change is a security-control change that
+needs your sign-off. Options: serve each widget in a sandboxed iframe with its own hash-based CSP, or stamp the nonce into
+the page on serve. Until decided, nothing changes.
+
+### OQ-045 — who ratifies the first release of each widget · 2026-11-10
+
+The registry refuses a release without a named, signed-in ratifier whose ratification matches the content hash. No release
+of any of the 80 widgets exists, so nothing can be wired. The archive index records each file's SHA-256, which is what a
+ratifier would be ratifying.
+
+**Needs a human:** name who ratifies each module's widgets (for example the HoD for CE, the SBST lead for SA, the PD
+coordinator for PD, the teacher lead for TB), and whether the 7 deterministic classroom tools (no agent, no learner data)
+can be ratified as one batch. Ratification is done in the Studio panel by that person; the release packages are then added
+with `addRelease`.

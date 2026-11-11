@@ -10,8 +10,21 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ## [Unreleased]
 
+### Removed
+
+- **Expired `billing_dunning_emails` feature flag** (`packages/config`)
+  - Passed its `expiresAt` (2026-11-01) and failed the `check:flags` CI gate on every PR.
+    The feature is not shipping, so the flag is removed rather than extended. Nothing in
+    product code evaluated it. Flag tests now use the remaining flags;
+    `docs/ONBOARDING_GUIDE.md` Step 4 updated. Re-add a flag when dunning emails are built
+    (needs a transactional email provider, OQ-021).
+
 ### Added
 
+- **Widget archive, Studio and Board sources, classroom tools and the toolbox catalogue** (`apps/web/public/widgets`, `tools/widget-studio`, `docs/TOOLBOX_CATALOGUE.md`, `docs/WIDGET_STUDIO_AND_BOARD.md`; OQ-044, OQ-045)
+  - 80 single-file widgets with a hashed index and tests; TB-W14 to TB-W20 are seven new classroom tools (no agent, no network, no microphone). Archived, not served, and not yet wired: no release has been ratified.
+- **Widget registry rules** (`@infinite-ai/widget-registry`, `docs/WIDGET_REGISTRY_DESIGN.md`; OQ-037 to OQ-039)
+  - Release package rules: ratification by a named person, reason required, forward-only roll back, wire only a ratified version. Pure TypeScript, no I/O, no new dependencies.
 - **Dev-only chaining and grounding for MOD-01** (`pnpm dev:run-pipeline --chain`; OQ-030 option C)
   - Each CE-01…CE-09 agent gets the ratified L0 documents and the provisional drafts earlier
     agents produced in the same run, labelled, plus a calibration addendum. Production

@@ -133,6 +133,9 @@ source text. Recorded as OQ-005.
 | CAPS — IsiZulu First Additional Language, Grades 1-3 (DBE)                            | Foundation   | 1–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-isizulu-fal-gr1-3.ts`        |
 | CAPS — Life Skills, Grades R-3 (DBE, ISBN 978-1-4315-0422-0)                          | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-skills-r3.ts`           |
 | CAPS — English Home Language, Grades R-3 (DBE, ISBN 978-1-4315-0400-8)                | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-english-hl-fp-gr-r3.ts`      |
+| CAPS — Sepedi Home Language, Grades R-3 (DBE, ISBN 978-1-4315-0404-6)                 | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-sepedi-hl-fp-gr-r3.ts`       |
+| CAPS — Sesotho Home Language, Grades R-3 (DBE, ISBN 978-1-4315-0403-9)                | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-sesotho-hl-fp-gr-r3.ts`      |
+| CAPS — Setswana Home Language, Grades R-3 (DBE, ISBN 978-1-4315-0402-2)               | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-setswana-hl-fp-gr-r3.ts`     |
 | CAPS — First Additional Language, Grades R-3 (DBE, 2011 Final Draft)                  | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-fal-fp-gr-r3.ts`             |
 | CAPS — Mathematics, Grades R-3 (DBE, ISBN 978-1-4315-0433-6)                          | Foundation   | R–3       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-mathematics-fp-gr-r3.ts`     |
 | CAPS — Life Skills, Grades 4-6 (DBE, ISBN 978-1-4315-0491-6)                          | Intermediate | 4–6       | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-life-skills-ip-gr46.ts`      |
@@ -150,6 +153,8 @@ source text. Recorded as OQ-005.
 | CAPS — Technology, Grades 7-9 (DBE, © 2011)                                           | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-technology-sp-gr7.ts`        |
 | CAPS — Economic and Management Sciences, Grades 7-9 (DBE, © 2011)                     | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-ems-sp-gr7.ts`               |
 | CAPS — Creative Arts, Grades 7-9 (DBE, © 2011)                                        | Senior       | 7 (scope) | © 2011 | RATIFIED | Derived structure only — `packages/contracts/src/curriculum/sources/caps-creative-arts-sp-gr7.ts`     |
+
+**Update 2026-11-05.** Sepedi Home Language, Grades R-3 added (22nd CAPS ingestion). Sesotho Home Language, Grades R-3 added (23rd). Setswana Home Language, Grades R-3 added (24th). Provenance is in `docs/sources/caps/foundation/<language>-hl/SOURCES.md`.
 
 All 21 CAPS ingestions store derived topic/content identifiers, content-area slugs, weighting_percent values, and SourceRef citations only — no source text (OQ-005). `ratifiedBy` is `null` on every SourceRef until a human countersigns (per OQ-002). ATPs for IP Mathematics (Gr 5–6) and NST (Gr 6) were also ingested as supplementary sources in `caps-mathematics-ip-gr46.ts` and `caps-nst-ip-gr46.ts` respectively.
 
