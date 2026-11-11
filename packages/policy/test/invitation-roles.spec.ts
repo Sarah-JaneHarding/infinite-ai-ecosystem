@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+import { SCHOOL_STAFF_ROLES } from '../src/provisioning.js';
 import { PLATFORM_ROLES, Role } from '../src/rbac.js';
 
 // OQ-033 drift guard. The invitation table's CHECK constraint lists the roles an invitation may
@@ -50,5 +51,12 @@ describe('roles an invitation may carry (user_invitation CHECK constraint)', () 
         r !== 'learner',
     );
     expect([...invitableRolesInSql()].sort()).toEqual([...expected].sort());
+  });
+
+  it('are exactly the roles the policy package lets an administrator confer', () => {
+    // SCHOOL_STAFF_ROLES gates the application's guard-rails; the CHECK constraint gates the
+    // data. If one changes without the other, a role could be refused by the app but accepted
+    // by the table (harmless) or — worse — accepted by the app and refused only at commit.
+    expect([...invitableRolesInSql()].sort()).toEqual([...SCHOOL_STAFF_ROLES].sort());
   });
 });

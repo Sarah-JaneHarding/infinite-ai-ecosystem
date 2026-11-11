@@ -556,6 +556,8 @@ action, keyed on what), and is email verification required? If yes, record where
 `SECURITY.md`. Until answered, treat MFA as not enforced. The provisioning design's step 7 will add the realm
 configuration to the repository with a drift test, so this does not depend on memory again.
 
+**Recommended way to answer it** (detail in `docs/PROVISIONING_DESIGN.md` §12.2): export the production realm and check four things — OTP required for `admin`, `smt` and the platform roles (or `CONFIGURE_TOTP` on creation), Verify email on, brute-force detection on, no federated provider that skips email verification — then commit the sanitised export with a drift test, or configure what is missing and correct `SECURITY.md`.
+
 ### OQ-037 — a public widget catalogue puts one school's code in front of other schools · 2026-10-25 · **decided 2026-10-26 (partly)**
 
 **Decision 2026-11-05 (Sarah-Jane Harding):** reviewed before public release by Infinite-AI appointed staff (see OQ-039), and every public widget runs in a sandbox with no network.
