@@ -21,6 +21,8 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Added
 
+- **Widget archive, Studio and Board sources, classroom tools and the toolbox catalogue** (`apps/web/public/widgets`, `tools/widget-studio`, `docs/TOOLBOX_CATALOGUE.md`, `docs/WIDGET_STUDIO_AND_BOARD.md`; OQ-044, OQ-045)
+  - 80 single-file widgets with a hashed index and tests; TB-W14 to TB-W20 are seven new classroom tools (no agent, no network, no microphone). Archived, not served, and not yet wired: no release has been ratified.
 - **Widget registry rules** (`@infinite-ai/widget-registry`, `docs/WIDGET_REGISTRY_DESIGN.md`; OQ-037 to OQ-039)
   - Release package rules: ratification by a named person, reason required, forward-only roll back, wire only a ratified version. Pure TypeScript, no I/O, no new dependencies.
 - **Dev-only chaining and grounding for MOD-01** (`pnpm dev:run-pipeline --chain`; OQ-030 option C)

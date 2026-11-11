@@ -654,3 +654,27 @@ Checked while ingesting the supplied Provider Setup Guide and Provider Hub again
    not work end to end. Test it against a real resource before telling a school to use it.
 4. **Price card.** The billing code, `docs/COST_MODEL.md` and `docs/financial-model.html` carry different price cards.
    **Needs a human:** choose one, then update `packages/billing/src/tiers.ts` and the documents together.
+
+### OQ-044 — the widget archive is not served, and the app's CSP would block it · 2026-11-10
+
+`apps/web/public/widgets/` holds 80 single-file widgets. Two things in the app stop a signed-in person opening them
+from the site: `src/lib/route-access.ts` denies every unlisted route (default deny), and `buildCsp` allows scripts only
+with the per-request nonce plus `strict-dynamic`, which blocks the widgets' inline `<script>`. The existing static pages
+under `public/` have the same property, so this follows the repo's current convention: the files are archived and handed
+to schools, not served.
+
+**Needs a human:** do schools open widgets from the platform, or as downloaded files? If from the platform, a gated route
+(for example `/teacher/tools/<id>`) and a CSP decision are needed, and the CSP change is a security-control change that
+needs your sign-off. Options: serve each widget in a sandboxed iframe with its own hash-based CSP, or stamp the nonce into
+the page on serve. Until decided, nothing changes.
+
+### OQ-045 — who ratifies the first release of each widget · 2026-11-10
+
+The registry refuses a release without a named, signed-in ratifier whose ratification matches the content hash. No release
+of any of the 80 widgets exists, so nothing can be wired. The archive index records each file's SHA-256, which is what a
+ratifier would be ratifying.
+
+**Needs a human:** name who ratifies each module's widgets (for example the HoD for CE, the SBST lead for SA, the PD
+coordinator for PD, the teacher lead for TB), and whether the 7 deterministic classroom tools (no agent, no learner data)
+can be ratified as one batch. Ratification is done in the Studio panel by that person; the release packages are then added
+with `addRelease`.

@@ -31,6 +31,9 @@ Rules (tested in `packages/widget-registry/test/release.spec.ts`):
 - **Roll back is a new forward release** that restores earlier content. History is never rewritten, so who
   rolled back, when and why stays on record. A roll back is ratified like any other change.
 
+The widget files and their index are archived at `apps/web/public/widgets/` (see `docs/WIDGET_STUDIO_AND_BOARD.md`).
+No release of them has been ratified yet (OQ-045).
+
 ## Output contract fit
 
 Each widget has an adapter that lays its output out the way its agent contract asks. The adapter output is
