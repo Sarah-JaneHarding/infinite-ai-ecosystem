@@ -11366,3 +11366,17 @@ exposure was a hand-written insert only.
 | Forward migration + tested rollback; repeatable                   | PASS (local SQL) + CI |
 | Fails safe over an existing `NULL` row (original constraint kept) | PASS (local SQL)      |
 | Drift test covers the restated list; mutation-checked             | PASS (unit, mutation) |
+
+## Stage 122 — RLS aggregate case counts the rows the seed actually gives each tenant
+
+**Defect found.** The `RLS isolation suite` failed on `aggregates cannot observe another tenant's rows` for `user_account` (`expected 2 to be 1`). Stage 118 added a second `user_account` per tenant to the seed (the proposer of a role grant request) but the aggregate case still asserted exactly one row.
+
+**Why it is not a leak.** Each tenant owns two accounts after the Stage 118 seed; the query ran under tenant A and counted two, which is A's own pair. A leak would show four.
+
+**Fix.** `SEEDED_ROWS_PER_TENANT` names the tables whose seed is not one row (`user_account: 2`); the assertion stays exact. Nothing was skipped or loosened (rule 2).
+
+| Exit gate item                                 | Result                                                      |
+| ---------------------------------------------- | ----------------------------------------------------------- |
+| Prettier and ESLint clean on the changed file  | PASS                                                        |
+| The aggregate case still fails on a leak       | PASS by construction (a leak adds the other tenant's rows)  |
+| Integration suite passes against real Postgres | OPEN (needs Docker; proven in CI, not in the authoring box) |

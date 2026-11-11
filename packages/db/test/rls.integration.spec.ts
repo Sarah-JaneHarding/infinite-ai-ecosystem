@@ -547,8 +547,18 @@ describe('the fixture itself', () => {
   });
 });
 
+/**
+ * Rows the seed gives each tenant, where that is not one. The aggregate case below needs
+ * the exact figure: "exactly what this tenant owns" is the whole point, so a looser
+ * assertion (>= 1) would let a leak through. `user_account` has two because the
+ * role-grant-request seed needs a proposer distinct from the target account. A leak
+ * would double whatever this says.
+ */
+const SEEDED_ROWS_PER_TENANT: Readonly<Record<string, number>> = { user_account: 2 };
+
 describe.each(TENANT_OWNED_TABLES)('tenant isolation on %s', (table) => {
   const quoted = `"${table}"`;
+  const ownedRows = SEEDED_ROWS_PER_TENANT[table] ?? 1;
 
   it("does not return another tenant's row by primary key", async () => {
     const otherId = rowIds.get(table)!.b;
@@ -615,8 +625,8 @@ describe.each(TENANT_OWNED_TABLES)('tenant isolation on %s', (table) => {
         `SELECT count(*)::bigint AS count FROM ${quoted}`,
       ),
     );
-    // Exactly the one row this tenant owns. A leak would show 2.
-    expect(Number(rows[0]!.count)).toBe(1);
+    // Exactly the rows this tenant owns. A leak would add the other tenant's.
+    expect(Number(rows[0]!.count)).toBe(ownedRows);
   });
 });
 
