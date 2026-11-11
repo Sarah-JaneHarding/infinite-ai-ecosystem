@@ -11258,3 +11258,27 @@ or the audit chain); the database lock for the race is step 3.
 | No self-grant; no platform / guardian / learner role; confirmation rule | PASS (tests)      |
 | Last administrator cannot be removed by a single change                 | PASS (exhaustive) |
 | Last administrator safe under concurrency                               | OPEN (step 3)     |
+
+## Stage 118 — OQ-036 Keycloak OTP and email verification
+
+`infra/keycloak/realm.json`: `verifyEmail: true`; custom browser flow `browser-mfa` (cookie or password form, then one conditional
+sub-flow per role, each a `conditional-user-role` check plus a required `auth-otp-form` with first-login set-up) for `admin`, `smt`,
+`platform_support` and `platform_admin`; required actions `CONFIGURE_TOTP` and `VERIFY_EMAIL` enabled. Dev users were already
+`emailVerified`. `docs/SECURITY.md` §7 rewritten to say what is verified (the configuration) and what is not (a live import and
+a production realm).
+
+**Tests.** `packages/policy/test/keycloak-realm-mfa.spec.ts` (11): email verification on; both required actions enabled; the
+browser flow is custom, top-level and exists; every sub-flow and config an execution names exists; each of the four roles has an
+OTP sub-flow that is reached, required and sets itself up; password still comes first; roles exist in the realm; dev users verified.
+Mutation-checked: `verifyEmail` false fails 1, a role condition changed fails 1, conditional steps disabled fails 4.
+
+**Not done.** Never run against Keycloak (no Docker in the authoring sandbox); the steps are in OQ-036. The production realm is
+not in this repository. Two roles on one user would ask for a code twice (the sub-flows are independent); no user holds two of
+these roles today.
+
+| Exit gate item                                     | Result                       |
+| -------------------------------------------------- | ---------------------------- |
+| Realm configuration in the repository              | PASS (tests)                 |
+| Drift test guards it                               | PASS (mutation-checked)      |
+| `SECURITY.md` §7 matches what is evidenced         | PASS                         |
+| Keycloak imports the flow and prompts for the code | OPEN (needs a live Keycloak) |
