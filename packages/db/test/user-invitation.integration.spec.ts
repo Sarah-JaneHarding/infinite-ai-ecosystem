@@ -80,6 +80,23 @@ describe('user_invitation: what the data layer refuses', () => {
     );
   });
 
+  it('refuses a NULL roles value — a CHECK that evaluates to NULL would otherwise pass', async () => {
+    // The column is nullable and cardinality(NULL) is NULL, so before the constraint said
+    // `"roles" IS NOT NULL` this insert was accepted. Raw SQL: the Prisma client never sends NULL.
+    await expect(
+      asTenant(
+        appRw,
+        TENANT_A,
+        ACTOR,
+        (tx) =>
+          tx.$executeRaw`
+          INSERT INTO user_invitation (id, tenant_id, email, roles, expires_at, updated_at)
+          VALUES (gen_random_uuid(), ${TENANT_A}::uuid, ${`null-${randomUUID()}@example.invalid`},
+                  NULL::text[], now() + interval '1 day', now())`,
+      ),
+    ).rejects.toThrow(/user_invitation_roles_school_staff/);
+  });
+
   it('accepts each school staff role, alone and together', async () => {
     for (const roles of [
       ['teacher'],

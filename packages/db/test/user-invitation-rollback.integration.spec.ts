@@ -17,8 +17,11 @@ const FORWARD = [
   '20261024090000_oq033_user_invitation/migration.sql',
   '20261024090100_oq033_user_invitation_rls/migration.sql',
   '20261024100000_oq033_invitation_confirmation/migration.sql',
+  '20261111110000_oq033_user_invitation_roles_not_null/migration.sql',
 ];
 const ROLLBACK = '20261024090000_oq033_user_invitation/rollback.sql';
+const ROLLBACK_ROLES_NOT_NULL =
+  '20261111110000_oq033_user_invitation_roles_not_null/rollback.sql';
 const ROLLBACK_CONFIRMATION = '20261024100000_oq033_invitation_confirmation/rollback.sql';
 
 let db: TestDatabase;
@@ -64,6 +67,14 @@ const columnExists = async (column: string): Promise<boolean> => {
   return rows[0]?.found === true;
 };
 
+const rolesCheck = async (): Promise<string> => {
+  const rows = await migrator.$queryRaw<{ def: string }[]>`
+    SELECT pg_get_constraintdef(oid) AS def FROM pg_constraint
+    WHERE conname = 'user_invitation_roles_school_staff'
+      AND conrelid = to_regclass('public."user_invitation"')`;
+  return rows[0]?.def ?? '';
+};
+
 const typeExists = async (name: string): Promise<boolean> => {
   const rows = await migrator.$queryRaw<{ found: boolean }[]>`
     SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname = ${name}) AS found`;
@@ -101,6 +112,21 @@ describe('user_invitation rollback', () => {
   it('starts with the table and its enum in place', async () => {
     expect(await exists('user_invitation')).toBe(true);
     expect(await typeExists('user_invitation_status')).toBe(true);
+  });
+
+  it('rolls back the NOT NULL tightening first, restoring the original constraint and changing no row', async () => {
+    expect(await rolesCheck()).toContain('roles IS NOT NULL');
+    await runSql(ROLLBACK_ROLES_NOT_NULL);
+    const restored = await rolesCheck();
+    expect(restored).not.toContain('roles IS NOT NULL');
+    expect(restored).toContain('cardinality(roles) >= 1');
+    const rows = await asTenant(
+      migrator,
+      TENANT,
+      ACTOR,
+      (tx) => tx.$queryRaw<{ n: bigint }[]>`SELECT count(*) AS n FROM user_invitation`,
+    );
+    expect(Number(rows[0]?.n)).toBe(1);
   });
 
   it('rolls back the confirmation columns first, leaving the invitation and its row', async () => {
@@ -147,6 +173,7 @@ describe('user_invitation rollback', () => {
     const policies = await migrator.$queryRaw<{ policyname: string }[]>`
       SELECT policyname FROM pg_policies WHERE tablename = 'user_invitation'`;
     expect(policies.map((p) => p.policyname)).toEqual(['tenant_isolation']);
+    expect(await rolesCheck()).toContain('roles IS NOT NULL');
     expect(await columnExists('confirmation')).toBe(true);
     expect(await typeExists('invitation_confirmation')).toBe(true);
   });
