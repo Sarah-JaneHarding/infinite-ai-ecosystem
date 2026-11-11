@@ -139,6 +139,74 @@ resource "aws_iam_role_policy_attachment" "github_deploy_power_user" {
   policy_arn = "arn:aws:iam::aws:policy/PowerUserAccess"
 }
 
+# --- Read-only plan role (pull requests) ----------------------------------------------
+#
+# The "Terraform plan" PR check needs AWS read access, but the deploy role above
+# deliberately trusts no pull-request subject. This is a SEPARATE role for that one job:
+# trusted only for `repo:<repo>:pull_request`, read-only, and with no write path to state
+# (the workflow plans with -lock=false, so it needs no DynamoDB write either).
+#
+# Two things it can read are sensitive, and both are accepted trade-offs recorded here
+# rather than hidden: (1) the state file, which holds secret values, because `plan`
+# cannot run without it; (2) project secrets, because modules/langfuse reads the
+# RDS-managed master password through a data source on every plan. Anyone who can run a
+# workflow on a branch of this repository can therefore read those values. Fine while
+# the repository has a single writer; revisit before others get write access (e.g.
+# require approval for the plan job, or stop planning against real state on PRs).
+data "aws_iam_policy_document" "github_plan_assume" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:${var.github_repository}:pull_request"]
+    }
+  }
+}
+
+resource "aws_iam_role" "github_plan" {
+  name               = "infinite-ai-github-plan"
+  assume_role_policy = data.aws_iam_policy_document.github_plan_assume.json
+
+  tags = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "github_plan_read_only" {
+  role       = aws_iam_role.github_plan.name
+  policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+}
+
+# ReadOnlyAccess does not include secretsmanager:GetSecretValue. Granted only for this
+# project's own secrets ("infinite-ai-" prefix) and RDS-managed master-user secrets
+# ("rds!db-" prefix, which carry no project prefix), in this account.
+data "aws_iam_policy_document" "github_plan_secrets" {
+  statement {
+    sid     = "ReadProjectSecretsForPlan"
+    actions = ["secretsmanager:GetSecretValue"]
+    resources = [
+      "arn:aws:secretsmanager:*:${data.aws_caller_identity.current.account_id}:secret:infinite-ai-*",
+      "arn:aws:secretsmanager:*:${data.aws_caller_identity.current.account_id}:secret:rds!db-*",
+    ]
+  }
+}
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_iam_role_policy" "github_plan_secrets" {
+  name   = "infinite-ai-plan-read-project-secrets"
+  role   = aws_iam_role.github_plan.name
+  policy = data.aws_iam_policy_document.github_plan_secrets.json
+}
+
 data "aws_iam_policy_document" "github_deploy_iam" {
   statement {
     sid = "ManageProjectIamResources"

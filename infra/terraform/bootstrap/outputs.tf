@@ -10,3 +10,8 @@ output "github_deploy_role_arn" {
   description = "Paste into the deploy workflow's `role-to-assume` input (aws-actions/configure-aws-credentials)."
   value       = aws_iam_role.github_deploy.arn
 }
+
+output "github_plan_role_arn" {
+  description = "Paste into the repository variable AWS_PLAN_ROLE_ARN (used only by the pull-request Terraform plan job)."
+  value       = aws_iam_role.github_plan.arn
+}
