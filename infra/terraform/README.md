@@ -77,8 +77,16 @@ terraform/
    terraform init
    terraform apply \
      -var 'github_repository=Sarah-JaneHarding/infinite-ai-ecosystem' \
-     -var 'github_branches=["main"]'
+     -var 'github_branches=["main"]' \
+     -var 'github_environments=["staging"]'
    ```
+
+   `github_environments` lists the GitHub Actions environments the deploy role trusts. A
+   job that declares `environment: staging` is identified to AWS by environment, not by
+   branch, so the environment must be listed or the OIDC sign-in is refused with
+   "Not authorized to perform sts:AssumeRoleWithWebIdentity". In GitHub, set that
+   environment's Deployment branches to `main` only, since the role no longer checks the
+   branch for environment jobs. `production` is not trusted by default.
 
    Note the `state_bucket_name`, `lock_table_name`, and `github_deploy_role_arn` outputs —
    the first two go into each environment's `backend.hcl` (copy from
