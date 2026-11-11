@@ -87,24 +87,22 @@ describe('aggregateMeteringEvents', () => {
 describe('computeOverage', () => {
   const starterTier = getTier('starter');
 
-  it('returns zero overages when usage is within limits', () => {
+  it('returns zero overage when usage is within the token quota', () => {
     const usage = aggregateMeteringEvents(
       [makeEvent({ tokensUsed: 1_000_000 })],
       TENANT,
       START,
       END,
-      100, // within starter's 300 included learners
-      5, // within starter's 20 included educators
+      100,
+      5,
     );
     const overage = computeOverage(usage, starterTier);
     expect(overage.tokenOverageKilos).toBe(0);
-    expect(overage.learnerOverageCount).toBe(0);
-    expect(overage.educatorOverageCount).toBe(0);
     expect(overage.totalOverageCents).toBe(0);
   });
 
   it('computes token overage correctly', () => {
-    // starter limit: 10_000_000. Use 11_500_000 → 1_500 kilo tokens overage.
+    // starter limit: 10_000_000. Use 11_500_000 -> 1_500 kilo tokens overage.
     const usage = aggregateMeteringEvents(
       [makeEvent({ tokensUsed: 11_500_000 })],
       TENANT,
@@ -116,39 +114,24 @@ describe('computeOverage', () => {
     const overage = computeOverage(usage, starterTier);
     expect(overage.tokenOverageKilos).toBe(1_500);
     expect(overage.tokenOverageCents).toBe(1_500 * starterTier.perKiloTokenOverageCents);
+    expect(overage.totalOverageCents).toBe(overage.tokenOverageCents);
   });
 
-  it('computes learner seat overage correctly', () => {
-    // starter: 300 included. 350 actual → 50 overage.
-    const usage = aggregateMeteringEvents([], TENANT, START, END, 350, 0);
-    const overage = computeOverage(usage, starterTier);
-    expect(overage.learnerOverageCount).toBe(50);
-    expect(overage.learnerOverageCents).toBe(50 * starterTier.perExtraLearnerCents);
+  it('seat counts never create overage (seats are priced by the school formula)', () => {
+    const usage = aggregateMeteringEvents([], TENANT, START, END, 5_000, 400);
+    expect(computeOverage(usage, starterTier).totalOverageCents).toBe(0);
   });
 
-  it('computes educator seat overage correctly', () => {
-    // starter: 20 included. 25 actual → 5 overage.
-    const usage = aggregateMeteringEvents([], TENANT, START, END, 0, 25);
-    const overage = computeOverage(usage, starterTier);
-    expect(overage.educatorOverageCount).toBe(5);
-    expect(overage.educatorOverageCents).toBe(5 * starterTier.perExtraEducatorCents);
-  });
-
-  it('computes combined overage total', () => {
+  it('rounds partial kilo-tokens down', () => {
     const usage = aggregateMeteringEvents(
-      [makeEvent({ tokensUsed: 11_000_000 })],
+      [makeEvent({ tokensUsed: 10_000_999 })],
       TENANT,
       START,
       END,
-      350,
-      25,
+      0,
+      0,
     );
-    const overage = computeOverage(usage, starterTier);
-    expect(overage.totalOverageCents).toBe(
-      overage.tokenOverageCents +
-        overage.learnerOverageCents +
-        overage.educatorOverageCents,
-    );
+    expect(computeOverage(usage, starterTier).tokenOverageKilos).toBe(0);
   });
 
   it('enterprise tier has no token overage regardless of usage', () => {
@@ -161,7 +144,6 @@ describe('computeOverage', () => {
       0,
       0,
     );
-    const overage = computeOverage(usage, enterprise);
-    expect(overage.tokenOverageCents).toBe(0);
+    expect(computeOverage(usage, enterprise).tokenOverageCents).toBe(0);
   });
 });
