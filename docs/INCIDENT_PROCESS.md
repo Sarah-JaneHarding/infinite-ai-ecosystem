@@ -25,6 +25,12 @@ time, rotating on Monday 08:00 SAST.
 | Primary on-call   | First responder for all P1/P2 alerts. Pages within 15 min for P1. |
 | Secondary on-call | Backup if primary is unreachable within 15 minutes.               |
 
+**Decision 2026-11-11 (Sarah-Jane Harding): the founder is the on-call responder until the
+pilot phase is complete.** There is no rota and no second person until then, so the
+"2 engineers" minimum above does not apply during the pilot. To be reviewed when more
+schools are onboarded. Until the review, treat the secondary-on-call row as unfilled, and
+do not promise a school a response time that depends on a second person.
+
 **OQ-019:** The actual rotation schedule is not populated until pilot engineers are
 confirmed. The tooling (PagerDuty or equivalent) is blocked on OQ-014 (paging
 integration).
