@@ -532,13 +532,6 @@ async function seedTwoTenants(): Promise<void> {
   }
 }
 
-/**
- * How many rows the fixture seeds per tenant in a table, where it is not one. `role_grant_request`
- * needs a proposer distinct from its target (a CHECK), so the fixture seeds two accounts per school.
- * The aggregate-isolation case below expects exactly this many: a leak across tenants would show double.
- */
-const SEEDED_ROWS_PER_TENANT: Readonly<Record<string, number>> = { user_account: 2 };
-
 describe('the fixture itself', () => {
   it('seeds a row in every tenant-owned table, for both tenants', () => {
     // If this drifts, the cases below silently stop testing whatever is missing.
@@ -632,9 +625,6 @@ describe.each(TENANT_OWNED_TABLES)('tenant isolation on %s', (table) => {
         `SELECT count(*)::bigint AS count FROM ${quoted}`,
       ),
     );
-    // Exactly the rows this tenant owns (one per table, two for user_account — see above).
-    // A leak from the other tenant would double it.
-    expect(Number(rows[0]!.count)).toBe(SEEDED_ROWS_PER_TENANT[table] ?? 1);
     // Exactly the rows this tenant owns. A leak would add the other tenant's.
     expect(Number(rows[0]!.count)).toBe(ownedRows);
   });
