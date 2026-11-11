@@ -11259,28 +11259,59 @@ or the audit chain); the database lock for the race is step 3.
 | Last administrator cannot be removed by a single change                 | PASS (exhaustive) |
 | Last administrator safe under concurrency                               | OPEN (step 3)     |
 
-## Stage 117 — OQ-043 per-school price formula (decided 2026-11-11, provisional)
+## Stage 117 — OQ-033 provisioning, step 3: the web layer binds the real rules
 
-`packages/billing/src/pricing.ts` (new): `priceBreakdown`, `splitVat`, `annualPrepayCents` and the constants (R300, R75, R4.00 /
-R1.50 above 500, R750 minimum, 50 % community, 10 % prepay, 15 % VAT). Integer cents throughout; negative or fractional counts
-are refused. `tiers.ts` now carries only the token quota and token-overage rate. `computeOverage` returns token overage only
-(seats are priced by the formula). `buildInvoice` lines: platform fee, educators, learners (first 500), learners above 500,
-minimum top-up, community reduction, token overage.
+`apps/web/src/lib/provisioning-rules.ts` hands the policy package's three rule functions (`evaluateRoleConferral`,
+`evaluateRoleRevocation`, `evaluateAccountStatusChange`) to the db layer as a `ProvisioningRules`. This is the only place
+the real rules meet the transactions in `packages/db/src/provisioning.ts` (Stage 115); db may not import policy.
 
-Docs updated in the same change: `COST_MODEL.md` (also withdraws the "35 %" starter margin, computed on the retired card, and
-points at OQ-018), `ONBOARDING_GUIDE.md` Step 7, `AWS_MIGRATION_AUDIT.md`, `financial-model.html` (pills and default),
-`OPEN_QUESTIONS.md` (OQ-043 decided; 11 Nov decisions table), `PILOT_PROTOCOL.md` (schools #2 and #3 deferred, D-4).
+- **Conformance is a compile-time check, and it needed tightening.** The first version of the db interface declared its
+  rules with method syntax, which TypeScript checks bivariantly: swapping `statusChange` for the revocation rule (which
+  needs an extra `role`) produced only an unused-import error, not a type error. The interface now uses property-function
+  syntax (with a comment saying why); the same swap now fails with "Property 'role' is missing". Mutation-checked.
+- **Nothing calls this yet.** No route or sign-in code uses the provisioning functions; steps 4–5 do.
+- **Still deferred (3b):** granting `admin`/`smt` to an existing account when a school has two or more administrators
+  needs a persisted request record. No function does it, so it fails closed.
 
-**Tests.** Billing 77 (from 71 at the start of the change): formula reference prices R1,380 / R3,100 / R7,925, the 500-learner
-step, the minimum and its top-up, community rate, VAT rounding, invoice lines summing to the subtotal, and
-`price-parity.spec.ts`, which reads the three documents and fails on any drift (it failed once during this change on a leftover
-R1 200 card in `COST_MODEL.md`, which was then removed). Typecheck, eslint, prettier clean.
+**Tests.** `apps/web/tests/unit/provisioning-rules.spec.ts` (8): the real rules through the db interface — invite with no
+confirmation, confirmation required with two administrators, waived for a sole administrator, confirmed by a second;
+refused for a non-administrator, a platform role, inviting your own address, revoking your own role, suspending yourself;
+one administrator may revoke and suspend another. Web typecheck, db typecheck, eslint, prettier clean.
 
-**Not done.** `tiers` still exist as token quotas only; no UI selects a price; the community-rate eligibility rule (which schools
-qualify) is not defined and is not invented here. Provisional until three schools have seen the price.
+| Exit gate item                                 | Result               |
+| ---------------------------------------------- | -------------------- |
+| Real policy bound to the db interface          | PASS (tests)         |
+| Drift between the two fails the build          | PASS (mutation)      |
+| Provisioning reachable from a route or sign-in | NOT DONE (steps 4–5) |
 
-| Exit gate item                                 | Result        |
-| ---------------------------------------------- | ------------- |
-| Price formula in code, one source of truth     | PASS (tests)  |
-| Docs and financial model agree with code       | PASS (parity) |
-| Rollback: revert this commit; no schema change | PASS          |
+## Stage 119 — OQ-033: `user_invitation.roles` no longer accepts `NULL`
+
+Found while building Stage 118 (`role_grant_request`): `user_invitation_roles_school_staff` was
+`CHECK (cardinality("roles") >= 1 AND "roles" <@ ARRAY[…])`. The column is nullable (Prisma generates list columns as
+plain `TEXT[]`), `cardinality(NULL)` is `NULL`, and a CHECK that evaluates to `NULL` **passes** — so a `NULL` `roles` was
+accepted, which is exactly what the constraint says no one can do ("no platform role can ever be invited, whoever writes
+the row"). Nothing in the application writes a `NULL` (Prisma lists default to empty, which the CHECK refuses), so the
+exposure was a hand-written insert only.
+
+- **Migration** `20261111110000_oq033_user_invitation_roles_not_null` (+ `rollback.sql`): drops and re-adds the constraint
+  with the same two tests plus an explicit `"roles" IS NOT NULL`, in one transaction. If an existing row had a `NULL` the
+  `ADD` fails and the migration stops with the original constraint intact — it does not repair data. No tenant context is
+  needed (a CHECK is validated by a direct scan, not through a foreign key to a table under `FORCE ROW LEVEL SECURITY`).
+- **Tests.** Integration (CI): a raw-SQL insert of `NULL::text[]` as `app_rw` is refused by name; the rollback spec rolls
+  the tightening back first (original constraint restored, no row changed) and checks the re-applied constraint has
+  `IS NOT NULL`. Unit (policy): the drift test now also reads the restated constraint and requires the same role list and
+  the `IS NOT NULL` — **mutation-checked** (deleting `IS NOT NULL` from the migration fails it). The drift test ignores SQL
+  comments after it first matched the example quoted in the migration's own header.
+- **Verified locally in a throwaway PostgreSQL 16** (stand-in table carrying the real original constraint text): the
+  original constraint accepts `NULL` (the gap reproduced); after the migration `NULL`, `{}`, a platform role, a platform role
+  mixed with a valid one and an unknown role are each refused and valid role lists accepted; existing rows are untouched;
+  the rollback restores the original constraint and changes no row; the migration re-applies; run as one transaction over an
+  existing `NULL` row it fails loudly and leaves the original constraint in place.
+- **Not verified:** the TypeScript integration specs have not run here (no Docker); CI's RLS job is their first run.
+
+| Exit gate item                                                    | Result                |
+| ----------------------------------------------------------------- | --------------------- |
+| `NULL` roles refused; valid lists still accepted                  | PASS (local SQL) + CI |
+| Forward migration + tested rollback; repeatable                   | PASS (local SQL) + CI |
+| Fails safe over an existing `NULL` row (original constraint kept) | PASS (local SQL)      |
+| Drift test covers the restated list; mutation-checked             | PASS (unit, mutation) |

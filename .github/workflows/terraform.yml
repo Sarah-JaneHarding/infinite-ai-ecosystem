@@ -110,7 +110,7 @@ jobs:
       - name: Verify required repository variables
         run: |
           missing=()
-          [[ -z '${{ vars.AWS_DEPLOY_ROLE_ARN }}'             ]] && missing+=("AWS_DEPLOY_ROLE_ARN")
+          [[ -z '${{ vars.AWS_PLAN_ROLE_ARN }}'               ]] && missing+=("AWS_PLAN_ROLE_ARN")
           [[ -z '${{ vars.TF_STATE_BUCKET }}'                 ]] && missing+=("TF_STATE_BUCKET")
           [[ -z '${{ vars.TF_LOCK_TABLE }}'                   ]] && missing+=("TF_LOCK_TABLE")
           [[ -z '${{ vars.TF_VAR_ALERT_EMAIL }}'              ]] && missing+=("TF_VAR_ALERT_EMAIL")
@@ -124,7 +124,8 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
-          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          # Read-only role trusted for pull requests — never the deploy role.
+          role-to-assume: ${{ vars.AWS_PLAN_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - uses: hashicorp/setup-terraform@v4
@@ -159,11 +160,13 @@ jobs:
 
       # -detailed-exitcode: 0=no changes, 1=error, 2=changes present.
       # continue-on-error so the comment step always runs (even on error).
+      # -lock=false: the plan role is read-only and cannot write the DynamoDB lock item.
+      # A plan changes nothing, so skipping the lock is safe.
       - name: Terraform plan
         id: plan
         run: |
           set +e
-          terraform -chdir=${{ env.TF_DIR }} plan -no-color -detailed-exitcode \
+          terraform -chdir=${{ env.TF_DIR }} plan -no-color -detailed-exitcode -lock=false \
             2>&1 | tee /tmp/plan.txt
           echo "exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
         continue-on-error: true
