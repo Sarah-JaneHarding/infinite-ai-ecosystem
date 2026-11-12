@@ -50,6 +50,7 @@ export const ROUTE_ACCESS: readonly RouteRule[] = [
   { prefix: '/district', roles: PLATFORM },
   { prefix: '/api/approvals', roles: SCHOOL_ROLES_WITH_A_QUEUE },
   { prefix: '/api/caps-canon', roles: ['admin'] },
+  { prefix: '/api/admin/staff', roles: ['admin'] },
 ];
 
 /** `/` is every signed-in role's way home: the page redirects to the role's own surface. */

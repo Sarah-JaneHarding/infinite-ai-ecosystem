@@ -3,6 +3,8 @@ import type { StaffOverview as Overview } from '@infinite-ai/db';
 import { ROLE_LABEL } from '@/lib/roles';
 import { readRole } from '@/lib/session-role';
 
+import { RevokeInvitationButton } from './RevokeInvitationButton';
+
 const TH =
   'text-left text-xs font-semibold uppercase tracking-wide px-3 py-2.5 border-b border-[var(--iai-border)] whitespace-nowrap';
 const TD = 'px-3 py-2.5 border-b border-[var(--iai-border)] text-sm align-top';
@@ -107,6 +109,9 @@ export function StaffOverview({ overview }: StaffOverviewProps) {
                 <th className={TH}>Roles</th>
                 <th className={TH}>Expires</th>
                 <th className={TH}>Confirmation</th>
+                <th className={TH}>
+                  <span className="sr-only">Actions</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -119,6 +124,9 @@ export function StaffOverview({ overview }: StaffOverviewProps) {
                     {i.expired ? ' (expired)' : ''}
                   </td>
                   <td className={TD}>{CONFIRMATION_LABEL[i.confirmation]}</td>
+                  <td className={TD}>
+                    <RevokeInvitationButton invitationId={i.id} />
+                  </td>
                 </tr>
               ))}
             </tbody>

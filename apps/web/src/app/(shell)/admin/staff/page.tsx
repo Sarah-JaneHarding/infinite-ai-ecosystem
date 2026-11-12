@@ -2,14 +2,15 @@ import type { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/auth';
+import { InviteForm } from '@/components/admin/staff/InviteForm';
 import { StaffOverview } from '@/components/admin/staff/StaffOverview';
 import { loadStaff } from '@/lib/staff-loader';
 
 export const metadata: Metadata = { title: 'Staff' };
 
-// OQ-033 delivery step 5, slice a: who has an account at this school, what they hold, and what is
-// waiting. Read only; the actions (invite, revoke, grant, suspend) arrive as later slices, each behind
-// the provisioning rules that already exist.
+// OQ-033 delivery step 5: who has an account at this school, what they hold, and what is waiting.
+// Slice b adds inviting a person and revoking an invitation; grants and suspension arrive as later
+// slices, each behind the provisioning rules that already exist.
 export default async function StaffPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect('/sign-in');
@@ -33,7 +34,10 @@ export default async function StaffPage() {
       >
         Staff
       </h1>
-      <StaffOverview overview={overview} />
+      <div className="flex flex-col gap-10">
+        <InviteForm />
+        <StaffOverview overview={overview} />
+      </div>
     </section>
   );
 }
