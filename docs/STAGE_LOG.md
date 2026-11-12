@@ -11812,3 +11812,20 @@ removing the self-hiding fails 1; passing a fixed status instead of the body's f
 | `pnpm lint`, `pnpm typecheck`, web unit tests                     | PASS                               |
 | Data layer against real Postgres                                  | Existing suite (CI); no new schema |
 | Rollback: revert this commit; no schema change                    | PASS                               |
+
+## Stage 137 — OQ-033 delivery plan: steps 7 and 8 planned (docs only)
+
+**What changed.** `docs/PROVISIONING_DESIGN.md` §11.1: the Keycloak integration (step 7) split into slices 7a–7e and step 8
+(dev stack on invitations) sequenced after it; OQ-048 records the four owner decisions step 7 needs. Verified before writing: the
+realm's email-verification and per-role MFA configuration already exists and is drift-tested (so that half of step 7 is done);
+nothing in the repository calls the Keycloak Admin API; `infinite-ai-worker` has `serviceAccountsEnabled` but no `realm-management`
+roles. **No code and no schema change.**
+
+**Not done / not verified.** Everything in the plan. The Admin API call shapes are still unverified against a running Keycloak (§13);
+7e exists to do that.
+
+| Exit gate item                                        | Result |
+| ----------------------------------------------------- | ------ |
+| Plan states what is built, what is not, and the order | PASS   |
+| Owner decisions recorded rather than guessed (OQ-048) | PASS   |
+| `pnpm format:check`                                   | PASS   |
