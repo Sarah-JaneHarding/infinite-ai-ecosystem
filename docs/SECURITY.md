@@ -9,7 +9,7 @@ turns any of them off.
 | Control          | Where it lives                                                                                                                                             | Proven by                                                        |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | Tenant isolation | `tenant_id` on every tenant-owned row; Postgres RLS with `FORCE ROW LEVEL SECURITY`; a tenant-scoped client that is the only exported database entry point | Exhaustive RLS suite (Stage 01, re-run on every change)          |
-| Authentication   | Keycloak OIDC, short-lived sessions, server-side refresh, MFA for `admin`, `smt`, `platform_*` (configured; see §7)                                        | Stage 02 auth suite                                              |
+| Authentication   | Keycloak OIDC, short-lived sessions, server-side refresh, MFA for `admin`, `smt`, `sbst_chair`, `platform_*` (configured; see §7)                          | Stage 02 auth suite                                              |
 | Authorisation    | A declarative permission matrix — resource × action × role × scope — behind a single `authorize()` call                                                    | Generated authorisation-matrix test over every role × permission |
 | Audit            | Append-only, hash-chained ledger written through an INSERT-only database role                                                                              | Hash-chain verification test + tamper-detection job              |
 | PII egress       | The De-identification Service plus a mandatory PII guard on the only path to the Model Gateway                                                             | Fuzz + red-team suites; a test asserting no second path exists   |
@@ -138,8 +138,10 @@ Every system boundary applies:
 
 ## 7. Identity hardening (Stage 16 step 4)
 
-- **MFA** is required by the committed Keycloak realm for the `admin`, `smt`, `platform_support`
-  and `platform_admin` roles (OQ-036, 2026-11-11). `infra/keycloak/realm.json` sets the browser
+- **MFA** is required by the committed Keycloak realm for the `admin`, `smt`, `sbst_chair`,
+  `platform_support` and `platform_admin` roles (OQ-036, 2026-11-11; `sbst_chair` added 2026-11-12
+  because the chair's confirmation ratifies SBST minutes into the Brain). A person holding two of these
+  roles is asked for a code once per role (the sub-flows are independent). `infra/keycloak/realm.json` sets the browser
   flow `browser-mfa`: password first, then a conditional one-time-code step keyed on each of those
   roles, with first-login enrolment (`CONFIGURE_TOTP`). `verifyEmail` is on. A drift test
   (`packages/policy/test/keycloak-realm-mfa.spec.ts`) fails if the file stops saying so.

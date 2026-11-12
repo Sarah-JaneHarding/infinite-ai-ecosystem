@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { PLATFORM_ROLES, Role } from '../src/rbac.js';
 
-// OQ-036 drift guard. docs/SECURITY.md §7 says MFA is required for `admin`, `smt` and the
+// OQ-036 drift guard. docs/SECURITY.md §7 says MFA is required for `admin`, `smt`, `sbst_chair` and the
 // platform roles, and that email is verified. That is only true if the committed Keycloak
 // realm says so. This reads infra/keycloak/realm.json and fails when the browser flow, a role
 // condition or a required action is missing, so the claim cannot go stale unnoticed.
@@ -53,7 +53,9 @@ const realm = JSON.parse(
   ),
 ) as Realm;
 
-const MFA_ROLES = ['admin', 'smt', ...PLATFORM_ROLES] as const;
+// `sbst_chair` was added on 2026-11-12 (OQ-046 follow-up, owner decision): the chair's confirmation ratifies
+// SBST minutes into the Brain as a versioned fact, so confirming them needs a second factor.
+const MFA_ROLES = ['admin', 'smt', 'sbst_chair', ...PLATFORM_ROLES] as const;
 const flows = realm.authenticationFlows ?? [];
 const flowByAlias = (alias: string): Flow | undefined =>
   flows.find((f) => f.alias === alias);
@@ -97,6 +99,21 @@ describe('Keycloak realm: email verification and MFA (OQ-036)', () => {
         }
       }
     }
+  });
+
+  it('requires the second factor from the SBST chair, whose confirmation ratifies minutes into the Brain', () => {
+    expect(MFA_ROLES).toContain('sbst_chair');
+    const forms = flowByAlias('browser-mfa forms');
+    const names = (forms?.authenticationExecutions ?? []).map((e) => e.flowAlias);
+    expect(names).toContain('browser-mfa otp sbst_chair');
+  });
+
+  it('does not ask for a code from roles that have no sub-flow: the second factor is exactly the listed roles', () => {
+    const guarded = flows
+      .filter((f) => f.alias.startsWith('browser-mfa otp '))
+      .map((f) => f.alias.replace('browser-mfa otp ', ''))
+      .sort();
+    expect(guarded).toEqual([...MFA_ROLES].sort());
   });
 
   it.each(MFA_ROLES.map((r) => [r] as const))(
