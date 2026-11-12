@@ -704,7 +704,7 @@ Recorded from the owner's instructions. Each is a decision, not yet built unless
 
 | ID     | Decision                                                                                                                                                         |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D-1    | OQ-043 formula price adopted, provisional (above). Built in Stage 120.                                                                                           |
+| D-1    | OQ-043 formula price adopted, provisional (above). Built in Stage 120b.                                                                                          |
 | D-2    | Prices are shown VAT-inclusive with the ex VAT split.                                                                                                            |
 | D-3    | Teacher training is part of the ecosystem, not a second product line.                                                                                            |
 | D-4    | Pilot schools #2 and #3 are deferred until pre-pilot testing with school #1 is complete.                                                                         |
