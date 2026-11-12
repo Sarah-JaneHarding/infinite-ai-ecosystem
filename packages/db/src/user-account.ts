@@ -11,6 +11,25 @@
 import type { TenantClient } from './client.js';
 
 /**
+ * Whether `userAccountId` is an ACTIVE account in the current tenant. A suspended or offboarded
+ * account — or one that does not exist here, or at another school — is not.
+ *
+ * A session's account is fixed at sign-in (docs/PROVISIONING_DESIGN.md §6), so suspending someone
+ * does not end a session they already hold. Anything that acts for the person *later* asks this
+ * again at the moment of acting; a human-gate decision does.
+ */
+export async function isUserAccountActive(
+  tx: TenantClient,
+  userAccountId: string,
+): Promise<boolean> {
+  const account = await tx.userAccount.findFirst({
+    where: { id: userAccountId, status: 'ACTIVE' },
+    select: { id: true },
+  });
+  return account !== null;
+}
+
+/**
  * The id of the ACTIVE account in the current tenant whose OIDC subject is `subject`, or
  * `null` if there is none. A suspended or deactivated account does not resolve: a person
  * who cannot act must not be handed an actor id.

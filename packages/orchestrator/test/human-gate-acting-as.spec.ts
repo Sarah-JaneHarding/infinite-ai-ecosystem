@@ -9,6 +9,7 @@ const db = vi.hoisted(() => ({
   getRun: vi.fn(),
   getApprovalTaskForStep: vi.fn(),
   hasActiveRoleAssignment: vi.fn(),
+  isUserAccountActive: vi.fn(),
   decideApprovalTask: vi.fn(),
   appendAuditEvent: vi.fn(),
 }));
@@ -42,6 +43,7 @@ beforeEach(() => {
     decision: null,
   });
   db.hasActiveRoleAssignment.mockResolvedValue(true);
+  db.isUserAccountActive.mockResolvedValue(true);
   db.decideApprovalTask.mockResolvedValue({ id: 'task1', decision: 'APPROVED' });
 });
 
@@ -110,5 +112,40 @@ describe('decideHumanGate — acting as the gate’s own role', () => {
         diff: expect.objectContaining({ actingAs: 'hod', decision: 'APPROVED' }),
       }),
     );
+  });
+});
+
+describe('decideHumanGate — the decider’s account must be ACTIVE (PROVISIONING_DESIGN §6)', () => {
+  it('checks the account of the person deciding, in this tenant’s transaction', async () => {
+    await decideHumanGate(TX, 'r1', { ...base, actingAs: 'hod' }, NOW);
+    expect(db.isUserAccountActive).toHaveBeenCalledWith(TX, ACTOR);
+  });
+
+  it('refuses a suspended or offboarded account that holds the role and acts as it — and records nothing', async () => {
+    db.isUserAccountActive.mockResolvedValue(false);
+    await expect(
+      decideHumanGate(TX, 'r1', { ...base, actingAs: 'hod' }, NOW),
+    ).rejects.toThrow(/does not have an active account/);
+    expect(db.decideApprovalTask).not.toHaveBeenCalled();
+    expect(db.appendAuditEvent).not.toHaveBeenCalled();
+  });
+
+  it('refuses an inactive account before asking about roles at all', async () => {
+    db.isUserAccountActive.mockResolvedValue(false);
+    await expect(
+      decideHumanGate(TX, 'r1', { ...base, actingAs: 'smt' }, NOW),
+    ).rejects.toThrow(/active account/);
+    expect(db.hasActiveRoleAssignment).not.toHaveBeenCalled();
+  });
+
+  it('does not look at the account of a malformed decision, or of a run that is not waiting', async () => {
+    await expect(
+      decideHumanGate(TX, 'r1', { ...base, actingAs: '' }, NOW),
+    ).rejects.toThrow(/Invalid human gate decision/);
+    db.getRun.mockResolvedValue({ id: 'r1', status: 'RUNNING', currentStepId: null });
+    await expect(
+      decideHumanGate(TX, 'r1', { ...base, actingAs: 'hod' }, NOW),
+    ).rejects.toThrow(/not waiting for approval/);
+    expect(db.isUserAccountActive).not.toHaveBeenCalled();
   });
 });
