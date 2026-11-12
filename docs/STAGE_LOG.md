@@ -11706,3 +11706,40 @@ Mutation-checked: dropping the role from `SCHOOL_STAFF_ROLES` fails 4 policy tes
 | Forward migration and non-destructive rollback                    | PASS (local Postgres); CI for the suite |
 | `pnpm lint`, `pnpm typecheck`, policy, web, db, orchestrator unit | PASS                                    |
 | Integration cases against real Postgres                           | OPEN (needs Docker; proven in CI)       |
+
+## Stage 129 — OQ-033 provisioning, step 5 slice b: invite a person and revoke an invitation
+
+**What changed.** Two administrator routes, both behind a `ROUTE_ACCESS` rule for `admin` and both re-checking that the session is
+acting as `admin` (Stage 124's `readTokenActingAs`) and has a resolved account:
+`POST /api/admin/staff/invitations` (an address and one or more school staff roles) and
+`POST /api/admin/staff/invitations/[id]/revoke`. The tenant and the actor come only from the verified token (rule 5); who may confer
+which roles is decided by the provisioning rules inside `createInvitation`, under the school's provisioning lock, and the invitation and
+its audit event commit together (the address is never audited). The contract is `lib/staff-contract.ts`: a strict Zod schema, so a body
+naming a tenant, actor, school or expiry is a 400, not ignored; the request must be `application/json` (415 otherwise — a cross-site
+form cannot send it); a 400 names fields, never values; each refusal the data layer can give has a status and words that never echo an
+address (an unknown reason is a generic 422). The page gains an invite form (roles from `SCHOOL_STAFF_ROLES`, labelled for a person)
+and a Revoke button on each pending invitation.
+
+**Tests.** `staff-contract.spec.ts` (every role accepted and every non-staff role refused, repeated/empty/oversized inputs, every key
+that must not be in a body, uuid param, response shapes, every refusal reason answered without an address); `staff-routes.spec.ts` (the
+session's own tenant and account, rules bound, unauthenticated / no tenant / no account / only a provider subject, every role but
+`admin` and no-role refused with nothing read, wrong content types, malformed and contract-breaking bodies, refusal statuses, a database
+fault not swallowed); `staff-forms.spec.ts` (the form and button views, escaping). Web unit 749 passing. Mutation-checked: removing the
+acting-as-admin check fails 10; removing `.strict()` fails 11; removing the JSON-only check fails 1. The data-layer behaviour is
+the existing `createInvitation` / `revokeInvitation` suites (real Postgres, CI); the routes are tested with the database stubbed, as
+`decide-route` is, and there is no web-level integration tier.
+
+**Not done.** The school scope on an invitation: `createInvitation` does not check a supplied school id against the school's own rows
+and a foreign key is not row-level-security aware, so the contract refuses the field rather than rely on it. Confirming an `AWAITING`
+invitation: inviting `admin` or `smt` at a school with two administrators creates an invitation the person cannot use until a second
+administrator confirms it, and the form says so; the confirm action is in slice c. Grants and revocation of roles (c), suspension and
+offboarding (d).
+
+| Exit gate item                                               | Result                              |
+| ------------------------------------------------------------ | ----------------------------------- |
+| Only an administrator acting as `admin` can invite or revoke | PASS (unit; mutation-checked)       |
+| Tenant and actor come from the token, never the request      | PASS (strict contract; unit)        |
+| A refusal never echoes an address                            | PASS                                |
+| `pnpm lint`, `pnpm typecheck`, web unit tests                | PASS                                |
+| Data-layer behaviour against real Postgres                   | Existing suites (CI); no new schema |
+| Rollback: revert this commit; no schema change               | PASS                                |
