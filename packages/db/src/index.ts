@@ -162,6 +162,15 @@ export {
 } from './approval.js';
 
 export { hasActiveRoleAssignment, listActiveRoles } from './roles.js';
+export {
+  loadStaffOverview,
+  STAFF_OVERVIEW_LIMIT,
+  type StaffAccount,
+  type StaffGrantRequest,
+  type StaffInvitation,
+  type StaffOverview,
+  type StaffRole,
+} from './staff-overview.js';
 
 export const PACKAGE_NAME = '@infinite-ai/db' as const;
 export {

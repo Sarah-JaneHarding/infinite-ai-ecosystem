@@ -11643,6 +11643,36 @@ waits at `chair-confirmation`.
 | `sbst_chair` built                                   | OPEN (proposal in §4.9)       |
 | Rollback: revert this commit; no schema change       | PASS                          |
 
+## Stage 127 — OQ-033 provisioning, step 5 slice a: the staff overview (read only)
+
+**What changed.** `packages/db/src/staff-overview.ts`: `loadStaffOverview(tx, now)` — the school's accounts (with each role, flagged
+`expired` once past its expiry, roles sorted alphabetically so no order reads as precedence), pending invitations and pending
+role-grant requests, each capped at 500 with a `truncated` flag. It only reads, through the tenant-scoped client.
+`apps/web`: `lib/staff-loader.ts` (reads nothing without both a tenant and an account; does **not** swallow a fault, so a
+database failure cannot look like "no staff"), `/admin/staff` (admin only; tenant and actor from the session, the page takes no
+parameters), the `StaffOverview` component (escapes what a person typed, names roles for a person, shows an unknown stored role
+as stored), a `ROUTE_ACCESS` rule and an `admin` nav link.
+
+**Tests.** `staff-overview.integration.spec.ts` (6, real Postgres, runs in CI): ordering and lapsed-role flags, pending-only
+invitations and requests, another school's staff invisible in both directions, empty school, no false truncation.
+`staff-page.spec.ts` (12): sign-in redirect, every other role sent home reading nothing, the session's own tenant and account,
+empty overview for a session with no tenant or account, a fault propagates. `staff-overview.spec.ts` (7). `route-access.spec.ts`
+policy table gained `/admin/staff`. Mutation-checked: removing the page's admin check fails 8. Web unit 643 passing; db unit 265
+passing (export-surface covers the new exports).
+
+**Not done.** The actions: b (invite, revoke an invitation), c (grant / revoke a role, confirm / decline / cancel a request),
+d (suspend, offboard). Pending invitations are listed with their address, as the design intended for `user_invitation` (admin
+only); nothing else about an invitation is shown.
+
+| Exit gate item                                       | Result                            |
+| ---------------------------------------------------- | --------------------------------- |
+| Only an administrator can open the page              | PASS (unit; mutation-checked)     |
+| Reads only the session's own school                  | PASS (unit); real Postgres in CI  |
+| A database fault is not shown as an empty school     | PASS                              |
+| `pnpm lint`, `pnpm typecheck`, web and db unit tests | PASS                              |
+| Integration cases against real Postgres              | OPEN (needs Docker; proven in CI) |
+| Rollback: revert this commit; no schema change       | PASS                              |
+
 ## Stage 128 — OQ-046: the `sbst_chair` role (decided 2026-11-12; PROVISIONING_DESIGN §4.9 recommendations accepted)
 
 Stacked on Stage 126 (the guard test and §4.9 are on that branch).

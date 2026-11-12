@@ -1,0 +1,39 @@
+import type { Metadata } from 'next';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/auth';
+import { StaffOverview } from '@/components/admin/staff/StaffOverview';
+import { loadStaff } from '@/lib/staff-loader';
+
+export const metadata: Metadata = { title: 'Staff' };
+
+// OQ-033 delivery step 5, slice a: who has an account at this school, what they hold, and what is
+// waiting. Read only; the actions (invite, revoke, grant, suspend) arrive as later slices, each behind
+// the provisioning rules that already exist.
+export default async function StaffPage() {
+  const session = await getServerSession(authOptions);
+  if (!session) redirect('/sign-in');
+  if (session.role !== 'admin') redirect('/');
+
+  // Tenant and actor come from the verified session only (rule 5).
+  const overview = await loadStaff({
+    tenantId: session.tenantId,
+    actorId: session.userId,
+  });
+
+  return (
+    <section aria-labelledby="staff-heading" className="max-w-5xl mx-auto py-8 px-4">
+      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--iai-text-subtle)] mb-1">
+        School Administration
+      </p>
+      <h1
+        id="staff-heading"
+        className="text-3xl font-bold text-[var(--iai-text)] mb-6"
+        style={{ fontFamily: 'var(--iai-font-title)' }}
+      >
+        Staff
+      </h1>
+      <StaffOverview overview={overview} />
+    </section>
+  );
+}

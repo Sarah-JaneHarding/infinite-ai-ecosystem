@@ -43,6 +43,7 @@ export const ROUTE_ACCESS: readonly RouteRule[] = [
   { prefix: '/approvals', roles: SCHOOL_ROLES_WITH_A_QUEUE },
   { prefix: '/admin/prompts', roles: ['admin'] },
   { prefix: '/admin/setup', roles: ['admin'] },
+  { prefix: '/admin/staff', roles: ['admin'] },
   { prefix: '/admin/curriculum/caps-canon', roles: ['admin'] },
   { prefix: '/admin/env', roles: ['admin', 'platform_admin'] },
   { prefix: '/platform/runs', roles: PLATFORM },
