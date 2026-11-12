@@ -33,10 +33,12 @@ const date = (d: Date): string => d.toISOString().slice(0, 10);
 
 export interface StaffOverviewProps {
   readonly overview: Overview;
+  /** The viewer's own account. No status action is offered on it (the server refuses it anyway). */
+  readonly selfId?: string;
 }
 
 /** Read-only for now (OQ-033 step 5, slice a): who has an account, what they hold, what is waiting. */
-export function StaffOverview({ overview }: StaffOverviewProps) {
+export function StaffOverview({ overview, selfId }: StaffOverviewProps) {
   const names = new Map(overview.accounts.map((a) => [a.id, a.displayName]));
   const nameOf = (id: string): string => names.get(id) ?? 'Unknown account';
   return (
@@ -65,6 +67,9 @@ export function StaffOverview({ overview }: StaffOverviewProps) {
                 <th className={TH}>Roles</th>
                 <th className={TH}>
                   <span className="sr-only">Give a role</span>
+                </th>
+                <th className={TH}>
+                  <span className="sr-only">Account actions</span>
                 </th>
               </tr>
             </thead>
@@ -107,6 +112,30 @@ export function StaffOverview({ overview }: StaffOverviewProps) {
                   </td>
                   <td className={TD}>
                     {a.status === 'ACTIVE' ? <GrantRoleForm accountId={a.id} /> : null}
+                  </td>
+                  <td className={TD}>
+                    {a.id !== selfId && a.status !== 'OFFBOARDED' && (
+                      <span className="flex flex-col gap-1">
+                        {a.status === 'ACTIVE' && (
+                          <StaffActionButton
+                            label="Suspend"
+                            busyLabel="Suspending…"
+                            tone="danger"
+                            url={`/api/admin/staff/accounts/${a.id}/status`}
+                            body={{ status: 'SUSPENDED' }}
+                            confirmText={`Suspend ${a.displayName}? They will not be able to sign in or decide approvals. This cannot be undone from here.`}
+                          />
+                        )}
+                        <StaffActionButton
+                          label="Offboard"
+                          busyLabel="Offboarding…"
+                          tone="danger"
+                          url={`/api/admin/staff/accounts/${a.id}/status`}
+                          body={{ status: 'OFFBOARDED' }}
+                          confirmText={`Offboard ${a.displayName}? This ends all their roles and cannot be undone.`}
+                        />
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}

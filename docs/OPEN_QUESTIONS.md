@@ -741,3 +741,15 @@ which school role should decide each is the school's and the owner's to say.
 whether a new role is wanted, which is its own design (guardians and learners were treated that way in §12.2 item 10). A
 CI check that every pipeline's `requiredRole` is a role provisioning can grant would stop this recurring; it needs the
 answer above first, since today three steps would fail it.
+
+### OQ-047 — reinstating a suspended account is not designed · 2026-11-12
+
+Found building the suspend and offboard actions (`docs/PROVISIONING_DESIGN.md` §4.5, Stage 131). `setAccountStatus` moves an
+account to `SUSPENDED` or `OFFBOARDED` and nothing moves it back: a suspended account stays suspended, and the data layer refuses to
+set the state it is already in. Offboarding is final by design (it ends every role); suspension is not obviously meant to be. The
+admin UI therefore offers Suspend with a warning that it cannot be undone from there, and no reinstate.
+
+**Needs a human:** may a suspended account be reinstated, and by whom? Suggested for the owner to accept or change: an administrator
+other than the person (the same rule as suspending), roles unchanged by the suspension itself, audited as its own event; and whether
+reinstating needs a second administrator (the argument for it is that it restores the ability to decide gates; the argument against is
+that suspending needed none). Until then a wrongly suspended person needs a database change by an operator.

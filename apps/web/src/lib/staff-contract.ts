@@ -56,6 +56,13 @@ export const GrantRolesResponse = z.object({
 export const RevokeRoleBody = z.object({ role: z.enum(SCHOOL_STAFF_ROLES) }).strict();
 export type RevokeRoleBody = z.infer<typeof RevokeRoleBody>;
 
+/** Suspend or offboard an account. There is no way back to ACTIVE from here: reinstatement is not
+ * designed (docs/OPEN_QUESTIONS.md), so the contract does not offer it. */
+export const SetStatusBody = z
+  .object({ status: z.enum(['SUSPENDED', 'OFFBOARDED']) })
+  .strict();
+export type SetStatusBody = z.infer<typeof SetStatusBody>;
+
 export const StaffActionResponse = z.object({ done: z.literal(true) });
 
 export const InviteStaffResponse = z.object({
@@ -170,6 +177,15 @@ const REFUSALS: Readonly<Record<string, Refusal>> = {
     message: 'That invitation has expired. Send a new one.',
   },
   proposer_unknown: { status: 422, message: 'That invitation cannot be confirmed here.' },
+  cannot_change_own_status: {
+    status: 403,
+    message: 'You cannot suspend or offboard yourself. Ask another administrator.',
+  },
+  already_offboarded: {
+    status: 409,
+    message: 'That person has already been offboarded, which cannot be changed.',
+  },
+  no_change: { status: 409, message: 'That account is already in that state.' },
   invitation_not_found: { status: 404, message: 'That invitation was not found.' },
   invitation_not_pending: {
     status: 409,

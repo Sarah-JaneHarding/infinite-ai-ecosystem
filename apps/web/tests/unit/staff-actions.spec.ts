@@ -15,6 +15,7 @@ const db = vi.hoisted(() => ({
   confirmRoleGrant: vi.fn(),
   declineRoleGrant: vi.fn(),
   cancelRoleGrant: vi.fn(),
+  setAccountStatus: vi.fn(),
 }));
 
 vi.mock('next-auth/jwt', () => ({ getToken: db.getToken }));
@@ -27,12 +28,14 @@ vi.mock('@infinite-ai/db', () => ({
   confirmRoleGrant: db.confirmRoleGrant,
   declineRoleGrant: db.declineRoleGrant,
   cancelRoleGrant: db.cancelRoleGrant,
+  setAccountStatus: db.setAccountStatus,
   SENSITIVE_ROLES: ['admin', 'smt'],
   defaultRoleGrantExpiry: (now: Date) => new Date(now.getTime() + 7 * 86_400_000),
 }));
 vi.mock('../../src/lib/env', () => ({ getWebEnv: () => ({ NEXTAUTH_SECRET: 'x' }) }));
 
 import { POST as confirmInvitationRoute } from '../../src/app/api/admin/staff/invitations/[id]/confirm/route.js';
+import { POST as statusRoute } from '../../src/app/api/admin/staff/accounts/[id]/status/route.js';
 import { POST as grantRoute } from '../../src/app/api/admin/staff/accounts/[id]/roles/route.js';
 import { POST as revokeRoleRoute } from '../../src/app/api/admin/staff/accounts/[id]/roles/revoke/route.js';
 import { POST as confirmRequestRoute } from '../../src/app/api/admin/staff/role-requests/[id]/confirm/route.js';
@@ -90,6 +93,12 @@ const ROUTES: readonly RouteCase[] = [
     fn: db.revokeRole,
   },
   {
+    name: 'suspend or offboard',
+    handler: statusRoute,
+    body: { status: 'SUSPENDED' },
+    fn: db.setAccountStatus,
+  },
+  {
     name: 'confirm an invitation',
     handler: confirmInvitationRoute,
     fn: db.confirmInvitation,
@@ -109,6 +118,7 @@ beforeEach(() => {
     db.confirmRoleGrant,
     db.declineRoleGrant,
     db.cancelRoleGrant,
+    db.setAccountStatus,
   ]) {
     fn.mockResolvedValue({ ok: true });
   }
@@ -376,5 +386,53 @@ describe('revoke a role', () => {
   ])('answers %s with %i', async (reason, status) => {
     db.revokeRole.mockResolvedValue({ ok: false, reason });
     expect((await post(revokeRoleRoute, OTHER, { role: 'hod' })).status).toBe(status);
+  });
+});
+
+describe('suspend or offboard', () => {
+  it.each(['SUSPENDED', 'OFFBOARDED'] as const)(
+    'sets %s on the url’s account, as the session’s account, with the rules bound',
+    async (status) => {
+      expect((await post(statusRoute, OTHER, { status })).status).toBe(200);
+      expect(db.setAccountStatus).toHaveBeenCalledWith(
+        TX,
+        provisioningRules,
+        expect.objectContaining({
+          actorAccountId: ACCOUNT,
+          targetAccountId: OTHER,
+          status,
+        }),
+      );
+    },
+  );
+
+  it.each(['ACTIVE', 'active', 'CLOSED', '', 'SUSPENDED '])(
+    'refuses the status %j — there is no way back to ACTIVE from here',
+    async (status) => {
+      expect((await post(statusRoute, OTHER, { status })).status).toBe(400);
+      expect(db.setAccountStatus).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([
+    ['cannot_change_own_status', 403],
+    ['actor_not_admin', 403],
+    ['already_offboarded', 409],
+    ['no_change', 409],
+    ['target_not_found', 404],
+  ])('answers %s with %i, in words', async (reason, status) => {
+    db.setAccountStatus.mockResolvedValue({ ok: false, reason });
+    const response = await post(statusRoute, OTHER, { status: 'SUSPENDED' });
+    expect(response.status).toBe(status);
+    expect(JSON.stringify(await response.json())).not.toContain(reason);
+  });
+
+  it('tells a person who tries it on themselves to ask another administrator', async () => {
+    db.setAccountStatus.mockResolvedValue({
+      ok: false,
+      reason: 'cannot_change_own_status',
+    });
+    const response = await post(statusRoute, ACCOUNT, { status: 'OFFBOARDED' });
+    expect(JSON.stringify(await response.json())).toContain('another administrator');
   });
 });
