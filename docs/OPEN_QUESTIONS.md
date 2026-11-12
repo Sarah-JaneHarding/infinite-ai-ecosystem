@@ -734,7 +734,9 @@ Until these are decided, a run that reaches one of those gates waits for an appr
 or stays open). The other gates use `teacher`, `hod`, `smt` and `sbst`, which exist. Nothing here is invented policy to fix:
 which school role should decide each is the school's and the owner's to say.
 
-**Needs a human:** for each of the three, which existing role decides it (for example `sbst` for the SBST chair step), or
+**Decided 2026-11-12 (Sarah-Jane Harding):** `lse` → `sbst`; `data_manager` → `admin` (both built, Stage 126); `sbst_chair` → a **new role**, designed in `docs/PROVISIONING_DESIGN.md` §4.9 with four decisions for the owner. The CI check now exists (`apps/web/tests/unit/pipeline-gate-roles.spec.ts`); `sbst_chair` is its one awaiting entry and the check fails when that entry is built or unused, so it cannot be forgotten. Consequences of the first two: any SBST member (not only the LSE) can sign off the parent letter, and the school administrator confirms new data-source mappings.
+
+**Originally needed a human:** for each of the three, which existing role decides it (for example `sbst` for the SBST chair step), or
 whether a new role is wanted, which is its own design (guardians and learners were treated that way in §12.2 item 10). A
 CI check that every pipeline's `requiredRole` is a role provisioning can grant would stop this recurring; it needs the
 answer above first, since today three steps would fail it.

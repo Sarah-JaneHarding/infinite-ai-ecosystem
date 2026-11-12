@@ -11583,3 +11583,31 @@ again is the only way to change role (decision 4).
 | Every agent has a prompt and a ≥ 20-case eval set | PASS                                       |
 | Prettier clean                                    | PASS                                       |
 | A test fails if a contract and the table disagree | OPEN (the table is copied by hand for now) |
+
+## Stage 126 — OQ-046: two gates move to roles that exist; a check that every gate can be decided
+
+**Decided 2026-11-12.** MOD-02 `parent-letter-review`: `lse` → `sbst`. MOD-03 `data-manager-confirmation`: `data_manager` → `admin`.
+MOD-02 `chair-confirmation` keeps `sbst_chair`, which becomes a new role (design: PROVISIONING_DESIGN §4.9, proposal; not built).
+
+**What changed.** `packages/orchestrator/src/pipelines/mod-02.ts` and `mod-03.ts` (the role, and the comments that named it);
+their specs now pin the new roles. New `apps/web/tests/unit/pipeline-gate-roles.spec.ts` walks every human gate in all thirteen
+pipelines and requires its role to be one an invitation or grant request can carry (`isSchoolStaffRole`), except `sbst_chair`,
+listed as awaiting its own change. The list is a ratchet: an entry that becomes grantable, or that no gate uses, fails the test
+until removed, and `lse` / `data_manager` are asserted gone.
+
+**Tests.** 14 new cases. Mutation-checked: restoring `data_manager` fails 2; removing `sbst_chair` from use fails the ratchet.
+Orchestrator unit 204 passing.
+
+**Consequences to know about.** Any SBST member, not only the Learning Support Educator, can sign off the parent letter; the school
+administrator confirms new data-source mappings (and a run reaching that gate needs an `admin`).
+
+**Not done.** `sbst_chair` itself — four decisions for the owner are in §4.9. Until it ships, MOD-02's SBST-scribe pipeline
+waits at `chair-confirmation`.
+
+| Exit gate item                                       | Result                        |
+| ---------------------------------------------------- | ----------------------------- |
+| Every gate but one names a role that can be granted  | PASS (test; mutation-checked) |
+| The remaining one is tracked and cannot be forgotten | PASS (ratchet)                |
+| `pnpm lint`, `pnpm typecheck`, orchestrator and web  | PASS                          |
+| `sbst_chair` built                                   | OPEN (proposal in §4.9)       |
+| Rollback: revert this commit; no schema change       | PASS                          |
