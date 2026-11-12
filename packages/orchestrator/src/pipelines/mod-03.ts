@@ -8,7 +8,7 @@
 //   recommend next steps (DW-08) → record to Brain
 //
 // DW-02 (Schema Mapper) raises a human gate the first time a new source shape is
-// seen; the data_manager confirms the mapping before the data flows further.
+// seen; the school administrator (`admin`) confirms the mapping before the data flows further.
 // The consent check (DW-03) records the lawful basis per field under POPIA; data
 // that has no recorded basis does not flow to the de-identification step.
 // DW-04 (De-identification Agent) is the last step before any model call that
@@ -17,7 +17,7 @@
 // from the conformed, de-identified warehouse tables.
 //
 // `warehouse.update_feature_store` is an append-only write; Brain writes are also
-// append-only. Both are reached only through the data_manager human gate.
+// append-only. Both are reached only through the data-manager-confirmation human gate (decided by `admin`, OQ-046).
 //
 // Structural integrity: validatePipelineDag runs at module load.
 
@@ -74,7 +74,7 @@ const warehouseDefinition = {
     'data-manager-confirmation': {
       id: 'data-manager-confirmation',
       kind: 'human_gate' as const,
-      requiredRole: 'data_manager',
+      requiredRole: 'admin',
       timeoutMs: 604_800_000, // 7 days
       maxRetries: 0,
       compensatesWith: null,
