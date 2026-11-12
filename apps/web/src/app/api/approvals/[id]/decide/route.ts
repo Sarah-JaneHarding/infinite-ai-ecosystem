@@ -20,7 +20,7 @@ import {
 import { z } from 'zod';
 
 import { getWebEnv } from '@/lib/env';
-import { readTokenActor } from '@/lib/token-actor';
+import { readTokenActingAs, readTokenActor } from '@/lib/token-actor';
 
 // The run ID is passed in the request body alongside the decision because the Route Handler
 // receives the TASK id (from the URL) but decideHumanGate needs the RUN id. The client
@@ -51,6 +51,12 @@ export async function POST(
     return NextResponse.json({ error: caller.error }, { status: caller.status });
   }
   const { tenantId, actorId } = caller.actor;
+  // Decided *as* the session's active role (OQ-032): a person who holds several roles must be signed
+  // in as the gate's own. A session that has not chosen a role decides nothing.
+  const actingAs = readTokenActingAs(token);
+  if (actingAs === null) {
+    return NextResponse.json({ error: 'No active role' }, { status: 403 });
+  }
 
   let body: unknown;
   try {
@@ -72,6 +78,7 @@ export async function POST(
   const input: HumanGateDecisionInput = {
     outcome,
     decidedBy: actorId,
+    actingAs,
     reason,
     ...(editDiff !== undefined ? { editDiff } : {}),
   };

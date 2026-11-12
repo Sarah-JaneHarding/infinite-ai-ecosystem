@@ -91,6 +91,18 @@ async function seedActorWithRole(
   });
 }
 
+/** Grants an existing account one more role — an account may hold several (OQ-032). */
+async function grantRole(
+  tenantId: string,
+  actorId: string,
+  userAccountId: string,
+  role: string,
+): Promise<void> {
+  await withTenant({ tenantId, actorId }, (tx) =>
+    tx.roleAssignment.create({ data: { tenantId, userAccountId, role } }),
+  );
+}
+
 const STEP_COMMON = { timeoutMs: 10_000, maxRetries: 2, compensatesWith: null };
 
 const prepareApproval: ApprovalMaterialProvider = () => ({
@@ -300,6 +312,7 @@ describe('human gate decisions', () => {
       await decideHumanGate(tx, run.id, {
         outcome: 'APPROVED',
         decidedBy: hodId,
+        actingAs: 'hod',
         reason: 'Looks correct.',
       });
       return runToCompletion(tx, pipeline, run.id, { executeStep, prepareApproval });
@@ -321,6 +334,7 @@ describe('human gate decisions', () => {
       await decideHumanGate(tx, run.id, {
         outcome: 'EDITED',
         decidedBy: hodId,
+        actingAs: 'hod',
         reason: 'Fixed the wording.',
         editDiff: { before: 'v2', after: 'v2-edited' },
       });
@@ -353,6 +367,7 @@ describe('human gate decisions', () => {
       await decideHumanGate(tx, run.id, {
         outcome: 'REJECTED',
         decidedBy: hodId,
+        actingAs: 'hod',
         reason: 'Not ready.',
       });
       return runToCompletion(tx, pipeline, run.id, { executeStep, prepareApproval });
@@ -386,6 +401,7 @@ describe('human gate decisions', () => {
       await decideHumanGate(tx, run.id, {
         outcome: 'REJECTED',
         decidedBy: hodId,
+        actingAs: 'hod',
         reason: 'Not ready.',
       });
       return runToCompletion(tx, pipeline, run.id, { executeStep, prepareApproval });
@@ -430,6 +446,7 @@ describe('human gate bypass vectors', () => {
         await decideHumanGate(tx, run.id, {
           outcome: 'APPROVED',
           decidedBy: teacherId,
+          actingAs: 'teacher',
           reason: 'I will approve this myself.',
         });
       } catch (error) {
@@ -441,6 +458,64 @@ describe('human gate bypass vectors', () => {
 
     expect(rejection).toBeInstanceOf(OrchestratorRunnerError);
     expect(task?.decision).toBeNull(); // the bypass attempt left nothing decided
+  });
+
+  it('refuses a person who holds the gate’s role but is acting as another role', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const hodId = await seedActorWithRole(tenantId, actorId, 'hod');
+    // The same account also holds `smt`, and signs in acting as it.
+    await grantRole(tenantId, actorId, hodId, 'smt');
+    const pipeline = gatedPipeline('bypass-acting-as-pipeline');
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({}),
+        prepareApproval,
+      });
+      await expect(
+        decideHumanGate(tx, run.id, {
+          outcome: 'APPROVED',
+          decidedBy: hodId,
+          actingAs: 'smt',
+          reason: 'Acting as the wrong role.',
+        }),
+      ).rejects.toThrow(/acting as "smt"/);
+      expect((await getApprovalTaskForStep(tx, run.id, 'gate'))?.decision).toBeNull();
+      // Signing in as the gate's own role decides it.
+      await decideHumanGate(tx, run.id, {
+        outcome: 'APPROVED',
+        decidedBy: hodId,
+        actingAs: 'hod',
+        reason: 'Acting as hod.',
+      });
+      expect((await getApprovalTaskForStep(tx, run.id, 'gate'))?.decision).toBe(
+        'APPROVED',
+      );
+    });
+  });
+
+  it('refuses a decision acting as the gate’s role by an account that was never granted it', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const teacherId = await seedActorWithRole(tenantId, actorId, 'teacher');
+    const pipeline = gatedPipeline('bypass-claimed-role-pipeline');
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({}),
+        prepareApproval,
+      });
+      await expect(
+        decideHumanGate(tx, run.id, {
+          outcome: 'APPROVED',
+          decidedBy: teacherId,
+          actingAs: 'hod', // claims the gate's role without holding it
+          reason: 'Claiming a role I was not given.',
+        }),
+      ).rejects.toThrow(/does not hold the required role/);
+      expect((await getApprovalTaskForStep(tx, run.id, 'gate'))?.decision).toBeNull();
+    });
   });
 
   it('refuses a second decision on an already-decided task', async () => {
@@ -457,12 +532,14 @@ describe('human gate bypass vectors', () => {
       await decideHumanGate(tx, run.id, {
         outcome: 'APPROVED',
         decidedBy: hodId,
+        actingAs: 'hod',
         reason: 'First decision.',
       });
       await expect(
         decideHumanGate(tx, run.id, {
           outcome: 'REJECTED',
           decidedBy: hodId,
+          actingAs: 'hod',
           reason: 'Changed my mind.',
         }),
       ).rejects.toThrow(OrchestratorRunnerError);
@@ -483,6 +560,7 @@ describe('human gate bypass vectors', () => {
         decideHumanGate(tx, run.id, {
           outcome: 'APPROVED',
           decidedBy: hodId,
+          actingAs: 'hod',
           reason: 'Too early.',
         }),
       ).rejects.toThrow(OrchestratorRunnerError);
@@ -504,6 +582,7 @@ describe('human gate bypass vectors', () => {
         decideHumanGate(tx, run.id, {
           outcome: 'APPROVED',
           decidedBy: hodId,
+          actingAs: 'hod',
           reason: '',
         }),
       ).rejects.toThrow(OrchestratorRunnerError);

@@ -300,12 +300,12 @@ suite picks the table up from `tables.ts`); the concurrency cases — two admini
 at once yields one `APPLIED` and one refusal, and a request racing the proposer's own demotion cannot apply; and the
 rollback test.
 
-### 4.8 Choosing the active role (step 4b — decided 2026-11-12; part 1 built, part 2 not)
+### 4.8 Choosing the active role (step 4b — decided 2026-11-12; both parts built)
 
 **Status.** The owner accepted all five recommendations in §4.8's decision list (2026-11-12). **Part 1 is built (Stage 123):**
-eligibility, the token, the chooser page, the proxy state and `Session.role: Role | null`. **Part 2 is not:** `actingAs` on
-gate decisions (item 5) — until it ships a gate decision is still checked against the account's role assignments only, as
-in §4.8's "Today". One difference from the text below: a school role present in the account but absent from the claim is
+eligibility, the token, the chooser page, the proxy state and `Session.role: Role | null`. **Part 2 is built (Stage 124):** `actingAs` on
+gate decisions (item 5) — `decideHumanGate` requires it, requires it to equal the gate's `requiredRole`, and still checks
+the live assignment. One difference from the text below: a school role present in the account but absent from the claim is
 returned as data (`assignedNotClaimed`) rather than logged — `apps/web` has no telemetry dependency, and importing the
 telemetry package pulls OpenTelemetry into the Next bundle.
 
@@ -505,7 +505,7 @@ must keep resolving **no** actor, and a test should pin that.
    carried on the token and session, an explanation shown to a school role with no account, a tenant-ACTIVE
    check, and a guard that only `packages/db` writes the account tables. **4b part 1 built (Stage 123)**:
    the session role from the intersection of the account's role assignments and the provider's claim, and the
-   chooser (OQ-032); **4b part 2 not built**: gate decisions checked against the active role (§4.8 item 5)._
+   chooser (OQ-032); **4b part 2 built (Stage 124)**: gate decisions checked against the active role (§4.8 item 5)._
 5. **Admin UI** (`/admin/staff`): invite, revoke, list, role changes; wired to the routes.
 6. **Gate decision hardening** (§6): require an `ACTIVE` account in `decideHumanGate`.
 7. **Keycloak integration** (§5): Admin API client, mirrored roles, required actions; realm config

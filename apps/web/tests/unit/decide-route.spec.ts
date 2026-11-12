@@ -42,7 +42,12 @@ describe('POST /api/approvals/[id]/decide', () => {
   });
 
   it('decides as the resolved account id — the same id in the context and the decision', async () => {
-    getToken.mockResolvedValue({ sub: SUB, tenantId: TENANT, userId: ACCOUNT });
+    getToken.mockResolvedValue({
+      sub: SUB,
+      tenantId: TENANT,
+      userId: ACCOUNT,
+      role: 'hod',
+    });
     const response = await call();
     expect(response.status).toBe(200);
     expect(withTenant).toHaveBeenCalledWith(
@@ -52,7 +57,11 @@ describe('POST /api/approvals/[id]/decide', () => {
     expect(decideHumanGate).toHaveBeenCalledWith(
       TX,
       'r1',
-      expect.objectContaining({ decidedBy: ACCOUNT, outcome: 'APPROVED' }),
+      expect.objectContaining({
+        decidedBy: ACCOUNT,
+        outcome: 'APPROVED',
+        actingAs: 'hod',
+      }),
     );
   });
 
@@ -68,5 +77,57 @@ describe('POST /api/approvals/[id]/decide', () => {
     getToken.mockResolvedValue(null);
     expect((await call()).status).toBe(401);
     expect(decideHumanGate).not.toHaveBeenCalled();
+  });
+
+  it('decides as the session’s active role, whichever role that is', async () => {
+    getToken.mockResolvedValue({
+      sub: SUB,
+      tenantId: TENANT,
+      userId: ACCOUNT,
+      role: 'smt',
+    });
+    await call();
+    expect(decideHumanGate).toHaveBeenCalledWith(
+      TX,
+      'r1',
+      expect.objectContaining({ actingAs: 'smt' }),
+    );
+  });
+
+  it.each([
+    ['no role (has not chosen one yet)', {}],
+    ['an unknown role', { role: 'superuser' }],
+    ['a non-string role', { role: 7 }],
+  ])('decides nothing for a session with %s', async (_name, extra) => {
+    getToken.mockResolvedValue({ sub: SUB, tenantId: TENANT, userId: ACCOUNT, ...extra });
+    const response = await call();
+    expect(response.status).toBe(403);
+    expect(decideHumanGate).not.toHaveBeenCalled();
+    expect(withTenant).not.toHaveBeenCalled();
+  });
+
+  it('takes the role from the token, never from the request body', async () => {
+    getToken.mockResolvedValue({
+      sub: SUB,
+      tenantId: TENANT,
+      userId: ACCOUNT,
+      role: 'hod',
+    });
+    const request = new NextRequest('http://localhost/api/approvals/t1/decide', {
+      method: 'POST',
+      body: JSON.stringify({
+        runId: 'r1',
+        outcome: 'APPROVED',
+        reason: 'Looks right.',
+        actingAs: 'smt',
+        role: 'smt',
+      }),
+    });
+    await POST(request, { params: Promise.resolve({ id: 't1' }) });
+    expect(decideHumanGate).toHaveBeenCalledWith(
+      TX,
+      'r1',
+      expect.objectContaining({ actingAs: 'hod' }),
+    );
   });
 });
