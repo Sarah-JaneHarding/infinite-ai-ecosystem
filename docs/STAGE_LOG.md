@@ -11812,3 +11812,38 @@ removing the self-hiding fails 1; passing a fixed status instead of the body's f
 | `pnpm lint`, `pnpm typecheck`, web unit tests                     | PASS                               |
 | Data layer against real Postgres                                  | Existing suite (CI); no new schema |
 | Rollback: revert this commit; no schema change                    | PASS                               |
+
+## Stage 132 — the development and testing sandbox
+
+**Why.** Running the platform locally was a ten-step, three-`.env`, two-Compose-project assembly (docs/DEV_SETUP.md), and running its tests
+on a clean machine had no equivalent of "run it in a container". The sandbox collapses both, with the safety properties a place that
+runs the test suite should have.
+
+**What changed.** `infra/sandbox/` (overlay `compose.sandbox.yml` on the unchanged `infra/docker/compose.dev.yml`; a toolbox `Dockerfile`;
+`sandbox-entrypoint.sh`; `sandbox-verify.sh`), `scripts/sandbox.sh` and `pnpm sandbox <command>`, `docs/SANDBOX.md`. `compose.apps.yml`'s
+network name became overridable (`DATA_PLANE_NETWORK`, default unchanged) so the apps can join the sandbox network. Secrets are generated on
+first use into a git-ignored file; ports are loopback-only; the repository is mounted read-only; no Docker socket or privilege.
+
+**Tests.** `packages/security/test/sandbox.spec.ts` (35): the generator fills every variable in `.env.example`, mode 600, fresh randomness per
+generation, no shared or guessable credential, URL-safe passwords, realm-policy passwords, `app_rw` (never the migrator) for the application,
+agreeing values, key formats, refuses a variable it has no rule for, never overwrites an existing file, `.gitignore` covers it; the overlay
+has its own project, loopback ports (and replaces the dev file's), a read-only repo mount, no socket / privilege / host namespace, the
+right profiles, no literal credential, migrator for `migrate` and `app_rw` for the toolbox; the image runs unprivileged and pins the repo's
+pnpm. Mutation-checked: a public port, a writable repo mount, a Docker socket, and the migrator URL for the application each fail one test.
+`docker compose config` was run on the real merged files, and the database path was run for real (initdb scripts → `db:migrate:deploy` →
+`db:seed` → `db:seed:identities` → `sandbox-verify`) on PostgreSQL 16 with pgvector, including three deliberate breakages of `verify`.
+
+**Not verified (no Docker daemon in the authoring environment).** Building the toolbox image, the rsync/install entrypoint, booting Keycloak
+with the generated secrets, the Keycloak and Redis checks, the `apps` profile and the Linux `host.docker.internal` workaround — listed in
+`docs/SANDBOX.md`. **Not covered by design:** the Testcontainers integration tier (a container that starts containers needs the host Docker
+socket, which is root on the host) and the Playwright tiers.
+
+| Exit gate item                                             | Result                                           |
+| ---------------------------------------------------------- | ------------------------------------------------ |
+| No secret committed; generated per machine; mode 600       | PASS (test + run)                                |
+| Not reachable from the network; cannot modify the checkout | PASS (static; mutation-checked)                  |
+| Compose files parse and merge as intended                  | PASS (`docker compose config` on the real files) |
+| Migrate + seed + verify on real Postgres                   | PASS (outside Docker, same scripts and roles)    |
+| Boot of the containers; image build; apps profile          | OPEN (needs a Docker daemon — first run)         |
+| `rsync` (GPL-3.0) in the toolbox                           | OPEN (rule 9 approval — docs/DEPENDENCIES.md)    |
+| Rollback: revert this commit; no schema change             | PASS                                             |
