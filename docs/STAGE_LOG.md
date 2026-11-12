@@ -11422,7 +11422,7 @@ stack; step 7 and 8 bring the dev flow onto invitations); the db integration tes
 | §4.4 role intersection and chooser                        | NOT DONE (step 4b) |
 | End-to-end against a running Keycloak                     | NOT DONE           |
 
-## Stage 120 — OQ-043 per-school price formula (decided 2026-11-11, provisional)
+## Stage 120b — OQ-043 per-school price formula (decided 2026-11-11, provisional)
 
 `packages/billing/src/pricing.ts` (new): `priceBreakdown`, `splitVat`, `annualPrepayCents` and the constants (R300, R75, R4.00 /
 R1.50 above 500, R750 minimum, 50 % community, 10 % prepay, 15 % VAT). Integer cents throughout; negative or fractional counts
@@ -11571,7 +11571,7 @@ again is the only way to change role (decision 4).
 | Integration cases against real Postgres                        | OPEN (needs Docker; proven in CI) |
 | Rollback: revert this commit; no schema change                 | PASS                              |
 
-## Stage 123 — agent roster reconciled with the contracts (docs only)
+## Stage 123b — agent roster reconciled with the contracts (docs only)
 
 `docs/AGENTS.md` §3 said the roster was "the plan, not a claim of completion" and gave tables for only 28 of the 56 agents (MOD-04, MOD-05 and the Learning Engine were name lists). The 56 contract files, 56 prompts and 56 eval sets all exist.
 
@@ -11583,6 +11583,37 @@ again is the only way to change role (decision 4).
 | Every agent has a prompt and a ≥ 20-case eval set | PASS                                       |
 | Prettier clean                                    | PASS                                       |
 | A test fails if a contract and the table disagree | OPEN (the table is copied by hand for now) |
+
+## Stage 125 — OQ-033 provisioning, step 6: a gate is decided only by an ACTIVE account
+
+**Why.** A session's account is fixed at sign-in, so suspending or offboarding someone does not end a session they already
+hold (PROVISIONING_DESIGN §6). Before this, `decideHumanGate` asked only whether the account held the gate's role; a suspended
+person who still held it, and was still signed in, could decide.
+
+**What changed.** `packages/db`: `isUserAccountActive(tx, userAccountId)` — true only for an `ACTIVE` account in the tenant
+already on `tx` (a suspended, offboarded, missing or other-school account is false). `decideHumanGate` calls it before the
+`actingAs` and assignment checks and refuses with "does not have an active account". Nothing is recorded on a refusal.
+Not changed: the session itself (pages and reads still honour it until it ends), and `hasActiveRoleAssignment` (its question is
+still "does this account hold this role").
+
+**Tests.** `human-gate-acting-as.spec.ts` (+4): the check runs on the deciding account in the caller's transaction; an inactive
+account holding the role and acting as it is refused with nothing decided or audited; refused before any role question; not
+reached for a malformed decision or a run that is not waiting. `user-account.integration.spec.ts` (+4, real Postgres): active,
+suspended and offboarded, missing, another school's active account. `runner.integration.spec.ts` (+1): an account suspended after
+the gate opened is refused with its role assignment untouched, and decides once reinstated. Mutation-checked: removing the check
+fails 3 unit tests. Orchestrator unit 208 passing; db unit 265 passing (export-surface covers the new function). Integration cases
+run in CI.
+
+**Not done.** Shortening the application session lifetime (§6's second bullet; `auth.ts` sets no `maxAge`) — a separate decision.
+
+| Exit gate item                                                | Result                            |
+| ------------------------------------------------------------- | --------------------------------- |
+| A suspended or offboarded account cannot decide a gate        | PASS (unit; mutation-checked)     |
+| The check is on the deciding account, in the tenant           | PASS                              |
+| Nothing is decided or audited on a refusal                    | PASS                              |
+| `pnpm lint`, `pnpm typecheck`, orchestrator and db unit tests | PASS                              |
+| Integration cases against real Postgres                       | OPEN (needs Docker; proven in CI) |
+| Rollback: revert this commit; no schema change                | PASS                              |
 
 ## Stage 127 — OQ-033 provisioning, step 5 slice a: the staff overview (read only)
 

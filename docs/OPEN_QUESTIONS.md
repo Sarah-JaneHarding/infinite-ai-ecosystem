@@ -497,8 +497,9 @@ not yet decided: the school administrator creates accounts and role assignments;
 account by _verified_ email within the tenant (setting its `subject`), and never grants a role from a token claim. That
 needs: an invite flow, an `email_verified` check, and a way to create the first administrator. Until then a real person at
 a real school has no actor, so cannot decide a gate (fails closed, as intended). Also open: a session's account is fixed
-at sign-in, so suspending an account does not end an existing session; `decideHumanGate`'s role check does look the
-account up at decision time, but its status is not re-checked there.
+at sign-in, so suspending an account does not end an existing session; `decideHumanGate` now re-checks the account is `ACTIVE`
+at decision time (Stage 125), so a suspended person with a live session can no longer decide a gate; pages and
+reads still honour the session until it ends.
 
 **Fixed 2026-11-11 (found in OQ-033 step 3b, closed in Stage 119):** the CHECK constraint on `user_invitation.roles`
 (`cardinality("roles") >= 1 AND "roles" <@ ARRAY[…]`, migration `20261024090000_oq033_user_invitation`) **accepted a `NULL`**: the
@@ -704,7 +705,7 @@ Recorded from the owner's instructions. Each is a decision, not yet built unless
 
 | ID     | Decision                                                                                                                                                         |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D-1    | OQ-043 formula price adopted, provisional (above). Built in Stage 120.                                                                                           |
+| D-1    | OQ-043 formula price adopted, provisional (above). Built in Stage 120b.                                                                                          |
 | D-2    | Prices are shown VAT-inclusive with the ex VAT split.                                                                                                            |
 | D-3    | Teacher training is part of the ecosystem, not a second product line.                                                                                            |
 | D-4    | Pilot schools #2 and #3 are deferred until pre-pilot testing with school #1 is complete.                                                                         |
