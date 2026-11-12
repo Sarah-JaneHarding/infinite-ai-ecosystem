@@ -41,6 +41,12 @@ export interface StaffOverviewProps {
 export function StaffOverview({ overview, selfId }: StaffOverviewProps) {
   const names = new Map(overview.accounts.map((a) => [a.id, a.displayName]));
   const nameOf = (id: string): string => names.get(id) ?? 'Unknown account';
+  const schoolNames = new Map(overview.schools.map((s) => [s.id, s.name]));
+  // A scope is only worth naming when there is more than one school to tell apart.
+  const scopeOf = (schoolId: string | null): string =>
+    schoolId !== null && overview.schools.length > 1
+      ? ` — ${schoolNames.get(schoolId) ?? 'unknown school'}`
+      : '';
   return (
     <div className="flex flex-col gap-10">
       {overview.truncated && (
@@ -88,6 +94,7 @@ export function StaffOverview({ overview, selfId }: StaffOverviewProps) {
                           <li key={r.role} className="flex gap-2 items-baseline">
                             <span>
                               {label(r.role)}
+                              {scopeOf(r.schoolId)}
                               {r.expired ? ' (lapsed)' : ''}
                               {!r.expired && r.expiresAt !== null
                                 ? ` (until ${date(r.expiresAt)})`
@@ -111,7 +118,9 @@ export function StaffOverview({ overview, selfId }: StaffOverviewProps) {
                     )}
                   </td>
                   <td className={TD}>
-                    {a.status === 'ACTIVE' ? <GrantRoleForm accountId={a.id} /> : null}
+                    {a.status === 'ACTIVE' ? (
+                      <GrantRoleForm accountId={a.id} schools={overview.schools} />
+                    ) : null}
                   </td>
                   <td className={TD}>
                     {a.id !== selfId && a.status !== 'OFFBOARDED' && (
@@ -178,7 +187,10 @@ export function StaffOverview({ overview, selfId }: StaffOverviewProps) {
               {overview.invitations.map((i) => (
                 <tr key={i.id}>
                   <td className={TD}>{i.email}</td>
-                  <td className={TD}>{i.roles.map(label).join(', ')}</td>
+                  <td className={TD}>
+                    {i.roles.map(label).join(', ')}
+                    {scopeOf(i.schoolId)}
+                  </td>
                   <td className={TD}>
                     {date(i.expiresAt)}
                     {i.expired ? ' (expired)' : ''}

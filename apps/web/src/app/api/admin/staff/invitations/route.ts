@@ -26,6 +26,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       actorAccountId: actorId,
       email: body.data.email,
       roles: body.data.roles,
+      ...(body.data.schoolId === undefined ? {} : { schoolId: body.data.schoolId }),
       expiresAt: defaultInvitationExpiry(now),
       now,
     }),

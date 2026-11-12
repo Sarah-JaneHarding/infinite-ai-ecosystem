@@ -829,6 +829,44 @@ describe('the remaining refusals', () => {
     expect(result).toMatchObject({ ok: true });
   });
 
+  it('refuses a school that is not this tenant’s — a foreign key would have accepted it', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    // A real school, in another tenant: the foreign key is satisfied, row-level security is the only
+    // thing that stops an administrator scoping an invitation to somebody else's school.
+    const foreign = await asTenant(migrator, TENANT_B, randomUUID(), (tx) =>
+      tx.school.create({
+        data: { tenantId: TENANT_B, name: `Foreign ${randomUUID()}`, lolt: 'English' },
+      }),
+    );
+    expect(await create(admin.id, { schoolId: foreign.id })).toEqual({
+      ok: false,
+      reason: 'school_not_found',
+    });
+    expect(await create(admin.id, { schoolId: randomUUID() })).toEqual({
+      ok: false,
+      reason: 'school_not_found',
+    });
+    const created = await asTenant(migrator, TENANT_A, randomUUID(), (tx) =>
+      tx.userInvitation.count({ where: { schoolId: foreign.id } }),
+    );
+    expect(created).toBe(0);
+  });
+
+  it('tells a caller who may not invite nothing about which schools exist', async () => {
+    const teacher = await makeAccount(TENANT_A, ['teacher']);
+    const foreign = await asTenant(migrator, TENANT_B, randomUUID(), (tx) =>
+      tx.school.create({
+        data: { tenantId: TENANT_B, name: `Foreign ${randomUUID()}`, lolt: 'English' },
+      }),
+    );
+    for (const schoolId of [foreign.id, randomUUID()]) {
+      expect(await create(teacher.id, { schoolId })).toEqual({
+        ok: false,
+        reason: 'actor_not_admin',
+      });
+    }
+  });
+
   it('refuses a staff record that is missing or already linked', async () => {
     const admin = await makeAccount(TENANT_A, ['admin']);
     const { staff } = await schoolAndStaff(true);

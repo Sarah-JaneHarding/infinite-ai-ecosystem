@@ -6,22 +6,30 @@ import { SCHOOL_STAFF_ROLES } from '@infinite-ai/policy';
 
 import { ROLE_LABEL } from '@/lib/roles';
 
+import type { SchoolOption } from './InviteForm';
 import { readFailure } from './StaffActionButton';
 
 export interface GrantRoleFormViewProps {
   readonly role: string;
+  readonly schools: readonly SchoolOption[];
+  /** The chosen school's id, or '' for the whole school group. */
+  readonly schoolId: string;
   readonly busy: boolean;
   readonly notice: { readonly kind: 'ok' | 'error'; readonly text: string } | null;
   readonly onRole: (role: string) => void;
+  readonly onSchool: (schoolId: string) => void;
   readonly onSubmit: () => void;
 }
 
 /** Presentational (no hooks): pick one role and give it. */
 export function GrantRoleFormView({
   role,
+  schools,
+  schoolId,
   busy,
   notice,
   onRole,
+  onSchool,
   onSubmit,
 }: GrantRoleFormViewProps) {
   return (
@@ -47,6 +55,22 @@ export function GrantRoleFormView({
             </option>
           ))}
         </select>
+        {schools.length > 1 && (
+          <select
+            aria-label="School"
+            value={schoolId}
+            disabled={busy}
+            onChange={(e) => onSchool(e.target.value)}
+            className="rounded-md border border-[var(--iai-border)] px-2 py-1 text-sm"
+          >
+            <option value="">Whole school group</option>
+            {schools.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        )}
         <button
           type="submit"
           disabled={busy || role === ''}
@@ -78,8 +102,15 @@ const OK_TEXT: Readonly<Record<string, string>> = {
     'Done. You are this school’s only administrator, so no second person was needed.',
 };
 
-export function GrantRoleForm({ accountId }: { readonly accountId: string }) {
+export function GrantRoleForm({
+  accountId,
+  schools,
+}: {
+  readonly accountId: string;
+  readonly schools: readonly SchoolOption[];
+}) {
   const [role, setRole] = useState('');
+  const [schoolId, setSchoolId] = useState('');
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<GrantRoleFormViewProps['notice']>(null);
 
@@ -89,7 +120,7 @@ export function GrantRoleForm({ accountId }: { readonly accountId: string }) {
     fetch(`/api/admin/staff/accounts/${encodeURIComponent(accountId)}/roles`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ roles: [role] }),
+      body: JSON.stringify({ roles: [role], ...(schoolId === '' ? {} : { schoolId }) }),
     })
       .then(async (response) => {
         if (!response.ok) {
@@ -114,9 +145,12 @@ export function GrantRoleForm({ accountId }: { readonly accountId: string }) {
   return (
     <GrantRoleFormView
       role={role}
+      schools={schools}
+      schoolId={schoolId}
       busy={busy}
       notice={notice}
       onRole={setRole}
+      onSchool={setSchoolId}
       onSubmit={submit}
     />
   );

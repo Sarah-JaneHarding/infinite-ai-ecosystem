@@ -127,6 +127,26 @@ export async function currentTenantId(tx: TenantClient): Promise<string> {
 }
 
 /**
+ * Whether `schoolId` is a school of the tenant already active on `tx`.
+ *
+ * A school id arrives from a client, and a foreign key is not row-level-security aware: Postgres
+ * checks that the referenced row exists, not that the caller may see it. Without this, an
+ * administrator could scope an invitation or a grant to another school's id. `school` is tenant-owned,
+ * so under `withTenant` this read sees only the caller's own tenant's schools, and an id from anywhere
+ * else is simply not found.
+ */
+export async function schoolInTenant(
+  tx: TenantClient,
+  schoolId: string,
+): Promise<boolean> {
+  const school = await tx.school.findFirst({
+    where: { id: schoolId },
+    select: { id: true },
+  });
+  return school !== null;
+}
+
+/**
  * Takes the tenant's provisioning lock for the rest of this transaction. Every function in this
  * module calls it first; it is exported so a caller composing several steps in one transaction
  * (and the tests) can hold it explicitly. Released automatically at commit or rollback.
@@ -222,6 +242,12 @@ export async function createInvitation(
     confirmation = 'AWAITING';
   } else {
     return refuse(decision.reason);
+  }
+
+  // The school scope, after the rules so a caller who may not invite learns nothing about which
+  // schools exist. Not a race: the lock is held, and a school cannot move between tenants.
+  if (input.schoolId != null && !(await schoolInTenant(tx, input.schoolId))) {
+    return refuse('school_not_found');
   }
 
   // Checked under the lock, so these are answers rather than races. (The partial unique index

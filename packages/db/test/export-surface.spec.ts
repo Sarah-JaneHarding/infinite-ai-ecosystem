@@ -100,6 +100,7 @@ describe('package export surface', () => {
       'resolveBrainConflict',
       'revokeInvitation',
       'revokeRole',
+      'schoolInTenant',
       'setAccountStatus',
       'startStepRun',
       'tombstoneBrainFact',

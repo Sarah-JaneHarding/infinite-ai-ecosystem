@@ -52,7 +52,9 @@ networks:
   # Shared with the data-plane stack so app containers can reach postgres, redis,
   # keycloak and minio by their service names without port-forwarding tricks.
   data_plane:
-    name: infinite-ai-dev_default
+    # Overridable so the sandbox (infra/sandbox, project infinite-ai-sandbox) can reuse this file
+    # against its own network; unset, it is exactly what it always was.
+    name: ${DATA_PLANE_NETWORK:-infinite-ai-dev_default}
     external: true
 
 services:

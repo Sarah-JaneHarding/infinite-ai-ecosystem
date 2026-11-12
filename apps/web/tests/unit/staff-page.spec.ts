@@ -24,6 +24,7 @@ const TENANT = '10000000-0000-4000-8000-000000000001';
 const ACCOUNT = 'acc00000-0000-4000-8000-000000000001';
 const TX = { tx: true };
 const OVERVIEW = {
+  schools: [],
   accounts: [
     {
       id: ACCOUNT,
@@ -31,7 +32,7 @@ const OVERVIEW = {
       email: 'ada@example.invalid',
       status: 'ACTIVE',
       lastSeenAt: null,
-      roles: [{ role: 'admin', expiresAt: null, expired: false }],
+      roles: [{ role: 'admin', schoolId: null, expiresAt: null, expired: false }],
     },
   ],
   invitations: [],

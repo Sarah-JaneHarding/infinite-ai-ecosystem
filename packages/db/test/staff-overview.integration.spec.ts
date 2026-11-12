@@ -13,6 +13,7 @@ import { asTenant, startTestDatabase, type TestDatabase } from './support/databa
 
 let db: TestDatabase;
 let appRw: PrismaClient;
+let migrator: PrismaClient;
 const TENANT_A = randomUUID();
 const TENANT_B = randomUUID();
 const ACTOR = randomUUID();
@@ -26,7 +27,7 @@ const OTHER_SCHOOL_PERSON = randomUUID();
 
 beforeAll(async () => {
   db = await startTestDatabase();
-  const migrator = db.clientFor('migrator');
+  migrator = db.clientFor('migrator');
   for (const tenantId of [TENANT_A, TENANT_B]) {
     await asTenant(migrator, tenantId, ACTOR, (tx) =>
       tx.tenant.create({
@@ -174,11 +175,71 @@ describe('loadStaffOverview (real Postgres)', () => {
   it('is empty, not an error, for a school with no staff yet', async () => {
     const empty = await overview(randomUUID());
     expect(empty).toEqual({
+      schools: [],
       accounts: [],
       invitations: [],
       grantRequests: [],
       truncated: false,
     });
+  });
+
+  it('lists the school’s own schools by name, and none of another tenant’s', async () => {
+    const own = await asTenant(migrator, TENANT_A, ACTOR, async (tx) => {
+      await tx.school.create({
+        data: { tenantId: TENANT_A, name: 'Zulu Primary', lolt: 'English' },
+      });
+      return tx.school.create({
+        data: { tenantId: TENANT_A, name: 'Alpha Primary', lolt: 'English' },
+      });
+    });
+    await asTenant(migrator, TENANT_B, ACTOR, (tx) =>
+      tx.school.create({
+        data: { tenantId: TENANT_B, name: 'Foreign Primary', lolt: 'English' },
+      }),
+    );
+    const a = await overview(TENANT_A);
+    expect(a.schools.map((s) => s.name)).toEqual(['Alpha Primary', 'Zulu Primary']);
+    expect(a.schools.map((s) => s.id)).toContain(own.id);
+    expect(a.schools.map((s) => s.name)).not.toContain('Foreign Primary');
+    expect((await overview(TENANT_B)).schools.map((s) => s.name)).toEqual([
+      'Foreign Primary',
+    ]);
+  });
+
+  it('reports the school a role or an invitation is scoped to', async () => {
+    const school = await asTenant(migrator, TENANT_A, ACTOR, (tx) =>
+      tx.school.findFirstOrThrow({ where: { name: 'Alpha Primary' } }),
+    );
+    await asTenant(migrator, TENANT_A, ACTOR, async (tx) => {
+      await tx.roleAssignment.create({
+        data: {
+          tenantId: TENANT_A,
+          userAccountId: BEN,
+          role: 'hod',
+          schoolId: school.id,
+        },
+      });
+      await tx.userInvitation.create({
+        data: {
+          tenantId: TENANT_A,
+          email: 'scoped@example.invalid',
+          roles: ['teacher'],
+          schoolId: school.id,
+          expiresAt: FUTURE,
+        },
+      });
+    });
+    const a = await overview(TENANT_A);
+    expect(
+      a.accounts.find((x) => x.id === BEN)?.roles.find((r) => r.role === 'hod')?.schoolId,
+    ).toBe(school.id);
+    expect(
+      a.accounts.find((x) => x.id === BEN)?.roles.find((r) => r.role === 'sbst')
+        ?.schoolId,
+    ).toBeNull();
+    expect(
+      a.invitations.find((i) => i.email === 'scoped@example.invalid')?.schoolId,
+    ).toBe(school.id);
   });
 
   it('does not report truncation for a small school', async () => {

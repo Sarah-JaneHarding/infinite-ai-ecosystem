@@ -14,8 +14,16 @@ import type { TenantClient } from './client.js';
  * unbounded read; `truncated` says when it bit, so the page can say so instead of looking complete. */
 export const STAFF_OVERVIEW_LIMIT = 500;
 
+/** A school of this tenant, for the scope pickers and for naming a scope. */
+export interface StaffSchool {
+  readonly id: string;
+  readonly name: string;
+}
+
 export interface StaffRole {
   readonly role: string;
+  /** The school the role is scoped to, or `null` for the whole school group / tenant. */
+  readonly schoolId: string | null;
   /** `null` = does not lapse. */
   readonly expiresAt: Date | null;
   /** Already past `now`. Shown, because a lapsed role explains why someone cannot act. */
@@ -35,6 +43,7 @@ export interface StaffInvitation {
   readonly id: string;
   readonly email: string;
   readonly roles: readonly string[];
+  readonly schoolId: string | null;
   readonly confirmation: 'NOT_REQUIRED' | 'AWAITING' | 'CONFIRMED' | 'WAIVED_SOLE_ADMIN';
   readonly expiresAt: Date;
   /** Past `expiresAt` but not yet marked EXPIRED: it can no longer be accepted. */
@@ -51,6 +60,8 @@ export interface StaffGrantRequest {
 }
 
 export interface StaffOverview {
+  /** This tenant's schools, by name. */
+  readonly schools: readonly StaffSchool[];
   readonly accounts: readonly StaffAccount[];
   readonly invitations: readonly StaffInvitation[];
   readonly grantRequests: readonly StaffGrantRequest[];
@@ -62,7 +73,12 @@ export async function loadStaffOverview(
   tx: TenantClient,
   now: Date,
 ): Promise<StaffOverview> {
-  const [accounts, invitations, grantRequests] = await Promise.all([
+  const [schools, accounts, invitations, grantRequests] = await Promise.all([
+    tx.school.findMany({
+      select: { id: true, name: true },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      take: STAFF_OVERVIEW_LIMIT,
+    }),
     tx.userAccount.findMany({
       select: {
         id: true,
@@ -70,14 +86,21 @@ export async function loadStaffOverview(
         email: true,
         status: true,
         lastSeenAt: true,
-        roleAssignments: { select: { role: true, expiresAt: true } },
+        roleAssignments: { select: { role: true, expiresAt: true, schoolId: true } },
       },
       orderBy: [{ displayName: 'asc' }, { id: 'asc' }],
       take: STAFF_OVERVIEW_LIMIT,
     }),
     tx.userInvitation.findMany({
       where: { status: 'PENDING' },
-      select: { id: true, email: true, roles: true, confirmation: true, expiresAt: true },
+      select: {
+        id: true,
+        email: true,
+        roles: true,
+        schoolId: true,
+        confirmation: true,
+        expiresAt: true,
+      },
       orderBy: [{ expiresAt: 'asc' }, { id: 'asc' }],
       take: STAFF_OVERVIEW_LIMIT,
     }),
@@ -96,6 +119,7 @@ export async function loadStaffOverview(
   ]);
 
   return {
+    schools,
     accounts: accounts.map((a) => ({
       id: a.id,
       displayName: a.displayName,
@@ -105,6 +129,7 @@ export async function loadStaffOverview(
       roles: a.roleAssignments
         .map((r) => ({
           role: r.role,
+          schoolId: r.schoolId,
           expiresAt: r.expiresAt,
           expired: r.expiresAt !== null && r.expiresAt <= now,
         }))
@@ -114,6 +139,7 @@ export async function loadStaffOverview(
       id: i.id,
       email: i.email,
       roles: [...i.roles].sort(),
+      schoolId: i.schoolId,
       confirmation: i.confirmation,
       expiresAt: i.expiresAt,
       expired: i.expiresAt <= now,
@@ -127,6 +153,7 @@ export async function loadStaffOverview(
       expired: g.expiresAt <= now,
     })),
     truncated:
+      schools.length === STAFF_OVERVIEW_LIMIT ||
       accounts.length === STAFF_OVERVIEW_LIMIT ||
       invitations.length === STAFF_OVERVIEW_LIMIT ||
       grantRequests.length === STAFF_OVERVIEW_LIMIT,
