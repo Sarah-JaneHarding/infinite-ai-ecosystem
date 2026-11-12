@@ -103,6 +103,8 @@ describe('user_invitation: what the data layer refuses', () => {
       ['hod'],
       ['smt'],
       ['sbst'],
+      ['sbst_chair'],
+      ['sbst', 'sbst_chair'],
       ['admin'],
       ['hod', 'teacher'],
     ]) {

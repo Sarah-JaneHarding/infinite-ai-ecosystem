@@ -8,6 +8,7 @@ describe('readRole', () => {
     'hod',
     'smt',
     'sbst',
+    'sbst_chair',
     'admin',
     'guardian',
     'learner',

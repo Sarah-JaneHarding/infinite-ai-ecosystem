@@ -9,6 +9,7 @@ export const metadata: Metadata = { title: 'SBST Casebook' };
 export default async function SbstPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect('/sign-in');
-  if (session.role !== 'sbst') redirect('/');
+  // The chair reads the same casebook (read-only grants, rbac.ts); casework is done as `sbst`.
+  if (session.role !== 'sbst' && session.role !== 'sbst_chair') redirect('/');
   return <SbstCasebook />;
 }

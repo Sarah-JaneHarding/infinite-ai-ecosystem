@@ -33,6 +33,10 @@
         "description": "School-Based Support Team — learner support and SIAS coordination"
       },
       {
+        "name": "sbst_chair",
+        "description": "SBST chair — confirms the SBST's draft minutes; held alongside sbst (OQ-046)"
+      },
+      {
         "name": "admin",
         "description": "School administrator — operational, non-instructional access"
       },

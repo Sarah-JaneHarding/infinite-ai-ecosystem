@@ -300,3 +300,39 @@ describe('negative cases the manual names', () => {
     expect(authorize(actor, 'approve', otherClass).allowed).toBe(true);
   });
 });
+
+// OQ-046, PROVISIONING_DESIGN §4.9: the SBST chair role exists to decide one gate. It is deliberately
+// narrow and inherits nothing from `sbst`, because a gate is decided as its own role (§4.8 item 5).
+describe('sbst_chair', () => {
+  const chair = () => actorWith([grantOf('sbst_chair')]);
+
+  it('can read a case and its interventions in its own school', () => {
+    for (const type of ['sbst_case', 'intervention'] as const) {
+      expect(authorize(chair(), 'read', resourceOf(type)).allowed, type).toBe(true);
+    }
+  });
+
+  it.each([
+    ['sbst_case', 'create'],
+    ['sbst_case', 'update'],
+    ['sbst_case', 'approve'],
+    ['sbst_case', 'export'],
+    ['intervention', 'create'],
+    ['intervention', 'update'],
+    ['intervention', 'approve'],
+    ['screening_result', 'read'],
+    ['learner', 'read'],
+    ['user_account', 'read'],
+    ['role_assignment', 'create'],
+    ['tenant_setting', 'update'],
+  ] as const)('cannot %s on %s — nothing is inherited from sbst', (type, action) => {
+    expect(authorize(chair(), action, resourceOf(type)).allowed).toBe(false);
+  });
+
+  it('cannot read another school’s case', () => {
+    expect(
+      authorize(chair(), 'read', resourceOf('sbst_case', { tenantId: OTHER_TENANT }))
+        .allowed,
+    ).toBe(false);
+  });
+});

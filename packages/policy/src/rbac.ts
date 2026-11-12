@@ -19,12 +19,13 @@ import { z } from 'zod';
 // Roles
 // ---------------------------------------------------------------------------
 
-/** The seven school roles plus the two platform roles (Stage 02 step 1). */
+/** The school roles plus the two platform roles (Stage 02 step 1; `sbst_chair` added for OQ-046). */
 export const Role = z.enum([
   'teacher',
   'hod',
   'smt',
   'sbst',
+  'sbst_chair',
   'admin',
   'guardian',
   'learner',
@@ -196,6 +197,13 @@ export const PERMISSIONS: readonly Permission[] = [
   ...grant('sbst', 'sbst_case', ['read', 'create', 'update', 'approve'], 'TENANT'),
   // Referral packs leave the school, so export is granted here and nowhere else.
   ...grant('sbst', 'sbst_case', ['export'], 'TENANT'),
+
+  // --- sbst_chair: confirms the SBST's draft minutes (OQ-046, PROVISIONING_DESIGN §4.9) ------
+  // The chair also holds `sbst` and does casework as that role: a gate is decided as its own role
+  // (§4.8 item 5), so this role is deliberately narrow — it can see a case and its interventions,
+  // and decide the one gate it exists for. Nothing is inherited from `sbst`.
+  ...grant('sbst_chair', 'sbst_case', ['read'], 'TENANT'),
+  ...grant('sbst_chair', 'intervention', ['read'], 'TENANT'),
 
   // --- admin: configuration and staff, deliberately not learner support -----
   ...grant('admin', 'tenant_setting', ['read', 'update'], 'TENANT'),

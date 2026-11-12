@@ -19,7 +19,14 @@
  * This list is held a second time in SQL — the CHECK constraint on `user_invitation.roles` —
  * and `test/invitation-roles.spec.ts` fails if the two ever differ.
  */
-export const SCHOOL_STAFF_ROLES = ['teacher', 'hod', 'smt', 'sbst', 'admin'] as const;
+export const SCHOOL_STAFF_ROLES = [
+  'teacher',
+  'hod',
+  'smt',
+  'sbst',
+  'sbst_chair',
+  'admin',
+] as const;
 export type SchoolStaffRole = (typeof SCHOOL_STAFF_ROLES)[number];
 
 /**

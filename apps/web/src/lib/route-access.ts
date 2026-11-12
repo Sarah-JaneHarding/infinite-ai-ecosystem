@@ -22,6 +22,7 @@ const SCHOOL_ROLES_WITH_A_QUEUE: readonly Role[] = [
   'hod',
   'smt',
   'sbst',
+  'sbst_chair',
   'admin',
 ];
 const PLATFORM: readonly Role[] = ['platform_support', 'platform_admin'];
@@ -36,7 +37,7 @@ export const ROUTE_ACCESS: readonly RouteRule[] = [
   { prefix: '/teacher', roles: ['teacher'] },
   { prefix: '/hod', roles: ['hod'] },
   { prefix: '/smt', roles: ['smt'] },
-  { prefix: '/sbst', roles: ['sbst'] },
+  { prefix: '/sbst', roles: ['sbst', 'sbst_chair'] },
   { prefix: '/guardian', roles: ['guardian'] },
   { prefix: '/learner', roles: ['learner'] },
   { prefix: '/approvals', roles: SCHOOL_ROLES_WITH_A_QUEUE },
