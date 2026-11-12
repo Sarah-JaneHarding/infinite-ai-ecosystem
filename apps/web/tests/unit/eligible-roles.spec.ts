@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { eligibleRoles } from '../../src/lib/eligible-roles.js';
 
-const STAFF: Role[] = ['teacher', 'hod', 'smt', 'sbst', 'admin'];
+const STAFF: Role[] = ['teacher', 'hod', 'smt', 'sbst', 'sbst_chair', 'admin'];
 const OTHER: Role[] = ['guardian', 'learner', 'platform_support', 'platform_admin'];
 
 describe('eligibleRoles — school staff roles need the claim AND the school’s grant', () => {

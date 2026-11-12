@@ -18,8 +18,10 @@ const FORWARD = [
   '20261024090100_oq033_user_invitation_rls/migration.sql',
   '20261024100000_oq033_invitation_confirmation/migration.sql',
   '20261111110000_oq033_user_invitation_roles_not_null/migration.sql',
+  '20261112100000_oq046_sbst_chair_role/migration.sql',
 ];
 const ROLLBACK = '20261024090000_oq033_user_invitation/rollback.sql';
+const ROLLBACK_SBST_CHAIR = '20261112100000_oq046_sbst_chair_role/rollback.sql';
 const ROLLBACK_ROLES_NOT_NULL =
   '20261111110000_oq033_user_invitation_roles_not_null/rollback.sql';
 const ROLLBACK_CONFIRMATION = '20261024100000_oq033_invitation_confirmation/rollback.sql';
@@ -114,7 +116,57 @@ describe('user_invitation rollback', () => {
     expect(await typeExists('user_invitation_status')).toBe(true);
   });
 
-  it('rolls back the NOT NULL tightening first, restoring the original constraint and changing no row', async () => {
+  it('rolls back the sbst_chair widening first, refusing while an invitation still carries it', async () => {
+    expect(await rolesCheck()).toContain('sbst_chair');
+    await asTenant(migrator, TENANT, ACTOR, (tx) =>
+      tx.userInvitation.create({
+        data: {
+          tenantId: TENANT,
+          email: 'chair@example.invalid',
+          roles: ['sbst', 'sbst_chair'],
+          expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+        },
+      }),
+    );
+    // Not destructive: the narrower constraint cannot be added over that row, so the rollback fails
+    // as a whole and the wider constraint stays in force.
+    const sql = readFileSync(join(migrationsDir, ROLLBACK_SBST_CHAIR), 'utf8');
+    const password = new URL(db.urlFor('migrator')).password;
+    const refused = await db.container.exec([
+      'env',
+      `PGPASSWORD=${password}`,
+      'psql',
+      '-h',
+      '127.0.0.1',
+      '-U',
+      'migrator',
+      '-d',
+      db.container.getDatabase(),
+      '-v',
+      'ON_ERROR_STOP=1',
+      '-c',
+      sql,
+    ]);
+    expect(refused.exitCode).not.toBe(0);
+    expect(await rolesCheck()).toContain('sbst_chair');
+    // Remove the row that blocks it (the invitation is revoked in real use), then it applies.
+    await asTenant(migrator, TENANT, ACTOR, (tx) =>
+      tx.userInvitation.deleteMany({ where: { email: 'chair@example.invalid' } }),
+    );
+    await runSql(ROLLBACK_SBST_CHAIR);
+    const narrowed = await rolesCheck();
+    expect(narrowed).not.toContain('sbst_chair');
+    expect(narrowed).toContain('roles IS NOT NULL');
+    const rows = await asTenant(
+      migrator,
+      TENANT,
+      ACTOR,
+      (tx) => tx.$queryRaw<{ n: bigint }[]>`SELECT count(*) AS n FROM user_invitation`,
+    );
+    expect(Number(rows[0]?.n)).toBe(1);
+  });
+
+  it('rolls back the NOT NULL tightening next, restoring the original constraint and changing no row', async () => {
     expect(await rolesCheck()).toContain('roles IS NOT NULL');
     await runSql(ROLLBACK_ROLES_NOT_NULL);
     const restored = await rolesCheck();
@@ -173,7 +225,9 @@ describe('user_invitation rollback', () => {
     const policies = await migrator.$queryRaw<{ policyname: string }[]>`
       SELECT policyname FROM pg_policies WHERE tablename = 'user_invitation'`;
     expect(policies.map((p) => p.policyname)).toEqual(['tenant_isolation']);
-    expect(await rolesCheck()).toContain('roles IS NOT NULL');
+    const forwardAgain = await rolesCheck();
+    expect(forwardAgain).toContain('roles IS NOT NULL');
+    expect(forwardAgain).toContain('sbst_chair');
     expect(await columnExists('confirmation')).toBe(true);
     expect(await typeExists('invitation_confirmation')).toBe(true);
   });

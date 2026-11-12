@@ -6,6 +6,7 @@ export const ROLE_HOME: Record<Role, string> = {
   hod: '/hod',
   smt: '/smt',
   sbst: '/sbst',
+  sbst_chair: '/sbst',
   admin: '/admin/prompts',
   guardian: '/guardian',
   learner: '/learner',
@@ -19,6 +20,7 @@ export const ROLE_LABEL: Record<Role, string> = {
   hod: 'Head of Department',
   smt: 'School Management Team',
   sbst: 'School-Based Support Team',
+  sbst_chair: 'SBST Chair',
   admin: 'Administrator',
   guardian: 'Guardian / Parent',
   learner: 'Learner',
@@ -32,6 +34,7 @@ export const ROLE_HUE: Record<Role, string> = {
   hod: 'teal',
   smt: 'indigo',
   sbst: 'green',
+  sbst_chair: 'green',
   admin: 'violet',
   guardian: 'orange',
   learner: 'amber',
@@ -56,6 +59,10 @@ export const ROLE_NAV: Record<Role, readonly NavLink[]> = {
   ],
   smt: [{ label: 'Dashboard', href: '/smt' }],
   sbst: [{ label: 'Casebook', href: '/sbst' }],
+  sbst_chair: [
+    { label: 'Casebook', href: '/sbst' },
+    { label: 'Approvals', href: '/approvals' },
+  ],
   admin: [
     { label: 'Prompts', href: '/admin/prompts' },
     { label: 'School Setup', href: '/admin/setup' },
@@ -84,7 +91,14 @@ export function roleCanViewPath(role: Role, pathname: string): boolean {
   // A role can always access its home surface.
   allowed.push(ROLE_HOME[role]);
   // Approvals are shared across school roles.
-  const schoolRoles: ReadonlyArray<string> = ['teacher', 'hod', 'smt', 'sbst', 'admin'];
+  const schoolRoles: ReadonlyArray<string> = [
+    'teacher',
+    'hod',
+    'smt',
+    'sbst',
+    'sbst_chair',
+    'admin',
+  ];
   if (schoolRoles.includes(role)) allowed.push('/approvals');
   return allowed.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),

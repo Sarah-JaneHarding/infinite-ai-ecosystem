@@ -7,7 +7,7 @@ import { SIGN_IN_OUTCOMES } from '../../src/lib/sign-in-outcome';
 import { AccountNotice } from '../../src/components/shell/AccountNotice';
 
 const ACCOUNT = 'acc00000-0000-4000-8000-000000000001';
-const SCHOOL_ROLES = ['teacher', 'hod', 'smt', 'sbst', 'admin'];
+const SCHOOL_ROLES = ['teacher', 'hod', 'smt', 'sbst', 'sbst_chair', 'admin'];
 
 describe('accountNotice', () => {
   it.each(SIGN_IN_OUTCOMES.map((o) => [o]))(

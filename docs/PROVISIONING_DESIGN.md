@@ -389,7 +389,13 @@ from the gate's, when the assignment has been revoked, and when both agree; an i
 5. Remember the last role chosen as the default? **Recommended: no** — a default is a quiet precedence, which OQ-032
    decided against.
 
-### 4.9 A new school role: `sbst_chair` (proposal — OQ-046, decided 2026-11-12 that it becomes real)
+### 4.9 A new school role: `sbst_chair` (OQ-046 — decided 2026-11-12; built, Stage 128)
+
+**Status.** The owner accepted all four recommendations below (2026-11-12) and the role is built. One correction to the
+touch list: only **one** CHECK constraint spells the role out, `user_invitation_roles_school_staff`; `role_grant_request` accepts
+only `admin` and `smt` (the roles needing a second administrator, decision 2), so it is unchanged. Not built: a dev identity
+holding both `sbst` and `sbst_chair` (the dev-identity machinery has one role per login), and MFA for the chair (the Keycloak
+MFA flows cover `admin`, `smt` and the platform roles; whether the chair needs it is a security decision, not made here).
 
 OQ-046 found three gates naming roles that do not exist. The owner decided two of them onto existing roles (`lse` → `sbst`,
 `data_manager` → `admin`, built in Stage 126) and one into a **new role**, `sbst_chair`, for the MOD-02 `chair-confirmation` gate
@@ -399,9 +405,9 @@ gate waits for an approval nobody can give; `apps/web/tests/unit/pipeline-gate-r
 **What a new school role touches** (nothing here is optional; each is a place a role list is written out by hand):
 
 1. `Role` (`packages/policy`) and `SCHOOL_STAFF_ROLES` / `isSchoolStaffRole` — what an invitation or grant request may carry.
-2. A forward migration with a tested rollback for the two CHECK constraints that spell the list out:
-   `user_invitation_roles_school_staff` and the role check on `role_grant_request` (migrations `20261024090000…`,
-   `20261111100000…`), keeping the explicit `IS NOT NULL` (a CHECK that evaluates to NULL passes).
+2. A forward migration with a tested rollback for the CHECK constraint that spells the list out,
+   `user_invitation_roles_school_staff` (migrations `20261024090000…`, `20261111110000…`), keeping the explicit
+   `IS NOT NULL` (a CHECK that evaluates to NULL passes). `role_grant_request` is untouched: it carries only `admin` and `smt`.
 3. The RBAC matrix (`rbac.ts`) — rows for the new role, written out like the others, not inherited from `sbst`.
 4. `route-access.ts`, `ROLE_LABEL` / `ROLE_NAV` / `ROLE_HOME`, and the `/approvals` page's role list (a test pins the pages to the table).
 5. The Keycloak realm role and the dev identities, so the claim can carry it; the pipeline-gate test then drops it from its

@@ -189,16 +189,25 @@ const grantTo = (over: Partial<RoleConferral>): RoleConferral => ({
 });
 
 describe('evaluateRoleConferral', () => {
-  it.each([['teacher'], ['hod'], ['sbst'], ['teacher', 'hod']])(
-    'lets an administrator grant %s with no confirmation',
-    (...roles) => {
-      expect(evaluateRoleConferral(grantTo({ roles }))).toEqual({
-        allowed: true,
-        confirmation: 'not_required',
-        confirmedBy: null,
-      });
-    },
-  );
+  it.each([
+    ['teacher'],
+    ['hod'],
+    ['sbst'],
+    ['sbst_chair'],
+    ['sbst', 'sbst_chair'],
+    ['teacher', 'hod'],
+  ])('lets an administrator grant %s with no confirmation', (...roles) => {
+    expect(evaluateRoleConferral(grantTo({ roles }))).toEqual({
+      allowed: true,
+      confirmation: 'not_required',
+      confirmedBy: null,
+    });
+  });
+
+  it('does not make sbst_chair a role that needs a second administrator (OQ-046, §4.9 decision 2)', () => {
+    expect(isSchoolStaffRole('sbst_chair')).toBe(true);
+    expect(CONFIRMATION_REQUIRED_ROLES).not.toContain('sbst_chair');
+  });
 
   it('treats an invitation the same way as a grant to an account', () => {
     const invite = grantTo({ target: { kind: 'invitation', isActorsOwnAddress: false } });
