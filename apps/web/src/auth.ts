@@ -6,12 +6,20 @@ import type { Role } from '@infinite-ai/policy';
 import { resolveSignIn } from './lib/actor-resolution';
 import { readOutcome, type SignInOutcome } from './lib/sign-in-outcome';
 import { identityFromProfile } from './lib/profile-claims';
-import { readRole, roleFromProfile } from './lib/session-role';
+import { resolveEligibleRoles } from './lib/role-resolution';
+import { readRole, readRoles, rolesFromProfile } from './lib/session-role';
 
 /** Extend next-auth types with our domain fields. */
 declare module 'next-auth' {
   interface Session {
-    role: Role;
+    /**
+     * The role this session is acting as, or `null` until the person has chosen one (OQ-032):
+     * someone eligible for more than one role signs in without a role and reaches only
+     * `/choose-role`. Never inferred, never defaulted.
+     */
+    role: Role | null;
+    /** Roles this person may choose from at this sign-in; the server's list, not the client's. */
+    eligibleRoles: Role[];
     tenantId: string;
     /**
      * The tenant's own `user_account.id` — the `actorId` for tenant-scoped database reads
@@ -30,6 +38,8 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     role?: Role;
+    /** See `Session.eligibleRoles`. Absent on a token issued before the chooser existed. */
+    eligibleRoles?: Role[];
     tenantId?: string;
     /** The resolved `user_account.id`; `''` if none. See `Session.userId`. */
     userId?: string;
@@ -51,15 +61,15 @@ export const authOptions: AuthOptions = {
     // Fail closed: an account with none of our roles does not get a session at all (the
     // sign-in page shows why). There is no default role — see lib/session-role.ts.
     async signIn({ profile }) {
-      return roleFromProfile(profile) !== null;
+      return rolesFromProfile(profile).length > 0;
     },
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account, profile, trigger, session }) {
       if (account) {
         // Map Keycloak realm_access.roles to our Role enum. `signIn` has already refused
-        // an account without one, so a missing role here is a bug, not a user to default.
-        const role = roleFromProfile(profile);
-        if (role === null) throw new Error('Signed in without a recognised role.');
-        token['role'] = role;
+        // an account without one, so none here is a bug, not a user to default.
+        const claimRoles = rolesFromProfile(profile);
+        if (claimRoles.length === 0)
+          throw new Error('Signed in without a recognised role.');
         const tenantId =
           (profile as Record<string, string> | undefined)?.['tenant_id'] ?? '';
         token['tenantId'] = tenantId;
@@ -74,6 +84,33 @@ export const authOptions: AuthOptions = {
         });
         token['userId'] = resolution.actorId;
         token['accountOutcome'] = resolution.outcome;
+        // What this person may act as: the claim and the school's own record must agree for a
+        // school staff role (eligible-roles.ts). Exactly one → act as it; otherwise the person
+        // chooses on /choose-role, and until then the session has no role at all (§4.8).
+        const { eligible } = await resolveEligibleRoles({
+          tenantId,
+          accountId: resolution.actorId,
+          claimRoles,
+        });
+        token['eligibleRoles'] = [...eligible];
+        const only = eligible.length === 1 ? eligible[0] : undefined;
+        if (only !== undefined) token['role'] = only;
+        else delete token['role'];
+      } else if (trigger === 'update') {
+        // The chooser's one write. `session` is client-supplied, so it is a request, not a fact:
+        // it is honoured only while no role is active yet (no switching without signing in again)
+        // and only for a role this token's own server-issued list contains.
+        const requested = readRole(
+          (session as { role?: unknown } | null | undefined)?.role,
+        );
+        const allowed = readRoles(token['eligibleRoles']) ?? [];
+        if (
+          readRole(token['role']) === null &&
+          requested !== null &&
+          allowed.includes(requested)
+        ) {
+          token['role'] = requested;
+        }
       }
       return token as JWT;
     },
@@ -81,8 +118,13 @@ export const authOptions: AuthOptions = {
       // A token without a valid role (issued before this check existed, or malformed) is
       // not a session: next-auth turns a throw here into "signed out" and clears the cookie.
       const role = readRole(token['role']);
-      if (role === null) throw new Error('Session token carries no recognised role.');
+      const eligible = readRoles(token['eligibleRoles']);
+      // No active role is a session only when the token says the person has yet to choose one.
+      if (role === null && eligible === null) {
+        throw new Error('Session token carries no recognised role.');
+      }
       session.role = role;
+      session.eligibleRoles = eligible ?? (role === null ? [] : [role]);
       session.tenantId = (token['tenantId'] as string | undefined) ?? '';
       // Never `token.sub`: a session without a resolved account has no actor (OQ-033).
       session.userId = typeof token['userId'] === 'string' ? token['userId'] : '';

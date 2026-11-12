@@ -133,3 +133,54 @@ describe('proxy role gating — public paths are untouched', () => {
     expect((await call('/sign-in', asRole('learner'))).status).toBe(200);
   });
 });
+
+// OQ-032: a person eligible for more than one role signs in with no active role and may reach
+// only the chooser. Real signed tokens, as above.
+describe('proxy — a session that has not chosen a role yet', () => {
+  const pending = { tenantId: 't', eligibleRoles: ['teacher', 'hod'] };
+
+  it('sends a page request to the chooser, not to sign-in and not to a default role', async () => {
+    for (const pathname of ['/', '/hod', '/teacher', '/approvals']) {
+      const response = await call(pathname, pending);
+      expect(response.status).toBe(307);
+      expect(new URL(response.headers.get('location') ?? '').pathname).toBe(
+        '/choose-role',
+      );
+    }
+  });
+
+  it('refuses an API call outright — nothing acts for a person who has not said who they are acting as', async () => {
+    for (const pathname of ['/api/approvals/x/decide', '/api/caps-canon']) {
+      const response = await call(pathname, pending);
+      expect(response.status).toBe(403);
+    }
+  });
+
+  it('lets them reach the chooser itself, with the CSP', async () => {
+    const response = await call('/choose-role', pending);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Security-Policy')).toBeTruthy();
+  });
+
+  it('lets a person with nothing to choose from reach the explanation, and nothing else', async () => {
+    const none = { tenantId: 't', eligibleRoles: [] };
+    expect((await call('/choose-role', none)).status).toBe(200);
+    expect((await call('/hod', none)).status).toBe(307);
+  });
+
+  it('can still reach the sign-in and auth endpoints it needs to choose and to leave', async () => {
+    expect((await call('/api/auth/session', pending)).status).toBe(200);
+    expect((await call('/sign-in', pending)).status).toBe(200);
+  });
+
+  it('sends a token with neither a role nor an offered list to sign-in', async () => {
+    const response = await call('/choose-role', { tenantId: 't' });
+    expect(new URL(response.headers.get('location') ?? '').pathname).toBe('/sign-in');
+  });
+
+  it('sends a person who has a role away from the chooser, to /', async () => {
+    const response = await call('/choose-role', { ...pending, role: 'hod' });
+    expect(response.status).toBe(307);
+    expect(new URL(response.headers.get('location') ?? '').pathname).toBe('/');
+  });
+});

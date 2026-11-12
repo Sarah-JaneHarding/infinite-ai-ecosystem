@@ -43,3 +43,13 @@ export function accountNotice(
   if (userId !== '' || !isSchoolStaffRole(role)) return null;
   return (outcome === null ? undefined : MESSAGES[outcome]) ?? GENERIC;
 }
+
+/**
+ * What to say to someone with no role to act as: signed in, but nothing is both asserted by the
+ * sign-in and granted by the school (eligible-roles.ts). With no account that is the account's
+ * own explanation; with an account it is the missing grant. Shown on `/choose-role` only.
+ */
+export function noRoleNotice(userId: string, outcome: SignInOutcome | null): string {
+  if (userId === '') return (outcome === null ? undefined : MESSAGES[outcome]) ?? GENERIC;
+  return `You're signed in, but your account has no role at your school that matches your sign-in. ${ASK_ADMIN} to check the roles you have been given.`;
+}

@@ -12,6 +12,8 @@
 
 import type { Role } from '@infinite-ai/policy';
 
+import { readRole, readRoles } from './session-role';
+
 /** Routes anyone may reach without a session. `/api/health` is the container liveness probe. */
 export const PUBLIC_PATHS: readonly string[] = ['/sign-in', '/api/auth', '/api/health'];
 
@@ -75,4 +77,38 @@ export function roleMayReach(role: Role, pathname: string): boolean {
 
 export function isApiPath(pathname: string): boolean {
   return under(pathname, '/api');
+}
+
+/** The one page a session with no active role may reach: where a person eligible for more than one
+ * role picks the one to act as (OQ-032, §4.8). Not in `ROUTE_ACCESS`: no role may reach it, so a
+ * session that already has a role is sent home by the default deny. */
+export const CHOOSE_ROLE_PATH = '/choose-role';
+
+export type AccessDecision =
+  | { readonly kind: 'allow' }
+  /** No session at all, or a token that is neither a role nor a pending choice. */
+  | { readonly kind: 'sign-in' }
+  /** Signed in but has not chosen a role: everything except the chooser is out of reach. */
+  | { readonly kind: 'choose-role' }
+  /** A role that may not reach this page. */
+  | { readonly kind: 'deny' };
+
+/**
+ * What the proxy does with a request for a non-public `pathname`. `token` is the decoded session
+ * token or `null`. Three states, and nothing is inferred between them:
+ *  - an active role → the route table decides;
+ *  - no active role but a valid list of roles to choose from → only `/choose-role`;
+ *  - anything else → not a session.
+ */
+export function decideAccess(
+  token: Readonly<Record<string, unknown>> | null,
+  pathname: string,
+): AccessDecision {
+  if (token === null) return { kind: 'sign-in' };
+  const role = readRole(token['role']);
+  if (role !== null) {
+    return roleMayReach(role, pathname) ? { kind: 'allow' } : { kind: 'deny' };
+  }
+  if (readRoles(token['eligibleRoles']) === null) return { kind: 'sign-in' };
+  return pathname === CHOOSE_ROLE_PATH ? { kind: 'allow' } : { kind: 'choose-role' };
 }

@@ -300,7 +300,14 @@ suite picks the table up from `tables.ts`); the concurrency cases — two admini
 at once yields one `APPLIED` and one refusal, and a request racing the proposer's own demotion cannot apply; and the
 rollback test.
 
-### 4.8 Choosing the active role (step 4b — proposal)
+### 4.8 Choosing the active role (step 4b — decided 2026-11-12; part 1 built, part 2 not)
+
+**Status.** The owner accepted all five recommendations in §4.8's decision list (2026-11-12). **Part 1 is built (Stage 123):**
+eligibility, the token, the chooser page, the proxy state and `Session.role: Role | null`. **Part 2 is not:** `actingAs` on
+gate decisions (item 5) — until it ships a gate decision is still checked against the account's role assignments only, as
+in §4.8's "Today". One difference from the text below: a school role present in the account but absent from the claim is
+returned as data (`assignedNotClaimed`) rather than logged — `apps/web` has no telemetry dependency, and importing the
+telemetry package pulls OpenTelemetry into the Next bundle.
 
 **Already decided** (OQ-032, 2026-11-05; §12.1 item 3): an account may hold several roles, the person chooses the
 active one at sign-in, and every action is checked against that role. This section is how to build it, and what
@@ -496,10 +503,9 @@ must keep resolving **no** actor, and a test should pin that.
    of the table in §4.3 and for platform sign-ins resolving no actor. _Split: **4a built (Stage 120)** —
    §4.3 in the `jwt` callback through `resolveSignIn` (`apps/web/src/lib/actor-resolution.ts`), the reason
    carried on the token and session, an explanation shown to a school role with no account, a tenant-ACTIVE
-   check, and a guard that only `packages/db` writes the account tables. **4b not built — proposed in §4.8**:
-   the session role as the intersection of the account's role assignments and the provider's claim, the
-   chooser, and gate decisions checked against the active role (OQ-032). Until it ships the role is still
-   the first of ours in the provider's claim._
+   check, and a guard that only `packages/db` writes the account tables. **4b part 1 built (Stage 123)**:
+   the session role from the intersection of the account's role assignments and the provider's claim, and the
+   chooser (OQ-032); **4b part 2 not built**: gate decisions checked against the active role (§4.8 item 5)._
 5. **Admin UI** (`/admin/staff`): invite, revoke, list, role changes; wired to the routes.
 6. **Gate decision hardening** (§6): require an `ACTIVE` account in `decideHumanGate`.
 7. **Keycloak integration** (§5): Admin API client, mirrored roles, required actions; realm config

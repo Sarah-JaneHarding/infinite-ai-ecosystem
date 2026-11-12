@@ -8,11 +8,13 @@ import type { PrismaClient } from '@prisma/client';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import type { TenantClient } from '../src/client.js';
+import { listActiveRoles } from '../src/roles.js';
 import { findActiveUserAccountId } from '../src/user-account.js';
 import { asTenant, startTestDatabase, type TestDatabase } from './support/database.js';
 
 let db: TestDatabase;
 let appRw: PrismaClient;
+let migrator: PrismaClient;
 const TENANT_A = randomUUID();
 const TENANT_B = randomUUID();
 const ACTOR = randomUUID();
@@ -24,7 +26,7 @@ const ACCOUNT_B = randomUUID();
 
 beforeAll(async () => {
   db = await startTestDatabase();
-  const migrator = db.clientFor('migrator');
+  migrator = db.clientFor('migrator');
   for (const [tenantId, accountId] of [
     [TENANT_A, ACCOUNT_A],
     [TENANT_B, ACCOUNT_B],
@@ -85,5 +87,46 @@ describe('findActiveUserAccountId (real Postgres)', () => {
 
   it('does not resolve a suspended account', async () => {
     await expect(resolve(TENANT_A, SUSPENDED_SUBJECT)).resolves.toBeNull();
+  });
+});
+
+describe('listActiveRoles (real Postgres)', () => {
+  const NOW = new Date('2026-11-12T08:00:00.000Z');
+  const roles = (tenantId: string, accountId: string) =>
+    asTenant(appRw, tenantId, ACTOR, (tx) =>
+      listActiveRoles(tx as TenantClient, accountId, NOW),
+    );
+  const assign = (
+    tenantId: string,
+    userAccountId: string,
+    role: string,
+    expiresAt: Date | null,
+  ) =>
+    asTenant(migrator, tenantId, ACTOR, (tx) =>
+      tx.roleAssignment.create({ data: { tenantId, userAccountId, role, expiresAt } }),
+    );
+
+  it('lists live roles — no expiry, or an expiry after now — sorted, each once', async () => {
+    await assign(TENANT_A, ACCOUNT_A, 'teacher', null);
+    await assign(TENANT_A, ACCOUNT_A, 'hod', new Date('2099-01-01T00:00:00.000Z'));
+    await assign(TENANT_A, ACCOUNT_A, 'hod', null); // a second assignment of the same role
+    await expect(roles(TENANT_A, ACCOUNT_A)).resolves.toEqual(['hod', 'teacher']);
+  });
+
+  it('leaves out a role whose assignment has expired, including one expiring exactly now', async () => {
+    await assign(TENANT_A, ACCOUNT_A, 'sbst', new Date('2026-01-01T00:00:00.000Z'));
+    await assign(TENANT_A, ACCOUNT_A, 'smt', NOW);
+    await expect(roles(TENANT_A, ACCOUNT_A)).resolves.toEqual(['hod', 'teacher']);
+  });
+
+  it('is empty for an account with no assignments, and for one that does not exist', async () => {
+    await expect(roles(TENANT_B, ACCOUNT_B)).resolves.toEqual([]);
+    await expect(roles(TENANT_A, randomUUID())).resolves.toEqual([]);
+  });
+
+  it("cannot see another school's account: its roles are invisible from this school", async () => {
+    await assign(TENANT_B, ACCOUNT_B, 'admin', null);
+    await expect(roles(TENANT_B, ACCOUNT_B)).resolves.toEqual(['admin']);
+    await expect(roles(TENANT_A, ACCOUNT_B)).resolves.toEqual([]);
   });
 });

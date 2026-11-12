@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import { accountNotice } from '../../src/lib/account-notice';
+import { accountNotice, noRoleNotice } from '../../src/lib/account-notice';
 import { SIGN_IN_OUTCOMES } from '../../src/lib/sign-in-outcome';
 import { AccountNotice } from '../../src/components/shell/AccountNotice';
 
@@ -48,6 +48,32 @@ describe('accountNotice', () => {
   it('never contains an email address', () => {
     for (const outcome of SIGN_IN_OUTCOMES) {
       expect(accountNotice('teacher', '', outcome) ?? '').not.toMatch(/\S+@\S+/);
+    }
+  });
+});
+
+describe('noRoleNotice', () => {
+  it('without an account, gives that outcome’s own explanation', () => {
+    expect(noRoleNotice('', 'no_invitation')).toBe(
+      accountNotice('teacher', '', 'no_invitation'),
+    );
+    expect(noRoleNotice('', 'invitation_expired')).toContain('expired');
+  });
+
+  it('without an account or a known outcome, still says something', () => {
+    expect(noRoleNotice('', null)).toContain("don't have an account");
+  });
+
+  it('with an account, says the roles do not match — and what to do', () => {
+    const text = noRoleNotice(ACCOUNT, 'existing');
+    expect(text).toContain('no role');
+    expect(text).toContain("Ask your school's administrator");
+  });
+
+  it('never contains an email address', () => {
+    for (const outcome of SIGN_IN_OUTCOMES) {
+      expect(noRoleNotice('', outcome)).not.toMatch(/\S+@\S+/);
+      expect(noRoleNotice(ACCOUNT, outcome)).not.toMatch(/\S+@\S+/);
     }
   });
 });
