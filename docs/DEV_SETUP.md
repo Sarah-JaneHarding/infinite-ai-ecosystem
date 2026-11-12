@@ -9,8 +9,10 @@ bottom of this file instead.
 Want to run it on free models with no paid API? Use `docs/FREE_LOCAL_TESTING.md`, which
 picks the free path for you.
 
-None of this is automated yet (there is no root `dev` script that starts everything
-together) — each step below is a real command you run.
+Want the data plane without the assembly? `pnpm sandbox up` does steps 2 and 3 below for you (secrets,
+Postgres, Redis, Keycloak, migrations, seeds) in a disposable project — see `docs/SANDBOX.md`. The rest of
+this file is the hand-assembled path and the reference for what each piece is. There is still no root `dev`
+script that starts the apps — each step below is a real command you run.
 
 ## 1. Prerequisites
 

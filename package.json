@@ -19,6 +19,7 @@
     "evals:run-live": "tsx scripts/evals-run-live.ts",
     "dev:run-agent": "tsx scripts/dev-run-agent.ts",
     "dev:run-pipeline": "tsx scripts/dev-run-pipeline.ts",
+    "sandbox": "bash scripts/sandbox.sh",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
