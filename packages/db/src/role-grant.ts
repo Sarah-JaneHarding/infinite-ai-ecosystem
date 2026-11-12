@@ -118,6 +118,83 @@ async function applyGrant(
 }
 
 // ---------------------------------------------------------------------------------------------
+// Granting roles that need no second administrator
+// ---------------------------------------------------------------------------------------------
+
+export interface GrantRoleInput {
+  readonly actorAccountId: string;
+  readonly targetAccountId: string;
+  readonly roles: readonly string[];
+  readonly now: Date;
+}
+
+export type GrantRoleResult = { readonly ok: true } | Refused;
+
+/**
+ * An administrator grants roles that need no second administrator (`teacher`, `hod`, `sbst`,
+ * `sbst_chair`) to an existing, ACTIVE account. The rules decide who may confer what; if they say a
+ * second administrator is needed (`admin`, `smt`) this refuses with `confirmation_required` — that
+ * path is `requestRoleGrant`, which stores the proposal for someone else to confirm. Nothing is
+ * granted that the account already holds. The grant and its audit event commit together.
+ *
+ * Scope is not taken: a client-supplied school id is not checked against the school's own rows (see
+ * `createInvitation`'s note), so a grant here is school-wide, as an invitation's is today.
+ */
+export async function grantRole(
+  tx: TenantClient,
+  rules: ProvisioningRules,
+  input: GrantRoleInput,
+): Promise<GrantRoleResult> {
+  await lockProvisioning(tx);
+
+  const roles = [...new Set(input.roles)].sort();
+  const admins = await listActiveAdminAccountIds(tx, input.now);
+  const decision = rules.conferral({
+    actorAccountId: input.actorAccountId,
+    target: { kind: 'account', accountId: input.targetAccountId },
+    roles,
+    admins: { activeAdminAccountIds: admins },
+  });
+  if (!decision.allowed) return refuse(decision.reason);
+  // A sole administrator's waiver is for requestRoleGrant, which records it. Here only a grant
+  // that never needed a second person is applied.
+  if (decision.confirmation !== 'not_required') return refuse('confirmation_required');
+
+  const target = await tx.userAccount.findFirst({
+    where: { id: input.targetAccountId },
+    select: { status: true },
+  });
+  if (target === null) return refuse('target_not_found');
+  if (target.status !== 'ACTIVE') return refuse('target_not_active');
+
+  if ((await heldRoles(tx, input.targetAccountId, roles, input.now)).length > 0) {
+    return refuse('role_already_held');
+  }
+
+  const tenantId = await currentTenantId(tx);
+  await applyGrant(tx, {
+    tenantId,
+    targetAccountId: input.targetAccountId,
+    roles,
+    schoolId: null,
+    grantedBy: input.actorAccountId,
+    now: input.now,
+  });
+  await appendAuditEvent(tx, {
+    actorId: input.actorAccountId,
+    action: 'role_grant.applied',
+    resourceType: 'user_account',
+    resourceId: input.targetAccountId,
+    purpose: null,
+    traceId: null,
+    diff: { roles, schoolId: null, confirmation: 'not_required' },
+    at: input.now,
+    createdBy: input.actorAccountId,
+  });
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------------------------
 // Request
 // ---------------------------------------------------------------------------------------------
 

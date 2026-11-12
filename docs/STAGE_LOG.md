@@ -11743,3 +11743,43 @@ offboarding (d).
 | `pnpm lint`, `pnpm typecheck`, web unit tests                | PASS                                |
 | Data-layer behaviour against real Postgres                   | Existing suites (CI); no new schema |
 | Rollback: revert this commit; no schema change               | PASS                                |
+
+## Stage 130 — OQ-033 provisioning, step 5 slice c: roles and confirmations
+
+**Found while building it.** There was no data-layer function to give an existing account a role that needs no second administrator:
+`requestRoleGrant` refuses those (`no_confirmation_needed`) and `applyGrant` was private. Slice c adds `grantRole` to `packages/db`.
+
+**What changed.** `packages/db`: `grantRole(tx, rules, { actorAccountId, targetAccountId, roles, now })` — the rules decide who may
+confer what; it applies only a grant that never needed a second person (`admin` / `smt` are refused with `confirmation_required`, and a
+sole administrator's waiver stays in `requestRoleGrant`, which records it); the target must be an ACTIVE account in this school and not
+already hold the role; the grant and its audit event commit together under the provisioning lock. Scope is not taken (a school id is not
+verified; see Stage 129). `apps/web`: seven routes under `/api/admin/staff` — give roles (`accounts/[id]/roles`, which proposes `admin` /
+`smt` and grants the rest, and refuses a mix), remove a role (`accounts/[id]/roles/revoke`), confirm an invitation
+(`invitations/[id]/confirm`), and confirm / decline / cancel a role request (`role-requests/[id]/…`). The two slice-b routes and the five new
+ones share `lib/staff-route.ts`: the verified token's tenant and account, acting as `admin`, JSON-only with a strict body, a 400 that names
+fields not values, refusals answered in words. The page gains a grant control per active account, a Remove on each live staff role (with a
+confirmation prompt), Confirm on an invitation awaiting a second administrator, and Confirm / Decline / Cancel on each waiting request.
+This closes slice b's dead end: an `admin` or `smt` invitation can now be confirmed.
+
+**Tests.** `role-grant.integration.spec.ts` (+5, real Postgres, CI): grants and audits in one transaction with ids and roles only; refuses
+a non-administrator, a self-grant and an empty list; sends `admin` / `smt` to the request path (two administrators, and a sole one);
+refuses a missing, suspended or another school's target and a role already held; grants again after a revoke. `staff-actions.spec.ts`
+(179, table-driven over the six new routes): the front door for each — the session's own account and school, no session / no tenant / no
+account / no or unknown role, every role but `admin`, non-uuid ids, a refusal answered without the raw reason, a database fault not
+swallowed — plus bodies (wrong content types, malformed, every key that must not be named), which path a grant takes, that the confirmer
+is the session's account and never named by the request. `staff-contract.spec.ts` (+bodies, +every refusal reason), `staff-forms.spec.ts`,
+`staff-overview.spec.ts` (what is offered to whom, and when not). Web 1013 passing; db 265 passing. Mutation-checked: always granting
+directly fails 4; dropping the mixed-roles refusal fails 1; removing the acting-as-admin check fails 71; naming the confirmer from the url
+fails 1.
+
+**Not done.** Suspend and offboard (slice d). Showing who proposed or may confirm a request is the server's decision, not the page's: the
+buttons are offered to any administrator and a refusal says why (for example, that a proposer cannot confirm their own). The school scope.
+
+| Exit gate item                                                 | Result                            |
+| -------------------------------------------------------------- | --------------------------------- |
+| `admin` / `smt` are only ever proposed, never granted directly | PASS (unit; mutation-checked)     |
+| The confirmer is the session's account, never the request's    | PASS (mutation-checked)           |
+| Only an administrator acting as `admin`, on their own school   | PASS (unit; mutation-checked)     |
+| `pnpm lint`, `pnpm typecheck`, web and db unit tests           | PASS                              |
+| `grantRole` against real Postgres                              | OPEN (needs Docker; proven in CI) |
+| Rollback: revert this commit; no schema change                 | PASS                              |

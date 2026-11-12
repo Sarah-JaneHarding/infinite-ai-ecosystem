@@ -1,9 +1,11 @@
 import type { StaffOverview as Overview } from '@infinite-ai/db';
+import { isSchoolStaffRole } from '@infinite-ai/policy';
 
 import { ROLE_LABEL } from '@/lib/roles';
 import { readRole } from '@/lib/session-role';
 
-import { RevokeInvitationButton } from './RevokeInvitationButton';
+import { GrantRoleForm } from './GrantRoleForm';
+import { StaffActionButton } from './StaffActionButton';
 
 const TH =
   'text-left text-xs font-semibold uppercase tracking-wide px-3 py-2.5 border-b border-[var(--iai-border)] whitespace-nowrap';
@@ -61,6 +63,9 @@ export function StaffOverview({ overview }: StaffOverviewProps) {
                 <th className={TH}>Email</th>
                 <th className={TH}>Status</th>
                 <th className={TH}>Roles</th>
+                <th className={TH}>
+                  <span className="sr-only">Give a role</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -75,16 +80,33 @@ export function StaffOverview({ overview }: StaffOverviewProps) {
                     ) : (
                       <ul>
                         {a.roles.map((r) => (
-                          <li key={r.role}>
-                            {label(r.role)}
-                            {r.expired ? ' (lapsed)' : ''}
-                            {!r.expired && r.expiresAt !== null
-                              ? ` (until ${date(r.expiresAt)})`
-                              : ''}
+                          <li key={r.role} className="flex gap-2 items-baseline">
+                            <span>
+                              {label(r.role)}
+                              {r.expired ? ' (lapsed)' : ''}
+                              {!r.expired && r.expiresAt !== null
+                                ? ` (until ${date(r.expiresAt)})`
+                                : ''}
+                            </span>
+                            {!r.expired &&
+                              a.status === 'ACTIVE' &&
+                              isSchoolStaffRole(r.role) && (
+                                <StaffActionButton
+                                  label="Remove"
+                                  busyLabel="Removing…"
+                                  tone="danger"
+                                  url={`/api/admin/staff/accounts/${a.id}/roles/revoke`}
+                                  body={{ role: r.role }}
+                                  confirmText={`Remove the ${label(r.role)} role from ${a.displayName}?`}
+                                />
+                              )}
                           </li>
                         ))}
                       </ul>
                     )}
+                  </td>
+                  <td className={TD}>
+                    {a.status === 'ACTIVE' ? <GrantRoleForm accountId={a.id} /> : null}
                   </td>
                 </tr>
               ))}
@@ -125,7 +147,22 @@ export function StaffOverview({ overview }: StaffOverviewProps) {
                   </td>
                   <td className={TD}>{CONFIRMATION_LABEL[i.confirmation]}</td>
                   <td className={TD}>
-                    <RevokeInvitationButton invitationId={i.id} />
+                    <span className="flex flex-col gap-1">
+                      {i.confirmation === 'AWAITING' && !i.expired && (
+                        <StaffActionButton
+                          label="Confirm"
+                          busyLabel="Confirming…"
+                          url={`/api/admin/staff/invitations/${i.id}/confirm`}
+                          confirmText="Confirm this invitation? The person will be able to sign in with these roles."
+                        />
+                      )}
+                      <StaffActionButton
+                        label="Revoke"
+                        busyLabel="Revoking…"
+                        tone="danger"
+                        url={`/api/admin/staff/invitations/${i.id}/revoke`}
+                      />
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -151,6 +188,9 @@ export function StaffOverview({ overview }: StaffOverviewProps) {
                 <th className={TH}>Roles</th>
                 <th className={TH}>Proposed by</th>
                 <th className={TH}>Expires</th>
+                <th className={TH}>
+                  <span className="sr-only">Actions</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -162,6 +202,32 @@ export function StaffOverview({ overview }: StaffOverviewProps) {
                   <td className={TD}>
                     {date(g.expiresAt)}
                     {g.expired ? ' (expired)' : ''}
+                  </td>
+                  <td className={TD}>
+                    <span className="flex flex-col gap-1">
+                      {!g.expired && (
+                        <StaffActionButton
+                          label="Confirm"
+                          busyLabel="Confirming…"
+                          url={`/api/admin/staff/role-requests/${g.id}/confirm`}
+                          confirmText={`Give ${g.roles.map(label).join(', ')} to ${nameOf(g.targetAccountId)}?`}
+                        />
+                      )}
+                      {!g.expired && (
+                        <StaffActionButton
+                          label="Decline"
+                          busyLabel="Declining…"
+                          tone="danger"
+                          url={`/api/admin/staff/role-requests/${g.id}/decline`}
+                        />
+                      )}
+                      <StaffActionButton
+                        label="Cancel"
+                        busyLabel="Cancelling…"
+                        tone="danger"
+                        url={`/api/admin/staff/role-requests/${g.id}/cancel`}
+                      />
+                    </span>
                   </td>
                 </tr>
               ))}

@@ -28,7 +28,35 @@ export const InviteStaffBody = z
   .strict();
 export type InviteStaffBody = z.infer<typeof InviteStaffBody>;
 
-export const InvitationIdParam = z.string().uuid();
+/** A route's `[id]`: an invitation, a role request or an account. A uuid or nothing. */
+export const IdParam = z.string().uuid();
+export const InvitationIdParam = IdParam;
+
+/** Grant roles to an existing account. Whether it is applied now or proposed for a second
+ * administrator to confirm is the server's decision, from the roles (admin and smt need one). */
+export const GrantRolesBody = z
+  .object({
+    roles: z
+      .array(z.enum(SCHOOL_STAFF_ROLES))
+      .min(1)
+      .max(SCHOOL_STAFF_ROLES.length)
+      .refine((roles) => new Set(roles).size === roles.length, {
+        message: 'A role may be listed once.',
+      }),
+  })
+  .strict();
+export type GrantRolesBody = z.infer<typeof GrantRolesBody>;
+
+export const GrantRolesResponse = z.object({
+  /** `granted`: applied now. `requested`: stored for a second administrator to confirm.
+   * `applied`: the school has one administrator, so it was applied now and the waiver audited. */
+  outcome: z.enum(['granted', 'requested', 'applied']),
+});
+
+export const RevokeRoleBody = z.object({ role: z.enum(SCHOOL_STAFF_ROLES) }).strict();
+export type RevokeRoleBody = z.infer<typeof RevokeRoleBody>;
+
+export const StaffActionResponse = z.object({ done: z.literal(true) });
 
 export const InviteStaffResponse = z.object({
   invitationId: z.string().uuid(),
@@ -51,7 +79,8 @@ const REFUSALS: Readonly<Record<string, Refusal>> = {
   },
   cannot_change_own_roles: {
     status: 403,
-    message: 'You cannot invite your own address. Ask another administrator.',
+    message:
+      'You cannot change your own roles or invite your own address. Ask another administrator.',
   },
   no_roles: { status: 422, message: 'Choose at least one role.' },
   role_not_assignable: {
@@ -77,6 +106,70 @@ const REFUSALS: Readonly<Record<string, Refusal>> = {
     status: 422,
     message: 'The invitation could not be created.',
   },
+  confirmation_required: {
+    status: 422,
+    message:
+      'That needs a second administrator to confirm. Request it instead of granting it.',
+  },
+  target_not_found: { status: 404, message: 'That person was not found at this school.' },
+  target_not_active: {
+    status: 409,
+    message: 'That account is not active, so roles cannot be given to it.',
+  },
+  role_already_held: { status: 409, message: 'They already have that role.' },
+  no_such_role: { status: 404, message: 'They do not have that role.' },
+  role_not_sensitive: {
+    status: 422,
+    message: 'That role does not need a request. Grant it directly.',
+  },
+  no_confirmation_needed: {
+    status: 422,
+    message: 'That does not need a second administrator.',
+  },
+  mixed_roles: {
+    status: 422,
+    message: 'Grant administrator and management roles separately from the others.',
+  },
+  request_already_pending: {
+    status: 409,
+    message: 'There is already a request waiting for that person.',
+  },
+  request_not_found: { status: 404, message: 'That request was not found.' },
+  request_not_pending: { status: 409, message: 'That request is no longer waiting.' },
+  request_expired: { status: 409, message: 'That request has expired. Make a new one.' },
+  confirmer_not_admin: {
+    status: 403,
+    message: 'Only an active administrator can confirm this.',
+  },
+  confirmer_is_actor: {
+    status: 403,
+    message: 'A different administrator must confirm this.',
+  },
+  confirmer_is_target: {
+    status: 403,
+    message: 'You cannot confirm a request for yourself.',
+  },
+  confirmation_not_applicable: {
+    status: 409,
+    message: 'That does not need confirming now.',
+  },
+  decider_is_requester: {
+    status: 403,
+    message: 'You proposed this, so cancel it instead of declining it.',
+  },
+  decider_is_target: {
+    status: 403,
+    message: 'You cannot decide a request for yourself.',
+  },
+  not_awaiting_confirmation: {
+    status: 409,
+    message: 'That invitation is not waiting to be confirmed.',
+  },
+  invitation_expired: {
+    status: 409,
+    message: 'That invitation has expired. Send a new one.',
+  },
+  proposer_unknown: { status: 422, message: 'That invitation cannot be confirmed here.' },
   invitation_not_found: { status: 404, message: 'That invitation was not found.' },
   invitation_not_pending: {
     status: 409,

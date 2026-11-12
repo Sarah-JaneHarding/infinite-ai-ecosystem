@@ -2,8 +2,13 @@ import { SCHOOL_STAFF_ROLES } from '@infinite-ai/policy';
 import { describe, expect, it } from 'vitest';
 
 import {
+  GrantRolesBody,
+  GrantRolesResponse,
+  IdParam,
   InvitationIdParam,
   InviteStaffBody,
+  RevokeRoleBody,
+  StaffActionResponse,
   InviteStaffResponse,
   RevokeInvitationResponse,
   refusalFor,
@@ -110,6 +115,27 @@ describe('refusalFor', () => {
     'staff_member_already_linked',
     'invitation_not_found',
     'invitation_not_pending',
+    'confirmation_required',
+    'target_not_found',
+    'target_not_active',
+    'role_already_held',
+    'no_such_role',
+    'role_not_sensitive',
+    'no_confirmation_needed',
+    'mixed_roles',
+    'request_already_pending',
+    'request_not_found',
+    'request_not_pending',
+    'request_expired',
+    'confirmer_not_admin',
+    'confirmer_is_actor',
+    'confirmer_is_target',
+    'confirmation_not_applicable',
+    'decider_is_requester',
+    'decider_is_target',
+    'not_awaiting_confirmation',
+    'invitation_expired',
+    'proposer_unknown',
   ];
 
   it.each(KNOWN)('answers %s with a status and words, and no address', (reason) => {
@@ -132,5 +158,62 @@ describe('refusalFor', () => {
     const refusal = refusalFor('some_new_reason');
     expect(refusal.status).toBe(422);
     expect(refusal.message).not.toContain('some_new_reason');
+  });
+});
+
+describe('GrantRolesBody', () => {
+  it.each(SCHOOL_STAFF_ROLES)('accepts %s', (role) => {
+    expect(GrantRolesBody.safeParse({ roles: [role] }).success).toBe(true);
+  });
+
+  it.each([
+    ['no roles', { roles: [] }],
+    ['a repeated role', { roles: ['hod', 'hod'] }],
+    ['a platform role', { roles: ['platform_admin'] }],
+    ['a guardian', { roles: ['guardian'] }],
+    ['roles not an array', { roles: 'hod' }],
+    ['nothing', {}],
+    [
+      'an address (this is for an existing account)',
+      { roles: ['hod'], email: 'a@example.invalid' },
+    ],
+    ['a target in the body', { roles: ['hod'], targetAccountId: 'x' }],
+    ['a school', { roles: ['hod'], schoolId: 'x' }],
+  ])('refuses %s', (_name, body) => {
+    expect(GrantRolesBody.safeParse(body).success).toBe(false);
+  });
+
+  it('pins the response shape', () => {
+    for (const outcome of ['granted', 'requested', 'applied']) {
+      expect(GrantRolesResponse.safeParse({ outcome }).success).toBe(true);
+    }
+    expect(GrantRolesResponse.safeParse({ outcome: 'maybe' }).success).toBe(false);
+  });
+});
+
+describe('RevokeRoleBody', () => {
+  it.each(SCHOOL_STAFF_ROLES)('accepts %s', (role) => {
+    expect(RevokeRoleBody.safeParse({ role }).success).toBe(true);
+  });
+
+  it.each([
+    ['a platform role', { role: 'platform_admin' }],
+    ['an array', { role: ['hod'] }],
+    ['no role', {}],
+    ['an extra key', { role: 'hod', targetAccountId: 'x' }],
+  ])('refuses %s', (_name, body) => {
+    expect(RevokeRoleBody.safeParse(body).success).toBe(false);
+  });
+});
+
+describe('IdParam and the generic action response', () => {
+  it('IdParam is the same uuid rule the invitation id uses', () => {
+    expect(IdParam).toBe(InvitationIdParam);
+    expect(IdParam.safeParse("x' OR 1=1").success).toBe(false);
+  });
+
+  it('StaffActionResponse is exactly { done: true }', () => {
+    expect(StaffActionResponse.safeParse({ done: true }).success).toBe(true);
+    expect(StaffActionResponse.safeParse({ done: false }).success).toBe(false);
   });
 });
