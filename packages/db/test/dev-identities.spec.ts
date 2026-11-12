@@ -35,7 +35,7 @@ describe('dev identities vs the Keycloak realm', () => {
       expect(user, `${who.username} missing from realm.json`).toBeDefined();
       expect(user?.id).toBe(who.subject);
       expect(user?.email).toBe(who.email);
-      expect(user?.realmRoles).toEqual([who.role]);
+      expect(user?.realmRoles).toEqual([...who.roles]);
       expect(user?.attributes?.tenant_id).toEqual([DEV_TENANT_ID]);
     },
   );
@@ -44,10 +44,23 @@ describe('dev identities vs the Keycloak realm', () => {
     const ids = DEV_IDENTITIES.flatMap((w) => [
       w.subject,
       w.accountId,
-      w.roleAssignmentId,
+      ...w.roleAssignmentIds,
     ]);
     for (const value of ids) expect(value).toMatch(UUID);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('gives every role exactly one assignment id', () => {
+    for (const who of DEV_IDENTITIES) {
+      expect(who.roleAssignmentIds, who.username).toHaveLength(who.roles.length);
+    }
+  });
+
+  it('has one login that is both a team member and its chair (OQ-046)', () => {
+    const chair = DEV_IDENTITIES.find((w) => w.roles.includes('sbst_chair'));
+    expect(chair?.roles).toEqual(['sbst', 'sbst_chair']);
+    // ...and nobody else holds the chair, so a gate test can tell the two apart.
+    expect(DEV_IDENTITIES.filter((w) => w.roles.includes('sbst_chair'))).toHaveLength(1);
   });
 
   it('keeps the actor id (the account) distinct from the provider subject', () => {
@@ -55,7 +68,7 @@ describe('dev identities vs the Keycloak realm', () => {
   });
 
   it('leaves platform staff without an account at the dev school', () => {
-    const roles = DEV_IDENTITIES.map((w) => w.role) as string[];
+    const roles = DEV_IDENTITIES.flatMap((w) => w.roles) as string[];
     expect(roles).not.toContain('platform_support');
     expect(roles).not.toContain('platform_admin');
   });

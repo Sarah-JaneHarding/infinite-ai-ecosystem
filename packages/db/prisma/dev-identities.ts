@@ -1,4 +1,4 @@
-// Development identities: the seven school-role logins in `infra/keycloak/realm.json`, and the
+// Development identities: the school-role logins in `infra/keycloak/realm.json`, and the
 // `user_account` + `role_assignment` rows that make each of them a person the app can act for.
 //
 // Why this exists (OQ-033): a human-gate decision is recorded under the school's own
@@ -17,17 +17,20 @@
 export const DEV_TENANT_ID = '10000000-0000-4000-8000-000000000001';
 
 export type DevSchoolRole =
-  'teacher' | 'hod' | 'smt' | 'sbst' | 'admin' | 'guardian' | 'learner';
+  'teacher' | 'hod' | 'smt' | 'sbst' | 'sbst_chair' | 'admin' | 'guardian' | 'learner';
 
 export interface DevIdentity {
   readonly username: string;
-  readonly role: DevSchoolRole;
+  /** Every role this login holds, in the realm file's order. Almost every login holds one; the
+   * chair holds `sbst` and `sbst_chair` because the chair is a member of the team who also
+   * chairs it, and the gates that need the chair (OQ-046) are decided "as its own role". */
+  readonly roles: readonly DevSchoolRole[];
   /** The Keycloak user id, hence the `sub` of every token this login receives. */
   readonly subject: string;
   /** `user_account.id` — the actor id (OQ-033). */
   readonly accountId: string;
-  /** `role_assignment.id`. */
-  readonly roleAssignmentId: string;
+  /** `role_assignment.id`, one per entry of `roles`, in the same order. */
+  readonly roleAssignmentIds: readonly string[];
   readonly email: string;
   readonly displayName: string;
 }
@@ -37,24 +40,32 @@ export interface DevIdentity {
 const id = (prefix: 'ba' | 'bb' | 'bc', n: number): string =>
   `${prefix}000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 
-function identity(n: number, role: DevSchoolRole, displayName: string): DevIdentity {
+function identity(
+  n: number,
+  handle: string,
+  roles: readonly DevSchoolRole[],
+  displayName: string,
+): DevIdentity {
   return {
-    username: `${role}.dev`,
-    role,
+    username: `${handle}.dev`,
+    roles,
     subject: id('ba', n),
     accountId: id('bb', n),
-    roleAssignmentId: id('bc', n),
-    email: `${role}.dev@example.invalid`,
+    // The first role keeps the id it always had, so an already-seeded database is unchanged;
+    // further roles get ids that cannot collide with another login's first one.
+    roleAssignmentIds: roles.map((_, i) => id('bc', i === 0 ? n : 100 * n + i)),
+    email: `${handle}.dev@example.invalid`,
     displayName,
   };
 }
 
 export const DEV_IDENTITIES: readonly DevIdentity[] = [
-  identity(1, 'teacher', 'Dev Teacher'),
-  identity(2, 'hod', 'Dev Head of Department'),
-  identity(3, 'smt', 'Dev School Management'),
-  identity(4, 'sbst', 'Dev Support Team'),
-  identity(5, 'admin', 'Dev Administrator'),
-  identity(6, 'guardian', 'Dev Guardian'),
-  identity(7, 'learner', 'Dev Learner'),
+  identity(1, 'teacher', ['teacher'], 'Dev Teacher'),
+  identity(2, 'hod', ['hod'], 'Dev Head of Department'),
+  identity(3, 'smt', ['smt'], 'Dev School Management'),
+  identity(4, 'sbst', ['sbst'], 'Dev Support Team'),
+  identity(5, 'admin', ['admin'], 'Dev Administrator'),
+  identity(6, 'guardian', ['guardian'], 'Dev Guardian'),
+  identity(7, 'learner', ['learner'], 'Dev Learner'),
+  identity(8, 'chair', ['sbst', 'sbst_chair'], 'Dev Support Team Chair'),
 ];
