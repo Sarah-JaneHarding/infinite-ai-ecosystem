@@ -13,6 +13,7 @@ import {
   createInvitation,
   listActiveAdminAccountIds,
   lockProvisioning,
+  reinstateAccount,
   revokeInvitation,
   revokeRole,
   setAccountStatus,
@@ -585,6 +586,82 @@ describe('revokeRole and setAccountStatus', () => {
       'user_account.suspended',
       'user_account.offboarded',
     ]);
+  });
+
+  it('reinstates a suspended account with its roles intact, audited, and refuses the rest', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    const target = await makeAccount(TENANT_A, ['teacher', 'hod']);
+    const suspend = () =>
+      inTenant(TENANT_A, (tx) =>
+        setAccountStatus(tx, testRules, {
+          actorAccountId: admin.id,
+          targetAccountId: target.id,
+          status: 'SUSPENDED',
+          now: NOW,
+        }),
+      );
+    const reinstate = (actor = admin.id, targetId = target.id) =>
+      inTenant(TENANT_A, (tx) =>
+        reinstateAccount(tx, testRules, {
+          actorAccountId: actor,
+          targetAccountId: targetId,
+          now: NOW,
+        }),
+      );
+    expect(await reinstate()).toEqual({ ok: false, reason: 'not_suspended' });
+    expect(await suspend()).toEqual({ ok: true });
+    expect(await reinstate(target.id)).toEqual({ ok: false, reason: 'actor_not_admin' });
+    expect(await reinstate(admin.id, randomUUID())).toEqual({
+      ok: false,
+      reason: 'target_not_found',
+    });
+    expect(await reinstate()).toEqual({ ok: true });
+    const after = await inTenant(TENANT_A, async (tx) => ({
+      status: (await tx.userAccount.findFirst({ where: { id: target.id } }))?.status,
+      live: await tx.roleAssignment.count({
+        where: {
+          userAccountId: target.id,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: NOW } }],
+        },
+      }),
+    }));
+    expect(after).toEqual({ status: 'ACTIVE', live: 2 });
+    expect(await reinstate()).toEqual({ ok: false, reason: 'not_suspended' });
+    expect((await auditActions(TENANT_A, target.id)).map((e) => e.action)).toEqual([
+      'user_account.suspended',
+      'user_account.reinstated',
+    ]);
+  });
+
+  it('never reinstates an offboarded account, and not oneself', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    const target = await makeAccount(TENANT_A, ['teacher']);
+    await inTenant(TENANT_A, (tx) =>
+      setAccountStatus(tx, testRules, {
+        actorAccountId: admin.id,
+        targetAccountId: target.id,
+        status: 'OFFBOARDED',
+        now: NOW,
+      }),
+    );
+    expect(
+      await inTenant(TENANT_A, (tx) =>
+        reinstateAccount(tx, testRules, {
+          actorAccountId: admin.id,
+          targetAccountId: target.id,
+          now: NOW,
+        }),
+      ),
+    ).toEqual({ ok: false, reason: 'already_offboarded' });
+    expect(
+      await inTenant(TENANT_A, (tx) =>
+        reinstateAccount(tx, testRules, {
+          actorAccountId: admin.id,
+          targetAccountId: admin.id,
+          now: NOW,
+        }),
+      ),
+    ).toEqual({ ok: false, reason: 'cannot_change_own_status' });
   });
 
   it('stops a suspended administrator counting as one', async () => {

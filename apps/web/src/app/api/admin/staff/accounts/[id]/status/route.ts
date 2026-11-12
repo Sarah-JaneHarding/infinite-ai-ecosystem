@@ -3,8 +3,8 @@
 //
 // Either way the account stops resolving at sign-in and, because a gate decision re-checks the account
 // (Stage 125), stops being able to decide. Offboarding is final: it also ends every live role and the
-// account cannot be changed again. There is no route back to ACTIVE — reinstatement is an open question
-// (docs/OPEN_QUESTIONS.md) — so the contract names only the two ways out. The rules refuse a
+// account cannot be changed again. A suspended account comes back through `/reinstate` (OQ-047), never
+// through this body, so the contract names only the two ways out. The rules refuse a
 // non-administrator and changing your own status; the last administrator cannot be affected, because the
 // actor must be a different administrator. Tenant and actor from the verified token only.
 

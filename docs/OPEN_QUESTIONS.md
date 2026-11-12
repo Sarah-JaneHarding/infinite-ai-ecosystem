@@ -742,7 +742,7 @@ whether a new role is wanted, which is its own design (guardians and learners we
 CI check that every pipeline's `requiredRole` is a role provisioning can grant would stop this recurring; it needs the
 answer above first, since today three steps would fail it.
 
-### OQ-047 — reinstating a suspended account is not designed · 2026-11-12
+### OQ-047 — reinstating a suspended account · 2026-11-12 · DECIDED 2026-11-12 (Stage 135)
 
 Found building the suspend and offboard actions (`docs/PROVISIONING_DESIGN.md` §4.5, Stage 131). `setAccountStatus` moves an
 account to `SUSPENDED` or `OFFBOARDED` and nothing moves it back: a suspended account stays suspended, and the data layer refuses to
@@ -753,3 +753,12 @@ admin UI therefore offers Suspend with a warning that it cannot be undone from t
 other than the person (the same rule as suspending), roles unchanged by the suspension itself, audited as its own event; and whether
 reinstating needs a second administrator (the argument for it is that it restores the ability to decide gates; the argument against is
 that suspending needed none). Until then a wrongly suspended person needs a database change by an operator.
+
+**Decision (2026-11-12, the owner):** "Yes they can be reinstated." Built in Stage 135 as `reinstateAccount` and
+`POST /api/admin/staff/accounts/[id]/reinstate`.
+
+**Assumptions I made, which the owner has not confirmed and may change:** the owner decided _whether_, not the details. I used the
+suggested ones: (1) the same rule as suspending — an active administrator other than the person; (2) roles untouched, so a person
+comes back with what they held; (3) **no second administrator** (suspending needed none); (4) audited as `user_account.reinstated`;
+(5) only `SUSPENDED` goes back — `OFFBOARDED` stays final, and bringing such a person back is a new invitation. If (3) should be
+stricter, reinstating needs a confirmation step like `smt`/`admin` grants; say so and it becomes its own change.
