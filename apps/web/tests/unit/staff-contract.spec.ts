@@ -8,6 +8,7 @@ import {
   InvitationIdParam,
   InviteStaffBody,
   RevokeRoleBody,
+  SetStatusBody,
   StaffActionResponse,
   InviteStaffResponse,
   RevokeInvitationResponse,
@@ -136,6 +137,9 @@ describe('refusalFor', () => {
     'not_awaiting_confirmation',
     'invitation_expired',
     'proposer_unknown',
+    'cannot_change_own_status',
+    'already_offboarded',
+    'no_change',
   ];
 
   it.each(KNOWN)('answers %s with a status and words, and no address', (reason) => {
@@ -215,5 +219,22 @@ describe('IdParam and the generic action response', () => {
   it('StaffActionResponse is exactly { done: true }', () => {
     expect(StaffActionResponse.safeParse({ done: true }).success).toBe(true);
     expect(StaffActionResponse.safeParse({ done: false }).success).toBe(false);
+  });
+});
+
+describe('SetStatusBody', () => {
+  it.each(['SUSPENDED', 'OFFBOARDED'])('accepts %s', (status) => {
+    expect(SetStatusBody.safeParse({ status }).success).toBe(true);
+  });
+
+  it.each([
+    ['reinstating (not designed)', { status: 'ACTIVE' }],
+    ['a made-up status', { status: 'CLOSED' }],
+    ['lower case', { status: 'suspended' }],
+    ['no status', {}],
+    ['an extra key', { status: 'SUSPENDED', targetAccountId: 'x' }],
+    ['an array', { status: ['SUSPENDED'] }],
+  ])('refuses %s', (_name, body) => {
+    expect(SetStatusBody.safeParse(body).success).toBe(false);
   });
 });

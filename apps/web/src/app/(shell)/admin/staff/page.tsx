@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: 'Staff' };
 
 // OQ-033 delivery step 5: who has an account at this school, what they hold, and what is waiting.
 // Slice b adds inviting a person and revoking an invitation; slice c adds giving and removing roles
-// and confirming, declining or cancelling a request. Suspension arrives as a later slice. Every
+// and confirming, declining or cancelling a request; slice d adds suspending and offboarding. Every
 // action is a route behind the provisioning rules, which decide who may do what.
 export default async function StaffPage() {
   const session = await getServerSession(authOptions);
@@ -37,7 +37,7 @@ export default async function StaffPage() {
       </h1>
       <div className="flex flex-col gap-10">
         <InviteForm />
-        <StaffOverview overview={overview} />
+        <StaffOverview overview={overview} selfId={session.userId} />
       </div>
     </section>
   );

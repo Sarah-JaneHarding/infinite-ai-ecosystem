@@ -269,3 +269,47 @@ describe('StaffOverview — actions', () => {
     expect(lapsed).not.toContain('/role-requests/g1/decline');
   });
 });
+
+describe('StaffOverview — account status actions', () => {
+  const acc = (id: string, status: 'ACTIVE' | 'SUSPENDED' | 'OFFBOARDED') => ({
+    id,
+    displayName: id === ADA ? 'Ada Abrahams' : 'Zoe Zulu',
+    email: `${id}@example.invalid`,
+    status,
+    lastSeenAt: null,
+    roles: [],
+  });
+  const html = (accounts: Overview['accounts'], selfId?: string): string =>
+    renderToStaticMarkup(
+      createElement(StaffOverview, {
+        overview: { ...base, accounts },
+        ...(selfId === undefined ? {} : { selfId }),
+      }),
+    );
+  const labels = (markup: string): string[] =>
+    [...markup.matchAll(/data-label="([^"]+)"/g)].map((m) => m[1] ?? '');
+
+  it('offers an active account both Suspend and Offboard', () => {
+    const l = labels(html([acc(ADA, 'ACTIVE')]));
+    expect(l).toContain('Suspend');
+    expect(l).toContain('Offboard');
+  });
+
+  it('offers a suspended account only Offboard', () => {
+    const l = labels(html([acc(ADA, 'SUSPENDED')]));
+    expect(l).not.toContain('Suspend');
+    expect(l).toContain('Offboard');
+  });
+
+  it('offers an offboarded account nothing — it is final', () => {
+    const l = labels(html([acc(ADA, 'OFFBOARDED')]));
+    expect(l).not.toContain('Suspend');
+    expect(l).not.toContain('Offboard');
+  });
+
+  it('offers nothing on the viewer’s own account, and still does on everyone else’s', () => {
+    const markup = html([acc(ADA, 'ACTIVE'), acc(ZOE, 'ACTIVE')], ADA);
+    expect(markup).not.toContain(`/accounts/${ADA}/status`);
+    expect(markup).toContain(`/accounts/${ZOE}/status`);
+  });
+});

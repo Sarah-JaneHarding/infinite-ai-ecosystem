@@ -11783,3 +11783,32 @@ buttons are offered to any administrator and a refusal says why (for example, th
 | `pnpm lint`, `pnpm typecheck`, web and db unit tests           | PASS                              |
 | `grantRole` against real Postgres                              | OPEN (needs Docker; proven in CI) |
 | Rollback: revert this commit; no schema change                 | PASS                              |
+
+## Stage 131 — OQ-033 provisioning, step 5 slice d: suspend and offboard
+
+**What changed.** One administrator route, `POST /api/admin/staff/accounts/[id]/status` with `{ status: 'SUSPENDED' | 'OFFBOARDED' }`, over the
+existing `setAccountStatus`, behind the shared front door (`lib/staff-route.ts`: the token's tenant and account, acting as `admin`,
+JSON-only, strict body). The contract names only the two ways out; `ACTIVE` is refused (400) because reinstatement is not designed
+(OQ-047). The rules refuse a non-administrator and changing your own status; the last administrator cannot be affected because the actor
+must be a different administrator. Either status stops the account resolving at sign-in and, since Stage 125, stops it deciding a gate;
+offboarding also ends every live role and is final. The page offers Suspend (active accounts) and Offboard (active and suspended), each
+behind a confirmation that says what it does; an offboarded account and the viewer's own account are offered nothing (the server refuses the
+second regardless). This completes the administrator UI (step 5).
+
+**Tests.** `staff-actions.spec.ts` (+the status route in the table-driven front-door matrix, +14): both statuses reach the data layer as the
+session's account on the url's target; `ACTIVE`, `CLOSED`, other case and padded values refused; every refusal reason answered in words
+without the raw reason; a person acting on themselves is told to ask another administrator. `staff-contract.spec.ts` (+`SetStatusBody`, the
+three new refusal reasons), `staff-overview.spec.ts` (+4: who is offered what). Web 1075 passing. Mutation-checked: allowing `ACTIVE` fails 2;
+removing the self-hiding fails 1; passing a fixed status instead of the body's fails 1. The data-layer behaviour is the existing
+`setAccountStatus` integration suite (real Postgres, CI); no schema change.
+
+**Not done.** Reinstating a suspended account (OQ-047). Until it is decided, a wrongly suspended person needs an operator's database change.
+
+| Exit gate item                                                    | Result                             |
+| ----------------------------------------------------------------- | ---------------------------------- |
+| Only an administrator acting as `admin` can suspend or offboard   | PASS (unit; front-door matrix)     |
+| Nobody can set ACTIVE through this route                          | PASS (contract; mutation-checked)  |
+| No action is offered on an offboarded or the viewer's own account | PASS (mutation-checked)            |
+| `pnpm lint`, `pnpm typecheck`, web unit tests                     | PASS                               |
+| Data layer against real Postgres                                  | Existing suite (CI); no new schema |
+| Rollback: revert this commit; no schema change                    | PASS                               |
