@@ -32,6 +32,7 @@ const EXPECTED: Readonly<Record<string, readonly string[]>> = {
   '/approvals/3a000000?runId=x': SCHOOL,
   '/admin/prompts': ['admin'],
   '/admin/setup': ['admin'],
+  '/admin/staff': ['admin'],
   '/admin/curriculum/caps-canon': ['admin'],
   '/admin/env': ['admin', 'platform_admin'],
   '/platform/runs': PLATFORM,

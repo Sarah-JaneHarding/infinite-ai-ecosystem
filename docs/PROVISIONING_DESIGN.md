@@ -538,7 +538,7 @@ must keep resolving **no** actor, and a test should pin that.
    check, and a guard that only `packages/db` writes the account tables. **4b part 1 built (Stage 123)**:
    the session role from the intersection of the account's role assignments and the provider's claim, and the
    chooser (OQ-032); **4b part 2 built (Stage 124)**: gate decisions checked against the active role (§4.8 item 5)._
-5. **Admin UI** (`/admin/staff`): invite, revoke, list, role changes; wired to the routes.
+5. **Admin UI** (`/admin/staff`): invite, revoke, list, role changes; wired to the routes. _Split in slices: **a — read-only overview built (Stage 127)**: accounts with their roles (lapsed ones flagged), pending invitations, pending role requests, admin only (`loadStaffOverview` in `packages/db`, `lib/staff-loader.ts`, the page, a nav link and a `ROUTE_ACCESS` rule). **Not built:** b — invite and revoke an invitation; c — grant and revoke a role, confirm / decline / cancel a role request; d — suspend and offboard. Each is a Zod-contracted route behind the existing provisioning functions plus a form, and each its own PR._
 6. **Gate decision hardening** (§6): require an `ACTIVE` account in `decideHumanGate`. _Built (Stage 125)._
 7. **Keycloak integration** (§5): Admin API client, mirrored roles, required actions; realm config
    for email verification and MFA, with a drift test like the dev-identities one.
