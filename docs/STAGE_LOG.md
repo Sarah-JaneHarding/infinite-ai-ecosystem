@@ -11813,6 +11813,29 @@ removing the self-hiding fails 1; passing a fixed status instead of the body's f
 | Data layer against real Postgres                                  | Existing suite (CI); no new schema |
 | Rollback: revert this commit; no schema change                    | PASS                               |
 
+## Stage 133 — MFA for `sbst_chair` (owner decision, 2026-11-12)
+
+**Decision.** The owner answered "yes" to requiring a second factor from the SBST chair (raised in Stage 128): the chair's confirmation ratifies SBST
+minutes into the Brain as a versioned fact.
+
+**What changed.** `infra/keycloak/realm.json`: a `browser-mfa otp sbst_chair` sub-flow (role condition `mfa-role-sbst_chair`, then `auth-otp-form` with
+first-login enrolment) and its conditional execution in `browser-mfa forms` — a pure 38-line insertion, valid JSON, formatter-clean. `docs/SECURITY.md`
+§7 and its summary row, `docs/DEV_SETUP.md` and OQ-046 now name the role. A person holding two MFA roles is asked for a code once per role (the
+sub-flows are independent), as before.
+
+**Tests.** `keycloak-realm-mfa.spec.ts` (+2, and the existing per-role case now covers `sbst_chair`): the forms flow reaches the chair's sub-flow, and the
+set of roles with a sub-flow is **exactly** the MFA role list — a role that gains or loses the step without the list changing fails. Mutation-checked:
+the original realm fails 3. Policy 341 passing.
+
+**Not verified.** As with OQ-036, this is the committed configuration; that Keycloak imports it and prompts for the code needs one run against a live
+Keycloak (the sandbox's `pnpm sandbox up` makes that a one-command check once it is merged and run). The production realm was not touched.
+
+| Exit gate item                                 | Result                           |
+| ---------------------------------------------- | -------------------------------- |
+| The realm requires a code from `sbst_chair`    | PASS (configuration; drift test) |
+| The MFA roles are exactly the documented list  | PASS (mutation-checked)          |
+| Keycloak imports it and prompts                | OPEN (needs a live Keycloak)     |
+| Rollback: revert this commit; no schema change | PASS                             |
 ## Stage 132 — fix: initdb roles script ran backticked comment words as commands
 
 **What changed.** `infra/docker/initdb/02-roles.sh` feeds its SQL through an unquoted heredoc so the four role passwords interpolate. That also
