@@ -16,7 +16,7 @@ import {
 } from '../../src/lib/route-access.js';
 
 const ALL_ROLES = Role.options;
-const SCHOOL = ['teacher', 'hod', 'smt', 'sbst', 'admin'];
+const SCHOOL = ['teacher', 'hod', 'smt', 'sbst', 'sbst_chair', 'admin'];
 const PLATFORM = ['platform_support', 'platform_admin'];
 
 // Written out independently of the table on purpose: this is the policy as a reviewer
@@ -25,7 +25,7 @@ const EXPECTED: Readonly<Record<string, readonly string[]>> = {
   '/teacher': ['teacher'],
   '/hod': ['hod'],
   '/smt': ['smt'],
-  '/sbst': ['sbst'],
+  '/sbst': ['sbst', 'sbst_chair'],
   '/guardian': ['guardian'],
   '/learner': ['learner'],
   '/approvals': SCHOOL,

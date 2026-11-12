@@ -28,6 +28,12 @@ describe('/sbst', () => {
     expect(redirect).not.toHaveBeenCalled();
   });
 
+  it('renders for the chair, who reads the same casebook', async () => {
+    getServerSession.mockResolvedValue({ role: 'sbst_chair' });
+    await expect(SbstPage()).resolves.toBeDefined();
+    expect(redirect).not.toHaveBeenCalled();
+  });
+
   it('sends an unauthenticated caller to sign in', async () => {
     getServerSession.mockResolvedValue(null);
     await expect(SbstPage()).rejects.toThrow('REDIRECT:/sign-in');

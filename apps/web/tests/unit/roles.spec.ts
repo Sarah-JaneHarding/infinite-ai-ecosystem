@@ -7,6 +7,7 @@ const ALL_ROLES: readonly Role[] = [
   'hod',
   'smt',
   'sbst',
+  'sbst_chair',
   'admin',
   'guardian',
   'learner',

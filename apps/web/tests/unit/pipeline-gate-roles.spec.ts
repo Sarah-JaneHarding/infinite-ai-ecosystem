@@ -40,8 +40,8 @@ const PIPELINES: readonly PipelineDefinition[] = [
   LE_COMMONS_PIPELINE,
 ];
 
-/** Decided 2026-11-12 (OQ-046): `sbst_chair` becomes a real role, which is its own change. */
-const AWAITING_ROLE: readonly string[] = ['sbst_chair'];
+/** Empty since `sbst_chair` was built (OQ-046). An entry here is an owner decision still to be built. */
+const AWAITING_ROLE: readonly string[] = [];
 
 const gates = PIPELINES.flatMap((pipeline) =>
   Object.values(pipeline.steps).flatMap((step) =>

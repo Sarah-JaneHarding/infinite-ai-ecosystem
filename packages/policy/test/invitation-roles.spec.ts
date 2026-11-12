@@ -26,6 +26,13 @@ const restated = readFileSync(
   'utf8',
 );
 
+// The list was widened for `sbst_chair` (OQ-046). The newest migration that restates the constraint is
+// the one in force; the earlier two are history, kept equal to each other below.
+const latest = readFileSync(
+  join(migrationsDir, '20261112100000_oq046_sbst_chair_role', 'migration.sql'),
+  'utf8',
+);
+
 function rolesIn(sql: string): string[] {
   // Comments first: a migration's header may quote the constraint it is explaining.
   const code = sql.replace(/--.*$/gm, '');
@@ -35,13 +42,20 @@ function rolesIn(sql: string): string[] {
 }
 
 function invitableRolesInSql(): string[] {
-  return rolesIn(migration);
+  return rolesIn(latest);
 }
 
 describe('roles an invitation may carry (user_invitation CHECK constraint)', () => {
   it('are the same list in the migration that added the IS NOT NULL test', () => {
     expect(rolesIn(restated)).toEqual(rolesIn(migration));
     expect(restated.replace(/--.*$/gm, '')).toContain('"roles" IS NOT NULL');
+  });
+
+  it('widened the earlier list by exactly sbst_chair, and kept IS NOT NULL', () => {
+    expect([...rolesIn(latest)].sort()).toEqual(
+      [...rolesIn(restated), 'sbst_chair'].sort(),
+    );
+    expect(latest.replace(/--.*$/gm, '')).toContain('"roles" IS NOT NULL');
   });
 
   it('are all real roles', () => {

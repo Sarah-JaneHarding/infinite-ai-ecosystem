@@ -9,7 +9,14 @@ export const metadata: Metadata = { title: 'Approvals' };
 
 // The roles that can have a human gate waiting on them. Mirrors the /approvals rule in
 // `lib/route-access.ts` (a test keeps the two equal). Anyone else has no queue.
-const APPROVAL_ROLES: ReadonlyArray<string> = ['teacher', 'hod', 'smt', 'sbst', 'admin'];
+const APPROVAL_ROLES: ReadonlyArray<string> = [
+  'teacher',
+  'hod',
+  'smt',
+  'sbst',
+  'sbst_chair',
+  'admin',
+];
 
 export default async function ApprovalsPage() {
   const session = await getServerSession(authOptions);

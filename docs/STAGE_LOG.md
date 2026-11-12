@@ -11672,3 +11672,37 @@ only); nothing else about an invitation is shown.
 | `pnpm lint`, `pnpm typecheck`, web and db unit tests | PASS                              |
 | Integration cases against real Postgres              | OPEN (needs Docker; proven in CI) |
 | Rollback: revert this commit; no schema change       | PASS                              |
+
+## Stage 128 — OQ-046: the `sbst_chair` role (decided 2026-11-12; PROVISIONING_DESIGN §4.9 recommendations accepted)
+
+Stacked on Stage 126 (the guard test and §4.9 are on that branch).
+
+**What changed.** `Role` and `SCHOOL_STAFF_ROLES` gain `sbst_chair`, so an invitation can carry it and the MOD-02 `chair-confirmation`
+gate can be decided. `rbac.ts`: two rows only — `sbst_case` and `intervention`, read — nothing inherited from `sbst`
+(§4.9 decision 4). Migration `20261112100000_oq046_sbst_chair_role` widens `user_invitation_roles_school_staff` (keeping
+`IS NOT NULL`), with a rollback that is not destructive: it refuses, whole, while an invitation still carries the role.
+Web: `ROLE_HOME` / `ROLE_LABEL` / `ROLE_HUE` / `ROLE_NAV`, `ROUTE_ACCESS` (`/sbst` for both roles; `/approvals` queue for the
+chair), the casebook and approvals pages. Keycloak realm: role `sbst_chair`. Conferral is unchanged: not in
+`CONFIRMATION_REQUIRED_ROLES`, so an administrator grants it alone (decision 2); no one-chair constraint (decision 3).
+
+**Because a gate is decided as its own role** (Stage 124), the chair holds `sbst` as well and signs in as `sbst_chair` to confirm
+minutes; the chooser offers both.
+
+**Tests.** Policy 338 passing (+17): the chair's matrix (reads, and the exhaustive refusals), not a confirmation-required role,
+conferral cases, the drift test now reads the newest migration and asserts it widened the list by exactly `sbst_chair`. Web 642
+passing: route table, `/sbst` for the chair, eligibility and roles tables extended; the pipeline guard's awaiting list is empty.
+`user-invitation-rollback.integration.spec.ts` (CI): the widening rolls back only once no invitation carries the role, and the whole
+chain re-applies. `user-invitation.integration.spec.ts`: `sbst_chair` accepted alone and with `sbst`. **The migration and both
+rollback paths were also run by hand on a throwaway local Postgres:** forward accepts the role; platform roles and NULL still
+refused; the rollback fails with a row present and leaves the wide constraint in force; with the row gone it restores the old list.
+Mutation-checked: dropping the role from `SCHOOL_STAFF_ROLES` fails 4 policy tests; narrowing the `/sbst` rule fails 2 web tests.
+
+**Not done.** A dev identity holding `sbst` and `sbst_chair`; MFA for the chair (see §4.9 status).
+
+| Exit gate item                                                    | Result                                  |
+| ----------------------------------------------------------------- | --------------------------------------- |
+| `chair-confirmation` can be decided by a granted role             | PASS (guard test, awaiting list empty)  |
+| The chair role is narrow and inherits nothing from `sbst`         | PASS (exhaustive refusals)              |
+| Forward migration and non-destructive rollback                    | PASS (local Postgres); CI for the suite |
+| `pnpm lint`, `pnpm typecheck`, policy, web, db, orchestrator unit | PASS                                    |
+| Integration cases against real Postgres                           | OPEN (needs Docker; proven in CI)       |
