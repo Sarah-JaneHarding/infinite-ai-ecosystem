@@ -11812,3 +11812,25 @@ removing the self-hiding fails 1; passing a fixed status instead of the body's f
 | `pnpm lint`, `pnpm typecheck`, web unit tests                     | PASS                               |
 | Data layer against real Postgres                                  | Existing suite (CI); no new schema |
 | Rollback: revert this commit; no schema change                    | PASS                               |
+
+## Stage 136 — dev login that holds both `sbst` and `sbst_chair`
+
+**What changed.** A dev login, `chair.dev`, that holds `sbst` and `sbst_chair`. Until now no dev account held both, so the chair-only gates
+(OQ-046) and the "decided as its own role" rule could not be tried by hand. `DevIdentity` carries `roles` and `roleAssignmentIds` (one per role)
+instead of a single `role`; the first role keeps the id it always had, so an already-seeded database is unchanged. The seed upserts one assignment
+per role. `infra/keycloak/realm.json` gains the user with fixed id `…0008` and both realm roles; `docs/DEV_SETUP.md` lists it.
+
+**Tests.** `dev-identities.spec.ts` (+2): each role has exactly one assignment id; exactly one login holds the chair, as `sbst` + `sbst_chair`; the
+realm user's roles equal the seed's. `seed-dev-identities.integration.spec.ts` (+1, real Postgres, **CI only — not run here**): the chair holds both
+roles and not `admin`; the existing resolve/hold test now checks every role. Mutation-checked: dropping `sbst_chair` from the realm user fails 1.
+db typecheck, db and security unit tests pass locally.
+
+**Not done.** `chair.dev` needs a one-time code at sign-in only once the chair is made an MFA role (Stage 133, a separate PR); this change does not
+depend on it.
+
+| Exit gate item                                               | Result                     |
+| ------------------------------------------------------------ | -------------------------- |
+| Realm user and seeded identity agree (id, email, roles)      | PASS (drift test)          |
+| An already-seeded database is unchanged by the new id scheme | PASS (first role keeps id) |
+| Seed resolves the chair and both roles against Postgres      | Integration (CI)           |
+| Rollback: revert this commit; no schema change               | PASS                       |

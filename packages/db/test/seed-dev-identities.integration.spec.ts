@@ -40,20 +40,34 @@ describe('seedDevIdentities (real Postgres)', () => {
         findActiveUserAccountId(tx as never, who.subject),
       );
       expect(resolved).toBe(who.accountId);
-      const holds = await asTenant(appRw, DEV_TENANT_ID, ACTOR, (tx) =>
-        hasActiveRoleAssignment(tx as never, who.accountId, who.role, new Date()),
-      );
-      expect(holds).toBe(true);
+      for (const role of who.roles) {
+        const holds = await asTenant(appRw, DEV_TENANT_ID, ACTOR, (tx) =>
+          hasActiveRoleAssignment(tx as never, who.accountId, role, new Date()),
+        );
+        expect(holds, `${who.username} should hold ${role}`).toBe(true);
+      }
     }
   });
 
   it('does not let one account act in another role', async () => {
-    const teacher = DEV_IDENTITIES.find((w) => w.role === 'teacher');
+    const teacher = DEV_IDENTITIES.find((w) => w.roles.includes('teacher'));
     if (teacher === undefined) throw new Error('fixture missing');
     const holdsSmt = await asTenant(appRw, DEV_TENANT_ID, ACTOR, (tx) =>
       hasActiveRoleAssignment(tx as never, teacher.accountId, 'smt', new Date()),
     );
     expect(holdsSmt).toBe(false);
+  });
+
+  it('gives the chair both roles and nothing more than its own pair', async () => {
+    const chair = DEV_IDENTITIES.find((w) => w.roles.includes('sbst_chair'));
+    if (chair === undefined) throw new Error('fixture missing');
+    const holds = (role: string) =>
+      asTenant(appRw, DEV_TENANT_ID, ACTOR, (tx) =>
+        hasActiveRoleAssignment(tx as never, chair.accountId, role, new Date()),
+      );
+    expect(await holds('sbst')).toBe(true);
+    expect(await holds('sbst_chair')).toBe(true);
+    expect(await holds('admin')).toBe(false);
   });
 
   it('is idempotent: a second run changes nothing', async () => {

@@ -36,17 +36,23 @@ export async function seedDevIdentities(
           createdBy: SEED_ACTOR,
         },
       });
-      await tx.roleAssignment.upsert({
-        where: { id: who.roleAssignmentId },
-        update: {},
-        create: {
-          id: who.roleAssignmentId,
-          tenantId: DEV_TENANT_ID,
-          userAccountId: who.accountId,
-          role: who.role,
-          createdBy: SEED_ACTOR,
-        },
-      });
+      for (const [i, role] of who.roles.entries()) {
+        const roleAssignmentId = who.roleAssignmentIds[i];
+        if (roleAssignmentId === undefined) {
+          throw new Error(`${who.username}: no role assignment id for ${role}`);
+        }
+        await tx.roleAssignment.upsert({
+          where: { id: roleAssignmentId },
+          update: {},
+          create: {
+            id: roleAssignmentId,
+            tenantId: DEV_TENANT_ID,
+            userAccountId: who.accountId,
+            role,
+            createdBy: SEED_ACTOR,
+          },
+        });
+      }
     });
   }
   return identities.length;
