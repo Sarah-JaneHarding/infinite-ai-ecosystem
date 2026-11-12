@@ -18,6 +18,11 @@ vi.mock('../../src/lib/env', () => ({
 const { resolveSignIn } = vi.hoisted(() => ({ resolveSignIn: vi.fn() }));
 vi.mock('../../src/lib/actor-resolution', () => ({ resolveSignIn }));
 
+// Which roles the school has granted is its own unit (role-resolution.spec.ts / eligible-roles.spec.ts).
+// By default the stand-in agrees with the claim; tests that care say otherwise.
+const { resolveEligibleRoles } = vi.hoisted(() => ({ resolveEligibleRoles: vi.fn() }));
+vi.mock('../../src/lib/role-resolution', () => ({ resolveEligibleRoles }));
+
 import { authOptions } from '../../src/auth.js';
 
 const callbacks = authOptions.callbacks;
@@ -61,6 +66,14 @@ describe('jwt', () => {
   beforeEach(() => {
     resolveSignIn.mockReset();
     resolveSignIn.mockResolvedValue({ actorId: ACCOUNT_ID, outcome: 'existing' });
+    resolveEligibleRoles.mockReset();
+    resolveEligibleRoles.mockImplementation(
+      async ({ claimRoles }: { claimRoles: string[] }) => ({
+        eligible: claimRoles,
+        assignedNotClaimed: [],
+        claimedNotAssigned: [],
+      }),
+    );
   });
 
   it('stores the role and tenant from the profile at sign-in', async () => {
@@ -98,6 +111,11 @@ describe('jwt', () => {
 
   it('stores no actor when the person has no active account — the sign-in is not blocked', async () => {
     resolveSignIn.mockResolvedValue({ actorId: '', outcome: 'no_invitation' });
+    resolveEligibleRoles.mockResolvedValue({
+      eligible: [],
+      assignedNotClaimed: [],
+      claimedNotAssigned: ['hod'],
+    });
     const token = await jwt({
       token: { sub: SUB } as JWT,
       account,
@@ -105,7 +123,9 @@ describe('jwt', () => {
       user: { id: SUB },
     });
     expect(token['userId']).toBe('');
-    expect(token['role']).toBe('hod');
+    // Nothing granted → nothing to act as: a claim alone never becomes a role (§4.8).
+    expect(token['role']).toBeUndefined();
+    expect(token['eligibleRoles']).toEqual([]);
   });
 
   it('fails the sign-in on a database fault instead of issuing a session without an actor', async () => {
@@ -169,6 +189,52 @@ describe('jwt', () => {
     expect(refused['accountOutcome']).toBe('invitation_expired');
   });
 
+  it('asks for eligibility with the resolved account and the whole claim, in the provider’s order', async () => {
+    await jwt({
+      token: { sub: SUB } as JWT,
+      account,
+      profile: profileWith(['learner', 'offline_access', 'admin', 'learner']),
+      user: { id: SUB },
+    });
+    expect(resolveEligibleRoles).toHaveBeenCalledWith({
+      tenantId: TENANT,
+      accountId: ACCOUNT_ID,
+      claimRoles: ['learner', 'admin'],
+    });
+  });
+
+  it('acts as the one eligible role without asking', async () => {
+    resolveEligibleRoles.mockResolvedValue({
+      eligible: ['hod'],
+      assignedNotClaimed: [],
+      claimedNotAssigned: ['admin'],
+    });
+    const token = await jwt({
+      token: { sub: SUB } as JWT,
+      account,
+      profile: profileWith(['hod', 'admin']),
+      user: { id: SUB },
+    });
+    expect(token['role']).toBe('hod');
+    expect(token['eligibleRoles']).toEqual(['hod']);
+  });
+
+  it('leaves the role empty when more than one is eligible — nothing is picked for the person', async () => {
+    resolveEligibleRoles.mockResolvedValue({
+      eligible: ['teacher', 'hod'],
+      assignedNotClaimed: [],
+      claimedNotAssigned: [],
+    });
+    const token = await jwt({
+      token: { sub: SUB, role: 'admin' } as JWT, // a stale value must not survive a new sign-in
+      account,
+      profile: profileWith(['teacher', 'hod']),
+      user: { id: SUB },
+    });
+    expect(token['role']).toBeUndefined();
+    expect(token['eligibleRoles']).toEqual(['teacher', 'hod']);
+  });
+
   it('does not look the account up again on later requests', async () => {
     await jwt({
       token: { sub: SUB, role: 'hod' } as JWT,
@@ -176,6 +242,7 @@ describe('jwt', () => {
       account: null,
     });
     expect(resolveSignIn).not.toHaveBeenCalled();
+    expect(resolveEligibleRoles).not.toHaveBeenCalled();
   });
 
   it('throws rather than inventing a role if signIn was somehow bypassed', async () => {
@@ -192,6 +259,64 @@ describe('jwt', () => {
   it('leaves an existing token alone on later requests', async () => {
     const token = { sub: SUB, role: 'hod' } as JWT;
     expect(await jwt({ token, user: { id: SUB }, account: null })).toBe(token);
+  });
+});
+
+describe('jwt — the chooser’s update (OQ-032)', () => {
+  const pending = (extra: Record<string, unknown> = {}) =>
+    ({ sub: SUB, eligibleRoles: ['teacher', 'hod'], ...extra }) as JWT;
+  const update = (token: JWT, requested: unknown) =>
+    jwt({
+      token,
+      user: { id: SUB },
+      account: null,
+      trigger: 'update',
+      session: { role: requested },
+    });
+
+  it('sets the role the person chose, when it is one the token offered', async () => {
+    const token = await update(pending(), 'hod');
+    expect(token['role']).toBe('hod');
+    expect(token['eligibleRoles']).toEqual(['teacher', 'hod']);
+  });
+
+  it.each([
+    ['a role the token did not offer', 'admin'],
+    ['a platform role the token did not offer', 'platform_admin'],
+    ['something that is not a role', 'superuser'],
+    ['a non-string', 7],
+    ['nothing', undefined],
+  ])('refuses a forged request for %s', async (_name, requested) => {
+    const token = await update(pending(), requested);
+    expect(token['role']).toBeUndefined();
+  });
+
+  it('does not switch roles: once one is active the request is ignored', async () => {
+    const token = await update(pending({ role: 'teacher' }), 'hod');
+    expect(token['role']).toBe('teacher');
+  });
+
+  it('cannot choose from a token that carries no offered roles', async () => {
+    const token = await update({ sub: SUB } as JWT, 'teacher');
+    expect(token['role']).toBeUndefined();
+  });
+
+  it('cannot choose from a malformed offered list', async () => {
+    const token = await update(
+      { sub: SUB, eligibleRoles: ['teacher', 'nope'] } as JWT,
+      'teacher',
+    );
+    expect(token['role']).toBeUndefined();
+  });
+
+  it('ignores an update with no session payload at all', async () => {
+    const token = await jwt({
+      token: pending(),
+      user: { id: SUB },
+      account: null,
+      trigger: 'update',
+    });
+    expect(token['role']).toBeUndefined();
   });
 });
 
@@ -250,8 +375,46 @@ describe('session', () => {
     }
   });
 
+  it('is a session with no role while the person still has to choose one', async () => {
+    const s = (await run({
+      sub: SUB,
+      tenantId: TENANT,
+      userId: ACCOUNT_ID,
+      eligibleRoles: ['teacher', 'hod'],
+    })) as Session;
+    expect(s.role).toBeNull();
+    expect(s.eligibleRoles).toEqual(['teacher', 'hod']);
+  });
+
+  it('is a session with no role and nothing to choose when no role is eligible', async () => {
+    const s = (await run({ sub: SUB, tenantId: TENANT, eligibleRoles: [] })) as Session;
+    expect(s.role).toBeNull();
+    expect(s.eligibleRoles).toEqual([]);
+  });
+
+  it('lists the active role as the only one for a token issued before the chooser', async () => {
+    const s = (await run({ sub: SUB, role: 'hod', tenantId: TENANT })) as Session;
+    expect(s.eligibleRoles).toEqual(['hod']);
+  });
+
+  it('exposes the server’s eligible list alongside an active role', async () => {
+    const s = (await run({
+      sub: SUB,
+      role: 'hod',
+      eligibleRoles: ['teacher', 'hod'],
+      tenantId: TENANT,
+    })) as Session;
+    expect(s.role).toBe('hod');
+    expect(s.eligibleRoles).toEqual(['teacher', 'hod']);
+  });
+
   it.each([
     ['no role', { sub: SUB, tenantId: TENANT }],
+    ['a malformed offered list', { sub: SUB, tenantId: TENANT, eligibleRoles: ['x'] }],
+    [
+      'an offered list that is not a list',
+      { sub: SUB, tenantId: TENANT, eligibleRoles: 'hod' },
+    ],
     ['an unknown role', { sub: SUB, role: 'superuser', tenantId: TENANT }],
     ['a role with the wrong case', { sub: SUB, role: 'Admin', tenantId: TENANT }],
     ['a non-string role', { sub: SUB, role: 7, tenantId: TENANT }],

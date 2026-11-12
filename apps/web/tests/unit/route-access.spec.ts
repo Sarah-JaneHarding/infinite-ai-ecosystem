@@ -6,8 +6,10 @@ import { Role } from '@infinite-ai/policy';
 import { describe, it, expect } from 'vitest';
 
 import {
+  CHOOSE_ROLE_PATH,
   PUBLIC_PATHS,
   ROUTE_ACCESS,
+  decideAccess,
   isPublic,
   roleMayReach,
   ruleFor,
@@ -144,7 +146,9 @@ describe('every page and handler in the app', () => {
     (_name, file) => {
       const url = urlFor(file);
       expect(
-        isPublic(url) || url === '/' || ruleFor(url) !== null,
+        // The chooser is the one page decided by `decideAccess` rather than a role rule: no role
+        // may reach it, only a session that has none yet (see the decideAccess tests below).
+        isPublic(url) || url === '/' || url === CHOOSE_ROLE_PATH || ruleFor(url) !== null,
         `${url} has no entry in ROUTE_ACCESS — until it does, no role can reach it`,
       ).toBe(true);
     },
@@ -174,5 +178,59 @@ describe('every page and handler in the app', () => {
         `${rule.prefix} matches nothing in the app`,
       ).toBe(true);
     }
+  });
+});
+
+describe('decideAccess — signed in with no role yet (OQ-032)', () => {
+  const pending = { eligibleRoles: ['teacher', 'hod'] };
+
+  it('has no session without a token', () => {
+    expect(decideAccess(null, '/hod')).toEqual({ kind: 'sign-in' });
+  });
+
+  it.each([
+    '/',
+    '/hod',
+    '/teacher',
+    '/approvals',
+    '/api/approvals/x/decide',
+    '/anything',
+  ])('keeps a person who has not chosen away from %s', (pathname) => {
+    expect(decideAccess(pending, pathname)).toEqual({ kind: 'choose-role' });
+  });
+
+  it('lets them reach the chooser — and only the chooser', () => {
+    expect(decideAccess(pending, CHOOSE_ROLE_PATH)).toEqual({ kind: 'allow' });
+    expect(decideAccess(pending, `${CHOOSE_ROLE_PATH}/x`)).toEqual({
+      kind: 'choose-role',
+    });
+    expect(decideAccess(pending, '/choose-roles')).toEqual({ kind: 'choose-role' });
+  });
+
+  it('lets a person with nothing to choose from reach the explanation page too', () => {
+    expect(decideAccess({ eligibleRoles: [] }, CHOOSE_ROLE_PATH)).toEqual({
+      kind: 'allow',
+    });
+    expect(decideAccess({ eligibleRoles: [] }, '/hod')).toEqual({ kind: 'choose-role' });
+  });
+
+  it.each([
+    ['no role and no list', {}],
+    ['an unknown role and no list', { role: 'superuser' }],
+    ['a malformed list', { eligibleRoles: ['teacher', 'nope'] }],
+    ['a list that is not a list', { eligibleRoles: 'teacher' }],
+  ])('is not a session for a token with %s', (_name, token) => {
+    expect(decideAccess(token, CHOOSE_ROLE_PATH)).toEqual({ kind: 'sign-in' });
+    expect(decideAccess(token, '/hod')).toEqual({ kind: 'sign-in' });
+  });
+
+  it('with a role, defers to the route table — and the chooser is out of reach', () => {
+    expect(decideAccess({ role: 'hod' }, '/hod')).toEqual({ kind: 'allow' });
+    expect(decideAccess({ role: 'hod' }, '/teacher')).toEqual({ kind: 'deny' });
+    expect(
+      decideAccess({ role: 'hod', eligibleRoles: ['hod', 'teacher'] }, CHOOSE_ROLE_PATH),
+    ).toEqual({
+      kind: 'deny',
+    });
   });
 });

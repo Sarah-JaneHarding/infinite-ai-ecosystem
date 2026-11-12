@@ -161,7 +161,7 @@ export {
   type OpenApprovalTaskInput,
 } from './approval.js';
 
-export { hasActiveRoleAssignment } from './roles.js';
+export { hasActiveRoleAssignment, listActiveRoles } from './roles.js';
 
 export const PACKAGE_NAME = '@infinite-ai/db' as const;
 export {

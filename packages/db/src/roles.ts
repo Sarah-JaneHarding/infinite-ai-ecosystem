@@ -33,3 +33,27 @@ export async function hasActiveRoleAssignment(
   });
   return match !== null;
 }
+
+/**
+ * The distinct roles `userAccountId` holds right now: its unexpired `role_assignment` rows, in the
+ * tenant already active on `tx`. Sorted, so the answer has no order that could be mistaken for a
+ * precedence (OQ-032: nothing ranks one role above another).
+ *
+ * The sign-in intersects this with the provider's claim to decide which roles a session may act as
+ * (docs/PROVISIONING_DESIGN.md §4.4, §4.8). Scope is irrelevant here for the same reason it is in
+ * `hasActiveRoleAssignment`: the question is which roles, not where they apply.
+ */
+export async function listActiveRoles(
+  tx: TenantClient,
+  userAccountId: string,
+  now: Date,
+): Promise<string[]> {
+  const rows = await tx.roleAssignment.findMany({
+    where: {
+      userAccountId,
+      OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+    },
+    select: { role: true },
+  });
+  return [...new Set(rows.map((r) => r.role))].sort();
+}

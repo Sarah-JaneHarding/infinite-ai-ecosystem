@@ -15,6 +15,7 @@ interface Props {
 export default async function ApprovalPage({ params, searchParams }: Props) {
   const session = await getServerSession(authOptions);
   if (!session) redirect('/sign-in');
+  if (session.role === null) redirect('/choose-role');
   const { id } = await params;
   const sp = await searchParams;
   const runId = typeof sp['runId'] === 'string' ? sp['runId'] : undefined;

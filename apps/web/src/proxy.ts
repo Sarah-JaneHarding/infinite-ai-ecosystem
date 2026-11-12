@@ -4,8 +4,7 @@ import type { NextRequest } from 'next/server';
 
 import { buildCsp, generateNonce } from '@infinite-ai/security';
 
-import { isApiPath, isPublic, roleMayReach } from './lib/route-access';
-import { readRole } from './lib/session-role';
+import { CHOOSE_ROLE_PATH, decideAccess, isApiPath, isPublic } from './lib/route-access';
 
 /**
  * Deliberately does not use next-auth's `withAuth` wrapper. `withAuth`'s own
@@ -41,19 +40,25 @@ export default async function proxy(req: NextRequest): Promise<NextResponse> {
 
   if (!isPublic(pathname)) {
     const token = await getToken({ req });
-    // A token with no valid role is not a session (see lib/session-role.ts): treated like
-    // no token at all, never as some default role.
-    const role = token === null ? null : readRole(token['role']);
-    if (role === null) {
+    // Who may reach this route (lib/route-access.ts). A token with no valid role and no pending
+    // choice is not a session (see lib/session-role.ts): treated like no token at all, never as
+    // some default role. Default deny: an unlisted route reaches nobody.
+    const decision = decideAccess(token, pathname);
+    if (decision.kind === 'sign-in') {
       const signInUrl = new URL('/sign-in', req.url);
       signInUrl.searchParams.set('callbackUrl', `${pathname}${search}`);
       return NextResponse.redirect(signInUrl);
     }
-
-    // Who may reach this route (lib/route-access.ts). Default deny: an unlisted route
-    // reaches nobody. A handler gets a 403; a page sends the person home, which is what
-    // each page's own role check already did.
-    if (!roleMayReach(role, pathname)) {
+    // Signed in, no role chosen yet: the chooser is the only page. A handler gets a 403 — an API
+    // call must not act for a person who has not said who they are acting as.
+    if (decision.kind === 'choose-role') {
+      return isApiPath(pathname)
+        ? NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        : NextResponse.redirect(new URL(CHOOSE_ROLE_PATH, req.url));
+    }
+    // A handler gets a 403; a page sends the person home, which is what each page's own role
+    // check already did.
+    if (decision.kind === 'deny') {
       return isApiPath(pathname)
         ? NextResponse.json({ error: 'Forbidden' }, { status: 403 })
         : NextResponse.redirect(new URL('/', req.url));

@@ -14,6 +14,7 @@ const APPROVAL_ROLES: ReadonlyArray<string> = ['teacher', 'hod', 'smt', 'sbst', 
 export default async function ApprovalsPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect('/sign-in');
+  if (session.role === null) redirect('/choose-role');
   if (!APPROVAL_ROLES.includes(session.role)) redirect('/');
 
   // Tenant and actor come from the verified session only. Without both there is nothing

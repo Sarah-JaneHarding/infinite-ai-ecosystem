@@ -8,7 +8,6 @@ import { AccountNotice } from '@/components/shell/AccountNotice';
 import { accountNotice } from '@/lib/account-notice';
 import { ROLE_NAV } from '@/lib/roles';
 import { loadTenantLabel } from '@/lib/tenant-name-loader';
-import type { Role } from '@infinite-ai/policy';
 
 export default async function ShellLayout({
   children,
@@ -18,7 +17,8 @@ export default async function ShellLayout({
   const session = await getServerSession(authOptions);
   if (!session) redirect('/sign-in');
 
-  const role = session.role as Role;
+  if (session.role === null) redirect('/choose-role');
+  const role = session.role;
   const links = ROLE_NAV[role];
   const userName = session.user?.name ?? session.user?.email ?? 'User';
   const tenantName = await loadTenantLabel({

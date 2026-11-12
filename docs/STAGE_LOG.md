@@ -11486,6 +11486,51 @@ these roles today.
 | The aggregate case still fails on a leak       | PASS by construction (a leak adds the other tenant's rows)  |
 | Integration suite passes against real Postgres | OPEN (needs Docker; proven in CI, not in the authoring box) |
 
+## Stage 123 — OQ-032 / OQ-033 provisioning, step 4b part 1: the person chooses the role they act as
+
+The five §4.8 decisions were accepted on 2026-11-12. This is the first of two changes: who may be offered which role, and the
+page where they choose. Gate decisions are untouched (part 2).
+
+**What changed.**
+
+- `packages/db`: `listActiveRoles(tx, userAccountId, now)` — the account's live roles (no expiry, or expiring after `now`), each
+  once, sorted so no order reads as precedence. Reads through the tenant-scoped client.
+- `apps/web/src/lib/eligible-roles.ts`: a school staff role is eligible only when the provider's claim **and** the school's
+  `role_assignment` agree; platform, guardian and learner roles (not school-granted) follow the claim alone. Output in `Role`
+  enum order. `assignedNotClaimed` / `claimedNotAssigned` are returned as data.
+- `session-role.ts`: `rolesFromProfile` (every role in the claim, deduped) replaces first-match `roleFromProfile`; `readRoles`
+  reads the token's list and treats a malformed list as no list, never a shorter one.
+- `auth.ts`: `jwt` at sign-in stores `eligibleRoles` and sets `role` only when exactly one is eligible (otherwise removes any
+  stale value). On the chooser's `update` it sets `role` only if none is active yet **and** the requested role is in the token's
+  own signed list — a forged request, or any request after a role is active, is ignored. `session` yields `role: null` for a
+  token that is waiting for a choice; a token with neither a role nor a valid list is still not a session.
+- `proxy.ts` / `route-access.ts` (`decideAccess`): with a role the route table decides; with a pending choice only
+  `/choose-role` (pages redirect there, API calls get 403); anything else is sign-in. `/choose-role` is deliberately in no role's
+  rule, so a session that has a role is sent home.
+- `/choose-role`: one button per eligible role; with none, the reason (`noRoleNotice`) and sign-out only. `/`, the shell layout
+  and the approvals pages redirect a role-less session there; `Session.role` is `Role | null`.
+
+**Tests.** `eligible-roles.spec.ts` (every role in every claim/grant combination, order, duplicates), `role-resolution.spec.ts`,
+`session-role.spec.ts` (replaced the test that pinned first-match and named OQ-032), `auth-callbacks.spec.ts` (sign-in with one,
+several and no eligible roles; forged, repeated and malformed `update`s refused; session shapes), `route-access.spec.ts`
+(`decideAccess`), `proxy-access.spec.ts` (real signed tokens), `role-chooser.spec.ts`, `account-notice.spec.ts`;
+`user-account.integration.spec.ts` gains `listActiveRoles` against real Postgres (live, expired incl. expiring exactly now,
+missing account, another school's account). Web unit: 616 passing; db unit: 265 passing. Integration tier is proven in CI,
+not locally (no Docker). Mutation-checked: dropping the "offered list" check, or the "no role active yet" check, in the `update`
+branch each fails the forged / no-switching tests.
+
+**Not done.** Part 2 (`actingAs` on gate decisions). A role revoked mid-session stays the session's role until it ends (§4.8
+item 7); gates will refuse it once part 2 lands. Role-in-database-but-not-in-claim is not logged (see §4.8 status).
+
+| Exit gate item                                                  | Result                             |
+| --------------------------------------------------------------- | ---------------------------------- |
+| No role is ever chosen for a person                             | PASS (tests; no default, no order) |
+| A claim cannot widen what the school granted                    | PASS (eligibility table)           |
+| A client cannot pick a role it was not offered, or switch roles | PASS (mutation-checked)            |
+| Role-less session reaches only the chooser                      | PASS (proxy tests, real tokens)    |
+| `pnpm lint`, `pnpm typecheck`, web and db unit tests            | PASS                               |
+| Integration test for `listActiveRoles` against real Postgres    | OPEN (needs Docker; proven in CI)  |
+| Rollback: revert this commit; no schema change                  | PASS                               |
 ## Stage 123 — agent roster reconciled with the contracts (docs only)
 
 `docs/AGENTS.md` §3 said the roster was "the plan, not a claim of completion" and gave tables for only 28 of the 56 agents (MOD-04, MOD-05 and the Learning Engine were name lists). The 56 contract files, 56 prompts and 56 eval sets all exist.
