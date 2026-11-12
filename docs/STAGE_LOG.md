@@ -11570,6 +11570,7 @@ again is the only way to change role (decision 4).
 | `pnpm lint`, `pnpm typecheck`, orchestrator and web unit tests | PASS                              |
 | Integration cases against real Postgres                        | OPEN (needs Docker; proven in CI) |
 | Rollback: revert this commit; no schema change                 | PASS                              |
+
 ## Stage 123 — agent roster reconciled with the contracts (docs only)
 
 `docs/AGENTS.md` §3 said the roster was "the plan, not a claim of completion" and gave tables for only 28 of the 56 agents (MOD-04, MOD-05 and the Learning Engine were name lists). The 56 contract files, 56 prompts and 56 eval sets all exist.
