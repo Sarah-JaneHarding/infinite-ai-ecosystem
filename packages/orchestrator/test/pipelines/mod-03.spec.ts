@@ -65,11 +65,11 @@ describe('MOD03_WAREHOUSE_PIPELINE', () => {
     }
   });
 
-  it('data-manager-confirmation is a human_gate with requiredRole "data_manager"', () => {
+  it('data-manager-confirmation is a human_gate with requiredRole "admin" (OQ-046)', () => {
     const gate = MOD03_WAREHOUSE_PIPELINE.steps['data-manager-confirmation'];
     expect(gate?.kind).toBe('human_gate');
     if (gate?.kind === 'human_gate') {
-      expect(gate.requiredRole).toBe('data_manager');
+      expect(gate.requiredRole).toBe('admin');
       expect(gate.next).toBe('check-consent');
     }
   });

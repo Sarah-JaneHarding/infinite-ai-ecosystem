@@ -306,7 +306,7 @@ const monitoringDefinition = {
     'parent-letter-review': {
       id: 'parent-letter-review',
       kind: 'human_gate' as const,
-      requiredRole: 'lse',
+      requiredRole: 'sbst',
       timeoutMs: 172_800_000, // 48 hours
       maxRetries: 0,
       compensatesWith: null,

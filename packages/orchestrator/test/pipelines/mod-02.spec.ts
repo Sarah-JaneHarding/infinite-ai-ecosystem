@@ -195,11 +195,11 @@ describe('MOD02_MONITORING_PIPELINE', () => {
     expect(report?.kind === 'agent_call' && report.agentId).toBe('AC-10');
   });
 
-  it('parent-letter-review is an lse gate immediately before dispatch-parent-report', () => {
+  it('parent-letter-review is an sbst gate (OQ-046: the LSE sits on the SBST) immediately before dispatch-parent-report', () => {
     const gate = MOD02_MONITORING_PIPELINE.steps['parent-letter-review'];
     expect(gate?.kind).toBe('human_gate');
     if (gate?.kind === 'human_gate') {
-      expect(gate.requiredRole).toBe('lse');
+      expect(gate.requiredRole).toBe('sbst');
       expect(gate.next).toBe('dispatch-parent-report');
     }
   });

@@ -389,6 +389,38 @@ from the gate's, when the assignment has been revoked, and when both agree; an i
 5. Remember the last role chosen as the default? **Recommended: no** — a default is a quiet precedence, which OQ-032
    decided against.
 
+### 4.9 A new school role: `sbst_chair` (proposal — OQ-046, decided 2026-11-12 that it becomes real)
+
+OQ-046 found three gates naming roles that do not exist. The owner decided two of them onto existing roles (`lse` → `sbst`,
+`data_manager` → `admin`, built in Stage 126) and one into a **new role**, `sbst_chair`, for the MOD-02 `chair-confirmation` gate
+(the SBST chair confirms draft minutes before they are committed to the Brain as a ratified fact). Until it is built that
+gate waits for an approval nobody can give; `apps/web/tests/unit/pipeline-gate-roles.spec.ts` lists it as awaiting.
+
+**What a new school role touches** (nothing here is optional; each is a place a role list is written out by hand):
+
+1. `Role` (`packages/policy`) and `SCHOOL_STAFF_ROLES` / `isSchoolStaffRole` — what an invitation or grant request may carry.
+2. A forward migration with a tested rollback for the two CHECK constraints that spell the list out:
+   `user_invitation_roles_school_staff` and the role check on `role_grant_request` (migrations `20261024090000…`,
+   `20261111100000…`), keeping the explicit `IS NOT NULL` (a CHECK that evaluates to NULL passes).
+3. The RBAC matrix (`rbac.ts`) — rows for the new role, written out like the others, not inherited from `sbst`.
+4. `route-access.ts`, `ROLE_LABEL` / `ROLE_NAV` / `ROLE_HOME`, and the `/approvals` page's role list (a test pins the pages to the table).
+5. The Keycloak realm role and the dev identities, so the claim can carry it; the pipeline-gate test then drops it from its
+   awaiting list (it fails until you do).
+6. Tests: the eligibility table, the chooser, the proxy table and the conferral rules all enumerate roles.
+
+**Decisions for the owner** (recommendations first):
+
+1. **Does the chair also hold `sbst`?** Recommended: yes — two assignments on one account. The chooser then offers both, and
+   because a gate is decided _as its own role_ (§4.8 item 5) the chair signs in as `sbst_chair` to confirm minutes and as
+   `sbst` for casework. The alternative, `sbst_chair` alone carrying the casework grants, duplicates the `sbst` matrix rows.
+2. **Who may confer it, and is a second person needed?** Recommended: the same rule as `sbst` (an administrator, no second
+   person). The two-person rule today covers only `admin` and `smt`, the roles that confer authority over others; the chair
+   confirms minutes and confers nothing. Say if minutes ratified into the Brain warrant the stricter rule.
+3. **At most one chair per school?** Recommended: no constraint yet — handovers and a deputy are normal, and a unique index
+   would need a swap procedure. The audit ledger shows who confirmed what.
+4. **What may the chair role see on its own?** Recommended: the `/approvals` queue and the `/sbst` casebook read-only view,
+   nothing else; everything else is done as `sbst`.
+
 ## 5. The identity-provider side
 
 Today Keycloak users, their `tenant_id` attribute and their realm roles are created by hand. That
