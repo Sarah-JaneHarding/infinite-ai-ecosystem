@@ -39,12 +39,15 @@ export async function POST(
 
   const { tenantId, actorId } = caller.actor;
   const now = new Date();
+  const schoolScope =
+    body.data.schoolId === undefined ? {} : { schoolId: body.data.schoolId };
   if (needsSecondAdmin.length === 0) {
     const result = await withTenant({ tenantId, actorId }, (tx) =>
       grantRole(tx, provisioningRules, {
         actorAccountId: actorId,
         targetAccountId: id.data,
         roles: body.data.roles,
+        ...schoolScope,
         now,
       }),
     );
@@ -57,6 +60,7 @@ export async function POST(
       actorAccountId: actorId,
       targetAccountId: id.data,
       roles: body.data.roles,
+      ...schoolScope,
       expiresAt: defaultRoleGrantExpiry(now),
       now,
     }),

@@ -212,14 +212,7 @@ describe.each(ROUTES.filter((r) => r.body !== undefined))(
       expect(fn).not.toHaveBeenCalled();
     });
 
-    it.each([
-      'tenantId',
-      'actorId',
-      'actorAccountId',
-      'targetAccountId',
-      'schoolId',
-      'expiresAt',
-    ])(
+    it.each(['tenantId', 'actorId', 'actorAccountId', 'targetAccountId', 'expiresAt'])(
       'refuses a body that names %s — the session and the url decide who and where',
       async (key) => {
         const response = await post(handler, OTHER, {
@@ -435,4 +428,52 @@ describe('suspend or offboard', () => {
     const response = await post(statusRoute, ACCOUNT, { status: 'OFFBOARDED' });
     expect(JSON.stringify(await response.json())).toContain('another administrator');
   });
+});
+
+describe('school scope on a grant', () => {
+  const SCHOOL = '7e1a0000-0000-4000-8000-000000000001';
+
+  it('passes the school to a direct grant', async () => {
+    await post(grantRoute, OTHER, { roles: ['hod'], schoolId: SCHOOL });
+    expect(db.grantRole).toHaveBeenCalledWith(
+      TX,
+      provisioningRules,
+      expect.objectContaining({ schoolId: SCHOOL }),
+    );
+  });
+
+  it('passes the school to a request for admin or smt', async () => {
+    await post(grantRoute, OTHER, { roles: ['smt'], schoolId: SCHOOL });
+    expect(db.requestRoleGrant).toHaveBeenCalledWith(
+      TX,
+      provisioningRules,
+      expect.objectContaining({ schoolId: SCHOOL }),
+    );
+  });
+
+  it('passes none when none was given, on either path', async () => {
+    await post(grantRoute, OTHER, { roles: ['hod'] });
+    await post(grantRoute, OTHER, { roles: ['smt'] });
+    expect(db.grantRole.mock.calls[0]?.[2]).not.toHaveProperty('schoolId');
+    expect(db.requestRoleGrant.mock.calls[0]?.[2]).not.toHaveProperty('schoolId');
+  });
+
+  it.each([
+    ['grantRole', 'hod'],
+    ['requestRoleGrant', 'smt'],
+  ] as const)('answers a foreign school from %s with a 404', async (fn, role) => {
+    db[fn].mockResolvedValue({ ok: false, reason: 'school_not_found' });
+    const response = await post(grantRoute, OTHER, { roles: [role], schoolId: SCHOOL });
+    expect(response.status).toBe(404);
+  });
+
+  it.each(['x', '', 7, null])(
+    'refuses the school %j before touching the database',
+    async (schoolId) => {
+      expect((await post(grantRoute, OTHER, { roles: ['hod'], schoolId })).status).toBe(
+        400,
+      );
+      expect(db.withTenant).not.toHaveBeenCalled();
+    },
+  );
 });

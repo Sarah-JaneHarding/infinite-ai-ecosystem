@@ -818,3 +818,138 @@ describe('granting a role that needs no second administrator', () => {
     ).resolves.toEqual({ ok: true });
   });
 });
+
+describe('school scope — a school must be this tenant’s own', () => {
+  const foreignSchool = async () => {
+    const other = await newTenant();
+    return asMigrator(other, (tx) =>
+      tx.school.create({
+        data: { tenantId: other, name: `Foreign ${randomUUID()}`, lolt: 'English' },
+      }),
+    );
+  };
+  const ownSchool = (tenant: string) =>
+    asMigrator(tenant, (tx) =>
+      tx.school.create({
+        data: { tenantId: tenant, name: `Own ${randomUUID()}`, lolt: 'English' },
+      }),
+    );
+  const direct = (
+    tenant: string,
+    actor: string,
+    target: string,
+    roles: string[],
+    schoolId?: string,
+  ) =>
+    inTenant(tenant, (tx) =>
+      grantRole(tx, testRules, {
+        actorAccountId: actor,
+        targetAccountId: target,
+        roles,
+        ...(schoolId === undefined ? {} : { schoolId }),
+        now: NOW,
+      }),
+    );
+  const assignments = (tenant: string, account: string) =>
+    asMigrator(tenant, (tx) =>
+      tx.roleAssignment.findMany({ where: { userAccountId: account } }),
+    );
+
+  it('refuses another tenant’s school on a request — a foreign key alone would accept it', async () => {
+    const { tenant, admins, teacher } = await school(2);
+    const foreign = await foreignSchool();
+    for (const schoolId of [foreign.id, randomUUID()]) {
+      expect(
+        await request(tenant, admins[0]!.id, teacher.id, { roles: ['smt'], schoolId }),
+      ).toEqual({ ok: false, reason: 'school_not_found' });
+    }
+    expect(await inTenant(tenant, (tx) => tx.roleGrantRequest.count())).toBe(0);
+  });
+
+  it('refuses it on a waived sole-administrator grant too, and applies nothing', async () => {
+    const { tenant, admins, teacher } = await school(1);
+    const foreign = await foreignSchool();
+    expect(
+      await request(tenant, admins[0]!.id, teacher.id, {
+        roles: ['admin'],
+        schoolId: foreign.id,
+      }),
+    ).toEqual({ ok: false, reason: 'school_not_found' });
+    expect((await assignments(tenant, teacher.id)).map((a) => a.role)).toEqual([
+      'teacher',
+    ]);
+  });
+
+  it('keeps an own school on the request and applies it, scoped, when confirmed', async () => {
+    const { tenant, admins, teacher } = await school(2);
+    const own = await ownSchool(tenant);
+    const requested = await request(tenant, admins[0]!.id, teacher.id, {
+      roles: ['smt'],
+      schoolId: own.id,
+    });
+    expect(requested).toMatchObject({ ok: true, outcome: 'requested' });
+    const stored = await inTenant(tenant, (tx) => tx.roleGrantRequest.findFirst());
+    expect(stored?.schoolId).toBe(own.id);
+    await inTenant(tenant, (tx) =>
+      confirmRoleGrant(tx, testRules, {
+        confirmerAccountId: admins[1]!.id,
+        requestId: stored!.id,
+        now: NOW,
+      }),
+    );
+    const smt = (await assignments(tenant, teacher.id)).find((a) => a.role === 'smt');
+    expect(smt?.schoolId).toBe(own.id);
+  });
+
+  it('grants directly with an own school, recording the scope on the assignment and the audit event', async () => {
+    const { tenant, admins, teacher } = await school(2);
+    const own = await ownSchool(tenant);
+    expect(await direct(tenant, admins[0]!.id, teacher.id, ['hod'], own.id)).toEqual({
+      ok: true,
+    });
+    const hod = (await assignments(tenant, teacher.id)).find((a) => a.role === 'hod');
+    expect(hod?.schoolId).toBe(own.id);
+    const events = await asMigrator(tenant, (tx) =>
+      tx.auditEvent.findMany({
+        where: { action: 'role_grant.applied', resourceId: teacher.id },
+      }),
+    );
+    expect(JSON.stringify(events[0]?.diff)).toContain(own.id);
+  });
+
+  it('refuses another tenant’s school on a direct grant, changing nothing', async () => {
+    const { tenant, admins, teacher } = await school(2);
+    const foreign = await foreignSchool();
+    for (const schoolId of [foreign.id, randomUUID()]) {
+      expect(await direct(tenant, admins[0]!.id, teacher.id, ['hod'], schoolId)).toEqual({
+        ok: false,
+        reason: 'school_not_found',
+      });
+    }
+    expect((await assignments(tenant, teacher.id)).map((a) => a.role)).toEqual([
+      'teacher',
+    ]);
+  });
+
+  it('answers a caller who may not grant with the rules’ refusal, not a hint about schools', async () => {
+    const { tenant, teacher } = await school(2);
+    const other = await member(tenant, ['teacher']);
+    const foreign = await foreignSchool();
+    for (const schoolId of [foreign.id, randomUUID()]) {
+      expect(await direct(tenant, other.id, teacher.id, ['hod'], schoolId)).toEqual({
+        ok: false,
+        reason: 'actor_not_admin',
+      });
+      expect(
+        await request(tenant, other.id, teacher.id, { roles: ['smt'], schoolId }),
+      ).toEqual({ ok: false, reason: 'actor_not_admin' });
+    }
+  });
+
+  it('is still school-wide when no school is given', async () => {
+    const { tenant, admins, teacher } = await school(2);
+    await direct(tenant, admins[0]!.id, teacher.id, ['hod']);
+    const hod = (await assignments(tenant, teacher.id)).find((a) => a.role === 'hod');
+    expect(hod?.schoolId).toBeNull();
+  });
+});

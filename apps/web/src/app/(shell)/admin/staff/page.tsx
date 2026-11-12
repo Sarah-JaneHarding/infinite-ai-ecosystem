@@ -36,7 +36,7 @@ export default async function StaffPage() {
         Staff
       </h1>
       <div className="flex flex-col gap-10">
-        <InviteForm />
+        <InviteForm schools={overview.schools} />
         <StaffOverview overview={overview} selfId={session.userId} />
       </div>
     </section>

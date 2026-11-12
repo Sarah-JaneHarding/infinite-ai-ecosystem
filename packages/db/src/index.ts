@@ -170,6 +170,7 @@ export {
   type StaffInvitation,
   type StaffOverview,
   type StaffRole,
+  type StaffSchool,
 } from './staff-overview.js';
 
 export const PACKAGE_NAME = '@infinite-ai/db' as const;
@@ -181,6 +182,7 @@ export {
   defaultInvitationExpiry,
   listActiveAdminAccountIds,
   lockProvisioning,
+  schoolInTenant,
   normaliseEmail,
   revokeInvitation,
   revokeRole,
