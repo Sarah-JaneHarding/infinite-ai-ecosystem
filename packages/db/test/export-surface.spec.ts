@@ -71,6 +71,7 @@ describe('package export surface', () => {
       'getRun',
       'hasActiveRoleAssignment',
       'isTenantActive',
+      'isUserAccountActive',
       'listActiveAdminAccountIds',
       'listActiveRoles',
       'listEffectiveConstitution',
@@ -166,6 +167,7 @@ describe('package export surface', () => {
       db.listPendingApprovalTasks,
       db.decideApprovalTask,
       db.hasActiveRoleAssignment,
+      db.isUserAccountActive,
     ]) {
       expect(fn.length).toBeGreaterThanOrEqual(1);
     }

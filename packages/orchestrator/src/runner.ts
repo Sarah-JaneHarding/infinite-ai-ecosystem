@@ -54,6 +54,7 @@ import {
   getApprovalTaskForStep,
   getRun,
   hasActiveRoleAssignment,
+  isUserAccountActive,
   listStepRuns,
   openApprovalTask,
   openRun,
@@ -311,6 +312,15 @@ export async function decideHumanGate(
   if (task.decision !== null) {
     throw new OrchestratorRunnerError(
       `Run ${runId}: the approval task for step "${run.currentStepId}" was already decided.`,
+    );
+  }
+
+  // The decider's account must be ACTIVE *now*. A session outlives a suspension (its account is fixed
+  // at sign-in, PROVISIONING_DESIGN §6), so this is where a suspended or offboarded person stops being
+  // able to decide. Checked before the role questions: an inactive account is refused whatever it holds.
+  if (!(await isUserAccountActive(tx, decision.decidedBy))) {
+    throw new OrchestratorRunnerError(
+      `Actor ${decision.decidedBy} does not have an active account, so cannot decide this gate.`,
     );
   }
 
