@@ -59,6 +59,7 @@ export const ROLE_NAV: Record<Role, readonly NavLink[]> = {
   admin: [
     { label: 'Prompts', href: '/admin/prompts' },
     { label: 'School Setup', href: '/admin/setup' },
+    { label: 'Staff', href: '/admin/staff' },
     { label: 'Environment Docs', href: '/admin/env' },
   ],
   guardian: [{ label: 'Portal', href: '/guardian' }],
