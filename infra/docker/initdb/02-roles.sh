@@ -14,6 +14,15 @@
 # This is a shell script rather than plain SQL so passwords come from the environment.
 # Rule 7: no secret in the repository, not even a dev default. An unset variable fails
 # the container's bootstrap loudly instead of creating a role with a guessable password.
+#
+# HEREDOC RULE. The SQL below is fed through an UNQUOTED heredoc so that the password
+# variables interpolate. An unquoted heredoc also runs backticks and dollar-parenthesis
+# command substitution anywhere in its body, comments included, so a backticked word in
+# an SQL comment would execute as a command during database initialisation, as the
+# entrypoint's superuser. Do not quote the delimiter (the passwords would stop
+# interpolating), and keep the body free of backticks and dollar-parenthesis: put
+# explanations in shell comments here, above the psql call, never inside the heredoc.
+# The guard is packages/db/test/initdb-roles-script.spec.ts.
 
 set -euo pipefail
 
@@ -24,45 +33,49 @@ for required in APP_RW_PASSWORD WORKER_RW_PASSWORD MIGRATOR_PASSWORD ANALYTICS_R
   fi
 done
 
+# --- Why each statement is the way it is ---------------------------------------------
+#
+# NOSUPERUSER and NOBYPASSRLS are the point of this file. A role with BYPASSRLS would
+# silently defeat every tenant-isolation policy in the schema, and the RLS suite would
+# still pass, because it would be testing a role that no longer has the constraint under
+# test.
+#
+# The schema belongs to migrator. Nobody else may change its shape. It is the public
+# schema, not a bespoke app schema. An earlier version of this file created a schema
+# named app while Prisma's datasource still targeted public, and additionally revoked
+# rights on public, so migrator had nowhere it was permitted to create tables and
+# "prisma migrate deploy" failed with "no schema has been selected to create in".
+# Ownership, not a separate namespace, is what makes DDL migrator's alone; a second
+# schema bought nothing and broke the migration.
+#
+# No CREATE for the runtime roles: DDL is migrator's alone (step 2). Revoking from PUBLIC
+# covers every current and future role that is not granted it explicitly.
+#
+# Default privileges apply to tables migrator creates from here on, so a new table in a
+# later stage is reachable by the application without a follow-up grant, and, more
+# importantly, is NOT reachable by analytics_ro without a deliberate one.
+#
+# analytics_ro gets nothing here, deliberately. It is granted SELECT on the de-identified
+# views built in Stage 09 (MOD-03), and on nothing else, ever. An empty grant now is the
+# honest state: there is nothing de-identified to read yet.
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    -- NOSUPERUSER and NOBYPASSRLS are the point of this file. A role with BYPASSRLS
-    -- would silently defeat every tenant-isolation policy in the schema, and the RLS
-    -- suite would still pass, because it would be testing a role that no longer has the
-    -- constraint under test.
     CREATE ROLE migrator     LOGIN PASSWORD '${MIGRATOR_PASSWORD}'     NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS;
     CREATE ROLE app_rw       LOGIN PASSWORD '${APP_RW_PASSWORD}'       NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS;
     CREATE ROLE worker_rw    LOGIN PASSWORD '${WORKER_RW_PASSWORD}'    NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS;
     CREATE ROLE analytics_ro LOGIN PASSWORD '${ANALYTICS_RO_PASSWORD}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS;
 
-    -- The schema belongs to migrator. Nobody else may change its shape.
-    --
-    -- This is `public`, not a bespoke `app` schema. An earlier version of this file
-    -- created `app` while Prisma's datasource still targeted `public`, and additionally
-    -- revoked rights on `public` — so `migrator` had nowhere it was permitted to create
-    -- tables and `prisma migrate deploy` failed with "no schema has been selected to
-    -- create in". Ownership, not a separate namespace, is what makes DDL migrator's
-    -- alone; a second schema bought nothing and broke the migration.
     ALTER SCHEMA public OWNER TO migrator;
 
     GRANT CONNECT ON DATABASE "${POSTGRES_DB}" TO migrator, app_rw, worker_rw, analytics_ro;
     GRANT USAGE ON SCHEMA public TO app_rw, worker_rw, analytics_ro;
 
-    -- No CREATE for the runtime roles: DDL is migrator's alone (step 2). Revoking from
-    -- PUBLIC covers every current and future role that is not granted it explicitly.
     REVOKE CREATE ON SCHEMA public FROM PUBLIC;
     REVOKE CREATE ON SCHEMA public FROM app_rw, worker_rw, analytics_ro;
 
-    -- Default privileges apply to tables migrator creates from here on, so a new table
-    -- in a later stage is reachable by the application without a follow-up grant — and,
-    -- more importantly, is NOT reachable by analytics_ro without a deliberate one.
     ALTER DEFAULT PRIVILEGES FOR ROLE migrator IN SCHEMA public
       GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_rw, worker_rw;
     ALTER DEFAULT PRIVILEGES FOR ROLE migrator IN SCHEMA public
       GRANT USAGE, SELECT ON SEQUENCES TO app_rw, worker_rw;
-
-    -- analytics_ro gets nothing here, deliberately. It is granted SELECT on the
-    -- de-identified views built in Stage 09 (MOD-03), and on nothing else, ever. An
-    -- empty grant now is the honest state: there is nothing de-identified to read yet.
 EOSQL
 
 echo "initdb: created migrator, app_rw, worker_rw, analytics_ro"

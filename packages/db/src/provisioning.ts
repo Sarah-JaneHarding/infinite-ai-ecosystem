@@ -127,6 +127,26 @@ export async function currentTenantId(tx: TenantClient): Promise<string> {
 }
 
 /**
+ * Whether `schoolId` is a school of the tenant already active on `tx`.
+ *
+ * A school id arrives from a client, and a foreign key is not row-level-security aware: Postgres
+ * checks that the referenced row exists, not that the caller may see it. Without this, an
+ * administrator could scope an invitation or a grant to another school's id. `school` is tenant-owned,
+ * so under `withTenant` this read sees only the caller's own tenant's schools, and an id from anywhere
+ * else is simply not found.
+ */
+export async function schoolInTenant(
+  tx: TenantClient,
+  schoolId: string,
+): Promise<boolean> {
+  const school = await tx.school.findFirst({
+    where: { id: schoolId },
+    select: { id: true },
+  });
+  return school !== null;
+}
+
+/**
  * Takes the tenant's provisioning lock for the rest of this transaction. Every function in this
  * module calls it first; it is exported so a caller composing several steps in one transaction
  * (and the tests) can hold it explicitly. Released automatically at commit or rollback.
@@ -222,6 +242,12 @@ export async function createInvitation(
     confirmation = 'AWAITING';
   } else {
     return refuse(decision.reason);
+  }
+
+  // The school scope, after the rules so a caller who may not invite learns nothing about which
+  // schools exist. Not a race: the lock is held, and a school cannot move between tenants.
+  if (input.schoolId != null && !(await schoolInTenant(tx, input.schoolId))) {
+    return refuse('school_not_found');
   }
 
   // Checked under the lock, so these are answers rather than races. (The partial unique index
@@ -659,6 +685,67 @@ export async function setAccountStatus(
     purpose: null,
     traceId: null,
     diff: { from: target.status, to: input.status, rolesEnded },
+    at: input.now,
+    createdBy: input.actorAccountId,
+  });
+  return { ok: true };
+}
+
+export interface ReinstateAccountInput {
+  readonly actorAccountId: string;
+  readonly targetAccountId: string;
+  readonly now: Date;
+}
+
+export type ReinstateAccountResult = { readonly ok: true } | Refused;
+
+/**
+ * Brings a SUSPENDED account back to ACTIVE (OQ-047, decided 2026-11-12: a suspended account may be
+ * reinstated).
+ *
+ * The same rule as suspending: an ACTIVE administrator other than the person. A suspended person is
+ * not ACTIVE, so nobody can reinstate themselves, and an administrator who was suspended needs another
+ * one to bring them back. Suspending never touched the account's roles, so reinstating restores exactly
+ * what they held (an assignment whose own expiry passed in the meantime stays expired). OFFBOARDED is
+ * final and is refused, and an account that is not suspended has nothing to reinstate.
+ *
+ * Nothing is deleted or rewritten: the account's status changes and an audit event records who did it.
+ */
+export async function reinstateAccount(
+  tx: TenantClient,
+  rules: ProvisioningRules,
+  input: ReinstateAccountInput,
+): Promise<ReinstateAccountResult> {
+  await lockProvisioning(tx);
+
+  const admins = await listActiveAdminAccountIds(tx, input.now);
+  const decision = rules.statusChange({
+    actorAccountId: input.actorAccountId,
+    targetAccountId: input.targetAccountId,
+    admins: { activeAdminAccountIds: admins },
+  });
+  if (!decision.allowed) return refuse(decision.reason);
+
+  const target = await tx.userAccount.findFirst({
+    where: { id: input.targetAccountId },
+    select: { status: true },
+  });
+  if (target === null) return refuse('target_not_found');
+  if (target.status === 'OFFBOARDED') return refuse('already_offboarded');
+  if (target.status !== 'SUSPENDED') return refuse('not_suspended');
+
+  await tx.userAccount.update({
+    where: { id: input.targetAccountId },
+    data: { status: 'ACTIVE' },
+  });
+  await appendAuditEvent(tx, {
+    actorId: input.actorAccountId,
+    action: 'user_account.reinstated',
+    resourceType: 'user_account',
+    resourceId: input.targetAccountId,
+    purpose: null,
+    traceId: null,
+    diff: { from: 'SUSPENDED', to: 'ACTIVE' },
     at: input.now,
     createdBy: input.actorAccountId,
   });

@@ -342,6 +342,13 @@
           "priority": 50,
           "flowAlias": "browser-mfa otp platform_admin",
           "userSetupAllowed": false
+        },
+        {
+          "authenticatorFlow": true,
+          "requirement": "CONDITIONAL",
+          "priority": 60,
+          "flowAlias": "browser-mfa otp sbst_chair",
+          "userSetupAllowed": false
         }
       ]
     },
@@ -440,6 +447,30 @@
           "userSetupAllowed": true
         }
       ]
+    },
+    {
+      "alias": "browser-mfa otp sbst_chair",
+      "description": "One-time code required when the user holds the sbst_chair role (OQ-046: the chair confirms minutes that become ratified Brain facts).",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-role",
+          "authenticatorConfig": "mfa-role-sbst_chair",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": true
+        }
+      ]
     }
   ],
   "authenticatorConfig": [
@@ -468,6 +499,13 @@
       "alias": "mfa-role-platform_admin",
       "config": {
         "condUserRole": "platform_admin",
+        "negate": "false"
+      }
+    },
+    {
+      "alias": "mfa-role-sbst_chair",
+      "config": {
+        "condUserRole": "sbst_chair",
         "negate": "false"
       }
     }

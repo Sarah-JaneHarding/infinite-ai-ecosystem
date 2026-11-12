@@ -1,0 +1,113 @@
+# The sandbox overlay. Always used together with the existing data plane, never alone:
+#
+#   docker compose -p infinite-ai-sandbox --env-file infra/sandbox/.env \
+#     -f infra/docker/compose.dev.yml -f infra/sandbox/compose.sandbox.yml ...
+#
+# `scripts/sandbox.sh` builds that command line; run it through `pnpm sandbox`. Reusing compose.dev.yml
+# (rather than copying it) keeps the sandbox on exactly the images, healthchecks, role bootstrap and
+# Keycloak realm import the team already debugged — its comments record why each is the way it is.
+#
+# Paths below are relative to infra/docker/, not to this file: Compose resolves every relative path
+# against the directory of the FIRST -f file.
+#
+# What this overlay changes, and nothing else:
+#   * a separate project name, so the sandbox's volumes never touch a developer's own dev stack;
+#   * published ports bound to loopback, so a sandbox is not reachable from the LAN;
+#   * the observability/object-store services (MinIO, Langfuse, ClickHouse...) move to an opt-in
+#     profile, so `up` does not start a multi-gigabyte stack nobody asked for;
+#   * `tools` and `migrate`: the toolbox and the one-shot that migrates and seeds.
+#
+# Rule 7: no secret here. Every credential is interpolated from infra/sandbox/.env, which
+# `sandbox.sh` generates on first use with fresh random values and which git ignores.
+
+name: infinite-ai-sandbox
+
+x-toolbox: &toolbox
+  image: infinite-ai-sandbox-tools:local
+  build:
+    context: ../sandbox
+    dockerfile: Dockerfile
+  environment:
+    &toolbox_env # The application's own role (RLS enforced) is the default connection, as in production.
+    DATABASE_URL: postgresql://app_rw:${APP_RW_PASSWORD:?run through pnpm sandbox}@postgres:5432/${POSTGRES_DB:?run through pnpm sandbox}
+    APP_RW_DATABASE_URL: postgresql://app_rw:${APP_RW_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    MIGRATOR_DATABASE_URL: postgresql://migrator:${MIGRATOR_PASSWORD:?run through pnpm sandbox}@postgres:5432/${POSTGRES_DB}
+    REDIS_URL: redis://redis:6379
+    KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+    DB_ENCRYPTION_KEY: ${DB_ENCRYPTION_KEY:?run through pnpm sandbox}
+  volumes:
+    # Read-only: nothing in the sandbox can change the host checkout.
+    - ../..:/repo:ro
+    - sandbox-workspace:/workspace
+    - sandbox-pnpm-store:/pnpm-store
+  # Cap what a runaway test run can take from the host. Generous for a monorepo build.
+  mem_limit: 6g
+  cpus: 4
+
+services:
+  postgres:
+    ports: !override
+      - '127.0.0.1:5432:5432'
+
+  redis:
+    ports: !override
+      - '127.0.0.1:6379:6379'
+
+  keycloak:
+    # Loopback by default. On a Linux engine the optional `apps` containers reach Keycloak through
+    # host.docker.internal, which a loopback-only port does not serve: start with
+    # SANDBOX_KEYCLOAK_BIND=0.0.0.0 pnpm sandbox up    (docs/SANDBOX.md explains the trade-off).
+    ports: !override
+      - '${SANDBOX_KEYCLOAK_BIND:-127.0.0.1}:8180:8080'
+
+  # Opt-in (--profile observability): the object store and self-hosted LLM tracing.
+  minio:
+    profiles: [observability]
+  minio-init:
+    profiles: [observability]
+  langfuse-clickhouse:
+    profiles: [observability]
+  langfuse-postgres:
+    profiles: [observability]
+  langfuse-redis:
+    profiles: [observability]
+  langfuse-worker:
+    profiles: [observability]
+  langfuse-web:
+    profiles: [observability]
+
+  # `docker compose run --rm tools <command>`: lint, typecheck, test, build in a clean container.
+  tools:
+    <<: *toolbox
+    profiles: [tools]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Applies every migration as the schema-owning role, then seeds the synthetic dev tenants and the
+  # seven dev identities. Idempotent: running it again is a no-op. Synthetic data only — there is no
+  # real learner or school data in a sandbox, by construction.
+  migrate:
+    <<: *toolbox
+    profiles: [tools]
+    restart: 'no'
+    environment:
+      <<: *toolbox_env
+      # prisma.config.ts reads DATABASE_URL: the migrator for DDL, and the seeds run as the migrator too.
+      DATABASE_URL: postgresql://migrator:${MIGRATOR_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    command:
+      - bash
+      - -c
+      - >-
+        pnpm --filter @infinite-ai/db db:migrate:deploy
+        && pnpm --filter @infinite-ai/db db:seed
+        && pnpm --filter @infinite-ai/db db:seed:identities
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  sandbox-workspace:
+  sandbox-pnpm-store:

@@ -14,10 +14,13 @@ const view = (over: Partial<Parameters<typeof InviteFormView>[0]> = {}): string 
     createElement(InviteFormView, {
       email: '',
       roles: [],
+      schools: [],
+      schoolId: '',
       busy: false,
       notice: null,
       onEmail: noop,
       onToggleRole: noop,
+      onSchool: noop,
       onSubmit: noop,
       ...over,
     }),
@@ -86,9 +89,12 @@ describe('GrantRoleFormView', () => {
     renderToStaticMarkup(
       createElement(GrantRoleFormView, {
         role: '',
+        schools: [],
+        schoolId: '',
         busy: false,
         notice: null,
         onRole: noop,
+        onSchool: noop,
         onSubmit: noop,
         ...over,
       }),
@@ -112,5 +118,80 @@ describe('GrantRoleFormView', () => {
       'role="alert"',
     );
     expect(render({ notice: { kind: 'ok', text: 'Done.' } })).toContain('role="status"');
+  });
+});
+
+describe('the school pickers', () => {
+  const SCHOOLS = [
+    { id: 's1', name: 'Alpha Primary' },
+    { id: 's2', name: 'Zulu Primary' },
+  ];
+
+  it('are absent for a tenant with no school or one school — there is nothing to choose between', () => {
+    for (const schools of [[], [SCHOOLS[0]!]]) {
+      const invite = renderToStaticMarkup(
+        createElement(InviteFormView, {
+          email: '',
+          roles: [],
+          schools,
+          schoolId: '',
+          busy: false,
+          notice: null,
+          onEmail: noop,
+          onToggleRole: noop,
+          onSchool: noop,
+          onSubmit: noop,
+        }),
+      );
+      expect(invite).not.toContain('Whole school group');
+      const grant = renderToStaticMarkup(
+        createElement(GrantRoleFormView, {
+          role: '',
+          schools,
+          schoolId: '',
+          busy: false,
+          notice: null,
+          onRole: noop,
+          onSchool: noop,
+          onSubmit: noop,
+        }),
+      );
+      expect(grant).not.toContain('Whole school group');
+    }
+  });
+
+  it('list each school by name, with the whole group as the default, on both forms', () => {
+    const invite = renderToStaticMarkup(
+      createElement(InviteFormView, {
+        email: '',
+        roles: [],
+        schools: SCHOOLS,
+        schoolId: '',
+        busy: false,
+        notice: null,
+        onEmail: noop,
+        onToggleRole: noop,
+        onSchool: noop,
+        onSubmit: noop,
+      }),
+    );
+    const grant = renderToStaticMarkup(
+      createElement(GrantRoleFormView, {
+        role: '',
+        schools: SCHOOLS,
+        schoolId: 's2',
+        busy: false,
+        notice: null,
+        onRole: noop,
+        onSchool: noop,
+        onSubmit: noop,
+      }),
+    );
+    for (const html of [invite, grant]) {
+      expect(html).toContain('Whole school group');
+      expect(html).toContain('Alpha Primary');
+      expect(html).toContain('Zulu Primary');
+    }
+    expect(grant).toMatch(/<option value="s2" selected="">Zulu Primary<\/option>/);
   });
 });

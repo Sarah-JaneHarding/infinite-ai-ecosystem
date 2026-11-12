@@ -9,8 +9,10 @@ bottom of this file instead.
 Want to run it on free models with no paid API? Use `docs/FREE_LOCAL_TESTING.md`, which
 picks the free path for you.
 
-None of this is automated yet (there is no root `dev` script that starts everything
-together) — each step below is a real command you run.
+Want the data plane without the assembly? `pnpm sandbox up` does steps 2 and 3 below for you (secrets,
+Postgres, Redis, Keycloak, migrations, seeds) in a disposable project — see `docs/SANDBOX.md`. The rest of
+this file is the hand-assembled path and the reference for what each piece is. There is still no root `dev`
+script that starts the apps — each step below is a real command you run.
 
 ## 1. Prerequisites
 
@@ -209,8 +211,8 @@ the account is resolved when you sign in, not on every request. A realm that was
 must be re-imported (the old users have random ids). `platform-support.dev` and `platform-admin.dev` have no tenant of
 their own and get no account.
 
-**One-time codes in dev (OQ-036).** The realm requires a one-time code for `admin.dev`, `smt.dev`, `platform-support.dev` and
-`platform-admin.dev`. The first time you sign in as one of them, Keycloak asks you to set up an authenticator app (any
+**One-time codes in dev (OQ-036).** The realm requires a one-time code for `admin.dev`, `smt.dev`, `platform-support.dev`,
+`platform-admin.dev` and `sbst_chair`. The first time you sign in as one of them, Keycloak asks you to set up an authenticator app (any
 TOTP app; the QR code is on that screen) and then asks for a code on every later sign-in. The other dev users sign in with the
 password only. `chair.dev` is the one login that holds two roles (`sbst` and `sbst_chair`), so you can act as either at a
 gate that needs the chair and see the other refused; once the chair is made an MFA role (OQ-046, Stage 133) it needs a code too. A realm imported before this change must be re-imported to pick up the flow.
