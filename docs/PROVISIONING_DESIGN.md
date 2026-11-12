@@ -551,6 +551,41 @@ must keep resolving **no** actor, and a test should pin that.
 8. **Dev stack**: replace `db:seed:identities` with seeded _invitations_ so the dev flow exercises
    the real path.
 
+### 11.1 Plan for steps 7 and 8 (written 2026-11-12; nothing below is built)
+
+**What is already true of step 7.** The _realm configuration_ half is done: email verification, the browser flow
+with per-role OTP, and the drift test `keycloak-realm-mfa.spec.ts` (OQ-036, Stages 120s and 133). What is **not**
+built is the Admin API half: nothing in the repository creates or changes a Keycloak user. The realm has a
+service-account client, `infinite-ai-worker`, but it holds **no `realm-management` roles**, so today it could not
+create a user even if code asked it to.
+
+**Step 7, in slices (each its own PR):**
+
+- **7a — a Keycloak Admin API port and client.** One narrow interface (`createUser`, `setRealmRoles`,
+  `disableUser`, `enableUser`, `sendExecuteActionsEmail`), a `fetch`-based implementation (no new dependency, so
+  rule 9 is untouched) and an in-memory fake. Contract-tested against recorded request/response shapes with an
+  injected `fetch`. Secrets come from `packages/config` only; no token is logged. **Not wired to anything.**
+- **7b — a dedicated service-account client and its realm config** (see OQ-048 (a) for why not the worker's), granted
+  only the roles it needs, with a drift test that fails if the realm file grants it more.
+- **7c — the schema for "the identity provider has been told".** An `idp_state` on the invitation / account
+  (PENDING, SYNCED, FAILED + last error class, never a message that could carry an address), so a Keycloak failure
+  after the database commit is visible and retryable instead of silent. This is a migration (rule 10).
+- **7d — wire it.** After the database transaction commits (never inside it: a network call must not hold the
+  provisioning advisory lock): invitation confirmed → create the Keycloak user (`tenant_id` attribute, mirrored
+  roles, required actions); role granted/revoked → mirror; **suspended / offboarded → disable the user and revoke its
+  sessions** (this is also the real fix for §6's stale session, which the ACTIVE-account gate only half closes);
+  reinstated → enable. The database stays the authority; a mismatch is repaired from the database, never the reverse.
+- **7e — verify against a running Keycloak 26.** §13 is explicit that the Admin API calls are from knowledge of the
+  product and unexercised. The sandbox (Stage 132) is where this happens; until it has run, 7d does not merge.
+
+**Step 8 depends on 7.** Replacing `db:seed:identities` with seeded _invitations_ only makes sense once an accepted
+invitation can produce a Keycloak user, and the dev gates need accounts that exist before anyone signs in. Plan: keep
+`db:seed:identities` until 7e has passed; then seed invitations for the dev logins and add a sandbox step that
+accepts them, keeping `chair.dev`'s two roles. Deleting the old seed is its own, last PR.
+
+**What this plan deliberately does not do:** send any email from the application (Keycloak's own
+execute-actions email does that, §5); touch platform staff (§8); or change who may be invited (§4).
+
 Steps 1–6 are testable without Docker only in their unit tier; the isolation, concurrency and
 migration tests are integration tests and run in CI.
 

@@ -756,6 +756,25 @@ other than the person (the same rule as suspending), roles unchanged by the susp
 reinstating needs a second administrator (the argument for it is that it restores the ability to decide gates; the argument against is
 that suspending needed none). Until then a wrongly suspended person needs a database change by an operator.
 
+### OQ-048 — the Keycloak integration needs four owner decisions before step 7 is built · 2026-11-12
+
+Found writing the delivery plan for steps 7 and 8 (`docs/PROVISIONING_DESIGN.md` §11.1). These are security and operations
+choices, so they are the owner's; recommendations are given so a one-line answer is enough.
+
+- **(a) Which client holds the power to create users?** The worker's service account (`infinite-ai-worker`) has no
+  `realm-management` roles. _Recommend:_ a new dedicated client, `infinite-ai-provisioner`, whose service account has only
+  `manage-users`, `query-users` and `view-users` (nothing realm-wide), secret `KEYCLOAK_PROVISIONER_CLIENT_SECRET`. Widening the
+  worker instead would give the model-facing worker process the power to mint identities.
+- **(b) Failure semantics.** The Admin API call cannot share the database transaction. _Recommend:_ commit first, then call; record
+  `idp_state` (PENDING / SYNCED / FAILED) on the row so a failure is visible and an administrator can retry. This needs a migration.
+  The alternative (call first, then commit) can leave a Keycloak user that the database has never heard of.
+- **(c) Disable in Keycloak on suspend/offboard?** _Recommend yes_, with session revocation: it is the only thing that ends a
+  session already in flight (§6), and the ACTIVE-account gate cannot.
+- **(d) Email delivery.** `execute-actions-email` needs SMTP configured on Keycloak. OQ-021 names a mailbox for dunning, not for
+  Keycloak, and I have not verified that Keycloak can use it. _Recommend:_ for the pilot, an operator sends the first sign-in
+  link by hand (as §5 already allows for three schools), and SMTP is a separate, later decision.
+
+Nothing in 7a (the unwired client and its fake) depends on these answers, so it can start now; 7b onward waits on (a) and (b).
 **Decision (2026-11-12, the owner):** "Yes they can be reinstated." Built in Stage 135 as `reinstateAccount` and
 `POST /api/admin/staff/accounts/[id]/reinstate`.
 
