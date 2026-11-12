@@ -29,8 +29,9 @@ failure, not a warning.
 
 ## 3. The agent roster
 
-Fifty-six agents across five modules plus the Learning Engine. Each is documented here as
-it is built; the table below is the plan, not a claim of completion.
+Fifty-six agents across five modules plus the Learning Engine. All are built and
+registered; the registry facts at the end of this section are reconciled with the
+contracts.
 
 ### MOD-01 Curriculum Engine — Stage 08
 
@@ -581,6 +582,71 @@ Composer · PD-07 Coaching Plan Agent · PD-08 CPTD Tracker.
 LE-01 Signal Collector · LE-02 Correction Differ · LE-03 Outcome Attributor · LE-04
 Pattern Miner · LE-05 Exemplar Curator · LE-06 Prompt Evolver · LE-07 Eval Gatekeeper ·
 LE-08 Commons Publisher · LE-09 Decay & Revalidation Agent.
+
+### Registry facts, reconciled with the contracts (12 November 2026)
+
+All fifty-six agents are built. Each has a contract in `packages/agents/src/<module>/<id>.contract.ts`, a versioned prompt in `packages/prompts/src/<id>/1.0.0.prompt.md` and an eval set of at least 20 cases in `packages/evals/sets/<id>/`. The roster tables above and this table list the same fifty-six IDs. This table is copied from the contracts, which are authoritative: if a contract and this table disagree, the contract wins and this table is stale.
+
+Count by module: CE 9, AC 11, DW 8, TB 11, PD 8, LE 9 (56 in all). 12 declare `requiresApproval: true`; 23 declare `writesToBrain: true`. The `module` value is `MOD-01` to `MOD-05` for the five modules and `LE` for the Learning Engine, so AC-11 sits in `MOD-02` with purpose `reporting_district`. These are not the 100 agents of the separate operations platform (`OPS-*` IDs); the two counts are never added.
+
+| ID    | Agent                      | Module | Model                      | Approval | Brain write | Max tokens | Max cost |
+| ----- | -------------------------- | ------ | -------------------------- | -------- | ----------- | ---------- | -------- |
+| CE-01 | CAPS Mapper                | MOD-01 | `curriculum.map`           | no       | yes         | 6,000      | $0.080   |
+| CE-02 | ATP Sequencer              | MOD-01 | `curriculum.sequence`      | no       | yes         | 8,000      | $0.100   |
+| CE-03 | Term Planner               | MOD-01 | `curriculum.plan`          | no       | yes         | 8,000      | $0.100   |
+| CE-04 | Unit Architect             | MOD-01 | `curriculum.design`        | no       | yes         | 10,000     | $0.120   |
+| CE-05 | Lesson Plan Generator      | MOD-01 | `curriculum.lessons`       | yes      | yes         | 12,000     | $0.150   |
+| CE-06 | Assessment Designer        | MOD-01 | `curriculum.assess`        | yes      | yes         | 10,000     | $0.120   |
+| CE-07 | Rubric Builder             | MOD-01 | `curriculum.rubric`        | no       | yes         | 8,000      | $0.100   |
+| CE-08 | Differentiation Agent      | MOD-01 | `curriculum.differentiate` | no       | yes         | 10,000     | $0.120   |
+| CE-09 | Coverage Auditor           | MOD-01 | `curriculum.audit`         | no       | yes         | 8,000      | $0.100   |
+| AC-01 | Universal Screener         | MOD-02 | `support.screen`           | no       | yes         | 1,500      | $0.005   |
+| AC-02 | Core-Health Analyst        | MOD-02 | `support.health`           | no       | no          | 800        | $0.002   |
+| AC-03 | Tier Recommender           | MOD-02 | `support.screen`           | no       | yes         | 1,200      | $0.004   |
+| AC-04 | Early Warning Agent        | MOD-02 | `support.screen`           | no       | no          | 800        | $0.002   |
+| AC-05 | Intervention Planner       | MOD-02 | `support.screen`           | no       | yes         | 1,500      | $0.005   |
+| AC-06 | Progress Monitor           | MOD-02 | `support.screen`           | no       | no          | 1,000      | $0.003   |
+| AC-07 | Fidelity Checker           | MOD-02 | `support.screen`           | no       | no          | 800        | $0.002   |
+| AC-08 | SBST Meeting Scribe        | MOD-02 | `support.screen`           | yes      | yes         | 2,000      | $0.006   |
+| AC-09 | SIAS Compiler              | MOD-02 | `support.screen`           | yes      | yes         | 2,500      | $0.008   |
+| AC-10 | Parent Report Writer       | MOD-02 | `support.screen`           | yes      | no          | 1,500      | $0.005   |
+| AC-11 | Analytics Data Screener    | MOD-02 | `analytics.screen`         | no       | no          | 600        | $0.001   |
+| DW-01 | Ingestion Agent            | MOD-03 | `data.ingest`              | no       | no          | 2,000      | $0.010   |
+| DW-02 | Schema Mapper              | MOD-03 | `data.map`                 | yes      | no          | 3,000      | $0.030   |
+| DW-03 | Consent Ledger Agent       | MOD-03 | `data.consent`             | no       | no          | 1,000      | $0.005   |
+| DW-04 | De-identification Agent    | MOD-03 | `data.deident`             | no       | no          | 1,000      | $0.005   |
+| DW-05 | Data Quality Sentinel      | MOD-03 | `data.quality`             | no       | no          | 4,000      | $0.040   |
+| DW-06 | Learner-360 Builder        | MOD-03 | `data.materialise`         | no       | yes         | 2,000      | $0.010   |
+| DW-07 | Insight Synthesiser        | MOD-03 | `data.insight`             | no       | yes         | 5,000      | $0.060   |
+| DW-08 | Next-Step Recommender      | MOD-03 | `data.nextstep`            | yes      | yes         | 3,000      | $0.030   |
+| TB-01 | Worksheet Builder          | MOD-04 | `plan.author`              | no       | no          | 4,000      | $0.020   |
+| TB-02 | Board & Deck Builder       | MOD-04 | `plan.author`              | no       | no          | 4,000      | $0.020   |
+| TB-03 | Reading Passage Generator  | MOD-04 | `plan.author`              | no       | no          | 3,000      | $0.015   |
+| TB-04 | Item Writer                | MOD-04 | `plan.author`              | no       | no          | 3,500      | $0.018   |
+| TB-05 | Memo & Marking Guide       | MOD-04 | `plan.verify`              | yes      | no          | 3,000      | $0.015   |
+| TB-06 | Home-Language Adapter      | MOD-04 | `plan.author`              | no       | no          | 4,000      | $0.020   |
+| TB-07 | Accessibility Adapter      | MOD-04 | `plan.author`              | no       | no          | 5,000      | $0.025   |
+| TB-08 | Remediation Pack Builder   | MOD-04 | `plan.author`              | no       | no          | 4,000      | $0.020   |
+| TB-09 | Extension & Enrichment     | MOD-04 | `plan.author`              | no       | no          | 4,000      | $0.020   |
+| TB-10 | Resource-Light Activity    | MOD-04 | `plan.author`              | no       | no          | 4,000      | $0.020   |
+| TB-11 | Visual Brief Writer        | MOD-04 | `plan.author`              | no       | no          | 2,000      | $0.010   |
+| PD-01 | Coverage vs Pacing Analyst | MOD-05 | `pd.coverage`              | no       | no          | 1,500      | $0.005   |
+| PD-02 | Assessment Quality Analyst | MOD-05 | `pd.assess`                | no       | no          | 1,500      | $0.005   |
+| PD-03 | Observation Analyst        | MOD-05 | `pd.observe`               | no       | no          | 2,000      | $0.010   |
+| PD-04 | Practice Signal Aggregator | MOD-05 | `pd.aggregate`             | no       | no          | 2,000      | $0.008   |
+| PD-05 | PD Gap Detector            | MOD-05 | `pd.detect`                | no       | no          | 1,500      | $0.006   |
+| PD-06 | Micro-Course Composer      | MOD-05 | `pd.compose`               | no       | no          | 3,000      | $0.015   |
+| PD-07 | Coaching Plan Agent        | MOD-05 | `pd.coach`                 | no       | no          | 2,500      | $0.012   |
+| PD-08 | CPTD Tracker               | MOD-05 | `pd.cptd`                  | no       | no          | 1,000      | $0.004   |
+| LE-01 | Signal Collector           | LE     | `le.signal`                | no       | yes         | 1,000      | $0.003   |
+| LE-02 | Correction Differ          | LE     | `le.correction`            | no       | yes         | 1,200      | $0.004   |
+| LE-03 | Outcome Attributor         | LE     | `le.attribution`           | no       | yes         | 1,500      | $0.005   |
+| LE-04 | Pattern Miner              | LE     | `le.pattern`               | no       | yes         | 2,000      | $0.007   |
+| LE-05 | Exemplar Curator           | LE     | `le.exemplar`              | yes      | no          | 1,500      | $0.005   |
+| LE-06 | Prompt Evolver             | LE     | `le.evolver`               | yes      | no          | 3,000      | $0.010   |
+| LE-07 | Eval Gatekeeper            | LE     | `le.gatekeeper`            | yes      | no          | 1,500      | $0.005   |
+| LE-08 | Commons Publisher          | LE     | `le.commons`               | yes      | yes         | 1,000      | $0.003   |
+| LE-09 | Decay & Revalidation Agent | LE     | `le.decay`                 | no       | yes         | 1,000      | $0.003   |
 
 ## 4. Standing constraints on every agent
 
