@@ -6,20 +6,30 @@ import { SCHOOL_STAFF_ROLES } from '@infinite-ai/policy';
 
 import { ROLE_LABEL } from '@/lib/roles';
 
+export interface SchoolOption {
+  readonly id: string;
+  readonly name: string;
+}
+
 export interface InviteFormViewProps {
   readonly email: string;
   readonly roles: readonly string[];
+  /** This tenant's schools. The picker appears only when there is more than one to choose from. */
+  readonly schools: readonly SchoolOption[];
+  /** The chosen school's id, or '' for the whole school group. */
+  readonly schoolId: string;
   readonly busy: boolean;
   /** What happened last: a success to show, or a refusal's own words. */
   readonly notice: { readonly kind: 'ok' | 'error'; readonly text: string } | null;
   readonly onEmail: (email: string) => void;
   readonly onToggleRole: (role: string) => void;
+  readonly onSchool: (schoolId: string) => void;
   readonly onSubmit: () => void;
 }
 
 /** The invitation form. Presentational (no hooks), so it renders in a unit test. */
 export function InviteFormView(props: InviteFormViewProps) {
-  const { email, roles, busy, notice } = props;
+  const { email, roles, busy, notice, schools, schoolId } = props;
   return (
     <form
       aria-labelledby="invite-heading"
@@ -46,6 +56,25 @@ export function InviteFormView(props: InviteFormViewProps) {
           className="rounded-md border border-[var(--iai-border)] px-3 py-2"
         />
       </label>
+      {schools.length > 1 && (
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="font-medium">School</span>
+          <select
+            name="school"
+            value={schoolId}
+            disabled={busy}
+            onChange={(e) => props.onSchool(e.target.value)}
+            className="rounded-md border border-[var(--iai-border)] px-3 py-2"
+          >
+            <option value="">Whole school group</option>
+            {schools.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <fieldset className="flex flex-col gap-2">
         <legend className="text-sm font-medium mb-1">Roles</legend>
         {SCHOOL_STAFF_ROLES.map((role) => (
@@ -113,8 +142,9 @@ async function readOutcome(
   };
 }
 
-export function InviteForm() {
+export function InviteForm({ schools }: { readonly schools: readonly SchoolOption[] }) {
   const [email, setEmail] = useState('');
+  const [schoolId, setSchoolId] = useState('');
   const [roles, setRoles] = useState<readonly string[]>([]);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<InviteFormViewProps['notice']>(null);
@@ -125,7 +155,7 @@ export function InviteForm() {
     fetch('/api/admin/staff/invitations', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ email, roles }),
+      body: JSON.stringify({ email, roles, ...(schoolId === '' ? {} : { schoolId }) }),
     })
       .then(readOutcome)
       .then((outcome) => {
@@ -147,9 +177,12 @@ export function InviteForm() {
     <InviteFormView
       email={email}
       roles={roles}
+      schools={schools}
+      schoolId={schoolId}
       busy={busy}
       notice={notice}
       onEmail={setEmail}
+      onSchool={setSchoolId}
       onToggleRole={(role) =>
         setRoles((current) =>
           current.includes(role) ? current.filter((r) => r !== role) : [...current, role],

@@ -182,6 +182,20 @@
       "realmRoles": ["sbst"]
     },
     {
+      "id": "ba000000-0000-4000-8000-000000000008",
+      "username": "chair.dev",
+      "email": "chair.dev@example.invalid",
+      "firstName": "Lindiwe",
+      "lastName": "Mokoena",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["sbst", "sbst_chair"]
+    },
+    {
       "id": "ba000000-0000-4000-8000-000000000005",
       "username": "admin.dev",
       "email": "admin.dev@example.invalid",
@@ -328,6 +342,13 @@
           "priority": 50,
           "flowAlias": "browser-mfa otp platform_admin",
           "userSetupAllowed": false
+        },
+        {
+          "authenticatorFlow": true,
+          "requirement": "CONDITIONAL",
+          "priority": 60,
+          "flowAlias": "browser-mfa otp sbst_chair",
+          "userSetupAllowed": false
         }
       ]
     },
@@ -426,6 +447,30 @@
           "userSetupAllowed": true
         }
       ]
+    },
+    {
+      "alias": "browser-mfa otp sbst_chair",
+      "description": "One-time code required when the user holds the sbst_chair role (OQ-046: the chair confirms minutes that become ratified Brain facts).",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-role",
+          "authenticatorConfig": "mfa-role-sbst_chair",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": true
+        }
+      ]
     }
   ],
   "authenticatorConfig": [
@@ -454,6 +499,13 @@
       "alias": "mfa-role-platform_admin",
       "config": {
         "condUserRole": "platform_admin",
+        "negate": "false"
+      }
+    },
+    {
+      "alias": "mfa-role-sbst_chair",
+      "config": {
+        "condUserRole": "sbst_chair",
         "negate": "false"
       }
     }

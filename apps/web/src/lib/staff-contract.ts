@@ -14,9 +14,14 @@ import { z } from 'zod';
  * read, so an enormous string is refused before anything else sees it. */
 const MAX_EMAIL_LENGTH = 254;
 
+/** An optional school scope. Only the shape is checked here; that it is a school of the caller's own tenant is
+ * checked in the data layer (`schoolInTenant`), because a foreign key does not know about row-level security. */
+const SchoolId = z.string().uuid();
+
 export const InviteStaffBody = z
   .object({
     email: z.string().min(1).max(MAX_EMAIL_LENGTH),
+    schoolId: SchoolId.optional(),
     roles: z
       .array(z.enum(SCHOOL_STAFF_ROLES))
       .min(1)
@@ -36,6 +41,7 @@ export const InvitationIdParam = IdParam;
  * administrator to confirm is the server's decision, from the roles (admin and smt need one). */
 export const GrantRolesBody = z
   .object({
+    schoolId: SchoolId.optional(),
     roles: z
       .array(z.enum(SCHOOL_STAFF_ROLES))
       .min(1)
@@ -56,8 +62,8 @@ export const GrantRolesResponse = z.object({
 export const RevokeRoleBody = z.object({ role: z.enum(SCHOOL_STAFF_ROLES) }).strict();
 export type RevokeRoleBody = z.infer<typeof RevokeRoleBody>;
 
-/** Suspend or offboard an account. There is no way back to ACTIVE from here: reinstatement is not
- * designed (docs/OPEN_QUESTIONS.md), so the contract does not offer it. */
+/** Suspend or offboard an account. ACTIVE is deliberately not a value here: bringing a SUSPENDED
+ * account back is its own route (`/reinstate`, OQ-047), so this body cannot be used to un-offboard. */
 export const SetStatusBody = z
   .object({ status: z.enum(['SUSPENDED', 'OFFBOARDED']) })
   .strict();
@@ -118,6 +124,7 @@ const REFUSALS: Readonly<Record<string, Refusal>> = {
     message:
       'That needs a second administrator to confirm. Request it instead of granting it.',
   },
+  school_not_found: { status: 404, message: 'That school was not found.' },
   target_not_found: { status: 404, message: 'That person was not found at this school.' },
   target_not_active: {
     status: 409,
@@ -186,6 +193,7 @@ const REFUSALS: Readonly<Record<string, Refusal>> = {
     message: 'That person has already been offboarded, which cannot be changed.',
   },
   no_change: { status: 409, message: 'That account is already in that state.' },
+  not_suspended: { status: 409, message: 'That account is not suspended.' },
   invitation_not_found: { status: 404, message: 'That invitation was not found.' },
   invitation_not_pending: {
     status: 409,

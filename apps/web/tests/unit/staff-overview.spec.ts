@@ -9,8 +9,11 @@ vi.mock('../../src/components/admin/staff/StaffActionButton', () => ({
     createElement('button', { 'data-url': props.url, 'data-label': props.label }),
 }));
 vi.mock('../../src/components/admin/staff/GrantRoleForm', () => ({
-  GrantRoleForm: (props: { accountId: string }) =>
-    createElement('form', { 'data-grant': props.accountId }),
+  GrantRoleForm: (props: { accountId: string; schools: readonly unknown[] }) =>
+    createElement('form', {
+      'data-grant': props.accountId,
+      'data-schools': props.schools.length,
+    }),
 }));
 
 import type { StaffOverview as Overview } from '@infinite-ai/db';
@@ -23,6 +26,7 @@ const NEXT_YEAR = new Date('2027-03-01T00:00:00.000Z');
 const LAST_YEAR = new Date('2025-03-01T00:00:00.000Z');
 
 const base: Overview = {
+  schools: [],
   accounts: [],
   invitations: [],
   grantRequests: [],
@@ -51,9 +55,9 @@ describe('StaffOverview', () => {
           status: 'SUSPENDED',
           lastSeenAt: null,
           roles: [
-            { role: 'admin', expiresAt: null, expired: false },
-            { role: 'hod', expiresAt: NEXT_YEAR, expired: false },
-            { role: 'sbst', expiresAt: LAST_YEAR, expired: true },
+            { role: 'admin', schoolId: null, expiresAt: null, expired: false },
+            { role: 'hod', schoolId: null, expiresAt: NEXT_YEAR, expired: false },
+            { role: 'sbst', schoolId: null, expiresAt: LAST_YEAR, expired: true },
           ],
         },
       ],
@@ -84,7 +88,9 @@ describe('StaffOverview', () => {
           email: 'ada@example.invalid',
           status: 'ACTIVE',
           lastSeenAt: null,
-          roles: [{ role: 'retired_role', expiresAt: null, expired: false }],
+          roles: [
+            { role: 'retired_role', schoolId: null, expiresAt: null, expired: false },
+          ],
         },
       ],
     });
@@ -100,6 +106,7 @@ describe('StaffOverview', () => {
           id: 'i1',
           email: 'new@example.invalid',
           roles: ['hod', 'teacher'],
+          schoolId: null,
           confirmation: 'AWAITING',
           expiresAt: NEXT_YEAR,
           expired: false,
@@ -108,6 +115,7 @@ describe('StaffOverview', () => {
           id: 'i2',
           email: 'old@example.invalid',
           roles: ['teacher'],
+          schoolId: null,
           confirmation: 'NOT_REQUIRED',
           expiresAt: LAST_YEAR,
           expired: true,
@@ -182,7 +190,7 @@ describe('StaffOverview — actions', () => {
     email: 'ada@example.invalid',
     status: 'ACTIVE',
     lastSeenAt: null,
-    roles: [{ role: 'hod', expiresAt: null, expired: false }],
+    roles: [{ role: 'hod', schoolId: null, expiresAt: null, expired: false }],
     ...over,
   });
 
@@ -208,8 +216,8 @@ describe('StaffOverview — actions', () => {
       accounts: [
         account({
           roles: [
-            { role: 'hod', expiresAt: LAST_YEAR, expired: true },
-            { role: 'guardian', expiresAt: null, expired: false },
+            { role: 'hod', schoolId: null, expiresAt: LAST_YEAR, expired: true },
+            { role: 'guardian', schoolId: null, expiresAt: null, expired: false },
           ],
         }),
       ],
@@ -229,6 +237,7 @@ describe('StaffOverview — actions', () => {
             id: 'i1',
             email: 'n@example.invalid',
             roles: ['admin'],
+            schoolId: null,
             confirmation,
             expiresAt: NEXT_YEAR,
             expired,
@@ -295,21 +304,85 @@ describe('StaffOverview — account status actions', () => {
     expect(l).toContain('Offboard');
   });
 
-  it('offers a suspended account only Offboard', () => {
+  it('offers a suspended account Reinstate and Offboard, not Suspend again', () => {
     const l = labels(html([acc(ADA, 'SUSPENDED')]));
     expect(l).not.toContain('Suspend');
+    expect(l).toContain('Reinstate');
     expect(l).toContain('Offboard');
+  });
+
+  it('never offers Reinstate on an active or offboarded account, or on oneself', () => {
+    expect(labels(html([acc(ADA, 'ACTIVE')]))).not.toContain('Reinstate');
+    expect(labels(html([acc(ADA, 'OFFBOARDED')]))).not.toContain('Reinstate');
+    expect(html([acc(ADA, 'SUSPENDED')], ADA)).not.toContain('/reinstate');
   });
 
   it('offers an offboarded account nothing — it is final', () => {
     const l = labels(html([acc(ADA, 'OFFBOARDED')]));
     expect(l).not.toContain('Suspend');
     expect(l).not.toContain('Offboard');
+    expect(l).not.toContain('Reinstate');
   });
 
   it('offers nothing on the viewer’s own account, and still does on everyone else’s', () => {
     const markup = html([acc(ADA, 'ACTIVE'), acc(ZOE, 'ACTIVE')], ADA);
     expect(markup).not.toContain(`/accounts/${ADA}/status`);
     expect(markup).toContain(`/accounts/${ZOE}/status`);
+  });
+});
+
+describe('StaffOverview — school scope', () => {
+  const schools = [
+    { id: 's1', name: 'Alpha Primary' },
+    { id: 's2', name: 'Zulu Primary' },
+  ];
+  const withRole = (schoolId: string | null, available: typeof schools) =>
+    render({
+      ...base,
+      schools: available,
+      accounts: [
+        {
+          id: ADA,
+          displayName: 'Ada Abrahams',
+          email: 'ada@example.invalid',
+          status: 'ACTIVE',
+          lastSeenAt: null,
+          roles: [{ role: 'hod', schoolId, expiresAt: null, expired: false }],
+        },
+      ],
+      invitations: [
+        {
+          id: 'i1',
+          email: 'n@example.invalid',
+          roles: ['teacher'],
+          schoolId,
+          confirmation: 'NOT_REQUIRED',
+          expiresAt: NEXT_YEAR,
+          expired: false,
+        },
+      ],
+    });
+
+  it('names the school a role and an invitation are scoped to, when there is more than one school', () => {
+    const html = withRole('s2', schools);
+    expect(html.match(/Zulu Primary/g)).toHaveLength(2);
+  });
+
+  it('says nothing for a role that covers the whole group', () => {
+    expect(withRole(null, schools)).not.toContain('Primary');
+  });
+
+  it('does not clutter a single-school tenant with a scope that tells nothing apart', () => {
+    expect(withRole('s1', [schools[0]!])).not.toContain('Alpha Primary');
+  });
+
+  it('shows an unknown school as such rather than leaking an id', () => {
+    const html = withRole('99999999-9999-4999-8999-999999999999', schools);
+    expect(html).toContain('unknown school');
+    expect(html).not.toContain('99999999');
+  });
+
+  it('hands the grant control the schools to choose from', () => {
+    expect(withRole(null, schools)).toContain('data-schools="2"');
   });
 });

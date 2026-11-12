@@ -9,8 +9,10 @@ bottom of this file instead.
 Want to run it on free models with no paid API? Use `docs/FREE_LOCAL_TESTING.md`, which
 picks the free path for you.
 
-None of this is automated yet (there is no root `dev` script that starts everything
-together) — each step below is a real command you run.
+Want the data plane without the assembly? `pnpm sandbox up` does steps 2 and 3 below for you (secrets,
+Postgres, Redis, Keycloak, migrations, seeds) in a disposable project — see `docs/SANDBOX.md`. The rest of
+this file is the hand-assembled path and the reference for what each piece is. There is still no root `dev`
+script that starts the apps — each step below is a real command you run.
 
 ## 1. Prerequisites
 
@@ -195,13 +197,13 @@ pnpm age-appropriateness:ratify         # advances them to committed brain_const
 
 To act as someone — decide a gate, or use the admin CAPS console — the dev login needs an account at the dev
 school. A token's `sub` is resolved at sign-in to that school's `user_account`, and the account's id (not the `sub`)
-is the actor everywhere (OQ-033). Seed one for each of the seven school-role logins, after `db:seed`, as the migrator:
+is the actor everywhere (OQ-033). Seed one for each of the eight school-role logins, after `db:seed`, as the migrator:
 
 ```bash
 pnpm --filter @infinite-ai/db db:seed:identities   # 7 accounts + role assignments at the dev school
 ```
 
-The seven Keycloak users in `infra/keycloak/realm.json` carry fixed ids so their `sub` is stable across imports; the
+The eight school-role Keycloak users in `infra/keycloak/realm.json` carry fixed ids so their `sub` is stable across imports; the
 seed uses those same ids as each account's `subject` (`packages/db/prisma/dev-identities.ts`, with a test that fails
 if the two drift). Without this step you can still sign in, but the app has no actor for you: pages that read data
 show nothing, and API routes answer 403 "No active account for this user". Sign out and in again after seeding —
@@ -209,10 +211,11 @@ the account is resolved when you sign in, not on every request. A realm that was
 must be re-imported (the old users have random ids). `platform-support.dev` and `platform-admin.dev` have no tenant of
 their own and get no account.
 
-**One-time codes in dev (OQ-036).** The realm requires a one-time code for `admin.dev`, `smt.dev`, `platform-support.dev` and
-`platform-admin.dev`. The first time you sign in as one of them, Keycloak asks you to set up an authenticator app (any
+**One-time codes in dev (OQ-036).** The realm requires a one-time code for `admin.dev`, `smt.dev`, `platform-support.dev`,
+`platform-admin.dev` and `sbst_chair`. The first time you sign in as one of them, Keycloak asks you to set up an authenticator app (any
 TOTP app; the QR code is on that screen) and then asks for a code on every later sign-in. The other dev users sign in with the
-password only. A realm imported before this change must be re-imported to pick up the flow.
+password only. `chair.dev` is the one login that holds two roles (`sbst` and `sbst_chair`), so you can act as either at a
+gate that needs the chair and see the other refused; once the chair is made an MFA role (OQ-046, Stage 133) it needs a code too. A realm imported before this change must be re-imported to pick up the flow.
 
 Optional, to see the approvals screens with something on them (`/approvals`, the HoD console, the SMT
 dashboard), open ten placeholder human gates. Run it as the migrator, like `db:seed`, after `db:seed`:
@@ -260,19 +263,20 @@ needed:
 
 ### Signing in as each role
 
-| Username               | Role               | Reaches                                            |
-| ---------------------- | ------------------ | -------------------------------------------------- |
-| `teacher.dev`          | `teacher`          | `/teacher`                                         |
-| `hod.dev`              | `hod`              | `/hod`                                             |
-| `smt.dev`              | `smt`              | `/smt`                                             |
-| `sbst.dev`             | `sbst`             | `/sbst`                                            |
-| `admin.dev`            | `admin`            | `/admin/prompts`, `/admin/setup`, `/admin/env`     |
-| `guardian.dev`         | `guardian`         | `/guardian`                                        |
-| `learner.dev`          | `learner`          | `/learner`                                         |
-| `platform-support.dev` | `platform_support` | `/platform/runs`                                   |
-| `platform-admin.dev`   | `platform_admin`   | `/platform/runs`, `/platform/tenants`, `/district` |
+| Username               | Role                  | Reaches                                                      |
+| ---------------------- | --------------------- | ------------------------------------------------------------ |
+| `teacher.dev`          | `teacher`             | `/teacher`                                                   |
+| `hod.dev`              | `hod`                 | `/hod`                                                       |
+| `smt.dev`              | `smt`                 | `/smt`                                                       |
+| `sbst.dev`             | `sbst`                | `/sbst`                                                      |
+| `chair.dev`            | `sbst` + `sbst_chair` | `/sbst`; the chair-only gates (OQ-046), via the role chooser |
+| `admin.dev`            | `admin`               | `/admin/prompts`, `/admin/setup`, `/admin/env`               |
+| `guardian.dev`         | `guardian`            | `/guardian`                                                  |
+| `learner.dev`          | `learner`             | `/learner`                                                   |
+| `platform-support.dev` | `platform_support`    | `/platform/runs`                                             |
+| `platform-admin.dev`   | `platform_admin`      | `/platform/runs`, `/platform/tenants`, `/district`           |
 
-The password for all nine is `SEED_USER_PASSWORD` from `infra/docker/.env` — each
+The password for all ten is `SEED_USER_PASSWORD` from `infra/docker/.env` — each
 account has `temporary: true` on its credential, so Keycloak forces a password change on
 first login (pick anything meeting the realm's password policy). These are fixture
 identities, invented the same way `packages/db/prisma/seed.ts`'s own header explains: no

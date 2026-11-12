@@ -21,6 +21,7 @@ import {
   currentTenantId,
   listActiveAdminAccountIds,
   lockProvisioning,
+  schoolInTenant,
   type ProvisioningRules,
   type Refused,
 } from './provisioning.js';
@@ -125,6 +126,8 @@ export interface GrantRoleInput {
   readonly actorAccountId: string;
   readonly targetAccountId: string;
   readonly roles: readonly string[];
+  /** Optional school scope; must be a school of this tenant (`school_not_found` otherwise). */
+  readonly schoolId?: string | null;
   readonly now: Date;
 }
 
@@ -137,8 +140,8 @@ export type GrantRoleResult = { readonly ok: true } | Refused;
  * path is `requestRoleGrant`, which stores the proposal for someone else to confirm. Nothing is
  * granted that the account already holds. The grant and its audit event commit together.
  *
- * Scope is not taken: a client-supplied school id is not checked against the school's own rows (see
- * `createInvitation`'s note), so a grant here is school-wide, as an invitation's is today.
+ * A school scope, if given, must be a school of this tenant — checked here, because a foreign key
+ * does not know about row-level security (`schoolInTenant`). Without one the grant is school-wide.
  */
 export async function grantRole(
   tx: TenantClient,
@@ -160,6 +163,11 @@ export async function grantRole(
   // that never needed a second person is applied.
   if (decision.confirmation !== 'not_required') return refuse('confirmation_required');
 
+  const schoolId = input.schoolId ?? null;
+  if (schoolId !== null && !(await schoolInTenant(tx, schoolId))) {
+    return refuse('school_not_found');
+  }
+
   const target = await tx.userAccount.findFirst({
     where: { id: input.targetAccountId },
     select: { status: true },
@@ -176,7 +184,7 @@ export async function grantRole(
     tenantId,
     targetAccountId: input.targetAccountId,
     roles,
-    schoolId: null,
+    schoolId,
     grantedBy: input.actorAccountId,
     now: input.now,
   });
@@ -187,7 +195,7 @@ export async function grantRole(
     resourceId: input.targetAccountId,
     purpose: null,
     traceId: null,
-    diff: { roles, schoolId: null, confirmation: 'not_required' },
+    diff: { roles, schoolId, confirmation: 'not_required' },
     at: input.now,
     createdBy: input.actorAccountId,
   });
@@ -251,6 +259,10 @@ export async function requestRoleGrant(
     return refuse('role_not_sensitive');
   }
   if (input.expiresAt.getTime() <= input.now.getTime()) return refuse('invalid_expiry');
+  // After the rules, so a caller who may not request this learns nothing about which schools exist.
+  if (schoolId !== null && !(await schoolInTenant(tx, schoolId))) {
+    return refuse('school_not_found');
+  }
 
   const target = await tx.userAccount.findFirst({
     where: { id: input.targetAccountId },

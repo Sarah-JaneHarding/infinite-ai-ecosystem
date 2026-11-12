@@ -13,6 +13,7 @@ import {
   createInvitation,
   listActiveAdminAccountIds,
   lockProvisioning,
+  reinstateAccount,
   revokeInvitation,
   revokeRole,
   setAccountStatus,
@@ -587,6 +588,82 @@ describe('revokeRole and setAccountStatus', () => {
     ]);
   });
 
+  it('reinstates a suspended account with its roles intact, audited, and refuses the rest', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    const target = await makeAccount(TENANT_A, ['teacher', 'hod']);
+    const suspend = () =>
+      inTenant(TENANT_A, (tx) =>
+        setAccountStatus(tx, testRules, {
+          actorAccountId: admin.id,
+          targetAccountId: target.id,
+          status: 'SUSPENDED',
+          now: NOW,
+        }),
+      );
+    const reinstate = (actor = admin.id, targetId = target.id) =>
+      inTenant(TENANT_A, (tx) =>
+        reinstateAccount(tx, testRules, {
+          actorAccountId: actor,
+          targetAccountId: targetId,
+          now: NOW,
+        }),
+      );
+    expect(await reinstate()).toEqual({ ok: false, reason: 'not_suspended' });
+    expect(await suspend()).toEqual({ ok: true });
+    expect(await reinstate(target.id)).toEqual({ ok: false, reason: 'actor_not_admin' });
+    expect(await reinstate(admin.id, randomUUID())).toEqual({
+      ok: false,
+      reason: 'target_not_found',
+    });
+    expect(await reinstate()).toEqual({ ok: true });
+    const after = await inTenant(TENANT_A, async (tx) => ({
+      status: (await tx.userAccount.findFirst({ where: { id: target.id } }))?.status,
+      live: await tx.roleAssignment.count({
+        where: {
+          userAccountId: target.id,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: NOW } }],
+        },
+      }),
+    }));
+    expect(after).toEqual({ status: 'ACTIVE', live: 2 });
+    expect(await reinstate()).toEqual({ ok: false, reason: 'not_suspended' });
+    expect((await auditActions(TENANT_A, target.id)).map((e) => e.action)).toEqual([
+      'user_account.suspended',
+      'user_account.reinstated',
+    ]);
+  });
+
+  it('never reinstates an offboarded account, and not oneself', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    const target = await makeAccount(TENANT_A, ['teacher']);
+    await inTenant(TENANT_A, (tx) =>
+      setAccountStatus(tx, testRules, {
+        actorAccountId: admin.id,
+        targetAccountId: target.id,
+        status: 'OFFBOARDED',
+        now: NOW,
+      }),
+    );
+    expect(
+      await inTenant(TENANT_A, (tx) =>
+        reinstateAccount(tx, testRules, {
+          actorAccountId: admin.id,
+          targetAccountId: target.id,
+          now: NOW,
+        }),
+      ),
+    ).toEqual({ ok: false, reason: 'already_offboarded' });
+    expect(
+      await inTenant(TENANT_A, (tx) =>
+        reinstateAccount(tx, testRules, {
+          actorAccountId: admin.id,
+          targetAccountId: admin.id,
+          now: NOW,
+        }),
+      ),
+    ).toEqual({ ok: false, reason: 'cannot_change_own_status' });
+  });
+
   it('stops a suspended administrator counting as one', async () => {
     const tenant = randomUUID();
     await asTenant(migrator, tenant, randomUUID(), (tx) =>
@@ -750,6 +827,44 @@ describe('the remaining refusals', () => {
       staffMemberId: staff.id,
     });
     expect(result).toMatchObject({ ok: true });
+  });
+
+  it('refuses a school that is not this tenant’s — a foreign key would have accepted it', async () => {
+    const admin = await makeAccount(TENANT_A, ['admin']);
+    // A real school, in another tenant: the foreign key is satisfied, row-level security is the only
+    // thing that stops an administrator scoping an invitation to somebody else's school.
+    const foreign = await asTenant(migrator, TENANT_B, randomUUID(), (tx) =>
+      tx.school.create({
+        data: { tenantId: TENANT_B, name: `Foreign ${randomUUID()}`, lolt: 'English' },
+      }),
+    );
+    expect(await create(admin.id, { schoolId: foreign.id })).toEqual({
+      ok: false,
+      reason: 'school_not_found',
+    });
+    expect(await create(admin.id, { schoolId: randomUUID() })).toEqual({
+      ok: false,
+      reason: 'school_not_found',
+    });
+    const created = await asTenant(migrator, TENANT_A, randomUUID(), (tx) =>
+      tx.userInvitation.count({ where: { schoolId: foreign.id } }),
+    );
+    expect(created).toBe(0);
+  });
+
+  it('tells a caller who may not invite nothing about which schools exist', async () => {
+    const teacher = await makeAccount(TENANT_A, ['teacher']);
+    const foreign = await asTenant(migrator, TENANT_B, randomUUID(), (tx) =>
+      tx.school.create({
+        data: { tenantId: TENANT_B, name: `Foreign ${randomUUID()}`, lolt: 'English' },
+      }),
+    );
+    for (const schoolId of [foreign.id, randomUUID()]) {
+      expect(await create(teacher.id, { schoolId })).toEqual({
+        ok: false,
+        reason: 'actor_not_admin',
+      });
+    }
   });
 
   it('refuses a staff record that is missing or already linked', async () => {
