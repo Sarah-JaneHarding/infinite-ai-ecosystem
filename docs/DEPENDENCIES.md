@@ -663,7 +663,7 @@ the new `SAFEGUARDING_SNS_TOPIC_ARN` environment variable in `packages/config/sr
 
 AWS SDK v3 (`@aws-sdk/*`) follows Apache-2.0. No approval exception needed.
 
-## Stage 132 — the development and testing sandbox
+## Stage 132b — the development and testing sandbox
 
 No package is added to any workspace. The sandbox adds **container base images and system packages**, used only
 inside a throwaway development container and never shipped:
@@ -677,8 +677,8 @@ inside a throwaway development container and never shipped:
 | `openssl`, `ca-certificates` (apt) | Debian bookworm      | Apache-2.0 / MPL-2.0 | TLS for corepack's download.                                                                    | —        |
 | `rsync` (apt)                      | Debian bookworm      | **GPL-3.0-or-later** | Copies the read-only repository mount into the work volume, deleting files removed on the host. | —        |
 
-**Needs explicit approval (rule 9): `rsync` is GPL-3.0.** It is run as a standalone command inside a disposable
+**Approved 2026-11-12 by the owner (rule 9): `rsync`, GPL-3.0.** It is run as a standalone command inside a disposable
 container: not linked into anything, not part of any image the platform ships, and no code of ours is derived
 from it. If that is not acceptable, the alternative is a `tar` copy without deletion of removed files (a stale
-file could then survive between runs). The database and Redis images are the ones `compose.dev.yml` already
-records.
+file could then survive between runs). The owner approved it on that basis; the `tar` alternative was not chosen. The database and Redis images are the ones
+`compose.dev.yml` already records.

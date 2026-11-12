@@ -11813,7 +11813,38 @@ removing the self-hiding fails 1; passing a fixed status instead of the body's f
 | Data layer against real Postgres                                  | Existing suite (CI); no new schema |
 | Rollback: revert this commit; no schema change                    | PASS                               |
 
-## Stage 132 — the development and testing sandbox
+## Stage 132 — fix: initdb roles script ran backticked comment words as commands
+
+**What changed.** `infra/docker/initdb/02-roles.sh` feeds its SQL through an unquoted heredoc so the four role passwords interpolate. That also
+makes the shell expand backticks and `$(...)` inside the SQL _comments_. Reproduced with a stub `psql` and the four passwords set: the script
+printed `line 27: public: command not found` (also `app`, `migrator`, `prisma`) and still exited 0. Today those words are not commands, so it
+was noise that could mask a real error; a backticked word that is on PATH would have run during database initialisation, as the entrypoint's
+superuser. The explanatory comments now live in shell comments above the `psql` call and the heredoc holds only SQL. The delimiter is still
+unquoted, so password interpolation is unchanged. The script header carries a HEREDOC RULE paragraph saying why.
+
+**Behaviour is unchanged.** The SQL fed to `psql`, with comment-only and blank lines removed, is byte-identical before and after, with the
+four passwords substituted. No schema change, no migration, no new dependency.
+
+**Tests.** New `packages/db/test/initdb-roles-script.spec.ts` (unit tier, +9): exactly one heredoc (`EOSQL`); its delimiter is unquoted; all four
+password variables appear in the body; the body contains no backtick and no `$(`; the header carries the rule. The guard's own failure paths
+are tested against synthetic scripts: a backticked comment, `$(...)`, a quoted delimiter, an unclosed heredoc, plus a clean body that is
+accepted. Mutation-checked: the original script fails the no-backtick and header tests. DB unit tier 274 passing; `pnpm lint` and
+`pnpm typecheck` clean for the touched package.
+
+**Not done.** The integration tier (`packages/*/test/support/database.ts` mounts this directory) needs Docker and was not run here; it is
+proven in CI. It cannot see this defect class, because the roles are still created and the script exits 0, which is why the guard is a source
+test. `pnpm verify:stage` was not run.
+
+| Exit gate item                                          | Result                            |
+| ------------------------------------------------------- | --------------------------------- |
+| Reproduced: `command not found` lines from the original | PASS                              |
+| Fixed script prints none; SQL fed to psql unchanged     | PASS (stub-psql diff)             |
+| Guard fails on the original script                      | PASS (mutation-checked)           |
+| `pnpm lint`, `pnpm typecheck`, db unit tests            | PASS                              |
+| Roles created against real Postgres                     | OPEN (needs Docker; proven in CI) |
+| Rollback: revert this commit; no schema change          | PASS                              |
+
+## Stage 132b — the development and testing sandbox
 
 **Why.** Running the platform locally was a ten-step, three-`.env`, two-Compose-project assembly (docs/DEV_SETUP.md), and running its tests
 on a clean machine had no equivalent of "run it in a container". The sandbox collapses both, with the safety properties a place that
