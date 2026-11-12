@@ -304,16 +304,24 @@ describe('StaffOverview — account status actions', () => {
     expect(l).toContain('Offboard');
   });
 
-  it('offers a suspended account only Offboard', () => {
+  it('offers a suspended account Reinstate and Offboard, not Suspend again', () => {
     const l = labels(html([acc(ADA, 'SUSPENDED')]));
     expect(l).not.toContain('Suspend');
+    expect(l).toContain('Reinstate');
     expect(l).toContain('Offboard');
+  });
+
+  it('never offers Reinstate on an active or offboarded account, or on oneself', () => {
+    expect(labels(html([acc(ADA, 'ACTIVE')]))).not.toContain('Reinstate');
+    expect(labels(html([acc(ADA, 'OFFBOARDED')]))).not.toContain('Reinstate');
+    expect(html([acc(ADA, 'SUSPENDED')], ADA)).not.toContain('/reinstate');
   });
 
   it('offers an offboarded account nothing — it is final', () => {
     const l = labels(html([acc(ADA, 'OFFBOARDED')]));
     expect(l).not.toContain('Suspend');
     expect(l).not.toContain('Offboard');
+    expect(l).not.toContain('Reinstate');
   });
 
   it('offers nothing on the viewer’s own account, and still does on everyone else’s', () => {

@@ -95,6 +95,7 @@ describe('package export surface', () => {
       'readTenantLexicon',
       'readTenantName',
       'recordContradictionResolution',
+      'reinstateAccount',
       'requestRoleGrant',
       'resolveBrainConflict',
       'revokeInvitation',

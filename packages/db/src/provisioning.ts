@@ -690,3 +690,64 @@ export async function setAccountStatus(
   });
   return { ok: true };
 }
+
+export interface ReinstateAccountInput {
+  readonly actorAccountId: string;
+  readonly targetAccountId: string;
+  readonly now: Date;
+}
+
+export type ReinstateAccountResult = { readonly ok: true } | Refused;
+
+/**
+ * Brings a SUSPENDED account back to ACTIVE (OQ-047, decided 2026-11-12: a suspended account may be
+ * reinstated).
+ *
+ * The same rule as suspending: an ACTIVE administrator other than the person. A suspended person is
+ * not ACTIVE, so nobody can reinstate themselves, and an administrator who was suspended needs another
+ * one to bring them back. Suspending never touched the account's roles, so reinstating restores exactly
+ * what they held (an assignment whose own expiry passed in the meantime stays expired). OFFBOARDED is
+ * final and is refused, and an account that is not suspended has nothing to reinstate.
+ *
+ * Nothing is deleted or rewritten: the account's status changes and an audit event records who did it.
+ */
+export async function reinstateAccount(
+  tx: TenantClient,
+  rules: ProvisioningRules,
+  input: ReinstateAccountInput,
+): Promise<ReinstateAccountResult> {
+  await lockProvisioning(tx);
+
+  const admins = await listActiveAdminAccountIds(tx, input.now);
+  const decision = rules.statusChange({
+    actorAccountId: input.actorAccountId,
+    targetAccountId: input.targetAccountId,
+    admins: { activeAdminAccountIds: admins },
+  });
+  if (!decision.allowed) return refuse(decision.reason);
+
+  const target = await tx.userAccount.findFirst({
+    where: { id: input.targetAccountId },
+    select: { status: true },
+  });
+  if (target === null) return refuse('target_not_found');
+  if (target.status === 'OFFBOARDED') return refuse('already_offboarded');
+  if (target.status !== 'SUSPENDED') return refuse('not_suspended');
+
+  await tx.userAccount.update({
+    where: { id: input.targetAccountId },
+    data: { status: 'ACTIVE' },
+  });
+  await appendAuditEvent(tx, {
+    actorId: input.actorAccountId,
+    action: 'user_account.reinstated',
+    resourceType: 'user_account',
+    resourceId: input.targetAccountId,
+    purpose: null,
+    traceId: null,
+    diff: { from: 'SUSPENDED', to: 'ACTIVE' },
+    at: input.now,
+    createdBy: input.actorAccountId,
+  });
+  return { ok: true };
+}

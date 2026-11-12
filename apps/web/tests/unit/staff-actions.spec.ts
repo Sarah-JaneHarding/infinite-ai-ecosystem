@@ -16,6 +16,7 @@ const db = vi.hoisted(() => ({
   declineRoleGrant: vi.fn(),
   cancelRoleGrant: vi.fn(),
   setAccountStatus: vi.fn(),
+  reinstateAccount: vi.fn(),
 }));
 
 vi.mock('next-auth/jwt', () => ({ getToken: db.getToken }));
@@ -29,12 +30,14 @@ vi.mock('@infinite-ai/db', () => ({
   declineRoleGrant: db.declineRoleGrant,
   cancelRoleGrant: db.cancelRoleGrant,
   setAccountStatus: db.setAccountStatus,
+  reinstateAccount: db.reinstateAccount,
   SENSITIVE_ROLES: ['admin', 'smt'],
   defaultRoleGrantExpiry: (now: Date) => new Date(now.getTime() + 7 * 86_400_000),
 }));
 vi.mock('../../src/lib/env', () => ({ getWebEnv: () => ({ NEXTAUTH_SECRET: 'x' }) }));
 
 import { POST as confirmInvitationRoute } from '../../src/app/api/admin/staff/invitations/[id]/confirm/route.js';
+import { POST as reinstateRoute } from '../../src/app/api/admin/staff/accounts/[id]/reinstate/route.js';
 import { POST as statusRoute } from '../../src/app/api/admin/staff/accounts/[id]/status/route.js';
 import { POST as grantRoute } from '../../src/app/api/admin/staff/accounts/[id]/roles/route.js';
 import { POST as revokeRoleRoute } from '../../src/app/api/admin/staff/accounts/[id]/roles/revoke/route.js';
@@ -98,6 +101,7 @@ const ROUTES: readonly RouteCase[] = [
     body: { status: 'SUSPENDED' },
     fn: db.setAccountStatus,
   },
+  { name: 'reinstate', handler: reinstateRoute, fn: db.reinstateAccount },
   {
     name: 'confirm an invitation',
     handler: confirmInvitationRoute,
@@ -119,6 +123,7 @@ beforeEach(() => {
     db.declineRoleGrant,
     db.cancelRoleGrant,
     db.setAccountStatus,
+    db.reinstateAccount,
   ]) {
     fn.mockResolvedValue({ ok: true });
   }
@@ -418,6 +423,28 @@ describe('suspend or offboard', () => {
     const response = await post(statusRoute, OTHER, { status: 'SUSPENDED' });
     expect(response.status).toBe(status);
     expect(JSON.stringify(await response.json())).not.toContain(reason);
+  });
+
+  it.each([
+    ['cannot_change_own_status', 403],
+    ['actor_not_admin', 403],
+    ['already_offboarded', 409],
+    ['not_suspended', 409],
+    ['target_not_found', 404],
+  ])('answers a reinstate refusal %s with %i, in words', async (reason, status) => {
+    db.reinstateAccount.mockResolvedValue({ ok: false, reason });
+    const response = await post(reinstateRoute, OTHER);
+    expect(response.status).toBe(status);
+    expect(JSON.stringify(await response.json())).not.toContain(reason);
+  });
+
+  it('reinstates the account named in the path, as the caller, with no status to choose', async () => {
+    expect((await post(reinstateRoute, OTHER)).status).toBe(200);
+    expect(db.reinstateAccount).toHaveBeenCalledWith(
+      TX,
+      provisioningRules,
+      expect.objectContaining({ actorAccountId: ACCOUNT, targetAccountId: OTHER }),
+    );
   });
 
   it('tells a person who tries it on themselves to ask another administrator', async () => {

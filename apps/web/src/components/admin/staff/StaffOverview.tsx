@@ -132,7 +132,16 @@ export function StaffOverview({ overview, selfId }: StaffOverviewProps) {
                             tone="danger"
                             url={`/api/admin/staff/accounts/${a.id}/status`}
                             body={{ status: 'SUSPENDED' }}
-                            confirmText={`Suspend ${a.displayName}? They will not be able to sign in or decide approvals. This cannot be undone from here.`}
+                            confirmText={`Suspend ${a.displayName}? They will not be able to sign in or decide approvals. An administrator can reinstate them later.`}
+                          />
+                        )}
+                        {a.status === 'SUSPENDED' && (
+                          <StaffActionButton
+                            label="Reinstate"
+                            busyLabel="Reinstating…"
+                            tone="neutral"
+                            url={`/api/admin/staff/accounts/${a.id}/reinstate`}
+                            confirmText={`Reinstate ${a.displayName}? They will be able to sign in again with the roles they held.`}
                           />
                         )}
                         <StaffActionButton

@@ -11813,6 +11813,31 @@ removing the self-hiding fails 1; passing a fixed status instead of the body's f
 | Data layer against real Postgres                                  | Existing suite (CI); no new schema |
 | Rollback: revert this commit; no schema change                    | PASS                               |
 
+## Stage 135 — OQ-047: reinstating a suspended account
+
+**What changed.** `reinstateAccount` in `packages/db` (same advisory lock and `statusChange` rule as suspending: an active administrator other
+than the person) moves `SUSPENDED` → `ACTIVE`, changes no role, and appends `user_account.reinstated` to the ledger. `OFFBOARDED` is refused
+(`already_offboarded`), as is anything not suspended (`not_suspended`, new refusal, 409) and an unknown target. One admin-only route,
+`POST /api/admin/staff/accounts/[id]/reinstate` (no body), behind the shared front door; the overview offers Reinstate on suspended accounts
+other than the viewer's own, and the Suspend confirmation no longer says it cannot be undone. `SetStatusBody` still refuses `ACTIVE`, so the
+status route cannot be used to un-offboard. The owner decided that reinstatement is allowed; the rule details are my assumptions and are
+recorded as such in OQ-047.
+
+**Tests.** `provisioning.integration.spec.ts` (+2, real Postgres, **CI only — not run here**): suspend → reinstate leaves status ACTIVE with
+both roles still live and the two audit events in order; not-suspended, non-admin, unknown target, offboarded and self all refused.
+`staff-actions.spec.ts` (+reinstate in the front-door matrix, +reason mapping, +call shape), `staff-contract.spec.ts` (+`not_suspended`),
+`staff-overview.spec.ts` (+2). Mutation-checked: offering Reinstate on every non-offboarded account fails 1. Web unit tests and db typecheck
+pass locally.
+
+**Not done.** A second-administrator requirement for reinstating (see OQ-047 assumption 3).
+
+| Exit gate item                                              | Result                          |
+| ----------------------------------------------------------- | ------------------------------- |
+| Only an administrator other than the person can reinstate   | PASS (unit; rules; integration) |
+| Offboarded stays final; status route still refuses `ACTIVE` | PASS                            |
+| Roles unchanged; reinstatement audited                      | Integration (CI)                |
+| `pnpm lint`, `pnpm typecheck`, unit tests                   | PASS (web 1108, db 265)         |
+| Rollback: revert this commit; no schema change              | PASS                            |
 ## Stage 134 — school scope on invitations and grants, with the tenant check in the data layer
 
 **Why.** Slice b (Stage 129) refused a `schoolId` in the contract because `createInvitation` did not check it against the caller's own rows, and a

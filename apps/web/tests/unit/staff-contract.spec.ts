@@ -132,6 +132,7 @@ describe('refusalFor', () => {
     'cannot_change_own_status',
     'already_offboarded',
     'no_change',
+    'not_suspended',
   ];
 
   it.each(KNOWN)('answers %s with a status and words, and no address', (reason) => {
