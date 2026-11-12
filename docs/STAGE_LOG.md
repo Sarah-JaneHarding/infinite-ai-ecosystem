@@ -11813,6 +11813,46 @@ removing the self-hiding fails 1; passing a fixed status instead of the body's f
 | Data layer against real Postgres                                  | Existing suite (CI); no new schema |
 | Rollback: revert this commit; no schema change                    | PASS                               |
 
+## Stage 134 — school scope on invitations and grants, with the tenant check in the data layer
+
+**Why.** Slice b (Stage 129) refused a `schoolId` in the contract because `createInvitation` did not check it against the caller's own rows, and a
+foreign key is not row-level-security aware. That was a real hole, not a hypothetical: run against a real database (PostgreSQL 16, the migrated and
+seeded schema, as `app_rw` in tenant 1's context), an invitation pointing at a school of **tenant 2** was **accepted** by the foreign key. The owner
+asked for it to be fixed (2026-11-12).
+
+**What changed.** `packages/db`: `schoolInTenant(tx, schoolId)` — reads `school` through the tenant-scoped client, so an id from anywhere else is
+simply not found. `createInvitation`, `requestRoleGrant` and `grantRole` (which gains an optional `schoolId`) refuse `school_not_found` when a
+supplied school is not the tenant's, **after** the rules, so a caller who may not do the thing learns nothing about which schools exist. A request that
+carries a school keeps it and applies it, scoped, on confirmation. `loadStaffOverview` now returns the tenant's schools and each role's and invitation's
+`schoolId`. `apps/web`: the contract accepts an optional uuid `schoolId` (still strict about every other key; a malformed id is a 400), the invite and
+grant routes pass it through, `school_not_found` answers 404 without echoing the id, the invite and grant forms show a School picker when the tenant has
+more than one school, and the overview names a role's or invitation's school when there is more than one to tell apart.
+
+**Verified against a real database (not only CI).** Before the fix, tenant 1's context wrote an invitation with `school_id` of a tenant-2 school
+(accepted by the foreign key). The check's own query, as `app_rw` in tenant 1's context, sees **0** rows for the foreign school and **1** for its own.
+
+**Tests.** Integration (real Postgres, CI): `provisioning.integration.spec.ts` (+2: another tenant's school and a missing one refused with nothing
+stored; a caller who may not invite gets `actor_not_admin`, never a hint about schools); `role-grant.integration.spec.ts` (+7: a foreign school refused
+on a request, on a waived sole-administrator grant and on a direct grant, applying nothing; an own school kept on the request and applied scoped when
+confirmed; a direct grant recording the scope on the assignment and the audit event; the rules' refusal winning for a non-administrator; no school still
+means school-wide); `staff-overview.integration.spec.ts` (+2: the tenant's schools by name and none of another's; scope reported on roles and
+invitations). Unit: `staff-contract.spec.ts` (+uuid-only, optional, still strict), `staff-routes.spec.ts` and `staff-actions.spec.ts` (the id passed
+through on every path, none when none given, a foreign school answered 404 without the id, a non-uuid refused before the database),
+`staff-forms.spec.ts` and `staff-overview.spec.ts` (the pickers appear only with two or more schools; the scope is named only then; an unknown school
+never leaks an id). Web 1100 passing; db 265 passing. Mutation-checked: dropping the pass-through fails 1; loosening the uuid fails 9. The three
+data-layer checks themselves are exercised by the integration cases, which run in CI.
+
+**Not done.** Using the scope: `role_assignment.school_id` is stored and reported, but this change does not alter what the authorization layer does
+with it (that is unchanged behaviour, not a regression).
+
+| Exit gate item                                                         | Result                                            |
+| ---------------------------------------------------------------------- | ------------------------------------------------- |
+| Another tenant's school id is refused on invitation, request and grant | PASS (real-Postgres proof of the query; CI cases) |
+| A caller who may not act learns nothing about schools                  | PASS (integration, CI)                            |
+| The contract takes only a uuid and nothing else new                    | PASS (mutation-checked)                           |
+| `pnpm lint`, `pnpm typecheck`, web and db unit tests                   | PASS                                              |
+| Integration cases against real Postgres                                | OPEN (needs Docker; proven in CI)                 |
+| Rollback: revert this commit; no schema change                         | PASS                                              |
 ## Stage 133 — MFA for `sbst_chair` (owner decision, 2026-11-12)
 
 **Decision.** The owner answered "yes" to requiring a second factor from the SBST chair (raised in Stage 128): the chair's confirmation ratifies SBST

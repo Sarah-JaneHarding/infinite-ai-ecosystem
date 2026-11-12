@@ -14,9 +14,14 @@ import { z } from 'zod';
  * read, so an enormous string is refused before anything else sees it. */
 const MAX_EMAIL_LENGTH = 254;
 
+/** An optional school scope. Only the shape is checked here; that it is a school of the caller's own tenant is
+ * checked in the data layer (`schoolInTenant`), because a foreign key does not know about row-level security. */
+const SchoolId = z.string().uuid();
+
 export const InviteStaffBody = z
   .object({
     email: z.string().min(1).max(MAX_EMAIL_LENGTH),
+    schoolId: SchoolId.optional(),
     roles: z
       .array(z.enum(SCHOOL_STAFF_ROLES))
       .min(1)
@@ -36,6 +41,7 @@ export const InvitationIdParam = IdParam;
  * administrator to confirm is the server's decision, from the roles (admin and smt need one). */
 export const GrantRolesBody = z
   .object({
+    schoolId: SchoolId.optional(),
     roles: z
       .array(z.enum(SCHOOL_STAFF_ROLES))
       .min(1)
@@ -118,6 +124,7 @@ const REFUSALS: Readonly<Record<string, Refusal>> = {
     message:
       'That needs a second administrator to confirm. Request it instead of granting it.',
   },
+  school_not_found: { status: 404, message: 'That school was not found.' },
   target_not_found: { status: 404, message: 'That person was not found at this school.' },
   target_not_active: {
     status: 409,

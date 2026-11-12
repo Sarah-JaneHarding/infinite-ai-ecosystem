@@ -57,15 +57,7 @@ describe('InviteStaffBody', () => {
     expect(InviteStaffBody.safeParse(body).success).toBe(false);
   });
 
-  it.each([
-    'tenantId',
-    'actorId',
-    'actorAccountId',
-    'schoolId',
-    'role',
-    'expiresAt',
-    'userId',
-  ])(
+  it.each(['tenantId', 'actorId', 'actorAccountId', 'role', 'expiresAt', 'userId'])(
     'refuses a request that names %s — the session decides who and where, never the body',
     (key) => {
       expect(InviteStaffBody.safeParse({ ...ok, [key]: 'x' }).success).toBe(false);
@@ -182,7 +174,9 @@ describe('GrantRolesBody', () => {
       { roles: ['hod'], email: 'a@example.invalid' },
     ],
     ['a target in the body', { roles: ['hod'], targetAccountId: 'x' }],
-    ['a school', { roles: ['hod'], schoolId: 'x' }],
+    ['a school that is not a uuid', { roles: ['hod'], schoolId: 'x' }],
+    ['an empty school', { roles: ['hod'], schoolId: '' }],
+    ['a numeric school', { roles: ['hod'], schoolId: 7 }],
   ])('refuses %s', (_name, body) => {
     expect(GrantRolesBody.safeParse(body).success).toBe(false);
   });
@@ -236,5 +230,53 @@ describe('SetStatusBody', () => {
     ['an array', { status: ['SUSPENDED'] }],
   ])('refuses %s', (_name, body) => {
     expect(SetStatusBody.safeParse(body).success).toBe(false);
+  });
+});
+
+describe('the optional school scope', () => {
+  const SCHOOL = '5b1a0000-0000-4000-8000-0000000000aa';
+
+  it('is accepted, as a uuid, on an invitation and on a grant', () => {
+    expect(
+      InviteStaffBody.safeParse({
+        email: 'a@example.invalid',
+        roles: ['teacher'],
+        schoolId: SCHOOL,
+      }).success,
+    ).toBe(true);
+    expect(GrantRolesBody.safeParse({ roles: ['hod'], schoolId: SCHOOL }).success).toBe(
+      true,
+    );
+  });
+
+  it('may be left out — the role is then school-group-wide, as before', () => {
+    expect(
+      InviteStaffBody.safeParse({ email: 'a@example.invalid', roles: ['teacher'] })
+        .success,
+    ).toBe(true);
+    expect(GrantRolesBody.safeParse({ roles: ['hod'] }).success).toBe(true);
+  });
+
+  it.each(['x', '', "' OR 1=1 --", '123', null])(
+    'refuses the school %j on an invitation',
+    (schoolId) => {
+      expect(
+        InviteStaffBody.safeParse({
+          email: 'a@example.invalid',
+          roles: ['teacher'],
+          schoolId,
+        }).success,
+      ).toBe(false);
+    },
+  );
+
+  it('is not a way to name a tenant: only the school field is added, the strict body still refuses the rest', () => {
+    expect(
+      InviteStaffBody.safeParse({
+        email: 'a@example.invalid',
+        roles: ['teacher'],
+        tenantId: SCHOOL,
+      }).success,
+    ).toBe(false);
   });
 });

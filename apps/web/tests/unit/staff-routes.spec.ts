@@ -172,7 +172,7 @@ describe('POST /api/admin/staff/invitations', () => {
     expect(createInvitation).not.toHaveBeenCalled();
   });
 
-  it.each(['tenantId', 'actorId', 'actorAccountId', 'schoolId'])(
+  it.each(['tenantId', 'actorId', 'actorAccountId'])(
     'ignores nothing: a body naming %s is refused outright',
     async (key) => {
       getToken.mockResolvedValue(ADMIN);
@@ -264,5 +264,42 @@ describe('POST /api/admin/staff/invitations/[id]/revoke', () => {
     getToken.mockResolvedValue(ADMIN);
     revokeInvitation.mockResolvedValue({ ok: false, reason });
     expect((await revokeRequest()).status).toBe(status);
+  });
+});
+
+describe('school scope on an invitation', () => {
+  const SCHOOL = '7e1a0000-0000-4000-8000-000000000001';
+
+  it('passes a school id to the data layer, which is what checks it belongs to this tenant', async () => {
+    getToken.mockResolvedValue(ADMIN);
+    const response = await invite(inviteRequest({ ...VALID, schoolId: SCHOOL }));
+    expect(response.status).toBe(201);
+    expect(createInvitation).toHaveBeenCalledWith(
+      TX,
+      provisioningRules,
+      expect.objectContaining({ schoolId: SCHOOL }),
+    );
+  });
+
+  it('passes none when none was given', async () => {
+    getToken.mockResolvedValue(ADMIN);
+    await invite(inviteRequest(VALID));
+    expect(createInvitation.mock.calls[0]?.[2]).not.toHaveProperty('schoolId');
+  });
+
+  it('answers a school that is not this tenant’s with a 404 and no hint of where it is', async () => {
+    getToken.mockResolvedValue(ADMIN);
+    createInvitation.mockResolvedValue({ ok: false, reason: 'school_not_found' });
+    const response = await invite(inviteRequest({ ...VALID, schoolId: SCHOOL }));
+    expect(response.status).toBe(404);
+    expect(JSON.stringify(await response.json())).not.toContain(SCHOOL);
+  });
+
+  it('refuses a school id that is not a uuid before touching the database', async () => {
+    getToken.mockResolvedValue(ADMIN);
+    expect(
+      (await invite(inviteRequest({ ...VALID, schoolId: 'not-a-uuid' }))).status,
+    ).toBe(400);
+    expect(createInvitation).not.toHaveBeenCalled();
   });
 });
