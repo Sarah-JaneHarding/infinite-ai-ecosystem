@@ -440,7 +440,7 @@ design, the SIAS/MTSS tier rule, the SACE schedule, a minutes record). Each can 
 
 ### OQ-032 — which role wins when an account holds more than one · 2026-10-01
 
-**Decision 2026-11-05 (Sarah-Jane Harding):** multi-role accounts are allowed. The person chooses the active role at sign-in and every action is checked against that role. **Built in part 2026-11-12 (Stage 123):** the chooser, and eligibility as the intersection of claim and `role_assignment`; `roleFromProfile` is gone (`rolesFromProfile` returns every role). Still to build: gate decisions checked against the active role (`actingAs`, §4.8 item 5). **Proposal 2026-11-11:** how to build it, including what "every action is checked against that role" has to mean for human-gate decisions, is `docs/PROVISIONING_DESIGN.md` §4.8, with five decisions for the owner.
+**Decision 2026-11-05 (Sarah-Jane Harding):** multi-role accounts are allowed. The person chooses the active role at sign-in and every action is checked against that role. **Built 2026-11-12 (Stages 123–124):** the chooser, eligibility as the intersection of claim and `role_assignment` (`roleFromProfile` is gone; `rolesFromProfile` returns every role), and gate decisions checked against the active role (`actingAs`, §4.8 item 5). **Proposal 2026-11-11:** how to build it, including what "every action is checked against that role" has to mean for human-gate decisions, is `docs/PROVISIONING_DESIGN.md` §4.8, with five decisions for the owner.
 
 Stage 99 removed the silent `teacher` default for accounts with no recognised role. It did not
 change how an account holding **several** of our roles is handled: the first one in Keycloak's

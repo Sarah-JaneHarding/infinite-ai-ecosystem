@@ -250,6 +250,12 @@ export async function cancelRun(
 const HumanGateDecisionInputSchema = z.object({
   outcome: z.enum(['APPROVED', 'REJECTED', 'EDITED']),
   decidedBy: z.guid(),
+  /**
+   * The role the decider is acting as in this session (OQ-032, PROVISIONING_DESIGN §4.8). Required, no
+   * default: a caller that does not say who the person is acting as cannot decide. It must equal the
+   * gate's own `requiredRole` — equality, not hierarchy — *in addition to* the live role assignment.
+   */
+  actingAs: z.string().min(1),
   /** Required for every outcome, not only a rejection — "the decision, the actor, the
    * reason... are recorded" (the manual's own step 5 text) reads as unconditional. */
   reason: z.string().min(1),
@@ -308,6 +314,15 @@ export async function decideHumanGate(
     );
   }
 
+  // Acting as the gate's own role. Checked first and refused on its own, so a person who holds the
+  // gate's role but is signed in as another is told to sign in as the right one, not that they lack it.
+  if (decision.actingAs !== task.requiredRole) {
+    throw new OrchestratorRunnerError(
+      `Actor ${decision.decidedBy} is acting as "${decision.actingAs}", but this gate is decided by ` +
+        `"${task.requiredRole}". Sign in acting as that role.`,
+    );
+  }
+
   const authorized = await hasActiveRoleAssignment(
     tx,
     decision.decidedBy,
@@ -342,7 +357,12 @@ export async function decideHumanGate(
     resourceId: runId,
     purpose: null,
     traceId: run.traceId,
-    diff: { stepId: task.stepId, decision: decision.outcome, reason: decision.reason },
+    diff: {
+      stepId: task.stepId,
+      decision: decision.outcome,
+      reason: decision.reason,
+      actingAs: decision.actingAs,
+    },
     at: now,
     createdBy: decision.decidedBy,
   });

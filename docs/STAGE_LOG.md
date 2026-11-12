@@ -11531,6 +11531,45 @@ item 7); gates will refuse it once part 2 lands. Role-in-database-but-not-in-cla
 | `pnpm lint`, `pnpm typecheck`, web and db unit tests            | PASS                               |
 | Integration test for `listActiveRoles` against real Postgres    | OPEN (needs Docker; proven in CI)  |
 | Rollback: revert this commit; no schema change                  | PASS                               |
+
+## Stage 124 — OQ-032 / OQ-033 provisioning, step 4b part 2: a gate is decided as its own role
+
+Stacked on Stage 123 (the chooser): it needs a session that knows which role it is acting as.
+
+**What changed.**
+
+- `decideHumanGate` takes a required `actingAs` and refuses unless it equals the gate's `requiredRole` — equality, not
+  hierarchy (`admin` does not decide an `hod` gate; nor do lookalikes such as `HOD` or `hod `). The check comes before the
+  assignment check and has its own message ("sign in acting as that role"), so a person who holds the role but is signed
+  in as another is told what to do. The live `role_assignment` check stays: the token's role list is a sign-in snapshot, and the
+  database is what knows a role has since been revoked (§4.8 item 7). A missing or empty `actingAs` fails validation before
+  anything is read. The audit event for a decision now records `actingAs`.
+- The decide route reads the role from the verified token (`readTokenActingAs`), never from the request body, and answers 403
+  `No active role` before reading anything when the session has none.
+
+**Tests.** `packages/orchestrator/test/human-gate-acting-as.spec.ts` (new, unit, stubbed database): decides when acting as the
+required role; refuses acting as another role while holding the gate's, recording nothing; refuses when acting as the right role
+but the assignment is gone; equality table; no assignment lookup for a role not acted as; missing / empty / non-string `actingAs`;
+`actingAs` in the audit diff. `decide-route.spec.ts`: passes the token's role, ignores a role in the body, 403 for no / unknown /
+non-string role. `runner.integration.spec.ts`: every existing call carries `actingAs`; new cases for an account holding `hod` and
+`smt` (refused acting as `smt`, decides acting as `hod`) and for claiming the gate's role without holding it. Mutation-checked:
+removing the equality check fails 9 tests. Orchestrator unit 204 passing; web unit 523 passing on this branch. The integration
+cases run only in CI (no Docker locally).
+
+**Effect to know about.** A person who is both `hod` and `smt` must be signed in as the gate's role to decide it; signing in
+again is the only way to change role (decision 4).
+
+**Not done.** Requiring an `ACTIVE` account in the gate check (delivery step 6) and the admin UI (step 5).
+
+| Exit gate item                                                 | Result                            |
+| -------------------------------------------------------------- | --------------------------------- |
+| A gate cannot be decided acting as a different role            | PASS (unit; mutation-checked)     |
+| The role comes from the token, never the request               | PASS                              |
+| A session with no role decides nothing                         | PASS                              |
+| The live assignment check is unchanged                         | PASS                              |
+| `pnpm lint`, `pnpm typecheck`, orchestrator and web unit tests | PASS                              |
+| Integration cases against real Postgres                        | OPEN (needs Docker; proven in CI) |
+| Rollback: revert this commit; no schema change                 | PASS                              |
 ## Stage 123 — agent roster reconciled with the contracts (docs only)
 
 `docs/AGENTS.md` §3 said the roster was "the plan, not a claim of completion" and gave tables for only 28 of the 56 agents (MOD-04, MOD-05 and the Learning Engine were name lists). The 56 contract files, 56 prompts and 56 eval sets all exist.

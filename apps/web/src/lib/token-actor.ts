@@ -4,6 +4,19 @@
 // `sub`. Reading `sub` here is what made every gate decision fail: the role check looks the
 // actor up in `role_assignment`, which references `user_account.id`.
 
+import type { Role } from '@infinite-ai/policy';
+
+import { readRole } from './session-role';
+
+/**
+ * The role the session is acting as, or `null` when it has none (it has yet to choose one, OQ-032).
+ * A gate decision is made *as* this role (`decideHumanGate`'s `actingAs`); `null` decides nothing.
+ */
+export function readTokenActingAs(token: unknown): Role | null {
+  if (typeof token !== 'object' || token === null) return null;
+  return readRole((token as Record<string, unknown>)['role']);
+}
+
 export interface TokenActor {
   readonly tenantId: string;
   readonly actorId: string;
