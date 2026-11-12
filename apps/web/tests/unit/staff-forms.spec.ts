@@ -5,7 +5,8 @@ import { describe, expect, it } from 'vitest';
 
 import { ROLE_LABEL } from '../../src/lib/roles.js';
 import { InviteFormView } from '../../src/components/admin/staff/InviteForm.js';
-import { RevokeButtonView } from '../../src/components/admin/staff/RevokeInvitationButton.js';
+import { GrantRoleFormView } from '../../src/components/admin/staff/GrantRoleForm.js';
+import { ActionButtonView } from '../../src/components/admin/staff/StaffActionButton.js';
 
 const noop = (): void => {};
 const view = (over: Partial<Parameters<typeof InviteFormView>[0]> = {}): string =>
@@ -51,26 +52,65 @@ describe('InviteFormView', () => {
   });
 });
 
-describe('RevokeButtonView', () => {
-  it('shows a button, a busy state, and the reason when it failed', () => {
-    const idle = renderToStaticMarkup(
-      createElement(RevokeButtonView, { busy: false, error: null, onClick: noop }),
+describe('ActionButtonView', () => {
+  const render = (over: Partial<Parameters<typeof ActionButtonView>[0]> = {}): string =>
+    renderToStaticMarkup(
+      createElement(ActionButtonView, {
+        label: 'Revoke',
+        busyLabel: 'Revoking…',
+        busy: false,
+        error: null,
+        onClick: noop,
+        ...over,
+      }),
     );
+
+  it('shows its label, its busy label while working, and the reason when it failed', () => {
+    const idle = render();
     expect(idle).toContain('Revoke');
     expect(idle).not.toContain('role="alert"');
-    expect(
-      renderToStaticMarkup(
-        createElement(RevokeButtonView, { busy: true, error: null, onClick: noop }),
-      ),
-    ).toContain('Revoking…');
-    expect(
-      renderToStaticMarkup(
-        createElement(RevokeButtonView, {
-          busy: false,
-          error: 'Already gone.',
-          onClick: noop,
-        }),
-      ),
-    ).toContain('Already gone.');
+    expect(render({ busy: true })).toContain('Revoking…');
+    expect(render({ error: 'Already gone.' })).toContain('Already gone.');
+  });
+
+  it('is disabled while working, and marks a refusing act as dangerous', () => {
+    expect(render({ busy: true })).toMatch(/<button[^>]*\sdisabled=""/);
+    expect(render()).not.toMatch(/<button[^>]*\sdisabled=""/);
+    expect(render({ tone: 'danger' })).toContain('iai-error-text');
+    expect(render()).not.toContain('iai-error-text');
+  });
+});
+
+describe('GrantRoleFormView', () => {
+  const render = (over: Partial<Parameters<typeof GrantRoleFormView>[0]> = {}): string =>
+    renderToStaticMarkup(
+      createElement(GrantRoleFormView, {
+        role: '',
+        busy: false,
+        notice: null,
+        onRole: noop,
+        onSubmit: noop,
+        ...over,
+      }),
+    );
+
+  it('offers every school staff role, named for a person, and no platform role', () => {
+    const html = render();
+    for (const role of SCHOOL_STAFF_ROLES) expect(html).toContain(ROLE_LABEL[role]);
+    expect(html).not.toContain('Platform');
+    expect(html.match(/<option/g)).toHaveLength(SCHOOL_STAFF_ROLES.length + 1);
+  });
+
+  it('cannot be submitted until a role is chosen, or while working', () => {
+    expect(render()).toMatch(/<button[^>]*\sdisabled=""/);
+    expect(render({ role: 'hod' })).not.toMatch(/<button[^>]*\sdisabled=""/);
+    expect(render({ role: 'hod', busy: true })).toContain('Giving…');
+  });
+
+  it('shows what was last said', () => {
+    expect(render({ notice: { kind: 'error', text: 'Nope.' } })).toContain(
+      'role="alert"',
+    );
+    expect(render({ notice: { kind: 'ok', text: 'Done.' } })).toContain('role="status"');
   });
 });

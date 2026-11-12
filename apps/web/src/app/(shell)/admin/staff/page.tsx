@@ -9,8 +9,9 @@ import { loadStaff } from '@/lib/staff-loader';
 export const metadata: Metadata = { title: 'Staff' };
 
 // OQ-033 delivery step 5: who has an account at this school, what they hold, and what is waiting.
-// Slice b adds inviting a person and revoking an invitation; grants and suspension arrive as later
-// slices, each behind the provisioning rules that already exist.
+// Slice b adds inviting a person and revoking an invitation; slice c adds giving and removing roles
+// and confirming, declining or cancelling a request. Suspension arrives as a later slice. Every
+// action is a route behind the provisioning rules, which decide who may do what.
 export default async function StaffPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect('/sign-in');

@@ -11,6 +11,7 @@ import {
   cancelRoleGrant,
   confirmRoleGrant,
   declineRoleGrant,
+  grantRole,
   requestRoleGrant,
 } from '../src/role-grant.js';
 import { listActiveAdminAccountIds, revokeRole } from '../src/provisioning.js';
@@ -702,5 +703,118 @@ describe('races', () => {
         await inTenant(tenant, (tx) => listActiveAdminAccountIds(tx, NOW)),
       ).toHaveLength(2);
     }
+  });
+});
+
+describe('granting a role that needs no second administrator', () => {
+  const grant = (
+    tenant: string,
+    actor: string,
+    target: string,
+    roles: string[],
+    now: Date = NOW,
+  ) =>
+    inTenant(tenant, (tx) =>
+      grantRole(tx, testRules, {
+        actorAccountId: actor,
+        targetAccountId: target,
+        roles,
+        now,
+      }),
+    );
+  const liveRoles = (tenant: string, account: string) =>
+    asMigrator(tenant, async (tx) =>
+      (await tx.roleAssignment.findMany({ where: { userAccountId: account } }))
+        .map((r) => r.role)
+        .sort(),
+    );
+
+  it('grants the roles and audits it in the same transaction, naming ids and roles only', async () => {
+    const { tenant, admins, teacher } = await school(2);
+    await expect(
+      grant(tenant, admins[0]?.id ?? '', teacher.id, ['hod', 'sbst']),
+    ).resolves.toEqual({ ok: true });
+    expect(await liveRoles(tenant, teacher.id)).toEqual(['hod', 'sbst', 'teacher']);
+    const events = await asMigrator(tenant, (tx) =>
+      tx.auditEvent.findMany({ where: { action: 'role_grant.applied' } }),
+    );
+    expect(events).toHaveLength(1);
+    expect(events[0]?.actorId).toBe(admins[0]?.id);
+    expect(events[0]?.resourceId).toBe(teacher.id);
+    expect(events[0]?.diff).toMatchObject({
+      roles: ['hod', 'sbst'],
+      confirmation: 'not_required',
+    });
+  });
+
+  it('refuses a non-administrator, a self-grant and an empty list, changing nothing', async () => {
+    const { tenant, admins, teacher } = await school(2);
+    const other = await member(tenant, ['teacher']);
+    for (const [actor, target, roles, reason] of [
+      [other.id, teacher.id, ['hod'], 'actor_not_admin'],
+      [admins[0]?.id ?? '', admins[0]?.id ?? '', ['hod'], 'cannot_change_own_roles'],
+      [admins[0]?.id ?? '', teacher.id, [], 'no_roles'],
+    ] as const) {
+      await expect(grant(tenant, actor, target, [...roles])).resolves.toEqual({
+        ok: false,
+        reason,
+      });
+    }
+    expect(await liveRoles(tenant, teacher.id)).toEqual(['teacher']);
+  });
+
+  it('sends admin and smt to the request path instead: with a second administrator, and for a sole one', async () => {
+    const two = await school(2);
+    await expect(
+      grant(two.tenant, two.admins[0]?.id ?? '', two.teacher.id, ['smt']),
+    ).resolves.toEqual({ ok: false, reason: 'confirmation_required' });
+    const sole = await school(1);
+    // A sole administrator's waiver is recorded by requestRoleGrant, never silently here.
+    await expect(
+      grant(sole.tenant, sole.admins[0]?.id ?? '', sole.teacher.id, ['admin']),
+    ).resolves.toEqual({ ok: false, reason: 'confirmation_required' });
+    expect(await liveRoles(two.tenant, two.teacher.id)).toEqual(['teacher']);
+    expect(await liveRoles(sole.tenant, sole.teacher.id)).toEqual(['teacher']);
+  });
+
+  it('refuses a missing, suspended or another school’s target, and a role already held', async () => {
+    const { tenant, admins, teacher } = await school(2);
+    const suspended = await member(tenant, [], 'SUSPENDED');
+    const elsewhere = await school(1);
+    const a = admins[0]?.id ?? '';
+    await expect(grant(tenant, a, randomUUID(), ['hod'])).resolves.toEqual({
+      ok: false,
+      reason: 'target_not_found',
+    });
+    await expect(grant(tenant, a, suspended.id, ['hod'])).resolves.toEqual({
+      ok: false,
+      reason: 'target_not_active',
+    });
+    await expect(grant(tenant, a, elsewhere.teacher.id, ['hod'])).resolves.toEqual({
+      ok: false,
+      reason: 'target_not_found',
+    });
+    await expect(grant(tenant, a, teacher.id, ['teacher'])).resolves.toEqual({
+      ok: false,
+      reason: 'role_already_held',
+    });
+    expect(await liveRoles(elsewhere.tenant, elsewhere.teacher.id)).toEqual(['teacher']);
+  });
+
+  it('grants a role again once the earlier assignment has been revoked', async () => {
+    const { tenant, admins, teacher } = await school(2);
+    const a = admins[0]?.id ?? '';
+    await grant(tenant, a, teacher.id, ['hod']);
+    await inTenant(tenant, (tx) =>
+      revokeRole(tx, testRules, {
+        actorAccountId: a,
+        targetAccountId: teacher.id,
+        role: 'hod',
+        now: NOW,
+      }),
+    );
+    await expect(
+      grant(tenant, a, teacher.id, ['hod'], new Date('2026-11-12T08:00:00.000Z')),
+    ).resolves.toEqual({ ok: true });
   });
 });

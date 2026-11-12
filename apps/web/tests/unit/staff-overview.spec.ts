@@ -1,6 +1,17 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// The action buttons are client components whose behaviour is their own spec; here each is a stand-in
+// that shows the URL it would call, so what the overview *offers* can be asserted.
+vi.mock('../../src/components/admin/staff/StaffActionButton', () => ({
+  StaffActionButton: (props: { label: string; url: string }) =>
+    createElement('button', { 'data-url': props.url, 'data-label': props.label }),
+}));
+vi.mock('../../src/components/admin/staff/GrantRoleForm', () => ({
+  GrantRoleForm: (props: { accountId: string }) =>
+    createElement('form', { 'data-grant': props.accountId }),
+}));
 
 import type { StaffOverview as Overview } from '@infinite-ai/db';
 
@@ -159,5 +170,102 @@ describe('StaffOverview', () => {
     });
     expect(html).not.toContain('<script>');
     expect(html).toContain('&lt;script&gt;');
+  });
+});
+
+describe('StaffOverview — actions', () => {
+  const account = (
+    over: Partial<Overview['accounts'][number]> = {},
+  ): Overview['accounts'][number] => ({
+    id: ADA,
+    displayName: 'Ada Abrahams',
+    email: 'ada@example.invalid',
+    status: 'ACTIVE',
+    lastSeenAt: null,
+    roles: [{ role: 'hod', expiresAt: null, expired: false }],
+    ...over,
+  });
+
+  it('offers to give a role to an active account, and to remove each live role it holds', () => {
+    const html = render({ ...base, accounts: [account()] });
+    expect(html).toContain(`data-grant="${ADA}"`);
+    expect(html).toContain(`data-url="/api/admin/staff/accounts/${ADA}/roles/revoke"`);
+    expect(html).toContain('data-label="Remove"');
+  });
+
+  it.each(['SUSPENDED', 'OFFBOARDED'] as const)(
+    'offers nothing to do to a %s account',
+    (status) => {
+      const html = render({ ...base, accounts: [account({ status })] });
+      expect(html).not.toContain('data-grant');
+      expect(html).not.toContain('/roles/revoke');
+    },
+  );
+
+  it('does not offer to remove a role that has already lapsed, or one that is not a staff role', () => {
+    const html = render({
+      ...base,
+      accounts: [
+        account({
+          roles: [
+            { role: 'hod', expiresAt: LAST_YEAR, expired: true },
+            { role: 'guardian', expiresAt: null, expired: false },
+          ],
+        }),
+      ],
+    });
+    expect(html).not.toContain('/roles/revoke');
+  });
+
+  it('offers to confirm an invitation only while it awaits a second administrator and has not expired', () => {
+    const inv = (
+      confirmation: Overview['invitations'][number]['confirmation'],
+      expired: boolean,
+    ) =>
+      render({
+        ...base,
+        invitations: [
+          {
+            id: 'i1',
+            email: 'n@example.invalid',
+            roles: ['admin'],
+            confirmation,
+            expiresAt: NEXT_YEAR,
+            expired,
+          },
+        ],
+      });
+    expect(inv('AWAITING', false)).toContain('/invitations/i1/confirm');
+    expect(inv('AWAITING', true)).not.toContain('/invitations/i1/confirm');
+    expect(inv('NOT_REQUIRED', false)).not.toContain('/invitations/i1/confirm');
+    expect(inv('CONFIRMED', false)).not.toContain('/invitations/i1/confirm');
+    // Revoking is always on offer for a pending invitation.
+    expect(inv('AWAITING', true)).toContain('/invitations/i1/revoke');
+  });
+
+  it('offers to confirm, decline or cancel a waiting request — and only to cancel one that has expired', () => {
+    const req = (expired: boolean) =>
+      render({
+        ...base,
+        accounts: [account()],
+        grantRequests: [
+          {
+            id: 'g1',
+            targetAccountId: ADA,
+            roles: ['admin'],
+            requestedBy: ZOE,
+            expiresAt: NEXT_YEAR,
+            expired,
+          },
+        ],
+      });
+    const live = req(false);
+    for (const action of ['confirm', 'decline', 'cancel']) {
+      expect(live).toContain(`/role-requests/g1/${action}`);
+    }
+    const lapsed = req(true);
+    expect(lapsed).toContain('/role-requests/g1/cancel');
+    expect(lapsed).not.toContain('/role-requests/g1/confirm');
+    expect(lapsed).not.toContain('/role-requests/g1/decline');
   });
 });
