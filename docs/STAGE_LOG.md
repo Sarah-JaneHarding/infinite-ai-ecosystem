@@ -11422,7 +11422,7 @@ stack; step 7 and 8 bring the dev flow onto invitations); the db integration tes
 | §4.4 role intersection and chooser                        | NOT DONE (step 4b) |
 | End-to-end against a running Keycloak                     | NOT DONE           |
 
-## Stage 120 — OQ-043 per-school price formula (decided 2026-11-11, provisional)
+## Stage 120b — OQ-043 per-school price formula (decided 2026-11-11, provisional)
 
 `packages/billing/src/pricing.ts` (new): `priceBreakdown`, `splitVat`, `annualPrepayCents` and the constants (R300, R75, R4.00 /
 R1.50 above 500, R750 minimum, 50 % community, 10 % prepay, 15 % VAT). Integer cents throughout; negative or fractional counts
@@ -11571,7 +11571,7 @@ again is the only way to change role (decision 4).
 | Integration cases against real Postgres                        | OPEN (needs Docker; proven in CI) |
 | Rollback: revert this commit; no schema change                 | PASS                              |
 
-## Stage 123 — agent roster reconciled with the contracts (docs only)
+## Stage 123b — agent roster reconciled with the contracts (docs only)
 
 `docs/AGENTS.md` §3 said the roster was "the plan, not a claim of completion" and gave tables for only 28 of the 56 agents (MOD-04, MOD-05 and the Learning Engine were name lists). The 56 contract files, 56 prompts and 56 eval sets all exist.
 
