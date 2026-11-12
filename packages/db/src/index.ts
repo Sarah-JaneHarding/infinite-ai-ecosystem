@@ -58,7 +58,7 @@ export {
 
 export { readTenantLexicon } from './lexicon.js';
 export { readTenantName } from './tenant-name.js';
-export { findActiveUserAccountId } from './user-account.js';
+export { findActiveUserAccountId, isUserAccountActive } from './user-account.js';
 
 export {
   BrainWriteError,

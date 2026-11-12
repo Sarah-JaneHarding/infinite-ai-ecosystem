@@ -518,6 +518,45 @@ describe('human gate bypass vectors', () => {
     });
   });
 
+  it('refuses a suspended account that still holds the gate’s role', async () => {
+    const { tenantId, actorId } = await seedTenant();
+    const hodId = await seedActorWithRole(tenantId, actorId, 'hod');
+    const pipeline = gatedPipeline('bypass-suspended-pipeline');
+
+    await withTenant({ tenantId, actorId }, async (tx) => {
+      const run = await startRun(tx, pipeline, {}, randomUUID(), actorId);
+      await runToCompletion(tx, pipeline, run.id, {
+        executeStep: async () => ({}),
+        prepareApproval,
+      });
+      // Suspended after the session began: the role assignment is untouched.
+      await tx.userAccount.update({
+        where: { id: hodId },
+        data: { status: 'SUSPENDED' },
+      });
+      await expect(
+        decideHumanGate(tx, run.id, {
+          outcome: 'APPROVED',
+          decidedBy: hodId,
+          actingAs: 'hod',
+          reason: 'Still signed in from before.',
+        }),
+      ).rejects.toThrow(/active account/);
+      expect((await getApprovalTaskForStep(tx, run.id, 'gate'))?.decision).toBeNull();
+      // Reinstated, the same decision goes through.
+      await tx.userAccount.update({ where: { id: hodId }, data: { status: 'ACTIVE' } });
+      await decideHumanGate(tx, run.id, {
+        outcome: 'APPROVED',
+        decidedBy: hodId,
+        actingAs: 'hod',
+        reason: 'Back.',
+      });
+      expect((await getApprovalTaskForStep(tx, run.id, 'gate'))?.decision).toBe(
+        'APPROVED',
+      );
+    });
+  });
+
   it('refuses a second decision on an already-decided task', async () => {
     const { tenantId, actorId } = await seedTenant();
     const hodId = await seedActorWithRole(tenantId, actorId, 'hod');

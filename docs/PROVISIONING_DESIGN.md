@@ -462,8 +462,8 @@ the Keycloak integration can come last.
 A session's account is fixed at sign-in. Suspending an account therefore does not end an existing
 session. Two cheap mitigations, both recommended:
 
-- `decideHumanGate`'s existing role check also requires the deciding account to be `ACTIVE` (today
-  it checks only the role assignment);
+- `decideHumanGate`'s existing role check also requires the deciding account to be `ACTIVE` (it
+  checked only the role assignment) — **built (Stage 125)**, as `isUserAccountActive`, before the role questions;
 - shorten the application session's lifetime, or re-check account status periodically. `auth.ts`
   sets no `maxAge`, so next-auth's default (30 days) applies, while `docs/SECURITY.md` §7 describes
   30-minute refresh tokens at the provider — the application session outlives them by a wide margin.
@@ -545,7 +545,7 @@ must keep resolving **no** actor, and a test should pin that.
    the session role from the intersection of the account's role assignments and the provider's claim, and the
    chooser (OQ-032); **4b part 2 built (Stage 124)**: gate decisions checked against the active role (§4.8 item 5)._
 5. **Admin UI** (`/admin/staff`): invite, revoke, list, role changes; wired to the routes.
-6. **Gate decision hardening** (§6): require an `ACTIVE` account in `decideHumanGate`.
+6. **Gate decision hardening** (§6): require an `ACTIVE` account in `decideHumanGate`. _Built (Stage 125)._
 7. **Keycloak integration** (§5): Admin API client, mirrored roles, required actions; realm config
    for email verification and MFA, with a drift test like the dev-identities one.
 8. **Dev stack**: replace `db:seed:identities` with seeded _invitations_ so the dev flow exercises

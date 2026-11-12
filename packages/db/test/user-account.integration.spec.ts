@@ -9,7 +9,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import type { TenantClient } from '../src/client.js';
 import { listActiveRoles } from '../src/roles.js';
-import { findActiveUserAccountId } from '../src/user-account.js';
+import { findActiveUserAccountId, isUserAccountActive } from '../src/user-account.js';
 import { asTenant, startTestDatabase, type TestDatabase } from './support/database.js';
 
 let db: TestDatabase;
@@ -21,6 +21,9 @@ const ACTOR = randomUUID();
 /** The same person at two schools: one subject, two accounts. */
 const SHARED_SUBJECT = randomUUID();
 const SUSPENDED_SUBJECT = randomUUID();
+const OFFBOARDED_SUBJECT = randomUUID();
+const SUSPENDED_ACCOUNT = randomUUID();
+const OFFBOARDED_ACCOUNT = randomUUID();
 const ACCOUNT_A = randomUUID();
 const ACCOUNT_B = randomUUID();
 
@@ -54,6 +57,19 @@ beforeAll(async () => {
   await asTenant(migrator, TENANT_A, ACTOR, (tx) =>
     tx.userAccount.create({
       data: {
+        id: OFFBOARDED_ACCOUNT,
+        tenantId: TENANT_A,
+        subject: OFFBOARDED_SUBJECT,
+        email: 'offboarded@example.invalid',
+        displayName: 'Dev fixture',
+        status: 'OFFBOARDED',
+      },
+    }),
+  );
+  await asTenant(migrator, TENANT_A, ACTOR, (tx) =>
+    tx.userAccount.create({
+      data: {
+        id: SUSPENDED_ACCOUNT,
         tenantId: TENANT_A,
         subject: SUSPENDED_SUBJECT,
         email: 'suspended@example.invalid',
@@ -128,5 +144,31 @@ describe('listActiveRoles (real Postgres)', () => {
     await assign(TENANT_B, ACCOUNT_B, 'admin', null);
     await expect(roles(TENANT_B, ACCOUNT_B)).resolves.toEqual(['admin']);
     await expect(roles(TENANT_A, ACCOUNT_B)).resolves.toEqual([]);
+  });
+});
+
+describe('isUserAccountActive (real Postgres)', () => {
+  const active = (tenantId: string, accountId: string) =>
+    asTenant(appRw, tenantId, ACTOR, (tx) =>
+      isUserAccountActive(tx as TenantClient, accountId),
+    );
+
+  it('is true for an ACTIVE account in the caller’s own school', async () => {
+    await expect(active(TENANT_A, ACCOUNT_A)).resolves.toBe(true);
+    await expect(active(TENANT_B, ACCOUNT_B)).resolves.toBe(true);
+  });
+
+  it('is false for a suspended account and for an offboarded one', async () => {
+    await expect(active(TENANT_A, SUSPENDED_ACCOUNT)).resolves.toBe(false);
+    await expect(active(TENANT_A, OFFBOARDED_ACCOUNT)).resolves.toBe(false);
+  });
+
+  it('is false for an account that does not exist', async () => {
+    await expect(active(TENANT_A, randomUUID())).resolves.toBe(false);
+  });
+
+  it('is false for another school’s ACTIVE account — RLS hides it', async () => {
+    await expect(active(TENANT_A, ACCOUNT_B)).resolves.toBe(false);
+    await expect(active(TENANT_B, ACCOUNT_A)).resolves.toBe(false);
   });
 });
