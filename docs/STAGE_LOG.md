@@ -11853,3 +11853,91 @@ with it (that is unchanged behaviour, not a regression).
 | `pnpm lint`, `pnpm typecheck`, web and db unit tests                   | PASS                                              |
 | Integration cases against real Postgres                                | OPEN (needs Docker; proven in CI)                 |
 | Rollback: revert this commit; no schema change                         | PASS                                              |
+## Stage 133 — MFA for `sbst_chair` (owner decision, 2026-11-12)
+
+**Decision.** The owner answered "yes" to requiring a second factor from the SBST chair (raised in Stage 128): the chair's confirmation ratifies SBST
+minutes into the Brain as a versioned fact.
+
+**What changed.** `infra/keycloak/realm.json`: a `browser-mfa otp sbst_chair` sub-flow (role condition `mfa-role-sbst_chair`, then `auth-otp-form` with
+first-login enrolment) and its conditional execution in `browser-mfa forms` — a pure 38-line insertion, valid JSON, formatter-clean. `docs/SECURITY.md`
+§7 and its summary row, `docs/DEV_SETUP.md` and OQ-046 now name the role. A person holding two MFA roles is asked for a code once per role (the
+sub-flows are independent), as before.
+
+**Tests.** `keycloak-realm-mfa.spec.ts` (+2, and the existing per-role case now covers `sbst_chair`): the forms flow reaches the chair's sub-flow, and the
+set of roles with a sub-flow is **exactly** the MFA role list — a role that gains or loses the step without the list changing fails. Mutation-checked:
+the original realm fails 3. Policy 341 passing.
+
+**Not verified.** As with OQ-036, this is the committed configuration; that Keycloak imports it and prompts for the code needs one run against a live
+Keycloak (the sandbox's `pnpm sandbox up` makes that a one-command check once it is merged and run). The production realm was not touched.
+
+| Exit gate item                                 | Result                           |
+| ---------------------------------------------- | -------------------------------- |
+| The realm requires a code from `sbst_chair`    | PASS (configuration; drift test) |
+| The MFA roles are exactly the documented list  | PASS (mutation-checked)          |
+| Keycloak imports it and prompts                | OPEN (needs a live Keycloak)     |
+| Rollback: revert this commit; no schema change | PASS                             |
+## Stage 132 — fix: initdb roles script ran backticked comment words as commands
+
+**What changed.** `infra/docker/initdb/02-roles.sh` feeds its SQL through an unquoted heredoc so the four role passwords interpolate. That also
+makes the shell expand backticks and `$(...)` inside the SQL _comments_. Reproduced with a stub `psql` and the four passwords set: the script
+printed `line 27: public: command not found` (also `app`, `migrator`, `prisma`) and still exited 0. Today those words are not commands, so it
+was noise that could mask a real error; a backticked word that is on PATH would have run during database initialisation, as the entrypoint's
+superuser. The explanatory comments now live in shell comments above the `psql` call and the heredoc holds only SQL. The delimiter is still
+unquoted, so password interpolation is unchanged. The script header carries a HEREDOC RULE paragraph saying why.
+
+**Behaviour is unchanged.** The SQL fed to `psql`, with comment-only and blank lines removed, is byte-identical before and after, with the
+four passwords substituted. No schema change, no migration, no new dependency.
+
+**Tests.** New `packages/db/test/initdb-roles-script.spec.ts` (unit tier, +9): exactly one heredoc (`EOSQL`); its delimiter is unquoted; all four
+password variables appear in the body; the body contains no backtick and no `$(`; the header carries the rule. The guard's own failure paths
+are tested against synthetic scripts: a backticked comment, `$(...)`, a quoted delimiter, an unclosed heredoc, plus a clean body that is
+accepted. Mutation-checked: the original script fails the no-backtick and header tests. DB unit tier 274 passing; `pnpm lint` and
+`pnpm typecheck` clean for the touched package.
+
+**Not done.** The integration tier (`packages/*/test/support/database.ts` mounts this directory) needs Docker and was not run here; it is
+proven in CI. It cannot see this defect class, because the roles are still created and the script exits 0, which is why the guard is a source
+test. `pnpm verify:stage` was not run.
+
+| Exit gate item                                          | Result                            |
+| ------------------------------------------------------- | --------------------------------- |
+| Reproduced: `command not found` lines from the original | PASS                              |
+| Fixed script prints none; SQL fed to psql unchanged     | PASS (stub-psql diff)             |
+| Guard fails on the original script                      | PASS (mutation-checked)           |
+| `pnpm lint`, `pnpm typecheck`, db unit tests            | PASS                              |
+| Roles created against real Postgres                     | OPEN (needs Docker; proven in CI) |
+| Rollback: revert this commit; no schema change          | PASS                              |
+
+## Stage 132b — the development and testing sandbox
+
+**Why.** Running the platform locally was a ten-step, three-`.env`, two-Compose-project assembly (docs/DEV_SETUP.md), and running its tests
+on a clean machine had no equivalent of "run it in a container". The sandbox collapses both, with the safety properties a place that
+runs the test suite should have.
+
+**What changed.** `infra/sandbox/` (overlay `compose.sandbox.yml` on the unchanged `infra/docker/compose.dev.yml`; a toolbox `Dockerfile`;
+`sandbox-entrypoint.sh`; `sandbox-verify.sh`), `scripts/sandbox.sh` and `pnpm sandbox <command>`, `docs/SANDBOX.md`. `compose.apps.yml`'s
+network name became overridable (`DATA_PLANE_NETWORK`, default unchanged) so the apps can join the sandbox network. Secrets are generated on
+first use into a git-ignored file; ports are loopback-only; the repository is mounted read-only; no Docker socket or privilege.
+
+**Tests.** `packages/security/test/sandbox.spec.ts` (35): the generator fills every variable in `.env.example`, mode 600, fresh randomness per
+generation, no shared or guessable credential, URL-safe passwords, realm-policy passwords, `app_rw` (never the migrator) for the application,
+agreeing values, key formats, refuses a variable it has no rule for, never overwrites an existing file, `.gitignore` covers it; the overlay
+has its own project, loopback ports (and replaces the dev file's), a read-only repo mount, no socket / privilege / host namespace, the
+right profiles, no literal credential, migrator for `migrate` and `app_rw` for the toolbox; the image runs unprivileged and pins the repo's
+pnpm. Mutation-checked: a public port, a writable repo mount, a Docker socket, and the migrator URL for the application each fail one test.
+`docker compose config` was run on the real merged files, and the database path was run for real (initdb scripts → `db:migrate:deploy` →
+`db:seed` → `db:seed:identities` → `sandbox-verify`) on PostgreSQL 16 with pgvector, including three deliberate breakages of `verify`.
+
+**Not verified (no Docker daemon in the authoring environment).** Building the toolbox image, the rsync/install entrypoint, booting Keycloak
+with the generated secrets, the Keycloak and Redis checks, the `apps` profile and the Linux `host.docker.internal` workaround — listed in
+`docs/SANDBOX.md`. **Not covered by design:** the Testcontainers integration tier (a container that starts containers needs the host Docker
+socket, which is root on the host) and the Playwright tiers.
+
+| Exit gate item                                             | Result                                           |
+| ---------------------------------------------------------- | ------------------------------------------------ |
+| No secret committed; generated per machine; mode 600       | PASS (test + run)                                |
+| Not reachable from the network; cannot modify the checkout | PASS (static; mutation-checked)                  |
+| Compose files parse and merge as intended                  | PASS (`docker compose config` on the real files) |
+| Migrate + seed + verify on real Postgres                   | PASS (outside Docker, same scripts and roles)    |
+| Boot of the containers; image build; apps profile          | OPEN (needs a Docker daemon — first run)         |
+| `rsync` (GPL-3.0) in the toolbox                           | OPEN (rule 9 approval — docs/DEPENDENCIES.md)    |
+| Rollback: revert this commit; no schema change             | PASS                                             |

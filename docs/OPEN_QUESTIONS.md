@@ -737,6 +737,8 @@ which school role should decide each is the school's and the owner's to say.
 
 **Decided 2026-11-12 (Sarah-Jane Harding):** `lse` → `sbst`; `data_manager` → `admin` (both built, Stage 126); `sbst_chair` → a **new role**, designed in `docs/PROVISIONING_DESIGN.md` §4.9; the four recommendations there were accepted the same day and the role is built (Stage 128). The CI check now exists (`apps/web/tests/unit/pipeline-gate-roles.spec.ts`); `sbst_chair` was its one awaiting entry; the list is now empty, and the check still fails if a gate names a role nobody can be granted. Consequences of the first two: any SBST member (not only the LSE) can sign off the parent letter, and the school administrator confirms new data-source mappings.
 
+**MFA for `sbst_chair`: decided 2026-11-12 (Sarah-Jane Harding): yes.** The realm now requires a one-time code for the role (Stage 133).
+
 **Originally needed a human:** for each of the three, which existing role decides it (for example `sbst` for the SBST chair step), or
 whether a new role is wanted, which is its own design (guardians and learners were treated that way in §12.2 item 10). A
 CI check that every pipeline's `requiredRole` is a role provisioning can grant would stop this recurring; it needs the
