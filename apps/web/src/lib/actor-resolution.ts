@@ -29,6 +29,7 @@ const REFUSALS = new Set<string>([
   'invitation_expired',
   'awaiting_confirmation',
   'email_in_use',
+  'subject_mismatch',
 ]);
 
 export interface SignInIdentity {
