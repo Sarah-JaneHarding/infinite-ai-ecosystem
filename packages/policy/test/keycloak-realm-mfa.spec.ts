@@ -43,6 +43,7 @@ interface Realm {
   readonly users: readonly {
     readonly username: string;
     readonly emailVerified?: boolean;
+    readonly serviceAccountClientId?: string;
   }[];
 }
 
@@ -168,6 +169,9 @@ describe('Keycloak realm: email verification and MFA (OQ-036)', () => {
   });
 
   it('every seeded dev user is email-verified (dev has no mail server)', () => {
-    for (const u of realm.users) expect(u.emailVerified, u.username).toBe(true);
+    // A service account signs in with a client secret, has no mailbox and no browser flow.
+    for (const u of realm.users.filter((u) => u.serviceAccountClientId === undefined)) {
+      expect(u.emailVerified, u.username).toBe(true);
+    }
   });
 });

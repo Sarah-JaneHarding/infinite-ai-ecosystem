@@ -565,7 +565,7 @@ create a user even if code asked it to.
   `disableUser`, `enableUser`, `sendExecuteActionsEmail`), a `fetch`-based implementation (no new dependency, so
   rule 9 is untouched) and an in-memory fake. Contract-tested against recorded request/response shapes with an
   injected `fetch`. Secrets come from `packages/config` only; no token is logged. **Not wired to anything.**
-- **7b — a dedicated service-account client and its realm config** (see OQ-048 (a) for why not the worker's), granted
+- **7b — a dedicated service-account client and its realm config** _(built, Stage 139; unverified against Keycloak until 7e)_ (see OQ-048 (a) for why not the worker's), granted
   only the roles it needs, with a drift test that fails if the realm file grants it more.
 - **7c — the schema for "the identity provider has been told".** An `idp_state` on the invitation / account
   (PENDING, SYNCED, FAILED + last error class, never a message that could carry an address), so a Keycloak failure
