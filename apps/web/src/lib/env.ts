@@ -12,6 +12,10 @@ export const WebEnvSchema = z.object({
     .url()
     .optional()
     .default('http://localhost:8080/realms/infinite-ai'),
+  // The identity-provider Admin API client (OQ-033 step 7; OQ-048 (a)). A dedicated service account,
+  // never the worker's. Both unset = provisioning does not touch Keycloak (the pilot's by-hand path).
+  KEYCLOAK_PROVISIONER_CLIENT_ID: z.string().min(1).optional(),
+  KEYCLOAK_PROVISIONER_CLIENT_SECRET: z.string().min(1).optional(),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
 
@@ -23,6 +27,8 @@ const BUILD_TIME_ENV: WebEnv = {
   AUTH_KEYCLOAK_ID: 'build-time',
   AUTH_KEYCLOAK_SECRET: 'build-time',
   AUTH_KEYCLOAK_ISSUER: 'http://localhost:8080/realms/infinite-ai',
+  KEYCLOAK_PROVISIONER_CLIENT_ID: undefined,
+  KEYCLOAK_PROVISIONER_CLIENT_SECRET: undefined,
   NODE_ENV: 'production',
 };
 
@@ -32,6 +38,8 @@ const TEST_ENV: WebEnv = {
   AUTH_KEYCLOAK_ID: 'test-client',
   AUTH_KEYCLOAK_SECRET: 'test-secret',
   AUTH_KEYCLOAK_ISSUER: 'http://localhost:8080/realms/infinite-ai',
+  KEYCLOAK_PROVISIONER_CLIENT_ID: undefined,
+  KEYCLOAK_PROVISIONER_CLIENT_SECRET: undefined,
   NODE_ENV: 'test',
 };
 

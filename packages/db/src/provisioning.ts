@@ -33,6 +33,7 @@
 
 import type { TenantClient } from './client.js';
 import { appendAuditEvent } from './audit.js';
+import { markAccountIdpPending } from './idp-sync.js';
 
 // ---------------------------------------------------------------------------------------------
 // The rules this module is driven by (structurally identical to @infinite-ai/policy's)
@@ -496,6 +497,13 @@ export async function acceptInvitation(
   }
   if (invitation.confirmation === 'AWAITING') return refuse('awaiting_confirmation');
 
+  // When the application created this person's Keycloak user, only that user may take the invitation
+  // (OQ-033 step 7). Keycloak refuses two users with one address, so a different subject here is an
+  // anomaly — a stray account at the same address — and it needs an administrator, not a silent link.
+  if (invitation.idpUserId !== null && invitation.idpUserId !== input.subject) {
+    return refuse('subject_mismatch');
+  }
+
   // The address may already belong to an account under another subject (a previous person at
   // this address). That needs an administrator, not a silent takeover.
   const sameAddress = await tx.userAccount.findFirst({
@@ -512,6 +520,8 @@ export async function acceptInvitation(
       email,
       displayName: input.displayName.trim() === '' ? email : input.displayName.trim(),
       createdBy: invitation.createdBy,
+      // Managed only if we made the Keycloak user: then later role and status changes are mirrored.
+      idpState: invitation.idpState === 'SYNCED' ? 'SYNCED' : 'NOT_MANAGED',
     },
     select: { id: true },
   });
@@ -611,6 +621,7 @@ export async function revokeRole(
     where: { id: { in: live.map((r) => r.id) } },
     data: { expiresAt: input.now },
   });
+  await markAccountIdpPending(tx, input.targetAccountId);
   await appendAuditEvent(tx, {
     actorId: input.actorAccountId,
     action: 'role_assignment.revoked',
@@ -676,6 +687,7 @@ export async function setAccountStatus(
     });
     rolesEnded = ended.count;
   }
+  await markAccountIdpPending(tx, input.targetAccountId);
   await appendAuditEvent(tx, {
     actorId: input.actorAccountId,
     action:
@@ -738,6 +750,7 @@ export async function reinstateAccount(
     where: { id: input.targetAccountId },
     data: { status: 'ACTIVE' },
   });
+  await markAccountIdpPending(tx, input.targetAccountId);
   await appendAuditEvent(tx, {
     actorId: input.actorAccountId,
     action: 'user_account.reinstated',

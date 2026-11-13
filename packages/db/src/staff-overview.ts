@@ -65,6 +65,8 @@ export interface StaffOverview {
   readonly accounts: readonly StaffAccount[];
   readonly invitations: readonly StaffInvitation[];
   readonly grantRequests: readonly StaffGrantRequest[];
+  /** How many people the identity provider has not caught up with (OQ-033 step 7): waiting, and failed. */
+  readonly idp: { readonly pending: number; readonly failed: number };
   /** True if any list reached `STAFF_OVERVIEW_LIMIT`. */
   readonly truncated: boolean;
 }
@@ -73,52 +75,70 @@ export async function loadStaffOverview(
   tx: TenantClient,
   now: Date,
 ): Promise<StaffOverview> {
-  const [schools, accounts, invitations, grantRequests] = await Promise.all([
-    tx.school.findMany({
-      select: { id: true, name: true },
-      orderBy: [{ name: 'asc' }, { id: 'asc' }],
-      take: STAFF_OVERVIEW_LIMIT,
-    }),
-    tx.userAccount.findMany({
-      select: {
-        id: true,
-        displayName: true,
-        email: true,
-        status: true,
-        lastSeenAt: true,
-        roleAssignments: { select: { role: true, expiresAt: true, schoolId: true } },
-      },
-      orderBy: [{ displayName: 'asc' }, { id: 'asc' }],
-      take: STAFF_OVERVIEW_LIMIT,
-    }),
-    tx.userInvitation.findMany({
-      where: { status: 'PENDING' },
-      select: {
-        id: true,
-        email: true,
-        roles: true,
-        schoolId: true,
-        confirmation: true,
-        expiresAt: true,
-      },
-      orderBy: [{ expiresAt: 'asc' }, { id: 'asc' }],
-      take: STAFF_OVERVIEW_LIMIT,
-    }),
-    tx.roleGrantRequest.findMany({
-      where: { status: 'PENDING' },
-      select: {
-        id: true,
-        targetAccountId: true,
-        roles: true,
-        requestedBy: true,
-        expiresAt: true,
-      },
-      orderBy: [{ expiresAt: 'asc' }, { id: 'asc' }],
-      take: STAFF_OVERVIEW_LIMIT,
-    }),
-  ]);
+  const [schools, accounts, invitations, grantRequests, idpAccounts, idpInvitations] =
+    await Promise.all([
+      tx.school.findMany({
+        select: { id: true, name: true },
+        orderBy: [{ name: 'asc' }, { id: 'asc' }],
+        take: STAFF_OVERVIEW_LIMIT,
+      }),
+      tx.userAccount.findMany({
+        select: {
+          id: true,
+          displayName: true,
+          email: true,
+          status: true,
+          lastSeenAt: true,
+          roleAssignments: { select: { role: true, expiresAt: true, schoolId: true } },
+        },
+        orderBy: [{ displayName: 'asc' }, { id: 'asc' }],
+        take: STAFF_OVERVIEW_LIMIT,
+      }),
+      tx.userInvitation.findMany({
+        where: { status: 'PENDING' },
+        select: {
+          id: true,
+          email: true,
+          roles: true,
+          schoolId: true,
+          confirmation: true,
+          expiresAt: true,
+        },
+        orderBy: [{ expiresAt: 'asc' }, { id: 'asc' }],
+        take: STAFF_OVERVIEW_LIMIT,
+      }),
+      tx.roleGrantRequest.findMany({
+        where: { status: 'PENDING' },
+        select: {
+          id: true,
+          targetAccountId: true,
+          roles: true,
+          requestedBy: true,
+          expiresAt: true,
+        },
+        orderBy: [{ expiresAt: 'asc' }, { id: 'asc' }],
+        take: STAFF_OVERVIEW_LIMIT,
+      }),
+      tx.userAccount.groupBy({
+        by: ['idpState'],
+        where: { idpState: { in: ['PENDING', 'FAILED'] } },
+        _count: { _all: true },
+      }),
+      // Only an invitation still waiting to become a login counts: an accepted, revoked or expired one has
+      // nothing left to tell the provider.
+      tx.userInvitation.groupBy({
+        by: ['idpState'],
+        where: { status: 'PENDING', idpState: { in: ['PENDING', 'FAILED'] } },
+        _count: { _all: true },
+      }),
+    ]);
+  const idpCount = (state: 'PENDING' | 'FAILED'): number =>
+    [...idpAccounts, ...idpInvitations]
+      .filter((row) => row.idpState === state)
+      .reduce((sum, row) => sum + row._count._all, 0);
 
   return {
+    idp: { pending: idpCount('PENDING'), failed: idpCount('FAILED') },
     schools,
     accounts: accounts.map((a) => ({
       id: a.id,

@@ -104,6 +104,7 @@ services:
         pnpm --filter @infinite-ai/db db:migrate:deploy
         && pnpm --filter @infinite-ai/db db:seed
         && pnpm --filter @infinite-ai/db db:seed:identities
+        && pnpm --filter @infinite-ai/db db:seed:invitations
     depends_on:
       postgres:
         condition: service_healthy

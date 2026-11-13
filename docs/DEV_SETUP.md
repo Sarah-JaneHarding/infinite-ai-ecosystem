@@ -203,6 +203,19 @@ is the actor everywhere (OQ-033). Seed one for each of the eight school-role log
 pnpm --filter @infinite-ai/db db:seed:identities   # 7 accounts + role assignments at the dev school
 ```
 
+**A login that goes through the real invitation path (OQ-033 step 8).** `invitee.dev` has a pending invitation and
+deliberately no account. Seed the invitation, as the migrator, after `db:seed`:
+
+```bash
+pnpm --filter @infinite-ai/db db:seed:invitations   # one pending teacher invitation, and no account
+```
+
+Then sign in as `invitee.dev`: the verified address finds the invitation, the account and its `teacher` role are created
+there and then (the path every real school staff member will take), and the invitation is spent. Seeding again never
+reopens a spent invitation; `pnpm sandbox reset` starts the flow over. The seeded identities above still create their
+accounts directly: replacing that with invitations for every login waits on checking the identity-provider integration
+against a running Keycloak (`docs/PROVISIONING_DESIGN.md` §11.1, slice 7e). `pnpm sandbox up` runs this seed for you.
+
 The eight school-role Keycloak users in `infra/keycloak/realm.json` carry fixed ids so their `sub` is stable across imports; the
 seed uses those same ids as each account's `subject` (`packages/db/prisma/dev-identities.ts`, with a test that fails
 if the two drift). Without this step you can still sign in, but the app has no actor for you: pages that read data
@@ -210,6 +223,11 @@ show nothing, and API routes answer 403 "No active account for this user". Sign 
 the account is resolved when you sign in, not on every request. A realm that was imported before the ids were added
 must be re-imported (the old users have random ids). `platform-support.dev` and `platform-admin.dev` have no tenant of
 their own and get no account.
+
+**Provisioner secret (OQ-033 step 7).** `KEYCLOAK_PROVISIONER_CLIENT_SECRET` is a fourth client secret in `infra/docker/.env`: the realm
+import substitutes it into the `infinite-ai-provisioner` client, so the stack will not start without it (`pnpm sandbox env` generates it). To let
+the web app use it, put the same value and `KEYCLOAK_PROVISIONER_CLIENT_ID=infinite-ai-provisioner` in `apps/web/.env`; leave them empty to keep
+creating Keycloak users by hand. A realm imported before this change must be re-imported to gain the client.
 
 **One-time codes in dev (OQ-036).** The realm requires a one-time code for `admin.dev`, `smt.dev`, `platform-support.dev`,
 `platform-admin.dev` and `sbst_chair`. The first time you sign in as one of them, Keycloak asks you to set up an authenticator app (any
@@ -263,20 +281,21 @@ needed:
 
 ### Signing in as each role
 
-| Username               | Role                  | Reaches                                                      |
-| ---------------------- | --------------------- | ------------------------------------------------------------ |
-| `teacher.dev`          | `teacher`             | `/teacher`                                                   |
-| `hod.dev`              | `hod`                 | `/hod`                                                       |
-| `smt.dev`              | `smt`                 | `/smt`                                                       |
-| `sbst.dev`             | `sbst`                | `/sbst`                                                      |
-| `chair.dev`            | `sbst` + `sbst_chair` | `/sbst`; the chair-only gates (OQ-046), via the role chooser |
-| `admin.dev`            | `admin`               | `/admin/prompts`, `/admin/setup`, `/admin/env`               |
-| `guardian.dev`         | `guardian`            | `/guardian`                                                  |
-| `learner.dev`          | `learner`             | `/learner`                                                   |
-| `platform-support.dev` | `platform_support`    | `/platform/runs`                                             |
-| `platform-admin.dev`   | `platform_admin`      | `/platform/runs`, `/platform/tenants`, `/district`           |
+| Username               | Role                                | Reaches                                                      |
+| ---------------------- | ----------------------------------- | ------------------------------------------------------------ |
+| `teacher.dev`          | `teacher`                           | `/teacher`                                                   |
+| `hod.dev`              | `hod`                               | `/hod`                                                       |
+| `smt.dev`              | `smt`                               | `/smt`                                                       |
+| `sbst.dev`             | `sbst`                              | `/sbst`                                                      |
+| `chair.dev`            | `sbst` + `sbst_chair`               | `/sbst`; the chair-only gates (OQ-046), via the role chooser |
+| `invitee.dev`          | `teacher` (after the first sign-in) | `/teacher`; the account is created from its invitation       |
+| `admin.dev`            | `admin`                             | `/admin/prompts`, `/admin/setup`, `/admin/env`               |
+| `guardian.dev`         | `guardian`                          | `/guardian`                                                  |
+| `learner.dev`          | `learner`                           | `/learner`                                                   |
+| `platform-support.dev` | `platform_support`                  | `/platform/runs`                                             |
+| `platform-admin.dev`   | `platform_admin`                    | `/platform/runs`, `/platform/tenants`, `/district`           |
 
-The password for all ten is `SEED_USER_PASSWORD` from `infra/docker/.env` — each
+The password for all eleven is `SEED_USER_PASSWORD` from `infra/docker/.env` — each
 account has `temporary: true` on its credential, so Keycloak forces a password change on
 first login (pick anything meeting the realm's password policy). These are fixture
 identities, invented the same way `packages/db/prisma/seed.ts`'s own header explains: no

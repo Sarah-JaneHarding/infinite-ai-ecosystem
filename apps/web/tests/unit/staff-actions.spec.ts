@@ -17,6 +17,7 @@ const db = vi.hoisted(() => ({
   cancelRoleGrant: vi.fn(),
   setAccountStatus: vi.fn(),
   reinstateAccount: vi.fn(),
+  syncIdentityProvider: vi.fn(),
 }));
 
 vi.mock('next-auth/jwt', () => ({ getToken: db.getToken }));
@@ -33,6 +34,9 @@ vi.mock('@infinite-ai/db', () => ({
   reinstateAccount: db.reinstateAccount,
   SENSITIVE_ROLES: ['admin', 'smt'],
   defaultRoleGrantExpiry: (now: Date) => new Date(now.getTime() + 7 * 86_400_000),
+}));
+vi.mock('../../src/lib/idp/sync', () => ({
+  syncIdentityProvider: db.syncIdentityProvider,
 }));
 vi.mock('../../src/lib/env', () => ({ getWebEnv: () => ({ NEXTAUTH_SECRET: 'x' }) }));
 
@@ -133,6 +137,7 @@ beforeEach(() => {
     requestId: OTHER,
   });
   db.getToken.mockResolvedValue(ADMIN);
+  db.syncIdentityProvider.mockResolvedValue(null);
 });
 
 describe.each(ROUTES)('$name — the front door', ({ handler, body, fn }) => {
@@ -503,4 +508,81 @@ describe('school scope on a grant', () => {
       expect(db.withTenant).not.toHaveBeenCalled();
     },
   );
+});
+
+// OQ-033 step 7d: after an administrator's change has COMMITTED, the identity provider is told. Never before
+// (it would hold the provisioning lock across a network call), never when the change was refused, and a
+// failure there never turns a successful change into an error.
+describe('telling the identity provider after a change', () => {
+  const SYNCING: readonly {
+    name: string;
+    handler: Handler;
+    body?: unknown;
+    fn: ReturnType<typeof vi.fn>;
+  }[] = [
+    {
+      name: 'grant roles',
+      handler: grantRoute,
+      body: { roles: ['hod'] },
+      fn: db.grantRole,
+    },
+    {
+      name: 'revoke a role',
+      handler: revokeRoleRoute,
+      body: { role: 'hod' },
+      fn: db.revokeRole,
+    },
+    {
+      name: 'suspend or offboard',
+      handler: statusRoute,
+      body: { status: 'SUSPENDED' },
+      fn: db.setAccountStatus,
+    },
+    { name: 'reinstate', handler: reinstateRoute, fn: db.reinstateAccount },
+    {
+      name: 'confirm an invitation',
+      handler: confirmInvitationRoute,
+      fn: db.confirmInvitation,
+    },
+    { name: 'confirm a request', handler: confirmRequestRoute, fn: db.confirmRoleGrant },
+  ];
+
+  it.each(SYNCING)(
+    '$name: syncs once, as the session’s school, after the change',
+    async ({ handler, body, fn }) => {
+      const order: string[] = [];
+      fn.mockImplementation(async () => (order.push('change'), { ok: true }));
+      db.syncIdentityProvider.mockImplementation(async () => (order.push('sync'), null));
+      expect((await post(handler, OTHER, body)).status).toBe(200);
+      expect(order).toEqual(['change', 'sync']);
+      expect(db.syncIdentityProvider).toHaveBeenCalledWith({
+        tenantId: TENANT,
+        actorId: ACCOUNT,
+      });
+    },
+  );
+
+  it.each(SYNCING)(
+    '$name: does not sync when the change was refused',
+    async ({ handler, body, fn }) => {
+      fn.mockResolvedValue({ ok: false, reason: 'actor_not_admin' });
+      expect((await post(handler, OTHER, body)).status).toBe(403);
+      expect(db.syncIdentityProvider).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(SYNCING)(
+    '$name: does not sync for a caller who is not an administrator',
+    async ({ handler, body }) => {
+      db.getToken.mockResolvedValue({ ...ADMIN, role: 'teacher' });
+      expect((await post(handler, OTHER, body)).status).toBe(403);
+      expect(db.syncIdentityProvider).not.toHaveBeenCalled();
+    },
+  );
+
+  it('declining or cancelling a request changes nothing the provider needs to know', async () => {
+    expect((await post(declineRequestRoute, OTHER)).status).toBe(200);
+    expect((await post(cancelRequestRoute, OTHER)).status).toBe(200);
+    expect(db.syncIdentityProvider).not.toHaveBeenCalled();
+  });
 });
