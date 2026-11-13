@@ -16,7 +16,6 @@
 // states only, and there is no free-text field.
 
 import { appendAuditEvent } from './audit.js';
-import { markAccountIdpPending } from './idp-sync.js';
 import type { TenantClient } from './client.js';
 import {
   currentTenantId,
@@ -117,7 +116,6 @@ async function applyGrant(
       },
     });
   }
-  await markAccountIdpPending(tx, input.targetAccountId);
 }
 
 // ---------------------------------------------------------------------------------------------

@@ -153,10 +153,6 @@ model UserAccount {
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
   createdBy   String?    @map("created_by") @db.Uuid
-  /// Whether Keycloak matches the database for this person (OQ-033 step 7c). `NOT_MANAGED` = the application
-  /// never touches their Keycloak user. `subject` is the Keycloak user id, so no separate id is kept.
-  idpState     IdpState  @default(NOT_MANAGED) @map("idp_state")
-  idpErrorKind String?   @map("idp_error_kind")
   version     Int        @default(1)
 
   tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -253,11 +249,6 @@ model UserInvitation {
   /// `smt` while the school has two or more administrators). AWAITING blocks acceptance.
   confirmation      InvitationConfirmation @default(NOT_REQUIRED)
   confirmedBy       String?              @map("confirmed_by") @db.Uuid
-  /// Whether the identity provider has been told about this invitation (OQ-033 step 7c). `idpUserId` is the
-  /// Keycloak user created for it, so a retry finds that user instead of failing on a duplicate.
-  idpState          IdpState             @default(NOT_MANAGED) @map("idp_state")
-  idpUserId         String?              @map("idp_user_id")
-  idpErrorKind      String?              @map("idp_error_kind")
   version           Int                  @default(1)
 
   tenant          Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -269,16 +260,6 @@ model UserInvitation {
   @@index([tenantId])
   @@index([tenantId, status])
   @@map("user_invitation")
-}
-
-/// Has the identity provider been told? (OQ-033 step 7c.)
-enum IdpState {
-  NOT_MANAGED
-  PENDING
-  SYNCED
-  FAILED
-
-  @@map("idp_state")
 }
 
 enum UserInvitationStatus {

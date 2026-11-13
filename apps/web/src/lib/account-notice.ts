@@ -21,7 +21,6 @@ const MESSAGES: Partial<Record<SignInOutcome, string>> = {
   awaiting_confirmation: `Your invitation is waiting for a second administrator at your school to confirm it. Try again once they have.`,
   email_not_verified: `Your email address hasn't been verified yet. Use the verification link sent to you, then sign in again.`,
   email_in_use: `Another account at your school already uses this email address. ${ASK_ADMIN} for help.`,
-  subject_mismatch: `This sign-in doesn't match the account your school set up for this email address. ${ASK_ADMIN} for help.`,
   account_not_active: `Your account at this school is not active. ${ASK_ADMIN} for help.`,
   tenant_not_active: `Your school's account is not active. ${ASK_ADMIN} for help.`,
   no_tenant: `Your sign-in isn't linked to a school. Contact your school's administrator or support.`,

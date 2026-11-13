@@ -20,7 +20,6 @@ export const SIGN_IN_OUTCOMES = [
   'invitation_expired',
   'awaiting_confirmation',
   'email_in_use',
-  'subject_mismatch',
   'refused',
 ] as const;
 

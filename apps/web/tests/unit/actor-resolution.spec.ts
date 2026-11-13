@@ -127,7 +127,6 @@ describe('resolveSignIn', () => {
       'invitation_expired',
       'awaiting_confirmation',
       'email_in_use',
-      'subject_mismatch', // step 7: the invitation names the Keycloak user we created; another one may not take it
     ])('%s', async (reason) => {
       acceptInvitation.mockResolvedValue({ ok: false, reason });
       const result = await resolveSignIn(identity, NOW);

@@ -567,7 +567,7 @@ create a user even if code asked it to.
   injected `fetch`. Secrets come from `packages/config` only; no token is logged. **Not wired to anything.**
 - **7b — a dedicated service-account client and its realm config** _(built, Stage 139; unverified against Keycloak until 7e)_ (see OQ-048 (a) for why not the worker's), granted
   only the roles it needs, with a drift test that fails if the realm file grants it more.
-- **7c — the schema for "the identity provider has been told"** _(built, Stage 140)_. An `idp_state` on the invitation / account
+- **7c — the schema for "the identity provider has been told".** An `idp_state` on the invitation / account
   (PENDING, SYNCED, FAILED + last error class, never a message that could carry an address), so a Keycloak failure
   after the database commit is visible and retryable instead of silent. This is a migration (rule 10).
 - **7d — wire it.** After the database transaction commits (never inside it: a network call must not hold the
