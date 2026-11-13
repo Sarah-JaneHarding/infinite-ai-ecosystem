@@ -561,7 +561,7 @@ create a user even if code asked it to.
 
 **Step 7, in slices (each its own PR):**
 
-- **7a — a Keycloak Admin API port and client.** One narrow interface (`createUser`, `setRealmRoles`,
+- **7a — a Keycloak Admin API port and client** _(built, Stage 138; unverified against Keycloak until 7e)_. One narrow interface (`createUser`, `setRealmRoles`,
   `disableUser`, `enableUser`, `sendExecuteActionsEmail`), a `fetch`-based implementation (no new dependency, so
   rule 9 is untouched) and an in-memory fake. Contract-tested against recorded request/response shapes with an
   injected `fetch`. Secrets come from `packages/config` only; no token is logged. **Not wired to anything.**
