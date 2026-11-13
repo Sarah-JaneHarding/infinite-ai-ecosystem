@@ -11829,6 +11829,7 @@ roles. **No code and no schema change.**
 | Plan states what is built, what is not, and the order | PASS   |
 | Owner decisions recorded rather than guessed (OQ-048) | PASS   |
 | `pnpm format:check`                                   | PASS   |
+
 ## Stage 136 — dev login that holds both `sbst` and `sbst_chair`
 
 **What changed.** A dev login, `chair.dev`, that holds `sbst` and `sbst_chair`. Until now no dev account held both, so the chair-only gates
@@ -11850,6 +11851,7 @@ depend on it.
 | An already-seeded database is unchanged by the new id scheme | PASS (first role keeps id) |
 | Seed resolves the chair and both roles against Postgres      | Integration (CI)           |
 | Rollback: revert this commit; no schema change               | PASS                       |
+
 ## Stage 135 — OQ-047: reinstating a suspended account
 
 **What changed.** `reinstateAccount` in `packages/db` (same advisory lock and `statusChange` rule as suspending: an active administrator other
@@ -11875,6 +11877,7 @@ pass locally.
 | Roles unchanged; reinstatement audited                      | Integration (CI)                |
 | `pnpm lint`, `pnpm typecheck`, unit tests                   | PASS (web 1108, db 265)         |
 | Rollback: revert this commit; no schema change              | PASS                            |
+
 ## Stage 134 — school scope on invitations and grants, with the tenant check in the data layer
 
 **Why.** Slice b (Stage 129) refused a `schoolId` in the contract because `createInvitation` did not check it against the caller's own rows, and a
@@ -11915,6 +11918,7 @@ with it (that is unchanged behaviour, not a regression).
 | `pnpm lint`, `pnpm typecheck`, web and db unit tests                   | PASS                                              |
 | Integration cases against real Postgres                                | OPEN (needs Docker; proven in CI)                 |
 | Rollback: revert this commit; no schema change                         | PASS                                              |
+
 ## Stage 133 — MFA for `sbst_chair` (owner decision, 2026-11-12)
 
 **Decision.** The owner answered "yes" to requiring a second factor from the SBST chair (raised in Stage 128): the chair's confirmation ratifies SBST
@@ -11938,6 +11942,7 @@ Keycloak (the sandbox's `pnpm sandbox up` makes that a one-command check once it
 | The MFA roles are exactly the documented list  | PASS (mutation-checked)          |
 | Keycloak imports it and prompts                | OPEN (needs a live Keycloak)     |
 | Rollback: revert this commit; no schema change | PASS                             |
+
 ## Stage 132 — fix: initdb roles script ran backticked comment words as commands
 
 **What changed.** `infra/docker/initdb/02-roles.sh` feeds its SQL through an unquoted heredoc so the four role passwords interpolate. That also
