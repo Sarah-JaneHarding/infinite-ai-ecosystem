@@ -12038,4 +12038,4 @@ real adapter against it are what was run.
 | The stub is unreachable from outside the sandbox network  | PASS (config: no ports; guard test)                         |
 | The stub speaks what the gateway's real adapter expects   | PASS (real adapter, real process)                           |
 | Images build, apps boot, UI works, an agent run completes | **NOT VERIFIED** (no Docker daemon)                         |
-| `pnpm lint`, `pnpm typecheck`, unit tests                 | see below                                                   |
+| `pnpm lint`, `pnpm typecheck`, unit tests                 | PASS (gateway 179, security 122)                            |
