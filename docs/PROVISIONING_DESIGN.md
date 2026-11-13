@@ -548,7 +548,7 @@ must keep resolving **no** actor, and a test should pin that.
 6. **Gate decision hardening** (§6): require an `ACTIVE` account in `decideHumanGate`. _Built (Stage 125)._
 7. **Keycloak integration** (§5): Admin API client, mirrored roles, required actions; realm config
    for email verification and MFA, with a drift test like the dev-identities one.
-8. **Dev stack**: replace `db:seed:identities` with seeded _invitations_ so the dev flow exercises
+8. **Dev stack** _(8a built, Stage 142: a dev invitee who signs in through the real accept path; 8b — replacing the identities seed — waits on 7e)_: replace `db:seed:identities` with seeded _invitations_ so the dev flow exercises
    the real path.
 
 ### 11.1 Plan for steps 7 and 8 (written 2026-11-12; nothing below is built)

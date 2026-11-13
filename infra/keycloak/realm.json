@@ -196,6 +196,20 @@
       "realmRoles": ["sbst", "sbst_chair"]
     },
     {
+      "id": "ba000000-0000-4000-8000-000000000009",
+      "username": "invitee.dev",
+      "email": "invitee.dev@example.invalid",
+      "firstName": "Naledi",
+      "lastName": "Dlamini",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "tenant_id": ["10000000-0000-4000-8000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "${SEED_USER_PASSWORD}", "temporary": true }
+      ],
+      "realmRoles": ["teacher"]
+    },
+    {
       "id": "ba000000-0000-4000-8000-000000000005",
       "username": "admin.dev",
       "email": "admin.dev@example.invalid",

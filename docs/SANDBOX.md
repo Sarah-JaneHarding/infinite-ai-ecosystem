@@ -26,7 +26,7 @@ collapsed into commands.
 | Redis 7                | `127.0.0.1:6379`                                                                                                                                  |
 | Keycloak 26            | `http://localhost:8180`, the `infinite-ai` realm imported from `infra/keycloak/realm.json`                                                        |
 | The toolbox            | A Node 22 + pnpm container (`infra/sandbox/Dockerfile`): `pnpm sandbox run                                                                        | shell | test | check` |
-| Seeded data            | The three synthetic dev tenants and the seven dev identities (`db:seed`, `db:seed:identities`)                                                    |
+| Seeded data            | The three synthetic dev tenants and the dev identities and one dev invitee (`db:seed`, `db:seed:identities`, `db:seed:invitations`)               |
 | Opt-in: observability  | `pnpm sandbox observability` adds MinIO and the Langfuse stack (large)                                                                            |
 | Opt-in: the apps       | `pnpm sandbox apps` builds and starts web, worker and gateway (needs model credentials)                                                           |
 

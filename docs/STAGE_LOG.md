@@ -12008,3 +12008,29 @@ socket, which is root on the host) and the Playwright tiers.
 | Boot of the containers; image build; apps profile          | OPEN (needs a Docker daemon — first run)         |
 | `rsync` (GPL-3.0) in the toolbox                           | OPEN (rule 9 approval — docs/DEPENDENCIES.md)    |
 | Rollback: revert this commit; no schema change             | PASS                                             |
+
+## Stage 142 — OQ-033 step 8a: a dev login that goes through the real invitation path
+
+**What changed.** `invitee.dev` (Keycloak user with a fixed id, verified, role `teacher`) and a seeded **pending invitation with no account**
+(`pnpm --filter @infinite-ai/db db:seed:invitations`, run by `pnpm sandbox up`). The first sign-in finds the invitation by verified address and
+creates the account and its role through `acceptInvitation` — the path schools will use — instead of a seed writing the account directly. The seed is
+an upsert with an empty update, so it never reopens an accepted, revoked or expired invitation. `DEV_INVITEES` is kept out of `DEV_IDENTITIES` on
+purpose, so nothing can seed an account for the invitee.
+
+**This is step 8's first half only.** Replacing the identities seed with invitations for every dev login is **not done** and stays blocked on slice 7e: it
+needs an accepted invitation to produce a Keycloak user, which has never been run against a real Keycloak.
+
+**Tests, run against a real PostgreSQL 16 here.** `seed-dev-invitations.integration.spec.ts` (+6): a pending invitation and no account; idempotent; no
+account made even when the identities are seeded; an unverified address links nothing; the first sign-in creates the account and role and spends the
+invitation; a re-seed never reopens it. `dev-identities.spec.ts` (+3 drift: the realm user matches; nothing shared with `DEV_IDENTITIES`; valid distinct
+ids), `sandbox.spec.ts` (+1: the migrate step's seed order). Mutation-checked: the seed resetting a spent invitation fails 1, the seed creating the account
+itself fails 5, the realm user losing its role fails 1. I first ran this against a stale generated Prisma client (from another branch) and got empty
+database errors; regenerating fixed it, and one assertion I had written depended on a field only a not-yet-merged branch has, so I removed it.
+
+| Exit gate item                                          | Result                                 |
+| ------------------------------------------------------- | -------------------------------------- |
+| No account is seeded for the invitee                    | PASS (real Postgres; mutation-checked) |
+| First sign-in takes the real accept path                | PASS (real Postgres)                   |
+| Re-seeding never reopens a spent invitation             | PASS (mutation-checked)                |
+| Identities seed replaced by invitations for every login | **NOT DONE** (waits on 7e)             |
+| `pnpm lint`, `pnpm typecheck`, unit tests               | PASS                                   |

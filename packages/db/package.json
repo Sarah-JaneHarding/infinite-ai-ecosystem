@@ -18,6 +18,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:approvals": "tsx prisma/seed-approvals.ts",
     "db:seed:identities": "tsx prisma/seed-dev-identities.ts",
+    "db:seed:invitations": "tsx prisma/seed-dev-invitations.ts",
     "db:validate": "prisma validate",
     "lint": "eslint src",
     "postinstall": "prisma generate",
