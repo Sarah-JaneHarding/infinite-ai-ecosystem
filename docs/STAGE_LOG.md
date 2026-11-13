@@ -12009,6 +12009,32 @@ socket, which is root on the host) and the Playwright tiers.
 | `rsync` (GPL-3.0) in the toolbox                           | OPEN (rule 9 approval — docs/DEPENDENCIES.md)    |
 | Rollback: revert this commit; no schema change             | PASS                                             |
 
+## Stage 138 — OQ-033 step 7a: the Keycloak Admin API port and client
+
+**What changed.** `apps/web/src/lib/idp/`: the `IdentityProviderAdmin` port (create user, find by email, set roles, enable/disable, revoke
+sessions, send Keycloak's execute-actions email) and a `fetch`-based Keycloak client behind it, plus an in-memory fake for later slices
+(`tests/support/fake-idp.ts`). Two properties are enforced by the client itself: only school-staff roles can be mirrored (a platform role is
+refused before any request, so a wiring mistake cannot mint platform authority, §8) and an error carries its kind only (never Keycloak's
+body, a token, a secret or an address). `createUser` refuses an existing user (`conflict`) rather than adopting it, and never marks the address
+verified (Keycloak does, §5). `WebEnvSchema` gains the optional `KEYCLOAK_PROVISIONER_CLIENT_ID/SECRET` (OQ-048 (a)); both empty keeps today's
+by-hand path. No new dependency (rule 9): `fetch` and the existing policy package. **Not wired to anything.**
+
+**Tests.** `keycloak-admin.spec.ts` (+26): the token grant and reuse until 30 s before expiry; relogin after a 401; path-prefixed Keycloak; each
+request's path, verb and body; refusal of a platform role before any request; error mapping and retryability; no secret, token or address in an
+error. Mutation-checked: dropping the role check fails 1, `emailVerified: true` fails 2, `setRoles` touching non-school roles fails 1, an
+unmapped 409 fails 1.
+
+**Not verified.** Every path, verb and body is from knowledge of Keycloak 26 (design §13) and pinned as an assumption by the tests. I downloaded
+Keycloak 26.0.8 (checksum verified) to check them for real, but the sandbox refused to let me run it, and I did not work around that, so **slice
+7e is not done**. Nothing may depend on this client in production until 7e has run.
+
+| Exit gate item                                 | Result                        |
+| ---------------------------------------------- | ----------------------------- |
+| A platform role can never be mirrored          | PASS (unit; mutation-checked) |
+| No secret, token or address in an error        | PASS (unit)                   |
+| Requests match a real Keycloak 26              | **NOT VERIFIED** (7e)         |
+| `pnpm lint`, `pnpm typecheck`, unit tests      | PASS (web)                    |
+| Rollback: revert this commit; no schema change | PASS                          |
 ## Stage 139 — OQ-033 step 7b: the provisioner client in the realm
 
 **What changed.** `infra/keycloak/realm.json` gains the `infinite-ai-provisioner` client (confidential, service accounts only, no browser/implicit/password
