@@ -12039,6 +12039,7 @@ real adapter against it are what was run.
 | The stub speaks what the gateway's real adapter expects   | PASS (real adapter, real process)                           |
 | Images build, apps boot, UI works, an agent run completes | **NOT VERIFIED** (no Docker daemon)                         |
 | `pnpm lint`, `pnpm typecheck`, unit tests                 | PASS (gateway 179, security 122)                            |
+
 ## Stage 142 — OQ-033 step 8a: a dev login that goes through the real invitation path
 
 **What changed.** `invitee.dev` (Keycloak user with a fixed id, verified, role `teacher`) and a seeded **pending invitation with no account**
@@ -12064,6 +12065,7 @@ database errors; regenerating fixed it, and one assertion I had written depended
 | Re-seeding never reopens a spent invitation             | PASS (mutation-checked)                |
 | Identities seed replaced by invitations for every login | **NOT DONE** (waits on 7e)             |
 | `pnpm lint`, `pnpm typecheck`, unit tests               | PASS                                   |
+
 ## Stage 140 — OQ-033 step 7c: "has the identity provider been told?"
 
 **What changed.** Migration `20261113100000_oq033_idp_sync_state` adds an `idp_state` (`NOT_MANAGED` default, `PENDING`, `SYNCED`, `FAILED`) to
