@@ -58,6 +58,7 @@ generate_env() {
   V[KEYCLOAK_ADMIN_PASSWORD]=$(policy_password)
   V[KEYCLOAK_WEB_CLIENT_SECRET]=$(alnum 32)
   V[KEYCLOAK_WORKER_CLIENT_SECRET]=$(alnum 32)
+  V[KEYCLOAK_PROVISIONER_CLIENT_SECRET]=$(alnum 32)
   V[SEED_USER_PASSWORD]=$(policy_password)
   V[MINIO_ROOT_USER]=sandboxminio
   V[MINIO_ROOT_PASSWORD]=$(alnum 32)
