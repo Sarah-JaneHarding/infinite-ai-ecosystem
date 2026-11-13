@@ -37,7 +37,7 @@ export interface DevIdentity {
 
 /** `ba000000-0000-4000-8000-0000000000NN`: structurally valid for `withTenant`, and
  * recognisably a fixture (the `ba`/`bb`/`bc` prefixes are used for nothing else). */
-const id = (prefix: 'ba' | 'bb' | 'bc', n: number): string =>
+const id = (prefix: 'ba' | 'bb' | 'bc' | 'bd', n: number): string =>
   `${prefix}000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 
 function identity(
@@ -68,4 +68,36 @@ export const DEV_IDENTITIES: readonly DevIdentity[] = [
   identity(6, 'guardian', ['guardian'], 'Dev Guardian'),
   identity(7, 'learner', ['learner'], 'Dev Learner'),
   identity(8, 'chair', ['sbst', 'sbst_chair'], 'Dev Support Team Chair'),
+];
+
+/**
+ * A dev login that has an invitation and, deliberately, NO account (OQ-033 step 8). Signing in as this person
+ * exercises the real path: the verified address finds the invitation, `acceptInvitation` creates the account
+ * and its role, and the invitation is spent. The seeded identities above skip that path by creating accounts
+ * directly; this one does not, so the flow the schools will actually use is the one a developer can try.
+ *
+ * Kept out of `DEV_IDENTITIES` on purpose: nothing may seed an account for this person, and the
+ * `dev-identities.spec.ts` drift guard says so.
+ */
+export interface DevInvitee {
+  readonly username: string;
+  /** The roles the invitation carries, and so the account will hold once it is accepted. */
+  readonly roles: readonly DevSchoolRole[];
+  /** The Keycloak user id, hence the `sub` of this login's tokens, and the `subject` of the account to be. */
+  readonly subject: string;
+  readonly email: string;
+  readonly displayName: string;
+  /** `user_invitation.id`. */
+  readonly invitationId: string;
+}
+
+export const DEV_INVITEES: readonly DevInvitee[] = [
+  {
+    username: 'invitee.dev',
+    roles: ['teacher'],
+    subject: id('ba', 9),
+    email: 'invitee.dev@example.invalid',
+    displayName: 'Dev New Teacher',
+    invitationId: id('bd', 9),
+  },
 ];

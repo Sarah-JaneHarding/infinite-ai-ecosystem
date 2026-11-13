@@ -259,6 +259,19 @@ describe('the compose overlay', () => {
     expect(tools).toMatch(/DATABASE_URL: postgresql:\/\/app_rw:/);
   });
 
+  it('seeds the dev invitee after the identities, so its invitation finds the tenant and no account is made for it', () => {
+    const migrate = code.slice(code.indexOf('  migrate:'));
+    const steps = [
+      ...migrate.matchAll(/db:(migrate:deploy|seed:identities|seed:invitations|seed)\b/g),
+    ].map((m) => m[1]);
+    expect(steps).toEqual([
+      'migrate:deploy',
+      'seed',
+      'seed:identities',
+      'seed:invitations',
+    ]);
+  });
+
   it('runs the data-plane services it shares with compose.dev.yml on the images that file pins', () => {
     const dev = read('infra/docker/compose.dev.yml');
     expect(dev).toContain('pgvector/pgvector:pg16');
