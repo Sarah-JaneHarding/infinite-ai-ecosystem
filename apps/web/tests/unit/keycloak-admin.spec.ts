@@ -146,20 +146,18 @@ describe('createUser', () => {
   const input = {
     email: 'Teacher@School.example',
     tenantId: '10000000-0000-4000-8000-000000000001',
-    roles: ['teacher'] as const,
     requiredActions: ['VERIFY_EMAIL', 'UPDATE_PASSWORD'] as const,
   };
 
-  it('creates the user with the tenant attribute and actions, then maps the roles', async () => {
+  it('creates the user with the tenant attribute and actions, and nothing else', async () => {
     const { client, seen } = harness([
       TOKEN,
       ok(201, undefined, {
         location: 'https://id.example/admin/realms/infinite-ai/users/u-123',
       }),
-      ok(200, { id: 'role-1', name: 'teacher' }),
-      ok(204),
     ]);
     expect(await client.createUser(input)).toEqual({ id: 'u-123', enabled: true });
+    expect(seen).toHaveLength(2); // the login and the create: roles are a separate, later call
     const create = JSON.parse(seen[1]?.body ?? '{}') as Record<string, unknown>;
     expect(seen[1]).toMatchObject({ method: 'POST' });
     expect(seen[1]?.url).toBe('https://id.example/admin/realms/infinite-ai/users');
@@ -170,21 +168,13 @@ describe('createUser', () => {
       attributes: { tenant_id: [input.tenantId] },
       requiredActions: ['VERIFY_EMAIL', 'UPDATE_PASSWORD'],
     });
-    expect(seen[3]).toMatchObject({
-      method: 'POST',
-      url: 'https://id.example/admin/realms/infinite-ai/users/u-123/role-mappings/realm',
-    });
-    expect(JSON.parse(seen[3]?.body ?? '[]')).toEqual([
-      { id: 'role-1', name: 'teacher' },
-    ]);
+    expect(create).not.toHaveProperty('realmRoles');
   });
 
   it('never marks the address verified itself — Keycloak does that (§5)', async () => {
     const { client, seen } = harness([
       TOKEN,
       ok(201, undefined, { location: '/users/u-1' }),
-      ok(200, { id: 'r', name: 'teacher' }),
-      ok(204),
     ]);
     await client.createUser(input);
     expect(JSON.parse(seen[1]?.body ?? '{}')).toMatchObject({ emailVerified: false });
@@ -193,14 +183,6 @@ describe('createUser', () => {
   it('refuses to adopt an existing user (409 → conflict)', async () => {
     const { client } = harness([TOKEN, ok(409)]);
     await expect(client.createUser(input)).rejects.toMatchObject({ kind: 'conflict' });
-  });
-
-  it('refuses a platform role before any request is made', async () => {
-    const { client, fetchStub } = harness([]);
-    await expect(
-      client.createUser({ ...input, roles: ['platform_admin' as never] }),
-    ).rejects.toMatchObject({ kind: 'invalid_role' });
-    expect(fetchStub).not.toHaveBeenCalled();
   });
 
   it('reports a 201 with no Location header as rejected, not as a user with no id', async () => {

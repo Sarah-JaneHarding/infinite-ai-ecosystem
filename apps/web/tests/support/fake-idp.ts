@@ -60,7 +60,6 @@ export function createFakeIdp(): FakeIdp {
     failNext: (method, kind) => void failures.set(method, kind),
     async createUser(input: CreateIdpUserInput) {
       enter('createUser');
-      if (!input.roles.every(isSchoolStaffRole)) throw new IdpError('invalid_role');
       if (byEmail(input.email) !== undefined) throw new IdpError('conflict');
       counter += 1;
       const user: FakeIdpUser = {
@@ -68,7 +67,7 @@ export function createFakeIdp(): FakeIdp {
         email: input.email.toLowerCase(),
         enabled: true,
         tenantId: input.tenantId,
-        roles: [...input.roles],
+        roles: [],
         requiredActions: [...input.requiredActions],
         sessionsRevoked: 0,
         emailsSent: [],

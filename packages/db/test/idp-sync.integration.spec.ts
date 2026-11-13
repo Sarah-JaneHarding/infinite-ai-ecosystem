@@ -12,6 +12,7 @@ import {
   markAccountIdpPending,
   recordAccountIdp,
   recordInvitationIdp,
+  recordInvitationIdpUser,
   requestInvitationIdpSync,
 } from '../src/idp-sync.js';
 import {
@@ -22,6 +23,7 @@ import {
   setAccountStatus,
 } from '../src/provisioning.js';
 import { grantRole } from '../src/role-grant.js';
+import { loadStaffOverview } from '../src/staff-overview.js';
 import { asTenant, startTestDatabase, type TestDatabase } from './support/database.js';
 import { testRules } from './support/provisioning-rules.js';
 
@@ -432,5 +434,70 @@ describe('the work for an account', () => {
     );
     expect(ids).not.toContain(unmanaged.id);
     expect(ids).not.toContain(synced.id);
+  });
+});
+
+describe('remembering the user a half-finished attempt created', () => {
+  it('stores the id without leaving PENDING, and never disturbs a synced invitation', async () => {
+    const admin = await makeAccount(['admin']);
+    const created = await inTenant(TENANT, (tx) =>
+      createInvitation(tx, testRules, {
+        actorAccountId: admin.id,
+        email: `${randomUUID()}@example.invalid`,
+        roles: ['teacher'],
+        expiresAt: FUTURE,
+        now: NOW,
+      }),
+    );
+    if (!created.ok) throw new Error('invite refused');
+    const id = created.invitationId;
+    await inTenant(TENANT, (tx) => requestInvitationIdpSync(tx, id));
+    await inTenant(TENANT, (tx) => recordInvitationIdpUser(tx, id, 'kc-early'));
+    const mid = await inTenant(TENANT, (tx) =>
+      tx.userInvitation.findFirstOrThrow({ where: { id } }),
+    );
+    expect(mid).toMatchObject({ idpState: 'PENDING', idpUserId: 'kc-early' });
+    await inTenant(TENANT, (tx) =>
+      recordInvitationIdp(tx, id, { ok: true }, 'kc-early', NOW),
+    );
+    await inTenant(TENANT, (tx) => recordInvitationIdpUser(tx, id, 'kc-other'));
+    const after = await inTenant(TENANT, (tx) =>
+      tx.userInvitation.findFirstOrThrow({ where: { id } }),
+    );
+    expect(after).toMatchObject({ idpState: 'SYNCED', idpUserId: 'kc-early' });
+  });
+});
+
+describe('the overview counts people the provider has not caught up with', () => {
+  it('counts waiting and failed accounts and live invitations, in this school only', async () => {
+    const tenant = randomUUID();
+    await asTenant(migrator, tenant, randomUUID(), (tx) =>
+      tx.tenant.create({
+        data: {
+          id: tenant,
+          name: 'Count',
+          slug: `cnt-${tenant.slice(0, 8)}`,
+          kind: 'SCHOOL',
+        },
+      }),
+    );
+    const mk = (state: 'NOT_MANAGED' | 'SYNCED') =>
+      makeAccount(['teacher'], state, tenant);
+    const a = await mk('SYNCED');
+    const b = await mk('SYNCED');
+    await mk('SYNCED');
+    await mk('NOT_MANAGED');
+    await asTenant(appRw, tenant, randomUUID(), async (tx) => {
+      await markAccountIdpPending(tx, a.id);
+      await markAccountIdpPending(tx, b.id);
+      await recordAccountIdp(tx, b.id, { ok: false, errorKind: 'unavailable' }, NOW);
+    });
+    const overview = await asTenant(appRw, tenant, randomUUID(), (tx) =>
+      loadStaffOverview(tx, NOW),
+    );
+    expect(overview.idp).toEqual({ pending: 1, failed: 1 });
+    const elsewhere = await inTenant(OTHER_TENANT, (tx) => loadStaffOverview(tx, NOW));
+    // The other school has only a synced account: nothing waiting, and none of this school's four leaks in.
+    expect(elsewhere.idp).toEqual({ pending: 0, failed: 0 });
   });
 });

@@ -26,7 +26,6 @@ export interface CreateIdpUserInput {
   readonly lastName?: string;
   /** Written to the `tenant_id` attribute the realm maps into the token. */
   readonly tenantId: string;
-  readonly roles: readonly SchoolStaffRole[];
   readonly requiredActions: readonly RequiredAction[];
 }
 
@@ -36,8 +35,10 @@ export interface IdpUser {
 }
 
 export interface IdentityProviderAdmin {
-  /** Creates the user. Refuses (`conflict`) rather than adopting an existing one: a stranger's
-   * account with the same address must never be silently taken over. */
+  /** Creates the user, with no roles: the caller records the returned id first and only then sets the
+   * roles, so a failure between the two cannot lose the id of a user that now exists. Refuses (`conflict`)
+   * rather than adopting an existing one: a stranger's account with the same address must never be
+   * silently taken over. */
   createUser(input: CreateIdpUserInput): Promise<IdpUser>;
   findUserByEmail(email: string): Promise<IdpUser | null>;
   /** Makes the user's school-staff realm roles exactly `roles`. Touches no other role. */

@@ -140,7 +140,6 @@ export function createKeycloakAdmin(config: KeycloakAdminConfig): IdentityProvid
 
   return {
     async createUser(input: CreateIdpUserInput): Promise<IdpUser> {
-      checkRoles(input.roles);
       const response = await call('/users', {
         method: 'POST',
         ...json({
@@ -157,9 +156,6 @@ export function createKeycloakAdmin(config: KeycloakAdminConfig): IdentityProvid
       if (response.status !== 201) throw failure(response.status);
       const id = response.headers.get('location')?.split('/').pop();
       if (id === undefined || id === '') throw new IdpError('rejected');
-      // A failure here leaves a user with no roles. That is the safe half-state (they hold nothing
-      // they should not), and the caller records it so a retry finds the user and sets the roles.
-      await mapRoles('POST', id, input.roles);
       return { id, enabled: true };
     },
 

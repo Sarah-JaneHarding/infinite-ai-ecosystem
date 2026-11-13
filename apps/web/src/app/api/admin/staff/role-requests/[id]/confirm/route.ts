@@ -5,6 +5,7 @@
 import { confirmRoleGrant, withTenant } from '@infinite-ai/db';
 import { NextResponse, type NextRequest } from 'next/server';
 
+import { syncIdentityProvider } from '@/lib/idp/sync';
 import { provisioningRules } from '@/lib/provisioning-rules';
 import { IdParam } from '@/lib/staff-contract';
 import { readAdminCaller, refusalResponse } from '@/lib/staff-route';
@@ -27,5 +28,6 @@ export async function POST(
     }),
   );
   if (!result.ok) return refusalResponse(result.reason);
+  await syncIdentityProvider(caller.actor);
   return NextResponse.json({ done: true }, { status: 200 });
 }

@@ -54,6 +54,20 @@ export async function markAccountIdpPending(
   });
 }
 
+/** Remembers the Keycloak user an attempt has just created, BEFORE the rest of the attempt (roles, email),
+ * without leaving PENDING. If the process dies after the user exists, the retry finds it by this id
+ * instead of meeting "already exists" and being unable to tell its own user from a stranger's. */
+export async function recordInvitationIdpUser(
+  tx: TenantClient,
+  invitationId: string,
+  idpUserId: string,
+): Promise<void> {
+  await tx.userInvitation.updateMany({
+    where: { id: invitationId, idpState: { in: ['PENDING', 'FAILED'] } },
+    data: { idpUserId },
+  });
+}
+
 export async function recordInvitationIdp(
   tx: TenantClient,
   invitationId: string,

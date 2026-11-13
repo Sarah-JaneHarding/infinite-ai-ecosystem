@@ -49,6 +49,25 @@ export function StaffOverview({ overview, selfId }: StaffOverviewProps) {
       : '';
   return (
     <div className="flex flex-col gap-10">
+      {overview.idp.pending + overview.idp.failed > 0 && (
+        <div
+          role={overview.idp.failed > 0 ? 'alert' : 'status'}
+          className="flex flex-col gap-1 text-sm text-[var(--iai-warning-text)]"
+        >
+          <p>
+            {overview.idp.failed > 0
+              ? `${overview.idp.failed} sign-in ${overview.idp.failed === 1 ? 'account' : 'accounts'} could not be updated, and ${overview.idp.pending} ${overview.idp.pending === 1 ? 'is' : 'are'} still waiting.`
+              : `${overview.idp.pending} sign-in ${overview.idp.pending === 1 ? 'account is' : 'accounts are'} still being updated.`}{' '}
+            The changes are saved here; the sign-in service has not caught up yet.
+          </p>
+          <StaffActionButton
+            label="Try again now"
+            busyLabel="Trying…"
+            url="/api/admin/staff/idp/reconcile"
+          />
+        </div>
+      )}
+
       {overview.truncated && (
         <p role="status" className="text-sm text-[var(--iai-warning-text)]">
           This list is cut short. Not everyone is shown.
