@@ -12034,3 +12034,129 @@ database errors; regenerating fixed it, and one assertion I had written depended
 | Re-seeding never reopens a spent invitation             | PASS (mutation-checked)                |
 | Identities seed replaced by invitations for every login | **NOT DONE** (waits on 7e)             |
 | `pnpm lint`, `pnpm typecheck`, unit tests               | PASS                                   |
+## Stage 140 — OQ-033 step 7c: "has the identity provider been told?"
+
+**What changed.** Migration `20261113100000_oq033_idp_sync_state` adds an `idp_state` (`NOT_MANAGED` default, `PENDING`, `SYNCED`, `FAILED`) to
+`user_invitation` and `user_account`, plus `idp_user_id` on an invitation and `idp_error_kind` on both, with two CHECKs (an error kind exactly when
+FAILED; a SYNCED invitation names its Keycloak user; an unmanaged one has none). `packages/db/src/idp-sync.ts`: opt an invitation in, mark an
+account out of date, record an outcome, and load the work (invitations ready to become logins, accounts whose Keycloak user is stale — both derived
+from the database each time, so a retry converges). **Every status and role write marks a managed account PENDING in its own transaction**
+(`setAccountStatus`, `revokeRole`, `reinstateAccount`, `applyGrant`), so no route can forget, and a crash between commit and call leaves a marker.
+An account the application never opted in stays `NOT_MANAGED` and is never touched: the application only ever changes Keycloak users it created.
+Accepting an invitation whose Keycloak user we created now requires the signing-in subject to be that user (`subject_mismatch`) and makes the new
+account managed. Error kinds are validated tokens, so a response body or an address cannot be written into a table.
+
+**Tests, run against a real PostgreSQL 16 here (not just in CI).** `idp-sync.integration.spec.ts` (+18), `idp-sync-state-rollback.integration.spec.ts`
+(+5), `idp-sync.spec.ts` (+10 unit), web mappings for the new refusal. I ran the real spec files against a throwaway local Postgres (a local-only
+database shim, not committed) and also re-ran the provisioning, role-grant, staff-overview, invitation-rollback and dev-identity suites: 122 passing,
+which includes the reinstatement, school-scope and `chair.dev` tests that had only run in CI. Mutation-checked: forgetting to mark in
+`setAccountStatus`, forgetting in `grantRole`, marking unmanaged accounts too (fails 4), no subject check, work including unconfirmed invitations,
+and a new account managed regardless of the invitation each fail.
+
+**A defect found in my own work.** The first rollback guard read the tables, which the migrator cannot do under FORCE RLS without a tenant context. It
+is now a temporary CHECK whose validation scan sees every row (the repo's existing pattern); the rollback refuses while any row is in use and leaves the
+schema untouched, succeeds once none is, and re-applies cleanly.
+
+**Not verified.** No Keycloak is involved yet (this is state only); 7d wires the calls and 7e checks them against a real Keycloak.
+
+| Exit gate item                                                  | Result                      |
+| --------------------------------------------------------------- | --------------------------- |
+| Forward migration, tested rollback (refuses in use, repeatable) | PASS (real Postgres)        |
+| Unmanaged rows are never touched                                | PASS (mutation-checked)     |
+| No error text or address can be stored                          | PASS (unit; DB CHECK)       |
+| Cross-school isolation of the new work queries                  | PASS (app_rw, RLS enforced) |
+| `pnpm lint`, `pnpm typecheck`, unit tests                       | PASS                        |
+
+## Stage 138 — OQ-033 step 7a: the Keycloak Admin API port and client
+
+**What changed.** `apps/web/src/lib/idp/`: the `IdentityProviderAdmin` port (create user, find by email, set roles, enable/disable, revoke
+sessions, send Keycloak's execute-actions email) and a `fetch`-based Keycloak client behind it, plus an in-memory fake for later slices
+(`tests/support/fake-idp.ts`). Two properties are enforced by the client itself: only school-staff roles can be mirrored (a platform role is
+refused before any request, so a wiring mistake cannot mint platform authority, §8) and an error carries its kind only (never Keycloak's
+body, a token, a secret or an address). `createUser` refuses an existing user (`conflict`) rather than adopting it, and never marks the address
+verified (Keycloak does, §5). `WebEnvSchema` gains the optional `KEYCLOAK_PROVISIONER_CLIENT_ID/SECRET` (OQ-048 (a)); both empty keeps today's
+by-hand path. No new dependency (rule 9): `fetch` and the existing policy package. **Not wired to anything.**
+
+**Tests.** `keycloak-admin.spec.ts` (+26): the token grant and reuse until 30 s before expiry; relogin after a 401; path-prefixed Keycloak; each
+request's path, verb and body; refusal of a platform role before any request; error mapping and retryability; no secret, token or address in an
+error. Mutation-checked: dropping the role check fails 1, `emailVerified: true` fails 2, `setRoles` touching non-school roles fails 1, an
+unmapped 409 fails 1.
+
+**Not verified.** Every path, verb and body is from knowledge of Keycloak 26 (design §13) and pinned as an assumption by the tests. I downloaded
+Keycloak 26.0.8 (checksum verified) to check them for real, but the sandbox refused to let me run it, and I did not work around that, so **slice
+7e is not done**. Nothing may depend on this client in production until 7e has run.
+
+| Exit gate item                                 | Result                        |
+| ---------------------------------------------- | ----------------------------- |
+| A platform role can never be mirrored          | PASS (unit; mutation-checked) |
+| No secret, token or address in an error        | PASS (unit)                   |
+| Requests match a real Keycloak 26              | **NOT VERIFIED** (7e)         |
+| `pnpm lint`, `pnpm typecheck`, unit tests      | PASS (web)                    |
+| Rollback: revert this commit; no schema change | PASS                          |
+
+## Stage 139 — OQ-033 step 7b: the provisioner client in the realm
+
+**What changed.** `infra/keycloak/realm.json` gains the `infinite-ai-provisioner` client (confidential, service accounts only, no browser/implicit/password
+flows, secret from `${KEYCLOAK_PROVISIONER_CLIENT_SECRET}`, 5-minute tokens) and its service-account user holding exactly four `realm-management`
+roles: `manage-users`, `query-users`, `view-users`, `view-realm` (OQ-048 (a): a dedicated client, not the worker's). `compose.dev.yml` passes the secret
+to Keycloak (without it the import would fail on an unresolved placeholder), `infra/docker/.env.example` names it, the sandbox generator fills it,
+`EnvDocs` documents it. The one existing assertion that every realm user is email-verified now skips service accounts (no mailbox).
+
+**Tests.** `keycloak-realm-provisioner.spec.ts` (+8): the client's flags and placeholder secret; exactly the four roles and none that make it a
+realm administrator; no application role on it; short tokens; the worker's account has no user-management power; no other user has any; the compose,
+example and generator wiring. Mutation-checked: adding `realm-admin`, a literal secret, `platform_admin` on the account and the password grant each fail 1.
+policy 349, security 113, db 277 passing.
+
+**Not verified.** That Keycloak accepts this import and that these four roles suffice for the calls the 7a client makes (slice 7e; I could not run a
+Keycloak here). **Residual risk, in OQ-048:** `manage-users` can map any realm role, so the secret must be treated as an administrator credential.
+
+| Exit gate item                                               | Result                              |
+| ------------------------------------------------------------ | ----------------------------------- |
+| The account cannot become a realm administrator (as written) | PASS (drift test; mutation-checked) |
+| No secret in the repository                                  | PASS (placeholder only)             |
+| Keycloak imports it and the roles suffice                    | **NOT VERIFIED** (7e)               |
+| Rollback: revert this commit; no schema change               | PASS                                |
+
+## Stage 141 — OQ-033 step 7d: wiring the identity provider
+
+**What changed.** After an administrator's change has committed, the application tells Keycloak. `lib/idp/reconcile.ts` (pure orchestration over the
+port and a store) creates the Keycloak user for an invitation that is ready, sets its school-staff roles, and has Keycloak send the verification and
+password email; for an account whose state changed it mirrors the roles it holds now and enables or disables it. `lib/idp/sync.ts` runs it after the
+seven routes that change what Keycloak must know (invite, confirm an invitation, confirm a role request, grant, revoke a role, suspend/offboard,
+reinstate) and **never throws**: the administrator's action already succeeded, and a provider problem is state, not an error. `invitations` opts the new
+invitation in inside its own transaction, and only when a provider is configured (`KEYCLOAK_PROVISIONER_CLIENT_ID/SECRET`); with neither set nothing changes
+(the by-hand pilot path). `POST /api/admin/staff/idp/reconcile` is the administrator's "try again", and the overview shows a banner when the sign-in
+service has not caught up (waiting, and failed). `createUser` no longer maps roles itself: the id is recorded first, then roles are set.
+
+**Rules it keeps, each tested and mutation-checked.** Never adopt a Keycloak user it did not create (an existing address is a `conflict`); record the new
+user's id before doing anything else to it; ending access is ordered (disable, end sessions, then roles); only school-staff roles are ever mirrored; a
+failure is one item's and is recorded as a kind, never a message, an address or an upstream body.
+
+**Tests.** `idp-reconcile.spec.ts` (+16), `idp-sync.spec.ts` (+3), `idp-provider.spec.ts` (+5), `idp-reconcile-route.spec.ts` (+8), banner (+3), route specs
+(sync after the change, never before, never on refusal or for a non-administrator; invite opts in inside the same transaction; +22 across both),
+`staff-overview.integration.spec.ts` and `idp-sync.integration.spec.ts` (+2, run against a real PostgreSQL 16 here: 28 passing). Mutation-checked:
+adopting an existing user (fails 3), remembering the id late, ending sessions before disabling, pushing every role, not refusing a non-staff role (fails 3).
+One mutation initially survived because its test was weak (the fake refused the platform role, so the account failed and the user looked unchanged); the test
+now requires the sync to succeed.
+
+**Known gaps, stated plainly.**
+
+1. **Not verified against Keycloak (slice 7e).** Every call is from knowledge of the Admin API; I could not run a Keycloak here.
+2. **A revoked or expired invitation leaves its Keycloak user in place.** It can authenticate to Keycloak but links to nothing (acceptance refuses with
+   `no_invitation`), so it is not a way in, but it is clutter and an unverified identity. Cleaning it up needs a decision (disable, or delete) and is not built.
+3. **A school that created users by hand first** will see `conflict` for those addresses once it opts in: the application will not adopt them. Clear them in
+   Keycloak or leave them unmanaged.
+4. **It runs inside the request**, not in a worker, so an administrator's action waits for the Keycloak calls (each has a 10-second ceiling). Two reconciles
+   at once cannot corrupt anything (recording only moves PENDING/FAILED rows; the recorded id lets the second finish the first's user) but one may report
+   `conflict` for a user the other just made; "try again" clears it.
+5. **No OTP action is sent.** The browser flow enrols a device on first sign-in for each MFA role, so `CONFIGURE_TOTP` is not added.
+6. The Keycloak email needs SMTP configured on Keycloak (OQ-048 (d)); until it is, the operator sends the first sign-in link by hand.
+
+| Exit gate item                                              | Result                        |
+| ----------------------------------------------------------- | ----------------------------- |
+| Never adopts a Keycloak user it did not create              | PASS (unit; mutation-checked) |
+| Told only after commit; never on refusal or for a non-admin | PASS (route specs)            |
+| A provider failure never fails the administrator's action   | PASS (unit)                   |
+| No message, address or upstream body is recorded            | PASS (unit; DB token check)   |
+| Behaves against a real Keycloak 26                          | **NOT VERIFIED** (7e)         |
+| `pnpm lint`, `pnpm typecheck`, unit tests                   | PASS                          |

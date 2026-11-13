@@ -117,6 +117,9 @@ services:
       # realm file references — apps/web's AUTH_KEYCLOAK_SECRET must match the web one.
       KEYCLOAK_WEB_CLIENT_SECRET: ${KEYCLOAK_WEB_CLIENT_SECRET:?set KEYCLOAK_WEB_CLIENT_SECRET in your local .env}
       KEYCLOAK_WORKER_CLIENT_SECRET: ${KEYCLOAK_WORKER_CLIENT_SECRET:?set KEYCLOAK_WORKER_CLIENT_SECRET in your local .env}
+      # The Admin API service account that creates and updates users (OQ-033 step 7). Same value as the
+      # web app's KEYCLOAK_PROVISIONER_CLIENT_SECRET. It holds user-management roles only.
+      KEYCLOAK_PROVISIONER_CLIENT_SECRET: ${KEYCLOAK_PROVISIONER_CLIENT_SECRET:?set KEYCLOAK_PROVISIONER_CLIENT_SECRET in your local .env}
       # Initial password for the nine dev-login users in realm.json (temporary: true, so
       # Keycloak forces a change on first login). Without this the realm file's
       # ${SEED_USER_PASSWORD} placeholder is never resolved, the literal text is checked

@@ -5,11 +5,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // actor come from the verified token alone; the request cannot widen them; a person acting as any
 // role but `admin` — or with no active role — does nothing; the rules, not the route, decide who may
 // confer what, and a refusal is answered without echoing an address.
-const { getToken, withTenant, createInvitation, revokeInvitation } = vi.hoisted(() => ({
+const {
+  getToken,
+  withTenant,
+  createInvitation,
+  revokeInvitation,
+  requestInvitationIdpSync,
+  configured,
+  syncIdentityProvider,
+} = vi.hoisted(() => ({
   getToken: vi.fn(),
   withTenant: vi.fn(),
   createInvitation: vi.fn(),
   revokeInvitation: vi.fn(),
+  requestInvitationIdpSync: vi.fn(),
+  configured: vi.fn(),
+  syncIdentityProvider: vi.fn(),
 }));
 
 vi.mock('next-auth/jwt', () => ({ getToken }));
@@ -17,8 +28,13 @@ vi.mock('@infinite-ai/db', () => ({
   withTenant,
   createInvitation,
   revokeInvitation,
+  requestInvitationIdpSync,
   defaultInvitationExpiry: (now: Date) => new Date(now.getTime() + 14 * 86_400_000),
 }));
+vi.mock('../../src/lib/idp/provider', () => ({
+  isIdentityProviderConfigured: configured,
+}));
+vi.mock('../../src/lib/idp/sync', () => ({ syncIdentityProvider }));
 vi.mock('../../src/lib/env', () => ({ getWebEnv: () => ({ NEXTAUTH_SECRET: 'x' }) }));
 
 import { POST as invite } from '../../src/app/api/admin/staff/invitations/route.js';
@@ -50,8 +66,18 @@ const revokeRequest = (id = INVITATION) =>
 const VALID = { email: 'new@example.invalid', roles: ['teacher', 'hod'] };
 
 beforeEach(() => {
-  for (const fn of [getToken, withTenant, createInvitation, revokeInvitation])
+  for (const fn of [
+    getToken,
+    withTenant,
+    createInvitation,
+    revokeInvitation,
+    requestInvitationIdpSync,
+    configured,
+    syncIdentityProvider,
+  ])
     fn.mockReset();
+  configured.mockReturnValue(false);
+  syncIdentityProvider.mockResolvedValue(null);
   withTenant.mockImplementation((_ctx, fn: (tx: unknown) => unknown) => fn(TX));
   createInvitation.mockResolvedValue({
     ok: true,
@@ -301,5 +327,42 @@ describe('school scope on an invitation', () => {
       (await invite(inviteRequest({ ...VALID, schoolId: 'not-a-uuid' }))).status,
     ).toBe(400);
     expect(createInvitation).not.toHaveBeenCalled();
+  });
+});
+
+// OQ-033 step 7d: an invitation is opted in to identity-provider sync only when one is connected, in the
+// same transaction as the invitation, and the provider is told only after it has committed.
+describe('inviting when an identity provider is connected', () => {
+  const body = { email: 'new.teacher@example.invalid', roles: ['teacher'] };
+
+  it('opts the new invitation in inside the same transaction, then syncs', async () => {
+    configured.mockReturnValue(true);
+    getToken.mockResolvedValue(ADMIN);
+    const order: string[] = [];
+    requestInvitationIdpSync.mockImplementation(async () => (order.push('opt-in'), true));
+    syncIdentityProvider.mockImplementation(async () => (order.push('sync'), null));
+    const response = await invite(inviteRequest(body));
+    expect(response.status).toBe(201);
+    expect(requestInvitationIdpSync).toHaveBeenCalledWith(TX, INVITATION);
+    expect(order).toEqual(['opt-in', 'sync']);
+    expect(syncIdentityProvider).toHaveBeenCalledWith({
+      tenantId: TENANT,
+      actorId: ACCOUNT,
+    });
+  });
+
+  it('leaves the invitation unmanaged when no provider is connected (the by-hand pilot path)', async () => {
+    getToken.mockResolvedValue(ADMIN);
+    expect((await invite(inviteRequest(body))).status).toBe(201);
+    expect(requestInvitationIdpSync).not.toHaveBeenCalled();
+  });
+
+  it('opts nothing in, and syncs nothing, when the invitation is refused', async () => {
+    configured.mockReturnValue(true);
+    getToken.mockResolvedValue(ADMIN);
+    createInvitation.mockResolvedValue({ ok: false, reason: 'actor_not_admin' });
+    expect((await invite(inviteRequest(body))).status).toBe(403);
+    expect(requestInvitationIdpSync).not.toHaveBeenCalled();
+    expect(syncIdentityProvider).not.toHaveBeenCalled();
   });
 });

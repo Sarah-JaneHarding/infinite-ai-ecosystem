@@ -226,4 +226,16 @@ export {
   type RequestRoleGrantInput,
   type RequestRoleGrantResult,
 } from './role-grant.js';
+export {
+  loadIdpAccountWork,
+  loadIdpInvitationWork,
+  markAccountIdpPending,
+  recordAccountIdp,
+  recordInvitationIdp,
+  recordInvitationIdpUser,
+  requestInvitationIdpSync,
+  type IdpAccountWork,
+  type IdpInvitationWork,
+  type IdpOutcome,
+} from './idp-sync.js';
 export { isTenantActive } from './tenant-status.js';

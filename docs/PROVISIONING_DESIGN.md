@@ -561,16 +561,16 @@ create a user even if code asked it to.
 
 **Step 7, in slices (each its own PR):**
 
-- **7a — a Keycloak Admin API port and client.** One narrow interface (`createUser`, `setRealmRoles`,
+- **7a — a Keycloak Admin API port and client** _(built, Stage 138; unverified against Keycloak until 7e)_. One narrow interface (`createUser`, `setRealmRoles`,
   `disableUser`, `enableUser`, `sendExecuteActionsEmail`), a `fetch`-based implementation (no new dependency, so
   rule 9 is untouched) and an in-memory fake. Contract-tested against recorded request/response shapes with an
   injected `fetch`. Secrets come from `packages/config` only; no token is logged. **Not wired to anything.**
-- **7b — a dedicated service-account client and its realm config** (see OQ-048 (a) for why not the worker's), granted
+- **7b — a dedicated service-account client and its realm config** _(built, Stage 139; unverified against Keycloak until 7e)_ (see OQ-048 (a) for why not the worker's), granted
   only the roles it needs, with a drift test that fails if the realm file grants it more.
-- **7c — the schema for "the identity provider has been told".** An `idp_state` on the invitation / account
+- **7c — the schema for "the identity provider has been told"** _(built, Stage 140)_. An `idp_state` on the invitation / account
   (PENDING, SYNCED, FAILED + last error class, never a message that could carry an address), so a Keycloak failure
   after the database commit is visible and retryable instead of silent. This is a migration (rule 10).
-- **7d — wire it.** After the database transaction commits (never inside it: a network call must not hold the
+- **7d — wire it** _(built, Stage 141; unverified against Keycloak until 7e)_. After the database transaction commits (never inside it: a network call must not hold the
   provisioning advisory lock): invitation confirmed → create the Keycloak user (`tenant_id` attribute, mirrored
   roles, required actions); role granted/revoked → mirror; **suspended / offboarded → disable the user and revoke its
   sessions** (this is also the real fix for §6's stale session, which the ACTIVE-account gate only half closes);
