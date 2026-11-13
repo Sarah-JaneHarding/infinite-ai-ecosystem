@@ -1,0 +1,14 @@
+# Applied on top of infra/docker/compose.apps.yml by `pnpm sandbox staging` (and only there).
+#
+#   docker compose -p infinite-ai-sandbox-apps --env-file infra/sandbox/.env \
+#     -f infra/docker/compose.apps.yml -f infra/sandbox/compose.staging.yml ...
+#
+# One change: the web UI is published on loopback only. compose.apps.yml publishes it on every interface
+# (`3000:3000`), which is right for a deployment and wrong for a sandbox: a staging UI with temporary dev
+# passwords must not be reachable from the LAN. The gateway already binds loopback in the base file.
+# `!override` replaces the base file's list instead of adding to it (Compose 2.24+, which the sandbox requires).
+
+services:
+  web:
+    ports: !override
+      - '127.0.0.1:3000:3000'

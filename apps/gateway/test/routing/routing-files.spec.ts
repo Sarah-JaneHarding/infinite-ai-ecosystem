@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { CredentialPool } from '../../src/credentials/pool.js';
 import { parseRoutingConfig } from '../../src/routing/config.js';
+import { deriveSingleProviderRouting } from '../../src/routing/single-provider.js';
 import { createRouter } from '../../src/routing/router.js';
 import type { ProviderAdapter } from '../../src/adapters/types.js';
 
@@ -130,5 +131,36 @@ describe('gateway boot check against the shipped routing files', () => {
     expect(JSON.stringify(calls[0])).toContain(
       anthropicOnly[JUDGE]?.[0]?.concreteModel ?? 'missing',
     );
+  });
+});
+
+// `routing.stub.json` points every logical model at the staging sandbox's stand-in model
+// (infra/sandbox/model-stub). Like the Anthropic file it is derived, never independent, so a route added to
+// `routing.json` cannot be missing from the stub and make the staging gateway answer "unknown model".
+describe('routing.stub.json — derived from routing.json for the staging sandbox', () => {
+  const stub = readRouting('routing.stub.json');
+
+  it('is exactly routing.json sent to one provider and one model', () => {
+    expect(stub).toEqual(
+      deriveSingleProviderRouting(shipped, {
+        provider: 'local',
+        heavyModel: 'sandbox-stub',
+        lightModel: 'sandbox-stub',
+      }),
+    );
+  });
+
+  it('names only the local provider and the stub model, one link per route', () => {
+    for (const [model, chain] of Object.entries(stub)) {
+      expect(chain, model).toEqual([
+        { provider: 'local', concreteModel: 'sandbox-stub' },
+      ]);
+    }
+  });
+
+  it('drops only embedding.encode, which the stub does not serve', () => {
+    expect(Object.keys(shipped).filter((model) => !(model in stub))).toEqual([
+      'embedding.encode',
+    ]);
   });
 });

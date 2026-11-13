@@ -12009,6 +12009,36 @@ socket, which is root on the host) and the Playwright tiers.
 | `rsync` (GPL-3.0) in the toolbox                           | OPEN (rule 9 approval — docs/DEPENDENCIES.md)    |
 | Rollback: revert this commit; no schema change             | PASS                                             |
 
+## Stage 143 — a staging sandbox: the whole platform on a stand-in model
+
+**What changed.** `pnpm sandbox staging` brings up the data plane, migrates and seeds, starts `infra/sandbox/model-stub` (a dependency-free,
+OpenAI-compatible stand-in model that calls nothing and says so in every reply), then builds and starts web + worker + gateway with the gateway routed to
+it (`apps/gateway/routing.stub.json`, derived from `routing.json`). It strips every real provider credential from the apps' environment, publishes the UI on
+loopback only (`infra/sandbox/compose.staging.yml`), and publishes no port for the stub. `pnpm sandbox build` runs `pnpm build` in the toolbox ("test
+container"); `staging-down` stops it. No new dependency (rule 9): the stub is `node:http`, on the Node image the sandbox already records.
+
+**What it can and cannot assess, plainly.** It exercises the UI, the roles, the approval gates, guardrails, budgets, audit and traces with no credentials and
+no spend. It cannot show what an agent would write: the stub produces no real content, so a validated agent fails validation, which is the platform failing
+closed. Real output needs test credentials with a spend limit (`pnpm sandbox apps`).
+
+**Tests.** `apps/gateway/test/model-stub.spec.ts` (+14): the stub as a real process through the gateway's real `local` adapter, plus its refusals and a
+no-outbound-call / no-body-in-logs guard; `routing-files.spec.ts` (+3: the stub routing is derived and drops only embeddings); `sandbox.spec.ts` (+9: profile,
+no published port, hardening, loopback UI, credential stripping, gateway wiring, ordering, the plain-words message, the commands). Mutation-checked: publishing
+a stub port, a writable stub filesystem, the UI on all interfaces, letting an Anthropic key through, and starting the apps before the stub each fail one test.
+Defects found by running it: the stub dropped the connection on an oversized body instead of answering 413 (fixed to drain and answer); my first contract test
+called the adapter with the wrong argument order, which the real adapter's types caught.
+
+**Not verified.** Nothing was started: there is no Docker daemon here. Whether the images build and boot, whether sign-in and the UI work against this stack,
+and whether an agent run reaches the stub end to end are unproven. `docker compose config` on the merged files, the stub as a real process, and the gateway's
+real adapter against it are what was run.
+
+| Exit gate item                                            | Result                                                      |
+| --------------------------------------------------------- | ----------------------------------------------------------- |
+| No real provider credential reaches a staging gateway     | PASS (`docker compose config`, both runs; mutation-checked) |
+| The stub is unreachable from outside the sandbox network  | PASS (config: no ports; guard test)                         |
+| The stub speaks what the gateway's real adapter expects   | PASS (real adapter, real process)                           |
+| Images build, apps boot, UI works, an agent run completes | **NOT VERIFIED** (no Docker daemon)                         |
+| `pnpm lint`, `pnpm typecheck`, unit tests                 | PASS (gateway 179, security 122)                            |
 ## Stage 142 — OQ-033 step 8a: a dev login that goes through the real invitation path
 
 **What changed.** `invitee.dev` (Keycloak user with a fixed id, verified, role `teacher`) and a seeded **pending invitation with no account**
