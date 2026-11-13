@@ -774,6 +774,12 @@ choices, so they are the owner's; recommendations are given so a one-line answer
   Keycloak, and I have not verified that Keycloak can use it. _Recommend:_ for the pilot, an operator sends the first sign-in
   link by hand (as §5 already allows for three schools), and SMTP is a separate, later decision.
 
+**Residual risk of (a), stated plainly.** A dedicated client limits the blast radius to identity management, but `manage-users` can map _any_
+realm role to a user — including `platform_admin`. The application's client refuses to (only school-staff roles can be mirrored, tested), but that
+protects against our own bugs, not against the secret leaking. So the secret is as sensitive as an administrator credential: keep it in AWS Secrets
+Manager in production, rotate it, keep Keycloak's Admin API reachable from the application only, and turn on Keycloak admin events with an alert on
+any realm-role mapping to a platform role. Keycloak's fine-grained admin permissions could narrow which roles it may map; I have not designed that.
+
 Nothing in 7a (the unwired client and its fake) depends on these answers, so it can start now; 7b onward waits on (a) and (b).
 **Decision (2026-11-12, the owner):** "Yes they can be reinstated." Built in Stage 135 as `reinstateAccount` and
 `POST /api/admin/staff/accounts/[id]/reinstate`.

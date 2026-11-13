@@ -211,6 +211,11 @@ the account is resolved when you sign in, not on every request. A realm that was
 must be re-imported (the old users have random ids). `platform-support.dev` and `platform-admin.dev` have no tenant of
 their own and get no account.
 
+**Provisioner secret (OQ-033 step 7).** `KEYCLOAK_PROVISIONER_CLIENT_SECRET` is a fourth client secret in `infra/docker/.env`: the realm
+import substitutes it into the `infinite-ai-provisioner` client, so the stack will not start without it (`pnpm sandbox env` generates it). To let
+the web app use it, put the same value and `KEYCLOAK_PROVISIONER_CLIENT_ID=infinite-ai-provisioner` in `apps/web/.env`; leave them empty to keep
+creating Keycloak users by hand. A realm imported before this change must be re-imported to gain the client.
+
 **One-time codes in dev (OQ-036).** The realm requires a one-time code for `admin.dev`, `smt.dev`, `platform-support.dev`,
 `platform-admin.dev` and `sbst_chair`. The first time you sign in as one of them, Keycloak asks you to set up an authenticator app (any
 TOTP app; the QR code is on that screen) and then asks for a code on every later sign-in. The other dev users sign in with the

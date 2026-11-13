@@ -12035,3 +12035,26 @@ Keycloak 26.0.8 (checksum verified) to check them for real, but the sandbox refu
 | Requests match a real Keycloak 26              | **NOT VERIFIED** (7e)         |
 | `pnpm lint`, `pnpm typecheck`, unit tests      | PASS (web)                    |
 | Rollback: revert this commit; no schema change | PASS                          |
+
+## Stage 139 — OQ-033 step 7b: the provisioner client in the realm
+
+**What changed.** `infra/keycloak/realm.json` gains the `infinite-ai-provisioner` client (confidential, service accounts only, no browser/implicit/password
+flows, secret from `${KEYCLOAK_PROVISIONER_CLIENT_SECRET}`, 5-minute tokens) and its service-account user holding exactly four `realm-management`
+roles: `manage-users`, `query-users`, `view-users`, `view-realm` (OQ-048 (a): a dedicated client, not the worker's). `compose.dev.yml` passes the secret
+to Keycloak (without it the import would fail on an unresolved placeholder), `infra/docker/.env.example` names it, the sandbox generator fills it,
+`EnvDocs` documents it. The one existing assertion that every realm user is email-verified now skips service accounts (no mailbox).
+
+**Tests.** `keycloak-realm-provisioner.spec.ts` (+8): the client's flags and placeholder secret; exactly the four roles and none that make it a
+realm administrator; no application role on it; short tokens; the worker's account has no user-management power; no other user has any; the compose,
+example and generator wiring. Mutation-checked: adding `realm-admin`, a literal secret, `platform_admin` on the account and the password grant each fail 1.
+policy 349, security 113, db 277 passing.
+
+**Not verified.** That Keycloak accepts this import and that these four roles suffice for the calls the 7a client makes (slice 7e; I could not run a
+Keycloak here). **Residual risk, in OQ-048:** `manage-users` can map any realm role, so the secret must be treated as an administrator credential.
+
+| Exit gate item                                               | Result                              |
+| ------------------------------------------------------------ | ----------------------------------- |
+| The account cannot become a realm administrator (as written) | PASS (drift test; mutation-checked) |
+| No secret in the repository                                  | PASS (placeholder only)             |
+| Keycloak imports it and the roles suffice                    | **NOT VERIFIED** (7e)               |
+| Rollback: revert this commit; no schema change               | PASS                                |
