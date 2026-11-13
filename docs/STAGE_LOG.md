@@ -12058,3 +12058,36 @@ Keycloak here). **Residual risk, in OQ-048:** `manage-users` can map any realm r
 | No secret in the repository                                  | PASS (placeholder only)             |
 | Keycloak imports it and the roles suffice                    | **NOT VERIFIED** (7e)               |
 | Rollback: revert this commit; no schema change               | PASS                                |
+
+## Stage 140 — OQ-033 step 7c: "has the identity provider been told?"
+
+**What changed.** Migration `20261113100000_oq033_idp_sync_state` adds an `idp_state` (`NOT_MANAGED` default, `PENDING`, `SYNCED`, `FAILED`) to
+`user_invitation` and `user_account`, plus `idp_user_id` on an invitation and `idp_error_kind` on both, with two CHECKs (an error kind exactly when
+FAILED; a SYNCED invitation names its Keycloak user; an unmanaged one has none). `packages/db/src/idp-sync.ts`: opt an invitation in, mark an
+account out of date, record an outcome, and load the work (invitations ready to become logins, accounts whose Keycloak user is stale — both derived
+from the database each time, so a retry converges). **Every status and role write marks a managed account PENDING in its own transaction**
+(`setAccountStatus`, `revokeRole`, `reinstateAccount`, `applyGrant`), so no route can forget, and a crash between commit and call leaves a marker.
+An account the application never opted in stays `NOT_MANAGED` and is never touched: the application only ever changes Keycloak users it created.
+Accepting an invitation whose Keycloak user we created now requires the signing-in subject to be that user (`subject_mismatch`) and makes the new
+account managed. Error kinds are validated tokens, so a response body or an address cannot be written into a table.
+
+**Tests, run against a real PostgreSQL 16 here (not just in CI).** `idp-sync.integration.spec.ts` (+18), `idp-sync-state-rollback.integration.spec.ts`
+(+5), `idp-sync.spec.ts` (+10 unit), web mappings for the new refusal. I ran the real spec files against a throwaway local Postgres (a local-only
+database shim, not committed) and also re-ran the provisioning, role-grant, staff-overview, invitation-rollback and dev-identity suites: 122 passing,
+which includes the reinstatement, school-scope and `chair.dev` tests that had only run in CI. Mutation-checked: forgetting to mark in
+`setAccountStatus`, forgetting in `grantRole`, marking unmanaged accounts too (fails 4), no subject check, work including unconfirmed invitations,
+and a new account managed regardless of the invitation each fail.
+
+**A defect found in my own work.** The first rollback guard read the tables, which the migrator cannot do under FORCE RLS without a tenant context. It
+is now a temporary CHECK whose validation scan sees every row (the repo's existing pattern); the rollback refuses while any row is in use and leaves the
+schema untouched, succeeds once none is, and re-applies cleanly.
+
+**Not verified.** No Keycloak is involved yet (this is state only); 7d wires the calls and 7e checks them against a real Keycloak.
+
+| Exit gate item                                                  | Result                      |
+| --------------------------------------------------------------- | --------------------------- |
+| Forward migration, tested rollback (refuses in use, repeatable) | PASS (real Postgres)        |
+| Unmanaged rows are never touched                                | PASS (mutation-checked)     |
+| No error text or address can be stored                          | PASS (unit; DB CHECK)       |
+| Cross-school isolation of the new work queries                  | PASS (app_rw, RLS enforced) |
+| `pnpm lint`, `pnpm typecheck`, unit tests                       | PASS                        |
