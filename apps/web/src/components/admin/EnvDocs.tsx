@@ -221,6 +221,19 @@ export const ENV_VARIABLES: readonly EnvVariableDoc[] = [
     source: 'Set in infra/docker/.env to match AUTH_KEYCLOAK_SECRET in apps/web.',
   },
   {
+    name: 'KEYCLOAK_PROVISIONER_CLIENT_SECRET',
+    category: 'Authentication',
+    scope: 'shared',
+    requiredForWeb: false,
+    isSecret: true,
+    exampleValue: 'provisioner-secret-key-uuid',
+    description:
+      'Service account client secret for the Keycloak Admin API client that creates and updates school staff users.',
+    usage:
+      'Substituted into infra/keycloak/realm.json at import, and used by apps/web to log in as infinite-ai-provisioner (OQ-033 step 7). Leave unset to create Keycloak users by hand.',
+    source: 'Set the same value in infra/docker/.env and apps/web/.env.',
+  },
+  {
     name: 'KEYCLOAK_WORKER_CLIENT_SECRET',
     category: 'Authentication',
     scope: 'infra',

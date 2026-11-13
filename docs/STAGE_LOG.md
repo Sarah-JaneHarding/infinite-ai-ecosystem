@@ -12041,3 +12041,51 @@ schema untouched, succeeds once none is, and re-applies cleanly.
 | No error text or address can be stored                          | PASS (unit; DB CHECK)       |
 | Cross-school isolation of the new work queries                  | PASS (app_rw, RLS enforced) |
 | `pnpm lint`, `pnpm typecheck`, unit tests                       | PASS                        |
+## Stage 138 — OQ-033 step 7a: the Keycloak Admin API port and client
+
+**What changed.** `apps/web/src/lib/idp/`: the `IdentityProviderAdmin` port (create user, find by email, set roles, enable/disable, revoke
+sessions, send Keycloak's execute-actions email) and a `fetch`-based Keycloak client behind it, plus an in-memory fake for later slices
+(`tests/support/fake-idp.ts`). Two properties are enforced by the client itself: only school-staff roles can be mirrored (a platform role is
+refused before any request, so a wiring mistake cannot mint platform authority, §8) and an error carries its kind only (never Keycloak's
+body, a token, a secret or an address). `createUser` refuses an existing user (`conflict`) rather than adopting it, and never marks the address
+verified (Keycloak does, §5). `WebEnvSchema` gains the optional `KEYCLOAK_PROVISIONER_CLIENT_ID/SECRET` (OQ-048 (a)); both empty keeps today's
+by-hand path. No new dependency (rule 9): `fetch` and the existing policy package. **Not wired to anything.**
+
+**Tests.** `keycloak-admin.spec.ts` (+26): the token grant and reuse until 30 s before expiry; relogin after a 401; path-prefixed Keycloak; each
+request's path, verb and body; refusal of a platform role before any request; error mapping and retryability; no secret, token or address in an
+error. Mutation-checked: dropping the role check fails 1, `emailVerified: true` fails 2, `setRoles` touching non-school roles fails 1, an
+unmapped 409 fails 1.
+
+**Not verified.** Every path, verb and body is from knowledge of Keycloak 26 (design §13) and pinned as an assumption by the tests. I downloaded
+Keycloak 26.0.8 (checksum verified) to check them for real, but the sandbox refused to let me run it, and I did not work around that, so **slice
+7e is not done**. Nothing may depend on this client in production until 7e has run.
+
+| Exit gate item                                 | Result                        |
+| ---------------------------------------------- | ----------------------------- |
+| A platform role can never be mirrored          | PASS (unit; mutation-checked) |
+| No secret, token or address in an error        | PASS (unit)                   |
+| Requests match a real Keycloak 26              | **NOT VERIFIED** (7e)         |
+| `pnpm lint`, `pnpm typecheck`, unit tests      | PASS (web)                    |
+| Rollback: revert this commit; no schema change | PASS                          |
+## Stage 139 — OQ-033 step 7b: the provisioner client in the realm
+
+**What changed.** `infra/keycloak/realm.json` gains the `infinite-ai-provisioner` client (confidential, service accounts only, no browser/implicit/password
+flows, secret from `${KEYCLOAK_PROVISIONER_CLIENT_SECRET}`, 5-minute tokens) and its service-account user holding exactly four `realm-management`
+roles: `manage-users`, `query-users`, `view-users`, `view-realm` (OQ-048 (a): a dedicated client, not the worker's). `compose.dev.yml` passes the secret
+to Keycloak (without it the import would fail on an unresolved placeholder), `infra/docker/.env.example` names it, the sandbox generator fills it,
+`EnvDocs` documents it. The one existing assertion that every realm user is email-verified now skips service accounts (no mailbox).
+
+**Tests.** `keycloak-realm-provisioner.spec.ts` (+8): the client's flags and placeholder secret; exactly the four roles and none that make it a
+realm administrator; no application role on it; short tokens; the worker's account has no user-management power; no other user has any; the compose,
+example and generator wiring. Mutation-checked: adding `realm-admin`, a literal secret, `platform_admin` on the account and the password grant each fail 1.
+policy 349, security 113, db 277 passing.
+
+**Not verified.** That Keycloak accepts this import and that these four roles suffice for the calls the 7a client makes (slice 7e; I could not run a
+Keycloak here). **Residual risk, in OQ-048:** `manage-users` can map any realm role, so the secret must be treated as an administrator credential.
+
+| Exit gate item                                               | Result                              |
+| ------------------------------------------------------------ | ----------------------------------- |
+| The account cannot become a realm administrator (as written) | PASS (drift test; mutation-checked) |
+| No secret in the repository                                  | PASS (placeholder only)             |
+| Keycloak imports it and the roles suffice                    | **NOT VERIFIED** (7e)               |
+| Rollback: revert this commit; no schema change               | PASS                                |
