@@ -16,6 +16,7 @@ import {
 } from '@infinite-ai/db';
 import { NextResponse, type NextRequest } from 'next/server';
 
+import { syncIdentityProvider } from '@/lib/idp/sync';
 import { provisioningRules } from '@/lib/provisioning-rules';
 import { GrantRolesBody, IdParam } from '@/lib/staff-contract';
 import { readAdminCaller, readJsonBody, refusalResponse } from '@/lib/staff-route';
@@ -52,6 +53,7 @@ export async function POST(
       }),
     );
     if (!result.ok) return refusalResponse(result.reason);
+    await syncIdentityProvider(caller.actor);
     return NextResponse.json({ outcome: 'granted' }, { status: 200 });
   }
 
@@ -66,5 +68,6 @@ export async function POST(
     }),
   );
   if (!result.ok) return refusalResponse(result.reason);
+  await syncIdentityProvider(caller.actor);
   return NextResponse.json({ outcome: result.outcome }, { status: 200 });
 }

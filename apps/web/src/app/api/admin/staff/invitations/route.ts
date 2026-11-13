@@ -6,9 +6,16 @@
 // transaction, under the school's provisioning lock, and the invitation and its audit event commit
 // together. `readAdminCaller` also requires the session to be acting as `admin`.
 
-import { createInvitation, defaultInvitationExpiry, withTenant } from '@infinite-ai/db';
+import {
+  createInvitation,
+  defaultInvitationExpiry,
+  requestInvitationIdpSync,
+  withTenant,
+} from '@infinite-ai/db';
 import { NextResponse, type NextRequest } from 'next/server';
 
+import { isIdentityProviderConfigured } from '@/lib/idp/provider';
+import { syncIdentityProvider } from '@/lib/idp/sync';
 import { provisioningRules } from '@/lib/provisioning-rules';
 import { InviteStaffBody } from '@/lib/staff-contract';
 import { readAdminCaller, readJsonBody, refusalResponse } from '@/lib/staff-route';
@@ -21,17 +28,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const { tenantId, actorId } = caller.actor;
   const now = new Date();
-  const result = await withTenant({ tenantId, actorId }, (tx) =>
-    createInvitation(tx, provisioningRules, {
+  // Opt the invitation in only when an identity provider is connected, and in the SAME transaction as the
+  // invitation: it either exists as something Keycloak must hear about or as the by-hand kind, never both.
+  const managed = isIdentityProviderConfigured();
+  const result = await withTenant({ tenantId, actorId }, async (tx) => {
+    const created = await createInvitation(tx, provisioningRules, {
       actorAccountId: actorId,
       email: body.data.email,
       roles: body.data.roles,
       ...(body.data.schoolId === undefined ? {} : { schoolId: body.data.schoolId }),
       expiresAt: defaultInvitationExpiry(now),
       now,
-    }),
-  );
+    });
+    if (created.ok && managed) await requestInvitationIdpSync(tx, created.invitationId);
+    return created;
+  });
   if (!result.ok) return refusalResponse(result.reason);
+  await syncIdentityProvider(caller.actor);
   return NextResponse.json(
     { invitationId: result.invitationId, confirmation: result.confirmation },
     { status: 201 },

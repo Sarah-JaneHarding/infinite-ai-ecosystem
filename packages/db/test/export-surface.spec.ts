@@ -100,6 +100,7 @@ describe('package export surface', () => {
       'recordAccountIdp',
       'recordContradictionResolution',
       'recordInvitationIdp',
+      'recordInvitationIdpUser',
       'reinstateAccount',
       'requestInvitationIdpSync',
       'requestRoleGrant',

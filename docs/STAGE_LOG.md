@@ -12041,6 +12041,7 @@ schema untouched, succeeds once none is, and re-applies cleanly.
 | No error text or address can be stored                          | PASS (unit; DB CHECK)       |
 | Cross-school isolation of the new work queries                  | PASS (app_rw, RLS enforced) |
 | `pnpm lint`, `pnpm typecheck`, unit tests                       | PASS                        |
+
 ## Stage 138 — OQ-033 step 7a: the Keycloak Admin API port and client
 
 **What changed.** `apps/web/src/lib/idp/`: the `IdentityProviderAdmin` port (create user, find by email, set roles, enable/disable, revoke
@@ -12067,6 +12068,7 @@ Keycloak 26.0.8 (checksum verified) to check them for real, but the sandbox refu
 | Requests match a real Keycloak 26              | **NOT VERIFIED** (7e)         |
 | `pnpm lint`, `pnpm typecheck`, unit tests      | PASS (web)                    |
 | Rollback: revert this commit; no schema change | PASS                          |
+
 ## Stage 139 — OQ-033 step 7b: the provisioner client in the realm
 
 **What changed.** `infra/keycloak/realm.json` gains the `infinite-ai-provisioner` client (confidential, service accounts only, no browser/implicit/password
@@ -12089,3 +12091,47 @@ Keycloak here). **Residual risk, in OQ-048:** `manage-users` can map any realm r
 | No secret in the repository                                  | PASS (placeholder only)             |
 | Keycloak imports it and the roles suffice                    | **NOT VERIFIED** (7e)               |
 | Rollback: revert this commit; no schema change               | PASS                                |
+
+## Stage 141 — OQ-033 step 7d: wiring the identity provider
+
+**What changed.** After an administrator's change has committed, the application tells Keycloak. `lib/idp/reconcile.ts` (pure orchestration over the
+port and a store) creates the Keycloak user for an invitation that is ready, sets its school-staff roles, and has Keycloak send the verification and
+password email; for an account whose state changed it mirrors the roles it holds now and enables or disables it. `lib/idp/sync.ts` runs it after the
+seven routes that change what Keycloak must know (invite, confirm an invitation, confirm a role request, grant, revoke a role, suspend/offboard,
+reinstate) and **never throws**: the administrator's action already succeeded, and a provider problem is state, not an error. `invitations` opts the new
+invitation in inside its own transaction, and only when a provider is configured (`KEYCLOAK_PROVISIONER_CLIENT_ID/SECRET`); with neither set nothing changes
+(the by-hand pilot path). `POST /api/admin/staff/idp/reconcile` is the administrator's "try again", and the overview shows a banner when the sign-in
+service has not caught up (waiting, and failed). `createUser` no longer maps roles itself: the id is recorded first, then roles are set.
+
+**Rules it keeps, each tested and mutation-checked.** Never adopt a Keycloak user it did not create (an existing address is a `conflict`); record the new
+user's id before doing anything else to it; ending access is ordered (disable, end sessions, then roles); only school-staff roles are ever mirrored; a
+failure is one item's and is recorded as a kind, never a message, an address or an upstream body.
+
+**Tests.** `idp-reconcile.spec.ts` (+16), `idp-sync.spec.ts` (+3), `idp-provider.spec.ts` (+5), `idp-reconcile-route.spec.ts` (+8), banner (+3), route specs
+(sync after the change, never before, never on refusal or for a non-administrator; invite opts in inside the same transaction; +22 across both),
+`staff-overview.integration.spec.ts` and `idp-sync.integration.spec.ts` (+2, run against a real PostgreSQL 16 here: 28 passing). Mutation-checked:
+adopting an existing user (fails 3), remembering the id late, ending sessions before disabling, pushing every role, not refusing a non-staff role (fails 3).
+One mutation initially survived because its test was weak (the fake refused the platform role, so the account failed and the user looked unchanged); the test
+now requires the sync to succeed.
+
+**Known gaps, stated plainly.**
+
+1. **Not verified against Keycloak (slice 7e).** Every call is from knowledge of the Admin API; I could not run a Keycloak here.
+2. **A revoked or expired invitation leaves its Keycloak user in place.** It can authenticate to Keycloak but links to nothing (acceptance refuses with
+   `no_invitation`), so it is not a way in, but it is clutter and an unverified identity. Cleaning it up needs a decision (disable, or delete) and is not built.
+3. **A school that created users by hand first** will see `conflict` for those addresses once it opts in: the application will not adopt them. Clear them in
+   Keycloak or leave them unmanaged.
+4. **It runs inside the request**, not in a worker, so an administrator's action waits for the Keycloak calls (each has a 10-second ceiling). Two reconciles
+   at once cannot corrupt anything (recording only moves PENDING/FAILED rows; the recorded id lets the second finish the first's user) but one may report
+   `conflict` for a user the other just made; "try again" clears it.
+5. **No OTP action is sent.** The browser flow enrols a device on first sign-in for each MFA role, so `CONFIGURE_TOTP` is not added.
+6. The Keycloak email needs SMTP configured on Keycloak (OQ-048 (d)); until it is, the operator sends the first sign-in link by hand.
+
+| Exit gate item                                              | Result                        |
+| ----------------------------------------------------------- | ----------------------------- |
+| Never adopts a Keycloak user it did not create              | PASS (unit; mutation-checked) |
+| Told only after commit; never on refusal or for a non-admin | PASS (route specs)            |
+| A provider failure never fails the administrator's action   | PASS (unit)                   |
+| No message, address or upstream body is recorded            | PASS (unit; DB token check)   |
+| Behaves against a real Keycloak 26                          | **NOT VERIFIED** (7e)         |
+| `pnpm lint`, `pnpm typecheck`, unit tests                   | PASS                          |

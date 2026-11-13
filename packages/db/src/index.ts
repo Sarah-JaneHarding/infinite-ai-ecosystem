@@ -232,6 +232,7 @@ export {
   markAccountIdpPending,
   recordAccountIdp,
   recordInvitationIdp,
+  recordInvitationIdpUser,
   requestInvitationIdpSync,
   type IdpAccountWork,
   type IdpInvitationWork,

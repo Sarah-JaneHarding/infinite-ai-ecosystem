@@ -176,6 +176,7 @@ describe('loadStaffOverview (real Postgres)', () => {
     const empty = await overview(randomUUID());
     expect(empty).toEqual({
       schools: [],
+      idp: { pending: 0, failed: 0 },
       accounts: [],
       invitations: [],
       grantRequests: [],

@@ -14,6 +14,7 @@ export interface StaffScope {
 
 export const EMPTY_STAFF_OVERVIEW: StaffOverview = {
   schools: [],
+  idp: { pending: 0, failed: 0 },
   accounts: [],
   invitations: [],
   grantRequests: [],
