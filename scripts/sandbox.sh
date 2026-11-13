@@ -181,6 +181,48 @@ cmd_apps() {
   echo "sandbox: web on http://localhost:3000 (sign in as one of the dev logins in docs/DEV_SETUP.md)."
 }
 
+# Staging: the whole platform, UI included, with a stand-in model — no credentials, no spend.
+# The gateway gets ONLY the stub's address and NO real provider credential: any key in this shell is removed
+# from the command's environment, so a stray ANTHROPIC_API_KEYS cannot make a staging run cost money.
+cmd_staging() {
+  need_docker; ensure_env
+  compose up -d --wait postgres redis keycloak
+  compose run --rm migrate
+  compose --profile staging up -d --wait model-stub
+  if [ "$(uname -s)" = Linux ]; then
+    echo "sandbox: on Linux the app containers reach Keycloak at host.docker.internal:8180, which needs"
+    echo "  (1) '127.0.0.1 host.docker.internal' in /etc/hosts for your browser, and"
+    echo "  (2) Keycloak published beyond loopback: SANDBOX_KEYCLOAK_BIND=0.0.0.0 pnpm sandbox up"
+  fi
+  env -u ANTHROPIC_API_KEYS -u OPENAI_API_KEYS -u GOOGLE_API_KEYS -u LOCAL_MODEL_API_KEYS -u LOCAL_MODEL_BASE_URL \
+    LOCAL_MODEL_BASE_URL=http://model-stub:11500/v1 \
+    LOCAL_MODEL_API_KEYS=sandbox-stub-credential \
+    GATEWAY_ROUTING_CONFIG=/repo/apps/gateway/routing.stub.json \
+    DATA_PLANE_NETWORK="${PROJECT}_default" \
+    docker compose -p "$APPS_PROJECT" --env-file "$ENV_FILE" \
+      -f infra/docker/compose.apps.yml -f infra/sandbox/compose.staging.yml up -d --build --wait
+  cat <<MSG
+
+Staging is up.  The platform is running with a STAND-IN model: nothing has been sent to any provider.
+  UI        http://localhost:3000   (sign in as one of the dev logins in docs/DEV_SETUP.md)
+  Gateway   http://localhost:8080   (loopback only)
+
+Good for: the UI and every role's screens, the approval gates, guardrails, budgets, audit trail and traces.
+Not good for: judging what an agent WRITES. The stand-in says so in every reply, and an agent whose output
+is validated will fail that validation here — that is the platform failing closed, and worth seeing.
+For real model output use test credentials with a spend limit:  ANTHROPIC_API_KEYS=... pnpm sandbox apps
+Stop with:  pnpm sandbox staging-down
+MSG
+}
+
+cmd_staging_down() {
+  need_docker; ensure_env
+  DATA_PLANE_NETWORK="${PROJECT}_default" docker compose -p "$APPS_PROJECT" --env-file "$ENV_FILE" \
+    -f infra/docker/compose.apps.yml -f infra/sandbox/compose.staging.yml down
+  compose --profile staging stop model-stub
+  echo "sandbox: staging stopped. The data is kept; \`pnpm sandbox reset\` deletes it."
+}
+
 cmd_apps_down() {
   need_docker; ensure_env
   DATA_PLANE_NETWORK="${PROJECT}_default" docker compose -p "$APPS_PROJECT" --env-file "$ENV_FILE" \
@@ -204,6 +246,9 @@ pnpm sandbox <command>
   psql          psql as the migrator role
   env           generate infra/sandbox/.env if it does not exist  (--out <file> writes elsewhere)
   doctor        check the prerequisites
+  staging       the whole platform, UI included, on a stand-in model: no credentials, no spend
+  staging-down  stop it
+  build         pnpm build in the toolbox (compiles the whole platform in a clean container)
   apps          build and start web + worker + gateway (needs model credentials in your shell)
   apps-down     stop them
   observability start MinIO and the Langfuse stack as well (large; opt-in)
@@ -219,6 +264,7 @@ case "${1:-}" in
   verify) in_tools sandbox-verify ;;
   check) in_tools bash -c 'pnpm lint && pnpm typecheck && pnpm format:check && pnpm test' ;;
   test) in_tools pnpm test ;;
+  build) in_tools pnpm build ;;
   run) shift; [ "$#" -gt 0 ] || die "run needs a command."; in_tools "$@" ;;
   shell) in_tools bash ;;
   psql) in_tools bash -c 'SANDBOX_NO_SYNC=1 psql "$MIGRATOR_DATABASE_URL"' ;;
@@ -239,6 +285,8 @@ case "${1:-}" in
     ;;
   apps) cmd_apps ;;
   apps-down) cmd_apps_down ;;
+  staging) cmd_staging ;;
+  staging-down) cmd_staging_down ;;
   observability) need_docker; ensure_env; compose --profile observability up -d --wait ;;
   ""|-h|--help|help) usage ;;
   *) usage >&2; die "unknown command '$1'." ;;

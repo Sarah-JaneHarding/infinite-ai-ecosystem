@@ -108,6 +108,38 @@ services:
       postgres:
         condition: service_healthy
 
+  # The staging sandbox's stand-in language model (profile `staging`). It speaks the OpenAI chat wire format
+  # the gateway's `local` adapter uses and calls nothing: no provider, no network, no secret. It publishes NO
+  # port, so only the other containers on this network (the gateway) can reach it, and it runs read-only,
+  # unprivileged, with every capability dropped. Not a model: every reply says so (docs/SANDBOX.md, Staging).
+  model-stub:
+    image: node:22-bookworm-slim
+    profiles: [staging]
+    restart: unless-stopped
+    user: node
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    mem_limit: 128m
+    cpus: 0.5
+    command: ['node', '/stub/server.mjs']
+    environment:
+      PORT: '11500'
+      HOST: 0.0.0.0
+    volumes:
+      - ../sandbox/model-stub:/stub:ro
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:11500/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
 volumes:
   sandbox-workspace:
   sandbox-pnpm-store:

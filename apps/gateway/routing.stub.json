@@ -1,0 +1,278 @@
+{
+  "curriculum.map": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "curriculum.assess": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "curriculum.audit": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "curriculum.design": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "curriculum.differentiate": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "curriculum.lessons": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "curriculum.plan": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "curriculum.rubric": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "curriculum.sequence": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "plan.author": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "plan.verify": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "support.screen": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "support.health": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "analytics.screen": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "analytics.report": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "data.consent": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "data.deident": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "data.ingest": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "data.map": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "data.materialise": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "data.quality": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "data.insight": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "data.nextstep": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "le.attribution": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "le.commons": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "le.correction": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "le.decay": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "le.evolver": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "le.exemplar": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "le.gatekeeper": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "le.pattern": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "le.signal": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "pd.aggregate": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "pd.analyse": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "pd.assess": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "pd.coach": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "pd.compose": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "pd.coverage": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "pd.cptd": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "pd.detect": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "pd.observe": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "pd.plan": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "toolbox.generate": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "toolbox.adapt": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "warehouse.synthesise": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ],
+  "guardrail.age_appropriateness": [
+    {
+      "provider": "local",
+      "concreteModel": "sandbox-stub"
+    }
+  ]
+}
