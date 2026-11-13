@@ -259,6 +259,19 @@ describe('the compose overlay', () => {
     expect(tools).toMatch(/DATABASE_URL: postgresql:\/\/app_rw:/);
   });
 
+  it('seeds the dev invitee after the identities, so its invitation finds the tenant and no account is made for it', () => {
+    const migrate = code.slice(code.indexOf('  migrate:'));
+    const steps = [
+      ...migrate.matchAll(/db:(migrate:deploy|seed:identities|seed:invitations|seed)\b/g),
+    ].map((m) => m[1]);
+    expect(steps).toEqual([
+      'migrate:deploy',
+      'seed',
+      'seed:identities',
+      'seed:invitations',
+    ]);
+  });
+
   it('runs the data-plane services it shares with compose.dev.yml on the images that file pins', () => {
     const dev = read('infra/docker/compose.dev.yml');
     expect(dev).toContain('pgvector/pgvector:pg16');
@@ -327,5 +340,85 @@ describe('the smoke test', () => {
 
   it('reads its credentials from the environment, never from a file or the script', () => {
     expect(verify).not.toMatch(/postgresql:\/\/\w+:[^$\s]/);
+  });
+});
+
+describe('the staging sandbox (a stand-in model, no credentials, no spend)', () => {
+  const overlay = read('infra/sandbox/compose.sandbox.yml');
+  const stub = overlay.slice(
+    overlay.indexOf('  model-stub:'),
+    overlay.indexOf('volumes:\n  sandbox-workspace:'),
+  );
+  const staging = read('infra/sandbox/compose.staging.yml');
+  const script = read('scripts/sandbox.sh');
+  const stagingFn = script.slice(
+    script.indexOf('cmd_staging() {'),
+    script.indexOf('cmd_staging_down() {'),
+  );
+
+  it('runs the stub behind the staging profile, so a plain `up` never starts it', () => {
+    expect(stub).toMatch(/profiles: \[staging\]/);
+  });
+
+  it('publishes no port for the stub: only the gateway, over the network, can reach it', () => {
+    expect(stub).not.toMatch(/^\s+ports:/m);
+    expect(stub).not.toMatch(/network_mode|privileged|docker\.sock|pid:|ipc:/);
+  });
+
+  it('runs the stub unprivileged, read-only, with every capability dropped and a read-only source', () => {
+    expect(stub).toMatch(/user: node/);
+    expect(stub).toMatch(/read_only: true/);
+    expect(stub).toMatch(/cap_drop: \[ALL\]/);
+    expect(stub).toMatch(/no-new-privileges:true/);
+    expect(stub).toMatch(/mem_limit:/);
+    expect(stub).toMatch(/model-stub:\/stub:ro/);
+  });
+
+  it('publishes the staging UI on loopback only, replacing the base file’s all-interface port', () => {
+    expect(staging).toMatch(/ports: !override/);
+    expect(staging).toMatch(/- '127\.0\.0\.1:3000:3000'/);
+    expect(staging).not.toMatch(/- '3000:3000'/);
+  });
+
+  it('removes every real provider credential from the apps’ environment before starting them', () => {
+    for (const name of [
+      'ANTHROPIC_API_KEYS',
+      'OPENAI_API_KEYS',
+      'GOOGLE_API_KEYS',
+      'LOCAL_MODEL_API_KEYS',
+    ]) {
+      expect(stagingFn, name).toContain(`-u ${name}`);
+    }
+    // ...and never reads one back in: no assignment of a real provider key anywhere in the staging command.
+    // (Checked before the closing message, which quotes the `apps` command for the person to copy.)
+    const commands = stagingFn.slice(0, stagingFn.indexOf('cat <<MSG'));
+    expect(commands).not.toMatch(/(ANTHROPIC|OPENAI|GOOGLE)_API_KEYS=/);
+  });
+
+  it('points the gateway at the stub alone: the stub’s address, a placeholder credential, the stub routing file', () => {
+    expect(stagingFn).toContain('LOCAL_MODEL_BASE_URL=http://model-stub:11500/v1');
+    expect(stagingFn).toContain(
+      'GATEWAY_ROUTING_CONFIG=/repo/apps/gateway/routing.stub.json',
+    );
+    expect(stagingFn).toContain('LOCAL_MODEL_API_KEYS=sandbox-stub-credential');
+    expect(stagingFn).toContain('compose.staging.yml');
+  });
+
+  it('starts the stub and waits for it before the apps that depend on it', () => {
+    expect(stagingFn.indexOf('model-stub')).toBeGreaterThan(-1);
+    expect(stagingFn.indexOf('--profile staging up -d --wait model-stub')).toBeLessThan(
+      stagingFn.indexOf('compose.apps.yml'),
+    );
+  });
+
+  it('tells the person plainly what staging is good for and what it is not', () => {
+    expect(stagingFn).toContain('STAND-IN model');
+    expect(stagingFn).toContain('Not good for: judging what an agent WRITES');
+  });
+
+  it('offers `staging`, `staging-down` and `build` as commands', () => {
+    for (const command of ['staging', 'staging-down', 'build']) {
+      expect(script).toMatch(new RegExp(`^  ${command}\\) `, 'm'));
+    }
   });
 });

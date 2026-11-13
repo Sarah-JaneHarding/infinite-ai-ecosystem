@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { DEV_IDENTITIES, DEV_TENANT_ID } from '../prisma/dev-identities.js';
+import { DEV_IDENTITIES, DEV_INVITEES, DEV_TENANT_ID } from '../prisma/dev-identities.js';
 
 // Drift guard (OQ-033). The dev stack only works if the Keycloak users and the seeded
 // accounts agree on the subject: a token's `sub` is resolved to the account whose `subject`
@@ -71,5 +71,39 @@ describe('dev identities vs the Keycloak realm', () => {
     const roles = DEV_IDENTITIES.flatMap((w) => w.roles) as string[];
     expect(roles).not.toContain('platform_support');
     expect(roles).not.toContain('platform_admin');
+  });
+});
+
+describe('dev invitees vs the Keycloak realm (OQ-033 step 8)', () => {
+  it.each(DEV_INVITEES.map((who) => [who.username, who] as const))(
+    '%s: the realm user has the fixed id, email, role and tenant, and is verified',
+    (_username, who) => {
+      const user = realm.users.find((u) => u.username === who.username);
+      expect(user, `${who.username} missing from realm.json`).toBeDefined();
+      expect(user?.id).toBe(who.subject);
+      expect(user?.email).toBe(who.email);
+      expect(user?.realmRoles).toEqual([...who.roles]);
+      expect(user?.attributes?.tenant_id).toEqual([DEV_TENANT_ID]);
+    },
+  );
+
+  it('are never seeded an account: none shares an identity with DEV_IDENTITIES', () => {
+    const taken = new Set(
+      DEV_IDENTITIES.flatMap((w) => [w.username, w.email, w.subject, w.accountId]),
+    );
+    for (const who of DEV_INVITEES) {
+      for (const value of [who.username, who.email, who.subject])
+        expect(taken.has(value)).toBe(false);
+    }
+  });
+
+  it('use valid, distinct ids', () => {
+    const ids = [
+      ...DEV_IDENTITIES.flatMap((w) => [w.subject, w.accountId, ...w.roleAssignmentIds]),
+      ...DEV_INVITEES.flatMap((w) => [w.subject, w.invitationId]),
+    ];
+    for (const value of DEV_INVITEES.flatMap((w) => [w.subject, w.invitationId]))
+      expect(value).toMatch(UUID);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });

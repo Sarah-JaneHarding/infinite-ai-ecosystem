@@ -27,6 +27,7 @@ const LAST_YEAR = new Date('2025-03-01T00:00:00.000Z');
 
 const base: Overview = {
   schools: [],
+  idp: { pending: 0, failed: 0 },
   accounts: [],
   invitations: [],
   grantRequests: [],
@@ -384,5 +385,33 @@ describe('StaffOverview — school scope', () => {
 
   it('hands the grant control the schools to choose from', () => {
     expect(withRole(null, schools)).toContain('data-schools="2"');
+  });
+});
+
+describe('StaffOverview — the sign-in service has not caught up', () => {
+  const html = (idp: { pending: number; failed: number }): string =>
+    renderToStaticMarkup(createElement(StaffOverview, { overview: { ...base, idp } }));
+
+  it('says nothing when everyone is up to date', () => {
+    const markup = html({ pending: 0, failed: 0 });
+    expect(markup).not.toContain('/api/admin/staff/idp/reconcile');
+    expect(markup).not.toContain('sign-in service');
+  });
+
+  it('offers a retry and says changes are saved when some are only waiting', () => {
+    const markup = html({ pending: 2, failed: 0 });
+    expect(markup).toContain('2 sign-in accounts are still being updated');
+    expect(markup).toContain('The changes are saved here');
+    expect(markup).toContain('data-url="/api/admin/staff/idp/reconcile"');
+    expect(markup).toContain('role="status"');
+  });
+
+  it('is an alert, with the failed count, when any could not be updated', () => {
+    const markup = html({ pending: 1, failed: 1 });
+    expect(markup).toContain(
+      '1 sign-in account could not be updated, and 1 is still waiting',
+    );
+    expect(markup).toContain('role="alert"');
+    expect(markup).toContain('data-label="Try again now"');
   });
 });

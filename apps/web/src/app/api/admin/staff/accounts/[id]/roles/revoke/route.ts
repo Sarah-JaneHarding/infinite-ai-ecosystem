@@ -6,6 +6,7 @@
 import { revokeRole, withTenant } from '@infinite-ai/db';
 import { NextResponse, type NextRequest } from 'next/server';
 
+import { syncIdentityProvider } from '@/lib/idp/sync';
 import { provisioningRules } from '@/lib/provisioning-rules';
 import { IdParam, RevokeRoleBody } from '@/lib/staff-contract';
 import { readAdminCaller, readJsonBody, refusalResponse } from '@/lib/staff-route';
@@ -31,5 +32,6 @@ export async function POST(
     }),
   );
   if (!result.ok) return refusalResponse(result.reason);
+  await syncIdentityProvider(caller.actor);
   return NextResponse.json({ done: true }, { status: 200 });
 }
