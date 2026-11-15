@@ -30,3 +30,21 @@ variable "langfuse_init_user_email" {
   description = "The first admin account for this environment's own self-hosted Langfuse instance. No default, same as domain_name above — pass explicitly at apply time."
   type        = string
 }
+
+variable "monthly_budget_usd" {
+  description = "Monthly AWS cost limit in USD for this environment's budget. Non-secret; set in production.tfvars. Null creates no budget."
+  type        = number
+  default     = null
+}
+
+variable "budget_alert_emails" {
+  description = "Extra budget alert recipients (alert_email always receives them too). Non-secret; set in production.tfvars."
+  type        = list(string)
+  default     = []
+}
+
+variable "keycloak_client_id" {
+  description = "The Keycloak client id apps/web authenticates as (AUTH_KEYCLOAK_ID). Non-secret; set in production.tfvars."
+  type        = string
+  default     = null
+}
