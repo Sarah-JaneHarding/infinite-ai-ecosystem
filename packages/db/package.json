@@ -29,7 +29,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@infinite-ai/contracts": "workspace:*",
+    "@infinite-ai/contracts": "0.1.0",
     "@testcontainers/postgresql": "12.2.1",
     "@vitest/coverage-v8": "5.1.0",
     "prisma": "7.10.1",
@@ -39,8 +39,8 @@
     "vitest": "5.1.0"
   },
   "dependencies": {
-    "@infinite-ai/config": "workspace:*",
-    "@infinite-ai/telemetry": "workspace:*",
+    "@infinite-ai/config": "0.1.0",
+    "@infinite-ai/telemetry": "0.1.0",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1"
   }

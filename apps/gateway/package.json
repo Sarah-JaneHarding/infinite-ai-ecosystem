@@ -26,12 +26,12 @@
     "vitest": "5.1.0"
   },
   "dependencies": {
-    "@infinite-ai/config": "workspace:*",
-    "@infinite-ai/contracts": "workspace:*",
-    "@infinite-ai/db": "workspace:*",
-    "@infinite-ai/deident": "workspace:*",
-    "@infinite-ai/guardrails": "workspace:*",
-    "@infinite-ai/telemetry": "workspace:*",
+    "@infinite-ai/config": "0.1.0",
+    "@infinite-ai/contracts": "0.1.0",
+    "@infinite-ai/db": "0.1.0",
+    "@infinite-ai/deident": "0.1.0",
+    "@infinite-ai/guardrails": "0.1.0",
+    "@infinite-ai/telemetry": "0.1.0",
     "zod": "4.6.7"
   }
 }
