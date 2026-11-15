@@ -82,6 +82,35 @@ variable "iam_policy_arns" {
   default     = []
 }
 
+variable "task_policy_statements" {
+  description = "Inline Allow statements for the task role (not the execution role), for small grants that do not warrant a managed policy. Every statement names exact actions and resource ARNs: \"*\" and \"service:*\" are rejected, so tightening later means editing this list, never removing a wildcard. sid must be alphanumeric (an IAM rule)."
+  type = list(object({
+    sid       = string
+    actions   = list(string)
+    resources = list(string)
+  }))
+  default = []
+
+  validation {
+    condition = alltrue(flatten([
+      for s in var.task_policy_statements : [for a in s.actions : a != "*" && !endswith(a, ":*")]
+    ]))
+    error_message = "task_policy_statements actions must be named, never \"*\" or \"service:*\"."
+  }
+
+  validation {
+    condition = alltrue(flatten([
+      for s in var.task_policy_statements : [for r in s.resources : r != "*"]
+    ]))
+    error_message = "task_policy_statements resources must be named ARNs, never \"*\"."
+  }
+
+  validation {
+    condition     = alltrue([for s in var.task_policy_statements : can(regex("^[A-Za-z0-9]+$", s.sid))])
+    error_message = "task_policy_statements sid must be alphanumeric (IAM does not allow spaces or punctuation)."
+  }
+}
+
 variable "health_check_path" {
   description = "Every app in this repo exposes one (apps/gateway and apps/web via their own routes, apps/worker via health-server.ts) — used for both the ECS container health check and, when attached, the ALB target group's health check."
   type        = string
