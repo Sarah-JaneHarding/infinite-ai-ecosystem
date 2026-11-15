@@ -28,7 +28,8 @@ provider "aws" {
 module "stack" {
   source = "../../modules/stack"
 
-  name = "infinite-ai-staging"
+  name        = "infinite-ai-staging"
+  environment = "staging"
 
   single_nat_gateway = true
   db_multi_az        = false
@@ -40,6 +41,10 @@ module "stack" {
   domain_name = var.domain_name
   dns_zone_id = var.dns_zone_id
   alert_email = var.alert_email
+
+  monthly_budget_usd  = var.monthly_budget_usd
+  budget_alert_emails = var.budget_alert_emails
+  keycloak_client_id  = var.keycloak_client_id
 
   gateway_desired_count = 1
   worker_desired_count  = 1

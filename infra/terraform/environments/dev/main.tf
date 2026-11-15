@@ -34,7 +34,8 @@ provider "aws" {
 module "stack" {
   source = "../../modules/stack"
 
-  name = "infinite-ai-dev"
+  name        = "infinite-ai-dev"
+  environment = "dev"
 
   single_nat_gateway = true
   db_multi_az        = false
