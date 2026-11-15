@@ -17,6 +17,13 @@ A runbook that has not been rehearsed does not count — Stage 15 requires them 
 | `suspected-breach.md`              | 16                         | Annually                   |
 | `region-loss.md`                   | 15                         | Annually                   |
 
+## Infrastructure walkthroughs
+
+| Runbook               | What it covers                                                                                  |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| `aws-setup.md`        | AWS CLI and region, state backend, budget, apply, populating secrets, proving they are injected |
+| `secrets-rotation.md` | The static-secrets position, the 90-day cadence, and per-secret rotation steps                  |
+
 ## Format
 
 Each runbook states, in this order: what the alert means · who owns it · the first action
