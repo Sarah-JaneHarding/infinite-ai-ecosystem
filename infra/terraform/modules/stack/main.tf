@@ -317,14 +317,17 @@ module "app_secrets" {
 }
 
 # --- Cost alert (budget) ----------------------------------------------------------
-# Only when an environment sets monthly_budget_usd (see its tfvars file).
+# Only when an environment sets monthly_budget_zar (see its tfvars file). The limit is stated in
+# rand and converted to the USD that AWS measures; the founder is subscribed to the alert topic
+# (budget_alert_topic_arn) by hand, so no personal contact detail is held in Terraform.
 
 module "budget" {
   source = "../budget"
-  count  = var.monthly_budget_usd == null ? 0 : 1
+  count  = var.monthly_budget_zar == null ? 0 : 1
 
   name               = var.name
-  monthly_budget_usd = var.monthly_budget_usd
+  monthly_budget_zar = var.monthly_budget_zar
+  zar_per_usd        = var.zar_per_usd
   alert_emails       = distinct(concat(compact([var.alert_email]), var.budget_alert_emails))
 
   tags = var.tags

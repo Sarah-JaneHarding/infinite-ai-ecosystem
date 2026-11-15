@@ -48,7 +48,8 @@ module "stack" {
   dns_zone_id = var.dns_zone_id
   alert_email = var.alert_email
 
-  monthly_budget_usd  = var.monthly_budget_usd
+  monthly_budget_zar  = var.monthly_budget_zar
+  zar_per_usd         = var.zar_per_usd
   budget_alert_emails = var.budget_alert_emails
   keycloak_client_id  = var.keycloak_client_id
 

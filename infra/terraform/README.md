@@ -43,7 +43,9 @@ terraform/
     app-secrets    empty Secrets Manager shells (provider keys, web auth secrets) and SSM
                    config under /infinite-ai/<env>/...; values are set out-of-band with
                    `put-secret-value`, never in Terraform, so they never reach state
-    budget         monthly AWS Budget with actual and forecast email alerts
+    budget         monthly AWS Budget (limit stated in rand, converted to the USD AWS measures)
+                   with actual and forecast alerts to an ops mailbox and an SNS topic that
+                   the founder is subscribed to by email and text
     ecs-service    one reusable Fargate service definition — ECR repo, task def,
                    service, autoscaling, optional ALB target group
     observability  CloudWatch alarms (see "What this does not do" below) + an SNS topic

@@ -825,17 +825,32 @@ workspace package's version (so a `workspace:` protocol, a range, `"*"` or a sta
 pnpm as the only supported path for development, release and CI; keep npm working for previews; add the CI job; do not commit a second
 lockfile.
 
-### OQ-050 — confirm the monthly AWS budget limits and alert recipients · 2026-11-15
+### OQ-050 — monthly AWS budget limits (provisional, in rand) and who is alerted · 2026-11-15
 
-`staging.tfvars` sets `monthly_budget_usd = 550` and `production.tfvars` sets `700`. These start as proposals.
-Basis: `docs/aws-cost-estimate.html` puts the shared baseline at about $280-$420/month; staging takes the top of that plus 20%
-headroom, production adds the estimate's own high-availability extras (+$152) then 20%. That estimate predates the self-hosted
-Langfuse stack and excludes LLM spend, so both figures are probably low. _Recommend:_ keep them for the first month, then reset
-from the real bill. Also needed: who else receives alerts besides `alert_email` (`budget_alert_emails`). Note that a merge to
-`main` runs the production apply behind its reviewer gate and would create the production budget.
+`staging.tfvars` sets `monthly_budget_zar = 10000` and `production.tfvars` sets `13000`, with `zar_per_usd = 18.5`. Basis:
+`docs/aws-cost-estimate.html` puts the shared baseline at R5,180-R7,770 a month; staging takes the top plus 20% headroom
+(R9,324, rounded to R10,000), production adds the estimate's own high-availability extras (+R2,220 and +R592) then 20%
+(R12,698, rounded to R13,000). That estimate predates the self-hosted Langfuse stack and excludes LLM spend, so both figures
+are probably low.
 
-**Decision (2026-11-15, the owner):** approved as **provisional**. Keep $550 and $700 until the full business load has been
-tested (the k6 run in OQ-017), then reset both limits from the real bill. Alert recipients beyond `alert_email` are still open.
+**Decisions (2026-11-15, the owner):** (1) the figures are **provisional**: keep them until the full business load has been
+tested (the k6 run in OQ-017), then reset both limits from the real bill. (2) All budgets are in **rand**. (3) **The founder
+receives budget alerts by email and by text message.**
+
+How those were built, and what is still open:
+
+- **Rand and USD.** AWS Budgets measures cost in USD; its documentation shows only USD cost budgets, and a rand figure sent as
+  the limit could be compared against USD costs and alert far too late. So Terraform converts: limit = rand / `zar_per_usd`,
+  rounded down to the cent, exposed as the `budget_limit_usd` output. AWS's own alerts will show USD. The effective rand limit
+  drifts with the exchange rate, so `zar_per_usd` needs updating if the rand moves materially.
+- **The founder's contact details are not in the repository or in Terraform state.** Alerts go to an SNS topic
+  (`budget_alert_topic_arn`); the founder's email and mobile number are subscribed to it by hand
+  (`docs/RUNBOOKS/aws-setup.md` step 6). **Still needed from the owner: the founder's email address and mobile number, given
+  to whoever runs that step, not written here.** Until that is done, only the ops mailbox (`alert_email`) is alerted.
+- **Unverified, to be tested with the step-6 publish test:** that SNS can text South African numbers from `af-south-1` (the account
+  starts in the SNS SMS sandbox, so the number must be verified, and an origination identity may be needed); and that AWS Budgets
+  can publish to a topic in an opt-in Region. If either fails the founder gets no alert, so the test matters.
+- A merge to `main` runs the production apply behind its reviewer gate and would create the production budget and the topic.
 
 ### OQ-051 — existing modules keep generated passwords in Terraform state · 2026-11-15
 

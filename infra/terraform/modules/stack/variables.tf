@@ -185,14 +185,20 @@ variable "environment" {
   }
 }
 
-variable "monthly_budget_usd" {
-  description = "Monthly AWS cost limit in USD. Null creates no budget. Set per environment in its tfvars file — see modules/budget."
+variable "monthly_budget_zar" {
+  description = "Monthly AWS cost limit in rand. Null creates no budget. Set per environment in its tfvars file, together with zar_per_usd — see modules/budget for why AWS needs it converted to USD."
+  type        = number
+  default     = null
+}
+
+variable "zar_per_usd" {
+  description = "Rand per US dollar, used to convert monthly_budget_zar into the USD limit AWS Budgets enforces. Required (modules/budget refuses null) whenever monthly_budget_zar is set; no default, so the assumption is always visible in the environment's tfvars."
   type        = number
   default     = null
 }
 
 variable "budget_alert_emails" {
-  description = "Extra budget alert recipients. var.alert_email, when set, always receives them too. modules/budget refuses to create a budget with no recipient."
+  description = "Extra OPERATIONAL budget alert recipients (shared mailboxes). var.alert_email, when set, always receives alerts too, and modules/budget refuses to create a budget with no recipient. Do not list a person's email or phone here: subscribe people to the budget alert topic instead (budget_alert_topic_arn)."
   type        = list(string)
   default     = []
 }

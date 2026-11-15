@@ -34,14 +34,20 @@ variable "langfuse_init_user_email" {
   type        = string
 }
 
-variable "monthly_budget_usd" {
-  description = "Monthly AWS cost limit in USD for this environment's budget. Non-secret; set in staging.tfvars. Null creates no budget."
+variable "monthly_budget_zar" {
+  description = "Monthly AWS cost limit in rand for this environment's budget. Non-secret; set in staging.tfvars. Null creates no budget."
+  type        = number
+  default     = null
+}
+
+variable "zar_per_usd" {
+  description = "Rand per US dollar used to convert monthly_budget_zar to the USD AWS enforces. Non-secret; set in staging.tfvars next to the budget."
   type        = number
   default     = null
 }
 
 variable "budget_alert_emails" {
-  description = "Extra budget alert recipients (alert_email always receives them too). Non-secret; set in staging.tfvars."
+  description = "Extra OPERATIONAL budget alert recipients (alert_email always receives alerts too); never a person's email or phone. Non-secret; set in staging.tfvars."
   type        = list(string)
   default     = []
 }

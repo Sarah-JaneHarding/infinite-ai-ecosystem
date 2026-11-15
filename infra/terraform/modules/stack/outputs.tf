@@ -80,8 +80,18 @@ output "web_task_role_arn" {
 }
 
 output "budget_name" {
-  description = "The monthly cost budget's name, or null when monthly_budget_usd is not set."
+  description = "The monthly cost budget's name, or null when monthly_budget_zar is not set."
   value       = length(module.budget) == 0 ? null : module.budget[0].budget_name
+}
+
+output "budget_limit_usd" {
+  description = "The monthly limit AWS enforces, in USD (monthly_budget_zar / zar_per_usd, rounded down to the cent), or null when no budget is set. Check it against the rand figure."
+  value       = length(module.budget) == 0 ? null : module.budget[0].budget_limit_usd
+}
+
+output "budget_alert_topic_arn" {
+  description = "SNS topic every budget alert is published to, or null when no budget is set. Subscribe the founder's email and mobile number to it with `aws sns subscribe` (docs/RUNBOOKS/aws-setup.md step 6). The email subscription is inactive until its confirmation link is followed, and the SMS destination must be verified while the account is in the SNS SMS sandbox."
+  value       = length(module.budget) == 0 ? null : module.budget[0].alert_topic_arn
 }
 
 output "ses_from_domain" {

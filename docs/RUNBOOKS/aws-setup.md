@@ -83,18 +83,67 @@ database app roles) generate passwords that Terraform stores in state. Whoever c
 state bucket can read those secrets. The new secrets from `app-secrets` are different: they
 are empty shells, so their values never enter state.
 
-## 6. Budget and spend limit
+## 6. Budget, founder alerts and spend limit
 
-The monthly budget is created by Terraform from `monthly_budget_usd` in
-`staging.tfvars` / `production.tfvars` (alerts at 50%, 80% and 100% of actual spend and at
-100% of forecast, emailed to `alert_email` plus `budget_alert_emails`). The figures in
-those files are **provisional** — the owner has said to keep them until the full business load
-has been tested, then reset them from the real bill (`docs/OPEN_QUESTIONS.md`, OQ-050).
+The monthly budget is created by Terraform from `monthly_budget_zar` and `zar_per_usd` in
+`staging.tfvars` / `production.tfvars`. Alerts fire at 50%, 80% and 100% of actual spend and at
+100% of forecast. They go to `alert_email` (the ops mailbox) and to an SNS topic that the founder
+is subscribed to, by email and by text message (below). The figures are in **rand** and are
+**provisional**: the owner has said to keep them until the full business load has been tested,
+then reset them from the real bill (`docs/OPEN_QUESTIONS.md`, OQ-050).
 
-Two things Terraform cannot do for you:
+**AWS measures cost in USD and does not convert.** Terraform therefore sends AWS
+`monthly_budget_zar / zar_per_usd`, rounded down to the cent. Check it after `apply`:
+
+```bash
+terraform output budget_limit_usd     # staging: 540.54 (R10,000 at R18.50); production: 702.7
+```
+
+AWS's own alert emails and texts will show USD amounts. If the rand moves materially, update
+`zar_per_usd`: the effective rand limit moves with it.
+
+### Subscribe the founder (once per environment, after `apply`)
+
+The founder's email address and mobile number are personal information, so they are **never**
+written into a tfvars file, a Terraform variable or a repository variable (all of which end up in
+git or in state). Subscribe them to the topic by hand with the values in front of you; the
+`<...>` below are placeholders.
+
+```bash
+TOPIC=$(terraform output -raw budget_alert_topic_arn)
+
+# Email. AWS sends a confirmation message; alerts reach nobody until the founder follows its link.
+aws sns subscribe --topic-arn "$TOPIC" --protocol email --notification-endpoint "<founder email>"
+
+# Text message. New accounts start in the SNS SMS sandbox, where a text goes only to a verified
+# number: verify it first (AWS texts a one-time code to the number).
+aws sns create-sms-sandbox-phone-number --phone-number "<founder mobile, +27...>"
+aws sns verify-sms-sandbox-phone-number --phone-number "<founder mobile, +27...>" --one-time-password "<code>"
+aws sns subscribe --topic-arn "$TOPIC" --protocol sms --notification-endpoint "<founder mobile, +27...>"
+```
+
+Then prove both channels work end to end:
+
+```bash
+aws sns list-subscriptions-by-topic --topic-arn "$TOPIC" \
+  --query 'Subscriptions[].[Protocol,SubscriptionArn]'
+# expect: the email subscription is an ARN, not "PendingConfirmation"; the sms one is present
+
+aws sns publish --topic-arn "$TOPIC" --subject "Budget alert test" --message "Test message from setup"
+# expect: the founder receives an email AND a text
+```
+
+If the text does not arrive: check you verified the number, check SNS delivery status logs, and
+check that South African numbers are supported for your account (an SMS origination identity may be
+required, and leaving the sandbox is a separate AWS request). The authoring session could not test
+SMS delivery or confirm that Budgets can publish to a topic in `af-south-1` (an opt-in Region);
+this publish test is how you find out. If the founder gets no alert from it, do not treat the
+budget as protecting anything until that is fixed.
+
+### Two more things Terraform cannot do for you
 
 - **Spend limit.** If your project has a spend limit (paid plan), set or check it in
-  **AWS Settings → Billing**. A budget only emails; a spend limit pauses the project.
+  **AWS Settings → Billing**. A budget only alerts; a spend limit pauses the project.
 - **Billing access for the apply role.** If `apply` is refused on `budgets:*`, a
   non-root role may need the account setting **IAM user and role access to Billing
   information** activated (root user, Account settings). Do that, then re-apply.
@@ -194,5 +243,5 @@ Values never appear in any of this output; if one does, stop and treat it as exp
 | Same error, but the secret has a value                                        | Execution role lacks the ARN, or the ARN in the task definition is wrong          | `aws iam get-role-policy --role-name $CLUSTER-<svc>-execution --policy-name $CLUSTER-<svc>-read-secrets` |
 | `AccessDeniedException` on `GetSecretValue` or `GetParameters`                | ARN mismatch between the task definition and the execution role policy            | Re-apply; the policy is derived from the same `secrets` map                                              |
 | `terraform apply` refused on `budgets:*`                                      | Billing access for non-root roles is off                                          | Step 6                                                                                                   |
-| `plan` fails: "alert_emails needs at least one address"                       | `monthly_budget_usd` is set but no `alert_email` was passed                       | Pass `-var alert_email=…`                                                                                |
+| `plan` fails: "alert_emails needs at least one address"                       | `monthly_budget_zar` is set but no `alert_email` was passed                       | Pass `-var alert_email=…`                                                                                |
 | Tasks start but `web` sign-in fails                                           | `AUTH_KEYCLOAK_SECRET` does not match Keycloak, or `keycloak_issuer_url` is unset | Step 8; set `keycloak_issuer_url` once a real realm exists                                               |
