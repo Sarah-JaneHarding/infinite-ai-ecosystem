@@ -2,9 +2,12 @@
 //
 // The supported package manager is pnpm, but the repository must also install with plain
 // `npm install` (some hosted build tools run npm and nothing else). npm cannot read the pnpm-only
-// `workspace:` protocol, so every internal dependency is declared as "*" and resolved to the local
-// folder: pnpm does that because .npmrc sets link-workspace-packages=true, npm does it through the
-// root "workspaces" field. These tests keep the two tools in step.
+// `workspace:` protocol, so every internal dependency is declared with the EXACT version of the
+// workspace package it points to and resolved to the local folder: pnpm does that because .npmrc sets
+// link-workspace-packages=true, npm does it through the root "workspaces" field. An exact version
+// (not "*") because scripts/audit-supply-chain.ts forbids range specifiers. If a declared version
+// ever differs from the package's own version, neither tool can link the folder and would look in
+// the registry instead, so these tests fail on any difference. These tests keep the two tools in step.
 // Definition of Done (§0.4): happy path plus at least two failure paths.
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -15,6 +18,7 @@ import { describe, expect, it } from 'vitest';
 
 interface Manifest {
   name?: string;
+  version?: string;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
@@ -39,19 +43,18 @@ function problems(
   pnpmWorkspaceGlobs: string[],
 ): string[] {
   const found: string[] = [];
-  const internal = new Set(
-    Object.values(workspaceManifests)
-      .map((m) => m.name)
-      .filter((n): n is string => typeof n === 'string'),
-  );
+  const versionOf = new Map<string, string | undefined>();
+  for (const m of Object.values(workspaceManifests)) {
+    if (typeof m.name === 'string') versionOf.set(m.name, m.version);
+  }
 
   const all: Record<string, Manifest> = { 'package.json': root, ...workspaceManifests };
   for (const [path, manifest] of Object.entries(all)) {
     for (const field of DEP_FIELDS) {
       for (const [dep, spec] of Object.entries(manifest[field] ?? {})) {
-        if (internal.has(dep) && spec !== '*') {
+        if (versionOf.has(dep) && spec !== versionOf.get(dep)) {
           found.push(
-            `${path}: ${field}.${dep} is "${spec}" but internal packages must be "*" (the workspace: protocol breaks npm install; a pinned version could be fetched from the registry instead of the local folder)`,
+            `${path}: ${field}.${dep} is "${spec}" but must be exactly "${versionOf.get(dep)}", the version of the workspace package (the workspace: protocol breaks npm install, "*" and other ranges fail audit:supply-chain, and a version that differs from the local package makes the tools look in the registry instead of the local folder)`,
           );
         }
       }
@@ -142,41 +145,67 @@ describe('workspace install compatibility checker', () => {
     pnpm: { overrides: { nanoid: '3.3.18' } },
   };
   const good: Record<string, Manifest> = {
-    'packages/a/package.json': { name: '@x/a', dependencies: { zod: '4.6.7' } },
-    'packages/b/package.json': { name: '@x/b', dependencies: { '@x/a': '*' } },
+    'packages/a/package.json': {
+      name: '@x/a',
+      version: '0.1.0',
+      dependencies: { zod: '4.6.7' },
+    },
+    'packages/b/package.json': {
+      name: '@x/b',
+      version: '0.1.0',
+      dependencies: { '@x/a': '0.1.0' },
+    },
   };
   const globs = ['apps/*', 'packages/*'];
+  const withB = (b: Manifest): Record<string, Manifest> => ({
+    ...good,
+    'packages/b/package.json': { name: '@x/b', version: '0.1.0', ...b },
+  });
 
   it('accepts a consistent set of manifests and ignores external dependencies', () => {
     expect(problems(root, good, globs)).toEqual([]);
   });
 
   it('rejects the workspace: protocol for an internal dependency', () => {
-    const bad = {
-      ...good,
-      'packages/b/package.json': {
-        name: '@x/b',
-        dependencies: { '@x/a': 'workspace:*' },
-      },
-    };
-    const out = problems(root, bad, globs);
+    const out = problems(root, withB({ dependencies: { '@x/a': 'workspace:*' } }), globs);
     expect(out).toHaveLength(1);
     expect(out[0]).toContain(
-      'packages/b/package.json: dependencies.@x/a is "workspace:*"',
+      'packages/b/package.json: dependencies.@x/a is "workspace:*" but must be exactly "0.1.0"',
     );
   });
 
-  it('rejects a pinned or ranged version for an internal dependency', () => {
-    for (const spec of ['0.1.0', '^0.1.0', 'latest']) {
-      const bad = {
-        ...good,
-        'packages/b/package.json': { name: '@x/b', devDependencies: { '@x/a': spec } },
-      };
-      expect(problems(root, bad, globs), spec).toHaveLength(1);
+  it('rejects a range or tag for an internal dependency, including "*" (audit:supply-chain forbids it)', () => {
+    for (const spec of ['*', '^0.1.0', '~0.1.0', '0.x', '>=0.1.0', 'latest']) {
+      const out = problems(root, withB({ devDependencies: { '@x/a': spec } }), globs);
+      expect(out, spec).toHaveLength(1);
     }
   });
 
-  it('rejects an internal dependency declared in the root manifest as anything but "*"', () => {
+  it('rejects an exact version that is not the workspace package version', () => {
+    // A version that differs cannot be linked from the folder, so the tools would go to the registry.
+    const out = problems(root, withB({ dependencies: { '@x/a': '0.2.0' } }), globs);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain('is "0.2.0" but must be exactly "0.1.0"');
+  });
+
+  it('follows a version bump: the declaration must change with the package version', () => {
+    const bumped: Record<string, Manifest> = {
+      ...good,
+      'packages/a/package.json': { name: '@x/a', version: '0.2.0' },
+    };
+    expect(problems(root, bumped, globs)).toHaveLength(1);
+    const updated: Record<string, Manifest> = {
+      ...bumped,
+      'packages/b/package.json': {
+        name: '@x/b',
+        version: '0.1.0',
+        dependencies: { '@x/a': '0.2.0' },
+      },
+    };
+    expect(problems(root, updated, globs)).toEqual([]);
+  });
+
+  it('checks the root manifest as well', () => {
     const out = problems(
       { ...root, devDependencies: { '@x/a': 'workspace:*' } },
       good,

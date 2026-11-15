@@ -31,8 +31,8 @@ pnpm verify:stage 00
 ```
 
 pnpm is the supported package manager and the only one CI uses. `npm install` also works, for hosted
-build tools that run npm and nothing else: internal packages are declared `"*"` and linked from their
-folders, not fetched. What an npm install does not give you is listed in `docs/OPEN_QUESTIONS.md` (OQ-049).
+build tools that run npm and nothing else: internal packages are declared with the exact version of the
+workspace package they point to and are linked from their folders, not fetched. What an npm install does not give you is listed in `docs/OPEN_QUESTIONS.md` (OQ-049).
 
 Node 22+ and pnpm 10+ are required. The commands above are everything the automated test
 suites need — the integration tier (real Postgres, via Testcontainers) is self-contained

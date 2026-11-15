@@ -796,25 +796,31 @@ A hosted build tool that runs `npm install` failed with `EUNSUPPORTEDPROTOCOL: U
 internal dependency was declared `workspace:*`, which only pnpm (and bun) understand. pnpm and bun installed the repository fine; npm
 could not.
 
-**What changed:** the 71 internal dependency declarations (23 manifests) are now `"*"`; the root `package.json` gains `workspaces`
-(the same two globs as `pnpm-workspace.yaml`) and an `overrides` block that mirrors `pnpm.overrides`. pnpm still links the local
-folders because `.npmrc` sets `link-workspace-packages=true`; npm links them through `workspaces`. Checked on clean copies: `pnpm install
---frozen-lockfile` and `npm install` both succeed, every `@infinite-ai/*` package is a symlink to its folder, none is resolved from the
-registry, and the pnpm lockfile changed only in its 71 `specifier` lines (no package version moved).
-`packages/config/test/workspace-install-compat.spec.ts` keeps it that way: it fails if an internal dependency is anything but `"*"`,
-if `workspaces` and `pnpm-workspace.yaml` differ, or if the two `overrides` blocks drift.
+**What changed:** the 71 internal dependency declarations (22 workspace manifests and the root) are now the exact version of the
+workspace package they point to (`"0.1.0"` today). `"*"` was tried first and rejected: `pnpm audit:supply-chain` (Stage 16) forbids
+range specifiers, and the audit was not changed. The root `package.json` gains `workspaces` (the same two globs as
+`pnpm-workspace.yaml`) and an `overrides` block that mirrors `pnpm.overrides`. pnpm still links the local folders because `.npmrc` sets
+`link-workspace-packages=true`; npm links them through `workspaces`. Checked on clean copies: `pnpm install --frozen-lockfile` and
+`npm install` both succeed, every `@infinite-ai/*` package is a symlink to its folder, none is resolved from the registry, and the pnpm
+lockfile changed only in its 71 `specifier` lines (no package version moved).
+`packages/config/test/workspace-install-compat.spec.ts` keeps it that way: it fails if an internal dependency is not exactly the
+workspace package's version (so a `workspace:` protocol, a range, `"*"` or a stale version all fail), if `workspaces` and
+`pnpm-workspace.yaml` differ, or if the two `overrides` blocks drift.
 
-**What an npm install does not give you (decide whether that matters):**
+**What this costs and what an npm install does not give you (decide whether that matters):**
 
-1. **No build-script allow-list.** pnpm 10 runs install scripts only for the eight packages in `pnpm.onlyBuiltDependencies`; npm runs the
-   install scripts of every dependency. This is a supply-chain control that only applies under pnpm.
-2. **No committed lockfile for npm.** Direct dependencies are exact pins in the manifests, so only transitive versions can differ from
+1. **Version bumps touch more files.** When a workspace package's version changes, every package that depends on it must change to the
+   new version, or the test fails (it names the files). Today all 35 packages are at `0.1.0` and nothing bumps them.
+2. **No build-script allow-list under npm.** pnpm 10 runs install scripts only for the eight packages in `pnpm.onlyBuiltDependencies`;
+   npm runs the install scripts of every dependency. This is a supply-chain control that only applies under pnpm.
+3. **No committed lockfile for npm.** Direct dependencies are exact pins in the manifests, so only transitive versions can differ from
    what pnpm resolves. A second lockfile would need keeping in step with `pnpm-lock.yaml`.
-3. **A name must resolve locally.** `"*"` is safe while the package exists in the workspace: both tools link the local folder first. If
-   an internal package were renamed or removed while something still depended on the old name, `"*"` could resolve to a package of that
-   name on the public registry. The new test only checks dependencies whose name is in the workspace, so it would not notice this; rename
-   a package by searching for the old name everywhere.
+4. **A name must resolve locally.** An exact version is linked from the folder only while the package exists in the workspace at that
+   version. If an internal package were renamed or removed while something still depended on the old name, the tools could resolve a
+   package of that name from the public registry. The new test checks only names that exist in the workspace, so it would not notice a
+   removed or renamed package; rename a package by searching for the old name everywhere.
 
-**Questions for the owner:** should npm stay a supported way to install, or only a way to run hosted previews? Should CI also run a
-`npm install` job (about a minute) so this cannot regress unseen? Should a `package-lock.json` be committed? The recommendation is: keep pnpm
-as the only supported path for development, release and CI; keep npm working for previews; add the CI job; do not commit a second lockfile.
+**Questions for the owner:** should npm stay a supported way to install, or only a way to run hosted previews? Should CI also run an
+`npm install` job (about a minute) so this cannot regress unseen? Should a `package-lock.json` be committed? The recommendation is: keep
+pnpm as the only supported path for development, release and CI; keep npm working for previews; add the CI job; do not commit a second
+lockfile.

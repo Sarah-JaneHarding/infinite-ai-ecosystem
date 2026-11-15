@@ -14,10 +14,13 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 - **`npm install` failed on the whole repository** (`package.json` in the root, `apps/*` and `packages/*`, `pnpm-lock.yaml`)
   - npm stopped at `EUNSUPPORTEDPROTOCOL: Unsupported URL Type "workspace:"` because internal dependencies were declared
-    `workspace:*`. All 71 are now `"*"`, the root declares `workspaces` and mirrors `pnpm.overrides` as `overrides`, and the pnpm
-    lockfile was regenerated (only the 71 specifier lines changed; no package version moved). pnpm and npm both install from a clean
-    copy and link every `@infinite-ai/*` package to its local folder. A new test (`packages/config/test/workspace-install-compat.spec.ts`)
-    keeps the two tools in step. What an npm install does not cover (the pnpm build-script allow-list, a second lockfile) is OQ-049.
+    `workspace:*`. All 71 are now the exact version of the workspace package they point to (`"0.1.0"`; `"*"` was tried first and
+    `pnpm audit:supply-chain` rejects range specifiers). The root declares `workspaces` and mirrors `pnpm.overrides` as `overrides`, and
+    the pnpm lockfile was regenerated (only the 71 specifier lines changed; no package version moved). pnpm and npm both install from
+    a clean copy and link every `@infinite-ai/*` package to its local folder. A new test
+    (`packages/config/test/workspace-install-compat.spec.ts`) keeps the two tools in step and fails if a declared version differs from the
+    package's own version. Consequence: bumping a workspace package's version now means updating the packages that depend on it, and that
+    test lists them. What an npm install does not cover (the pnpm build-script allow-list, a second lockfile) is OQ-049.
 
 ### Removed
 

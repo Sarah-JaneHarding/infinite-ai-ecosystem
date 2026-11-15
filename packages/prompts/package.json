@@ -16,7 +16,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@infinite-ai/contracts": "*",
+    "@infinite-ai/contracts": "0.1.0",
     "zod": "4.6.7"
   },
   "devDependencies": {
