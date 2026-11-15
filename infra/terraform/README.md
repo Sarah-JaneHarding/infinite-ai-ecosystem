@@ -40,6 +40,12 @@ terraform/
     database       RDS Postgres 16 + pgvector, Secrets-Manager-backed app roles
     cache          ElastiCache Redis, TLS + AUTH token
     object-store   S3 bucket for Brain snapshots (OBJECT_STORE_BUCKET)
+    app-secrets    empty Secrets Manager shells (provider keys, web auth secrets) and SSM
+                   config under /infinite-ai/<env>/...; values are set out-of-band with
+                   `put-secret-value`, never in Terraform, so they never reach state
+    budget         monthly AWS Budget (limit stated in rand, converted to the USD AWS measures)
+                   with actual and forecast alerts to an ops mailbox and an SNS topic that
+                   the founder is subscribed to by email and text
     ecs-service    one reusable Fargate service definition — ECR repo, task def,
                    service, autoscaling, optional ALB target group
     observability  CloudWatch alarms (see "What this does not do" below) + an SNS topic
@@ -126,6 +132,17 @@ gateway_image_tag=<sha>` (and the same for worker/web).
    published version (`4.25.0`, pulled directly from `docker.langfuse.com`, not this
    repo's own ECR) — nothing "unreleased" to push first, since Langfuse is third-party
    software this repo's CD pipeline never builds.
+
+   Staging and production also read their non-secret, per-environment values (budget
+   limit, Keycloak client id) from a tfvars file: add `-var-file=staging.tfvars` or
+   `-var-file=production.tfvars` to `plan` and `apply` (CI passes the production one). Those
+   files never hold a credential; `scripts/ci/check-terraform-secrets.sh` enforces it.
+
+   **Populate the secrets** that `modules/app-secrets` and `modules/encryption-key` create
+   empty (provider keys, web auth secrets, the learner-identifier key) before any service
+   can start: `docs/RUNBOOKS/aws-setup.md` step 8, then force a new deployment. Rotation:
+   `docs/RUNBOOKS/secrets-rotation.md`. The full walkthrough, from installing the AWS CLI
+   to proving injection in a running task, is `docs/RUNBOOKS/aws-setup.md`.
 
 3. **Bootstrap the database roles and extensions**, once per environment, after step 2's
    first `apply`:

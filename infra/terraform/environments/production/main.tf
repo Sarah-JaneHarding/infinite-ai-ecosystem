@@ -31,7 +31,8 @@ provider "aws" {
 module "stack" {
   source = "../../modules/stack"
 
-  name = "infinite-ai-production"
+  name        = "infinite-ai-production"
+  environment = "production"
 
   single_nat_gateway = false
   db_multi_az        = true
@@ -46,6 +47,11 @@ module "stack" {
   domain_name = var.domain_name
   dns_zone_id = var.dns_zone_id
   alert_email = var.alert_email
+
+  monthly_budget_zar  = var.monthly_budget_zar
+  zar_per_usd         = var.zar_per_usd
+  budget_alert_emails = var.budget_alert_emails
+  keycloak_client_id  = var.keycloak_client_id
 
   gateway_desired_count = 2
   gateway_min_count     = 2

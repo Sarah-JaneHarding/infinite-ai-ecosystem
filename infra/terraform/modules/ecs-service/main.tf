@@ -64,35 +64,54 @@ resource "aws_iam_role_policy_attachment" "execution_managed" {
 }
 
 # The managed policy above covers ECR pull + CloudWatch Logs; it does NOT cover reading
-# the Secrets Manager values `var.secrets` names, which is a per-environment, per-service
-# set of ARNs this policy scopes to exactly those and nothing else.
+# the Secrets Manager secrets and SSM parameters `var.secrets` names, which is a
+# per-environment, per-service set of ARNs this policy scopes to exactly those and
+# nothing else.
 locals {
-  # var.secrets values may carry a ":<json-key>::" suffix (ECS's own syntax for reading
-  # one field of a JSON secret — see that variable's own doc comment). A Secrets Manager
-  # ARN always has exactly 6 colons (arn:aws:secretsmanager:region:account:secret:id); the
-  # 8th colon-separated field onward, if present, is that suffix. Truncating to the first
-  # 7 fields recovers the base ARN IAM actually authorizes against, regardless of whether
-  # a caller appended a suffix.
+  # Secrets Manager: var.secrets values may carry a ":<json-key>::" suffix (ECS's own
+  # syntax for reading one field of a JSON secret — see that variable's own doc comment).
+  # A Secrets Manager ARN always has exactly 6 colons
+  # (arn:aws:secretsmanager:region:account:secret:id); the 8th colon-separated field
+  # onward, if present, is that suffix. Truncating to the first 7 fields recovers the base
+  # ARN IAM actually authorizes against, regardless of whether a caller appended a suffix.
   secret_base_arns = distinct([
     for arn in values(var.secrets) : join(":", slice(split(":", arn), 0, 7))
+    if startswith(arn, "arn:aws:secretsmanager:")
   ])
-}
 
-data "aws_iam_policy_document" "execution_secrets" {
-  count = length(var.secrets) > 0 ? 1 : 0
+  # SSM Parameter Store: ECS reads a whole parameter, so there is no ":json-key::" suffix
+  # to strip and the ARN is used as given. Listing the exact ARN (never a path wildcard)
+  # keeps the grant to the parameters a service actually names.
+  ssm_parameter_arns = distinct([
+    for arn in values(var.secrets) : arn
+    if startswith(arn, "arn:aws:ssm:")
+  ])
 
-  statement {
-    actions   = ["secretsmanager:GetSecretValue"]
-    resources = local.secret_base_arns
-  }
+  # Secrets Manager statement first, with no Sid, so a Secrets-Manager-only caller gets the
+  # same policy content it always had. The SSM statement exists only when needed.
+  execution_secret_statements = concat(
+    length(local.secret_base_arns) > 0 ? [{
+      Effect   = "Allow"
+      Action   = "secretsmanager:GetSecretValue"
+      Resource = local.secret_base_arns
+    }] : [],
+    length(local.ssm_parameter_arns) > 0 ? [{
+      Effect   = "Allow"
+      Action   = "ssm:GetParameters"
+      Resource = local.ssm_parameter_arns
+    }] : [],
+  )
 }
 
 resource "aws_iam_role_policy" "execution_secrets" {
   count = length(var.secrets) > 0 ? 1 : 0
 
-  name   = "${var.name}-read-secrets"
-  role   = aws_iam_role.execution.id
-  policy = data.aws_iam_policy_document.execution_secrets[0].json
+  name = "${var.name}-read-secrets"
+  role = aws_iam_role.execution.id
+  policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = local.execution_secret_statements
+  })
 }
 
 resource "aws_iam_role" "task" {
@@ -107,6 +126,26 @@ resource "aws_iam_role_policy_attachment" "task_extra" {
 
   role       = aws_iam_role.task.name
   policy_arn = var.iam_policy_arns[count.index]
+}
+
+# Small, named-ARN grants that do not justify their own managed policy. This is the one
+# place to tighten or extend a task role: every statement names exact actions and ARNs
+# (the variable's validation rejects "*" and "service:*"), so a reviewer reads the whole
+# grant here instead of inferring it from a managed policy elsewhere.
+resource "aws_iam_role_policy" "task_inline" {
+  count = length(var.task_policy_statements) > 0 ? 1 : 0
+
+  name = "${var.name}-task-inline"
+  role = aws_iam_role.task.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [for s in var.task_policy_statements : {
+      Sid      = s.sid
+      Effect   = "Allow"
+      Action   = s.actions
+      Resource = s.resources
+    }]
+  })
 }
 
 resource "aws_security_group_rule" "from_alb" {

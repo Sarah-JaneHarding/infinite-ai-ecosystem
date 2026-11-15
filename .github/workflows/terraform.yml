@@ -28,6 +28,11 @@ name: Terraform
 #   TF_VAR_WEB_IMAGE_TAG     /  the running ECS task definition is the source of
 #                               truth and these vars are the fallback only.
 #
+# Per-environment, non-secret values (budget limit, Keycloak client id) live in
+# infra/terraform/environments/production/production.tfvars, passed with -var-file. A
+# tfvars value overrides a TF_VAR_* of the same name, so that file deliberately omits
+# everything listed above. scripts/ci/check-terraform-secrets.sh keeps credentials out.
+#
 # Actual credentials (DB passwords, signing keys, API keys) live in AWS Secrets
 # Manager.  None of the variables listed above are secrets — they are config.
 # Do not add raw credential values here.
@@ -90,6 +95,20 @@ jobs:
 
       - name: Terraform validate
         run: terraform -chdir=${{ env.TF_DIR }} validate
+
+      # Native `terraform test` (plan-only, mocked AWS provider) for the modules that carry
+      # tests. Each needs its provider schema, so each is initialised without a backend.
+      - name: Terraform module tests
+        run: |
+          for module in ecs-service app-secrets budget; do
+            terraform -chdir=infra/terraform/modules/${module} init -backend=false
+            terraform -chdir=infra/terraform/modules/${module} test
+          done
+
+      # tfvars files are committed, so they hold non-secret config only, and app-secrets
+      # must never declare a secret value (CLAUDE.md rule 7).
+      - name: Guard — no secrets in tfvars or app-secrets
+        run: bash scripts/ci/check-terraform-secrets.sh infra/terraform
 
   # ── Plan ──────────────────────────────────────────────────────────────────
   plan:
@@ -166,7 +185,7 @@ jobs:
         id: plan
         run: |
           set +e
-          terraform -chdir=${{ env.TF_DIR }} plan -no-color -detailed-exitcode -lock=false \
+          terraform -chdir=${{ env.TF_DIR }} plan -var-file=production.tfvars -no-color -detailed-exitcode -lock=false \
             2>&1 | tee /tmp/plan.txt
           echo "exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
         continue-on-error: true
@@ -303,4 +322,4 @@ jobs:
             -backend-config="dynamodb_table=${{ vars.TF_LOCK_TABLE }}"
 
       - name: Terraform apply
-        run: terraform -chdir=${{ env.TF_DIR }} apply -auto-approve
+        run: terraform -chdir=${{ env.TF_DIR }} apply -var-file=production.tfvars -auto-approve

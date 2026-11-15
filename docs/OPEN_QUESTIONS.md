@@ -824,3 +824,53 @@ workspace package's version (so a `workspace:` protocol, a range, `"*"` or a sta
 `npm install` job (about a minute) so this cannot regress unseen? Should a `package-lock.json` be committed? The recommendation is: keep
 pnpm as the only supported path for development, release and CI; keep npm working for previews; add the CI job; do not commit a second
 lockfile.
+
+### OQ-050 — monthly AWS budget limits (provisional, in rand) and who is alerted · 2026-11-15
+
+`staging.tfvars` sets `monthly_budget_zar = 10000` and `production.tfvars` sets `13000`, with `zar_per_usd = 18.5`. Basis:
+`docs/aws-cost-estimate.html` puts the shared baseline at R5,180-R7,770 a month; staging takes the top plus 20% headroom
+(R9,324, rounded to R10,000), production adds the estimate's own high-availability extras (+R2,220 and +R592) then 20%
+(R12,698, rounded to R13,000). That estimate predates the self-hosted Langfuse stack and excludes LLM spend, so both figures
+are probably low.
+
+**Decisions (2026-11-15, the owner):** (1) the figures are **provisional**: keep them until the full business load has been
+tested (the k6 run in OQ-017), then reset both limits from the real bill. (2) All budgets are in **rand**. (3) **The founder
+receives budget alerts by email and by text message.**
+
+How those were built, and what is still open:
+
+- **Rand and USD.** AWS Budgets measures cost in USD; its documentation shows only USD cost budgets, and a rand figure sent as
+  the limit could be compared against USD costs and alert far too late. So Terraform converts: limit = rand / `zar_per_usd`,
+  rounded down to the cent, exposed as the `budget_limit_usd` output. AWS's own alerts will show USD. The effective rand limit
+  drifts with the exchange rate, so `zar_per_usd` needs updating if the rand moves materially.
+- **The founder's contact details are not in the repository or in Terraform state.** Alerts go to an SNS topic
+  (`budget_alert_topic_arn`); the founder's email and mobile number are subscribed to it by hand
+  (`docs/RUNBOOKS/aws-setup.md` step 6). **Still needed from the owner: the founder's email address and mobile number, given
+  to whoever runs that step, not written here.** Until that is done, only the ops mailbox (`alert_email`) is alerted.
+- **Unverified, to be tested with the step-6 publish test:** that SNS can text South African numbers from `af-south-1` (the account
+  starts in the SNS SMS sandbox, so the number must be verified, and an origination identity may be needed); and that AWS Budgets
+  can publish to a topic in an opt-in Region. If either fails the founder gets no alert, so the test matters.
+- A merge to `main` runs the production apply behind its reviewer gate and would create the production budget and the topic.
+
+### OQ-051 — existing modules keep generated passwords in Terraform state · 2026-11-15
+
+`modules/cache`, `modules/langfuse`, `modules/clickhouse` and the `modules/database` application roles create
+`aws_secretsmanager_secret_version` resources from generated values, so those values sit in the state file. The new
+`modules/app-secrets` avoids this (empty shells). The state bucket is private and encrypted, so this is tolerable for a pilot with
+one operator, but access to the state bucket is access to those secrets. _Recommend:_ decide, before a second person gets state
+access, whether to move these to empty shells set out-of-band, or to RDS-managed rotation where the service supports it.
+
+### OQ-052 — customer-managed KMS key, and billing access for the apply role · 2026-11-15
+
+(a) Secrets Manager uses the AWS-managed key (`aws/secretsmanager`), as `modules/encryption-key` already records. A
+customer-managed key would add key-policy control and an audit trail of who decrypted what, at about $1/month and a key-policy
+change on every execution role. _Recommend:_ stay on the managed key for the pilot; revisit with the second school. (b) Creating
+the budget as a non-root role may require the account setting "IAM user and role access to Billing information" to be activated by
+the root user. I could not check this without credentials; `docs/RUNBOOKS/aws-setup.md` step 6 says what to do if `apply` is refused.
+
+### OQ-053 — there is no procedure to re-encrypt learner data under a new `DB_ENCRYPTION_KEY` · 2026-11-15
+
+`docs/RUNBOOKS/secrets-rotation.md` tells the operator never to rotate this key, because replacing the secret makes every
+existing encrypted identifier undecryptable and nothing in the repository describes re-encrypting them. Needed before the key can
+ever be rotated (including after a suspected exposure): a written, tested re-encryption procedure that uses
+`DB_ENCRYPTION_KEY_VERSION`, runs per tenant, and can be resumed if interrupted. _Recommend:_ design it before production go-live.

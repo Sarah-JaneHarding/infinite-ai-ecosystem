@@ -173,6 +173,42 @@ variable "alert_email" {
   default = null
 }
 
+# --- Secrets, config and cost alerts -----------------------------------------------
+
+variable "environment" {
+  description = "Short environment name — \"dev\", \"staging\" or \"production\". Used only for the secret and parameter path (\"/infinite-ai/<environment>/...\") and to pick the secret recovery window (30 days for production, 7 otherwise)."
+  type        = string
+
+  validation {
+    condition     = contains(["dev", "staging", "production"], var.environment)
+    error_message = "environment must be one of: dev, staging, production."
+  }
+}
+
+variable "monthly_budget_zar" {
+  description = "Monthly AWS cost limit in rand. Null creates no budget. Set per environment in its tfvars file, together with zar_per_usd — see modules/budget for why AWS needs it converted to USD."
+  type        = number
+  default     = null
+}
+
+variable "zar_per_usd" {
+  description = "Rand per US dollar, used to convert monthly_budget_zar into the USD limit AWS Budgets enforces. Required (modules/budget refuses null) whenever monthly_budget_zar is set; no default, so the assumption is always visible in the environment's tfvars."
+  type        = number
+  default     = null
+}
+
+variable "budget_alert_emails" {
+  description = "Extra OPERATIONAL budget alert recipients (shared mailboxes). var.alert_email, when set, always receives alerts too, and modules/budget refuses to create a budget with no recipient. Do not list a person's email or phone here: subscribe people to the budget alert topic instead (budget_alert_topic_arn)."
+  type        = list(string)
+  default     = []
+}
+
+variable "keycloak_client_id" {
+  description = "The Keycloak client id the web app authenticates as (AUTH_KEYCLOAK_ID). Not a secret. Null omits the parameter and the web mapping, matching keycloak_issuer_url's own \"mechanism now, real config once it exists\" convention."
+  type        = string
+  default     = null
+}
+
 # --- Langfuse (self-hosted LLM observability) -------------------------------------
 # See modules/langfuse's own header for what this deploys and why. domain_name for
 # Langfuse's own ALB/cert/DNS is derived below ("langfuse." + var.domain_name), not a

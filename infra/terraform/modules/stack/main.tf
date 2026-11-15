@@ -290,6 +290,49 @@ module "encryption_key" {
   tags = var.tags
 }
 
+# --- Runtime secrets and config (app-secrets) -------------------------------------
+# Empty Secrets Manager shells for the credentials the services need that no other module
+# owns, plus the one plain config value (the Keycloak client id) as an SSM parameter.
+# Same contract as encryption_key above: populate with `aws secretsmanager put-secret-value`
+# after `apply`, never in Terraform — a task referencing an empty secret cannot start. See
+# the app-secrets module's own header and docs/RUNBOOKS/aws-setup.md.
+
+module "app_secrets" {
+  source = "../app-secrets"
+
+  name_prefix = "/infinite-ai/${var.environment}"
+
+  secret_names = [
+    "ANTHROPIC_API_KEYS",   # apps/gateway only: the provider credential pool
+    "NEXTAUTH_SECRET",      # apps/web session signing
+    "AUTH_KEYCLOAK_SECRET", # apps/web's Keycloak client secret
+  ]
+  ssm_config = var.keycloak_client_id == null ? {} : { AUTH_KEYCLOAK_ID = var.keycloak_client_id }
+
+  # Production keeps the longest recovery window; elsewhere a shorter one avoids a name
+  # staying reserved for a month after a teardown.
+  recovery_window_in_days = var.environment == "production" ? 30 : 7
+
+  tags = var.tags
+}
+
+# --- Cost alert (budget) ----------------------------------------------------------
+# Only when an environment sets monthly_budget_zar (see its tfvars file). The limit is stated in
+# rand and converted to the USD that AWS measures; the founder is subscribed to the alert topic
+# (budget_alert_topic_arn) by hand, so no personal contact detail is held in Terraform.
+
+module "budget" {
+  source = "../budget"
+  count  = var.monthly_budget_zar == null ? 0 : 1
+
+  name               = var.name
+  monthly_budget_zar = var.monthly_budget_zar
+  zar_per_usd        = var.zar_per_usd
+  alert_emails       = distinct(concat(compact([var.alert_email]), var.budget_alert_emails))
+
+  tags = var.tags
+}
+
 # --- SES transactional email (OQ-021) -------------------------------------------
 # Domain identity, DKIM CNAME records, and IAM send policy for apps/gateway's dunning
 # emails (billing OVERDUE / SUSPENDED notifications). Only provisioned when a real
@@ -366,6 +409,10 @@ module "ecs_service_gateway" {
 
   secrets = {
     DATABASE_URL = "${module.database.app_role_secret_arns["app_rw"]}:url::"
+    # The model gateway's provider credential pool (comma-separated keys). Gateway only:
+    # CLAUDE.md rule 3 keeps provider credentials out of every other service, and
+    # apps/worker and apps/web never read this variable.
+    ANTHROPIC_API_KEYS = module.app_secrets.secret_arns["ANTHROPIC_API_KEYS"]
     # The Basic-auth header module.langfuse generated for this environment's own
     # Langfuse project — never plain env, since it carries the project's secret key.
     OTEL_EXPORTER_OTLP_HEADERS = "${module.langfuse.otlp_header_secret_arn}:header::"
@@ -460,9 +507,16 @@ module "ecs_service_web" {
     var.keycloak_issuer_url == null ? {} : { AUTH_KEYCLOAK_ISSUER = var.keycloak_issuer_url },
   )
 
-  secrets = {
-    DB_ENCRYPTION_KEY = module.encryption_key.secret_arn
-  }
+  secrets = merge(
+    {
+      DB_ENCRYPTION_KEY    = module.encryption_key.secret_arn
+      NEXTAUTH_SECRET      = module.app_secrets.secret_arns["NEXTAUTH_SECRET"]
+      AUTH_KEYCLOAK_SECRET = module.app_secrets.secret_arns["AUTH_KEYCLOAK_SECRET"]
+    },
+    # The client id is plain config in SSM, injected the same native way (not an env var in
+    # the task definition). Omitted while keycloak_client_id is null.
+    var.keycloak_client_id == null ? {} : { AUTH_KEYCLOAK_ID = module.app_secrets.ssm_parameter_arns["AUTH_KEYCLOAK_ID"] },
+  )
 
   tags = var.tags
 }
