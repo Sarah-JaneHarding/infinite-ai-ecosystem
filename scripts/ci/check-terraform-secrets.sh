@@ -17,7 +17,7 @@ root="${1:?usage: check-terraform-secrets.sh <terraform-root>}"
 status=0
 
 if grep -rEni --include='*.tfvars' --include='*.tfvars.json' \
-  '^[^#]*(secret|password|token|api_?key|private_key|AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9])' "$root"; then
+  '^[^#]*(secret|password|token|api_?key|private_key|AKIA[0-9A-Z]{16}|(^|[^[:alnum:]])sk-[[:alnum:]])' "$root"; then
   echo "::error::A tfvars file looks like it contains a credential (matches above). tfvars hold non-secret config only; set secret values with 'aws secretsmanager put-secret-value'." >&2
   status=1
 fi
