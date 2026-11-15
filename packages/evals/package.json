@@ -20,8 +20,8 @@
     "vitest": "5.1.0"
   },
   "dependencies": {
-    "@infinite-ai/agents": "workspace:*",
-    "@infinite-ai/guardrails": "workspace:*",
+    "@infinite-ai/agents": "0.1.0",
+    "@infinite-ai/guardrails": "0.1.0",
     "zod": "4.6.7"
   }
 }

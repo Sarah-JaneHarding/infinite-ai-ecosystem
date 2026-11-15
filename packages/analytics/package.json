@@ -22,7 +22,7 @@
     "vitest": "5.1.0"
   },
   "dependencies": {
-    "@infinite-ai/guardrails": "workspace:*",
+    "@infinite-ai/guardrails": "0.1.0",
     "zod": "4.6.7"
   }
 }
