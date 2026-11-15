@@ -57,11 +57,11 @@ aws account get-region-opt-status --region-name af-south-1
 aws ssm get-parameters-by-path --region af-south-1 \
   --path /aws/service/global-infrastructure/regions/af-south-1/services \
   --recursive --query 'Parameters[].Name' --output text | tr '\t' '\n' \
-  | grep -E '/(secretsmanager|ssm|ecs|fargate|rds|elasticache|budgets)$'
+  | grep -E '/(secretsmanager|ssm|ecs|rds|elasticache|budgets)$'
 ```
 
-Every one of `secretsmanager`, `ssm`, `ecs`, `fargate`, `rds` and `elasticache` should be
-listed. (`budgets` is a billing-plane service and may not be listed per Region; Step 6
+Every one of `secretsmanager`, `ssm`, `ecs` (which covers Fargate), `rds` and `elasticache`
+should be listed. (`budgets` is a billing-plane service and may not be listed per Region; Step 6
 covers it.) A missing service is a stop: record it in `docs/OPEN_QUESTIONS.md` rather than
 working around it.
 
