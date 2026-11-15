@@ -88,13 +88,13 @@ Chosen by the user: **A**.
 
 ### Module map
 
-| Requested | Built as |
-|---|---|
-| `modules/secrets` | new `modules/app-secrets` |
-| `modules/iam` | additions inside `modules/ecs-service` |
-| `modules/ecs` | existing `modules/ecs-service`, wired by `modules/stack` |
+| Requested                   | Built as                                                                                               |
+| --------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `modules/secrets`           | new `modules/app-secrets`                                                                              |
+| `modules/iam`               | additions inside `modules/ecs-service`                                                                 |
+| `modules/ecs`               | existing `modules/ecs-service`, wired by `modules/stack`                                               |
 | `envs/staging`, `envs/prod` | existing `environments/staging`, `environments/production` plus `staging.tfvars` / `production.tfvars` |
-| budget | new `modules/budget` |
+| budget                      | new `modules/budget`                                                                                   |
 
 ### `modules/app-secrets`
 
