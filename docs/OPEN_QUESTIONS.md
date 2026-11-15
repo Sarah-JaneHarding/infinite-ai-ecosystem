@@ -824,3 +824,35 @@ workspace package's version (so a `workspace:` protocol, a range, `"*"` or a sta
 `npm install` job (about a minute) so this cannot regress unseen? Should a `package-lock.json` be committed? The recommendation is: keep
 pnpm as the only supported path for development, release and CI; keep npm working for previews; add the CI job; do not commit a second
 lockfile.
+
+### OQ-050 — confirm the monthly AWS budget limits and alert recipients · 2026-11-15
+
+`staging.tfvars` sets `monthly_budget_usd = 550` and `production.tfvars` sets `700`. These are **proposals, not decisions.**
+Basis: `docs/aws-cost-estimate.html` puts the shared baseline at about $280-$420/month; staging takes the top of that plus 20%
+headroom, production adds the estimate's own high-availability extras (+$152) then 20%. That estimate predates the self-hosted
+Langfuse stack and excludes LLM spend, so both figures are probably low. _Recommend:_ keep them for the first month, then reset
+from the real bill. Also needed: who else receives alerts besides `alert_email` (`budget_alert_emails`). Nothing is applied until
+you confirm; note that a merge to `main` runs the production apply behind its reviewer gate and would create the production budget.
+
+### OQ-051 — existing modules keep generated passwords in Terraform state · 2026-11-15
+
+`modules/cache`, `modules/langfuse`, `modules/clickhouse` and the `modules/database` application roles create
+`aws_secretsmanager_secret_version` resources from generated values, so those values sit in the state file. The new
+`modules/app-secrets` avoids this (empty shells). The state bucket is private and encrypted, so this is tolerable for a pilot with
+one operator, but access to the state bucket is access to those secrets. _Recommend:_ decide, before a second person gets state
+access, whether to move these to empty shells set out-of-band, or to RDS-managed rotation where the service supports it.
+
+### OQ-052 — customer-managed KMS key, and billing access for the apply role · 2026-11-15
+
+(a) Secrets Manager uses the AWS-managed key (`aws/secretsmanager`), as `modules/encryption-key` already records. A
+customer-managed key would add key-policy control and an audit trail of who decrypted what, at about $1/month and a key-policy
+change on every execution role. _Recommend:_ stay on the managed key for the pilot; revisit with the second school. (b) Creating
+the budget as a non-root role may require the account setting "IAM user and role access to Billing information" to be activated by
+the root user. I could not check this without credentials; `docs/RUNBOOKS/aws-setup.md` step 6 says what to do if `apply` is refused.
+
+### OQ-053 — there is no procedure to re-encrypt learner data under a new `DB_ENCRYPTION_KEY` · 2026-11-15
+
+`docs/RUNBOOKS/secrets-rotation.md` tells the operator never to rotate this key, because replacing the secret makes every
+existing encrypted identifier undecryptable and nothing in the repository describes re-encrypting them. Needed before the key can
+ever be rotated (including after a suspected exposure): a written, tested re-encryption procedure that uses
+`DB_ENCRYPTION_KEY_VERSION`, runs per tenant, and can be resumed if interrupted. _Recommend:_ design it before production go-live.
