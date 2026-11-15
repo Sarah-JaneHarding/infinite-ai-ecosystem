@@ -827,12 +827,15 @@ lockfile.
 
 ### OQ-050 — confirm the monthly AWS budget limits and alert recipients · 2026-11-15
 
-`staging.tfvars` sets `monthly_budget_usd = 550` and `production.tfvars` sets `700`. These are **proposals, not decisions.**
+`staging.tfvars` sets `monthly_budget_usd = 550` and `production.tfvars` sets `700`. These start as proposals.
 Basis: `docs/aws-cost-estimate.html` puts the shared baseline at about $280-$420/month; staging takes the top of that plus 20%
 headroom, production adds the estimate's own high-availability extras (+$152) then 20%. That estimate predates the self-hosted
 Langfuse stack and excludes LLM spend, so both figures are probably low. _Recommend:_ keep them for the first month, then reset
-from the real bill. Also needed: who else receives alerts besides `alert_email` (`budget_alert_emails`). Nothing is applied until
-you confirm; note that a merge to `main` runs the production apply behind its reviewer gate and would create the production budget.
+from the real bill. Also needed: who else receives alerts besides `alert_email` (`budget_alert_emails`). Note that a merge to
+`main` runs the production apply behind its reviewer gate and would create the production budget.
+
+**Decision (2026-11-15, the owner):** approved as **provisional**. Keep $550 and $700 until the full business load has been
+tested (the k6 run in OQ-017), then reset both limits from the real bill. Alert recipients beyond `alert_email` are still open.
 
 ### OQ-051 — existing modules keep generated passwords in Terraform state · 2026-11-15
 

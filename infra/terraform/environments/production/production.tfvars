@@ -6,7 +6,8 @@
 # Values CI supplies through TF_VAR_* (domain_name, dns_zone_id, alert_email, image tags,
 # langfuse_init_user_email) are deliberately NOT set here: a tfvars value would override them.
 
-# PROPOSED — confirm before apply (docs/OPEN_QUESTIONS.md).
+# PROVISIONAL (owner decision, 2026-11-15): keep this figure until the full business load has been
+# tested, then reset it from the real bill (docs/OPEN_QUESTIONS.md OQ-050, load test OQ-017).
 # Basis: docs/aws-cost-estimate.html puts the shared baseline at ~$280-$420/month. Production
 # adds the estimate's own high-availability caveats: db.t4g.large Multi-AZ (+~$120) and a NAT
 # gateway per AZ (+~$32), so $420 + $152 = $572. x 1.2 headroom = $686, rounded up to $700.

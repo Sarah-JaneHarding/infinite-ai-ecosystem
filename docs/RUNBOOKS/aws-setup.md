@@ -88,7 +88,8 @@ are empty shells, so their values never enter state.
 The monthly budget is created by Terraform from `monthly_budget_usd` in
 `staging.tfvars` / `production.tfvars` (alerts at 50%, 80% and 100% of actual spend and at
 100% of forecast, emailed to `alert_email` plus `budget_alert_emails`). The figures in
-those files are **proposals** — confirm them first (`docs/OPEN_QUESTIONS.md`).
+those files are **provisional** — the owner has said to keep them until the full business load
+has been tested, then reset them from the real bill (`docs/OPEN_QUESTIONS.md`, OQ-050).
 
 Two things Terraform cannot do for you:
 

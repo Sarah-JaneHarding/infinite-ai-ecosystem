@@ -6,7 +6,8 @@
 # Values CI supplies through TF_VAR_* (domain_name, dns_zone_id, alert_email, image tags,
 # langfuse_init_user_email) are deliberately NOT set here: a tfvars value would override them.
 
-# PROPOSED — confirm before apply (docs/OPEN_QUESTIONS.md).
+# PROVISIONAL (owner decision, 2026-11-15): keep this figure until the full business load has been
+# tested, then reset it from the real bill (docs/OPEN_QUESTIONS.md OQ-050, load test OQ-017).
 # Basis: docs/aws-cost-estimate.html puts the shared baseline (ECS Fargate x3, RDS, cache,
 # ALB, NAT, CloudWatch, Secrets Manager) at R5,180-R7,770/month = ~$280-$420 at R18.50/USD.
 # Staging uses the upper end: $420 x 1.2 headroom = $504, rounded up to $550.
