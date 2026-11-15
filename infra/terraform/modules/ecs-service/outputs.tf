@@ -6,6 +6,11 @@ output "task_role_arn" {
   value = aws_iam_role.task.arn
 }
 
+output "execution_role_arn" {
+  description = "The ECS task execution role (image pull, log write, secret and parameter read). Exposed so a pipeline or downstream module can reference it; it is only ever widened by this module's own `secrets` input."
+  value       = aws_iam_role.execution.arn
+}
+
 output "log_group_name" {
   value = aws_cloudwatch_log_group.this.name
 }
