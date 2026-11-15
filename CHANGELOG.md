@@ -10,6 +10,15 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`npm install` failed on the whole repository** (`package.json` in the root, `apps/*` and `packages/*`, `pnpm-lock.yaml`)
+  - npm stopped at `EUNSUPPORTEDPROTOCOL: Unsupported URL Type "workspace:"` because internal dependencies were declared
+    `workspace:*`. All 71 are now `"*"`, the root declares `workspaces` and mirrors `pnpm.overrides` as `overrides`, and the pnpm
+    lockfile was regenerated (only the 71 specifier lines changed; no package version moved). pnpm and npm both install from a clean
+    copy and link every `@infinite-ai/*` package to its local folder. A new test (`packages/config/test/workspace-install-compat.spec.ts`)
+    keeps the two tools in step. What an npm install does not cover (the pnpm build-script allow-list, a second lockfile) is OQ-049.
+
 ### Removed
 
 - **Expired `billing_dunning_emails` feature flag** (`packages/config`)

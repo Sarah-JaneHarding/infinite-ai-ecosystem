@@ -9,6 +9,10 @@
     "node": ">=22.0.0",
     "pnpm": ">=10.0.0"
   },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "type": "module",
   "scripts": {
     "build": "turbo run build",
@@ -67,15 +71,15 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@infinite-ai/analytics": "workspace:*",
-    "@infinite-ai/brain": "workspace:*",
-    "@infinite-ai/contracts": "workspace:*",
-    "@infinite-ai/curriculum-seed": "workspace:*",
-    "@infinite-ai/db": "workspace:*",
-    "@infinite-ai/evals": "workspace:*",
-    "@infinite-ai/guardrails": "workspace:*",
-    "@infinite-ai/prompts": "workspace:*",
-    "@infinite-ai/warehouse": "workspace:*",
+    "@infinite-ai/analytics": "*",
+    "@infinite-ai/brain": "*",
+    "@infinite-ai/contracts": "*",
+    "@infinite-ai/curriculum-seed": "*",
+    "@infinite-ai/db": "*",
+    "@infinite-ai/evals": "*",
+    "@infinite-ai/guardrails": "*",
+    "@infinite-ai/prompts": "*",
+    "@infinite-ai/warehouse": "*",
     "@types/node": "26.6.6",
     "eslint": "10.14.0",
     "eslint-config-prettier": "10.1.8",
@@ -87,6 +91,10 @@
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1",
     "vitest": "5.1.0"
+  },
+  "overrides": {
+    "nanoid": "3.3.18",
+    "deepmerge-ts": "8.0.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

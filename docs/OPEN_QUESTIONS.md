@@ -789,3 +789,32 @@ suggested ones: (1) the same rule as suspending — an active administrator othe
 comes back with what they held; (3) **no second administrator** (suspending needed none); (4) audited as `user_account.reinstated`;
 (5) only `SUSPENDED` goes back — `OFFBOARDED` stays final, and bringing such a person back is a new invitation. If (3) should be
 stricter, reinstating needs a confirmation step like `smt`/`admin` grants; say so and it becomes its own change.
+
+### OQ-049 — the repository now also installs with npm; what should that cover? · 2026-11-15
+
+A hosted build tool that runs `npm install` failed with `EUNSUPPORTEDPROTOCOL: Unsupported URL Type "workspace:"`, because every
+internal dependency was declared `workspace:*`, which only pnpm (and bun) understand. pnpm and bun installed the repository fine; npm
+could not.
+
+**What changed:** the 71 internal dependency declarations (23 manifests) are now `"*"`; the root `package.json` gains `workspaces`
+(the same two globs as `pnpm-workspace.yaml`) and an `overrides` block that mirrors `pnpm.overrides`. pnpm still links the local
+folders because `.npmrc` sets `link-workspace-packages=true`; npm links them through `workspaces`. Checked on clean copies: `pnpm install
+--frozen-lockfile` and `npm install` both succeed, every `@infinite-ai/*` package is a symlink to its folder, none is resolved from the
+registry, and the pnpm lockfile changed only in its 71 `specifier` lines (no package version moved).
+`packages/config/test/workspace-install-compat.spec.ts` keeps it that way: it fails if an internal dependency is anything but `"*"`,
+if `workspaces` and `pnpm-workspace.yaml` differ, or if the two `overrides` blocks drift.
+
+**What an npm install does not give you (decide whether that matters):**
+
+1. **No build-script allow-list.** pnpm 10 runs install scripts only for the eight packages in `pnpm.onlyBuiltDependencies`; npm runs the
+   install scripts of every dependency. This is a supply-chain control that only applies under pnpm.
+2. **No committed lockfile for npm.** Direct dependencies are exact pins in the manifests, so only transitive versions can differ from
+   what pnpm resolves. A second lockfile would need keeping in step with `pnpm-lock.yaml`.
+3. **A name must resolve locally.** `"*"` is safe while the package exists in the workspace: both tools link the local folder first. If
+   an internal package were renamed or removed while something still depended on the old name, `"*"` could resolve to a package of that
+   name on the public registry. The new test only checks dependencies whose name is in the workspace, so it would not notice this; rename
+   a package by searching for the old name everywhere.
+
+**Questions for the owner:** should npm stay a supported way to install, or only a way to run hosted previews? Should CI also run a
+`npm install` job (about a minute) so this cannot regress unseen? Should a `package-lock.json` be committed? The recommendation is: keep pnpm
+as the only supported path for development, release and CI; keep npm working for previews; add the CI job; do not commit a second lockfile.

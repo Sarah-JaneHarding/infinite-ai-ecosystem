@@ -16,31 +16,31 @@ importers:
         specifier: 10.0.1
         version: 10.0.1(eslint@10.14.0(jiti@2.7.0))
       '@infinite-ai/analytics':
-        specifier: workspace:*
+        specifier: '*'
         version: link:packages/analytics
       '@infinite-ai/brain':
-        specifier: workspace:*
+        specifier: '*'
         version: link:packages/brain
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:packages/contracts
       '@infinite-ai/curriculum-seed':
-        specifier: workspace:*
+        specifier: '*'
         version: link:packages/curriculum-seed
       '@infinite-ai/db':
-        specifier: workspace:*
+        specifier: '*'
         version: link:packages/db
       '@infinite-ai/evals':
-        specifier: workspace:*
+        specifier: '*'
         version: link:packages/evals
       '@infinite-ai/guardrails':
-        specifier: workspace:*
+        specifier: '*'
         version: link:packages/guardrails
       '@infinite-ai/prompts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:packages/prompts
       '@infinite-ai/warehouse':
-        specifier: workspace:*
+        specifier: '*'
         version: link:packages/warehouse
       '@types/node':
         specifier: 26.6.6
@@ -79,22 +79,22 @@ importers:
   apps/gateway:
     dependencies:
       '@infinite-ai/config':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/config
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/contracts
       '@infinite-ai/db':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/db
       '@infinite-ai/deident':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/deident
       '@infinite-ai/guardrails':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/guardrails
       '@infinite-ai/telemetry':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/telemetry
       zod:
         specifier: 4.6.7
@@ -119,31 +119,31 @@ importers:
   apps/web:
     dependencies:
       '@infinite-ai/brain':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/brain
       '@infinite-ai/curriculum-seed':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/curriculum-seed
       '@infinite-ai/db':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/db
       '@infinite-ai/design-system':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/design-system
       '@infinite-ai/learner-client':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/learner-client
       '@infinite-ai/orchestrator':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/orchestrator
       '@infinite-ai/policy':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/policy
       '@infinite-ai/school-setup':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/school-setup
       '@infinite-ai/security':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/security
       next:
         specifier: 16.4.5
@@ -198,34 +198,34 @@ importers:
         specifier: 3.1163.0
         version: 3.1163.0
       '@infinite-ai/agents':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/agents
       '@infinite-ai/brain':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/brain
       '@infinite-ai/config':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/config
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/contracts
       '@infinite-ai/db':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/db
       '@infinite-ai/evals':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/evals
       '@infinite-ai/guardrails':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/guardrails
       '@infinite-ai/orchestrator':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/orchestrator
       '@infinite-ai/prompts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/prompts
       '@infinite-ai/telemetry':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/telemetry
       bullmq:
         specifier: 6.7.1
@@ -266,13 +266,13 @@ importers:
   packages/agents:
     dependencies:
       '@infinite-ai/analytics':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../analytics
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       '@infinite-ai/warehouse':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../warehouse
       zod:
         specifier: 4.6.7
@@ -288,7 +288,7 @@ importers:
   packages/analytics:
     dependencies:
       '@infinite-ai/guardrails':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../guardrails
       zod:
         specifier: 4.6.7
@@ -323,16 +323,16 @@ importers:
   packages/brain:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       '@infinite-ai/db':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../db
       '@infinite-ai/policy':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../policy
       '@infinite-ai/telemetry':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../telemetry
       zod:
         specifier: 4.6.7
@@ -357,7 +357,7 @@ importers:
   packages/compliance:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       zod:
         specifier: 4.6.7
@@ -405,13 +405,13 @@ importers:
   packages/curriculum-seed:
     dependencies:
       '@infinite-ai/brain':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../brain
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       '@infinite-ai/db':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../db
       zod:
         specifier: 4.6.7
@@ -430,10 +430,10 @@ importers:
   packages/db:
     dependencies:
       '@infinite-ai/config':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../config
       '@infinite-ai/telemetry':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../telemetry
       '@prisma/adapter-pg':
         specifier: 7.10.1
@@ -443,7 +443,7 @@ importers:
         version: 7.10.1(prisma@7.10.1(@types/node@26.6.6)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3))(typescript@6.0.3)
     devDependencies:
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       '@testcontainers/postgresql':
         specifier: 12.2.1
@@ -504,7 +504,7 @@ importers:
         version: 4.6.7
     devDependencies:
       '@infinite-ai/config':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../config
       '@vitest/coverage-v8':
         specifier: 5.1.0
@@ -519,10 +519,10 @@ importers:
   packages/evals:
     dependencies:
       '@infinite-ai/agents':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../agents
       '@infinite-ai/guardrails':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../guardrails
       zod:
         specifier: 4.6.7
@@ -554,22 +554,22 @@ importers:
   packages/guardrails:
     dependencies:
       '@infinite-ai/brain':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../brain
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       '@infinite-ai/db':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../db
       '@infinite-ai/deident':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../deident
       '@infinite-ai/policy':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../policy
       '@infinite-ai/telemetry':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../telemetry
       zod:
         specifier: 4.6.7
@@ -601,7 +601,7 @@ importers:
         version: 4.6.7
     devDependencies:
       '@infinite-ai/config':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../config
       '@vitest/coverage-v8':
         specifier: 5.1.0
@@ -616,7 +616,7 @@ importers:
   packages/learning:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       zod:
         specifier: 4.6.7
@@ -651,10 +651,10 @@ importers:
   packages/orchestrator:
     dependencies:
       '@infinite-ai/db':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../db
       '@infinite-ai/telemetry':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../telemetry
       zod:
         specifier: 4.6.7
@@ -679,14 +679,14 @@ importers:
   packages/pd-journal:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       zod:
         specifier: 4.6.7
         version: 4.6.7
     devDependencies:
       '@infinite-ai/compliance':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../compliance
       vitest:
         specifier: ^5.1.0
@@ -695,7 +695,7 @@ importers:
   packages/policy:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       zod:
         specifier: 4.6.7
@@ -714,7 +714,7 @@ importers:
   packages/prompt-builder:
     dependencies:
       '@infinite-ai/prompts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../prompts
       zod:
         specifier: 4.6.7
@@ -733,7 +733,7 @@ importers:
   packages/prompts:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       zod:
         specifier: 4.6.7
@@ -749,7 +749,7 @@ importers:
   packages/provisioning:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       zod:
         specifier: 4.6.7
@@ -793,10 +793,10 @@ importers:
   packages/system-prompt-builder:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       '@infinite-ai/prompt-builder':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../prompt-builder
       zod:
         specifier: 4.6.7
@@ -849,7 +849,7 @@ importers:
   packages/warehouse:
     dependencies:
       '@infinite-ai/contracts':
-        specifier: workspace:*
+        specifier: '*'
         version: link:../contracts
       zod:
         specifier: 4.6.7
