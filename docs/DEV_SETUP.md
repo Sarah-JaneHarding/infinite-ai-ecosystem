@@ -17,7 +17,7 @@ script that starts the apps — each step below is a real command you run.
 ## 1. Prerequisites
 
 - Node 22+, pnpm 10+ (see `README.md`).
-- Use pnpm. `npm install` also works (see `README.md` and OQ-049), but only pnpm applies the build-script allow-list in `package.json`.
+- Use pnpm. `npm install` is also supported (see `README.md` and OQ-049): CI installs and tests with pnpm and also runs an npm install compatibility check. Only pnpm applies the build-script allow-list in `package.json`.
 - Docker, with a running daemon — `docker info` should succeed. If it doesn't, Docker
   Desktop isn't running (Mac/Windows) or the service isn't started (`sudo systemctl
 start docker` on Linux).

@@ -30,7 +30,9 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build
 pnpm verify:stage 00
 ```
 
-pnpm is the supported package manager and the only one CI uses. `npm install` also works, for hosted
+pnpm is the primary package manager: CI installs, lints, tests and builds with it. `npm install` is also supported, and CI runs an
+npm install compatibility check (install without scripts, then confirm internal packages are linked from their folders) so it
+cannot break unnoticed. This is for hosted
 build tools that run npm and nothing else: internal packages are declared with the exact version of the
 workspace package they point to and are linked from their folders, not fetched. What an npm install does not give you is listed in `docs/OPEN_QUESTIONS.md` (OQ-049).
 
