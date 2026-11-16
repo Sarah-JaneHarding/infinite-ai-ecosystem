@@ -26,7 +26,7 @@
     "@infinite-ai/learner-client": "0.1.0",
     "@infinite-ai/policy": "0.1.0",
     "@infinite-ai/security": "0.1.0",
-    "next": "16.4.5",
+    "next": "16.4.6",
     "next-auth": "4.24.15",
     "react": "19.3.1",
     "react-dom": "19.3.1",
@@ -35,12 +35,12 @@
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
     "@playwright/test": "1.65.0",
-    "@tailwindcss/postcss": "4.3.4",
+    "@tailwindcss/postcss": "4.3.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "autoprefixer": "10.6.2",
     "postcss": "8.5.32",
-    "tailwindcss": "4.3.4",
+    "tailwindcss": "4.3.5",
     "typescript": "6.0.3",
     "vitest": "5.1.0"
   }
