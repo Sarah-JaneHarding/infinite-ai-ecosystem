@@ -790,7 +790,7 @@ comes back with what they held; (3) **no second administrator** (suspending need
 (5) only `SUSPENDED` goes back — `OFFBOARDED` stays final, and bringing such a person back is a new invitation. If (3) should be
 stricter, reinstating needs a confirmation step like `smt`/`admin` grants; say so and it becomes its own change.
 
-### OQ-049 — the repository now also installs with npm; what should that cover? · 2026-11-15
+### OQ-049 — the repository now also installs with npm; what should that cover? · 2026-11-15 · RESOLVED (2026-11-16)
 
 A hosted build tool that runs `npm install` failed with `EUNSUPPORTEDPROTOCOL: Unsupported URL Type "workspace:"`, because every
 internal dependency was declared `workspace:*`, which only pnpm (and bun) understand. pnpm and bun installed the repository fine; npm
@@ -824,6 +824,13 @@ workspace package's version (so a `workspace:` protocol, a range, `"*"` or a sta
 `npm install` job (about a minute) so this cannot regress unseen? Should a `package-lock.json` be committed? The recommendation is: keep
 pnpm as the only supported path for development, release and CI; keep npm working for previews; add the CI job; do not commit a second
 lockfile.
+
+**Resolved (2026-11-16, the owner):** keep npm as a supported install path. CI now has an `npm install compatibility` job
+(`npm-install` in `.github/workflows/ci.yml`) that runs `npm install --ignore-scripts --no-package-lock` and fails unless every
+`node_modules/@infinite-ai/*` entry is a symlink to its workspace folder. No `package-lock.json` is committed. The job does not run
+install scripts (so it cannot show that a dependency's install script works under npm), and the missing build-script allow-list
+(point 2 above) remains true for npm; CI still installs, lints, typechecks, tests and builds with pnpm only. The job is not added to any
+required-checks list by this change.
 
 ### OQ-050 — monthly AWS budget limits (provisional, in rand) and who is alerted · 2026-11-15
 

@@ -10,6 +10,13 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ## [Unreleased]
 
+### Added
+
+- **CI check that `npm install` keeps working** (`.github/workflows/ci.yml`, OQ-049)
+  - New `npm install compatibility` job (`npm-install`): installs with `npm install --ignore-scripts --no-package-lock` and fails
+    if `node_modules/@infinite-ai` is missing or empty, or any entry in it is not a symlink to its workspace folder. It does not run
+    install scripts and does not replace the pnpm jobs. OQ-049 is resolved: the owner decided npm stays a supported install path.
+
 ### Fixed
 
 - **`npm install` failed on the whole repository** (`package.json` in the root, `apps/*` and `packages/*`, `pnpm-lock.yaml`)

@@ -111,6 +111,48 @@ jobs:
           done < <(find . -name '.env.example' -not -path '*/node_modules/*' -print0)
           exit $status
 
+  # OQ-049 (resolved 2026-11-16): the owner decided npm stays a supported way to install,
+  # so something has to notice when it stops working. Every internal dependency is the
+  # exact version of its workspace package; a `workspace:*` or a stale version brings back
+  # EUNSUPPORTEDPROTOCOL or makes npm fetch a registry package by the same name. This job
+  # installs with plain npm and checks that every @infinite-ai/* package is a symlink to
+  # its workspace folder.
+  #
+  # What it does NOT prove: it passes --ignore-scripts, so no dependency install script
+  # runs (npm has no build-script allow-list, unlike pnpm's onlyBuiltDependencies — see
+  # OQ-049), and it does not lint, typecheck, test or build. pnpm remains what CI uses for
+  # all of that. --no-package-lock because the repository deliberately has no npm lockfile.
+  npm-install:
+    name: npm install compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      # No `cache: pnpm` here: this job must not depend on pnpm at all.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: npm install
+        run: npm install --ignore-scripts --no-package-lock
+
+      - name: Internal packages are linked from the workspace, not fetched
+        run: |
+          dir=node_modules/@infinite-ai
+          if [ ! -d "$dir" ] || [ -z "$(ls -A "$dir")" ]; then
+            echo "::error::$dir is missing or empty after npm install."
+            exit 1
+          fi
+          status=0
+          for p in "$dir"/*; do
+            if [ ! -L "$p" ]; then
+              echo "::error::$p is not a symlink: it was fetched from the registry, not linked from the workspace."
+              status=1
+            fi
+          done
+          exit $status
+
   database:
     name: RLS isolation suite (real Postgres)
     runs-on: ubuntu-latest
