@@ -19,6 +19,10 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Fixed
 
+- **Removed the expired `commons_pattern_sharing` feature flag** (`packages/config/src/flags.ts`, `flags.spec.ts`, `docs/OPERATOR_MANUAL.md`, OQ-054)
+  - It expired on 2026-11-15, which failed `pnpm check:flags` (Stage 18), and nothing in `apps/*` or `packages/*` read it. The owner chose to
+    remove it (OQ-054 option 1) because LE-08 Commons pattern sharing is not built yet. Re-add a flag with a fresh expiry when it is.
+    The tests that named it now use `pilot_school_onboarding_wizard`; the expiry boundary test uses that flag's real 2027-02-01 date.
 - **`npm install` crashed with `Cannot read properties of null (reading 'edgesOut')`, and `pnpm audit:supply-chain` failed** (root `package.json`, `pnpm-lock.yaml`)
   - Root cause of the crash: `vitest` peers on `vite`; npm resolves that to `8.x`, whose optional `@vitejs/devtools` peer pulls
     `@vitejs/devtools-vitest`, which peers back on `vitest@*`, a cycle arborist cannot resolve. pnpm never saw it because the lockfile

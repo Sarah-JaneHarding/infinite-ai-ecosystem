@@ -882,7 +882,7 @@ existing encrypted identifier undecryptable and nothing in the repository descri
 ever be rotated (including after a suspected exposure): a written, tested re-encryption procedure that uses
 `DB_ENCRYPTION_KEY_VERSION`, runs per tenant, and can be resumed if interrupted. _Recommend:_ design it before production go-live.
 
-### OQ-054 — `commons_pattern_sharing` expired on 2026-11-15; ship it, remove it, or extend it? · 2026-11-24
+### OQ-054 — `commons_pattern_sharing` expired on 2026-11-15; ship it, remove it, or extend it? · 2026-11-24 · RESOLVED (2026-11-24)
 
 `pnpm check:flags` (Stage 18's gate) fails because the flag's `expiresAt` (`packages/config/src/flags.ts`) passed on 2026-11-15, and its
 own rule is: "ship behind the flag and remove it, or remove it if the feature is off. Do not extend `expiresAt` without a review."
@@ -896,3 +896,5 @@ threshold), which touches POPIA purpose limitation, so this is the owner's call,
 3. **Needs more time:** extend `expiresAt` to a stated date with a recorded reason. Allowed only after a review.
 
 _Recommend:_ option 1, since no code uses it. Nothing was changed; Stage 18's gate stays red until this is decided (rule 1: do not proceed).
+
+**Resolution 2026-11-24:** the owner chose option 1. The flag was removed from `FLAGS`, with its tests and the `FLAG_COMMONS_PATTERN_SHARING` line in `docs/OPERATOR_MANUAL.md`. Re-add a flag, with a fresh expiry, when LE-08 pattern sharing is built.
