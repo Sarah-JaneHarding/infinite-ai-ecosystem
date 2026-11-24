@@ -881,3 +881,18 @@ the root user. I could not check this without credentials; `docs/RUNBOOKS/aws-se
 existing encrypted identifier undecryptable and nothing in the repository describes re-encrypting them. Needed before the key can
 ever be rotated (including after a suspected exposure): a written, tested re-encryption procedure that uses
 `DB_ENCRYPTION_KEY_VERSION`, runs per tenant, and can be resumed if interrupted. _Recommend:_ design it before production go-live.
+
+### OQ-054 — `commons_pattern_sharing` expired on 2026-11-15; ship it, remove it, or extend it? · 2026-11-24
+
+`pnpm check:flags` (Stage 18's gate) fails because the flag's `expiresAt` (`packages/config/src/flags.ts`) passed on 2026-11-15, and its
+own rule is: "ship behind the flag and remove it, or remove it if the feature is off. Do not extend `expiresAt` without a review."
+Nothing in `apps/*` or `packages/*` reads `isEnabled('commons_pattern_sharing')` (only `flags.ts` and `flags.spec.ts` mention it), so the
+flag currently gates no code. It describes tenant opt-in sharing of anonymised learning patterns to the Commons pool (LE-08, k-anonymity
+threshold), which touches POPIA purpose limitation, so this is the owner's call, not a clean-up. Options:
+
+1. **Feature is off / not being built yet:** delete the flag from `FLAGS` and update the three `flags.spec.ts` cases that name it
+   (the registry test counts `FLAGS.length`). Re-add it, with a fresh expiry, when LE-08 sharing is actually built.
+2. **Feature is shipping:** it needs its consumer wired behind the flag first; the flag is then removed once it ships to all tenants.
+3. **Needs more time:** extend `expiresAt` to a stated date with a recorded reason. Allowed only after a review.
+
+_Recommend:_ option 1, since no code uses it. Nothing was changed; Stage 18's gate stays red until this is decided (rule 1: do not proceed).

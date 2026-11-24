@@ -19,6 +19,15 @@ project is pre-1.0 until Stage 18's exit gate passes and a pilot school is live.
 
 ### Fixed
 
+- **`npm install` crashed with `Cannot read properties of null (reading 'edgesOut')`, and `pnpm audit:supply-chain` failed** (root `package.json`, `pnpm-lock.yaml`)
+  - Root cause of the crash: `vitest` peers on `vite`; npm resolves that to `8.x`, whose optional `@vitejs/devtools` peer pulls
+    `@vitejs/devtools-vitest`, which peers back on `vitest@*`, a cycle arborist cannot resolve. pnpm never saw it because the lockfile
+    pins `7.3.6`. `vite` is now pinned to `7.3.6` in `overrides` and `pnpm.overrides`; no version moves under pnpm. Verified on a clean
+    copy: `npm install --ignore-scripts --no-package-lock` succeeds and all 35 `@infinite-ai/*` packages are symlinks. A new test in
+    `workspace-install-compat.spec.ts` keeps the override equal to the lockfile's `vite`. Three other hypotheses were tested and
+    ruled out first (mixed `^5.1.0` / `5.1.0` vitest pins; the `vitest@5.1.1` release of 2026-11-18; pinning `@vitest/browser-playwright`).
+  - `pnpm audit:supply-chain` (Stage 16) failed on GHSA-7589-6fvf-x4pw (high, `effect <=3.22.0`, via `prisma → @prisma/config`). Pinned
+    `effect` to `3.22.5` the same way `nanoid` and `deepmerge-ts` were. Recorded in `docs/DEPENDENCIES.md`.
 - **`npm install` failed on the whole repository** (`package.json` in the root, `apps/*` and `packages/*`, `pnpm-lock.yaml`)
   - npm stopped at `EUNSUPPORTEDPROTOCOL: Unsupported URL Type "workspace:"` because internal dependencies were declared
     `workspace:*`. All 71 are now the exact version of the workspace package they point to (`"0.1.0"`; `"*"` was tried first and
