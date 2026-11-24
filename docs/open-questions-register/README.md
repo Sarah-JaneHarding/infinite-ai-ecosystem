@@ -5,10 +5,10 @@ A live register of every open question across `infinite-ai-ecosystem` and
 recommendation. This folder is a **versioned snapshot** of the page and its starting data. The live
 copy is a Claude artifact whose answers live in the artifact's own database, not in this repository.
 
-| File                  | What it is                                                                               |
-| --------------------- | ---------------------------------------------------------------------------------------- |
-| `register.html`       | The page source (single file, no build). Runs only inside a Claude artifact.             |
-| `questions.seed.json` | The 56 questions the register was loaded with on 2026-11-15 (22 ecosystem, 34 platform). |
+| File                  | What it is                                                                                                                                     |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `register.html`       | The page source (single file, no build). Runs only inside a Claude artifact.                                                                   |
+| `questions.seed.json` | The 60 questions in the register as of 2026-11-24 (26 ecosystem, 34 platform). Loaded 2026-11-15, then synced with the markdown on 2026-11-24. |
 
 ## How answers are checked
 
@@ -26,5 +26,5 @@ copy is a Claude artifact whose answers live in the artifact's own database, not
 - Recommendations marked "from the repository's recommendations file" come from the platform repo's
   `docs/OPQ_RECOMMENDATIONS.md`. The rest were written by Claude from the question text and need a
   human's judgement.
-- The seed holds unresolved questions only. Resolved items stay in the markdown files.
+- The seed holds unresolved questions, plus OPQ-035 and OPQ-036, which were marked resolved on 2026-11-24 to match the markdown. Other resolved items stay in the markdown files.
 - Nothing here holds learner data, credentials or tenant identifiers.
