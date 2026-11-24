@@ -80,9 +80,8 @@ describe('FeatureFlagSchema', () => {
 
 describe('isEnabled — happy path', () => {
   it('returns the registry defaultValue when no env override is set', () => {
-    // Both flags default to false.
+    // The flag defaults to false.
     expect(isEnabled('pilot_school_onboarding_wizard', {})).toBe(false);
-    expect(isEnabled('commons_pattern_sharing', {})).toBe(false);
   });
 
   it('returns true when the env override is the string "true"', () => {
@@ -96,8 +95,17 @@ describe('isEnabled — happy path', () => {
   });
 
   it('uses the uppercased FLAG_ prefix for env lookup', () => {
-    const env = { FLAG_COMMONS_PATTERN_SHARING: 'true' };
-    expect(isEnabled('commons_pattern_sharing', env)).toBe(true);
+    expect(
+      isEnabled('pilot_school_onboarding_wizard', {
+        FLAG_PILOT_SCHOOL_ONBOARDING_WIZARD: 'true',
+      }),
+    ).toBe(true);
+    // The bare key, without the FLAG_ prefix, is not an override.
+    expect(
+      isEnabled('pilot_school_onboarding_wizard', {
+        PILOT_SCHOOL_ONBOARDING_WIZARD: 'true',
+      }),
+    ).toBe(false);
   });
 });
 
@@ -113,8 +121,8 @@ describe('isEnabled — failure paths', () => {
   });
 
   it('returns false when env override is an empty string', () => {
-    const env = { FLAG_COMMONS_PATTERN_SHARING: '' };
-    expect(isEnabled('commons_pattern_sharing', env)).toBe(false);
+    const env = { FLAG_PILOT_SCHOOL_ONBOARDING_WIZARD: '' };
+    expect(isEnabled('pilot_school_onboarding_wizard', env)).toBe(false);
   });
 });
 
@@ -122,19 +130,19 @@ describe('isEnabled — failure paths', () => {
 
 describe('expiredFlags — happy path', () => {
   it('returns no flags when checked before all expiry dates', () => {
-    // commons_pattern_sharing: 2026-11-15,
     // pilot_school_onboarding_wizard: 2027-02-01 (extended for pilot evaluation).
     const beforeAll = new Date('2026-10-31');
     expect(expiredFlags(beforeAll)).toHaveLength(0);
   });
 
-  it('returns the commons flag once it expires, but not pilot', () => {
-    // pilot_school_onboarding_wizard does not expire until 2027-02-01.
-    const afterCommons = new Date('2026-11-20');
-    const expired = expiredFlags(afterCommons);
-    const keys = expired.map((f) => f.key);
-    expect(keys).toContain('commons_pattern_sharing');
-    expect(keys).not.toContain('pilot_school_onboarding_wizard');
+  it('does not return the pilot flag before its 2027-02-01 expiry', () => {
+    const expired = expiredFlags(new Date('2026-11-20'));
+    expect(expired.map((f) => f.key)).not.toContain('pilot_school_onboarding_wizard');
+  });
+
+  it('returns the pilot flag the day after its expiry', () => {
+    const expired = expiredFlags(new Date('2027-02-02'));
+    expect(expired.map((f) => f.key)).toContain('pilot_school_onboarding_wizard');
   });
 
   it('returns all flags when checked after the last expiry date (2027-02-01)', () => {
@@ -146,11 +154,9 @@ describe('expiredFlags — happy path', () => {
 describe('expiredFlags — failure paths', () => {
   it('does not return a flag on the day of its expiry (boundary — not yet expired)', () => {
     // expiresAt < today (strict less-than), so flags expiring today are not stale.
-    const onCommonsExpiry = new Date('2026-11-15');
-    const expired = expiredFlags(onCommonsExpiry);
-    const keys = expired.map((f) => f.key);
-    expect(keys).not.toContain('commons_pattern_sharing');
-    expect(keys).not.toContain('pilot_school_onboarding_wizard');
+    const onPilotExpiry = new Date('2027-02-01');
+    const expired = expiredFlags(onPilotExpiry);
+    expect(expired.map((f) => f.key)).not.toContain('pilot_school_onboarding_wizard');
   });
 
   it('returns flags in a far-future check', () => {

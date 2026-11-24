@@ -43,7 +43,6 @@ Feature flags can be overridden without a code deploy by setting:
 ```
 FLAG_PILOT_SCHOOL_ONBOARDING_WIZARD=true
 FLAG_BILLING_DUNNING_EMAILS=true
-FLAG_COMMONS_PATTERN_SHARING=true
 ```
 
 Run `pnpm check:flags` after adding an override to confirm the flag has not expired.

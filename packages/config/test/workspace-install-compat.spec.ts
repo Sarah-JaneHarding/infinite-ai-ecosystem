@@ -126,6 +126,21 @@ describe('workspace install compatibility (real repository)', () => {
     expect(internalDeps).toBeGreaterThan(20);
   });
 
+  // `vitest` declares `vite` as a peer, and npm (unlike pnpm, which follows pnpm-lock.yaml)
+  // resolves it to the highest match. vite 8.x added an optional `@vitejs/devtools` peer that
+  // pulls `@vitejs/devtools-vitest`, which peers back on `vitest@*`; arborist cannot resolve
+  // that cycle and `npm install` dies with "Cannot read properties of null (reading
+  // 'edgesOut')". Pinning `vite` to the version pnpm resolves removes the cycle for npm.
+  it('pins vite to the single version pnpm-lock.yaml resolves, so npm cannot pick vite 8.x', () => {
+    const lock = readFileSync(join(ROOT, 'pnpm-lock.yaml'), 'utf8');
+    const resolved = new Set(
+      [...lock.matchAll(/^ {2}vite@(\d+\.\d+\.\d+):$/gm)].map((m) => m[1] as string),
+    );
+    expect([...resolved], 'pnpm-lock.yaml must resolve exactly one vite').toHaveLength(1);
+    expect(repo.root.overrides?.['vite']).toBe([...resolved][0]);
+    expect(repo.root.pnpm?.overrides?.['vite']).toBe([...resolved][0]);
+  });
+
   it('no manifest anywhere uses the pnpm-only workspace: protocol', () => {
     for (const [path, m] of Object.entries({
       'package.json': repo.root,

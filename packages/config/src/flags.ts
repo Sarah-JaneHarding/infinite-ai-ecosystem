@@ -40,15 +40,6 @@ export const FLAGS = [
     expiresAt: '2027-02-01',
     defaultValue: false,
   },
-  {
-    key: 'commons_pattern_sharing',
-    description:
-      'Allows tenants that have opted in to share anonymised learning patterns to the Commons pool (LE-08). ' +
-      'k-anonymity threshold must be met before any sharing occurs.',
-    owner: 'mrsharding@benjaminpine.co.za',
-    expiresAt: '2026-11-15',
-    defaultValue: false,
-  },
 ] as const satisfies readonly FeatureFlag[];
 
 export type FlagKey = (typeof FLAGS)[number]['key'];
