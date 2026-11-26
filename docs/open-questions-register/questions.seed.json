@@ -373,6 +373,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "updated",
+        "text": "Decided 2026-11-26 by the owner: ratify by phase, Foundation first, then Intermediate, then Senior. This fixes the order and batch size and ratifies nothing by itself. Still open: the named person who ratifies each phase. ratifiedBy stays null on every SourceRef until a named person countersigns; the ratifier is not assumed from a job title. The five IP-MULTI stubs still wait for DBE data."
       }
     ],
     "id": "OQ-002",
@@ -396,7 +401,15 @@
       "Ratify only what pilot school #1 uses, at onboarding."
     ],
     "title": "Who countersigns the ingested CAPS and ATP sources?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-002 (b). Status stays partially answered."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: ratify by phase, Foundation first, then Intermediate, then Senior. This fixes the order and batch size and ratifies nothing by itself. Still open: the named person who ratifies each phase. ratifiedBy stays null on every SourceRef until a named person countersigns; the ratifier is not assumed from a job title. The five IP-MULTI stubs still wait for DBE data.",
+      "verdict": "followup"
+    }
   },
   {
     "blocks": "Unit blueprint, assessment task, rubric and parent report agents for this school",
