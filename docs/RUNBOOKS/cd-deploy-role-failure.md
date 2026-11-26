@@ -23,7 +23,15 @@ role's ARN never was). That makes row 1 below (never applied) less likely than r
 variable being set says nothing about the AWS side. The Terraform workflow has failed on every one of its last 7 runs since 13 November, including two pushes
 to `main`; I read the log of only the latest.
 
-**What that proves and does not.** It proves the variable is set and AWS refused the token. It does **not** say why. AWS returns this same
+**Update, 2026-11-26 evening: the role assumption now works, and the failure has moved on.** After the owner changed settings in GitHub and/or AWS (I do not know exactly
+what), CD run `45894174628` (job `140163854855`, on `main` at `ad9c027`) **got past `configure-aws-credentials`**: the ECR login step ran and a Docker build started. It then
+fails with `The repository with name 'infinite-ai-staging-gateway' does not exist in the registry`. Separately, the PR `Terraform plan` job now authenticates with the plan role
+(AWS credentials are present in its environment), which also shows the OIDC provider and the plan role exist. So causes 1, 2 (for the deploy role), 3, 4 and 5 below are **no
+longer the blocker**; keep them for the day it recurs. **The new blocker is that the staging stack has not been applied**: the ECR repositories are created by the
+`ecs-service` module, and this workflow never runs Terraform (a human does, per `infra/terraform/README.md`). Note the PR plan job plans the **production** directory, not
+staging. See OQ-059 and OQ-062.
+
+**What that proves and does not.** _(Written before the update above, about the earlier failure.)_ It proves the variable is set and AWS refused the token. It does **not** say why. AWS returns this same
 message for several different causes, including a role that does not exist. Work the causes in the order below; do not guess.
 
 ## The first action
