@@ -24,6 +24,18 @@ export interface OpenAiCompatibleConfig {
   readonly baseUrl: string;
   readonly fetchImpl: FetchLike;
   readonly timeoutMs?: number;
+  /**
+   * How the credential travels. `bearer` (default) is `Authorization: Bearer <key>`;
+   * `api-key` is the `api-key: <key>` header Azure OpenAI expects. Never both — a key sent
+   * in a header the provider does not read is a key leaked for nothing.
+   */
+  readonly authStyle?: 'bearer' | 'api-key';
+  /**
+   * Builds the full request URL when a provider's path is not `${baseUrl}${path}` — Azure
+   * puts the deployment in the path and `api-version` in the query string. Receives the
+   * OpenAI-style path (`/chat/completions`) and the routed concrete model.
+   */
+  readonly urlFor?: (path: string, concreteModel: string) => string;
 }
 
 interface OpenAiChatResponse {
@@ -63,20 +75,26 @@ async function openConnection(
   path: string,
   body: unknown,
   credential: string,
+  concreteModel: string,
 ): Promise<Awaited<ReturnType<FetchLike>>> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), config.timeoutMs ?? 30_000);
   let response: Awaited<ReturnType<FetchLike>>;
   try {
-    response = await config.fetchImpl(`${config.baseUrl}${path}`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        authorization: `Bearer ${credential}`,
+    response = await config.fetchImpl(
+      config.urlFor?.(path, concreteModel) ?? `${config.baseUrl}${path}`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...(config.authStyle === 'api-key'
+            ? { 'api-key': credential }
+            : { authorization: `Bearer ${credential}` }),
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
       },
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
+    );
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       throw new AdapterError('timeout', `Provider ${config.provider} timed out.`);
@@ -103,8 +121,9 @@ async function post(
   path: string,
   body: unknown,
   credential: string,
+  concreteModel: string,
 ): Promise<unknown> {
-  const response = await openConnection(config, path, body, credential);
+  const response = await openConnection(config, path, body, credential, concreteModel);
   return response.json();
 }
 
@@ -152,6 +171,7 @@ async function* streamChatCompletion(
       })),
     },
     credential,
+    concreteModel,
   );
 
   if (response.body === undefined || response.body === null) {
@@ -237,6 +257,7 @@ export function createOpenAiCompatibleAdapter(
           })),
         },
         credential,
+        concreteModel,
       )) as OpenAiChatResponse;
 
       // A 2xx response with an unexpected shape is not this code's bug to crash on — see
@@ -280,6 +301,7 @@ export function createOpenAiCompatibleAdapter(
         '/embeddings',
         { model: concreteModel, input: request.input },
         credential,
+        concreteModel,
       )) as OpenAiEmbeddingsResponse;
 
       try {

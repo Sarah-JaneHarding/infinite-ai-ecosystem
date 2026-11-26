@@ -11,7 +11,15 @@
 import { loadGatewayEnv } from './env.js';
 
 export type ProviderId =
-  'claude' | 'gemini' | 'groq' | 'qwen' | 'lm-studio' | 'ollama' | 'genspark' | 'azure';
+  | 'claude'
+  | 'gemini'
+  | 'groq'
+  | 'qwen'
+  | 'grok'
+  | 'lm-studio'
+  | 'ollama'
+  | 'genspark'
+  | 'azure';
 
 export interface ProviderDefaults {
   /** Adapter key used in the gateway adapter registry. */
@@ -50,8 +58,13 @@ export function getProviderDefaults(): Record<ProviderId, ProviderDefaults> {
     },
     qwen: {
       adapterKey: 'openai-compatible',
-      defaultModel: 'qwen-plus',
+      defaultModel: env.QWEN_MODEL_ID,
       baseUrl: env.DASHSCOPE_BASE_URL,
+    },
+    grok: {
+      adapterKey: 'openai-compatible',
+      defaultModel: env.GROK_MODEL_ID,
+      baseUrl: env.XAI_BASE_URL,
     },
     'lm-studio': {
       adapterKey: 'openai-compatible',
