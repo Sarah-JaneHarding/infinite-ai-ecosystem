@@ -191,6 +191,15 @@ export {
 } from './gateway/chat.js';
 
 export {
+  ASSISTANT_CONNECTORS,
+  AssistantChatRequest,
+  AssistantChatResponse,
+  AssistantProvider,
+  connectorFor,
+  type AssistantConnector,
+} from './gateway/assistants.js';
+
+export {
   ARTEFACT_TYPE_TO_AGENT,
   AccessibilityCheckItem,
   AccessibilityCheckResult,

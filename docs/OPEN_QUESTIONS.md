@@ -916,3 +916,24 @@ SBST, HoD, SMT, district and run-inspector pages had the same kind of content re
 
 **Needs a human:** confirm that it should be treated the same way (remove the notices and say nothing real is shown yet), or say where genuine school notices
 would come from. Until then no guardian may be given access (guardian access is switched off in the pilot scope in any case).
+
+### OQ-057 — Toqi has no API to connect to · 2026-11-26
+
+Asked to embed Claude, Gemini, Copilot, Qwen, Grok and Toqi as live assistants. The first five are built (`ASSISTANT_CONNECTORS`, gateway adapters). **Toqi is not:** it is a
+consumer app from the Google Play Store, and no published API, base URL or auth scheme was supplied. Wrapping its app, scraping it or automating the Android client would be
+a second, ungoverned path to a model (rule 3) and would give it learner-adjacent text with no de-identification control.
+
+**Needs a human:** if Toqi (or its vendor) has a documented HTTP API, supply the base URL, auth style and whether it speaks the OpenAI wire format. If it is OpenAI-compatible
+it is one registry row plus one env block. If it has no API, Toqi stays out of the platform.
+
+### OQ-058 — the in-app assistant chat panel: free text and de-identification · 2026-11-26
+
+The connector layer is done in the gateway (`assistant.*` logical models, one provider per connector, no cross-vendor fallback). The **web panel is not built**, because it
+needs decisions I should not guess (rule 4: no learner personal information may enter a prompt):
+
+1. **Who may use it.** Recommended: signed-in staff only, never a learner or guardian.
+2. **Free text.** A teacher can type a learner's name. The gateway's PII guard refuses any payload without a `deidentified: true` stamp, so the web route must run the text
+   through the De-identification Service (`packages/deident`, tenant lexicon from `packages/db`) before calling the gateway. Recommended: scrub, and show the user what was redacted.
+3. **Caller identity.** `apps/web` has no gateway client or `GATEWAY_URL` today, and the gateway has no caller authentication on the wire (Stage 06). Recommended: the web route
+   is the only caller and takes tenant and actor from the verified session, never the body (`AssistantChatRequest` is strict for exactly this).
+4. **Budget and audit.** Provider pricing is still zero in `apps/gateway/src/index.ts`, so no per-school cost limit bites yet (OQ-055 D7).

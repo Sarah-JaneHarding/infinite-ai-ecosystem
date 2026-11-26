@@ -18,6 +18,13 @@ imported by application code anywhere else in the repo.
   `openai-compatible.ts` for OpenAI and any local/self-hosted OpenAI-compatible model),
   plus `sse.ts` for streaming responses. These are the only files in the repo allowed to
   import a provider SDK.
+- `routing/assistants.ts` — turns `ASSISTANT_CONNECTORS` (`@infinite-ai/contracts`) into
+  one-link routes (`assistant.claude|gemini|copilot|qwen|grok`), only for providers this
+  deployment holds credentials for. No cross-vendor fallback: a user who picked Grok is
+  never silently answered by Claude. Qwen (`DASHSCOPE_*`), Grok (`XAI_*`) and Copilot
+  (`AZURE_OPENAI_*`, i.e. Azure OpenAI; M365 and GitHub Copilot have no embeddable API)
+  are the OpenAI-compatible adapter pointed elsewhere; Azure uses `authStyle: 'api-key'`
+  and a deployment URL. Toqi is not supported (OQ-057).
 - `routing/` — `router.ts`/`config.ts`: resolves a logical model name
   (`curriculum.plan`, `analytics.screen`, ...) to a real provider + model, with
   failover links.
