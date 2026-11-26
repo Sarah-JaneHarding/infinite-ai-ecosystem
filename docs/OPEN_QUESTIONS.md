@@ -529,7 +529,7 @@ Until decided, the page asserts no control it does not exercise.
 
 ### OQ-035 — the EGRA screening tab's benchmarks and tier rule have no supplied source · 2026-10-08
 
-**Decision 2026-11-05 (Sarah-Jane Harding):** the tab shows scores against benchmarks the school types in, and recommends no tier. The SBST person assigns the tier. The built-in benchmark table and 0 / 1-2 / 3+ rule are to be removed. Not yet changed.
+**Decision 2026-11-05 (Sarah-Jane Harding):** the tab shows scores against benchmarks the school types in, and recommends no tier. The SBST person assigns the tier. The built-in benchmark table and 0 / 1-2 / 3+ rule are to be removed. **Done (Stage 142, audit R01/T02):** the tab compares scores with school-typed benchmarks and shows no tier; blank or invalid input gives no result. **Still open:** the subtest list, labels and units were carried over unchanged and do not match the EGRA MTSS reference, and a qualified SBST person must confirm the tab before it is used for real decisions.
 
 Found while removing the sample data from the SBST tabs. `EgraScreeningView.tsx` carries a benchmark table (per grade, per subtest) and
 a rule that turns the number of below-benchmark subtests into a tier recommendation (0 → Tier 1, 1–2 → Tier 2, 3+ → Tier 3). Its
@@ -881,3 +881,38 @@ the root user. I could not check this without credentials; `docs/RUNBOOKS/aws-se
 existing encrypted identifier undecryptable and nothing in the repository describes re-encrypting them. Needed before the key can
 ever be rotated (including after a suspected exposure): a written, tested re-encryption procedure that uses
 `DB_ENCRYPTION_KEY_VERSION`, runs per tenant, and can be resumed if interrupted. _Recommend:_ design it before production go-live.
+
+### OQ-054 — `commons_pattern_sharing` expired on 2026-11-15; ship it, remove it, or extend it? · 2026-11-24 · RESOLVED (2026-11-24)
+
+`pnpm check:flags` (Stage 18's gate) fails because the flag's `expiresAt` (`packages/config/src/flags.ts`) passed on 2026-11-15, and its
+own rule is: "ship behind the flag and remove it, or remove it if the feature is off. Do not extend `expiresAt` without a review."
+Nothing in `apps/*` or `packages/*` reads `isEnabled('commons_pattern_sharing')` (only `flags.ts` and `flags.spec.ts` mention it), so the
+flag currently gates no code. It describes tenant opt-in sharing of anonymised learning patterns to the Commons pool (LE-08, k-anonymity
+threshold), which touches POPIA purpose limitation, so this is the owner's call, not a clean-up. Options:
+
+1. **Feature is off / not being built yet:** delete the flag from `FLAGS` and update the three `flags.spec.ts` cases that name it
+   (the registry test counts `FLAGS.length`). Re-add it, with a fresh expiry, when LE-08 sharing is actually built.
+2. **Feature is shipping:** it needs its consumer wired behind the flag first; the flag is then removed once it ships to all tenants.
+3. **Needs more time:** extend `expiresAt` to a stated date with a recorded reason. Allowed only after a review.
+
+_Recommend:_ option 1, since no code uses it. Nothing was changed; Stage 18's gate stays red until this is decided (rule 1: do not proceed).
+
+**Resolution 2026-11-24:** the owner chose option 1. The flag was removed from `FLAGS`, with its tests and the `FLAG_COMMONS_PATTERN_SHARING` line in `docs/OPERATOR_MANUAL.md`. Re-add a flag, with a fresh expiry, when LE-08 pattern sharing is built.
+
+### OQ-055 — decisions the one-school pilot protocol needs from you · 2026-11-26
+
+Source: audit tasks T01, T04, T32. `docs/PILOT_PROTOCOL_ONE_SCHOOL_DRAFT.md` (draft, not adopted) leaves these blank on purpose; the existing
+`docs/PILOT_PROTOCOL.md` stays in force until you adopt it. In the order they unblock work: **D2** the school's written agreement, signatory and date
+(Benjamin Pine is recorded as school 1 but current approval is unconfirmed) · **D4** product owner and who may restart a paused pilot · **D5** privacy and
+safeguarding leads · **D3** first workflow (recommended: the offline classroom-kit widgets while the generation journey is built) · **D1** start date and phase
+lengths (the 2026-10-06 start has passed) · **D6** thresholds (recommended: no NPS gate; safety is the only hard stop) · **D7** a cost ceiling, plus model
+pricing and a budget for T16 · **D8** who decides at the end.
+
+### OQ-056 — the Parent Portal shows invented school notices · 2026-11-26
+
+Found while writing `docs/FEATURE_MATRIX.md`; not in the audit. `GuardianPortal.tsx` hard-codes "Term 3 results available from 25 August" and "Parent evening:
+3 September 18:00" under "School notices", and a progress line that promises results "once Term 3 assessments are completed". None comes from the school. The
+SBST, HoD, SMT, district and run-inspector pages had the same kind of content removed and now say plainly that there is nothing to show; this page was missed.
+
+**Needs a human:** confirm that it should be treated the same way (remove the notices and say nothing real is shown yet), or say where genuine school notices
+would come from. Until then no guardian may be given access (guardian access is switched off in the pilot scope in any case).

@@ -12192,3 +12192,98 @@ now requires the sync to succeed.
 | No message, address or upstream body is recorded            | PASS (unit; DB token check)   |
 | Behaves against a real Keycloak 26                          | **NOT VERIFIED** (7e)         |
 | `pnpm lint`, `pnpm typecheck`, unit tests                   | PASS                          |
+
+## Stage 142 — audit R01 / T02: the EGRA screening tab no longer recommends a tier
+
+Source: the 25 November 2026 pilot-readiness audit (risk R01, task T02), on commit `50d88b5`. The audit's finding was confirmed in this checkout before
+any change: blank scores were skipped, zero flags mapped to "Tier 1 — On track", and submission did not require a score, so an empty form told a support
+team a learner was on track. This implements the decision already recorded in OQ-035 (2026-11-05): benchmarks are typed by the school, no tier is
+recommended, and the SBST person assigns the tier.
+
+**What changed.** The built-in benchmark table, `tierFromFlags` and the three tier labels are gone. `egra-screening.ts` (pure, no React) compares each
+score with the benchmark the user typed and returns one of `not-entered`, `invalid-score`, `no-benchmark`, `invalid-benchmark`, `meets`, `below`.
+A subtest with no score, or no valid benchmark, has no result and is never read as reassurance. Input is parsed strictly (`1e3`, `-1`, `NaN`, `0x10`,
+`5.` are invalid; a typed `0` is a score; a percentage above 100 is invalid). The view says in plain words that it supplies no benchmark and
+recommends no tier.
+
+**Tests.** `egra-screening.spec.ts` (+9): below / meets; blank input gives no result for every subtest (the audited defect); score with no benchmark;
+invalid input; percentage ceiling; zero is a score; a source scan fails if a benchmark table, `tierFromFlags`, a tier label or "On track" returns; the
+rendered view shows no tier and every benchmark box starts empty. `sbst-views.spec.ts` updated for the renamed button (a deliberate behaviour change under
+OQ-035, not a weakened assertion). web unit tier 1229 passing; lint and typecheck clean.
+
+**Not done, stated plainly.**
+
+1. **The subtest list itself is unverified.** Ids, labels and units are carried over from the old view; OQ-035 records that the EGRA MTSS reference uses
+   different subtests and scales. Left open in OQ-035. No numeric threshold remains.
+2. **The audit also requires qualified SBST confirmation** ("Done when: … qualified SBST confirms"). That is a human sign-off and has **not** happened.
+3. Not walked in a browser here.
+
+| Exit gate item                                                                | Result                  |
+| ----------------------------------------------------------------------------- | ----------------------- |
+| Blank, partial, invalid and complete input show no tier or built-in benchmark | PASS (unit)             |
+| No benchmark table or tier rule can return unnoticed                          | PASS (source-scan test) |
+| `pnpm lint`, `pnpm typecheck`, web unit tests                                 | PASS                    |
+| Qualified SBST confirms the tab                                               | **NOT DONE** (human)    |
+| Rollback: revert this commit; no schema change                                | PASS                    |
+
+## Stage 143 — audit R05 / T09: MOD-01 and MOD-04 refuse to run without an age checker
+
+Source: pilot-readiness audit risk **R05**, task **T09**, on `50d88b5`. Confirmed in this checkout before any change: the worker built a phase-aware age
+checker only for jobs carrying `gradePhase`; otherwise `checkAgeAppropriateness(output, undefined)` passed everything, so a MOD-01/MOD-04 job without a
+phase generated content with the age guardrail silently off. **Also found:** nothing in this repository enqueues MOD-01/MOD-04 jobs with a `gradePhase`
+(no producer in `apps/web` or elsewhere), so whatever creates those jobs must supply it. That producer is not here and was not changed.
+
+**What changed.** `age-check-policy.ts` holds a closed list of age-checked pipeline ids (MOD-01 curriculum, MOD-04 toolbox) and `AgeCheckUnavailableError`.
+`processPipelineJob` now throws it, before any tenant transaction or model call, when one of those pipelines has no usable checker: reason
+`missing_grade_phase` (factory configured, job has no phase) or `no_checker_configured` (worker has neither a factory nor a static checker). A static
+checker passed explicitly still satisfies the rule. The dev in-process runner shares this code, so it is refused the same way. Other pipelines are unchanged.
+
+**Tests.** `job-processor.spec.ts` (+10, both pipelines): refuses no phase and no checker, each with no transaction opened and nothing run; runs with a phase
+and builds the checker for that phase; rejects an unknown phase; leaves non-listed pipelines alone. Three existing tests now pass an explicit checker, since
+running MOD-04 unchecked is the behaviour being removed. Mutation-checked: disabling the guard fails 4. worker 150 passing; lint, typecheck and format clean.
+
+**Not done, stated plainly.**
+
+1. **The refused job just fails** (logged `worker.job_failed`); its run row is left as started. Surfacing that to the educator as "could not run, phase missing"
+   needs the producer, which is not in this repository.
+2. **The list is closed on purpose.** A new content pipeline must be added to `AGE_CHECKED_PIPELINE_IDS`; nothing detects that you forgot.
+3. **Adversarial prompts** (T09's wording) are not covered here: this change guarantees a checker runs, not that the judge catches every unsafe output. That is
+   T28 (calibrating the judge against human-labelled examples) and needs a labelled set.
+4. Safeguarding alert delivery to a named person (T10) is separate and untouched.
+
+| Exit gate item                                      | Result                        |
+| --------------------------------------------------- | ----------------------------- |
+| Missing context fails closed, before any model call | PASS (unit; mutation-checked) |
+| Both applicable pipelines covered                   | PASS (unit)                   |
+| `pnpm lint`, `pnpm typecheck`, worker unit tests    | PASS                          |
+| Judge catches adversarial outputs                   | **NOT VERIFIED** (T28)        |
+| Rollback: revert this commit; no schema change      | PASS                          |
+
+## Stage 144 — pilot documents: feature matrix and one-school protocol (drafts)
+
+Source: audit tasks T01, T03, T04, T32, section 9. **Documents only; no code or behaviour changed.** Nothing here is adopted.
+
+`docs/FEATURE_MATRIX.md` states, row by row with a file as evidence, what a pilot user can and cannot rely on. `docs/PILOT_PROTOCOL_ONE_SCHOOL_DRAFT.md` is a
+one-school protocol with three phases, gates A–D tied to the audit's task ids, measures with fixed definitions, stop authority and eight numbered decisions
+for Sarah-Jane Harding. It lists six faults in the current `PILOT_PROTOCOL.md` (an expired start date, "of 3" metrics, conflicting NPS and cost thresholds,
+percentages over a handful of people, an assumption of learner data, targets written as if met). It does not replace that file.
+
+**Findings made while writing them, stated plainly.**
+
+1. **No teacher journey reaches a model.** No web route or action starts a pipeline run; the AI Studio tab's own banner says it is a demonstration. Only the
+   worker's dev runner, or a producer that is not in this repository, starts one. This is the gap behind T05 and the reason the matrix lists generation as "Not
+   reachable". It also means nothing in the app currently supplies the `gradePhase` that Stage 143 now requires.
+2. **The Parent Portal shows invented notices** (OQ-056). Not in the audit.
+3. 78 of 80 widgets were scanned and none makes a network call; the two matches are detector patterns inside PF-W06 and PF-W07. Whether `/widgets/*` needs
+   a sign-in was not established.
+
+**Not verified.** Nothing was run in a browser or against a deployed environment. Statuses come from reading the code and the audit. The Operations
+repository is not covered. The protocol is not legal or privacy advice.
+
+| Exit gate item                                                | Result                |
+| ------------------------------------------------------------- | --------------------- |
+| Every matrix row cites a file or document                     | PASS (by reading)     |
+| No name, date, threshold or approval invented in the protocol | PASS (all left blank) |
+| Decisions logged in `docs/OPEN_QUESTIONS.md` (OQ-055, OQ-056) | PASS                  |
+| Adopted by the owner                                          | **NOT DONE** (human)  |
+| Rollback: revert; documents only                              | PASS                  |

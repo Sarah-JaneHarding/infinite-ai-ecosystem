@@ -682,3 +682,16 @@ container: not linked into anything, not part of any image the platform ships, a
 from it. If that is not acceptable, the alternative is a `tar` copy without deletion of removed files (a stale
 file could then survive between runs). The owner approved it on that basis; the `tar` alternative was not chosen. The database and Redis images are the ones
 `compose.dev.yml` already records.
+
+## Overrides added 2026-11-24: `effect` and `vite`
+
+Two more root `overrides` / `pnpm.overrides` entries (kept identical, as `packages/config/test/workspace-install-compat.spec.ts`
+requires). Neither is a new dependency of this repository; each pins a transitive package.
+
+| Override | Pinned to | Licence | Why                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Replaces                                 |
+| -------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
+| `effect` | `3.22.5`  | MIT     | GHSA-7589-6fvf-x4pw (high, ReDoS in `Schema.TemplateLiteral`'s compiled regex), versions `<=3.22.0`, patched in `>=3.22.1`. Reached only through `packages/db → @prisma/client → prisma → @prisma/config → effect`; `@prisma/config` pins `effect` to an exact `3.20.0`, so an override is the only remediation without a Prisma release. `effect` is Prisma's own config-loading tooling and is never imported by this codebase. `prisma generate` and the db unit tier were re-run against it. | `effect` `3.20.0` (transitive)           |
+| `vite`   | `7.3.6`   | MIT     | **Not a security pin.** `vitest` declares `vite` as a peer. pnpm follows `pnpm-lock.yaml` (`7.3.6`); npm resolves the highest match, `8.x`, whose new optional `@vitejs/devtools` peer pulls `@vitejs/devtools-vitest`, which peers back on `vitest@*`. arborist cannot resolve that cycle and `npm install` aborts with `Cannot read properties of null (reading 'edgesOut')` (OQ-049's CI job). Pinning to the lockfile version removes the cycle. No version moves under pnpm.                | `vite` peer range (`^6 \|\| ^7 \|\| ^8`) |
+
+A guard test (`workspace-install-compat.spec.ts`) fails if the `vite` override stops matching the one version `pnpm-lock.yaml`
+resolves. When `vite` is bumped on purpose, change the override and the lockfile together.

@@ -30,13 +30,13 @@
   },
   "devDependencies": {
     "@infinite-ai/contracts": "0.1.0",
-    "@testcontainers/postgresql": "12.2.1",
-    "@vitest/coverage-v8": "5.1.0",
+    "@testcontainers/postgresql": "12.2.2",
+    "@vitest/coverage-v8": "5.1.1",
     "prisma": "7.10.1",
-    "testcontainers": "12.2.1",
+    "testcontainers": "12.2.2",
     "tsx": "4.23.15",
     "typescript": "6.0.3",
-    "vitest": "5.1.0"
+    "vitest": "5.1.1"
   },
   "dependencies": {
     "@infinite-ai/config": "0.1.0",

@@ -67,6 +67,8 @@ describe('SBST tabs without data', () => {
     expect(out).toContain('MTSS Overview');
     expect(out).toContain('EGRA Screening');
     expect(out).toContain('SIAS Pipeline');
-    expect(out).toContain('Calculate tier recommendation');
+    // OQ-035: the tab compares against school-entered benchmarks; it recommends no tier.
+    expect(out).toContain('Compare scores to my benchmarks');
+    expect(out).not.toContain('Calculate tier recommendation');
   });
 });
