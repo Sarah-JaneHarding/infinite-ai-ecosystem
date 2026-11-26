@@ -12287,3 +12287,35 @@ repository is not covered. The protocol is not legal or privacy advice.
 | Decisions logged in `docs/OPEN_QUESTIONS.md` (OQ-055, OQ-056) | PASS                  |
 | Adopted by the owner                                          | **NOT DONE** (human)  |
 | Rollback: revert; documents only                              | PASS                  |
+
+## Stage 145 — slice 7e (partial): the Admin client run against Keycloak 26.0.8; `tenant_id` was being dropped
+
+Source: OQ-048, `docs/PROVISIONING_DESIGN.md` §11.1 7e. There is no Docker daemon in the authoring environment, so the Compose stack could not be
+used. Instead the Keycloak 26.0.8 distribution (from the project's GitHub release, SHA-1 checked against the published value) ran natively on Java 21
+with its embedded dev database, importing this repository's unmodified `infra/keycloak/realm.json`, and the real `createKeycloakAdmin` client was
+driven against it with throwaway secrets generated outside the repository. The scripts are not committed.
+
+**Defect found and fixed.** The Admin API accepted `createUser` with a `tenant_id` attribute and stored nothing: Keycloak 26 ignores attributes the
+realm's user profile does not declare (`unmanagedAttributePolicy` is unset). Seeded dev users kept theirs only because realm import bypasses that rule.
+Every user the application created would have had no tenant claim. `realm.json` now declares `tenant_id` in the user profile with view and edit
+limited to `admin`, alongside the four standard attributes. After a fresh import the attribute is stored, survives a disable and enable, and the access
+token carries it. `packages/policy/test/keycloak-realm-provisioner.spec.ts` guards it (fails when the declaration is removed).
+
+**Observed against the real server.** Create; duplicate refused as `conflict`; find by email; role replacement leaves exactly `smt` (plus the default
+role); disable then revoke ends a live session (sessions 1 to 0, the old access token gets 401, the refresh token and a new sign-in get
+`invalid_grant`); re-enable restores sign-in; the worker's client is refused user creation; a wrong secret is `unauthorised`; `sendActionsEmail` fails
+without SMTP, as OQ-048 (d) expects. **Confirmed residual risk from OQ-048 (a):** the provisioner's own credential can map `platform_admin` to a user
+(HTTP 204), so the secret is an administrator credential.
+
+**Not verified.** `reconcile.ts` and the database wiring; the Compose image, Postgres and `start` (not `start-dev`) mode; a user editing their own
+`tenant_id` through the account API (the call returned 401, so it proves nothing); admin events and the platform-role mapping alert; secret handling in
+AWS (below).
+
+| Exit gate item                                                   | Result                |
+| ---------------------------------------------------------------- | --------------------- |
+| Realm file imports into Keycloak 26                              | PASS (26.0.8, native) |
+| Admin client calls behave as designed (create to revoke)         | PASS (run)            |
+| Defect found by the run is fixed and guarded                     | PASS (test, mutation) |
+| Wiring (`reconcile.ts`), Compose stack, self-edit of `tenant_id` | **NOT VERIFIED**      |
+| Production secret in Secrets Manager, rotation, alert (OQ-048 a) | **NOT DONE** (human)  |
+| Rollback: revert; realm file and one test only                   | PASS                  |
