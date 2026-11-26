@@ -203,6 +203,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "updated",
+        "text": "Decided 2026-11-26 by the owner: option A, per-stage ratification with an artefact store. This records the design only; nothing is built (no new constitution kinds, migration, production getters, per-artefact gates or matching prompt context). Until it is built, production MOD-01 is unchanged and dev-only chaining is the only chaining. When built: tested migration rollback (rule 10), approval record before each guarded transition (rule 6), and a named role for every gate (see OQ-046). Not decided here: the build order (recommendation: GradeFramework and TermPlan first) and which role ratifies each artefact."
       }
     ],
     "id": "OQ-030",
@@ -226,7 +231,15 @@
       "C: stay dev-only (current state)."
     ],
     "title": "How should MOD-01 chain ratified artefacts in production?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-030. Status stays partially answered: the design is chosen, the build order and ratifying roles are not."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: option A, per-stage ratification with an artefact store. This records the design only; nothing is built (no new constitution kinds, migration, production getters, per-artefact gates or matching prompt context). Until it is built, production MOD-01 is unchanged and dev-only chaining is the only chaining. When built: tested migration rollback (rule 10), approval record before each guarded transition (rule 6), and a named role for every gate (see OQ-046). Not decided here: the build order (recommendation: GradeFramework and TermPlan first) and which role ratifies each artefact.",
+      "verdict": "followup"
+    }
   },
   {
     "blocks": "Nothing; built with assumptions",
