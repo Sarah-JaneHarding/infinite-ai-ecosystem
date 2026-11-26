@@ -908,7 +908,9 @@ safeguarding leads · **D3** first workflow (recommended: the offline classroom-
 lengths (the 2026-10-06 start has passed) · **D6** thresholds (recommended: no NPS gate; safety is the only hard stop) · **D7** a cost ceiling, plus model
 pricing and a budget for T16 · **D8** who decides at the end.
 
-### OQ-056 — the Parent Portal shows invented school notices · 2026-11-26
+### OQ-056 — the Parent Portal shows invented school notices · 2026-11-26 · **notices removed (Stage 145)**
+
+**Decision 2026-11-26 (Sarah-Jane Harding):** fix the notices first. **Done (Stage 145):** the page shows no notice, date, result or progress and says plainly that nothing on it comes from the school. **Still open:** where genuine school notices would come from, and how a guardian is linked to a learner and what they may see (consent, purpose) before the portal can show anything real.
 
 Found while writing `docs/FEATURE_MATRIX.md`; not in the audit. `GuardianPortal.tsx` hard-codes "Term 3 results available from 25 August" and "Parent evening:
 3 September 18:00" under "School notices", and a progress line that promises results "once Term 3 assessments are completed". None comes from the school. The

@@ -12287,3 +12287,32 @@ repository is not covered. The protocol is not legal or privacy advice.
 | Decisions logged in `docs/OPEN_QUESTIONS.md` (OQ-055, OQ-056) | PASS                  |
 | Adopted by the owner                                          | **NOT DONE** (human)  |
 | Rollback: revert; documents only                              | PASS                  |
+
+## Stage 145 — OQ-056: the Parent Portal no longer shows invented notices
+
+Source: OQ-056, found while writing the feature matrix (Stage 144); not in the audit. Decision 2026-11-26 (Sarah-Jane Harding): fix the notices first.
+
+**What was wrong.** `GuardianPortal.tsx` hard-coded "Term 3 results available from 25 August" and "Parent evening: 3 September 18:00" under "School notices", a line promising
+progress "once Term 3 assessments are completed", and the claim "only information about your child is shown". None came from the school, and the last described a
+restriction the page never exercised. The other role pages had this removed earlier; this one was missed.
+
+**What changed.** The page now reads no record and shows no notice, date, result or progress. It says "Nothing to show yet", that nothing on the page comes from the
+child's school, and tells a parent to ask the school directly, in the same plain style as the district and run-inspector pages. The claim of a restriction is gone.
+
+**Tests.** `guardian-portal.spec.ts` (+5): none of the invented text returns; no date or time appears at all; the page says there is nothing to show; it announces its
+state to assistive technology; the component's only import is the design system, so it cannot read data. Mutation-checked: restoring an invented line fails 3. web unit
+tier 1234 passing; lint, typecheck and format clean. `FEATURE_MATRIX.md` and OQ-056 updated.
+
+**Not done, stated plainly.**
+
+1. **Guardian access is still undecided** (OQ-056): where real notices come from, how a guardian is linked to a learner, what they may see. Until then guardian access stays
+   off in the pilot scope.
+2. **Learner Space still shows a sample graph and a demo learner**; it was not changed here.
+3. Not walked in a browser.
+
+| Exit gate item                                           | Result                        |
+| -------------------------------------------------------- | ----------------------------- |
+| No invented notice, date or promise can return unnoticed | PASS (unit; mutation-checked) |
+| The page makes no claim it does not exercise             | PASS (unit)                   |
+| `pnpm lint`, `pnpm typecheck`, web unit tests            | PASS                          |
+| Rollback: revert this commit; no schema change           | PASS                          |

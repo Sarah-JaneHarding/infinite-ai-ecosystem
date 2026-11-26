@@ -62,12 +62,12 @@ changes in the same commit (`CLAUDE.md`, Definition of Done).
 
 ## 5. Learner support, learner and guardian surfaces
 
-| Feature                           | Status                                     | Evidence                                                                                                          | What is unproven / note                                                                                                                         |
-| --------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| EGRA screening comparison         | Limited                                    | `EgraScreeningView.tsx`, `egra-screening.ts` (PR #236, **not yet merged**)                                        | Compares scores to benchmarks the school types in; recommends **no tier**. Needs qualified SBST confirmation. Subtest list unverified (OQ-035). |
-| MTSS overview, SIAS pipeline tabs | Stub / not built                           | `MtssOverviewView.tsx`, `SiasPipelineView.tsx`                                                                    | Deliberately empty; they show no learners, tiers or process claims.                                                                             |
-| Learner Space                     | Demonstration                              | `LearnerSpace.tsx` builds a sample graph and a `learner-demo-token` profile                                       | Do not show to a learner or guardian as their own data.                                                                                         |
-| **Parent Portal**                 | **Demonstration, and must be fixed first** | `GuardianPortal.tsx` hard-codes "Term 3 results available from 25 August" and "Parent evening: 3 September 18:00" | **Invented notices that look real.** Not in the audit; found while building this matrix. Remove or label before any guardian can see it.        |
+| Feature                           | Status           | Evidence                                                                                                                         | What is unproven / note                                                                                                                                          |
+| --------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| EGRA screening comparison         | Limited          | `EgraScreeningView.tsx`, `egra-screening.ts` (PR #236, **not yet merged**)                                                       | Compares scores to benchmarks the school types in; recommends **no tier**. Needs qualified SBST confirmation. Subtest list unverified (OQ-035).                  |
+| MTSS overview, SIAS pipeline tabs | Stub / not built | `MtssOverviewView.tsx`, `SiasPipelineView.tsx`                                                                                   | Deliberately empty; they show no learners, tiers or process claims.                                                                                              |
+| Learner Space                     | Demonstration    | `LearnerSpace.tsx` builds a sample graph and a `learner-demo-token` profile                                                      | Do not show to a learner or guardian as their own data.                                                                                                          |
+| **Parent Portal**                 | Stub / not built | `GuardianPortal.tsx` (Stage 145, OQ-056): shows no notice, date, result or progress and says nothing on it comes from the school | The invented notices were removed. Guardian access to a child's information still needs its own decision (consent, guardian-to-learner link, what they may see). |
 
 ## 6. Teacher Toolbox widgets (MOD-04 and others)
 
@@ -92,7 +92,7 @@ changes in the same commit (`CLAUDE.md`, Definition of Done).
 1. **Biggest build gap:** no teacher journey exists end to end (section 4, first row). Until it does,
    an educator pilot can offer the Toolbox widgets, the curriculum map, the approvals views and the
    EGRA comparison, and nothing that "generates".
-2. **Biggest honesty gap:** the Parent Portal and Learner Space show content that looks real.
+2. **Biggest honesty gap:** Learner Space still shows content that looks real (a sample graph and a demo learner). The Parent Portal's invented notices were removed in Stage 145.
 3. **Biggest safety gap that needs your input:** model spend limits (needs pricing and a budget).
 
 _Operations platform:_ it lives in a separate repository and is not covered here.
