@@ -46,6 +46,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "resolved",
+        "text": "Decided 2026-11-26 by the owner: commit first, then call Keycloak, with idp_state on the row, as recommended. Already built (migration 20261113100000_oq033_idp_sync_state, Stage 140; post-commit wiring, Stage 141), so no code changes. Not yet run against a real Keycloak (slice 7e)."
       }
     ],
     "id": "OQ-048b",
@@ -61,13 +66,21 @@
     "recommendedIndex": 0,
     "source": "docs/OPEN_QUESTIONS.md · OQ-048",
     "stage": "Provisioning 7",
-    "status": "open",
+    "status": "resolved",
     "suggestions": [
       "Commit first, then call Keycloak, and record idp_state (PENDING, SYNCED, FAILED) on the row so an administrator can retry.",
       "Call Keycloak first, then commit."
     ],
     "title": "What happens when the Keycloak call fails after the database commit?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-048; (d) stays open."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: commit first, then call Keycloak, with idp_state on the row, as recommended. Already built (migration 20261113100000_oq033_idp_sync_state, Stage 140; post-commit wiring, Stage 141), so no code changes. Not yet run against a real Keycloak (slice 7e).",
+      "verdict": "accepted"
+    }
   },
   {
     "blocks": "Provisioning step 7",
@@ -76,6 +89,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "resolved",
+        "text": "Decided 2026-11-26 by the owner: yes, disable the user in Keycloak and revoke its sessions on suspend and offboard, as recommended. Already built in slice 7d, so no code changes. Not yet run against a real Keycloak (slice 7e); 7d does not merge until 7e has run."
       }
     ],
     "id": "OQ-048c",
@@ -91,13 +109,21 @@
     "recommendedIndex": 0,
     "source": "docs/OPEN_QUESTIONS.md · OQ-048",
     "stage": "Provisioning 7",
-    "status": "open",
+    "status": "resolved",
     "suggestions": [
       "Disable the Keycloak user and revoke sessions on suspend and offboard.",
       "Rely on the application's ACTIVE-account gate alone."
     ],
     "title": "Should suspending or offboarding also disable the user in Keycloak?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-048; (d) stays open."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: yes, disable the user in Keycloak and revoke its sessions on suspend and offboard, as recommended. Already built in slice 7d, so no code changes. Not yet run against a real Keycloak (slice 7e); 7d does not merge until 7e has run.",
+      "verdict": "accepted"
+    }
   },
   {
     "blocks": "Provisioning step 7 (email)",

@@ -774,8 +774,15 @@ choices, so they are the owner's; recommendations are given so a one-line answer
 - **(b) Failure semantics.** The Admin API call cannot share the database transaction. _Recommend:_ commit first, then call; record
   `idp_state` (PENDING / SYNCED / FAILED) on the row so a failure is visible and an administrator can retry. This needs a migration.
   The alternative (call first, then commit) can leave a Keycloak user that the database has never heard of.
+  **Decision (b), 2026-11-26, the owner:** commit first, then call, with `idp_state` on the row, as recommended. Already built: the
+  migration `20261113100000_oq033_idp_sync_state` (Stage 140, slice 7c) and the post-commit wiring (Stage 141, slice 7d). No code changes.
+  Not verified against a running Keycloak (slice 7e).
 - **(c) Disable in Keycloak on suspend/offboard?** _Recommend yes_, with session revocation: it is the only thing that ends a
   session already in flight (§6), and the ACTIVE-account gate cannot.
+  **Decision (c), 2026-11-26, the owner:** yes, disable the user and revoke its sessions on suspend and offboard, as recommended.
+  Already built in slice 7d (`apps/web/src/lib/idp/reconcile.ts`, `keycloak-admin.ts`), ordered disable, then end sessions, then role
+  changes. No code changes. Not verified against a running Keycloak (slice 7e), and per `docs/PROVISIONING_DESIGN.md` §11.1 7d does not
+  merge until 7e has run.
 - **(d) Email delivery.** `execute-actions-email` needs SMTP configured on Keycloak. OQ-021 names a mailbox for dunning, not for
   Keycloak, and I have not verified that Keycloak can use it. _Recommend:_ for the pilot, an operator sends the first sign-in
   link by hand (as §5 already allows for three schools), and SMTP is a separate, later decision.
