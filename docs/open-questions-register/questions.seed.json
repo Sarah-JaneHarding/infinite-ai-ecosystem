@@ -784,6 +784,244 @@
     "title": "The commons_pattern_sharing flag expired on 2026-11-15: ship it, remove it, or extend it?"
   },
   {
+    "blocks": "Adopting docs/PILOT_PROTOCOL_ONE_SCHOOL_DRAFT.md (audit tasks T01, T04, T32)",
+    "history": [
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "raised",
+        "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      }
+    ],
+    "id": "OQ-055",
+    "options": [
+      "Decide D2, D4, D5, D3, D1, D6, D7 and D8, in that order",
+      "Keep the existing PILOT_PROTOCOL.md for now"
+    ],
+    "order": 28,
+    "question": "The draft one-school protocol leaves eight decisions blank on purpose: D1 the start date and phase lengths (the 2026-10-06 start has passed); D2 the school's written agreement, signatory and date (Benjamin Pine is recorded as school 1 but current approval is unconfirmed); D3 the first workflow; D4 the product owner and who may restart a paused pilot; D5 the privacy and safeguarding leads; D6 the success thresholds; D7 a cost ceiling, with model pricing and a budget for audit task T16; D8 who decides at the end. The existing docs/PILOT_PROTOCOL.md stays in force until you adopt the draft.",
+    "raised": "2026-11-26",
+    "reason": "Nothing in the draft may be read as agreed, approved or achieved until these are decided, and the current protocol still counts three schools and carries conflicting NPS and cost thresholds.",
+    "recBy": "claude",
+    "recommendation": "Decide in the order that unblocks work: D2 the school's agreement, D4 the product owner, D5 the privacy and safeguarding leads, D3 the first workflow (the offline classroom widgets first), D1 the dates, D6 thresholds with no NPS gate and safety as the only hard stop, D7 a cost ceiling, D8 who decides at the end.",
+    "recommendedIndex": 0,
+    "repo": "ecosystem",
+    "source": "docs/OPEN_QUESTIONS.md · OQ-055",
+    "stage": "Pilot",
+    "status": "open",
+    "suggestions": [
+      "Start with D2, D4 and D5: they name people and the school, and everything else waits on them.",
+      "Use a fixed cost ceiling for D7, because the gateway currently enforces no spend limit at all.",
+      "Treat NPS as a conversation, not a gate, while there are only a handful of educators."
+    ],
+    "title": "What does the one-school pilot protocol need you to decide before it can be adopted?"
+  },
+  {
+    "blocks": "Any guardian access (switched off in the pilot scope)",
+    "history": [
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "raised",
+        "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "updated",
+        "text": "Notices removed (Stage 145, owner decision 2026-11-26). Guardian access design is still open."
+      }
+    ],
+    "id": "OQ-056",
+    "options": [
+      "Keep the plain 'nothing to show yet' page until guardian access is designed",
+      "Decide where real school notices come from first"
+    ],
+    "order": 29,
+    "question": "GuardianPortal.tsx hard-coded 'Term 3 results available from 25 August', 'Parent evening: 3 September 18:00', a promise that progress would be shared once Term 3 assessments were completed, and the claim that only information about your child is shown. None came from a school. Fixed on 2026-11-26 (Stage 145): the page now reads no record and says plainly that nothing on it comes from the school. Still open: where genuine school notices would come from, how a guardian is linked to a learner, and what they may see.",
+    "raised": "2026-11-26",
+    "reason": "A parent reads a date on a school page as the school's own date, so an invented one is worse than an empty page. The remaining questions are consent and purpose decisions, not clean-up.",
+    "recBy": "claude",
+    "recommendation": "Keep the plain 'nothing to show yet' page, and decide guardian-to-learner linking, consent and purpose before the portal shows anything real.",
+    "recommendedIndex": 0,
+    "repo": "ecosystem",
+    "source": "docs/OPEN_QUESTIONS.md · OQ-056",
+    "stage": "Pilot",
+    "status": "partial",
+    "suggestions": [
+      "Give no guardian a login until the linking and consent design exists.",
+      "If notices are wanted sooner, decide the single source the school would publish them from, and show only that."
+    ],
+    "title": "The Parent Portal showed invented school notices: what should guardians see, and from where?"
+  },
+  {
+    "blocks": "Adding Toqi as an assistant connector",
+    "history": [
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "raised",
+        "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      }
+    ],
+    "id": "OQ-057",
+    "options": [
+      "Supply the documented HTTP API (base URL, auth style, wire format)",
+      "Keep Toqi out of the platform"
+    ],
+    "order": 30,
+    "question": "Asked to embed Claude, Gemini, Copilot, Qwen, Grok and Toqi as live assistants. The first five are built (ASSISTANT_CONNECTORS, gateway adapters). Toqi is not: it is a consumer app from the Google Play Store, and no published API, base URL or auth scheme was supplied. Wrapping its app, scraping it or automating the Android client would be a second, ungoverned path to a model (rule 3) and would give it learner-adjacent text with no de-identification control.",
+    "raised": "2026-11-26",
+    "reason": "A second path to a model provider is one of the things the project must never add, so this cannot be worked around in code; it needs a documented API or a decision to leave Toqi out.",
+    "recBy": "source",
+    "recommendation": "If Toqi, or its vendor, has a documented HTTP API, supply the base URL, auth style and whether it speaks the OpenAI wire format: if it is OpenAI-compatible it is one registry row plus one env block. If it has no API, Toqi stays out of the platform.",
+    "recommendedIndex": 0,
+    "repo": "ecosystem",
+    "source": "docs/OPEN_QUESTIONS.md · OQ-057",
+    "stage": "Providers",
+    "status": "open",
+    "suggestions": [
+      "Ask the vendor for API documentation before building anything.",
+      "If there is none, record that Toqi is out of scope and close this question."
+    ],
+    "title": "Toqi has no API to connect to"
+  },
+  {
+    "blocks": "The assistant chat panel in apps/web",
+    "history": [
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "raised",
+        "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      }
+    ],
+    "id": "OQ-058",
+    "options": [
+      "Staff only; scrub free text through the De-identification Service and show what was redacted; the web route is the only caller",
+      "Do not build the panel yet"
+    ],
+    "order": 31,
+    "question": "The connector layer is done in the gateway (assistant.* logical models, one provider per connector, no cross-vendor fallback). The web panel is not built, because it needs decisions that must not be guessed (rule 4: no learner personal information may enter a prompt). (1) Who may use it. (2) Free text: a teacher can type a learner's name, and the gateway's PII guard refuses any payload without a deidentified:true stamp, so the web route must run the text through the De-identification Service before calling the gateway. (3) Caller identity: apps/web has no gateway client or GATEWAY_URL today, and the gateway has no caller authentication on the wire. (4) Budget and audit: provider pricing is still zero in the gateway, so no per-school cost limit bites yet.",
+    "raised": "2026-11-26",
+    "reason": "Free text from teachers is exactly where a learner's name can reach a prompt, so the panel cannot be built until the de-identification path, the caller identity and the budget are decided.",
+    "recBy": "source",
+    "recommendation": "Signed-in staff only, never a learner or guardian. Scrub free text and show the user what was redacted. The web route is the only caller and takes tenant and actor from the verified session, never the body.",
+    "recommendedIndex": 0,
+    "repo": "ecosystem",
+    "source": "docs/OPEN_QUESTIONS.md · OQ-058",
+    "stage": "Providers",
+    "status": "open",
+    "suggestions": [
+      "Build the web route first, with tenant and actor from the session and the de-identification step in front of the gateway.",
+      "Wire real provider pricing and per-tenant budgets (audit task T16) before the panel is switched on."
+    ],
+    "title": "What must be decided before the in-app assistant chat panel is built?"
+  },
+  {
+    "blocks": "Any deployment to staging (audit task T17)",
+    "history": [
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "raised",
+        "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "updated",
+        "text": "Role assumption now works; the new blocker is the missing staging ECR repositories (CD run 45894174628)."
+      }
+    ],
+    "id": "OQ-059",
+    "options": [
+      "Apply the staging Terraform stack, then re-run the failed CD job",
+      "Keep investigating the role (only if the assumption fails again)"
+    ],
+    "order": 32,
+    "question": "The CD workflow's first job failed with 'Not authorized to perform sts:AssumeRoleWithWebIdentity' on all 12 attempts after its own role-ARN check had passed (run 45483184887). After the owner changed settings on 2026-11-26, CD run 45894174628 passed the role assumption and failed later with 'The repository infinite-ai-staging-gateway does not exist in the registry': the staging stack, which creates the ECR repositories, has not been applied (CD never runs Terraform; a human does). The PR Terraform plan job also authenticates now.",
+    "raised": "2026-11-26",
+    "reason": "Nothing deploys, and no staging environment can be called working, until the staging stack exists. The cause of the original role failure was never established; the owner's change fixed it.",
+    "recBy": "claude",
+    "recommendation": "Apply infra/terraform/environments/staging (see infra/terraform/README.md and docs/RUNBOOKS/aws-setup.md), then re-run the failed CD job. Keep docs/RUNBOOKS/cd-deploy-role-failure.md for the day the role assumption fails again.",
+    "recommendedIndex": 0,
+    "repo": "ecosystem",
+    "source": "docs/OPEN_QUESTIONS.md · OQ-059",
+    "stage": "AWS",
+    "status": "partial",
+    "suggestions": [
+      "Re-run the failed job in GitHub Actions; do not push an empty commit to trigger it.",
+      "Note the PR plan job plans the production directory, not staging (see OQ-062)."
+    ],
+    "title": "CD cannot assume the AWS deploy role: what is the next blocker?"
+  },
+  {
+    "blocks": "Telling a school MFA is enforced; Phase 2 (identifiable learner data)",
+    "history": [
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "raised",
+        "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "updated",
+        "text": "Production realm rule and HoD one-time code done (Stage 147). Recovery owner, sbst/teacher MFA and live verification still open."
+      }
+    ],
+    "id": "OQ-060",
+    "options": [
+      "Name a recovery owner and a break-glass administrator with its own MFA and an offline copy of its details",
+      "Leave it until Phase 2"
+    ],
+    "order": 33,
+    "question": "Decided and done on 2026-11-26: the production Keycloak realm is derived from the dev fixture with every person and loopback redirect removed (infra/keycloak/realm.production.json, guarded by tests), and the HoD now needs a one-time code. Still open: six roles must enter a code, including admin and both platform roles, but the realm configures no recovery codes and nothing describes who may reset another person's authenticator or who holds a break-glass administrator. Also open: whether sbst and teacher must use a code before any identifiable learner data enters (Phase 2); whether Keycloak honours the production client's wildcard host redirect (https://*.infinite-ai.co.za/*); and MFA is still unverified anywhere because no live Keycloak or production realm has been checked.",
+    "raised": "2026-11-26",
+    "reason": "If the only administrator loses their phone they cannot sign in, and a break-glass account is a security decision, not something to invent during an incident.",
+    "recBy": "claude",
+    "recommendation": "Name a recovery owner now and keep a break-glass Keycloak administrator, separate from application admins, with its own MFA and an offline copy of its recovery details. Decide sbst and teacher MFA before Phase 2, and verify with docs/RUNBOOKS/verify-mfa.md Parts A and B.",
+    "recommendedIndex": 0,
+    "repo": "ecosystem",
+    "source": "docs/OPEN_QUESTIONS.md · OQ-060",
+    "stage": "Security",
+    "status": "partial",
+    "suggestions": [
+      "Run Part A of docs/RUNBOOKS/verify-mfa.md against a local Keycloak first; it needs only Docker.",
+      "Try a real sign-in on the real domain to settle the wildcard redirect, and prefer exact redirect URIs per school if it does not work."
+    ],
+    "title": "Who can reset a lost authenticator, and who holds the break-glass administrator?"
+  },
+  {
+    "blocks": "Audit task T19; Phase 2 (identifiable learner data)",
+    "history": [
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "raised",
+        "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T21:40:00.000Z",
+        "kind": "updated",
+        "text": "Brain RPO dropped and region-loss rewritten (Stage 147). Key custody, identity backup and the live drill are still open."
+      }
+    ],
+    "id": "OQ-061",
+    "options": [
+      "Name two key custodians (a sealed copy held by a second person) before Phase 2, and run the live drill in staging",
+      "Accept the risk for the pilot, which stores no learner identifiers"
+    ],
+    "order": 34,
+    "question": "Found by reading, not by restoring: the drill records in docs/RUNBOOKS/drill-results/ are paper drills that restore nothing; database-restore.md step 4 cannot run as written (the integration suite starts its own containers); there is no Keycloak module in infra/terraform so identity backup is undescribed; staging uses default backup settings (7 days, no deletion protection); and DB_ENCRYPTION_KEY has no second copy or custody plan. Decided on 2026-11-26: the 60-minute Brain RPO is dropped (no hourly snapshot job exists), so the Brain's RPO is the database's (5 minutes), unproven until the live drill; region-loss.md now says there is no failover and commits to no RTO or RPO. Accepting a Region loss is the recommendation for the pilot.",
+    "raised": "2026-11-26",
+    "reason": "Losing the encryption key makes every encrypted learner identifier unreadable, and there is no re-encryption procedure (OQ-053). The restore figures are claims until a real restore proves them.",
+    "recBy": "claude",
+    "recommendation": "Name two custodians for DB_ENCRYPTION_KEY, with a sealed copy in a password manager held by a second person, and write and test the re-encryption procedure, before Phase 2. Run docs/RUNBOOKS/restore-drill.md once in staging, and reopen an off-region export before Phase 2.",
+    "recommendedIndex": 0,
+    "repo": "ecosystem",
+    "source": "docs/OPEN_QUESTIONS.md · OQ-061",
+    "stage": "AWS",
+    "status": "partial",
+    "suggestions": [
+      "Do not rotate the key until a tested re-encryption procedure exists.",
+      "Fix database-restore.md step 4 and decide the identity-provider backup before relying on the restore figures."
+    ],
+    "title": "What will the live restore drill find, and who holds DB_ENCRYPTION_KEY's second copy?"
+  },
+  {
     "blocks": "Live connector, webhook and narrative",
     "history": [
       {
