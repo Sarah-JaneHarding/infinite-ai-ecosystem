@@ -141,16 +141,6 @@ jobs:
             exit 1
           fi
 
-      # TEMPORARY DIAGNOSTIC (remove once the plan role sign-in works): prints the non-secret identity
-      # claims GitHub puts in the OIDC token, to compare with the role's trust policy. Never prints the token.
-      - name: Diagnostic - OIDC claims (temporary)
-        uses: actions/github-script@v9
-        with:
-          script: |
-            const token = await core.getIDToken('sts.amazonaws.com');
-            const c = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
-            core.info(JSON.stringify({ sub: c.sub, aud: c.aud, iss: c.iss, repository: c.repository, event_name: c.event_name, ref: c.ref }));
-
       - uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
           # Read-only role trusted for pull requests — never the deploy role.
