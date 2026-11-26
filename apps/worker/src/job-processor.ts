@@ -18,6 +18,10 @@ import type { PipelineDefinition, RunnerOptions } from '@infinite-ai/orchestrato
 import { runToCompletion } from '@infinite-ai/orchestrator';
 import { z } from 'zod';
 
+import {
+  AGE_CHECKED_PIPELINE_IDS,
+  AgeCheckUnavailableError,
+} from './age-check-policy.js';
 import { prepareApproval } from './approval.js';
 import { evaluateCondition } from './condition-evaluator.js';
 import { buildPendingLeSignalJob, type PendingLeSignalJob } from './le-signal-trigger.js';
@@ -64,6 +68,20 @@ export async function processPipelineJob(
   const jobData = JobDataSchema.parse(rawJobData);
   const { runId, tenantId, actorId } = jobData;
   // gradePhase is read later inside withTenant to build the per-job checker
+
+  // Fail closed (audit R05 / T09): an age-checked pipeline never runs without a checker.
+  // Decided here, before the transaction and before any model call.
+  if (
+    AGE_CHECKED_PIPELINE_IDS.has(pipeline.id) &&
+    deps.ageAppropriatenessChecker === undefined
+  ) {
+    if (deps.ageAppropriatenessCheckerFactory === undefined) {
+      throw new AgeCheckUnavailableError(pipeline.id, 'no_checker_configured');
+    }
+    if (jobData.gradePhase === undefined) {
+      throw new AgeCheckUnavailableError(pipeline.id, 'missing_grade_phase');
+    }
+  }
 
   // Collected inside the withTenant callback; flushed to BullMQ after the transaction
   // commits so a DB rollback never leaves a phantom LE signal job in Redis.

@@ -12225,3 +12225,36 @@ OQ-035, not a weakened assertion). web unit tier 1229 passing; lint and typechec
 | `pnpm lint`, `pnpm typecheck`, web unit tests                                 | PASS                    |
 | Qualified SBST confirms the tab                                               | **NOT DONE** (human)    |
 | Rollback: revert this commit; no schema change                                | PASS                    |
+
+## Stage 143 — audit R05 / T09: MOD-01 and MOD-04 refuse to run without an age checker
+
+Source: pilot-readiness audit risk **R05**, task **T09**, on `50d88b5`. Confirmed in this checkout before any change: the worker built a phase-aware age
+checker only for jobs carrying `gradePhase`; otherwise `checkAgeAppropriateness(output, undefined)` passed everything, so a MOD-01/MOD-04 job without a
+phase generated content with the age guardrail silently off. **Also found:** nothing in this repository enqueues MOD-01/MOD-04 jobs with a `gradePhase`
+(no producer in `apps/web` or elsewhere), so whatever creates those jobs must supply it. That producer is not here and was not changed.
+
+**What changed.** `age-check-policy.ts` holds a closed list of age-checked pipeline ids (MOD-01 curriculum, MOD-04 toolbox) and `AgeCheckUnavailableError`.
+`processPipelineJob` now throws it, before any tenant transaction or model call, when one of those pipelines has no usable checker: reason
+`missing_grade_phase` (factory configured, job has no phase) or `no_checker_configured` (worker has neither a factory nor a static checker). A static
+checker passed explicitly still satisfies the rule. The dev in-process runner shares this code, so it is refused the same way. Other pipelines are unchanged.
+
+**Tests.** `job-processor.spec.ts` (+10, both pipelines): refuses no phase and no checker, each with no transaction opened and nothing run; runs with a phase
+and builds the checker for that phase; rejects an unknown phase; leaves non-listed pipelines alone. Three existing tests now pass an explicit checker, since
+running MOD-04 unchecked is the behaviour being removed. Mutation-checked: disabling the guard fails 4. worker 150 passing; lint, typecheck and format clean.
+
+**Not done, stated plainly.**
+
+1. **The refused job just fails** (logged `worker.job_failed`); its run row is left as started. Surfacing that to the educator as "could not run, phase missing"
+   needs the producer, which is not in this repository.
+2. **The list is closed on purpose.** A new content pipeline must be added to `AGE_CHECKED_PIPELINE_IDS`; nothing detects that you forgot.
+3. **Adversarial prompts** (T09's wording) are not covered here: this change guarantees a checker runs, not that the judge catches every unsafe output. That is
+   T28 (calibrating the judge against human-labelled examples) and needs a labelled set.
+4. Safeguarding alert delivery to a named person (T10) is separate and untouched.
+
+| Exit gate item                                      | Result                        |
+| --------------------------------------------------- | ----------------------------- |
+| Missing context fails closed, before any model call | PASS (unit; mutation-checked) |
+| Both applicable pipelines covered                   | PASS (unit)                   |
+| `pnpm lint`, `pnpm typecheck`, worker unit tests    | PASS                          |
+| Judge catches adversarial outputs                   | **NOT VERIFIED** (T28)        |
+| Rollback: revert this commit; no schema change      | PASS                          |

@@ -267,8 +267,9 @@ export async function start(): Promise<void> {
     // MOD-01 and MOD-04 jobs that include gradePhase on the job payload get a phase-scoped
     // checker, grounded in the ratified Brain clauses for that phase, that renders a real
     // verdict via the Model Gateway and fails closed if that call cannot be completed (see
-    // age-appropriateness-judge.ts's own header). Jobs without gradePhase fall through to
-    // undefined (no checker) — unchanged from before this wiring.
+    // age-appropriateness-judge.ts's own header). A MOD-01/MOD-04 job WITHOUT gradePhase is
+    // refused before any model call (age-check-policy.ts, audit R05 / T09); it no longer runs
+    // unchecked. Other pipelines are unaffected.
     ageAppropriatenessCheckerFactory,
     // OQ-014: wire the real SNS notifier when the topic ARN is configured.
     // When absent, WorkerHost's default falls through to defaultEscalationNotifier

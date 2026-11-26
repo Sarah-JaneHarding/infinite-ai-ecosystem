@@ -43,8 +43,9 @@ export interface WorkerHostDeps {
    * Per-job factory for phase-aware age-appropriateness checking (OQ-015 Gap 1).
    * When a job carries `gradePhase`, the host calls this factory inside the `withTenant`
    * transaction and uses the returned checker for that job in place of the static
-   * `ageAppropriatenessChecker`. Pipelines that do not carry a phase (or that supply
-   * no `gradePhase` on the job payload) fall back to `ageAppropriatenessChecker` as before.
+   * `ageAppropriatenessChecker`. Pipelines outside `AGE_CHECKED_PIPELINE_IDS` that carry no
+   * phase fall back to `ageAppropriatenessChecker`. MOD-01 and MOD-04 with no usable checker
+   * are refused by `processPipelineJob` (audit R05 / T09), never run unchecked.
    * This is the injection point for `createBrainAgeAppropriatenessChecker`.
    */
   readonly ageAppropriatenessCheckerFactory?: (
