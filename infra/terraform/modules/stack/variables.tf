@@ -209,6 +209,21 @@ variable "keycloak_client_id" {
   default     = null
 }
 
+variable "keycloak_provisioner_enabled" {
+  description = <<-EOT
+    OQ-048 (a): give apps/web the dedicated Keycloak provisioner client (infinite-ai-provisioner), the
+    credential that creates and updates users. Creates the EMPTY Secrets Manager shell
+    KEYCLOAK_PROVISIONER_CLIENT_SECRET and publishes the client id, and maps both into the WEB task only
+    (never the worker or gateway: the model-facing process must not be able to mint identities). The
+    mapping also needs keycloak_issuer_url, so it stays off until a real Keycloak exists. Populate the
+    secret BEFORE setting this and applying (a task that references an empty secret cannot start):
+    docs/RUNBOOKS/aws-setup.md. This secret is an administrator-equivalent credential (it can map any
+    realm role): docs/RUNBOOKS/secrets-rotation.md.
+  EOT
+  type        = bool
+  default     = false
+}
+
 # --- Langfuse (self-hosted LLM observability) -------------------------------------
 # See modules/langfuse's own header for what this deploys and why. domain_name for
 # Langfuse's own ALB/cert/DNS is derived below ("langfuse." + var.domain_name), not a

@@ -57,3 +57,15 @@ variable "keycloak_client_id" {
   type        = string
   default     = null
 }
+
+variable "keycloak_issuer_url" {
+  description = "The Keycloak realm issuer apps/web signs in against and provisions through (AUTH_KEYCLOAK_ISSUER), e.g. https://id.example/realms/infinite-ai. Null leaves apps/web on its localhost default, which only works in development. Required before keycloak_provisioner_enabled."
+  type        = string
+  default     = null
+}
+
+variable "keycloak_provisioner_enabled" {
+  description = "OQ-048 (a): map the Keycloak provisioner client into the web task. Off until KEYCLOAK_PROVISIONER_CLIENT_SECRET is populated and keycloak_issuer_url is set. See modules/stack."
+  type        = bool
+  default     = false
+}

@@ -302,12 +302,20 @@ module "app_secrets" {
 
   name_prefix = "/infinite-ai/${var.environment}"
 
-  secret_names = [
-    "ANTHROPIC_API_KEYS",   # apps/gateway only: the provider credential pool
-    "NEXTAUTH_SECRET",      # apps/web session signing
-    "AUTH_KEYCLOAK_SECRET", # apps/web's Keycloak client secret
-  ]
-  ssm_config = var.keycloak_client_id == null ? {} : { AUTH_KEYCLOAK_ID = var.keycloak_client_id }
+  secret_names = toset(concat(
+    [
+      "ANTHROPIC_API_KEYS",   # apps/gateway only: the provider credential pool
+      "NEXTAUTH_SECRET",      # apps/web session signing
+      "AUTH_KEYCLOAK_SECRET", # apps/web's Keycloak client secret
+    ],
+    # OQ-048 (a): the user-management credential. WEB ONLY, administrator-equivalent.
+    var.keycloak_provisioner_enabled ? ["KEYCLOAK_PROVISIONER_CLIENT_SECRET"] : [],
+  ))
+  ssm_config = merge(
+    var.keycloak_client_id == null ? {} : { AUTH_KEYCLOAK_ID = var.keycloak_client_id },
+    # Not a secret: the id of the realm's infinite-ai-provisioner client (infra/keycloak/realm.json).
+    var.keycloak_provisioner_enabled ? { KEYCLOAK_PROVISIONER_CLIENT_ID = "infinite-ai-provisioner" } : {},
+  )
 
   # Production keeps the longest recovery window; elsewhere a shorter one avoids a name
   # staying reserved for a month after a teardown.
@@ -478,6 +486,16 @@ module "ecs_service_worker" {
   tags = var.tags
 }
 
+# The provisioner calls the Admin API at keycloak_issuer_url. apps/web falls back to a localhost issuer
+# when AUTH_KEYCLOAK_ISSUER is unset, so enabling the provisioner without an issuer would make every
+# provisioning call fail (visible as idp_state FAILED, never silent). Warn at plan time instead.
+check "keycloak_provisioner_needs_issuer" {
+  assert {
+    condition     = !var.keycloak_provisioner_enabled || var.keycloak_issuer_url != null
+    error_message = "keycloak_provisioner_enabled is true but keycloak_issuer_url is null: the web task would call a localhost Keycloak."
+  }
+}
+
 module "ecs_service_web" {
   source = "../ecs-service"
 
@@ -516,6 +534,12 @@ module "ecs_service_web" {
     # The client id is plain config in SSM, injected the same native way (not an env var in
     # the task definition). Omitted while keycloak_client_id is null.
     var.keycloak_client_id == null ? {} : { AUTH_KEYCLOAK_ID = module.app_secrets.ssm_parameter_arns["AUTH_KEYCLOAK_ID"] },
+    # OQ-048 (a). WEB ONLY. Never add either entry to the worker or gateway maps: that is the
+    # alternative OQ-048 (a) rejected. See also the check "keycloak_provisioner_needs_issuer" below.
+    var.keycloak_provisioner_enabled ? {
+      KEYCLOAK_PROVISIONER_CLIENT_ID     = module.app_secrets.ssm_parameter_arns["KEYCLOAK_PROVISIONER_CLIENT_ID"]
+      KEYCLOAK_PROVISIONER_CLIENT_SECRET = module.app_secrets.secret_arns["KEYCLOAK_PROVISIONER_CLIENT_SECRET"]
+    } : {},
   )
 
   tags = var.tags
