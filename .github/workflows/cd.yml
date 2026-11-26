@@ -62,7 +62,7 @@ jobs:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN || secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - uses: aws-actions/amazon-ecr-login@v2.1.7
+      - uses: aws-actions/amazon-ecr-login@v2.2.0
         id: ecr
 
       # One build per app, from the repo root — every Dockerfile in this repo builds
@@ -111,7 +111,7 @@ jobs:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN || secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - uses: aws-actions/amazon-ecr-login@v2.1.7
+      - uses: aws-actions/amazon-ecr-login@v2.2.0
         id: ecr
 
       # gateway and web sit behind the ALB and have the error-rate/latency-p95 alarms
@@ -166,7 +166,7 @@ jobs:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN || secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - uses: aws-actions/amazon-ecr-login@v2.1.7
+      - uses: aws-actions/amazon-ecr-login@v2.2.0
         id: ecr
 
       # Promotes the exact image staging just ran through the checks above — never a
