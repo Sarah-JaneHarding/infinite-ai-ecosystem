@@ -36,8 +36,8 @@ export type PipelineQueue =
  *
  * `gradePhase` is optional: pipelines that know their own curriculum phase (MOD-01, MOD-04)
  * supply it so the worker can construct a phase-specific age-appropriateness checker for that
- * job. Pipelines with no phase context leave it absent — the checker falls back to the
- * host-level default (OQ-015 Gap 1). */
+ * job. It is REQUIRED for MOD-01 and MOD-04 (`AGE_CHECKED_PIPELINE_IDS`): without it the job is
+ * refused before any model call. Other pipelines may leave it absent (OQ-015 Gap 1). */
 export interface PipelineJobData {
   readonly runId: string;
   readonly tenantId: string;
