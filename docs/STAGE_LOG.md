@@ -12192,3 +12192,36 @@ now requires the sync to succeed.
 | No message, address or upstream body is recorded            | PASS (unit; DB token check)   |
 | Behaves against a real Keycloak 26                          | **NOT VERIFIED** (7e)         |
 | `pnpm lint`, `pnpm typecheck`, unit tests                   | PASS                          |
+
+## Stage 142 — audit R01 / T02: the EGRA screening tab no longer recommends a tier
+
+Source: the 25 November 2026 pilot-readiness audit (risk R01, task T02), on commit `50d88b5`. The audit's finding was confirmed in this checkout before
+any change: blank scores were skipped, zero flags mapped to "Tier 1 — On track", and submission did not require a score, so an empty form told a support
+team a learner was on track. This implements the decision already recorded in OQ-035 (2026-11-05): benchmarks are typed by the school, no tier is
+recommended, and the SBST person assigns the tier.
+
+**What changed.** The built-in benchmark table, `tierFromFlags` and the three tier labels are gone. `egra-screening.ts` (pure, no React) compares each
+score with the benchmark the user typed and returns one of `not-entered`, `invalid-score`, `no-benchmark`, `invalid-benchmark`, `meets`, `below`.
+A subtest with no score, or no valid benchmark, has no result and is never read as reassurance. Input is parsed strictly (`1e3`, `-1`, `NaN`, `0x10`,
+`5.` are invalid; a typed `0` is a score; a percentage above 100 is invalid). The view says in plain words that it supplies no benchmark and
+recommends no tier.
+
+**Tests.** `egra-screening.spec.ts` (+9): below / meets; blank input gives no result for every subtest (the audited defect); score with no benchmark;
+invalid input; percentage ceiling; zero is a score; a source scan fails if a benchmark table, `tierFromFlags`, a tier label or "On track" returns; the
+rendered view shows no tier and every benchmark box starts empty. `sbst-views.spec.ts` updated for the renamed button (a deliberate behaviour change under
+OQ-035, not a weakened assertion). web unit tier 1229 passing; lint and typecheck clean.
+
+**Not done, stated plainly.**
+
+1. **The subtest list itself is unverified.** Ids, labels and units are carried over from the old view; OQ-035 records that the EGRA MTSS reference uses
+   different subtests and scales. Left open in OQ-035. No numeric threshold remains.
+2. **The audit also requires qualified SBST confirmation** ("Done when: … qualified SBST confirms"). That is a human sign-off and has **not** happened.
+3. Not walked in a browser here.
+
+| Exit gate item                                                                | Result                  |
+| ----------------------------------------------------------------------------- | ----------------------- |
+| Blank, partial, invalid and complete input show no tier or built-in benchmark | PASS (unit)             |
+| No benchmark table or tier rule can return unnoticed                          | PASS (source-scan test) |
+| `pnpm lint`, `pnpm typecheck`, web unit tests                                 | PASS                    |
+| Qualified SBST confirms the tab                                               | **NOT DONE** (human)    |
+| Rollback: revert this commit; no schema change                                | PASS                    |

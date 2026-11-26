@@ -529,7 +529,7 @@ Until decided, the page asserts no control it does not exercise.
 
 ### OQ-035 — the EGRA screening tab's benchmarks and tier rule have no supplied source · 2026-10-08
 
-**Decision 2026-11-05 (Sarah-Jane Harding):** the tab shows scores against benchmarks the school types in, and recommends no tier. The SBST person assigns the tier. The built-in benchmark table and 0 / 1-2 / 3+ rule are to be removed. Not yet changed.
+**Decision 2026-11-05 (Sarah-Jane Harding):** the tab shows scores against benchmarks the school types in, and recommends no tier. The SBST person assigns the tier. The built-in benchmark table and 0 / 1-2 / 3+ rule are to be removed. **Done (Stage 142, audit R01/T02):** the tab compares scores with school-typed benchmarks and shows no tier; blank or invalid input gives no result. **Still open:** the subtest list, labels and units were carried over unchanged and do not match the EGRA MTSS reference, and a qualified SBST person must confirm the tab before it is used for real decisions.
 
 Found while removing the sample data from the SBST tabs. `EgraScreeningView.tsx` carries a benchmark table (per grade, per subtest) and
 a rule that turns the number of below-benchmark subtests into a tier recommendation (0 → Tier 1, 1–2 → Tier 2, 3+ → Tier 3). Its
