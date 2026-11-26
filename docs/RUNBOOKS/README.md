@@ -19,10 +19,13 @@ A runbook that has not been rehearsed does not count — Stage 15 requires them 
 
 ## Infrastructure walkthroughs
 
-| Runbook               | What it covers                                                                                  |
-| --------------------- | ----------------------------------------------------------------------------------------------- |
-| `aws-setup.md`        | AWS CLI and region, state backend, budget, apply, populating secrets, proving they are injected |
-| `secrets-rotation.md` | The static-secrets position, the 90-day cadence, and per-secret rotation steps                  |
+| Runbook                     | What it covers                                                                                                          |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `aws-setup.md`              | AWS CLI and region, state backend, budget, apply, populating secrets, proving they are injected                         |
+| `secrets-rotation.md`       | The static-secrets position, the 90-day cadence, and per-secret rotation steps                                          |
+| `cd-deploy-role-failure.md` | Why CD cannot assume the AWS deploy role: the confirmed error, six ordered causes, read-only checks (audit T17, OQ-057) |
+| `verify-mfa.md`             | Prove MFA and individual sign-in against a live Keycloak and the production realm (audit T12/T13, OQ-036, OQ-058)       |
+| `restore-drill.md`          | The live staging restore drill with measured RTO/RPO, key recovery and identity gaps (audit T19, OQ-059)                |
 
 ## Format
 

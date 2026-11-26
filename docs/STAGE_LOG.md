@@ -12316,3 +12316,29 @@ tier 1234 passing; lint, typecheck and format clean. `FEATURE_MATRIX.md` and OQ-
 | The page makes no claim it does not exercise             | PASS (unit)                   |
 | `pnpm lint`, `pnpm typecheck`, web unit tests            | PASS                          |
 | Rollback: revert this commit; no schema change           | PASS                          |
+
+## Stage 146 — verification runbooks for audit tasks T13, T17 and T19
+
+Source: pilot-readiness audit tasks T12/T13 (MFA), T17 (staging deploy) and T19 (backup and restore). Requested 2026-11-26. **Documents only; no code, infrastructure or setting was changed**
+and nothing was run against AWS, Keycloak or a database. Each runbook says it is unrun.
+
+Added `docs/RUNBOOKS/cd-deploy-role-failure.md`, `verify-mfa.md` and `restore-drill.md`, indexed in `docs/RUNBOOKS/README.md`, with OQ-057 to OQ-059.
+
+**What reading the repository and the real CD log turned up, stated plainly.**
+
+1. **The CD failure is `sts:AssumeRoleWithWebIdentity` refused by AWS**, after the workflow's own role-ARN check passed (job log of run `45483184887`). The Terraform trust policy does handle the job's `environment: staging`
+   subject, so the repository logic looks right and the cause is in what was applied in AWS or set in GitHub. The runbook orders six causes and warns against the two tempting wrong fixes (long-lived keys, wildcard trust).
+2. **The realm file would create `admin.dev` and `platform-admin.dev` in production** if imported as OQ-036 says, and nothing removes them first. All credentials in it are `${...}` placeholders, so rule 7 holds.
+3. **Restore evidence is thinner than it looks.** The drill folder holds paper drills only; no Brain snapshot job exists; one runbook step cannot be performed as written; `region-loss.md` describes Google Cloud and a second region; Keycloak has no
+   Terraform and no stated backup; the encryption key has no second copy.
+4. Checked and **not** a problem: the Education web app registers only the Keycloak provider (no development sign-in); the "open development mode" finding is about the separate Operations platform.
+
+**Not done.** None of the three runbooks has been run, so none of audit tasks T13, T17 or T19 is complete. I did not fix `database-restore.md`, `region-loss.md` or the realm file; each is a decision or a human step (logged).
+
+| Exit gate item                                                           | Result               |
+| ------------------------------------------------------------------------ | -------------------- |
+| Each runbook states what is confirmed, what is not, and that it is unrun | PASS (by reading)    |
+| No secret, ARN, account id or credential written into a document         | PASS                 |
+| Findings logged (OQ-057, OQ-058, OQ-059)                                 | PASS                 |
+| Someone with access ran a runbook and recorded the result                | **NOT DONE** (human) |
+| Rollback: revert; documents only                                         | PASS                 |

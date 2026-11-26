@@ -918,3 +918,24 @@ SBST, HoD, SMT, district and run-inspector pages had the same kind of content re
 
 **Needs a human:** confirm that it should be treated the same way (remove the notices and say nothing real is shown yet), or say where genuine school notices
 would come from. Until then no guardian may be given access (guardian access is switched off in the pilot scope in any case).
+
+### OQ-057 — CD cannot assume the AWS deploy role; the cause is in AWS, not in the workflow · 2026-11-26
+
+Audit R07 / T17. The job log of CD run `45483184887` (24 November) shows the workflow passed its own "role ARN is set" check and AWS then answered `Not authorized to perform
+sts:AssumeRoleWithWebIdentity` on all 12 attempts; runs `503` and `507` also failed (logs not read). AWS gives that same message for a role that does not exist, a wrong role, or a trust
+policy that does not match, so the cause cannot be known from here. **Needs a human with access to the AWS project:** work the six ordered checks in `docs/RUNBOOKS/cd-deploy-role-failure.md`
+(read-only first), then record which one was true. Until then nothing deploys and no staging environment can be called working.
+
+### OQ-058 — decisions and a hazard found while writing the MFA verification runbook · 2026-11-26
+
+From `docs/RUNBOOKS/verify-mfa.md` (audit T12/T13, OQ-036). (1) **Hazard:** `infra/keycloak/realm.json` defines eleven `*.dev` users, including `admin.dev` (role `admin`) and `platform-admin.dev`; OQ-036 says the production realm
+"must be created from this file", and **no document or script removes those users first**. Importing it unchanged would create real administrator accounts. Needs a decision on how the production realm is built (strip the users, or
+import without them). (2) **Should `hod` and `sbst` also require a one-time code?** Today only `admin`, `smt`, `sbst_chair`, `platform_support` and `platform_admin` do. (3) **Lost authenticator:** the realm configures no recovery codes
+and nothing describes who may reset another person's device or who holds a break-glass administrator. (4) MFA is still **not verified** anywhere: Part A of the runbook (a live Keycloak) and Part B (the production realm) are unrun.
+
+### OQ-059 — what the live restore drill is likely to find · 2026-11-26
+
+From `docs/RUNBOOKS/restore-drill.md` (audit T19, R11). Found by reading, not by restoring: the "PASS" drill records in `docs/RUNBOOKS/drill-results/` are paper drills that restore nothing; **no hourly Brain snapshot job exists**
+although `brain-restore.md` and the drill declare a 60-minute RPO; `database-restore.md` step 4 tells the operator to run an integration suite that starts its own containers and cannot target a restored instance; `region-loss.md` names
+a Google Cloud bucket and a secondary region that the single-Region AWS stack does not have; there is **no Keycloak module** in `infra/terraform`, so identity backup is undescribed; staging uses default backup settings (7 days, no deletion
+protection); and `DB_ENCRYPTION_KEY` has no second copy or custody plan (see also OQ-053). **Needs the owner:** who runs the drill, a decision on key custody, and a decision on whether to build the snapshot job or drop that RPO claim.
