@@ -6,6 +6,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "resolved",
+        "text": "Decided 2026-11-26 by the owner: dedicated provisioner client (infinite-ai-provisioner), as recommended. The worker's service account is not widened. This matches Stage 139 (slice 7b), so no code changes. Still to do and not verifiable here: keep the secret in AWS Secrets Manager, rotate it, and alert on any realm-role mapping to a platform role. Not yet run against a real Keycloak (slice 7e)."
       }
     ],
     "id": "OQ-048a",
@@ -18,13 +23,21 @@
     "recommendedIndex": 0,
     "source": "docs/OPEN_QUESTIONS.md · OQ-048",
     "stage": "Provisioning 7",
-    "status": "open",
+    "status": "resolved",
     "suggestions": [
       "A new client, infinite-ai-provisioner, holding only manage-users, query-users and view-users.",
       "Widen the existing worker service account (fewer moving parts, much larger blast radius)."
     ],
     "title": "Which Keycloak client holds the power to create users?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-048 (a); (b), (c) and (d) stay open."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: dedicated provisioner client (infinite-ai-provisioner), as recommended. The worker's service account is not widened. This matches Stage 139 (slice 7b), so no code changes. Still to do and not verifiable here: keep the secret in AWS Secrets Manager, rotate it, and alert on any realm-role mapping to a platform role. Not yet run against a real Keycloak (slice 7e).",
+      "verdict": "accepted"
+    }
   },
   {
     "blocks": "Provisioning step 7b onward",

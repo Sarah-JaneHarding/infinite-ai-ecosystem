@@ -765,6 +765,12 @@ choices, so they are the owner's; recommendations are given so a one-line answer
   `realm-management` roles. _Recommend:_ a new dedicated client, `infinite-ai-provisioner`, whose service account has only
   `manage-users`, `query-users` and `view-users` (nothing realm-wide), secret `KEYCLOAK_PROVISIONER_CLIENT_SECRET`. Widening the
   worker instead would give the model-facing worker process the power to mint identities.
+  **Decision (a), 2026-11-26, the owner:** dedicated provisioner client (`infinite-ai-provisioner`), as recommended; the worker's service
+  account is not widened. This matches what Stage 139 already built (slice 7b: the client, its realm config and the drift guard in
+  `packages/policy/test/keycloak-realm-provisioner.spec.ts`), so no code changes. Still to do, none of it verifiable from this repository:
+  hold `KEYCLOAK_PROVISIONER_CLIENT_SECRET` in AWS Secrets Manager in production, rotate it, keep the Admin API reachable from the
+  application only, and alert on any realm-role mapping to a platform role (see the residual risk below). Nothing was run against a
+  real Keycloak (slice 7e). (b), (c) and (d) remain open.
 - **(b) Failure semantics.** The Admin API call cannot share the database transaction. _Recommend:_ commit first, then call; record
   `idp_state` (PENDING / SYNCED / FAILED) on the row so a failure is visible and an administrator can retry. This needs a migration.
   The alternative (call first, then commit) can leave a Keycloak user that the database has never heard of.
