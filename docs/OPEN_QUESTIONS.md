@@ -924,7 +924,9 @@ would come from. Until then no guardian may be given access (guardian access is 
 Audit R07 / T17. The job log of CD run `45483184887` (24 November) shows the workflow passed its own "role ARN is set" check and AWS then answered `Not authorized to perform
 sts:AssumeRoleWithWebIdentity` on all 12 attempts; runs `503` and `507` also failed (logs not read). AWS gives that same message for a role that does not exist, a wrong role, or a trust
 policy that does not match, so the cause cannot be known from here. **Needs a human with access to the AWS project:** work the six ordered checks in `docs/RUNBOOKS/cd-deploy-role-failure.md`
-(read-only first), then record which one was true. Until then nothing deploys and no staging environment can be called working.
+(read-only first), then record which one was true. Until then nothing deploys and no staging environment can be called working. **Added 2026-11-26:** the `Terraform plan` job
+fails with `Missing repository variables: AWS_PLAN_ROLE_ARN` and lists only that one, so the bootstrap outputs `TF_STATE_BUCKET` and `TF_LOCK_TABLE` are set; the bootstrap was probably applied
+and only partly wired into GitHub. The Terraform workflow has been red on its last 7 runs (since 13 November), including pushes to `main`. Set `AWS_PLAN_ROLE_ARN` from `terraform output github_plan_role_arn`.
 
 ### OQ-058 — decisions and a hazard found while writing the MFA verification runbook · 2026-11-26 · **items 1 and 2 done (Stage 147)**
 

@@ -16,6 +16,13 @@ deployed, and the two later jobs are skipped. Every merge to `main` produces a r
 action gave up. Runs `503` and `507` also ended in `failure`; I did not read their logs. Other recent CD runs are `skipped`, which means the
 workflow's `if` condition was false for them; I did not establish why.
 
+**A second clue (2026-11-26, from the `Terraform plan` job on PR #238).** That job stops with `Missing repository variables: AWS_PLAN_ROLE_ARN`, and lists
+**only** that one. So `TF_STATE_BUCKET`, `TF_LOCK_TABLE` and the two email variables **are** set. The first two are outputs of the same `infra/terraform/bootstrap`
+that creates the deploy and plan roles, which suggests the bootstrap **was applied at some point** and its outputs were only partly copied into GitHub (the plan
+role's ARN never was). That makes row 1 below (never applied) less likely than rows 2 and 3, but it does not prove the bucket or roles still exist in AWS: a
+variable being set says nothing about the AWS side. The Terraform workflow has failed on every one of its last 7 runs since 13 November, including two pushes
+to `main`; I read the log of only the latest.
+
 **What that proves and does not.** It proves the variable is set and AWS refused the token. It does **not** say why. AWS returns this same
 message for several different causes, including a role that does not exist. Work the causes in the order below; do not guess.
 
