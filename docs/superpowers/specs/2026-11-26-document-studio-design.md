@@ -66,11 +66,11 @@ Brain can recall, without anyone being able to claim an approval that did not ha
 
 ## Approaches considered
 
-| | Approach | Trade-off | Outcome |
-|---|---|---|---|
-| **A** | Infinite-AI is an **operator tenant**; new tenant-owned tables; studio at `/platform/library`; files generated on demand from block JSON | Needs one operator-tenant row and a docx/xlsx dependency | **Chosen** (operator picked A) |
-| B | New platform-scoped table class outside tenancy | First exemption in the isolation proof; second query path | Rejected |
-| C | Extend the Widget Studio pattern with no database | Nothing persists, so signatures would be lost | Rejected |
+|       | Approach                                                                                                                                 | Trade-off                                                 | Outcome                        |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------ |
+| **A** | Infinite-AI is an **operator tenant**; new tenant-owned tables; studio at `/platform/library`; files generated on demand from block JSON | Needs one operator-tenant row and a docx/xlsx dependency  | **Chosen** (operator picked A) |
+| B     | New platform-scoped table class outside tenancy                                                                                          | First exemption in the isolation proof; second query path | Rejected                       |
+| C     | Extend the Widget Studio pattern with no database                                                                                        | Nothing persists, so signatures would be lost             | Rejected                       |
 
 ## Design
 
@@ -81,12 +81,12 @@ Brain can recall, without anyone being able to claim an approval that did not ha
   `source_manifest_sha256`.
 - `library_revision` — append-only per document: `revision_no`, `content_json` (the blocks),
   `content_sha256` (hash of canonical JSON), `status` (`DRAFT | REVIEWED | COUNTERSIGNED |
-  RATIFIED`), `edited_by`, `edit_reason`, `parent_revision_id`, optional `original_xlsx`
+RATIFIED`), `edited_by`, `edit_reason`, `parent_revision_id`, optional `original_xlsx`
   reference (see "Workbooks"). Revision 1 is the import; its hash must match the manifest's
   `.json` sha256.
 - `library_signature` — **append-only** (trigger refuses UPDATE/DELETE; listed in
   `APPEND_ONLY_TABLES`): `revision_id`, `content_sha256`, `kind (REVIEW | COUNTERSIGN |
-  RATIFY)`, `signer_actor_id`, `reason`, `attestation` (for "Needs review" documents),
+RATIFY)`, `signer_actor_id`, `reason`, `attestation` (for "Needs review" documents),
   `signed_at`.
 - `library_ingest` — one row per Brain submission: `revision_id`, `content_sha256`,
   `brain_write_candidate_id`, `actor_id`, `created_at`. Unique on `(revision_id)` so Ingest
