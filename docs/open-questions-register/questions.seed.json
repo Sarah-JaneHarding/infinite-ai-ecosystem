@@ -132,6 +132,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "resolved",
+        "text": "Decided 2026-11-26 by the owner: an operator sends the first sign-in link by hand for the pilot, as recommended. No SMTP on Keycloak yet; that is a later decision once a transactional mail provider is chosen. No code changes. Not yet run against a real Keycloak (slice 7e)."
       }
     ],
     "id": "OQ-048d",
@@ -147,13 +152,19 @@
     "recommendedIndex": 0,
     "source": "docs/OPEN_QUESTIONS.md · OQ-048",
     "stage": "Provisioning 7",
-    "status": "open",
+    "status": "resolved",
     "suggestions": [
       "An operator sends the first sign-in link by hand for the pilot (already allowed in section 5 of the provisioning design).",
       "Configure SMTP on Keycloak now and test delivery."
     ],
     "title": "How do pilot users receive their first sign-in link?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": ["Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-048 (d)."],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: an operator sends the first sign-in link by hand for the pilot, as recommended. No SMTP on Keycloak yet; that is a later decision once a transactional mail provider is chosen. No code changes. Not yet run against a real Keycloak (slice 7e).",
+      "verdict": "accepted"
+    }
   },
   {
     "blocks": "Serving the 80 widgets to signed-in staff",

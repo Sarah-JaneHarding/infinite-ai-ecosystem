@@ -786,6 +786,10 @@ choices, so they are the owner's; recommendations are given so a one-line answer
 - **(d) Email delivery.** `execute-actions-email` needs SMTP configured on Keycloak. OQ-021 names a mailbox for dunning, not for
   Keycloak, and I have not verified that Keycloak can use it. _Recommend:_ for the pilot, an operator sends the first sign-in
   link by hand (as §5 already allows for three schools), and SMTP is a separate, later decision.
+  **Decision (d), 2026-11-26, the owner:** an operator sends the first sign-in link by hand for the pilot, as recommended. No SMTP is
+  configured on Keycloak. No code changes. SMTP remains a later decision, to be raised once a transactional mail provider is chosen;
+  until then `execute-actions-email` will not deliver, and the operator runbook must say how the link is sent. With (a) to (d) decided,
+  OQ-048 is resolved as a decision; slice 7e (verification against a running Keycloak 26) is still outstanding.
 
 **Residual risk of (a), stated plainly.** A dedicated client limits the blast radius to identity management, but `manage-users` can map _any_
 realm role to a user — including `platform_admin`. The application's client refuses to (only school-staff roles can be mirrored, tested), but that
