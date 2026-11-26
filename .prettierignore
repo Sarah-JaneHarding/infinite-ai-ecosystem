@@ -16,3 +16,7 @@ apps/web/public/widgets/
 
 # Browser-side widget source and its Python test drivers.
 tools/widget-studio/
+
+# Supplied document library: vendor-generated data, committed byte-for-byte so its manifest
+# hashes keep matching. Not formatted by hand.
+docs/library/

@@ -916,3 +916,21 @@ SBST, HoD, SMT, district and run-inspector pages had the same kind of content re
 
 **Needs a human:** confirm that it should be treated the same way (remove the notices and say nothing real is shown yet), or say where genuine school notices
 would come from. Until then no guardian may be given access (guardian access is switched off in the pilot scope in any case).
+
+### OQ-057 — the Document Studio needs an operator tenant and platform staff accounts · 2026-11-26
+
+The Document Studio (review, edit, export, countersign, ratify and ingest the 120 library documents into the Brain) is used by Infinite-AI platform staff, not by a school. The platform has no tenant that represents the operator itself and no account type for its own staff; every account today belongs to a school tenant.
+
+**Needs a human:** decide whether staff sign in under a dedicated operator tenant, and who creates and removes those accounts. **Why it blocks:** signatures and ingestion must be attributed to a named person in a tenant, and library documents hold no learner data, so which tenant owns them is a design choice, not a detail. **Built meanwhile:** the contracts and the committed library data only; nothing that signs or ingests is wired to an identity.
+
+### OQ-058 — who may ratify "Needs review" documents · 2026-11-26
+
+65 of the 120 library documents carry a `review` note in the manifest naming the specialist who must see them (for example "a South African attorney"); 55 carry none. The Studio's last step, ratification, is what lets a document into the Brain.
+
+**Needs a human:** say who may ratify a document whose manifest `review` is set (the named professional, a named staff role, or the founder on their written advice), and whether the 55 documents without one need a different rule. **Why it blocks:** ratification is a human approval that cannot be bypassed, and guessing the approver would invent a legal sign-off. **Built meanwhile:** the signature kinds (`REVIEW`, `COUNTERSIGN`, `RATIFY`) and a refusal reason on every action that is not yet allowed; no rule decides who is eligible.
+
+### OQ-059 — how long revisions and signatures are kept · 2026-11-26
+
+Every edit to a library document is a new revision and every sign-off is an append-only signature naming the revision hash. Nothing in `docs/RETENTION_SCHEDULE_TEMPLATE.md` covers these records, and they can name staff and, in attestations, their roles.
+
+**Needs a human:** set a retention period for superseded revisions and for signatures (and whether a withdrawn staff member's name must be removed). **Why it blocks:** retention periods are a legal determination and the repository ships none. **Built meanwhile:** revisions and signatures are designed to be kept indefinitely, with no deletion path, until this is answered.

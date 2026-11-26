@@ -755,4 +755,6 @@ export {
 
 export { mapSubjectToCategory } from './curriculum/subject-mapper.js';
 
+export * from './library/index.js';
+
 export const PACKAGE_NAME = '@infinite-ai/contracts' as const;

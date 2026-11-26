@@ -1,0 +1,4451 @@
+{
+  "count": 120,
+  "items": [
+    {
+      "id": "lib-msa",
+      "title": "Master Services Agreement (school)",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "contract",
+      "review": "a South African attorney",
+      "law": [
+        "Consumer Protection Act 68 of 2008",
+        "Electronic Communications and Transactions Act 25 of 2002",
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-msa.html",
+          "sha256": "628d6a2d3da4ecf035dfd8b411981a5c0d1f730f5ffb7f7896d4bd3d288ee28d",
+          "bytes": 6057
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-msa.md",
+          "sha256": "989d09196d904aa91819c4a08f30185d190d117cb00be096e929b3f97c360929",
+          "bytes": 3827
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-msa.json",
+          "sha256": "6f84605e2311efbb7002221683e46e722daf05e847145d1af47c3c32025a2c4a",
+          "bytes": 6739
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-msa.docx",
+          "sha256": "590fa9ea1a849c04a0efd6cb7270bdc0d501bb2c48915b8e0d88a7351b0286cb",
+          "bytes": 12033
+        }
+      ]
+    },
+    {
+      "id": "lib-order-form",
+      "title": "Order Form",
+      "group": "customer",
+      "dept": "sales",
+      "kind": "contract",
+      "review": "a South African attorney",
+      "law": [
+        "Consumer Protection Act 68 of 2008"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-order-form.html",
+          "sha256": "7842c736f5ce5160a8c889f7c4f9dc9c1277ea0afc7ffbebebe70ff4a9507367",
+          "bytes": 3958
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-order-form.md",
+          "sha256": "062b4bc5871ac60eba12a04e1efed96bee62a9eff244934878b8147c28e3c220",
+          "bytes": 1771
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-order-form.json",
+          "sha256": "2f1ab2185fd59c38ae9d4937311dba4f0aa104bda02e7fdfa10486d4ad5f34ae",
+          "bytes": 3569
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-order-form.docx",
+          "sha256": "1d24d28e4af1034a38412fb8fead6577ef8696cdcd8d85998f6069d98c541136",
+          "bytes": 10945
+        }
+      ]
+    },
+    {
+      "id": "lib-dpa",
+      "title": "Data Processing Agreement (operator agreement)",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "contract",
+      "review": "a South African attorney",
+      "law": [
+        "POPIA (Act 4 of 2013) sections 20, 21 and 72",
+        "POPIA (Act 4 of 2013) section 34 (children)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-dpa.html",
+          "sha256": "4af3b50ed0bcb4ef1ab1d2ceae5c8577b28f629540434ecfeeafcafdfbf6e215",
+          "bytes": 5390
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-dpa.md",
+          "sha256": "d19eb568764e5c07f1056cd2c2353f8513afa835a3e81e12c868e90cef95e52c",
+          "bytes": 3107
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-dpa.json",
+          "sha256": "000d995c3d8b9fc5bf53c56abd8f162d123eaabf641bb8b85e7e1fcf119bd168",
+          "bytes": 5691
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-dpa.docx",
+          "sha256": "9d16822b58d8cc659d0c0cf487cfeda58cb03de175663932e8db4cd34cee48f7",
+          "bytes": 11556
+        }
+      ]
+    },
+    {
+      "id": "lib-sla",
+      "title": "Service Level Agreement",
+      "group": "customer",
+      "dept": "support",
+      "kind": "contract",
+      "review": "a South African attorney",
+      "law": [
+        "Consumer Protection Act 68 of 2008"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "support/lib-sla.html",
+          "sha256": "37aa23a9a1c39bce10c3362db2edfad91cffaa604480691450f512322b8db752",
+          "bytes": 3882
+        },
+        {
+          "ext": "md",
+          "path": "support/lib-sla.md",
+          "sha256": "02ed0a85fcbf34b37e47e3a7a83883a27231e02531c8f747c391dba54e216aa0",
+          "bytes": 1794
+        },
+        {
+          "ext": "json",
+          "path": "support/lib-sla.json",
+          "sha256": "de401d0beb51b6548b26d7f04f2e480e787ce3f0e8e22dc782817a588ace61b4",
+          "bytes": 3366
+        },
+        {
+          "ext": "docx",
+          "path": "support/lib-sla.docx",
+          "sha256": "9fe778c26c0f56b58fe5bce14a9cafaa3c1fcb3ab21d00677ecb49cc51f55f2a",
+          "bytes": 10985
+        }
+      ]
+    },
+    {
+      "id": "lib-pilot-agreement",
+      "title": "Pilot Agreement",
+      "group": "customer",
+      "dept": "sales",
+      "kind": "contract",
+      "review": "a South African attorney",
+      "law": [
+        "POPIA (Act 4 of 2013)",
+        "Consumer Protection Act 68 of 2008"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-pilot-agreement.html",
+          "sha256": "959a61527c216bb4b0604c07c8e571d6a460ae8ec869d40f9570ddf6be7da50b",
+          "bytes": 3663
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-pilot-agreement.md",
+          "sha256": "6143b9de25b17af43ac3933c31c2f9e43cc2c39cde16d83912e4509babcdc63e",
+          "bytes": 1634
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-pilot-agreement.json",
+          "sha256": "0f2d8168a455a5235597071ce87f7767650c4fd2c8abd0413f150240f26b74bc",
+          "bytes": 3288
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-pilot-agreement.docx",
+          "sha256": "d943b7bbd84e952b27e029bcc59f85b378a88cfcc328532846798cae9a7b1493",
+          "bytes": 10912
+        }
+      ]
+    },
+    {
+      "id": "lib-aup",
+      "title": "Acceptable Use Policy (platform users)",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "policy",
+      "review": "a South African attorney",
+      "law": [
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-aup.html",
+          "sha256": "993fb500cdc1cb24318fdd13c5128a6402e0ef51c917877a1f61853286b33ea7",
+          "bytes": 3268
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-aup.md",
+          "sha256": "9181d5762bf0ebd34379b9b35f66c16e976b74fdc8bd42bd950598bf70a2d583",
+          "bytes": 1370
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-aup.json",
+          "sha256": "52cdf0b1d94a8f348791a1a02783df1acb4bd1b77ae85bd468b7865c458a4d00",
+          "bytes": 2313
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-aup.docx",
+          "sha256": "9e8113c7d270b4a68ef786e7ae4539552f0f0d8243a390e7ae271abdc0acfb04",
+          "bytes": 10724
+        }
+      ]
+    },
+    {
+      "id": "lib-terms-of-use",
+      "title": "Website and Platform Terms of Use",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "contract",
+      "review": "a South African attorney",
+      "law": [
+        "Electronic Communications and Transactions Act 25 of 2002",
+        "Consumer Protection Act 68 of 2008",
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-terms-of-use.html",
+          "sha256": "32d789bbd1d86d2f5cb57bf903286a875972c5cdd169db3a7269cc1b7f9385d0",
+          "bytes": 3205
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-terms-of-use.md",
+          "sha256": "c5230153d3657d4f6f87e17d7dd007a97dde85fbaf428741665f951db2d4a831",
+          "bytes": 1318
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-terms-of-use.json",
+          "sha256": "f4d74197abb7a573db941462acdcc4bbb3597dc6e2eb481786c95c1fc841921e",
+          "bytes": 2693
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-terms-of-use.docx",
+          "sha256": "8b38e4a36d9cc2069ba19e61f0abf2f497fe35ff770a53646b31a90c039662f6",
+          "bytes": 10652
+        }
+      ]
+    },
+    {
+      "id": "lib-nda",
+      "title": "Mutual Non-Disclosure Agreement",
+      "group": "business",
+      "dept": "legal",
+      "kind": "contract",
+      "review": "a South African attorney",
+      "law": [
+        "Common law of contract"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-nda.html",
+          "sha256": "fa9b1f3e4f8d9551e8109a5aa9cdeba9645d385b97701dca3c7c2c21a61c049e",
+          "bytes": 3279
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-nda.md",
+          "sha256": "4de943c7d1818425829953893230d9c0fd2a790bcb47662ebdbfc89955a2f54a",
+          "bytes": 1253
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-nda.json",
+          "sha256": "de9dba852ce36e678de6032be6c2014a177b2767f28ef02921fb7c44b99e8c2a",
+          "bytes": 2828
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-nda.docx",
+          "sha256": "0bf1fcf04630cd792b8c8605dc1f12f13a5f9df5a49e21be2fd451462b52df36",
+          "bytes": 10710
+        }
+      ]
+    },
+    {
+      "id": "lib-partner-agreement",
+      "title": "Partner and Referral Agreement",
+      "group": "business",
+      "dept": "sales",
+      "kind": "contract",
+      "review": "a South African attorney",
+      "law": [
+        "Consumer Protection Act 68 of 2008",
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-partner-agreement.html",
+          "sha256": "54c9b603526cbfbc32d20eb6d5420ef14f78cf9b89616a53e4e930973b6efb85",
+          "bytes": 3402
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-partner-agreement.md",
+          "sha256": "aee58b335e8ba03eeae3e45d385b81ffda2d432384540b390c29a42f6b1a0334",
+          "bytes": 1387
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-partner-agreement.json",
+          "sha256": "d420bee740b72f2b156abfd72aa0e0f52668fde7223113638c0bdf06cc6b1d8d",
+          "bytes": 2854
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-partner-agreement.docx",
+          "sha256": "410ae0cb0794c4a4c8a8a7d8fb647e0f902bdb73aebed2e940bf43f8d751be77",
+          "bytes": 10816
+        }
+      ]
+    },
+    {
+      "id": "lib-variation",
+      "title": "Contract Variation Form",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "form",
+      "review": "a South African attorney",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-variation.html",
+          "sha256": "ff009bf4b02726ed3054ae623ad26c07d20a091aa2ba6c197d2dfe67d108d815",
+          "bytes": 2971
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-variation.md",
+          "sha256": "6bf4ee0e304fc9074eef29db8e3ed43e7c1c6351c2657f62ceca76d92215946e",
+          "bytes": 868
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-variation.json",
+          "sha256": "e078cee7ce59817419c82bd655360ba58a4b6f4ba0ea000cc3ea50cbaa8e47a8",
+          "bytes": 2127
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-variation.docx",
+          "sha256": "2271949d09891df288e1164acac06c0b389886f386af54e2dcbf65b7bdeb9874",
+          "bytes": 10522
+        }
+      ]
+    },
+    {
+      "id": "lib-cancellation-notice",
+      "title": "Cancellation and Non-Renewal Notice",
+      "group": "customer",
+      "dept": "success",
+      "kind": "letter",
+      "review": "a South African attorney",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-cancellation-notice.html",
+          "sha256": "52d5c677d30965e253454e28ce6593fa338512724e9e29eb604cc472543ee03f",
+          "bytes": 2821
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-cancellation-notice.md",
+          "sha256": "50934272f35f75c498ba6136da2d6bc8b249a933cac01324644f6fed20a2e050",
+          "bytes": 990
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-cancellation-notice.json",
+          "sha256": "6bb2fa424dba235d3ffa7a1647148a85d55f9ddd03f78d83bd3b99396f45f885",
+          "bytes": 1620
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-cancellation-notice.docx",
+          "sha256": "044360687ee81651e3174376b6eaa70f0b8d77ec9c4e24b019f141fdea9a918b",
+          "bytes": 10470
+        }
+      ]
+    },
+    {
+      "id": "lib-data-return-erasure",
+      "title": "Data Return and Erasure Certificate",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "form",
+      "review": "a South African attorney",
+      "law": [
+        "POPIA (Act 4 of 2013) section 14 (retention) and section 21"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-data-return-erasure.html",
+          "sha256": "82d9c009488e424973c7e610d70524727d4421d39c428cf86d59eb48ccc099a1",
+          "bytes": 3591
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-data-return-erasure.md",
+          "sha256": "1cabf449be964ede1ec211eb5e7d2f547fa9c18a3bd833d083ec574df7dc6391",
+          "bytes": 1364
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-data-return-erasure.json",
+          "sha256": "b248fd121b6de71e09d53100d4058f5d43e322120c39d03b41efc553b1d6a4b9",
+          "bytes": 2823
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-data-return-erasure.docx",
+          "sha256": "f86a0883e1bbc6c66f20f40e1e6244235b5ee6d33bbe31531eb94b9bb42ea3ce",
+          "bytes": 10782
+        }
+      ]
+    },
+    {
+      "id": "lib-privacy-notice",
+      "title": "Privacy Notice (for parents and educators)",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "notice",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) sections 18 and 34"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-privacy-notice.html",
+          "sha256": "1f9bafe43599867c6092b17c21d6e7e383027c8f7e34bf298846ec2568096a64",
+          "bytes": 3776
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-privacy-notice.md",
+          "sha256": "da7eb2c5684ae395c4c4e59a34e167d05df7232e48cbe92ee45fc6794e35a4f0",
+          "bytes": 1753
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-privacy-notice.json",
+          "sha256": "a45f77f82c701d2d97d8bb84baeca07988596ec40924239b99c2720e78b67de9",
+          "bytes": 3051
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-privacy-notice.docx",
+          "sha256": "7cca0032718b74a3840afb0edd8d6766438514b8ba9f87325f6361ccdcb5b295",
+          "bytes": 11001
+        }
+      ]
+    },
+    {
+      "id": "lib-parent-info-letter",
+      "title": "Parent Information Letter and Consent",
+      "group": "customer",
+      "dept": "success",
+      "kind": "letter",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) section 35 (children, where consent is the ground)",
+        "Children’s Act 38 of 2005"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-parent-info-letter.html",
+          "sha256": "1f42d5198c2d8b66f17076adb0ba48fcc429553b8976b1f08ad3c96371c18b7c",
+          "bytes": 3689
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-parent-info-letter.md",
+          "sha256": "ceb51d9e3ff0a810357b7ef7e3195225c3442bbf06e14f586d415db02693bb08",
+          "bytes": 1662
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-parent-info-letter.json",
+          "sha256": "7f3e89fcf9df1370f027a857e71ebe23f73a1024d0c4b9b1f1584c50048eb346",
+          "bytes": 2696
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-parent-info-letter.docx",
+          "sha256": "754f518311ac416256b4101265332837a028efb2692e4be1d11ecaad17804735",
+          "bytes": 10972
+        }
+      ]
+    },
+    {
+      "id": "lib-consent-withdrawal",
+      "title": "Consent Withdrawal Form",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "form",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) section 11"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-consent-withdrawal.html",
+          "sha256": "b601f7badf8fb582bed7fdcf43d336cdd5d4cabbe0cb400ad75380384f40b245",
+          "bytes": 2925
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-consent-withdrawal.md",
+          "sha256": "9fd6827f90f17e9cedf47251ddae5a53f27679401a0e5a291e4e75f4ed666c03",
+          "bytes": 947
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-consent-withdrawal.json",
+          "sha256": "bd7b68464ed5956ef8f8b313d99470114d9c7f5feb88bc10c9ed4708fa9a2ec9",
+          "bytes": 1895
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-consent-withdrawal.docx",
+          "sha256": "8cc3ff8edbfabfe2de2127a24c33c1095b6419331628ad66dc98a1d88b4d9f18",
+          "bytes": 10550
+        }
+      ]
+    },
+    {
+      "id": "lib-dsr-form",
+      "title": "Data Subject Request Form",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "form",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) sections 23 to 25",
+        "PAIA (Act 2 of 2000)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-dsr-form.html",
+          "sha256": "cfab80636d1217b8fce89fe4b3a19d7762c7bf1e91473ec99f05d0ac3adcbf22",
+          "bytes": 3153
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-dsr-form.md",
+          "sha256": "a8136932c9287b6ca9b0ee712d51d55728bcf307f325053371e515580454f0eb",
+          "bytes": 1140
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-dsr-form.json",
+          "sha256": "2833f9365311c28bf8522a6938c079edd0de45700508ad28ad4f6d46003c91a6",
+          "bytes": 2229
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-dsr-form.docx",
+          "sha256": "23ce0729b4318357edb11cdf59e344d1f144783af8d79d344f60068d948594f2",
+          "bytes": 10671
+        }
+      ]
+    },
+    {
+      "id": "lib-dsr-sop",
+      "title": "Data Subject Request SOP",
+      "group": "business",
+      "dept": "legal",
+      "kind": "sop",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) sections 23 to 25"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-dsr-sop.html",
+          "sha256": "675bf23144fd15bc59db5b31feaf71d275bb37cbf73c42df1783e57aa286689b",
+          "bytes": 3666
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-dsr-sop.md",
+          "sha256": "edb1d5be89cea09f92236ca50f44a1a56dc3cc6318c19bbcca541615e66a4418",
+          "bytes": 1505
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-dsr-sop.json",
+          "sha256": "b396a925aba6303d7c825d427e5f1da778c9173ee75c2b41cc9ef5539c136fcf",
+          "bytes": 2871
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-dsr-sop.docx",
+          "sha256": "89cd3ee93798d0cf3f6417e89f06d13c972eec246b081d127c412176520ab703",
+          "bytes": 10923
+        }
+      ]
+    },
+    {
+      "id": "lib-breach-sop",
+      "title": "Security Compromise (Breach) Response SOP",
+      "group": "business",
+      "dept": "security",
+      "kind": "sop",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) section 22"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-breach-sop.html",
+          "sha256": "d838c7d259f0fe2fac2af49d8f8198d9e7c039670a10ac1f19b71070154436a6",
+          "bytes": 3799
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-breach-sop.md",
+          "sha256": "b4d1a35ca226e3da9e7ced6a235f8582ff3621fa145f31100064edf21e46483e",
+          "bytes": 1732
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-breach-sop.json",
+          "sha256": "edef876a0ed0b6c11cd59b9887d007df6c54f863aac2fa1833ac7db035ed1479",
+          "bytes": 2995
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-breach-sop.docx",
+          "sha256": "004c219567c44f48529d7770b5198e280945141825eb67e249e1f2f497ab0b33",
+          "bytes": 11053
+        }
+      ]
+    },
+    {
+      "id": "lib-breach-notice-school",
+      "title": "Breach Notice to a School",
+      "group": "customer",
+      "dept": "security",
+      "kind": "notice",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) section 21(2)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-breach-notice-school.html",
+          "sha256": "b7d83be0ead2adcb4defdad4ed2578901edd1f82be8181e0908e09642636bb29",
+          "bytes": 3085
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-breach-notice-school.md",
+          "sha256": "9775614fb5c19bad0a0c956c3a02bcec48bc8b1a0bfbe145e7eb66be46349372",
+          "bytes": 1102
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-breach-notice-school.json",
+          "sha256": "ae31980aea4b4c39dc222b7e260e163a7b0e6ffa6beb06809155a25b5602059d",
+          "bytes": 1942
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-breach-notice-school.docx",
+          "sha256": "d1491ddf795f25dc1c710ca68c35c8890dab6fff7e3dc286c662241715febbb4",
+          "bytes": 10619
+        }
+      ]
+    },
+    {
+      "id": "lib-breach-notice-regulator",
+      "title": "Breach Notice to the Information Regulator",
+      "group": "business",
+      "dept": "legal",
+      "kind": "notice",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) section 22(2)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-breach-notice-regulator.html",
+          "sha256": "91084c77785e055173c46eb01a358c9b10f07391885fbf7a42cb156bdd3957ca",
+          "bytes": 3070
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-breach-notice-regulator.md",
+          "sha256": "473dbdcb73fde2aaea6d829df75db3861a0e48471f00cdf462d164dfd11cd5dd",
+          "bytes": 1081
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-breach-notice-regulator.json",
+          "sha256": "bebedf732dc98d06181c21635283ec0a991ef61c9847245ca9f3ff41e5f62af4",
+          "bytes": 1851
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-breach-notice-regulator.docx",
+          "sha256": "57496f1061bf5699ea0a0f51b12f54e4daccbc009a7bb2f0e87c7aa8af26ec62",
+          "bytes": 10620
+        }
+      ]
+    },
+    {
+      "id": "lib-breach-notice-subjects",
+      "title": "Breach Notice to Affected People",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "notice",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) section 22(4)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-breach-notice-subjects.html",
+          "sha256": "855d788ea821e69c692a4103d3bd673d0332246ddbd15cd1f6e3c0c36fd64cd4",
+          "bytes": 2738
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-breach-notice-subjects.md",
+          "sha256": "be956f694ef6c1976fd8e752227c0f9bd4e6018c723405ca9a686f6036a1fd12",
+          "bytes": 911
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-breach-notice-subjects.json",
+          "sha256": "863ba79aa1dc6c56483c33da3eb0058034bd632e20cb5c595119d1d21353f9d7",
+          "bytes": 1445
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-breach-notice-subjects.docx",
+          "sha256": "f50b78bbee2d7e8a146d17014bbe7c6aea31a047108bee45b8b09d0c3290f819",
+          "bytes": 10442
+        }
+      ]
+    },
+    {
+      "id": "lib-info-officer-appointment",
+      "title": "Information Officer Appointment Letter",
+      "group": "business",
+      "dept": "legal",
+      "kind": "letter",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) sections 55 and 56"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-info-officer-appointment.html",
+          "sha256": "5cb38f6fa2f67da6d3d845ab47bd2a866fa7a45313ac27c6145f2aead15429c4",
+          "bytes": 2934
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-info-officer-appointment.md",
+          "sha256": "d9dfee2f4c89a694307116b1eca31265832ca1b624e7fcdb0d01e51c5d9a1295",
+          "bytes": 1054
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-info-officer-appointment.json",
+          "sha256": "35115eb1fc2b1b3554d305830611fde64b82236b4be67197f84dff033525482d",
+          "bytes": 1845
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-info-officer-appointment.docx",
+          "sha256": "e078d696a2d95657b95e9bbed6aa53c5ce9d3c07b70af16c62f49e041d5a7d42",
+          "bytes": 10487
+        }
+      ]
+    },
+    {
+      "id": "lib-paia-manual",
+      "title": "PAIA Manual Outline",
+      "group": "business",
+      "dept": "legal",
+      "kind": "policy",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "PAIA (Act 2 of 2000) section 51"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-paia-manual.html",
+          "sha256": "400c66841d30f52a7182ab4f719e6e87c5261e23e4fd551885d2b4b067fecf28",
+          "bytes": 3257
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-paia-manual.md",
+          "sha256": "d747e013946e209f164613772b0e933e56f222ddaf7781753787fb9d425f7bae",
+          "bytes": 1177
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-paia-manual.json",
+          "sha256": "4105145999e0ba94e414ea55fa9313d2580a1c136534f204392247e76461351e",
+          "bytes": 2212
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-paia-manual.docx",
+          "sha256": "28d05d54139a424fd188ebda7e1ad77af9770bcaa5a7e08d55d02f6bd45998b7",
+          "bytes": 10674
+        }
+      ]
+    },
+    {
+      "id": "lib-dpia",
+      "title": "Privacy Impact Assessment",
+      "group": "business",
+      "dept": "legal",
+      "kind": "template",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-dpia.html",
+          "sha256": "5d67459afc7779888a36127e1375228501ff5f90bdac0f3f0eb0935d48be0beb",
+          "bytes": 3178
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-dpia.md",
+          "sha256": "4b890b4caf88474725ed82276abaaf022aabcaffc86e1e33a53d7bf5d694f9b5",
+          "bytes": 1111
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-dpia.json",
+          "sha256": "6387f1478dce33387fa8b41be20b7513ec5b4471d38cd763e666b142a321654d",
+          "bytes": 2328
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-dpia.docx",
+          "sha256": "374c5592a205988b709487b4a8e9a7fb7871373f1e709f8161fe1084b09822b8",
+          "bytes": 10656
+        }
+      ]
+    },
+    {
+      "id": "lib-popia-checklist",
+      "title": "POPIA Compliance Checklist",
+      "group": "business",
+      "dept": "legal",
+      "kind": "checklist",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) chapter 3"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-popia-checklist.html",
+          "sha256": "03d511f5359f5362b31ccfcbff0166a26b5f824e04712fe4389c7910ad225c4f",
+          "bytes": 3151
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-popia-checklist.md",
+          "sha256": "33a62eeeadc37d652dab0b1d17270a11e5a383689f2376bba12fa10fd9ac1c51",
+          "bytes": 1288
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-popia-checklist.json",
+          "sha256": "bf5b4d3d917c27b983e33b529a9e77be8b08d8118e01a2113fcafe655f82c75d",
+          "bytes": 2423
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-popia-checklist.docx",
+          "sha256": "609bc2030998172c1176a829a9d0d5b38008689a690477a3be8e812ae0ef39b4",
+          "bytes": 10585
+        }
+      ]
+    },
+    {
+      "id": "lib-retention-policy",
+      "title": "Records Retention Policy",
+      "group": "business",
+      "dept": "legal",
+      "kind": "policy",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) section 14"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-retention-policy.html",
+          "sha256": "e2f8a8f8884d4c586d878c02baa25644106bbad576637d09f90986681fb82bdd",
+          "bytes": 3784
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-retention-policy.md",
+          "sha256": "1e03efdd3902f4a2f546ac2525eb0caa2729ed7d22ee69664696bfed6c675747",
+          "bytes": 1635
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-retention-policy.json",
+          "sha256": "7f7065ed75ac5086b14baebded1088e3d4106362dd6e8d1522676f0df1759947",
+          "bytes": 2888
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-retention-policy.docx",
+          "sha256": "ed48c96e8501cb8fe1733bb020058e063332c2c97c85f30d56e6b4b0edb33311",
+          "bytes": 10701
+        }
+      ]
+    },
+    {
+      "id": "lib-ai-use-policy",
+      "title": "AI Use Policy",
+      "group": "business",
+      "dept": "security",
+      "kind": "policy",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-ai-use-policy.html",
+          "sha256": "c2aca812de6cd33207e87fbf42f39e5450fe0af532d074c3c5503a7db3613c34",
+          "bytes": 3148
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-ai-use-policy.md",
+          "sha256": "21ad450f58b9a3f6bf12b07952e9d6b3c85c8cb7438704c1c3ebe006ad920e15",
+          "bytes": 1265
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-ai-use-policy.json",
+          "sha256": "9ee33cce5262dcd68890ec1d7cb2f3aa46c535428fdd27aa18582a0001906270",
+          "bytes": 2186
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-ai-use-policy.docx",
+          "sha256": "b339e13156b7a593c911dfbfcbe9eb2d1a32141d10249987ebbbe4c4e1f443ee",
+          "bytes": 10612
+        }
+      ]
+    },
+    {
+      "id": "lib-learner-data-policy",
+      "title": "Learner Data Policy",
+      "group": "business",
+      "dept": "legal",
+      "kind": "policy",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) section 34"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-learner-data-policy.html",
+          "sha256": "800ae7af0746b6bd2777c517e50b6342faf77c40497768e4a197ae813eaeeecb",
+          "bytes": 2699
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-learner-data-policy.md",
+          "sha256": "a0bbd50d9b6f942979c174c426be66e4dc59b98f8e8b4b70bb2301943929d2d0",
+          "bytes": 867
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-learner-data-policy.json",
+          "sha256": "f1594818cdba6055f8022e3f35911406532141e56204dc0f3eebde554813abcb",
+          "bytes": 1441
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-learner-data-policy.docx",
+          "sha256": "4280547e7900a75dcaff7cb809175cd405dee629cef46fbf302232adf20fabef",
+          "bytes": 10401
+        }
+      ]
+    },
+    {
+      "id": "lib-complaints-policy",
+      "title": "Complaints Policy and Form",
+      "group": "customer",
+      "dept": "support",
+      "kind": "policy",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "Consumer Protection Act 68 of 2008"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "support/lib-complaints-policy.html",
+          "sha256": "cdc5607a01a0dc37c47d3c1d8b6c3e80ec3154632495aa17de6dbc1be8123a90",
+          "bytes": 3002
+        },
+        {
+          "ext": "md",
+          "path": "support/lib-complaints-policy.md",
+          "sha256": "dae80433bdbabcde305d3921706bc89e138d7a3092ef2ef194ccd6ac001f70db",
+          "bytes": 1030
+        },
+        {
+          "ext": "json",
+          "path": "support/lib-complaints-policy.json",
+          "sha256": "7a873b7d9a6e4a568b40dc1a9cc30d5667eddfcd4ddbe5f1390b8b5ab1b212b3",
+          "bytes": 1838
+        },
+        {
+          "ext": "docx",
+          "path": "support/lib-complaints-policy.docx",
+          "sha256": "39333f93d3f29762f02f169b58098ac708d816dbc49e96d280f59bee85475c0a",
+          "bytes": 10603
+        }
+      ]
+    },
+    {
+      "id": "lib-safeguarding-sop",
+      "title": "Safeguarding Concern Handling (outline)",
+      "group": "customer",
+      "dept": "support",
+      "kind": "sop",
+      "review": "the school’s designated safeguarding lead and counsel",
+      "law": [
+        "Children’s Act 38 of 2005"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "support/lib-safeguarding-sop.html",
+          "sha256": "c53539e819a5fbd86504c8f8d1aa323f9f31b2d0b23577b532240fc610176846",
+          "bytes": 3242
+        },
+        {
+          "ext": "md",
+          "path": "support/lib-safeguarding-sop.md",
+          "sha256": "449927e55f6a856315acfa3b39fb508fdaf26b06aac316657659aded479ce812",
+          "bytes": 1289
+        },
+        {
+          "ext": "json",
+          "path": "support/lib-safeguarding-sop.json",
+          "sha256": "30ca5f9d365a60c297023002d4efecbb8363155764aa08ab0103574bfb19214f",
+          "bytes": 2064
+        },
+        {
+          "ext": "docx",
+          "path": "support/lib-safeguarding-sop.docx",
+          "sha256": "6d523f47ea6cd2f779be680dfc62fa1c297c09ffafea526708d99863cd8842c6",
+          "bytes": 10690
+        }
+      ]
+    },
+    {
+      "id": "lib-coi-declaration",
+      "title": "Conflict of Interest Declaration",
+      "group": "business",
+      "dept": "legal",
+      "kind": "form",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "Companies Act 71 of 2008 section 75"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-coi-declaration.html",
+          "sha256": "91c1465606fc3acfdf8dcdd468a0d85e12a1841382a1c940baf0f75e059720a5",
+          "bytes": 2663
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-coi-declaration.md",
+          "sha256": "68110126e75244d9d96186c9d961a1fd730bc80b8dd1ecf8f330de7cea6095ba",
+          "bytes": 723
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-coi-declaration.json",
+          "sha256": "fc8a0f001dc1bdd6f0dc5e66f468b42dfa5475fd8f5d483e71dd2e44c246826d",
+          "bytes": 1389
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-coi-declaration.docx",
+          "sha256": "d6e069cec42f42026fd2a9d0461b5083ed52a20f952cb3f42cae36c62b5b4efc",
+          "bytes": 10454
+        }
+      ]
+    },
+    {
+      "id": "lib-delegation-matrix",
+      "title": "Delegation of Authority Matrix",
+      "group": "business",
+      "dept": "executive",
+      "kind": "template",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "executive/lib-delegation-matrix.html",
+          "sha256": "2d91bb4b980e6039afb93935c5136f38914bab429d045a3ec4c8806b6998ad31",
+          "bytes": 2915
+        },
+        {
+          "ext": "md",
+          "path": "executive/lib-delegation-matrix.md",
+          "sha256": "751af9f73f0c9db3070263aa91a931110894c514ddd4b1b3967f3b2bc2ac2f53",
+          "bytes": 936
+        },
+        {
+          "ext": "json",
+          "path": "executive/lib-delegation-matrix.json",
+          "sha256": "c6bacc1a7d9c52878caed6f5adc90672f4a1c4df616ace4d1774c7a927e67137",
+          "bytes": 1678
+        },
+        {
+          "ext": "docx",
+          "path": "executive/lib-delegation-matrix.docx",
+          "sha256": "aac4528faf0a3d01c97a03f5101179fbc75ffd52ba9ec8663c2a702196c9af5b",
+          "bytes": 10505
+        }
+      ]
+    },
+    {
+      "id": "lib-board-resolution",
+      "title": "Written Resolution Template",
+      "group": "business",
+      "dept": "executive",
+      "kind": "template",
+      "review": "a South African attorney or the appointed Information Officer",
+      "law": [
+        "Companies Act 71 of 2008"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "executive/lib-board-resolution.html",
+          "sha256": "5f5b0767988c250e1ad289c9049a00c70b53b6398c009fbe4ee755507fd0eaf7",
+          "bytes": 2801
+        },
+        {
+          "ext": "md",
+          "path": "executive/lib-board-resolution.md",
+          "sha256": "8fa2a2c31b7411a888da84292a368f21e05dea59f9a3bc92a1ef7eebe78e5d7c",
+          "bytes": 835
+        },
+        {
+          "ext": "json",
+          "path": "executive/lib-board-resolution.json",
+          "sha256": "92629b7e491a789c58a13f9b0d123f3463a7cacdc2537248299fe47279462441",
+          "bytes": 1706
+        },
+        {
+          "ext": "docx",
+          "path": "executive/lib-board-resolution.docx",
+          "sha256": "d932e809d1232f36bcc91ed008539fafa9148e7d3ce0195f871320462cbabe7f",
+          "bytes": 10500
+        }
+      ]
+    },
+    {
+      "id": "lib-pricing-calculator",
+      "title": "School Quote Calculator (workbook)",
+      "group": "customer",
+      "dept": "sales",
+      "kind": "workbook",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-pricing-calculator.html",
+          "sha256": "6f8d00514bf96f4ce9ace90c097e889ded46e2bad7b5e509d18859341dbb98cd",
+          "bytes": 2640
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-pricing-calculator.md",
+          "sha256": "f3c50c9099c5627b98d43eaca41e7d9366098684dc84fd1d8b96b373a297196c",
+          "bytes": 817
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-pricing-calculator.json",
+          "sha256": "f357ea7c469c9f4a4631bf91ee402c1f577327e5b4b0fe1ec088986abf81b479",
+          "bytes": 1304
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-pricing-calculator.docx",
+          "sha256": "0984808b1c8a17c72372136b3b725b8305b7021453e66d989b3ccd6f1c8f245f",
+          "bytes": 10430
+        },
+        {
+          "ext": "xlsx",
+          "path": "sales/lib-pricing-calculator.xlsx",
+          "sha256": "bd097ed3fe1bc0675abd7c556acee412fbee4dd9d6cc04442274328c86148a38",
+          "bytes": 8581
+        }
+      ]
+    },
+    {
+      "id": "lib-tax-invoice",
+      "title": "Tax Invoice Template",
+      "group": "customer",
+      "dept": "finance",
+      "kind": "template",
+      "review": "a registered tax practitioner or the company’s accountant",
+      "law": [
+        "VAT Act 89 of 1991 section 20"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-tax-invoice.html",
+          "sha256": "500af23e8db1519dddcf61a1ee673ffd53874cac2300dce6d99da44c96671ec2",
+          "bytes": 3730
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-tax-invoice.md",
+          "sha256": "7f99c7fa468ad7b0da9ddb06b6d5d178e2a024267bc724e0e9487038149edfd1",
+          "bytes": 1588
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-tax-invoice.json",
+          "sha256": "652eb2099a4165910c37b678a30ce727b3fad72f24f3b2dca20008e5b72e548e",
+          "bytes": 2911
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-tax-invoice.docx",
+          "sha256": "d534d951c8476385720312ea3e81c0891a0a54a46472a2a49f455271bcf94ef4",
+          "bytes": 10860
+        }
+      ]
+    },
+    {
+      "id": "lib-credit-note",
+      "title": "Credit Note Template",
+      "group": "customer",
+      "dept": "finance",
+      "kind": "template",
+      "review": "a registered tax practitioner or the company’s accountant",
+      "law": [
+        "VAT Act 89 of 1991 section 21"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-credit-note.html",
+          "sha256": "5b8e2b426f6f9f77405695c1d1bd7b8a83ed08c894e2bf170a96cb9fb2340c57",
+          "bytes": 2914
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-credit-note.md",
+          "sha256": "d90fbd96664948557e610e81e48b1384cf7d48d469b6361e4c1cf5e0de487766",
+          "bytes": 925
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-credit-note.json",
+          "sha256": "1d7a45fe85d63e0bc6fc1caf7f1736de39048e012885a440b61efc5abd618f0a",
+          "bytes": 1864
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-credit-note.docx",
+          "sha256": "867c2cdd514b8915ef6351972f4fbcc052843e8d817cd86abe2503f079c69266",
+          "bytes": 10521
+        }
+      ]
+    },
+    {
+      "id": "lib-statement-of-account",
+      "title": "Statement of Account Template",
+      "group": "customer",
+      "dept": "finance",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-statement-of-account.html",
+          "sha256": "6c0d10e69ef977356a2ea5ebc3c11b91f0d77cc691b0e205caf2dd30cf27db28",
+          "bytes": 2883
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-statement-of-account.md",
+          "sha256": "db2230701dcc818c6a78841213c195bac1a639624b4ab732ecbb9e0266cf995a",
+          "bytes": 676
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-statement-of-account.json",
+          "sha256": "44c39e3de691a0ff2f2b1afc3bde203f52e53165ab360535b00f2d14b56fd638",
+          "bytes": 1920
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-statement-of-account.docx",
+          "sha256": "a06add6465a9b23ef36faa13370c87b84e560e54f880a3428ea396d950f64058",
+          "bytes": 10368
+        }
+      ]
+    },
+    {
+      "id": "lib-expense-claim",
+      "title": "Expense Claim Form",
+      "group": "business",
+      "dept": "finance",
+      "kind": "form",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-expense-claim.html",
+          "sha256": "a6bb530d25a0627fadfa7bdf4c15b00dd98183544beb8decfdb9df8e10603f36",
+          "bytes": 2821
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-expense-claim.md",
+          "sha256": "1260e7c5541a220cc45ab93a52723b0506872e329f053ae4047c9f278f37199f",
+          "bytes": 691
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-expense-claim.json",
+          "sha256": "b9b85aa148197e5447172d428233bdf1f91a847607a56b0ca0f60119e62bf675",
+          "bytes": 1866
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-expense-claim.docx",
+          "sha256": "ca475cda8cdc77084323ba4d6349dc018078768e323ebc6b0c1c2e93f5e55a0d",
+          "bytes": 10376
+        },
+        {
+          "ext": "xlsx",
+          "path": "finance/lib-expense-claim.xlsx",
+          "sha256": "096da297318d83988c32585a791fe09820dfdbe36eb82fcb046591d7f4023ac4",
+          "bytes": 8768
+        }
+      ]
+    },
+    {
+      "id": "lib-purchase-order",
+      "title": "Purchase Order Template",
+      "group": "business",
+      "dept": "procurement",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "procurement/lib-purchase-order.html",
+          "sha256": "76eac5bd44ae62775be8358a3a50b2a90dda9491a0eae888ca6d216c4a808195",
+          "bytes": 2624
+        },
+        {
+          "ext": "md",
+          "path": "procurement/lib-purchase-order.md",
+          "sha256": "33dc3cdccada38373cff9f2c286c6f530cc94f6a5d2edc28fb28688ab9a8102a",
+          "bytes": 618
+        },
+        {
+          "ext": "json",
+          "path": "procurement/lib-purchase-order.json",
+          "sha256": "4c64b4287371e7b1931d9518abd0f2c994b430927bbe36689735ede0984803bb",
+          "bytes": 1547
+        },
+        {
+          "ext": "docx",
+          "path": "procurement/lib-purchase-order.docx",
+          "sha256": "8ad92e33a3580e0702c8f6733af576bf81ed38db8d1e971f79bda5a8e5bf7e81",
+          "bytes": 10320
+        }
+      ]
+    },
+    {
+      "id": "lib-payment-requisition",
+      "title": "Payment Requisition",
+      "group": "business",
+      "dept": "finance",
+      "kind": "form",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-payment-requisition.html",
+          "sha256": "dffaf7cfb15cc46458198fd497400351db84a7a4a3be0dd00e42c7af40e8b75a",
+          "bytes": 2590
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-payment-requisition.md",
+          "sha256": "ae8663cba8eaae4ba890a99b1c7ef9a5d779676e8b14a7b8f245726bfa5b3c2d",
+          "bytes": 733
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-payment-requisition.json",
+          "sha256": "87c3d5b2498432378680a8d0433265b5a9b634b6c64af03c93b070742b958a2e",
+          "bytes": 1667
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-payment-requisition.docx",
+          "sha256": "d92a9d272b40c2a52a76092c7b57076daa01d8fcafe7a1ef3fd961c43f613b53",
+          "bytes": 10255
+        }
+      ]
+    },
+    {
+      "id": "lib-supplier-onboarding",
+      "title": "Supplier Onboarding Form",
+      "group": "business",
+      "dept": "procurement",
+      "kind": "form",
+      "review": "the Information Officer for the data-handling questions",
+      "law": [
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "procurement/lib-supplier-onboarding.html",
+          "sha256": "2413c19d4b9956652489282573275c3af344fba27c940c386fc98262ca758398",
+          "bytes": 2935
+        },
+        {
+          "ext": "md",
+          "path": "procurement/lib-supplier-onboarding.md",
+          "sha256": "7b112b35e88fac57ad92c96d4ae7afd0b4a76e66bf8a439336cd10553cc4902e",
+          "bytes": 958
+        },
+        {
+          "ext": "json",
+          "path": "procurement/lib-supplier-onboarding.json",
+          "sha256": "d50938fb1235e38a3521fb6c64535c0b6e8d0e9aa1753c32b5de9fe3d201149a",
+          "bytes": 1932
+        },
+        {
+          "ext": "docx",
+          "path": "procurement/lib-supplier-onboarding.docx",
+          "sha256": "0d896946cf3bad98bfce299713461d42a1d2f51c4ef4cafd36c5095e9987e606",
+          "bytes": 10593
+        }
+      ]
+    },
+    {
+      "id": "lib-month-end-sop",
+      "title": "Month-End Close SOP",
+      "group": "business",
+      "dept": "finance",
+      "kind": "sop",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-month-end-sop.html",
+          "sha256": "dc27b1519816b3c3316a491713635593a5af47ab30cfac118d3ee38c1f5b46ec",
+          "bytes": 2719
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-month-end-sop.md",
+          "sha256": "4cf2e08fe5dec81883f4d5659da8a2e60d4c82c6f1305499b56a1387ddb9242b",
+          "bytes": 851
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-month-end-sop.json",
+          "sha256": "39cc260f2c3ff08b0e765c3f8fd4e10813141a10a38a62cafa6d8c1523126368",
+          "bytes": 1793
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-month-end-sop.docx",
+          "sha256": "e72993732ec2fb0ca558e319387bd1900799c897c1eaa85a60ddf95d84696c40",
+          "bytes": 10334
+        }
+      ]
+    },
+    {
+      "id": "lib-collections-sop",
+      "title": "Collections SOP",
+      "group": "business",
+      "dept": "finance",
+      "kind": "sop",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-collections-sop.html",
+          "sha256": "b945c5dd431f51de643585f4733898ace05f54f6f314035fc6fe3a0c49b462f1",
+          "bytes": 2747
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-collections-sop.md",
+          "sha256": "eb7bb23c39db509964097bc80b33248880dd9ac1aa3e61a0a61e548442f3556c",
+          "bytes": 810
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-collections-sop.json",
+          "sha256": "b31bf3eed53bee4681a3fc4c245b57c8dcb9bd0d80e3185235c867a4c45349b4",
+          "bytes": 1551
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-collections-sop.docx",
+          "sha256": "03d480758f5e6af19ccf5f457d73ba4e4a0aa8fe2c5e4a3c583bdf673bc8531e",
+          "bytes": 10442
+        }
+      ]
+    },
+    {
+      "id": "lib-vat-registration-checklist",
+      "title": "VAT Registration Checklist",
+      "group": "business",
+      "dept": "finance",
+      "kind": "checklist",
+      "review": "a registered tax practitioner or the company’s accountant",
+      "law": [
+        "VAT Act 89 of 1991 section 23"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-vat-registration-checklist.html",
+          "sha256": "721f5ee146cc36453e2ac03575adc29c30523f0b78f7af3cd6c382fe6e7ebb42",
+          "bytes": 2786
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-vat-registration-checklist.md",
+          "sha256": "95d304e26768790a9dee3d64616ed1e12a05b31bd220673c1ccb60235a19d972",
+          "bytes": 953
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-vat-registration-checklist.json",
+          "sha256": "88e8c27de4845d81e308ce2702ac98ce9f98c69221a5f8a0209df481125266bf",
+          "bytes": 1769
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-vat-registration-checklist.docx",
+          "sha256": "e1990f203458f99be59dad63ece445191dd4eba0013f81de80ef41b82cfbf402",
+          "bytes": 10405
+        }
+      ]
+    },
+    {
+      "id": "lib-budget-workbook",
+      "title": "Operating Budget (workbook)",
+      "group": "business",
+      "dept": "finance",
+      "kind": "workbook",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-budget-workbook.html",
+          "sha256": "d31bbae359f7fe0c8d590158f2ec2ac16f3c98960cdcd45fe0b4f1a35ae4059f",
+          "bytes": 2164
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-budget-workbook.md",
+          "sha256": "c81424df01452e8bfe95313c3f1d5c54f014c2449077d578e0b6e5ca7a455004",
+          "bytes": 386
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-budget-workbook.json",
+          "sha256": "610f47a08252ff14727062a3288c5ab15d05a0e2474458cd911aade12281ddac",
+          "bytes": 782
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-budget-workbook.docx",
+          "sha256": "a5231d4df9bd6519344823c39ed84d24fdf891f1bd36298d790af0e09301fcc5",
+          "bytes": 10164
+        },
+        {
+          "ext": "xlsx",
+          "path": "finance/lib-budget-workbook.xlsx",
+          "sha256": "757e63a374594ff1b52529d809f32632fefde47470a116de20b344cd1e438729",
+          "bytes": 9559
+        }
+      ]
+    },
+    {
+      "id": "lib-cashflow-13w",
+      "title": "13-Week Cash Flow (workbook)",
+      "group": "business",
+      "dept": "finance",
+      "kind": "workbook",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-cashflow-13w.html",
+          "sha256": "e19490bb10f595f671d303f44dccb9b4eaaad0c9d5ac25eee05b087ef490b5ce",
+          "bytes": 2073
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-cashflow-13w.md",
+          "sha256": "6d3e84e947b387693ea97b2b16627f45a981ee26708f819aa56a650271236e59",
+          "bytes": 315
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-cashflow-13w.json",
+          "sha256": "1b22b6100ca21c203c4b52826f95dafbaa958b9de0027c54ead68cfde0b040ce",
+          "bytes": 637
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-cashflow-13w.docx",
+          "sha256": "bbaa82d34ba8e634fb78f85acb4803a860aa5ef074a74bb7d10c6c094427ca96",
+          "bytes": 10094
+        },
+        {
+          "ext": "xlsx",
+          "path": "finance/lib-cashflow-13w.xlsx",
+          "sha256": "c80d99a0c60f7e12d9e085d34d3ed23decd8ddcd12201160017bf3f0738e3f35",
+          "bytes": 8247
+        }
+      ]
+    },
+    {
+      "id": "lib-debtors-ageing",
+      "title": "Debtors Ageing (workbook)",
+      "group": "business",
+      "dept": "finance",
+      "kind": "workbook",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-debtors-ageing.html",
+          "sha256": "4abaae944e87e7b9c58467b92137205982e2ef1655e0534970cf056c7e83bf3e",
+          "bytes": 2071
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-debtors-ageing.md",
+          "sha256": "9c9e8257247ca4caf7023d5de1c8d2cf56dc6e6b11c27d86e073468222e80102",
+          "bytes": 316
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-debtors-ageing.json",
+          "sha256": "349e3a7a297d274ebd6c63e472e4c87797e5e382b5d156a212a1eb4d50d3eb34",
+          "bytes": 638
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-debtors-ageing.docx",
+          "sha256": "64ee94016a7b88f87b8037eb7ffcba5ead0f48792074e0723ee047f473a324a4",
+          "bytes": 10086
+        },
+        {
+          "ext": "xlsx",
+          "path": "finance/lib-debtors-ageing.xlsx",
+          "sha256": "7be49186dbb213a89e0472b55c1f14247dd434cce87554106d2d59adce9294ba",
+          "bytes": 13275
+        }
+      ]
+    },
+    {
+      "id": "lib-invoice-register",
+      "title": "Invoice Register (workbook)",
+      "group": "business",
+      "dept": "finance",
+      "kind": "register",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-invoice-register.html",
+          "sha256": "a22f5a5e081ad8b2c576358c969bf53739fd8450b5b79d0e5acde58c43c54547",
+          "bytes": 2079
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-invoice-register.md",
+          "sha256": "b1e7539606652e7612a4a936399212adc174d1d8a5576e31d795833d107a9047",
+          "bytes": 322
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-invoice-register.json",
+          "sha256": "979e971a93fac7e90dd38ecc87d0e5618d7b87d5fd82b11fd9977320664445d2",
+          "bytes": 644
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-invoice-register.docx",
+          "sha256": "f37a38ecaefa0419aee3573f1d4ee4868c7c4d31d871a4b0ccbbc3baea6fe6ea",
+          "bytes": 10087
+        },
+        {
+          "ext": "xlsx",
+          "path": "finance/lib-invoice-register.xlsx",
+          "sha256": "2de7f6cd845f51d973b44b9dcd247b0ad6d28beadd24ac90ba1c4c9d0e289e65",
+          "bytes": 9797
+        }
+      ]
+    },
+    {
+      "id": "lib-expense-register",
+      "title": "Expense Register (workbook)",
+      "group": "business",
+      "dept": "finance",
+      "kind": "register",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-expense-register.html",
+          "sha256": "efb272329f8947fe8936ef6756edd05bfb1736f50180da0122a78547a442176d",
+          "bytes": 2079
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-expense-register.md",
+          "sha256": "fa404470e4c8153e61b5b8f76cda51e07f58774d2f436f054764e8c8dad5ac02",
+          "bytes": 322
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-expense-register.json",
+          "sha256": "dd6df627a42f8596276cd75c1e94f7a7f3b442e52019e0b5af4783591a9b8249",
+          "bytes": 644
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-expense-register.docx",
+          "sha256": "c6eda0be139775033c9f7cda8e7fae89aced71dff95341e231fd66f4be90c64d",
+          "bytes": 10089
+        },
+        {
+          "ext": "xlsx",
+          "path": "finance/lib-expense-register.xlsx",
+          "sha256": "c399f533a78638a78d46586a8f8396cc50c942dbf33c7cf9426c455752893043",
+          "bytes": 9817
+        }
+      ]
+    },
+    {
+      "id": "lib-vat-workings",
+      "title": "VAT Workings (workbook)",
+      "group": "business",
+      "dept": "finance",
+      "kind": "workbook",
+      "review": "a registered tax practitioner or the company’s accountant",
+      "law": [
+        "VAT Act 89 of 1991"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-vat-workings.html",
+          "sha256": "e88808214ce83fc968a554991ff429de447ffc52d200de9a1e17161b8de20339",
+          "bytes": 2344
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-vat-workings.md",
+          "sha256": "0dac1b02841abcddd1a760ceb4bfc90d2e43d14ac07d1f13e32f368a73c90cbd",
+          "bytes": 571
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-vat-workings.json",
+          "sha256": "d41dbd552634ae1806f50910568ec1f6c1eaf1b70814fdcf7f432f18f4d3442f",
+          "bytes": 957
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-vat-workings.docx",
+          "sha256": "1e83521e6ffff985dd3ba85cb9ba0191383c2538e3a4bac77ff1cc83fd824f9b",
+          "bytes": 10248
+        },
+        {
+          "ext": "xlsx",
+          "path": "finance/lib-vat-workings.xlsx",
+          "sha256": "03c47316aa9afe2414d3690d60ec2f2f670cd22c9445f0a931a6005d0017405f",
+          "bytes": 7826
+        }
+      ]
+    },
+    {
+      "id": "lib-asset-register",
+      "title": "Asset Register (workbook)",
+      "group": "business",
+      "dept": "finance",
+      "kind": "register",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "finance/lib-asset-register.html",
+          "sha256": "d3780aef7889ba51f07d01739d1a1c98a5d332d05d8c7a38d3729f0d24f99341",
+          "bytes": 2071
+        },
+        {
+          "ext": "md",
+          "path": "finance/lib-asset-register.md",
+          "sha256": "cea2362355e55c50bc6d9fcc44454e3fdbc153dd22819195507e4de306129c3a",
+          "bytes": 316
+        },
+        {
+          "ext": "json",
+          "path": "finance/lib-asset-register.json",
+          "sha256": "f9e876068e28eec67569944b900bd4b44e37160a6d86192b8dbf899179802156",
+          "bytes": 638
+        },
+        {
+          "ext": "docx",
+          "path": "finance/lib-asset-register.docx",
+          "sha256": "f5847cfb9f50fcd8210172bc726aee0846bc4b62069cf786a3d11b273cccfb89",
+          "bytes": 10083
+        },
+        {
+          "ext": "xlsx",
+          "path": "finance/lib-asset-register.xlsx",
+          "sha256": "3fa7486872efda48f4b844ffcd8c89f2083bf879020015a5d7ef994520d57cee",
+          "bytes": 8738
+        }
+      ]
+    },
+    {
+      "id": "lib-sales-playbook",
+      "title": "Sales Playbook (schools)",
+      "group": "business",
+      "dept": "sales",
+      "kind": "plan",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-sales-playbook.html",
+          "sha256": "c3b9f254407a8e8b317be614db2da070eedbafa5c3f30f1e19de06552f6bcfc5",
+          "bytes": 3347
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-sales-playbook.md",
+          "sha256": "a71dd091ebe8e22a81481e37fa25a1d289fe82c93d3e852f56e8b00e6931b8d0",
+          "bytes": 1286
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-sales-playbook.json",
+          "sha256": "88cfaec4a79907d2ae0344b5e480f5291539c51444b19bbd210cf99266a88e96",
+          "bytes": 2529
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-sales-playbook.docx",
+          "sha256": "9204662fb53546898d30f197b12fea0f6ed93ea38418aafd37f7ba6f11aead90",
+          "bytes": 10805
+        }
+      ]
+    },
+    {
+      "id": "lib-discovery-guide",
+      "title": "Discovery Call Guide",
+      "group": "business",
+      "dept": "sales",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-discovery-guide.html",
+          "sha256": "967962d03341b4145126e363be94e11f10ddaff7f48b3985cb2568d138b513b1",
+          "bytes": 2669
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-discovery-guide.md",
+          "sha256": "3360e94453f06edeb4c7f684f1e3ebd4974c5e8aac5969e5e157dfaafb28181f",
+          "bytes": 700
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-discovery-guide.json",
+          "sha256": "736716cacd27c287c822491244f744073a9b8eafedbb6b49dcc24d9229ae07f1",
+          "bytes": 1422
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-discovery-guide.docx",
+          "sha256": "3a5b7a69472db50d9e4d579c5bac4fb7fb24747252eb6ffe0b44deb70bc3f2ec",
+          "bytes": 10450
+        }
+      ]
+    },
+    {
+      "id": "lib-demo-script",
+      "title": "Demo Script",
+      "group": "business",
+      "dept": "sales",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-demo-script.html",
+          "sha256": "0c45da73f1e04ec843ba82084260466c902ddc46f809cd21cea48836ab053929",
+          "bytes": 2454
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-demo-script.md",
+          "sha256": "8ea05ad49f26c7d720ca2196791444b9003b401c40229d1b24ce8add66212f85",
+          "bytes": 660
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-demo-script.json",
+          "sha256": "101306c3476f624b07a6b4e0d70524f206d5fc05d353e0f9e647f8076c563c34",
+          "bytes": 1103
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-demo-script.docx",
+          "sha256": "c121e8dac54e29c3a31dc68abc246fdfcf29226e0ddf9936780910c5246025ca",
+          "bytes": 10287
+        }
+      ]
+    },
+    {
+      "id": "lib-lead-qualification",
+      "title": "Lead Qualification Form",
+      "group": "business",
+      "dept": "sales",
+      "kind": "form",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-lead-qualification.html",
+          "sha256": "806bc78e026d1a3ff142500b1a29749b5a13bca8a81e28224c6ec7868300c83c",
+          "bytes": 2631
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-lead-qualification.md",
+          "sha256": "f34c5639a8a5990dd6294e873208e20d7e3d0dcb639d0a95886f1a9cbd9e5450",
+          "bytes": 625
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-lead-qualification.json",
+          "sha256": "b1e036c94d76c768716b19d45fd5c723cfd236c5a2437931920fae77fe6e51b2",
+          "bytes": 1427
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-lead-qualification.docx",
+          "sha256": "e9945f8764cf7a339adfc80ac9fe90d14c9975e27f056b9c0087216e7b1337cc",
+          "bytes": 10405
+        }
+      ]
+    },
+    {
+      "id": "lib-proposal",
+      "title": "Proposal Template",
+      "group": "customer",
+      "dept": "sales",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-proposal.html",
+          "sha256": "a8672ddbdfda049605625a448ac645cad63690745ed82c0148ff79ae74f613a4",
+          "bytes": 2525
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-proposal.md",
+          "sha256": "b531b537578596fa1be9d5ac80f182051b42910392bb76b6c89c01360b89ba33",
+          "bytes": 718
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-proposal.json",
+          "sha256": "41c96fc1d9d5cb548970df8b8190849d3cc30c8768b2f55f29ad39e1616aec41",
+          "bytes": 1647
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-proposal.docx",
+          "sha256": "176d87e7f1c9cfde91b9e0ec3b9a7afe596ed3d0b3c352dec3abbf219c7bcc06",
+          "bytes": 10317
+        }
+      ]
+    },
+    {
+      "id": "lib-school-onboarding-questionnaire",
+      "title": "School Onboarding Questionnaire",
+      "group": "customer",
+      "dept": "success",
+      "kind": "form",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-school-onboarding-questionnaire.html",
+          "sha256": "42cc1a1f814796e5df71424d309dcc1ed1caabfa049f10bb248af11d8d69dbee",
+          "bytes": 2805
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-school-onboarding-questionnaire.md",
+          "sha256": "407be5965485189702caa5ca481045d992736ebd7534ac5477c35eee84f4a6df",
+          "bytes": 823
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-school-onboarding-questionnaire.json",
+          "sha256": "2f5d52d74be0e89f83c87b349d966d1c078fb83060259a48947b6529e9866d29",
+          "bytes": 1592
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-school-onboarding-questionnaire.docx",
+          "sha256": "a8aee064ee0582986fe3a090e578af6a55b415e9f5814849a505605b21724147",
+          "bytes": 10518
+        }
+      ]
+    },
+    {
+      "id": "lib-press-release",
+      "title": "Press Release Template",
+      "group": "business",
+      "dept": "marketing",
+      "kind": "template",
+      "review": "the founder, before anything is published",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "marketing/lib-press-release.html",
+          "sha256": "0ec1c11334b92b92899dd9891c132b91a9076ff321394545e9994977f8b27828",
+          "bytes": 2767
+        },
+        {
+          "ext": "md",
+          "path": "marketing/lib-press-release.md",
+          "sha256": "83a269d6de56159ea730fc8033df4519cd3a3886af21a8eae41175ef13cd5b2f",
+          "bytes": 831
+        },
+        {
+          "ext": "json",
+          "path": "marketing/lib-press-release.json",
+          "sha256": "a0d57e6907f09df5755cce4555f6269e44fd91e9c2bc1832b20d19de3a123486",
+          "bytes": 1544
+        },
+        {
+          "ext": "docx",
+          "path": "marketing/lib-press-release.docx",
+          "sha256": "13f222b569b724475c715568d0b82523c33e8b537241745174aae1192467bad8",
+          "bytes": 10504
+        }
+      ]
+    },
+    {
+      "id": "lib-social-media-policy",
+      "title": "Social Media Policy",
+      "group": "business",
+      "dept": "marketing",
+      "kind": "policy",
+      "review": "a South African attorney",
+      "law": [
+        "POPIA (Act 4 of 2013) section 69, direct marketing; Consumer Protection Act 68 of 2008"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "marketing/lib-social-media-policy.html",
+          "sha256": "7a4c506e51854356235d3c11f7a1c44f9c45b3c50c19114e230288d0d2b7e262",
+          "bytes": 2791
+        },
+        {
+          "ext": "md",
+          "path": "marketing/lib-social-media-policy.md",
+          "sha256": "652447bc8852a439cbaac7051e57bd8bc3bad7dc436571db81fd7c08a192e320",
+          "bytes": 971
+        },
+        {
+          "ext": "json",
+          "path": "marketing/lib-social-media-policy.json",
+          "sha256": "c568d5a126d0f271cf05e97dcc083eb52a1a6bb39d2aa38d1873f100bbe3b6c9",
+          "bytes": 1489
+        },
+        {
+          "ext": "docx",
+          "path": "marketing/lib-social-media-policy.docx",
+          "sha256": "72f6284ed5d291eefd2eaed7b8bb6e08875e9a0a826228a4dedc70affa1e071c",
+          "bytes": 10483
+        }
+      ]
+    },
+    {
+      "id": "lib-case-study",
+      "title": "Case Study Template",
+      "group": "business",
+      "dept": "marketing",
+      "kind": "template",
+      "review": "a South African attorney",
+      "law": [
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "marketing/lib-case-study.html",
+          "sha256": "53fe56cf4b2afab5c44f54e73f4e4f53afefebf45b73949c973e965878247921",
+          "bytes": 2760
+        },
+        {
+          "ext": "md",
+          "path": "marketing/lib-case-study.md",
+          "sha256": "f10d2e2cd4c2a17154a60c698e7e43e56343b1c4fd19afc8fc864634f0d514ed",
+          "bytes": 832
+        },
+        {
+          "ext": "json",
+          "path": "marketing/lib-case-study.json",
+          "sha256": "09defb47fd536259f666e6ec1743bd655df2c33d4e435ba152627418fa4318d2",
+          "bytes": 1522
+        },
+        {
+          "ext": "docx",
+          "path": "marketing/lib-case-study.docx",
+          "sha256": "b5bfeb9aef2725b2622027f3753862a393588e9c9ad9a7fed9654039a6b5236d",
+          "bytes": 10509
+        }
+      ]
+    },
+    {
+      "id": "lib-event-checklist",
+      "title": "Event Checklist",
+      "group": "business",
+      "dept": "marketing",
+      "kind": "checklist",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "marketing/lib-event-checklist.html",
+          "sha256": "1a447994d0edd00dce7c2cda40a9000040fe58a4386f7ce059d138e63b74fcf3",
+          "bytes": 2360
+        },
+        {
+          "ext": "md",
+          "path": "marketing/lib-event-checklist.md",
+          "sha256": "41f21907bfb276b7c5aa7a710e063fcae512d3393cb31e110038f98a38eb096a",
+          "bytes": 552
+        },
+        {
+          "ext": "json",
+          "path": "marketing/lib-event-checklist.json",
+          "sha256": "064fc2850334c8419df93917202a2e9f05edf97c7b19f3bc149033ab537251fa",
+          "bytes": 1379
+        },
+        {
+          "ext": "docx",
+          "path": "marketing/lib-event-checklist.docx",
+          "sha256": "ec241e000a8de3eafef204aac2a8ed4e6377839d325d8963ba9471b1c771ab0b",
+          "bytes": 10211
+        }
+      ]
+    },
+    {
+      "id": "lib-referral-terms",
+      "title": "Referral Programme Terms",
+      "group": "customer",
+      "dept": "sales",
+      "kind": "contract",
+      "review": "a South African attorney",
+      "law": [
+        "POPIA (Act 4 of 2013) section 69, direct marketing; Consumer Protection Act 68 of 2008"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-referral-terms.html",
+          "sha256": "f369965a96f89ac291c640e0b49414adb6acd674d355306ed9a1d21df19e4ecc",
+          "bytes": 2696
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-referral-terms.md",
+          "sha256": "e3ecca2767b1878fe00c23a0cd8d64f1e0c1f31f9f6c3e1f7a10bb9c4b4425a9",
+          "bytes": 877
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-referral-terms.json",
+          "sha256": "832a7019cbef52cca06792bb3f4800f78af5d1060a3652cf3d0b12d5d23b7992",
+          "bytes": 1386
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-referral-terms.docx",
+          "sha256": "909a1d668be4b70ba04fe4b1062f0199228ef6e9ccf807315107e3a88c2827fa",
+          "bytes": 10420
+        }
+      ]
+    },
+    {
+      "id": "lib-consent-case-study",
+      "title": "Case Study Consent Form",
+      "group": "customer",
+      "dept": "legal",
+      "kind": "form",
+      "review": "a South African attorney",
+      "law": [
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-consent-case-study.html",
+          "sha256": "6884c7c32ce9ae850a419c387325dc9fc6f32fd662ddb7f0abea07fcc6118def",
+          "bytes": 2726
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-consent-case-study.md",
+          "sha256": "4a2ea2e9b80233ede14c810130ba56bbaa9994855126874de7dc4f7a10d6744f",
+          "bytes": 770
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-consent-case-study.json",
+          "sha256": "e4c75e9f4036f8f2db8f9f7fa6996618eff2a7a402c2b935b73a0f714fe82cc5",
+          "bytes": 1523
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-consent-case-study.docx",
+          "sha256": "6b8bf5120942d934545433e76644de508a0c85958d7a45907ce2a885b8dcdc04",
+          "bytes": 10494
+        }
+      ]
+    },
+    {
+      "id": "lib-pipeline-tracker",
+      "title": "Sales Pipeline Tracker (workbook)",
+      "group": "business",
+      "dept": "sales",
+      "kind": "workbook",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "sales/lib-pipeline-tracker.html",
+          "sha256": "69a19f8ecc471814fd2bcd733162c5a021a47aa400cfe1068def0f5328e74b99",
+          "bytes": 2091
+        },
+        {
+          "ext": "md",
+          "path": "sales/lib-pipeline-tracker.md",
+          "sha256": "9792971bd09b65205c27586f733e449cd7a432df7058589d579ff84c373c7034",
+          "bytes": 328
+        },
+        {
+          "ext": "json",
+          "path": "sales/lib-pipeline-tracker.json",
+          "sha256": "41c4ecb10a4f763470746b3c56f72713baf9fedcfe390f9835c594b5287cab24",
+          "bytes": 650
+        },
+        {
+          "ext": "docx",
+          "path": "sales/lib-pipeline-tracker.docx",
+          "sha256": "729ebdcba9f761806658df39606f5f57f567acce16973f1fdcb020123e6d4809",
+          "bytes": 10095
+        },
+        {
+          "ext": "xlsx",
+          "path": "sales/lib-pipeline-tracker.xlsx",
+          "sha256": "a2ff453b5a67d8e367a6d8614ed8de829b399ff9054a98f7fc544b5b1a16b40a",
+          "bytes": 9382
+        }
+      ]
+    },
+    {
+      "id": "lib-content-calendar",
+      "title": "Content Calendar (workbook)",
+      "group": "business",
+      "dept": "marketing",
+      "kind": "workbook",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "marketing/lib-content-calendar.html",
+          "sha256": "9f4bc1eea0f962e14b2213a0a460befa25d3b5126ecba0c8712b98d1bbc42b01",
+          "bytes": 2079
+        },
+        {
+          "ext": "md",
+          "path": "marketing/lib-content-calendar.md",
+          "sha256": "5c925e76d8bac5f9b2e107e1f2e1d93fb24a27ac2e2673a4e3e82450c9e82fd7",
+          "bytes": 322
+        },
+        {
+          "ext": "json",
+          "path": "marketing/lib-content-calendar.json",
+          "sha256": "2ad4d55e34714382dc1b5374faad30e8268bb04b72074ac783ab0e5e1e2a5ed5",
+          "bytes": 644
+        },
+        {
+          "ext": "docx",
+          "path": "marketing/lib-content-calendar.docx",
+          "sha256": "b17aa97184438a759204a555e0e0deef7a957e75cbcb81b670dc0cb03376234a",
+          "bytes": 10090
+        },
+        {
+          "ext": "xlsx",
+          "path": "marketing/lib-content-calendar.xlsx",
+          "sha256": "849dba420721dc8ce86b071f0320b896308aadc3f17ec8296f564abe8eb9b1c2",
+          "bytes": 8383
+        }
+      ]
+    },
+    {
+      "id": "lib-campaign-tracker",
+      "title": "Campaign Tracker (workbook)",
+      "group": "business",
+      "dept": "marketing",
+      "kind": "workbook",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "marketing/lib-campaign-tracker.html",
+          "sha256": "2b09dca22f6a8d54d2f94691ff9b0415352ac7904b62d005123fea26a7e45738",
+          "bytes": 2079
+        },
+        {
+          "ext": "md",
+          "path": "marketing/lib-campaign-tracker.md",
+          "sha256": "47467ecfc20b0cf86516155307b1618b85211c4248ec2417cbc78b52f897c710",
+          "bytes": 322
+        },
+        {
+          "ext": "json",
+          "path": "marketing/lib-campaign-tracker.json",
+          "sha256": "2c69eeb1d312972f86a3ce455a259e4a8c6c90eefc5a49cb212cce3deba4814f",
+          "bytes": 644
+        },
+        {
+          "ext": "docx",
+          "path": "marketing/lib-campaign-tracker.docx",
+          "sha256": "10b96d158d0881a116a05ab7b0f03732faf0835b54d91cf9bff0a66c0c5fc149",
+          "bytes": 10087
+        },
+        {
+          "ext": "xlsx",
+          "path": "marketing/lib-campaign-tracker.xlsx",
+          "sha256": "54a45bedb8f3ff89146b761006ad962f77bbcc229786fb9a3498daa757151e2a",
+          "bytes": 10504
+        }
+      ]
+    },
+    {
+      "id": "lib-onboarding-plan",
+      "title": "School Onboarding Plan",
+      "group": "customer",
+      "dept": "success",
+      "kind": "plan",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-onboarding-plan.html",
+          "sha256": "6911a879313bd9bef17b63ba8c95026e03458be84b5f496e04b201fbdff4673b",
+          "bytes": 3051
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-onboarding-plan.md",
+          "sha256": "886f3c20d211482b6676cfae78ce5222f99b83b4431a944b339113ec6cbca6f0",
+          "bytes": 989
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-onboarding-plan.json",
+          "sha256": "c7e6be13d281bab10bf148cd7d349754bdd8b2261064ace903f1e98870d3452d",
+          "bytes": 1931
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-onboarding-plan.docx",
+          "sha256": "10afce05153a45953d3a55233790e6cb66bb87a4360f56af848b15d28a42d6f0",
+          "bytes": 10455
+        }
+      ]
+    },
+    {
+      "id": "lib-data-import-request",
+      "title": "Data Import Request",
+      "group": "customer",
+      "dept": "success",
+      "kind": "form",
+      "review": "the school’s Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-data-import-request.html",
+          "sha256": "0514f91659b42882f8740f0d8c57689ba1217507ea2abe67d40eed8b95d036d4",
+          "bytes": 2827
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-data-import-request.md",
+          "sha256": "1c0757bee97e173e4d90a1c88f70baf124deb13e4fd4ef9b4d237d009eb4c070",
+          "bytes": 875
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-data-import-request.json",
+          "sha256": "d6c58380f366e69fac0b01b7e9106307e0e99fcaade944fc1c6b974f0017e74b",
+          "bytes": 1628
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-data-import-request.docx",
+          "sha256": "cea121903ab73ee734db0c57c9c531b384f9444c06ea55f3f7fe16f6140e2850",
+          "bytes": 10562
+        }
+      ]
+    },
+    {
+      "id": "lib-training-register",
+      "title": "Training Attendance Register",
+      "group": "customer",
+      "dept": "success",
+      "kind": "register",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-training-register.html",
+          "sha256": "2dd734d83d04a92109634383814bc8b06a5fd6834260228f79820464fa428295",
+          "bytes": 2659
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-training-register.md",
+          "sha256": "d073040ea0a3dd6a759a4a476769e4f9b91074870ba51360995794f387364ac3",
+          "bytes": 601
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-training-register.json",
+          "sha256": "e7610021d7c7d406bc2d7df16258c48d01aa848496b5a93fc696fb40b331b7ab",
+          "bytes": 1523
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-training-register.docx",
+          "sha256": "ae31f0407855ea58645d1ce98a83288c5347da5d93d6ea555df7533892ce0de2",
+          "bytes": 10362
+        },
+        {
+          "ext": "xlsx",
+          "path": "success/lib-training-register.xlsx",
+          "sha256": "50875c83b6f2fd98980d9fcfeb915d1051f4e182760564fee6003564098d21ae",
+          "bytes": 8260
+        }
+      ]
+    },
+    {
+      "id": "lib-go-live-checklist",
+      "title": "Go-Live Checklist",
+      "group": "customer",
+      "dept": "success",
+      "kind": "checklist",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-go-live-checklist.html",
+          "sha256": "baf13f4d0e351e7a4c6f04e447a28f182a7a0fd3287ab8b1ca7cd01609b9946d",
+          "bytes": 2475
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-go-live-checklist.md",
+          "sha256": "c877ca89ba21e531666d9bef64b348a18578d30682f57460eb5eabe0c268e3fb",
+          "bytes": 647
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-go-live-checklist.json",
+          "sha256": "a59592c378c3f1163389b1e319d34ac2db98bdb173570b0f39fdc0e30328644b",
+          "bytes": 1657
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-go-live-checklist.docx",
+          "sha256": "678c7fcc5fcf751fd16d0d224b6d4c7bcb4a1f4ab8a41439750965df28777249",
+          "bytes": 10259
+        }
+      ]
+    },
+    {
+      "id": "lib-ticket-triage-sop",
+      "title": "Support Ticket Triage SOP",
+      "group": "business",
+      "dept": "support",
+      "kind": "sop",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "support/lib-ticket-triage-sop.html",
+          "sha256": "79a350e9d0b93ab538c9018e9c61247de28cbf7c1817cfa877bbe85539c88bf9",
+          "bytes": 2610
+        },
+        {
+          "ext": "md",
+          "path": "support/lib-ticket-triage-sop.md",
+          "sha256": "41695d8ef25e4f98bbb2de6ffdb4ade2fcace534fa38ce5197c4636becaa8070",
+          "bytes": 779
+        },
+        {
+          "ext": "json",
+          "path": "support/lib-ticket-triage-sop.json",
+          "sha256": "a0b8f7ab836031532e8c35f05d6096bf581283b53e393c8b839bd0f2662a6974",
+          "bytes": 1308
+        },
+        {
+          "ext": "docx",
+          "path": "support/lib-ticket-triage-sop.docx",
+          "sha256": "156bc8245dd2d2a620379610512c2452d2b5c7ab7e6c05c352584148eee69ca4",
+          "bytes": 10352
+        }
+      ]
+    },
+    {
+      "id": "lib-escalation-matrix",
+      "title": "Escalation Matrix",
+      "group": "business",
+      "dept": "support",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "support/lib-escalation-matrix.html",
+          "sha256": "551bcbc338d2662fe34a3fbb0583bbdcc8d42843d9ef0ea9dab3c1a41da54c4f",
+          "bytes": 2712
+        },
+        {
+          "ext": "md",
+          "path": "support/lib-escalation-matrix.md",
+          "sha256": "e30304c2613e78670f300cccac868c06065c93e54859a6c828cd48925f7607bf",
+          "bytes": 766
+        },
+        {
+          "ext": "json",
+          "path": "support/lib-escalation-matrix.json",
+          "sha256": "836a15691a2a3dc46a27defd367f3168553aee2876e9575766cbdbd8a2109a5d",
+          "bytes": 1444
+        },
+        {
+          "ext": "docx",
+          "path": "support/lib-escalation-matrix.docx",
+          "sha256": "5261f804d0ad2223075e9330641018fa7c94cd05f3c43cf2b8afd3aaee08105b",
+          "bytes": 10399
+        }
+      ]
+    },
+    {
+      "id": "lib-kb-article",
+      "title": "Knowledge Base Article Template",
+      "group": "business",
+      "dept": "support",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "support/lib-kb-article.html",
+          "sha256": "cd3a9105a14c75d70a1fe4afdf1fa3c9d5bcb1590474a8f1e3fd0af09d2a924a",
+          "bytes": 2498
+        },
+        {
+          "ext": "md",
+          "path": "support/lib-kb-article.md",
+          "sha256": "6f796b21752b17264f1acce75dfe9eec46a632610e2189032714482e107b8e34",
+          "bytes": 579
+        },
+        {
+          "ext": "json",
+          "path": "support/lib-kb-article.json",
+          "sha256": "88639f6460bc9da429699dbdccc667af6ae7ac67bf03d6e6675b23d2853adb94",
+          "bytes": 1181
+        },
+        {
+          "ext": "docx",
+          "path": "support/lib-kb-article.docx",
+          "sha256": "4399a0bdc4778a2d0cd6c646401f1658546933a0d89864247cb00767072c184a",
+          "bytes": 10364
+        }
+      ]
+    },
+    {
+      "id": "lib-sla-report",
+      "title": "Monthly Service Report",
+      "group": "customer",
+      "dept": "support",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "support/lib-sla-report.html",
+          "sha256": "137ae4c2f8d9b8370979f8b1923d77b9a539f66acdb3ad18413e444fa71a6cdd",
+          "bytes": 2437
+        },
+        {
+          "ext": "md",
+          "path": "support/lib-sla-report.md",
+          "sha256": "e9c157d3a98a5580723836d23de6d04836a21c4b9973f4ca0278dfee92257ea9",
+          "bytes": 532
+        },
+        {
+          "ext": "json",
+          "path": "support/lib-sla-report.json",
+          "sha256": "749bd1c03f2a9e769ee0453e7d146046fd9e9bce769fa9aa770a4d42986973c7",
+          "bytes": 1235
+        },
+        {
+          "ext": "docx",
+          "path": "support/lib-sla-report.docx",
+          "sha256": "31ba0a071e35452eda4367ed25658238e0df5382f16031d24b9775424c82545f",
+          "bytes": 10330
+        },
+        {
+          "ext": "xlsx",
+          "path": "support/lib-sla-report.xlsx",
+          "sha256": "93f849afdfa6db42d7a1c1ead0e93a2ac7ba8fcbacebdaa0603e08bf5e448c69",
+          "bytes": 8839
+        }
+      ]
+    },
+    {
+      "id": "lib-nps-survey",
+      "title": "Customer Survey Template",
+      "group": "customer",
+      "dept": "success",
+      "kind": "form",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-nps-survey.html",
+          "sha256": "4072b5b27b3a0aa19e7f5955708d9e590c48e21fee9678eeb2b5cf11e01deeca",
+          "bytes": 2300
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-nps-survey.md",
+          "sha256": "5f8ed714800c67a09f60884fbbda9345b0200f624f05579623773ed81acca0e4",
+          "bytes": 517
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-nps-survey.json",
+          "sha256": "fa043045d860750533f7fcd904c873b78c00dc7bdfe06a6011790d2e772fade3",
+          "bytes": 927
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-nps-survey.docx",
+          "sha256": "365534b77201c005caabbce5f3fcaec19f77f7312730fdd0a7fd8651002e01a0",
+          "bytes": 10205
+        }
+      ]
+    },
+    {
+      "id": "lib-health-scorecard",
+      "title": "Customer Health Scorecard (workbook)",
+      "group": "business",
+      "dept": "success",
+      "kind": "workbook",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-health-scorecard.html",
+          "sha256": "552e69271cee427100e95cd1bcdb7c2fdd97a3582ff3f7f879a0a672b1884418",
+          "bytes": 2097
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-health-scorecard.md",
+          "sha256": "e1ba9d109235f38a347e4f4faf1f1058c55f10c7afad023a647f6363cc58370c",
+          "bytes": 331
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-health-scorecard.json",
+          "sha256": "ce9d4432a19c12275788180839ce4d5bf752ce0c63b65b98f17cfd637f6de299",
+          "bytes": 653
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-health-scorecard.docx",
+          "sha256": "45d51ef1ee9a55090b48dbd1a7d784b8018f32a2187c7a027d329574b2662105",
+          "bytes": 10100
+        },
+        {
+          "ext": "xlsx",
+          "path": "success/lib-health-scorecard.xlsx",
+          "sha256": "e6227130b4968518012d0bf438e71e165e739e6f8962ec0f1bdaadaaf833f627",
+          "bytes": 9349
+        }
+      ]
+    },
+    {
+      "id": "lib-renewal-playbook",
+      "title": "Renewal Playbook",
+      "group": "business",
+      "dept": "success",
+      "kind": "plan",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-renewal-playbook.html",
+          "sha256": "135cf7304f6f1b06854663616edd61a0e5a5ffbef898082037bc4e2d3447f7b2",
+          "bytes": 2704
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-renewal-playbook.md",
+          "sha256": "47c1493b0b4271cf91ece9ab25a1f0cf767421fbecc710f5ef0580ec87426519",
+          "bytes": 795
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-renewal-playbook.json",
+          "sha256": "8d18eb816a92bff0c49a64e5b8e8e9b692ae8bf4fbd844e2b9e24dbe2a2816f2",
+          "bytes": 1482
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-renewal-playbook.docx",
+          "sha256": "3d85e3b429d031c29d2c903666ca69a20a8f56d59394f23db783e821ffd054cf",
+          "bytes": 10461
+        }
+      ]
+    },
+    {
+      "id": "lib-exit-interview",
+      "title": "Customer Exit Interview",
+      "group": "customer",
+      "dept": "success",
+      "kind": "form",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-exit-interview.html",
+          "sha256": "aee1c6726baf54fb54e998ae5d4c01baee5668a94b3b3f0701395adab0b7907a",
+          "bytes": 2460
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-exit-interview.md",
+          "sha256": "40a96555894b28b203b366bf2113c486d52d60bc69ea007686f5955ccced1fd6",
+          "bytes": 539
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-exit-interview.json",
+          "sha256": "26396f4bcde54773a3b5d5eabd818cee61de9ec01488ba03360856745670dace",
+          "bytes": 1189
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-exit-interview.docx",
+          "sha256": "1db04bb5cf6b519f193b01e178019237b366324d3bda23a5f630cee3b0465a6d",
+          "bytes": 10361
+        }
+      ]
+    },
+    {
+      "id": "lib-offboarding-sop",
+      "title": "Customer Offboarding SOP",
+      "group": "business",
+      "dept": "success",
+      "kind": "sop",
+      "review": "a South African attorney",
+      "law": [
+        "POPIA (Act 4 of 2013) section 14"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "success/lib-offboarding-sop.html",
+          "sha256": "940133f784af5044739a5d089d0c8cf9df3f5ce0a0c626150c74c2c548830abf",
+          "bytes": 2839
+        },
+        {
+          "ext": "md",
+          "path": "success/lib-offboarding-sop.md",
+          "sha256": "7dc6c34397c2bebd898bf0a86e184ffda590e7017c797fb98cfca92279f1efcd",
+          "bytes": 999
+        },
+        {
+          "ext": "json",
+          "path": "success/lib-offboarding-sop.json",
+          "sha256": "ac2de4ec7f74bb4ef004cc27750d35dd7dee9b2017085c8625cbafce2aa95679",
+          "bytes": 1544
+        },
+        {
+          "ext": "docx",
+          "path": "success/lib-offboarding-sop.docx",
+          "sha256": "884cabae43c48e0700947ac97af7b16fb32d1f73857a32cc3b26a8bf21bd92e7",
+          "bytes": 10483
+        }
+      ]
+    },
+    {
+      "id": "lib-ticket-log",
+      "title": "Support Ticket Log (workbook)",
+      "group": "business",
+      "dept": "support",
+      "kind": "register",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "support/lib-ticket-log.html",
+          "sha256": "2d55b214c1c284ef95e1282e75f252f8f8eff4f77107116b118bb8de6ebdd3ac",
+          "bytes": 2071
+        },
+        {
+          "ext": "md",
+          "path": "support/lib-ticket-log.md",
+          "sha256": "66ff3bd13a9f12b92240bb89739e08ad4dd5d89cc2271fa0475d67b530524222",
+          "bytes": 312
+        },
+        {
+          "ext": "json",
+          "path": "support/lib-ticket-log.json",
+          "sha256": "fc6a1d05043ff440241e7de937a679935aaa903cd025fb51b213330637a2eadf",
+          "bytes": 634
+        },
+        {
+          "ext": "docx",
+          "path": "support/lib-ticket-log.docx",
+          "sha256": "6780c3b8402c211f42b66035e4f2b8ed9d20d972231d5ff2bc71c76dad898edc",
+          "bytes": 10094
+        },
+        {
+          "ext": "xlsx",
+          "path": "support/lib-ticket-log.xlsx",
+          "sha256": "0a8b0c450a7ae73302f06d4987d529f6e81fc1762ca1e9e4fd1157b730cc0cea",
+          "bytes": 8644
+        }
+      ]
+    },
+    {
+      "id": "lib-security-questionnaire-response",
+      "title": "Security Questionnaire Response Template",
+      "group": "customer",
+      "dept": "security",
+      "kind": "template",
+      "review": "the security lead",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-security-questionnaire-response.html",
+          "sha256": "e551c85a75549e8d2989dd713d94c1042a8d6e4af2f26682f8c750f39b601099",
+          "bytes": 3192
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-security-questionnaire-response.md",
+          "sha256": "9e563efc963ba8be804480005b2c67ee6a4ee95f7d9b3e1255bedbe9b12bfed5",
+          "bytes": 1188
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-security-questionnaire-response.json",
+          "sha256": "ca855b4200bb147f5841a0d7aaf9830f9cde825fb7c484479e9d8a2ff371add6",
+          "bytes": 1987
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-security-questionnaire-response.docx",
+          "sha256": "8324c5a89afeca0a732eec3e17419c29292029ac39fc9d6dc1904c4428430e29",
+          "bytes": 10687
+        }
+      ]
+    },
+    {
+      "id": "lib-employment-contract",
+      "title": "Employment Contract (outline)",
+      "group": "business",
+      "dept": "people",
+      "kind": "contract",
+      "review": "a labour-law practitioner or attorney",
+      "law": [
+        "Basic Conditions of Employment Act 75 of 1997 section 29",
+        "Labour Relations Act 66 of 1995"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-employment-contract.html",
+          "sha256": "6df92c6ccba8e7727532ad556f68189bea853a63011803c86f4815a58c30c1af",
+          "bytes": 3586
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-employment-contract.md",
+          "sha256": "136480d703d4d467a3231934e84561a62bd5c0ad85834d713400cd50ff054e34",
+          "bytes": 1521
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-employment-contract.json",
+          "sha256": "741eff8f6918a825318982b0e973940d08bb6d5085855f32a4b993e53fa4aeae",
+          "bytes": 2799
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-employment-contract.docx",
+          "sha256": "a1f50f5c5172fe09a8677c47955c3d2cb0abafaf8bfa62e81ba69509b1ceb253",
+          "bytes": 10850
+        }
+      ]
+    },
+    {
+      "id": "lib-offer-letter",
+      "title": "Offer Letter",
+      "group": "business",
+      "dept": "people",
+      "kind": "letter",
+      "review": "a labour-law practitioner or attorney",
+      "law": [
+        "Basic Conditions of Employment Act 75 of 1997"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-offer-letter.html",
+          "sha256": "9f55a92d4c20021069c4f1ed99df65167df4a6130ccd90929cd9afe281227b3d",
+          "bytes": 2792
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-offer-letter.md",
+          "sha256": "ef81902bdc8ed2a220ff62b90565d26f2eacedf77b0bdbb5aa2d681eadad4f3d",
+          "bytes": 890
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-offer-letter.json",
+          "sha256": "b1e9332486d8dd35242d8d39568a59319613807b58c0ba532e92fac6af16daef",
+          "bytes": 1613
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-offer-letter.docx",
+          "sha256": "56bdcd2af2d2d19ff62b19261eb6a0aee28cc4cad4b15027966cadd5a40d05d7",
+          "bytes": 10560
+        }
+      ]
+    },
+    {
+      "id": "lib-contractor-agreement",
+      "title": "Independent Contractor Agreement (outline)",
+      "group": "business",
+      "dept": "people",
+      "kind": "contract",
+      "review": "a labour-law practitioner or attorney",
+      "law": [
+        "Basic Conditions of Employment Act 75 of 1997",
+        "Labour Relations Act 66 of 1995"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-contractor-agreement.html",
+          "sha256": "41040d05b86875355e15e352ca6184cce0120cd98c9c44c4972c06c22144872e",
+          "bytes": 3086
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-contractor-agreement.md",
+          "sha256": "5fcbafd88cf9376c85911bf0a8d70bc605ca652519ffc53b4908a652a7da268a",
+          "bytes": 1106
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-contractor-agreement.json",
+          "sha256": "2654e66b1997c8087d31567f5f07ed8f51e57f5c8c0bbd2c192b385e655330b2",
+          "bytes": 2025
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-contractor-agreement.docx",
+          "sha256": "0f9d51de4eea8292bccd58352fab656628abeec0e76dc866199d9acac9294e24",
+          "bytes": 10619
+        }
+      ]
+    },
+    {
+      "id": "lib-ip-assignment",
+      "title": "Confidentiality and IP Assignment",
+      "group": "business",
+      "dept": "people",
+      "kind": "contract",
+      "review": "an intellectual property attorney",
+      "law": [
+        "Copyright Act 98 of 1978"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-ip-assignment.html",
+          "sha256": "6d883e14abfc01d3f2f657aab8dbb6a7164e7189e6c1cd12633930666a699215",
+          "bytes": 2842
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-ip-assignment.md",
+          "sha256": "e94427bfcc9667e13b7a8a501929b153450db55b1781d4959b9901c5eeea3ff6",
+          "bytes": 889
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-ip-assignment.json",
+          "sha256": "e6fcdabed3e7a1e57bd86ed1d1a39685f20689d373ef612e21b53941cefcb5d2",
+          "bytes": 1641
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-ip-assignment.docx",
+          "sha256": "2b7bec847657079e5959694f904ea91015c06ec9601769d99a982539ba501416",
+          "bytes": 10583
+        }
+      ]
+    },
+    {
+      "id": "lib-staff-onboarding-checklist",
+      "title": "Staff Onboarding Checklist",
+      "group": "business",
+      "dept": "people",
+      "kind": "checklist",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-staff-onboarding-checklist.html",
+          "sha256": "2b88d5eb0459e5b625a00287509f6e109683fe9d8fc02899d1e5bd43dc103883",
+          "bytes": 2429
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-staff-onboarding-checklist.md",
+          "sha256": "7d30b346cf4333b8335c007642c0dfe7c1df48eab540950a53f3acb07852a226",
+          "bytes": 604
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-staff-onboarding-checklist.json",
+          "sha256": "6f8ebf59ea251761aead8ad9678ac930776941816888fd0df6a3d4f2114132f3",
+          "bytes": 1492
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-staff-onboarding-checklist.docx",
+          "sha256": "dd09c12b056a2a9bc36c0f261501f4b27d95fc7eb2ed613b63fb0897ca6f8b54",
+          "bytes": 10234
+        }
+      ]
+    },
+    {
+      "id": "lib-staff-offboarding-checklist",
+      "title": "Staff Offboarding Checklist",
+      "group": "business",
+      "dept": "people",
+      "kind": "checklist",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-staff-offboarding-checklist.html",
+          "sha256": "a64ab9d0a229875966215d87c622cd28baefc73bc86e1829bd5a51bd900e236e",
+          "bytes": 2334
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-staff-offboarding-checklist.md",
+          "sha256": "5678c0a6a1f31839f9d644d5adc207700cce14d6e05bc55455d673cb09e606f1",
+          "bytes": 526
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-staff-offboarding-checklist.json",
+          "sha256": "3a270af77c502dc37dcf3d65e656ec02b3f0116294e1f21165171ac641967b2b",
+          "bytes": 1231
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-staff-offboarding-checklist.docx",
+          "sha256": "5abc7bcb672db84933a2564fada559d9bec678660037a3aeb5b50791b4ad9354",
+          "bytes": 10190
+        }
+      ]
+    },
+    {
+      "id": "lib-leave-application",
+      "title": "Leave Application Form",
+      "group": "business",
+      "dept": "people",
+      "kind": "form",
+      "review": "a labour-law practitioner or attorney",
+      "law": [
+        "Basic Conditions of Employment Act 75 of 1997"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-leave-application.html",
+          "sha256": "48087a2890dc1fb312da518f7146a9e7bd8ccd3cbf314d3e41c6e07e49ba6f9a",
+          "bytes": 2586
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-leave-application.md",
+          "sha256": "7bf479c4af032c45a2d822d4882477be1f2c54aaa0c812a311ed81b2edcd5a1a",
+          "bytes": 656
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-leave-application.json",
+          "sha256": "6a064cef241298cfa4ce1bdab85b77d340f662cacccf31cd827c6cfd8b353a8f",
+          "bytes": 1322
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-leave-application.docx",
+          "sha256": "852a78db8209b519f3af2a8727cd3cf727dbf444f5c68db32baff3ae7fa7e15e",
+          "bytes": 10415
+        }
+      ]
+    },
+    {
+      "id": "lib-leave-register",
+      "title": "Leave Register (workbook)",
+      "group": "business",
+      "dept": "people",
+      "kind": "register",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-leave-register.html",
+          "sha256": "1e09716741d285cc3333cc1eac7e39c360dac805d39d47bc4ca3d2992b59ac64",
+          "bytes": 2071
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-leave-register.md",
+          "sha256": "06469b5fdd2128095010ecf3206aa3bf058402735487f44dfba5235f31a68abf",
+          "bytes": 316
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-leave-register.json",
+          "sha256": "9597c9969f9b8cedfc9b79cfd2ec688a97ff5e37476a86829176abec62fc0b98",
+          "bytes": 638
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-leave-register.docx",
+          "sha256": "03ecc8f7dc2aa3e9c907e80f0d709dcd082798195f2925868807f547b01d96ce",
+          "bytes": 10085
+        },
+        {
+          "ext": "xlsx",
+          "path": "people/lib-leave-register.xlsx",
+          "sha256": "0b8851640a3ec2852c949fc7a3766269c247a01ffa56b4df6d8271d16a0dd439",
+          "bytes": 9078
+        }
+      ]
+    },
+    {
+      "id": "lib-performance-review",
+      "title": "Performance Review Form",
+      "group": "business",
+      "dept": "people",
+      "kind": "form",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-performance-review.html",
+          "sha256": "a722876e26f28f082f86c2b69e6016edfb36404e454efaf4f18586f145b66aa0",
+          "bytes": 2656
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-performance-review.md",
+          "sha256": "5677d62c933ea73721d4b2374c9ba3b5ea9223bbca5319c7d8e814c4a19f9d84",
+          "bytes": 540
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-performance-review.json",
+          "sha256": "69cdcd08bfd9cdb9e4be92cde6d29f86a35c5e56422b597e8f20002f988e1bbc",
+          "bytes": 1545
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-performance-review.docx",
+          "sha256": "dc5abeab571ab535b6bd522352fd2c2e1b3232507534e586550fe2c2027382dc",
+          "bytes": 10356
+        }
+      ]
+    },
+    {
+      "id": "lib-disciplinary-procedure",
+      "title": "Disciplinary and Grievance Procedure (outline)",
+      "group": "business",
+      "dept": "people",
+      "kind": "policy",
+      "review": "a labour-law practitioner or attorney",
+      "law": [
+        "Labour Relations Act 66 of 1995",
+        "Schedule 8 Code of Good Practice: Dismissal"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-disciplinary-procedure.html",
+          "sha256": "bdd0af370b465ca1e7cc15c3d9a5fef53598a911bb89f142a69ecdcaf12f9842",
+          "bytes": 3191
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-disciplinary-procedure.md",
+          "sha256": "482168c5fc67571708d37953361d54aa5b17850623975e39716a5095a8e8656e",
+          "bytes": 1198
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-disciplinary-procedure.json",
+          "sha256": "0a278afa66d45a7a6956569c037f2e48d5fa03939461adf1da5bd01b82c113cd",
+          "bytes": 2098
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-disciplinary-procedure.docx",
+          "sha256": "64d1d360bc3e699595f856e9413777257a8f6f3dd3644138a5f181f0e2a86762",
+          "bytes": 10705
+        }
+      ]
+    },
+    {
+      "id": "lib-code-of-conduct",
+      "title": "Code of Conduct",
+      "group": "business",
+      "dept": "people",
+      "kind": "policy",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "people/lib-code-of-conduct.html",
+          "sha256": "56bd7f4cb808498552777e4abaaf4fe3591ab93b38239f093d09637b1bf9b6eb",
+          "bytes": 2387
+        },
+        {
+          "ext": "md",
+          "path": "people/lib-code-of-conduct.md",
+          "sha256": "cce22a1fca313afa0e2cab74225b4a5ec20fa82afd4cf7681fbffdbcaa5700a5",
+          "bytes": 591
+        },
+        {
+          "ext": "json",
+          "path": "people/lib-code-of-conduct.json",
+          "sha256": "4e0c757e57648accdbfbf2132f3411fa6c73937e41e0e3a5ab8f3a75cf83929c",
+          "bytes": 1045
+        },
+        {
+          "ext": "docx",
+          "path": "people/lib-code-of-conduct.docx",
+          "sha256": "1f4bf70f87e2690c4fb5f289fed2d461322f24308b5c58fd5301fdbdf21e2c12",
+          "bytes": 10268
+        }
+      ]
+    },
+    {
+      "id": "lib-infosec-policy",
+      "title": "Information Security Policy",
+      "group": "business",
+      "dept": "security",
+      "kind": "policy",
+      "review": "the security lead",
+      "law": [
+        "POPIA (Act 4 of 2013) sections 19 to 22"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-infosec-policy.html",
+          "sha256": "0beb286b71b77c36eaba1f0889b62a7b5dbbd4264f10a16e9f13e5a0360bc773",
+          "bytes": 3088
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-infosec-policy.md",
+          "sha256": "f077ea56ec0dcd9b6a6a6a433dbcf72a8829c8af82412663eb176370f90e7b7b",
+          "bytes": 1145
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-infosec-policy.json",
+          "sha256": "810f48fd9b5cb6b17d6555495e7d0de7af4a115212b4dd85a14dfedb5cf2785e",
+          "bytes": 2072
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-infosec-policy.docx",
+          "sha256": "c0742c3a6f41788149c0f5384a49bdde087cc997d477bb48083029255447322f",
+          "bytes": 10731
+        }
+      ]
+    },
+    {
+      "id": "lib-access-control-policy",
+      "title": "Access Control Policy",
+      "group": "business",
+      "dept": "security",
+      "kind": "policy",
+      "review": "the security lead",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-access-control-policy.html",
+          "sha256": "1528e9a817f813d8a41b954476fce8894e1a876e1c52050225b3e695766ff02b",
+          "bytes": 2562
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-access-control-policy.md",
+          "sha256": "590b19f8d5bc779770953d3eb892b61f48019a0c147051b5b13861abc9fc9f5a",
+          "bytes": 746
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-access-control-policy.json",
+          "sha256": "f9174ab5387f481d849198ebfbda40c8e95de541daff21500bce27497b7fe2eb",
+          "bytes": 1255
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-access-control-policy.docx",
+          "sha256": "b05ea203404940619e59de7ee3767ed4561d34ffc31354e818b02423ab43d9a1",
+          "bytes": 10328
+        }
+      ]
+    },
+    {
+      "id": "lib-password-mfa-policy",
+      "title": "Password and Multi-Factor Policy",
+      "group": "business",
+      "dept": "security",
+      "kind": "policy",
+      "review": "the security lead",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-password-mfa-policy.html",
+          "sha256": "3a3d4c5d0e57963f97d50cd7ea4b8d88b0d1d03bc707f28cef5333f8b08a3378",
+          "bytes": 2598
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-password-mfa-policy.md",
+          "sha256": "f4b36220be9822bff510a8b31c588fa6f01cc9e1d5f7f46130fc17a961e94650",
+          "bytes": 765
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-password-mfa-policy.json",
+          "sha256": "4469605a7215ecb4144002bcafa164c6cfab5d2663f0582fe7ff951bee55ada3",
+          "bytes": 1321
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-password-mfa-policy.docx",
+          "sha256": "87634851fe0ddb350e14c6b9f32b32911a9edc1fb2896edc216a40313cd96693",
+          "bytes": 10354
+        }
+      ]
+    },
+    {
+      "id": "lib-staff-it-policy",
+      "title": "Staff IT Acceptable Use Policy",
+      "group": "business",
+      "dept": "security",
+      "kind": "policy",
+      "review": "the security lead",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-staff-it-policy.html",
+          "sha256": "b983c45b7896c7d4827d3635c824a45e9538b005ee257f3da74a98a147fd958f",
+          "bytes": 2527
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-staff-it-policy.md",
+          "sha256": "418ee564d3cf6bfb29e34ff31f0749330e2215077a420fa11613e42ac08c2d90",
+          "bytes": 696
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-staff-it-policy.json",
+          "sha256": "ac6bd4f9bf39d0267a3c9cb00290e5070d36ea4fb97f73af08b80ba8d85d4106",
+          "bytes": 1214
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-staff-it-policy.docx",
+          "sha256": "4c7795da19cd0e2e67fc81a9161646a1d24a0764a06956bab99ec71052aaa561",
+          "bytes": 10326
+        }
+      ]
+    },
+    {
+      "id": "lib-backup-dr-policy",
+      "title": "Backup and Disaster Recovery Plan",
+      "group": "business",
+      "dept": "security",
+      "kind": "plan",
+      "review": "the security lead",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-backup-dr-policy.html",
+          "sha256": "c7f00f9de55690341ab08fb32ebc334f7afa2334a82cc7959b635edf3c58d97e",
+          "bytes": 2861
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-backup-dr-policy.md",
+          "sha256": "44cee135a81a0765d063001b1023595cc4de842c1e185498d6dd4e8217552aa5",
+          "bytes": 896
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-backup-dr-policy.json",
+          "sha256": "64df4ee2085bf2dd79e321ed0dfb786a932e55e3edc6d329ea191e281adf2617",
+          "bytes": 1687
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-backup-dr-policy.docx",
+          "sha256": "523595aed5edaa243041192fa72c3b301d4bd2db3361ae44332ab8b806567e37",
+          "bytes": 10509
+        }
+      ]
+    },
+    {
+      "id": "lib-bcp",
+      "title": "Business Continuity Plan",
+      "group": "business",
+      "dept": "executive",
+      "kind": "plan",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "executive/lib-bcp.html",
+          "sha256": "fdaf36d9103e424d79e8e10cec1b21805652b97e4629684a5c4a21ece95ddea7",
+          "bytes": 2637
+        },
+        {
+          "ext": "md",
+          "path": "executive/lib-bcp.md",
+          "sha256": "d171b477c6df9297649b2d78244fb284de83949208217ac4481cd9f27abaeafe",
+          "bytes": 697
+        },
+        {
+          "ext": "json",
+          "path": "executive/lib-bcp.json",
+          "sha256": "a263305f56ab150a9a05f87c56cc9000886eaece05be487e981ad97415550ff0",
+          "bytes": 1391
+        },
+        {
+          "ext": "docx",
+          "path": "executive/lib-bcp.docx",
+          "sha256": "ca2756a29f2e3b67d04ceadb68e7ca5327032b5db427894ed001782316d22c00",
+          "bytes": 10368
+        }
+      ]
+    },
+    {
+      "id": "lib-incident-response",
+      "title": "Incident Response Plan",
+      "group": "business",
+      "dept": "devops",
+      "kind": "plan",
+      "review": "the security lead",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "devops/lib-incident-response.html",
+          "sha256": "fbc75e426c53943b93b684ec546b42c0c383b15f6fb375eef83a79ddc35bc4b7",
+          "bytes": 2789
+        },
+        {
+          "ext": "md",
+          "path": "devops/lib-incident-response.md",
+          "sha256": "55b7db5284cbd84eb57f6555012f28bbe53b7c860c057d189fa6f180e35a4dd0",
+          "bytes": 841
+        },
+        {
+          "ext": "json",
+          "path": "devops/lib-incident-response.json",
+          "sha256": "e9579ad858f3ddd001f1f801a875ae30f76d745c60175400c7f005caa99a4501",
+          "bytes": 1605
+        },
+        {
+          "ext": "docx",
+          "path": "devops/lib-incident-response.docx",
+          "sha256": "7e1c59d492c33ba965c7f102aa3abb90fa83966968e1f8c9717deeabb0f50cae",
+          "bytes": 10480
+        }
+      ]
+    },
+    {
+      "id": "lib-change-management",
+      "title": "Change Management SOP",
+      "group": "business",
+      "dept": "devops",
+      "kind": "sop",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "devops/lib-change-management.html",
+          "sha256": "d7d395f2168c383c460e705ec6fe837e79e5aee9f4f3e287fec2d02ad51174dc",
+          "bytes": 2356
+        },
+        {
+          "ext": "md",
+          "path": "devops/lib-change-management.md",
+          "sha256": "98cadc4cc3eb95a541ebbfab53c797340e2ce9fb9343f810e702b0e481a95c9f",
+          "bytes": 554
+        },
+        {
+          "ext": "json",
+          "path": "devops/lib-change-management.json",
+          "sha256": "29ae903e0ca825b1ad56f96b5f7f7ce71ec5532dc1e29dbd71973ba6fa7a917e",
+          "bytes": 1011
+        },
+        {
+          "ext": "docx",
+          "path": "devops/lib-change-management.docx",
+          "sha256": "4f84ca3a7b248f24d6ef2ebf3e58a84a7ae54b39068ab49faeb5bac0aa128194",
+          "bytes": 10200
+        }
+      ]
+    },
+    {
+      "id": "lib-vuln-mgmt",
+      "title": "Vulnerability Management SOP",
+      "group": "business",
+      "dept": "security",
+      "kind": "sop",
+      "review": "the security lead",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-vuln-mgmt.html",
+          "sha256": "7f50bdc8d2bf9fd6cd1a6b63aea80d83f6cee79e1410e978afeafc5709fb4417",
+          "bytes": 2565
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-vuln-mgmt.md",
+          "sha256": "963f63ae57e28f5af387f9ff117e87004aacf0c5c0e37ab49282f3181a2d7ee7",
+          "bytes": 741
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-vuln-mgmt.json",
+          "sha256": "d8acd0c273e385aec01128ae6f6e5eb412dbcc39344d41b20e45c0e189c935d9",
+          "bytes": 1254
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-vuln-mgmt.docx",
+          "sha256": "0ed23b0ad4975c971cc07cc8028c40e665f9dbbda9fd3d11f07ee6d89820483d",
+          "bytes": 10319
+        }
+      ]
+    },
+    {
+      "id": "lib-secrets-handling",
+      "title": "Secrets Handling Standard",
+      "group": "business",
+      "dept": "security",
+      "kind": "policy",
+      "review": "the security lead",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-secrets-handling.html",
+          "sha256": "a24c3c38c97b210234bdfb7140721a3e5e16a8fdf951c42dc8066d489aa6ce45",
+          "bytes": 2524
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-secrets-handling.md",
+          "sha256": "276b3a43f3eb6f5ebf6973e857c7b9d4df83af3d678847f61ecd7d4191fd7f33",
+          "bytes": 704
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-secrets-handling.json",
+          "sha256": "33bf558ffe18e79251faa38152037a41742f910d558e88b408a6e08ee710f5fe",
+          "bytes": 1213
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-secrets-handling.docx",
+          "sha256": "f5bf1ae56d011975f89082264a6108b8f4161804fc902d0eb1fc22e6881deebd",
+          "bytes": 10310
+        }
+      ]
+    },
+    {
+      "id": "lib-remote-work-byod",
+      "title": "Remote Work and Personal Device Policy",
+      "group": "business",
+      "dept": "security",
+      "kind": "policy",
+      "review": "the security lead",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-remote-work-byod.html",
+          "sha256": "443e08ae4f35599b0f36e9df867b7998ac8893de95dd2daef5726e752b835471",
+          "bytes": 2534
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-remote-work-byod.md",
+          "sha256": "44d72ca6a0bf3309624e73efc34442571afa74572445374f82d36715e2b5b748",
+          "bytes": 701
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-remote-work-byod.json",
+          "sha256": "8ff8a58d2228d80069230e6c36b495a76168c69909dd8ae1c824c0542fde6afe",
+          "bytes": 1210
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-remote-work-byod.docx",
+          "sha256": "0e2fde233dd819ddbb8b482d190a97947639aca2bfdeb27db93def40983cceae",
+          "bytes": 10340
+        }
+      ]
+    },
+    {
+      "id": "lib-risk-register",
+      "title": "Risk Register (workbook)",
+      "group": "business",
+      "dept": "executive",
+      "kind": "register",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "executive/lib-risk-register.html",
+          "sha256": "1fddabe947388133a8677636fb483089ea97dcdd867a9ce49ebb24cab83ea7d8",
+          "bytes": 2067
+        },
+        {
+          "ext": "md",
+          "path": "executive/lib-risk-register.md",
+          "sha256": "a5d9ff7e77bcb36070781d2314832f95ebc8ce51df1b02019895e99bc0c99076",
+          "bytes": 313
+        },
+        {
+          "ext": "json",
+          "path": "executive/lib-risk-register.json",
+          "sha256": "7ce825c18e2e24dd52419275cc0f47fc06585919f072df7931c913130bae8ee1",
+          "bytes": 635
+        },
+        {
+          "ext": "docx",
+          "path": "executive/lib-risk-register.docx",
+          "sha256": "9deba25dd44849bc363d6ba1226b0f32ead4ce374e555bab8d77f2f13e54edb4",
+          "bytes": 10082
+        },
+        {
+          "ext": "xlsx",
+          "path": "executive/lib-risk-register.xlsx",
+          "sha256": "327f2adfe95528f9c61df79b63b3e3951f69a2eb4fbf331ca65b58b03934b305",
+          "bytes": 10322
+        }
+      ]
+    },
+    {
+      "id": "lib-ropa",
+      "title": "Record of Processing Activities (workbook)",
+      "group": "business",
+      "dept": "legal",
+      "kind": "register",
+      "review": "the Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013)"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-ropa.html",
+          "sha256": "d9d81d184a30d61a73018256f73c1e82e4ea0faebf2d310dcbaac9daf6ebca94",
+          "bytes": 2333
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-ropa.md",
+          "sha256": "04a66449fcbaae77f75b9aaad4cf1983723dc5f24cdfcf74db28659d7d2aeb1e",
+          "bytes": 541
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-ropa.json",
+          "sha256": "3b71504972ce0186cc09aabdda172987f1e44ea6857979f69a2babc7a979b07b",
+          "bytes": 927
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-ropa.docx",
+          "sha256": "21e6912e8b40e2c42b5d9a6543521943fb8e1a600cfb780746e8a1206f65cb1d",
+          "bytes": 10238
+        },
+        {
+          "ext": "xlsx",
+          "path": "legal/lib-ropa.xlsx",
+          "sha256": "0c5f4a4fb0f5e710bc75b0bf0f4246221fea62d0871f33701f012036268bbf3c",
+          "bytes": 8033
+        }
+      ]
+    },
+    {
+      "id": "lib-supplier-register",
+      "title": "Supplier Register (workbook)",
+      "group": "business",
+      "dept": "procurement",
+      "kind": "register",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "procurement/lib-supplier-register.html",
+          "sha256": "9306d69fdef780d22a1c891296b5ff7de48e8b11ebbd605a888c7ed86fb9a6fe",
+          "bytes": 2083
+        },
+        {
+          "ext": "md",
+          "path": "procurement/lib-supplier-register.md",
+          "sha256": "97e43bf4a9589a9971b709c6078d9eef9b8c161fab656aca1b0f2ffc3c3aab7b",
+          "bytes": 325
+        },
+        {
+          "ext": "json",
+          "path": "procurement/lib-supplier-register.json",
+          "sha256": "ae5398fa843cbe1777e3b5622e12729553b8b52e9d75f40c81c770077eaf0161",
+          "bytes": 647
+        },
+        {
+          "ext": "docx",
+          "path": "procurement/lib-supplier-register.docx",
+          "sha256": "948c4cd43e1389061e18281cfab1e23cf3abde2357be33ee8bb75ee1a3894528",
+          "bytes": 10088
+        },
+        {
+          "ext": "xlsx",
+          "path": "procurement/lib-supplier-register.xlsx",
+          "sha256": "a2c79a5e0c9383f07e9550bcda2461a3b8d24c4ca146108e3465d8f311dffe99",
+          "bytes": 8781
+        }
+      ]
+    },
+    {
+      "id": "lib-contract-register",
+      "title": "Contract Register (workbook)",
+      "group": "business",
+      "dept": "legal",
+      "kind": "register",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "legal/lib-contract-register.html",
+          "sha256": "9b9fb0138abc2aa741221746a1c471b9d928a5e71fe8f42a449714a3aed7beba",
+          "bytes": 2083
+        },
+        {
+          "ext": "md",
+          "path": "legal/lib-contract-register.md",
+          "sha256": "4d4b045b5b09c637637c963b1b1c2cbdb97b59d1dda3f47e28f8e8d8e5e456cb",
+          "bytes": 325
+        },
+        {
+          "ext": "json",
+          "path": "legal/lib-contract-register.json",
+          "sha256": "eb32f8106f4f051dbb124df2c38d6ce99dab37039bc46c43acb0c9de5d7b59b3",
+          "bytes": 647
+        },
+        {
+          "ext": "docx",
+          "path": "legal/lib-contract-register.docx",
+          "sha256": "6921d4141ed09b44a9e4d36512c9974357326a4e48709aae93bb69fc372e0805",
+          "bytes": 10090
+        },
+        {
+          "ext": "xlsx",
+          "path": "legal/lib-contract-register.xlsx",
+          "sha256": "d20fff8fa0bba4e53506fb82e4fe61098c59fddf8c12bcd2ff13d3776c4ed8df",
+          "bytes": 9080
+        }
+      ]
+    },
+    {
+      "id": "lib-breach-register",
+      "title": "Security Incident and Breach Register (workbook)",
+      "group": "business",
+      "dept": "security",
+      "kind": "register",
+      "review": "the Information Officer",
+      "law": [
+        "POPIA (Act 4 of 2013) section 22"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "security/lib-breach-register.html",
+          "sha256": "8bda1671acb355110445e955a080357243907b943b5341e44fe8bea6003bad0c",
+          "bytes": 2378
+        },
+        {
+          "ext": "md",
+          "path": "security/lib-breach-register.md",
+          "sha256": "be27cffb4b297ebfd228a432d3cb0e8ffc105f40fff4a3eb3652c7e4acb3f1c0",
+          "bytes": 580
+        },
+        {
+          "ext": "json",
+          "path": "security/lib-breach-register.json",
+          "sha256": "1047a5bf4e824b1c12e7e5e2765f72d5a2a2eee01ff30ee421f6f4e79af9ed36",
+          "bytes": 966
+        },
+        {
+          "ext": "docx",
+          "path": "security/lib-breach-register.docx",
+          "sha256": "ee1fb78094cb0d45329692f731e6e1cd1dfde4fddde4a2aa26aa9e1da6639b7b",
+          "bytes": 10256
+        },
+        {
+          "ext": "xlsx",
+          "path": "security/lib-breach-register.xlsx",
+          "sha256": "5ba8e38d4ae7375f8b316481ad77ddff7a70acfb04a6bab65dbcaa9a3cd17a52",
+          "bytes": 9394
+        }
+      ]
+    },
+    {
+      "id": "lib-prd",
+      "title": "Product Requirements Document",
+      "group": "business",
+      "dept": "product",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "product/lib-prd.html",
+          "sha256": "ef49025a325df753d2bedccf982e3b35f569e51132396a393eb47a76af91647e",
+          "bytes": 2545
+        },
+        {
+          "ext": "md",
+          "path": "product/lib-prd.md",
+          "sha256": "cddc8c8556add6a8b2a4b10a6f672db408595bce2bd7bf72352144fac3bd2b76",
+          "bytes": 609
+        },
+        {
+          "ext": "json",
+          "path": "product/lib-prd.json",
+          "sha256": "5b3cecd4470646fb9f413124cd33117aedf38416bfd63ca29ff715eb1cb7253d",
+          "bytes": 1251
+        },
+        {
+          "ext": "docx",
+          "path": "product/lib-prd.docx",
+          "sha256": "88ca02db29cac63b6b29da78fa7088f998dbad64aa93b4b54fe772606239133f",
+          "bytes": 10377
+        }
+      ]
+    },
+    {
+      "id": "lib-adr",
+      "title": "Architecture Decision Record",
+      "group": "business",
+      "dept": "devops",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "devops/lib-adr.html",
+          "sha256": "cc93d5d45c93688655761eb72c9a26f4d2e2ee8221b61c8cc07e4bb4d2657b26",
+          "bytes": 2412
+        },
+        {
+          "ext": "md",
+          "path": "devops/lib-adr.md",
+          "sha256": "f7bc1b7eef5a95b724f3fd25aeb28a42949e7205390eab55443f34a1c4673fe2",
+          "bytes": 496
+        },
+        {
+          "ext": "json",
+          "path": "devops/lib-adr.json",
+          "sha256": "4e08071ad43c4dbb84f56258476621fca5ceb29ab5c89ecf8e0d70b6a4c7f40d",
+          "bytes": 1098
+        },
+        {
+          "ext": "docx",
+          "path": "devops/lib-adr.docx",
+          "sha256": "45f413dc8a635ca41331d44eb48848df60099d32832780d6ed3098ea163a0fda",
+          "bytes": 10307
+        }
+      ]
+    },
+    {
+      "id": "lib-release-sop",
+      "title": "Release SOP",
+      "group": "business",
+      "dept": "devops",
+      "kind": "sop",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "devops/lib-release-sop.html",
+          "sha256": "29c5c46d746da4981191c9562a85c09f7d14beec3992adfa8d6b2ea2c032438c",
+          "bytes": 2312
+        },
+        {
+          "ext": "md",
+          "path": "devops/lib-release-sop.md",
+          "sha256": "9796f991c5199d4ebdf005652e25b1d49b76667eff3dab1d61b62afcc68746b2",
+          "bytes": 515
+        },
+        {
+          "ext": "json",
+          "path": "devops/lib-release-sop.json",
+          "sha256": "6fa4532a7e39db78eb0dd70e109c1224c69c7ff63282613443b49b974ff5abc1",
+          "bytes": 980
+        },
+        {
+          "ext": "docx",
+          "path": "devops/lib-release-sop.docx",
+          "sha256": "0904d251ccece85b559f79a397dc1f3c24b30327659232c11064a666b686ac18",
+          "bytes": 10180
+        }
+      ]
+    },
+    {
+      "id": "lib-test-plan",
+      "title": "Test Plan Template",
+      "group": "business",
+      "dept": "devops",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "devops/lib-test-plan.html",
+          "sha256": "54d881cdf7bc1a6d21587f2f6737c55b5616c89ea725714e1bea921841ade062",
+          "bytes": 2369
+        },
+        {
+          "ext": "md",
+          "path": "devops/lib-test-plan.md",
+          "sha256": "e85e9430c27a0775390aa41f16a26920b898d8eb932e6428b7043cfc3d0f0bd0",
+          "bytes": 422
+        },
+        {
+          "ext": "json",
+          "path": "devops/lib-test-plan.json",
+          "sha256": "b9d6af8958b60418fde756260692def26867330774e41a905bbd577df7236b8e",
+          "bytes": 1100
+        },
+        {
+          "ext": "docx",
+          "path": "devops/lib-test-plan.docx",
+          "sha256": "5e0d6fd06250f5daab6383eaf9c015f3387def84704a7912362692a68caba403",
+          "bytes": 10269
+        }
+      ]
+    },
+    {
+      "id": "lib-postmortem",
+      "title": "Post-Incident Review",
+      "group": "business",
+      "dept": "devops",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "devops/lib-postmortem.html",
+          "sha256": "98d0d3fde7b3a79e174944e10cb3f8ebb9069c1100153d0181f834eb86957344",
+          "bytes": 2360
+        },
+        {
+          "ext": "md",
+          "path": "devops/lib-postmortem.md",
+          "sha256": "2b692d09a625cc78f9fad201208a39986635e385652f4b7cfcca350df44893ad",
+          "bytes": 433
+        },
+        {
+          "ext": "json",
+          "path": "devops/lib-postmortem.json",
+          "sha256": "98f4d805a9c86a61dcb02dcb8faf195f0a945ca409a250e584c76e4c3cc3792e",
+          "bytes": 1075
+        },
+        {
+          "ext": "docx",
+          "path": "devops/lib-postmortem.docx",
+          "sha256": "9987b835b2201f1888fe931582408c11b409593d9a392465d818e60c59a27821",
+          "bytes": 10294
+        }
+      ]
+    },
+    {
+      "id": "lib-runbook",
+      "title": "Runbook Template",
+      "group": "business",
+      "dept": "devops",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "devops/lib-runbook.html",
+          "sha256": "0ab37031794bc00a7bedae322793e7413041f449d92537d8d41f4abca161b146",
+          "bytes": 2298
+        },
+        {
+          "ext": "md",
+          "path": "devops/lib-runbook.md",
+          "sha256": "abcbd41ada005685e1c42e9eeefb92dec3b7d378292d13759961b52c3db9a4c6",
+          "bytes": 394
+        },
+        {
+          "ext": "json",
+          "path": "devops/lib-runbook.json",
+          "sha256": "d3a14c6ed3dab26facd11346dff1054b895ee0ba328888222af0de0ad80cb3bc",
+          "bytes": 996
+        },
+        {
+          "ext": "docx",
+          "path": "devops/lib-runbook.docx",
+          "sha256": "f6a1b4cc59e081a9be445db540ab9adc4b47f653fe64799b140f9f896c15eef3",
+          "bytes": 10265
+        }
+      ]
+    },
+    {
+      "id": "lib-oncall",
+      "title": "On-Call Guide",
+      "group": "business",
+      "dept": "devops",
+      "kind": "plan",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "devops/lib-oncall.html",
+          "sha256": "5ae2f29468404d3a8a3a6579fd708ea762d9a060b003191446695db473b52ca0",
+          "bytes": 2400
+        },
+        {
+          "ext": "md",
+          "path": "devops/lib-oncall.md",
+          "sha256": "e00893250ab0f71e67ad4dee30ad052091e94edadbaea0bb6d8a1fc2768b1d60",
+          "bytes": 519
+        },
+        {
+          "ext": "json",
+          "path": "devops/lib-oncall.json",
+          "sha256": "457ffdf4306690e60dfa28ba2f5a1747f78a5c96f8a81176ef2bfe0fb32afef4",
+          "bytes": 1119
+        },
+        {
+          "ext": "docx",
+          "path": "devops/lib-oncall.docx",
+          "sha256": "38572e9e0ba75ca472b42f51658df3c384ab6d0ae4c0bf6a7a307e3a44171b82",
+          "bytes": 10309
+        }
+      ]
+    },
+    {
+      "id": "lib-model-eval",
+      "title": "Model Evaluation Report",
+      "group": "business",
+      "dept": "aibrain",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "aibrain/lib-model-eval.html",
+          "sha256": "f2119f5921922f34e71aa7060638a695109a87d904d6c6bf011ffc46771704e5",
+          "bytes": 2451
+        },
+        {
+          "ext": "md",
+          "path": "aibrain/lib-model-eval.md",
+          "sha256": "be16ea3a85b6e82c23e0cb316eab30faf0d6ebb3f1ced8abe01d0d7ec05539e2",
+          "bytes": 521
+        },
+        {
+          "ext": "json",
+          "path": "aibrain/lib-model-eval.json",
+          "sha256": "10c89a8bb89704dfaaef6ece7b8a9edef88d99816e69e6231823a1f26da9a7cc",
+          "bytes": 1163
+        },
+        {
+          "ext": "docx",
+          "path": "aibrain/lib-model-eval.docx",
+          "sha256": "abce729f64f1650a7e5e0688f6ed41b4b6537d2725021b5b2961ab0147c01c02",
+          "bytes": 10350
+        }
+      ]
+    },
+    {
+      "id": "lib-rfq",
+      "title": "Request for Quotation Template",
+      "group": "business",
+      "dept": "procurement",
+      "kind": "template",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "procurement/lib-rfq.html",
+          "sha256": "e782e0070b69b2fa46945819afdb575cafc689dbd4922ed8adcf536a4ea808a0",
+          "bytes": 2450
+        },
+        {
+          "ext": "md",
+          "path": "procurement/lib-rfq.md",
+          "sha256": "026e7dc7a71fe8f2ecf3864ff8ed041f087e2073ab0e1e1d66ed27b6b9db2b22",
+          "bytes": 532
+        },
+        {
+          "ext": "json",
+          "path": "procurement/lib-rfq.json",
+          "sha256": "cefd6ec91a509c975bb8408ead8e45d3cc3352b4f2aed1a117c4b17d17bf9f17",
+          "bytes": 1134
+        },
+        {
+          "ext": "docx",
+          "path": "procurement/lib-rfq.docx",
+          "sha256": "742165ddb87c49141d30f0d0acefeacd754135ccf992aa2d53eb52abb4ce3181",
+          "bytes": 10351
+        }
+      ]
+    },
+    {
+      "id": "lib-tender-checklist",
+      "title": "Tender Response Checklist",
+      "group": "business",
+      "dept": "government",
+      "kind": "checklist",
+      "review": "a South African attorney or tender adviser",
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "government/lib-tender-checklist.html",
+          "sha256": "d4eef56babc0c42f254da885318c99600154be9a4ca9acf0968be289f915ea57",
+          "bytes": 2700
+        },
+        {
+          "ext": "md",
+          "path": "government/lib-tender-checklist.md",
+          "sha256": "5cbbf67ae3738b6e658378f5d746af8b8f42aff1363b0095bc1ab0ebbdf64536",
+          "bytes": 856
+        },
+        {
+          "ext": "json",
+          "path": "government/lib-tender-checklist.json",
+          "sha256": "bf304da897640e2b7dfbcf5da2497a2da265693c84eb7bf6bf23461ea370d92b",
+          "bytes": 1794
+        },
+        {
+          "ext": "docx",
+          "path": "government/lib-tender-checklist.docx",
+          "sha256": "fa1321e30351a87eef2c30595fbaf5f11ea66eb3db27436c0fa05a7215b43c28",
+          "bytes": 10371
+        }
+      ]
+    },
+    {
+      "id": "lib-grant-checklist",
+      "title": "Grant Application Checklist",
+      "group": "business",
+      "dept": "government",
+      "kind": "checklist",
+      "review": null,
+      "law": [],
+      "files": [
+        {
+          "ext": "html",
+          "path": "government/lib-grant-checklist.html",
+          "sha256": "5212ea68d51964aa89f416fc005bee2bbdb2305d575bbe46b62092572ab0eab0",
+          "bytes": 2316
+        },
+        {
+          "ext": "md",
+          "path": "government/lib-grant-checklist.md",
+          "sha256": "3acfb3ec3bab3f96823682994275b1324c4b976a956b5a0665395121066f1a14",
+          "bytes": 508
+        },
+        {
+          "ext": "json",
+          "path": "government/lib-grant-checklist.json",
+          "sha256": "22f265e9bad7e6b78b85ac65baa3aa8953c15b92075a8249049bab24f94afcb6",
+          "bytes": 1213
+        },
+        {
+          "ext": "docx",
+          "path": "government/lib-grant-checklist.docx",
+          "sha256": "99c7069e89234580a63179ebecbbf34685ce6d4bfa515733d444550bfda46fc3",
+          "bytes": 10185
+        }
+      ]
+    },
+    {
+      "id": "lib-moa",
+      "title": "Memorandum of Agreement (outline)",
+      "group": "business",
+      "dept": "government",
+      "kind": "contract",
+      "review": "a South African attorney",
+      "law": [
+        "Public Finance Management Act 1 of 1999 where a public body is party"
+      ],
+      "files": [
+        {
+          "ext": "html",
+          "path": "government/lib-moa.html",
+          "sha256": "f8250bb02f699e5338ef217e75560ac21981b049e8dff26749db7e464c7cfd04",
+          "bytes": 2945
+        },
+        {
+          "ext": "md",
+          "path": "government/lib-moa.md",
+          "sha256": "50675638e6061ba575705e8ce6c1c92428c503ee1b247c6072c57721f4e03553",
+          "bytes": 962
+        },
+        {
+          "ext": "json",
+          "path": "government/lib-moa.json",
+          "sha256": "02dc0902e1a0c385ae41de391589b89abdc90b6653758ae53f29217fcef52bd6",
+          "bytes": 1912
+        },
+        {
+          "ext": "docx",
+          "path": "government/lib-moa.docx",
+          "sha256": "b95cb41662e0df168c3ee78cb702a89b17d283eac053385272ae98c7e8ec363b",
+          "bytes": 10554
+        }
+      ]
+    }
+  ]
+}
