@@ -12258,3 +12258,32 @@ running MOD-04 unchecked is the behaviour being removed. Mutation-checked: disab
 | `pnpm lint`, `pnpm typecheck`, worker unit tests    | PASS                          |
 | Judge catches adversarial outputs                   | **NOT VERIFIED** (T28)        |
 | Rollback: revert this commit; no schema change      | PASS                          |
+
+## Stage 144 — pilot documents: feature matrix and one-school protocol (drafts)
+
+Source: audit tasks T01, T03, T04, T32, section 9. **Documents only; no code or behaviour changed.** Nothing here is adopted.
+
+`docs/FEATURE_MATRIX.md` states, row by row with a file as evidence, what a pilot user can and cannot rely on. `docs/PILOT_PROTOCOL_ONE_SCHOOL_DRAFT.md` is a
+one-school protocol with three phases, gates A–D tied to the audit's task ids, measures with fixed definitions, stop authority and eight numbered decisions
+for Sarah-Jane Harding. It lists six faults in the current `PILOT_PROTOCOL.md` (an expired start date, "of 3" metrics, conflicting NPS and cost thresholds,
+percentages over a handful of people, an assumption of learner data, targets written as if met). It does not replace that file.
+
+**Findings made while writing them, stated plainly.**
+
+1. **No teacher journey reaches a model.** No web route or action starts a pipeline run; the AI Studio tab's own banner says it is a demonstration. Only the
+   worker's dev runner, or a producer that is not in this repository, starts one. This is the gap behind T05 and the reason the matrix lists generation as "Not
+   reachable". It also means nothing in the app currently supplies the `gradePhase` that Stage 143 now requires.
+2. **The Parent Portal shows invented notices** (OQ-056). Not in the audit.
+3. 78 of 80 widgets were scanned and none makes a network call; the two matches are detector patterns inside PF-W06 and PF-W07. Whether `/widgets/*` needs
+   a sign-in was not established.
+
+**Not verified.** Nothing was run in a browser or against a deployed environment. Statuses come from reading the code and the audit. The Operations
+repository is not covered. The protocol is not legal or privacy advice.
+
+| Exit gate item                                                | Result                |
+| ------------------------------------------------------------- | --------------------- |
+| Every matrix row cites a file or document                     | PASS (by reading)     |
+| No name, date, threshold or approval invented in the protocol | PASS (all left blank) |
+| Decisions logged in `docs/OPEN_QUESTIONS.md` (OQ-055, OQ-056) | PASS                  |
+| Adopted by the owner                                          | **NOT DONE** (human)  |
+| Rollback: revert; documents only                              | PASS                  |

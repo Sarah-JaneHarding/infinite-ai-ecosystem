@@ -898,3 +898,21 @@ threshold), which touches POPIA purpose limitation, so this is the owner's call,
 _Recommend:_ option 1, since no code uses it. Nothing was changed; Stage 18's gate stays red until this is decided (rule 1: do not proceed).
 
 **Resolution 2026-11-24:** the owner chose option 1. The flag was removed from `FLAGS`, with its tests and the `FLAG_COMMONS_PATTERN_SHARING` line in `docs/OPERATOR_MANUAL.md`. Re-add a flag, with a fresh expiry, when LE-08 pattern sharing is built.
+
+### OQ-055 — decisions the one-school pilot protocol needs from you · 2026-11-26
+
+Source: audit tasks T01, T04, T32. `docs/PILOT_PROTOCOL_ONE_SCHOOL_DRAFT.md` (draft, not adopted) leaves these blank on purpose; the existing
+`docs/PILOT_PROTOCOL.md` stays in force until you adopt it. In the order they unblock work: **D2** the school's written agreement, signatory and date
+(Benjamin Pine is recorded as school 1 but current approval is unconfirmed) · **D4** product owner and who may restart a paused pilot · **D5** privacy and
+safeguarding leads · **D3** first workflow (recommended: the offline classroom-kit widgets while the generation journey is built) · **D1** start date and phase
+lengths (the 2026-10-06 start has passed) · **D6** thresholds (recommended: no NPS gate; safety is the only hard stop) · **D7** a cost ceiling, plus model
+pricing and a budget for T16 · **D8** who decides at the end.
+
+### OQ-056 — the Parent Portal shows invented school notices · 2026-11-26
+
+Found while writing `docs/FEATURE_MATRIX.md`; not in the audit. `GuardianPortal.tsx` hard-codes "Term 3 results available from 25 August" and "Parent evening:
+3 September 18:00" under "School notices", and a progress line that promises results "once Term 3 assessments are completed". None comes from the school. The
+SBST, HoD, SMT, district and run-inspector pages had the same kind of content removed and now say plainly that there is nothing to show; this page was missed.
+
+**Needs a human:** confirm that it should be treated the same way (remove the notices and say nothing real is shown yet), or say where genuine school notices
+would come from. Until then no guardian may be given access (guardian access is switched off in the pilot scope in any case).
