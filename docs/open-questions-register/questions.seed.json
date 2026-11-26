@@ -418,6 +418,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "updated",
+        "text": "Decided 2026-11-26 by the owner: wait for onboarding; no request is sent to the school now. Reason given: running without the four templates tests the application's adaptability and the template fidelity checks. This supersedes the earlier instruction to ask the principal now with a date. Not decided here: the lesson plan template's countersignature (ratifiedAt stays null), and whether the school is still asked for a date at onboarding. The question stays partially answered until the templates arrive."
       }
     ],
     "id": "OQ-003",
@@ -436,7 +441,15 @@
       "Wait until onboarding."
     ],
     "title": "When will Benjamin Pine supply the four missing templates?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-003 and marked the 2026-11-05 decisions-table note as superseded. Status stays partially answered."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: wait for onboarding; no request is sent to the school now. Reason given: running without the four templates tests the application's adaptability and the template fidelity checks. This supersedes the earlier instruction to ask the principal now with a date. Not decided here: the lesson plan template's countersignature (ratifiedAt stays null), and whether the school is still asked for a date at onboarding. The question stays partially answered until the templates arrive.",
+      "verdict": "followup"
+    }
   },
   {
     "blocks": "Calibrated age-appropriateness checking",
