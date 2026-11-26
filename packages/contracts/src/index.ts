@@ -194,7 +194,9 @@ export {
   ASSISTANT_CONNECTORS,
   AssistantChatRequest,
   AssistantChatResponse,
+  AssistantConnectorList,
   AssistantProvider,
+  AssistantRedactionSummary,
   connectorFor,
   type AssistantConnector,
 } from './gateway/assistants.js';
