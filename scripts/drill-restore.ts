@@ -44,7 +44,7 @@ const RUNBOOK_CHECKS: readonly RunbookCheck[] = [
     file: 'brain-restore.md',
     // The Brain lives in the same Postgres as everything else, so point-in-time recovery covers it and
     // its RPO is the database's. An earlier 60-minute figure assumed an hourly Brain snapshot job that
-    // does not exist and is not planned (OQ-059, decided 2026-11-26). Unproven until the live drill.
+    // does not exist and is not planned (OQ-061, decided 2026-11-26). Unproven until the live drill.
     description: 'Brain restore — all five tiers, via database point-in-time recovery',
     rtoMinutes: 120,
     rpoMinutes: 5,
@@ -82,7 +82,7 @@ const RUNBOOK_CHECKS: readonly RunbookCheck[] = [
   {
     file: 'region-loss.md',
     // No secondary region, replica or off-Region copy exists in the stack, so there is no failover and
-    // no honest figure to declare. A number here would be invented (OQ-059, decided 2026-11-26).
+    // no honest figure to declare. A number here would be invented (OQ-061, decided 2026-11-26).
     description:
       'Full region loss — no failover exists; communicate and wait for recovery',
     rtoMinutes: null,

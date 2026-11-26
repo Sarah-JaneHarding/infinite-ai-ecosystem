@@ -12322,7 +12322,7 @@ tier 1234 passing; lint, typecheck and format clean. `FEATURE_MATRIX.md` and OQ-
 Source: pilot-readiness audit tasks T12/T13 (MFA), T17 (staging deploy) and T19 (backup and restore). Requested 2026-11-26. **Documents only; no code, infrastructure or setting was changed**
 and nothing was run against AWS, Keycloak or a database. Each runbook says it is unrun.
 
-Added `docs/RUNBOOKS/cd-deploy-role-failure.md`, `verify-mfa.md` and `restore-drill.md`, indexed in `docs/RUNBOOKS/README.md`, with OQ-057 to OQ-059.
+Added `docs/RUNBOOKS/cd-deploy-role-failure.md`, `verify-mfa.md` and `restore-drill.md`, indexed in `docs/RUNBOOKS/README.md`, with OQ-059 to OQ-061.
 
 **What reading the repository and the real CD log turned up, stated plainly.**
 
@@ -12333,29 +12333,32 @@ Added `docs/RUNBOOKS/cd-deploy-role-failure.md`, `verify-mfa.md` and `restore-dr
    Terraform and no stated backup; the encryption key has no second copy.
 4. Checked and **not** a problem: the Education web app registers only the Keycloak provider (no development sign-in); the "open development mode" finding is about the separate Operations platform.
 
+**Renumbering.** These questions were first written as OQ-057 (CD role), OQ-058 (MFA and realm) and OQ-059 (restore drill), and the earlier commit messages and PR comments use those numbers. `main` took
+OQ-057 and OQ-058 for unrelated questions (the Toqi connector, the assistant chat panel) while this branch was open, so on merging they became **OQ-059, OQ-060 and OQ-061**. Read old references accordingly.
+
 **Not done.** None of the three runbooks has been run, so none of audit tasks T13, T17 or T19 is complete. I did not fix `database-restore.md`, `region-loss.md` or the realm file; each is a decision or a human step (logged).
 
 | Exit gate item                                                           | Result               |
 | ------------------------------------------------------------------------ | -------------------- |
 | Each runbook states what is confirmed, what is not, and that it is unrun | PASS (by reading)    |
 | No secret, ARN, account id or credential written into a document         | PASS                 |
-| Findings logged (OQ-057, OQ-058, OQ-059)                                 | PASS                 |
+| Findings logged (OQ-059, OQ-060, OQ-061)                                 | PASS                 |
 | Someone with access ran a runbook and recorded the result                | **NOT DONE** (human) |
 | Rollback: revert; documents only                                         | PASS                 |
 
-## Stage 147 — OQ-058 / OQ-059: production realm rule, HoD one-time code, Brain RPO and region loss
+## Stage 147 — OQ-060 / OQ-061: production realm rule, HoD one-time code, Brain RPO and region loss
 
 Source: the decisions Sarah-Jane Harding made on 2026-11-26 after reading `docs/RUNBOOKS/verify-mfa.md` and `restore-drill.md` (Stage 146).
 
-**1. The production realm is derived, not copied (OQ-058).** `infra/keycloak/realm.json` is a development fixture with eleven `*.dev` users (two administrators) and a localhost redirect. `toProductionRealm`
+**1. The production realm is derived, not copied (OQ-060).** `infra/keycloak/realm.json` is a development fixture with eleven `*.dev` users (two administrators) and a localhost redirect. `toProductionRealm`
 (`packages/policy/src/keycloak-production-realm.ts`) removes every person, keeps the provisioner's service account (it carries the user-management roles), drops loopback redirect URIs and web origins, changes nothing
 else, and **refuses** (throws) when the result would be unusable: no service account, or a client left with no redirect URI. No production domain is invented. `pnpm keycloak:production-realm` writes
 `infra/keycloak/realm.production.json` (`--check` verifies it is current). The rule is by _role of the entry_, not by name, so a person called anything is removed.
 
-**2. The HoD needs a one-time code (OQ-058).** `realm.json` gains the `browser-mfa otp hod` sub-flow, its role condition, and its invocation (priority 70), copied exactly from the `sbst_chair` pattern. The drift test now guards
+**2. The HoD needs a one-time code (OQ-060).** `realm.json` gains the `browser-mfa otp hod` sub-flow, its role condition, and its invocation (priority 70), copied exactly from the `sbst_chair` pattern. The drift test now guards
 six roles and records `teacher`, `sbst`, `guardian` and `learner` as "not asked yet"; a new test fails if any realm role is in neither list, so a new role cannot slip through. `sbst` and `teacher` are to be decided before Phase 2.
 
-**3. The Brain RPO and region loss are stated truthfully (OQ-059).** The 60-minute Brain RPO assumed an hourly snapshot job that does not exist; it was dropped, so the Brain's RPO is the database's (≤ 5 minutes), unproven
+**3. The Brain RPO and region loss are stated truthfully (OQ-061).** The 60-minute Brain RPO assumed an hourly snapshot job that does not exist; it was dropped, so the Brain's RPO is the database's (≤ 5 minutes), unproven
 until the live drill. `region-loss.md` described a failover to a secondary region that the stack does not build; it now says there is no failover and commits to no RTO or RPO. `scripts/drill-restore.ts` allows "not
 committed", declares the new Brain figure, and its record now says it restores nothing. Four Terraform comments were corrected (comment-only: verified by diff, zero non-comment lines changed).
 
@@ -12365,7 +12368,7 @@ every user fails 2; changing the dev realm without regenerating fails 2; droppin
 **Not done, stated plainly.**
 
 1. **None of this was run against a live Keycloak or a real database.** MFA is still unverified (OQ-036, runbook Parts A and B); the Brain RPO is still unproven (live drill).
-2. **The production client keeps `https://*.infinite-ai.co.za/*`.** I have not verified Keycloak honours a wildcard in the host, and it is broad. To check on the real domain (OQ-058).
+2. **The production client keeps `https://*.infinite-ai.co.za/*`.** I have not verified Keycloak honours a wildcard in the host, and it is broad. To check on the real domain (OQ-060).
 3. **Still open:** lost authenticator and break-glass administrator; `DB_ENCRYPTION_KEY` custody and re-encryption (OQ-053); identity-provider backup; `database-restore.md` step 4; staging backup settings; `sbst`/`teacher` MFA before Phase 2.
 4. `docs/PROVISIONING_DESIGN.md` still carries its dated notes about "admin, smt and platform roles"; left as history.
 

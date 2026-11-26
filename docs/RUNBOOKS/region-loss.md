@@ -3,7 +3,7 @@
 **RTO:** not committed. Service returns when AWS restores the Region; nothing here can bring it back sooner.
 **RPO:** not committed. No copy of the data is held outside the Region, so anything written since AWS's own recovery point depends on AWS restoring the Region intact.
 
-**Status:** rewritten 2026-11-26 (OQ-059, owner decision). The earlier version described a failover to a secondary region: promote a read replica, repoint DNS, restore a Brain snapshot from a `gs://` bucket, RTO ≤ 4 hours, RPO ≤ 60 minutes. **None of that exists.** `infra/terraform` builds no secondary region, no cross-region replica and no off-region copy, and `environments/production/main.tf` says the failover was "deliberately not automated". A runbook that promised a recovery the stack cannot perform is worse than none, because it is believed at the worst moment. This version says what is true.
+**Status:** rewritten 2026-11-26 (OQ-061, owner decision). The earlier version described a failover to a secondary region: promote a read replica, repoint DNS, restore a Brain snapshot from a `gs://` bucket, RTO ≤ 4 hours, RPO ≤ 60 minutes. **None of that exists.** `infra/terraform` builds no secondary region, no cross-region replica and no off-region copy, and `environments/production/main.tf` says the failover was "deliberately not automated". A runbook that promised a recovery the stack cannot perform is worse than none, because it is believed at the worst moment. This version says what is true.
 
 ## What this covers, and what it does not
 

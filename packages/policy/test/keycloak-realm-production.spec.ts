@@ -10,7 +10,7 @@ import {
   toProductionRealm,
 } from '../src/keycloak-production-realm.js';
 
-// OQ-058: `infra/keycloak/realm.json` is a development fixture with eleven `*.dev` users (two of them
+// OQ-060: `infra/keycloak/realm.json` is a development fixture with eleven `*.dev` users (two of them
 // administrators) and a localhost redirect. OQ-036 said production "must be created from this file", and
 // nothing removed those users first. `realm.production.json` is the file that is safe to import, derived by
 // `toProductionRealm`. These tests make that a checked rule, not a step someone has to remember.

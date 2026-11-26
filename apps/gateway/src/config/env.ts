@@ -50,6 +50,12 @@ export const GatewayEnvSchema = z.object({
     .url()
     .default('https://dashscope.aliyuncs.com/compatible-mode/v1'),
   DASHSCOPE_API_KEYS: commaSeparatedKeys.optional(),
+  QWEN_MODEL_ID: z.string().default('qwen-plus'),
+
+  // --- Grok via xAI (OpenAI-compatible) ------------------------------------------
+  XAI_BASE_URL: z.string().url().default('https://api.x.ai/v1'),
+  XAI_API_KEYS: commaSeparatedKeys.optional(),
+  GROK_MODEL_ID: z.string().default('grok-4'),
 
   // --- LM Studio (local OpenAI-compatible server) --------------------------------
   LM_STUDIO_BASE_URL: z.string().url().default('http://localhost:1234/v1'),
@@ -94,6 +100,7 @@ export const GatewayEnvSchema = z.object({
       'gemini',
       'groq',
       'qwen',
+      'grok',
       'lm-studio',
       'ollama',
       'genspark',

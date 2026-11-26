@@ -57,7 +57,7 @@ const realm = JSON.parse(
 // `sbst_chair` was added on 2026-11-12 (OQ-046 follow-up, owner decision): the chair's confirmation ratifies
 // SBST minutes into the Brain as a versioned fact, so confirming them needs a second factor.
 //
-// `hod` was added on 2026-11-26 (OQ-058, owner decision): the HoD's approval is the human gate every generated
+// `hod` was added on 2026-11-26 (OQ-060, owner decision): the HoD's approval is the human gate every generated
 // artefact passes through, so a stolen password must not be enough to approve content in a named person's name.
 const MFA_ROLES = ['admin', 'smt', 'sbst_chair', 'hod', ...PLATFORM_ROLES] as const;
 

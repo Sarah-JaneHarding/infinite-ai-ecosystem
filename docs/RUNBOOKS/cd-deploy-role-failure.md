@@ -74,7 +74,7 @@ mistake in the repository's Terraform (rows 3 or 4 point at it), fix the Terrafo
 ## What to record afterwards
 
 Which row was true · what you changed and where · the run URL that went green · the date and who did it. Add it to `docs/STAGE_LOG.md`
-under a new heading, and update OQ-057 in `docs/OPEN_QUESTIONS.md`. Audit task T17 also asks for health checks, secrets and rollback to be
+under a new heading, and update OQ-059 in `docs/OPEN_QUESTIONS.md`. Audit task T17 also asks for health checks, secrets and rollback to be
 tested: this runbook covers getting CD to authenticate and deploy once; rollback is `canary-deploy.md`.
 
 ## Which test would have caught this earlier

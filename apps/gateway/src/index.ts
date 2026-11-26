@@ -46,6 +46,7 @@ import {
   parseRoutingConfig,
   type RoutingLink,
 } from './routing/config.js';
+import { buildAssistantRouting } from './routing/assistants.js';
 import { createRouter } from './routing/router.js';
 import { createGatewayServer, type CostEstimator } from './server.js';
 
@@ -80,6 +81,44 @@ export function buildAdapters(
     credentialPools.google = new CredentialPool('google', env.GOOGLE_API_KEYS);
     adapters.google = createGoogleAdapter({
       baseUrl: env.GOOGLE_BASE_URL,
+      fetchImpl,
+    });
+  }
+  // Qwen, Grok and Copilot are connectors, not new adapters: each speaks the OpenAI wire
+  // format, so each is the one existing factory pointed at a different endpoint. Registry
+  // keys (`qwen`, `xai`, `azure`) are what the routing file's `provider` field names.
+  if (env.DASHSCOPE_API_KEYS !== undefined) {
+    credentialPools.qwen = new CredentialPool('qwen', env.DASHSCOPE_API_KEYS);
+    adapters.qwen = createOpenAiCompatibleAdapter({
+      provider: 'qwen',
+      baseUrl: env.DASHSCOPE_BASE_URL,
+      fetchImpl,
+    });
+  }
+  if (env.XAI_API_KEYS !== undefined) {
+    credentialPools.xai = new CredentialPool('xai', env.XAI_API_KEYS);
+    adapters.xai = createOpenAiCompatibleAdapter({
+      provider: 'xai',
+      baseUrl: env.XAI_BASE_URL,
+      fetchImpl,
+    });
+  }
+  // "Copilot" is Azure OpenAI: Microsoft 365 Copilot and GitHub Copilot expose no
+  // embeddable chat-completion API. Azure puts the deployment in the path, `api-version`
+  // in the query string and the key in an `api-key` header.
+  if (
+    env.AZURE_OPENAI_API_KEYS !== undefined &&
+    env.AZURE_OPENAI_ENDPOINT !== undefined
+  ) {
+    credentialPools.azure = new CredentialPool('azure', env.AZURE_OPENAI_API_KEYS);
+    const endpoint = env.AZURE_OPENAI_ENDPOINT.replace(/\/+$/, '');
+    const apiVersion = encodeURIComponent(env.AZURE_OPENAI_API_VERSION);
+    adapters.azure = createOpenAiCompatibleAdapter({
+      provider: 'azure',
+      baseUrl: endpoint,
+      authStyle: 'api-key',
+      urlFor: (path, deployment) =>
+        `${endpoint}/openai/deployments/${encodeURIComponent(deployment)}${path}?api-version=${apiVersion}`,
       fetchImpl,
     });
   }
@@ -202,7 +241,12 @@ export function boot(
   const router = createRouter({
     adapters,
     credentialPools,
-    routing: loadRouting(gatewayEnv),
+    // Assistant connectors first, the reviewed routing file second: an explicit route in
+    // the file for an `assistant.*` model overrides the derived one.
+    routing: {
+      ...buildAssistantRouting(gatewayEnv, adapters),
+      ...loadRouting(gatewayEnv),
+    },
     logger,
     circuitBreaker,
   });

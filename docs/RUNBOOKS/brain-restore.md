@@ -4,7 +4,7 @@
 **RPO:** ≤ 5 minutes, **the same as the database's**. The Brain's tables live in the same Postgres as every other table, so RDS point-in-time recovery
 covers them and there is no separate Brain backup to age. **Unproven:** this holds only if the live restore drill (`docs/RUNBOOKS/restore-drill.md`) passes.
 
-**Withdrawn 2026-11-26 (OQ-059, owner decision):** an earlier version declared an RPO of ≤ 60 minutes from hourly Brain snapshots. **No such snapshot job exists
+**Withdrawn 2026-11-26 (OQ-061, owner decision):** an earlier version declared an RPO of ≤ 60 minutes from hourly Brain snapshots. **No such snapshot job exists
 and none is planned.** A separate hourly copy of data the database already recovers to within minutes would only be a weaker second copy. If long-term or
 off-instance copies are wanted (for example retention beyond the backup window), that is a separate decision with its own design.
 

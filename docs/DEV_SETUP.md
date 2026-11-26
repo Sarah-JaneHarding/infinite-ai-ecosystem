@@ -230,7 +230,7 @@ import substitutes it into the `infinite-ai-provisioner` client, so the stack wi
 the web app use it, put the same value and `KEYCLOAK_PROVISIONER_CLIENT_ID=infinite-ai-provisioner` in `apps/web/.env`; leave them empty to keep
 creating Keycloak users by hand. A realm imported before this change must be re-imported to gain the client.
 
-**One-time codes in dev (OQ-036, OQ-058).** The realm requires a one-time code for `admin.dev`, `smt.dev`, `hod.dev`, `chair.dev` (it holds
+**One-time codes in dev (OQ-036, OQ-060).** The realm requires a one-time code for `admin.dev`, `smt.dev`, `hod.dev`, `chair.dev` (it holds
 `sbst_chair`), `platform-support.dev` and `platform-admin.dev`. The first time you sign in as one of them, Keycloak asks you to set up an
 authenticator app (any TOTP app; the QR code is on that screen) and then asks for a code on every later sign-in. **`hod.dev` needs this
 too since 2026-11-26, so deciding a human gate as the HoD now means having the authenticator app to hand.** The other dev users

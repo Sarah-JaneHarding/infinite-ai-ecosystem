@@ -1,4 +1,4 @@
-// Derives the PRODUCTION Keycloak realm file from the development one (OQ-036 / OQ-058).
+// Derives the PRODUCTION Keycloak realm file from the development one (OQ-036 / OQ-060).
 //
 // `infra/keycloak/realm.json` is a development fixture: it defines eleven `*.dev` sign-in users,
 // including `admin.dev` (role `admin`) and `platform-admin.dev`, each with an initial password

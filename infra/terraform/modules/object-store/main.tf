@@ -1,6 +1,6 @@
 # S3 bucket for object storage — whatever OBJECT_STORE_BUCKET names (no hourly Brain snapshot
 # job exists; the Brain is recovered with the database, see docs/RUNBOOKS/brain-restore.md and
-# OQ-059), matching MinIO's role in
+# OQ-061), matching MinIO's role in
 # infra/docker/compose.dev.yml exactly (the app talks to it through the same S3-compatible
 # API either way, no code branch for "real S3 vs MinIO"). Private, versioned (a snapshot
 # overwritten by mistake is still recoverable), and encrypted with a dedicated KMS key —
