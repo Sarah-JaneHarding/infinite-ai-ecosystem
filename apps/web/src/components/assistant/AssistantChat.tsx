@@ -186,7 +186,7 @@ export function AssistantChat({ assistants }: Props) {
       ) : null}
 
       {error !== null ? (
-        <p role="alert" className="text-sm text-[var(--iai-danger,#b00020)] mb-3">
+        <p role="alert" className="text-sm text-[var(--iai-error-text)] mb-3">
           {error}
         </p>
       ) : null}
@@ -215,7 +215,7 @@ export function AssistantChat({ assistants }: Props) {
           type="button"
           onClick={() => void send()}
           disabled={busy || full || draft.trim() === ''}
-          className="px-4 py-2 rounded-md bg-[var(--iai-primary,#1d4ed8)] text-white disabled:opacity-50"
+          className="px-4 py-2 rounded-md bg-[var(--iai-primary)] text-white disabled:opacity-50"
         >
           Send
         </button>
