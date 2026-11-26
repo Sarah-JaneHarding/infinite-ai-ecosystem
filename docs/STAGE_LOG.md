@@ -12381,3 +12381,29 @@ every user fails 2; changing the dev realm without regenerating fails 2; droppin
 | Keycloak imports the files and asks the HoD for a code                   | **NOT VERIFIED** (runbook A/B) |
 | Live restore drill meets the stated RTO and RPO                          | **NOT DONE** (human)           |
 | Rollback: revert; the realm file is not deployed anywhere from this repo | PASS                           |
+
+## Stage 148 — audit T05: design for the first teacher journey (a CAPS lesson draft)
+
+Source: audit task T05; workflow chosen by Sarah-Jane Harding on 2026-11-26 (a CAPS lesson draft with educator review, synthetic input). **Documents only; no code changed.**
+
+`docs/T05_CAPS_LESSON_DRAFT_DESIGN.md` records what the code shows and proposes slices S0 to S6 with the decisions D1 to D5 (OQ-063). The audit expected T05 to be "build one workflow". Reading the code showed it is a sequence of dependent pieces,
+and that some of what looks like a feature gap is a **silent safety gap**.
+
+**Findings, stated plainly.**
+
+1. **13 agents declare guardrails that are never wired.** `groundingChecker` and `templateFidelityChecker` are optional dependencies of the step executor that nothing in `apps/worker` or `scripts` sets, so both checks are silently skipped for CE-01 to CE-09 and DW-02, DW-05, DW-07, DW-08.
+   Same class as the age-check gap fixed in Stage 143, and wider. Not in the audit.
+2. **CE-05 gets no ratified context.** `buildPayload` is unset in production, so the agent receives only the raw run input, although its prompt requires the framework, unit blueprint and template from L0 and calls itself "an empty vessel" until they are ratified. Its prompt has `ratified_by: null`.
+3. **MOD-04 cannot produce a draft.** Its `draft-artefact` step is a `tool_call` whose handler only records an episode; no model is called.
+4. **No entry point exists** (no route, no queue client in `apps/web`), already recorded in Stage 144.
+5. **The school's inputs are real but unratified:** the Benjamin Pine lesson plan template was supplied as a .docx (`ratifiedAt: null`, pending the principal), and every CAPS `SourceRef.ratifiedBy` is `null`. The ratify scripts act as a development system actor, so ratification in the pilot is a human act.
+
+**Not done.** Nothing was built or run, and I did not check whether a MOD-01 producer exists outside this repository. No CAPS content is written anywhere in this change.
+
+| Exit gate item                                                           | Result               |
+| ------------------------------------------------------------------------ | -------------------- |
+| Every claim in the design cites a file                                   | PASS (by reading)    |
+| Decisions left to the owner, none guessed (subject, grade, who ratifies) | PASS                 |
+| Logged in `docs/OPEN_QUESTIONS.md` (OQ-063)                              | PASS                 |
+| Owner confirmed the scope and decisions D1 to D5                         | **NOT DONE** (human) |
+| Rollback: revert; documents only                                         | PASS                 |
