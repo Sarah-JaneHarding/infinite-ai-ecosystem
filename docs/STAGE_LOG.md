@@ -12346,3 +12346,34 @@ by this Terraform, so it belongs wherever Keycloak runs. The unplumbed issuer is
 | `terraform fmt`, `validate`, `plan`                           | **NOT RUN**             |
 | Secret populated, rotated; admin-event alert on platform role | **NOT DONE** (human)    |
 | Rollback: revert; default-off variable, no state change       | PASS                    |
+
+## Stage 147 — fix: two production "Terraform plan" failures (target group name, empty domain)
+
+Source: the PR "Terraform plan" job, first run against real AWS state (OIDC sign-in had just been fixed). **Terraform and one workflow comment only; nothing planned
+locally or applied.**
+
+**Defects, both already on `main`.**
+
+1. `modules/langfuse`: the target group is named `<environment>-langfuse-web`, 35 characters for `infinite-ai-production`; AWS allows 32 (staging fits at exactly 32). It
+   is now `local.web_target_group_name`: the plain name when it fits, so staging's target group is not replaced, otherwise a 20-character prefix plus a 7-character hash
+   of the full name (20 + 1 + 7 + 4 = 32).
+2. `modules/stack`: GitHub passes an unset `vars.X` to Terraform as `""`, not null, so with `TF_VAR_DOMAIN_NAME` and `TF_VAR_DNS_ZONE_ID` unset the stack built the Langfuse
+   domain `"langfuse."` and an empty hosted-zone id (two validation errors). `""` is now normalised to null once (`local.domain_name`, `local.dns_zone_id`) and every
+   other reader uses the locals, including the `ses_from_domain` output, which would otherwise have indexed a SES module that no longer exists. The workflow's
+   "null means plain HTTP" comments now say "unset or empty".
+
+**Tests.** `packages/security/test/terraform-stack-naming.spec.ts` (5): the target group uses the capped local; the formula fits for dev, staging and production, leaves a
+name that already fits unchanged, and keeps two long names distinct; only the two normalising lines read the raw variables. Mutation-checked: restoring the inline name
+and restoring a raw `var.domain_name` in the output each fail the matching test. These read the files and mirror the arithmetic; they do not run Terraform.
+
+**Not verified.** The real proof is the "Terraform plan" job on this branch, which was not run before opening the PR. `terraform fmt` was not run locally (no binary here);
+CI's "Lint (fmt + validate)" is the check. The production plan has never completed: further errors that only appear after these two are possible. Production still has no
+domain, so this plans it as plain HTTP; the apply job still requires `TF_VAR_DOMAIN_NAME`.
+
+| Exit gate item                                               | Result                              |
+| ------------------------------------------------------------ | ----------------------------------- |
+| Target group name within 32 characters for every environment | PASS (formula; plan job to confirm) |
+| Empty domain and zone id treated as unset                    | PASS (static; plan job to confirm)  |
+| `pnpm lint`, security typecheck, new specs                   | PASS                                |
+| "Terraform plan" job green on this branch                    | **NOT RUN**                         |
+| Rollback: revert; no state change (nothing deployed in prod) | PASS                                |
