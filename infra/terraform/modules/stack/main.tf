@@ -21,6 +21,14 @@ module "network" {
   tags               = var.tags
 }
 
+# A repository or environment variable that is unset reaches Terraform as an EMPTY STRING, not null (GitHub
+# Actions passes every `vars.X` as a string). Treat "" as unset, or the stack builds "langfuse." and an empty
+# hosted-zone id and fails validation. Everything below reads these locals, never the variables.
+locals {
+  domain_name = var.domain_name == "" ? null : var.domain_name
+  dns_zone_id = var.dns_zone_id == "" ? null : var.dns_zone_id
+}
+
 resource "aws_security_group" "gateway" {
   name        = "${var.name}-gateway"
   description = "apps/gateway Fargate tasks."
@@ -60,7 +68,7 @@ resource "aws_security_group" "alb" {
   }
 
   dynamic "ingress" {
-    for_each = var.domain_name == null ? [] : [1]
+    for_each = local.domain_name == null ? [] : [1]
     content {
       from_port   = 443
       to_port     = 443
@@ -90,10 +98,10 @@ resource "aws_lb" "this" {
 }
 
 resource "aws_acm_certificate" "this" {
-  count = var.domain_name == null ? 0 : 1
+  count = local.domain_name == null ? 0 : 1
 
-  domain_name               = "api.${var.domain_name}"
-  subject_alternative_names = ["app.${var.domain_name}"]
+  domain_name               = "api.${local.domain_name}"
+  subject_alternative_names = ["app.${local.domain_name}"]
   validation_method         = "DNS"
 
   lifecycle {
@@ -104,7 +112,7 @@ resource "aws_acm_certificate" "this" {
 }
 
 resource "aws_route53_record" "cert_validation" {
-  for_each = var.domain_name == null ? {} : {
+  for_each = local.domain_name == null ? {} : {
     for dvo in aws_acm_certificate.this[0].domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
       record = dvo.resource_record_value
@@ -112,7 +120,7 @@ resource "aws_route53_record" "cert_validation" {
     }
   }
 
-  zone_id         = var.dns_zone_id
+  zone_id         = local.dns_zone_id
   name            = each.value.name
   type            = each.value.type
   ttl             = 60
@@ -121,7 +129,7 @@ resource "aws_route53_record" "cert_validation" {
 }
 
 resource "aws_acm_certificate_validation" "this" {
-  count = var.domain_name == null ? 0 : 1
+  count = local.domain_name == null ? 0 : 1
 
   certificate_arn         = aws_acm_certificate.this[0].arn
   validation_record_fqdns = [for r in aws_route53_record.cert_validation : r.fqdn]
@@ -136,7 +144,7 @@ resource "aws_lb_listener" "http" {
   # web otherwise — plain HTTP is the honest state for an environment that has not yet
   # had a real domain decided, not a security bug in this module.
   dynamic "default_action" {
-    for_each = var.domain_name == null ? [1] : []
+    for_each = local.domain_name == null ? [1] : []
     content {
       type             = "forward"
       target_group_arn = module.ecs_service_web.target_group_arn
@@ -144,7 +152,7 @@ resource "aws_lb_listener" "http" {
   }
 
   dynamic "default_action" {
-    for_each = var.domain_name == null ? [] : [1]
+    for_each = local.domain_name == null ? [] : [1]
     content {
       type = "redirect"
       redirect {
@@ -157,7 +165,7 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_lb_listener" "https" {
-  count = var.domain_name == null ? 0 : 1
+  count = local.domain_name == null ? 0 : 1
 
   load_balancer_arn = aws_lb.this.arn
   port              = 443
@@ -174,7 +182,7 @@ resource "aws_lb_listener" "https" {
 locals {
   # gateway serves /v1/* and /health (apps/gateway/src/server.ts) — everything else on
   # either listener falls through to web's default action above.
-  primary_listener_arn = var.domain_name == null ? aws_lb_listener.http.arn : aws_lb_listener.https[0].arn
+  primary_listener_arn = local.domain_name == null ? aws_lb_listener.http.arn : aws_lb_listener.https[0].arn
 }
 
 resource "aws_lb_listener_rule" "gateway" {
@@ -194,10 +202,10 @@ resource "aws_lb_listener_rule" "gateway" {
 }
 
 resource "aws_route53_record" "gateway" {
-  count = var.domain_name == null ? 0 : 1
+  count = local.domain_name == null ? 0 : 1
 
-  zone_id = var.dns_zone_id
-  name    = "api.${var.domain_name}"
+  zone_id = local.dns_zone_id
+  name    = "api.${local.domain_name}"
   type    = "A"
 
   alias {
@@ -208,10 +216,10 @@ resource "aws_route53_record" "gateway" {
 }
 
 resource "aws_route53_record" "web" {
-  count = var.domain_name == null ? 0 : 1
+  count = local.domain_name == null ? 0 : 1
 
-  zone_id = var.dns_zone_id
-  name    = "app.${var.domain_name}"
+  zone_id = local.dns_zone_id
+  name    = "app.${local.domain_name}"
   type    = "A"
 
   alias {
@@ -342,12 +350,12 @@ module "budget" {
 # raised manually before sending to arbitrary school addresses.
 
 module "ses" {
-  count  = var.domain_name == null ? 0 : 1
+  count  = local.domain_name == null ? 0 : 1
   source = "../ses"
 
   name        = "${var.name}-ses"
-  domain_name = var.domain_name
-  dns_zone_id = var.dns_zone_id
+  domain_name = local.domain_name
+  dns_zone_id = local.dns_zone_id
   tags        = var.tags
 }
 
@@ -389,7 +397,7 @@ module "ecs_service_gateway" {
     [module.object_store.read_write_policy_arn],
     # SES send policy — only exists when a real domain is configured (module.ses is
     # count=0 when domain_name is null). The gateway sends dunning emails (OQ-021).
-    var.domain_name == null ? [] : [module.ses[0].send_policy_arn],
+    local.domain_name == null ? [] : [module.ses[0].send_policy_arn],
   )
 
   environment = merge(
@@ -404,7 +412,7 @@ module "ecs_service_gateway" {
     { OTEL_EXPORTER_OTLP_ENDPOINT = module.langfuse.otlp_endpoint },
     # SES_FROM_ADDRESS is a plain env var (no credential) — apps/gateway reads it to
     # build the From: header of dunning emails. Only set when SES is provisioned.
-    var.domain_name == null ? {} : { SES_FROM_ADDRESS = "no-reply@${var.domain_name}" },
+    local.domain_name == null ? {} : { SES_FROM_ADDRESS = "no-reply@${local.domain_name}" },
   )
 
   secrets = {
@@ -502,7 +510,7 @@ module "ecs_service_web" {
   environment = merge(
     {
       NODE_ENV     = "production"
-      NEXTAUTH_URL = var.domain_name == null ? "http://${aws_lb.this.dns_name}" : "https://app.${var.domain_name}"
+      NEXTAUTH_URL = local.domain_name == null ? "http://${aws_lb.this.dns_name}" : "https://app.${local.domain_name}"
     },
     var.keycloak_issuer_url == null ? {} : { AUTH_KEYCLOAK_ISSUER = var.keycloak_issuer_url },
   )
@@ -541,8 +549,8 @@ module "langfuse" {
 
   # "langfuse." + the main app's own domain — not a second, independent domain
   # decision; null flows through unchanged when var.domain_name itself is null.
-  domain_name = var.domain_name == null ? null : "langfuse.${var.domain_name}"
-  dns_zone_id = var.dns_zone_id
+  domain_name = local.domain_name == null ? null : "langfuse.${local.domain_name}"
+  dns_zone_id = local.dns_zone_id
 
   clickhouse_instance_type  = var.langfuse_clickhouse_instance_type
   clickhouse_volume_size_gb = var.langfuse_clickhouse_volume_size_gb
