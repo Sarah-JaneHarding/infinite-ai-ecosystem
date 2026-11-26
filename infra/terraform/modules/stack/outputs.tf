@@ -96,5 +96,5 @@ output "budget_alert_topic_arn" {
 
 output "ses_from_domain" {
   description = "The SES-verified sending domain, or null when domain_name is not set. Set SES_FROM_ADDRESS to no-reply@<this value> in apps/gateway's own email configuration."
-  value       = var.domain_name == null ? null : module.ses[0].from_domain
+  value       = local.domain_name == null ? null : module.ses[0].from_domain
 }

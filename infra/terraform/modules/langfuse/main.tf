@@ -108,8 +108,19 @@ resource "aws_lb" "this" {
   tags = var.tags
 }
 
+locals {
+  # Target group names are limited to 32 characters. "<name>-web" is used as is when it fits, so an
+  # existing deployment's target group (staging is exactly 32) is never replaced. Otherwise a shortened
+  # prefix plus a short hash of the full name keeps it unique and under the limit: 20 + 1 + 7 + 4 = 32.
+  web_target_group_name = (
+    length("${var.name}-web") <= 32
+    ? "${var.name}-web"
+    : "${trim(substr(var.name, 0, 20), "-")}-${substr(sha256(var.name), 0, 7)}-web"
+  )
+}
+
 resource "aws_lb_target_group" "web" {
-  name        = "${var.name}-web"
+  name        = local.web_target_group_name
   port        = 3000
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
