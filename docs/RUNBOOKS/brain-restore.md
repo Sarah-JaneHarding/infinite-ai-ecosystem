@@ -1,11 +1,16 @@
 # Brain restore
 
-**Status:** written in Stage 05 (step 10), as `docs/RUNBOOKS/README.md`'s own table
-specifies. Rehearsed with recorded RTO/RPO evidence in Stage 15 step 7 — that drill,
-and the nightly-snapshot/point-in-time-recovery mechanism it drills against, do not
-exist yet. This document is the procedure for when they do; do not treat it as proof a
-drill has been run. `docs/STAGE_LOG.md`'s Stage 05 write-up says the same thing in more
-detail, including why the underlying infrastructure is out of scope here.
+**RTO:** ≤ 120 minutes from declaring an incident to a verified Brain.
+**RPO:** ≤ 5 minutes, **the same as the database's**. The Brain's tables live in the same Postgres as every other table, so RDS point-in-time recovery
+covers them and there is no separate Brain backup to age. **Unproven:** this holds only if the live restore drill (`docs/RUNBOOKS/restore-drill.md`) passes.
+
+**Withdrawn 2026-11-26 (OQ-059, owner decision):** an earlier version declared an RPO of ≤ 60 minutes from hourly Brain snapshots. **No such snapshot job exists
+and none is planned.** A separate hourly copy of data the database already recovers to within minutes would only be a weaker second copy. If long-term or
+off-instance copies are wanted (for example retention beyond the backup window), that is a separate decision with its own design.
+
+**Status:** written in Stage 05 (step 10), as `docs/RUNBOOKS/README.md`'s own table specifies. It has never been rehearsed against a deployed database: the
+drill records in `docs/RUNBOOKS/drill-results/` are paper drills that restore nothing. `packages/brain/test/restore.integration.spec.ts` proves supersession
+chains and tombstones survive a database copy inside a test container; it is not point-in-time recovery. Do not treat this document as proof a drill has been run.
 
 ## What the alert means
 
@@ -57,11 +62,11 @@ removed (a restore must not silently undo a lawful erasure — see "the fix," be
 
 ## The fix
 
-1. Identify the last known-good point: the most recent nightly snapshot (Stage 15 step 6)
-   or WAL position before the corruption, using the recorded RPO for the affected data
-   class.
-2. Restore Postgres to that point using the point-in-time recovery mechanism Stage 15 step
-   6 builds, into a **separate** instance first — never restore over the live database
+1. Identify the last known-good point: a time before the corruption within the RDS
+   point-in-time recovery window (or the most recent automated snapshot if that is
+   unavailable), using the recorded RPO for the affected data class.
+2. Restore Postgres to that point using RDS point-in-time recovery (the command is in
+   `restore-drill.md` step 4), into a **separate** instance first — never restore over the live database
    directly.
 3. Before cutting over, replay every `audit_event` for the affected tenant between the
    restore point and now against the restored instance's data, to identify what a bare

@@ -6,16 +6,16 @@ A runbook that has not been rehearsed does not count — Stage 15 requires them 
 
 ## Required runbooks
 
-| Runbook                            | Stage it lands             | Drill cadence              |
-| ---------------------------------- | -------------------------- | -------------------------- |
-| `database-restore.md`              | 15                         | Quarterly                  |
-| `brain-restore.md`                 | 05 (written), 15 (drilled) | Quarterly                  |
-| `provider-outage.md`               | 04 (written), 15 (drilled) | Quarterly                  |
-| `queue-backlog.md`                 | 15                         | Quarterly                  |
-| `bad-prompt-promotion-rollback.md` | 13                         | Quarterly                  |
-| `tenant-data-erasure.md`           | 03 (written), 17 (drilled) | On request, plus quarterly |
-| `suspected-breach.md`              | 16                         | Annually                   |
-| `region-loss.md`                   | 15                         | Annually                   |
+| Runbook                            | Stage it lands             | Drill cadence                                |
+| ---------------------------------- | -------------------------- | -------------------------------------------- |
+| `database-restore.md`              | 15                         | Quarterly                                    |
+| `brain-restore.md`                 | 05 (written), 15 (drilled) | Quarterly                                    |
+| `provider-outage.md`               | 04 (written), 15 (drilled) | Quarterly                                    |
+| `queue-backlog.md`                 | 15                         | Quarterly                                    |
+| `bad-prompt-promotion-rollback.md` | 13                         | Quarterly                                    |
+| `tenant-data-erasure.md`           | 03 (written), 17 (drilled) | On request, plus quarterly                   |
+| `suspected-breach.md`              | 16                         | Annually                                     |
+| `region-loss.md`                   | 15 (rewritten 2026-11-26)  | Annually (tabletop only: no failover exists) |
 
 ## Infrastructure walkthroughs
 

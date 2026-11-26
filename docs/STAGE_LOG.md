@@ -12342,3 +12342,39 @@ Added `docs/RUNBOOKS/cd-deploy-role-failure.md`, `verify-mfa.md` and `restore-dr
 | Findings logged (OQ-057, OQ-058, OQ-059)                                 | PASS                 |
 | Someone with access ran a runbook and recorded the result                | **NOT DONE** (human) |
 | Rollback: revert; documents only                                         | PASS                 |
+
+## Stage 147 — OQ-058 / OQ-059: production realm rule, HoD one-time code, Brain RPO and region loss
+
+Source: the decisions Sarah-Jane Harding made on 2026-11-26 after reading `docs/RUNBOOKS/verify-mfa.md` and `restore-drill.md` (Stage 146).
+
+**1. The production realm is derived, not copied (OQ-058).** `infra/keycloak/realm.json` is a development fixture with eleven `*.dev` users (two administrators) and a localhost redirect. `toProductionRealm`
+(`packages/policy/src/keycloak-production-realm.ts`) removes every person, keeps the provisioner's service account (it carries the user-management roles), drops loopback redirect URIs and web origins, changes nothing
+else, and **refuses** (throws) when the result would be unusable: no service account, or a client left with no redirect URI. No production domain is invented. `pnpm keycloak:production-realm` writes
+`infra/keycloak/realm.production.json` (`--check` verifies it is current). The rule is by _role of the entry_, not by name, so a person called anything is removed.
+
+**2. The HoD needs a one-time code (OQ-058).** `realm.json` gains the `browser-mfa otp hod` sub-flow, its role condition, and its invocation (priority 70), copied exactly from the `sbst_chair` pattern. The drift test now guards
+six roles and records `teacher`, `sbst`, `guardian` and `learner` as "not asked yet"; a new test fails if any realm role is in neither list, so a new role cannot slip through. `sbst` and `teacher` are to be decided before Phase 2.
+
+**3. The Brain RPO and region loss are stated truthfully (OQ-059).** The 60-minute Brain RPO assumed an hourly snapshot job that does not exist; it was dropped, so the Brain's RPO is the database's (≤ 5 minutes), unproven
+until the live drill. `region-loss.md` described a failover to a secondary region that the stack does not build; it now says there is no failover and commits to no RTO or RPO. `scripts/drill-restore.ts` allows "not
+committed", declares the new Brain figure, and its record now says it restores nothing. Four Terraform comments were corrected (comment-only: verified by diff, zero non-comment lines changed).
+
+**Tests.** `keycloak-realm-production.spec.ts` (+25) and additions to `keycloak-realm-mfa.spec.ts` (+3). Mutation-checked: a dev user back in the production file fails 3; a localhost redirect back fails 2; a generator that keeps
+every user fails 2; changing the dev realm without regenerating fails 2; dropping the `hod` flow's invocation fails 2; negating its role condition fails 1.
+
+**Not done, stated plainly.**
+
+1. **None of this was run against a live Keycloak or a real database.** MFA is still unverified (OQ-036, runbook Parts A and B); the Brain RPO is still unproven (live drill).
+2. **The production client keeps `https://*.infinite-ai.co.za/*`.** I have not verified Keycloak honours a wildcard in the host, and it is broad. To check on the real domain (OQ-058).
+3. **Still open:** lost authenticator and break-glass administrator; `DB_ENCRYPTION_KEY` custody and re-encryption (OQ-053); identity-provider backup; `database-restore.md` step 4; staging backup settings; `sbst`/`teacher` MFA before Phase 2.
+4. `docs/PROVISIONING_DESIGN.md` still carries its dated notes about "admin, smt and platform roles"; left as history.
+
+| Exit gate item                                                           | Result                         |
+| ------------------------------------------------------------------------ | ------------------------------ |
+| No person or loopback URI can reach the production realm file unnoticed  | PASS (unit; mutation-checked)  |
+| `hod` requires a code and no realm role is silently unclassified         | PASS (unit; mutation-checked)  |
+| Brain RPO and region-loss claims match what the stack builds             | PASS (by reading and by diff)  |
+| `pnpm lint`, `pnpm typecheck`, affected unit tests                       | PASS (see below)               |
+| Keycloak imports the files and asks the HoD for a code                   | **NOT VERIFIED** (runbook A/B) |
+| Live restore drill meets the stated RTO and RPO                          | **NOT DONE** (human)           |
+| Rollback: revert; the realm file is not deployed anywhere from this repo | PASS                           |

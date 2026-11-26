@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { PLATFORM_ROLES, Role } from '../src/rbac.js';
 
-// OQ-036 drift guard. docs/SECURITY.md §7 says MFA is required for `admin`, `smt`, `sbst_chair` and the
+// OQ-036 drift guard. docs/SECURITY.md §7 says MFA is required for `admin`, `smt`, `sbst_chair`, `hod` and the
 // platform roles, and that email is verified. That is only true if the committed Keycloak
 // realm says so. This reads infra/keycloak/realm.json and fails when the browser flow, a role
 // condition or a required action is missing, so the claim cannot go stale unnoticed.
@@ -56,7 +56,15 @@ const realm = JSON.parse(
 
 // `sbst_chair` was added on 2026-11-12 (OQ-046 follow-up, owner decision): the chair's confirmation ratifies
 // SBST minutes into the Brain as a versioned fact, so confirming them needs a second factor.
-const MFA_ROLES = ['admin', 'smt', 'sbst_chair', ...PLATFORM_ROLES] as const;
+//
+// `hod` was added on 2026-11-26 (OQ-058, owner decision): the HoD's approval is the human gate every generated
+// artefact passes through, so a stolen password must not be enough to approve content in a named person's name.
+const MFA_ROLES = ['admin', 'smt', 'sbst_chair', 'hod', ...PLATFORM_ROLES] as const;
+
+// Deliberately NOT asked for a code today. This is a decision recorded in docs/PILOT_PROTOCOL_ONE_SCHOOL_DRAFT.md,
+// not an oversight: `sbst` and `teacher` come under review before any identifiable learner data enters (Phase 2).
+// When that decision is taken, move the role into MFA_ROLES above and delete it here; this list failing is the prompt.
+const NO_MFA_YET = ['teacher', 'sbst', 'guardian', 'learner'] as const;
 const flows = realm.authenticationFlows ?? [];
 const flowByAlias = (alias: string): Flow | undefined =>
   flows.find((f) => f.alias === alias);
@@ -107,6 +115,32 @@ describe('Keycloak realm: email verification and MFA (OQ-036)', () => {
     const forms = flowByAlias('browser-mfa forms');
     const names = (forms?.authenticationExecutions ?? []).map((e) => e.flowAlias);
     expect(names).toContain('browser-mfa otp sbst_chair');
+  });
+
+  it('requires the second factor from the HoD, whose approval is the human gate for generated artefacts', () => {
+    expect(MFA_ROLES).toContain('hod');
+    const forms = flowByAlias('browser-mfa forms');
+    const names = (forms?.authenticationExecutions ?? []).map((e) => e.flowAlias);
+    expect(names).toContain('browser-mfa otp hod');
+  });
+
+  it('records which roles are not asked for a code yet, and none of them has a sub-flow', () => {
+    const guarded = new Set(
+      flows
+        .filter((f) => f.alias.startsWith('browser-mfa otp '))
+        .map((f) => f.alias.replace('browser-mfa otp ', '')),
+    );
+    for (const role of NO_MFA_YET) {
+      expect(guarded.has(role), `${role} unexpectedly has an OTP sub-flow`).toBe(false);
+      expect(MFA_ROLES as readonly string[]).not.toContain(role);
+    }
+  });
+
+  it('every realm role is either asked for a code or recorded as not asked yet: a new role cannot slip through', () => {
+    const covered = new Set<string>([...MFA_ROLES, ...NO_MFA_YET]);
+    for (const r of realm.roles.realm) {
+      expect(covered.has(r.name), `role ${r.name} is in neither list`).toBe(true);
+    }
   });
 
   it('does not ask for a code from roles that have no sub-flow: the second factor is exactly the listed roles', () => {

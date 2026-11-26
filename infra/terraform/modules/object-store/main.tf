@@ -1,5 +1,6 @@
-# S3 bucket for object storage — Brain snapshots (docs/RUNBOOKS/region-loss.md's hourly
-# snapshots) and whatever else OBJECT_STORE_BUCKET names, matching MinIO's role in
+# S3 bucket for object storage — whatever OBJECT_STORE_BUCKET names (no hourly Brain snapshot
+# job exists; the Brain is recovered with the database, see docs/RUNBOOKS/brain-restore.md and
+# OQ-059), matching MinIO's role in
 # infra/docker/compose.dev.yml exactly (the app talks to it through the same S3-compatible
 # API either way, no code branch for "real S3 vs MinIO"). Private, versioned (a snapshot
 # overwritten by mistake is still recoverable), and encrypted with a dedicated KMS key —
@@ -57,9 +58,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
     status = "Enabled"
 
     # Versioning protects against an accidental overwrite; it should not turn into an
-    # unbounded storage bill for hourly snapshots. 90 days comfortably outlives every
-    # retention/restore runbook's own RPO/RTO window (docs/RUNBOOKS/region-loss.md,
-    # database-restore.md) — a real schedule, once a school's retention determination
+    # unbounded storage bill for old object versions. 90 days comfortably outlives every
+    # retention/restore runbook's own RPO/RTO window (docs/RUNBOOKS/database-restore.md,
+    # brain-restore.md) — a real schedule, once a school's retention determination
     # exists (OQ-007), may shorten this.
     noncurrent_version_expiration {
       noncurrent_days = 90

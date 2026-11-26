@@ -1,12 +1,11 @@
 # The production environment — Multi-AZ database and cache, one NAT gateway per AZ (an
 # AZ outage does not take outbound internet with it), deletion protection on, at least 2
 # tasks per service (an ECS deployment or a task crash never drops a service to zero).
-# docs/RUNBOOKS/region-loss.md's cross-region failover is deliberately not automated by
-# this environment — that runbook's own "Cloud console -> Promote replica" manual step and
-# annual drill requirement (Stage 15) reflect a decision already made not to automate
-# region failover from Terraform; a promoted cross-region read replica would be its own
-# module and its own real decision (which region, cost, when to actually build it), not
-# assumed here.
+# There is NO cross-region failover: no secondary region, replica or off-region copy is built,
+# and docs/RUNBOOKS/region-loss.md (rewritten 2026-11-26, OQ-059) says so and commits to no
+# RTO or RPO for a Region loss. Multi-AZ above covers losing one availability zone, not a
+# Region. A cross-region replica or an encrypted off-region export would be its own module and
+# its own real decision (where, cost, POPIA s72, key custody), not assumed here.
 
 terraform {
   backend "s3" {
