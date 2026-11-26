@@ -41,6 +41,7 @@ export const ROUTE_ACCESS: readonly RouteRule[] = [
   { prefix: '/guardian', roles: ['guardian'] },
   { prefix: '/learner', roles: ['learner'] },
   { prefix: '/approvals', roles: SCHOOL_ROLES_WITH_A_QUEUE },
+  { prefix: '/assistant', roles: SCHOOL_ROLES_WITH_A_QUEUE },
   { prefix: '/admin/prompts', roles: ['admin'] },
   { prefix: '/admin/setup', roles: ['admin'] },
   { prefix: '/admin/staff', roles: ['admin'] },
@@ -49,6 +50,7 @@ export const ROUTE_ACCESS: readonly RouteRule[] = [
   { prefix: '/platform/runs', roles: PLATFORM },
   { prefix: '/district', roles: PLATFORM },
   { prefix: '/api/approvals', roles: SCHOOL_ROLES_WITH_A_QUEUE },
+  { prefix: '/api/assistant', roles: SCHOOL_ROLES_WITH_A_QUEUE },
   { prefix: '/api/caps-canon', roles: ['admin'] },
   { prefix: '/api/admin/staff', roles: ['admin'] },
 ];

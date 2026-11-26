@@ -123,12 +123,18 @@ importers:
       '@infinite-ai/brain':
         specifier: 0.1.0
         version: link:../../packages/brain
+      '@infinite-ai/contracts':
+        specifier: 0.1.0
+        version: link:../../packages/contracts
       '@infinite-ai/curriculum-seed':
         specifier: 0.1.0
         version: link:../../packages/curriculum-seed
       '@infinite-ai/db':
         specifier: 0.1.0
         version: link:../../packages/db
+      '@infinite-ai/deident':
+        specifier: 0.1.0
+        version: link:../../packages/deident
       '@infinite-ai/design-system':
         specifier: 0.1.0
         version: link:../../packages/design-system
