@@ -306,6 +306,64 @@ describe('detectCards', () => {
     ]);
   });
 
+  it('reports high confidence at distance 1 and low at distance 2', () => {
+    // Card 61, side A (drawn as the canonical bitmap): whiten black data cells, (col, row).
+    const bitmap = cardBitmap(61);
+    const flips: readonly (readonly [number, number])[] = [
+      [1, 1],
+      [4, 3],
+    ];
+    // Premise: each chosen cell is a black data cell, so painting it white flips exactly one bit.
+    for (const [col, row] of flips) {
+      expect([col, row, bitmap[row]?.[col]]).toEqual([col, row, true]);
+      expect(col >= 1 && col <= 5 && row >= 1 && row <= 5).toBe(true);
+    }
+    const read = (cells: readonly (readonly [number, number])[]): unknown[][] =>
+      detectCards(
+        renderFrame(
+          110,
+          110,
+          [{ cardNumber: 61, side: 'A', centre: { x: 55, y: 55 }, sidePx: 70 }],
+          { occlude: [{ cardIndex: 0, cells, value: 255 }] },
+        ),
+      ).map((r) => [r.cardNumber, r.side, r.distance, r.confidence]);
+    expect(read(flips.slice(0, 1))).toEqual([[61, 'A', 1, 'high']]);
+    expect(read(flips)).toEqual([[61, 'A', 2, 'low']]);
+  });
+
+  it('reports low confidence when the topmost edge is tilted over 30 degrees', () => {
+    const read = (angleDeg: number): MarkerReading[] => [
+      ...detectCards(
+        renderFrame(140, 140, [
+          { cardNumber: 27, side: 'C', centre: { x: 70, y: 70 }, sidePx: 70, angleDeg },
+        ]),
+      ),
+    ];
+    const at25 = read(25);
+    expect(at25.map((r) => [r.cardNumber, r.side, r.distance, r.confidence])).toEqual([
+      [27, 'C', 0, 'high'],
+    ]);
+    expect(at25[0]?.tiltDeg).toBeLessThan(30);
+    const at35 = read(35);
+    expect(at35.map((r) => [r.cardNumber, r.side, r.distance, r.confidence])).toEqual([
+      [27, 'C', 0, 'low'],
+    ]);
+    expect(at35[0]?.tiltDeg).toBeGreaterThan(30);
+  });
+
+  it('reports low confidence at 4 px per cell and high at 5 px per cell', () => {
+    // Centres chosen so the square's edges fall on pixel boundaries: 28 px spans [16, 44),
+    // 35 px spans [13, 48).
+    const read = (centre: number, sidePx: number): unknown[][] =>
+      detectCards(
+        renderFrame(60, 60, [
+          { cardNumber: 88, side: 'D', centre: { x: centre, y: centre }, sidePx },
+        ]),
+      ).map((r) => [r.cardNumber, r.side, r.distance, r.confidence, r.sidePx]);
+    expect(read(30, 28)).toEqual([[88, 'D', 0, 'low', 28]]);
+    expect(read(30.5, 35)).toEqual([[88, 'D', 0, 'high', 35]]);
+  });
+
   it('requires 22 of the 24 border cells to sample dark', () => {
     // Covering a run of top-border cells keeps the border one component with the same outline.
     const covered = (cells: readonly (readonly [number, number])[]): MarkerReading[] => [
