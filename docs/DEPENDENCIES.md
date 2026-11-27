@@ -113,6 +113,15 @@ No new dependency. `brain_conflict_queue` is another Prisma model in `packages/d
 same `prisma`/`zod` already recorded; the provenance comparison it depends on
 (`resolveContradiction`) is pure TypeScript in `packages/brain`, with nothing to add.
 
+## AI assistant chat panel (apps/web)
+
+No new third-party dependency. `apps/web` takes two workspace packages as runtime dependencies
+for the first time: `@infinite-ai/contracts` (the strict `AssistantChatRequest`/`Response`
+schemas and the connector registry — the same contract the gateway uses) and
+`@infinite-ai/deident` (`scrub()`, so a staff member's free text is scrubbed against the
+school's own names before it reaches the model gateway; rule 4). Both are MIT, in-repo, and
+replace nothing. `pnpm-lock.yaml` gains the two workspace links and nothing else.
+
 ## Stage 05 step 4 — the retrieval path
 
 No new dependency — every addition is a workspace package already built, taken as a real

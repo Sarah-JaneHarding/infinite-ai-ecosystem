@@ -22,6 +22,7 @@
 import { readFileSync } from 'node:fs';
 
 import { loadEnv } from '@infinite-ai/config';
+import { ASSISTANT_CONNECTORS } from '@infinite-ai/contracts';
 import { EncryptionKey, readTenantLexicon, withTenant } from '@infinite-ai/db';
 import {
   NOOP_TRACER,
@@ -258,7 +259,13 @@ export function boot(
     });
   }
 
+  const assistantRouting = buildAssistantRouting(gatewayEnv, adapters);
+  const assistants = ASSISTANT_CONNECTORS.filter(
+    (c) => assistantRouting[c.logicalModel] !== undefined,
+  ).map((c) => ({ id: c.id, label: c.label }));
+
   return createGatewayServer({
+    assistants,
     router,
     budget: new BudgetTracker({ limitsFor: () => undefined }),
     cache: new GatewayCache(),

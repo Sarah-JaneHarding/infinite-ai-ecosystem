@@ -93,9 +93,27 @@ export const AssistantChatRequest = z
   .strict();
 export type AssistantChatRequest = z.infer<typeof AssistantChatRequest>;
 
+/** One kind of personal information the scrubber removed, and how many times. Counts only —
+ *  never the original text, because this object is logged and audited. */
+export const AssistantRedactionSummary = z.object({
+  kind: z.string().min(1),
+  count: z.number().int().positive(),
+});
+export type AssistantRedactionSummary = z.infer<typeof AssistantRedactionSummary>;
+
 export const AssistantChatResponse = z.object({
   provider: AssistantProvider,
   message: z.object({ role: z.literal('assistant'), content: z.string() }),
   usage: z.object({ totalTokens: z.number().int().nonnegative() }),
+  /** What was removed from the conversation before the model saw it (rule 4). */
+  redactions: z.array(AssistantRedactionSummary),
+  /** The user's latest message exactly as the model received it — the user sees what left. */
+  sent: z.string(),
 });
 export type AssistantChatResponse = z.infer<typeof AssistantChatResponse>;
+
+/** `GET /v1/assistants` on the gateway: the connectors this deployment holds credentials for. */
+export const AssistantConnectorList = z.object({
+  assistants: z.array(z.object({ id: AssistantProvider, label: z.string().min(1) })),
+});
+export type AssistantConnectorList = z.infer<typeof AssistantConnectorList>;
