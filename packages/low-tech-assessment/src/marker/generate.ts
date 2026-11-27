@@ -33,35 +33,45 @@ export function generatePatterns(search: PatternSearch): readonly number[] {
   if (minBlack > maxBlack) throw new RangeError('minBlack must not exceed maxBlack');
 
   const accepted: number[] = [];
-  const variants: number[] = [];
   for (let candidate = 1; candidate <= maxCandidates; candidate += 1) {
     const black = popcount(candidate);
     if (black < minBlack || black > maxBlack) continue;
 
-    const rotations = [candidate];
-    for (let k = 1; k < 4; k += 1) rotations.push(rotateGrid(rotations[k - 1] as number));
-
-    let ok = true;
-    for (let i = 0; i < 4 && ok; i += 1) {
-      for (let j = i + 1; j < 4; j += 1) {
-        if (hamming(rotations[i] as number, rotations[j] as number) < minDistance) {
-          ok = false;
-          break;
-        }
-      }
+    const r1 = rotateGrid(candidate);
+    const r2 = rotateGrid(r1);
+    const r3 = rotateGrid(r2);
+    if (
+      hamming(candidate, r1) < minDistance ||
+      hamming(candidate, r2) < minDistance ||
+      hamming(candidate, r3) < minDistance ||
+      hamming(r1, r2) < minDistance ||
+      hamming(r1, r3) < minDistance ||
+      hamming(r2, r3) < minDistance
+    ) {
+      continue;
     }
-    for (let v = 0; ok && v < variants.length; v += 1) {
-      for (const r of rotations) {
-        if (hamming(variants[v] as number, r) < minDistance) {
-          ok = false;
-          break;
-        }
+
+    // Rotation preserves Hamming distance, so every rotation of an accepted pattern is at least
+    // minDistance from every rotation of the candidate exactly when the accepted pattern itself
+    // is at least minDistance from each of the candidate's four rotations. Comparing against the
+    // accepted base patterns alone is therefore equivalent to comparing against all their variants.
+    // Newest first: recent patterns reject most candidates, which ends the scan early.
+    let ok = true;
+    for (let v = accepted.length - 1; v >= 0; v -= 1) {
+      const w = accepted[v] as number;
+      if (
+        hamming(w, candidate) < minDistance ||
+        hamming(w, r1) < minDistance ||
+        hamming(w, r2) < minDistance ||
+        hamming(w, r3) < minDistance
+      ) {
+        ok = false;
+        break;
       }
     }
     if (!ok) continue;
 
     accepted.push(candidate);
-    variants.push(...rotations);
     if (accepted.length === count) return accepted;
   }
   throw new RangeError(

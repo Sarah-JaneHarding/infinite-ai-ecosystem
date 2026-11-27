@@ -39,6 +39,29 @@ describe('grid helpers', () => {
     expect(rotateGrid(1)).toBe(1 << 4);
   });
 
+  it('table-driven rotateGrid and popcount match a straightforward bit loop', () => {
+    const slowRotate = (bits: number): number => {
+      let out = 0;
+      for (let r = 0; r < 5; r += 1) {
+        for (let c = 0; c < 5; c += 1) {
+          if (((bits >>> (r * 5 + c)) & 1) === 1) out |= 1 << (c * 5 + (4 - r));
+        }
+      }
+      return out;
+    };
+    const slowCount = (bits: number): number => bits.toString(2).replace(/0/g, '').length;
+    const values = [0, 1, 2, (1 << 25) - 1, 1 << 12, 1 << 13];
+    let seed = 12345;
+    for (let i = 0; i < 5000; i += 1) {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      values.push(seed & ((1 << 25) - 1));
+    }
+    for (const v of values) {
+      expect(rotateGrid(v)).toBe(slowRotate(v));
+      expect(popcount(v)).toBe(slowCount(v));
+    }
+  });
+
   it('hamming counts differing bits', () => {
     expect(hamming(0, 0)).toBe(0);
     expect(hamming(0b1010, 0b0110)).toBe(2);

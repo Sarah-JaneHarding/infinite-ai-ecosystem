@@ -9,8 +9,8 @@ export const GRID = 5;
 /** Side of the printed marker (data grid plus a one-cell black border), in cells. */
 export const CARD_CELLS = 7;
 
-/** Rotate a 5x5 bit grid 90 degrees clockwise: (row r, col c) moves to (row c, col 4 - r). */
-export function rotateGrid(bits: number): number {
+/** Reference rotation, one cell at a time; used only to build the lookup tables below. */
+function rotateCells(bits: number): number {
   let out = 0;
   for (let r = 0; r < GRID; r += 1) {
     for (let c = 0; c < GRID; c += 1) {
@@ -22,12 +22,34 @@ export function rotateGrid(bits: number): number {
   return out >>> 0;
 }
 
+// Rotation is a bit permutation, so it distributes over OR: rotating the low 13 bits and the high
+// 12 bits separately and OR-ing the results equals rotating the whole grid.
+const LOW_BITS = 13;
+const LOW_MASK = (1 << LOW_BITS) - 1;
+const ROTATE_LOW = new Uint32Array(1 << LOW_BITS);
+const ROTATE_HIGH = new Uint32Array(1 << (GRID * GRID - LOW_BITS));
+for (let i = 0; i < ROTATE_LOW.length; i += 1) ROTATE_LOW[i] = rotateCells(i);
+for (let i = 0; i < ROTATE_HIGH.length; i += 1)
+  ROTATE_HIGH[i] = rotateCells(i << LOW_BITS);
+
+const POPCOUNT_16 = new Uint8Array(1 << 16);
+for (let i = 1; i < POPCOUNT_16.length; i += 1) {
+  POPCOUNT_16[i] = (POPCOUNT_16[i >>> 1] as number) + (i & 1);
+}
+
+/** Rotate a 5x5 bit grid 90 degrees clockwise: (row r, col c) moves to (row c, col 4 - r). */
+export function rotateGrid(bits: number): number {
+  return (
+    ((ROTATE_LOW[bits & LOW_MASK] as number) |
+      (ROTATE_HIGH[(bits >>> LOW_BITS) & 0xfff] as number)) >>>
+    0
+  );
+}
+
 /** Number of set bits in a 32-bit value. */
 export function popcount(value: number): number {
-  let x = value >>> 0;
-  x -= (x >>> 1) & 0x55555555;
-  x = (x & 0x33333333) + ((x >>> 2) & 0x33333333);
-  return (((x + (x >>> 4)) & 0x0f0f0f0f) * 0x01010101) >>> 24;
+  const x = value >>> 0;
+  return (POPCOUNT_16[x & 0xffff] as number) + (POPCOUNT_16[x >>> 16] as number);
 }
 
 /** Number of differing bits between two grids. */
