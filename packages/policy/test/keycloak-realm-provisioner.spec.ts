@@ -122,3 +122,43 @@ describe('Keycloak realm: the provisioner service account (OQ-048 (a))', () => {
       expect(Role.safeParse(role).success).toBe(true);
   });
 });
+
+// Found by slice 7e against Keycloak 26.0.8: the Admin API silently drops a user attribute the realm's
+// user profile does not declare, so users the application created had no `tenant_id`, and so no tenant
+// claim. Declared here as admin-only: a user must never be able to view-edit their own tenant.
+describe('Keycloak realm: tenant_id is a declared, admin-only user attribute (slice 7e)', () => {
+  const raw = JSON.parse(
+    readFileSync(join(root, 'infra', 'keycloak', 'realm.json'), 'utf8'),
+  ) as {
+    components?: Record<
+      string,
+      readonly { config?: Record<string, readonly string[]> }[]
+    >;
+  };
+  const config =
+    raw.components?.['org.keycloak.userprofile.UserProfileProvider']?.[0]?.config?.[
+      'kc.user.profile.config'
+    ]?.[0];
+  const profile = (config === undefined ? { attributes: [] } : JSON.parse(config)) as {
+    attributes: {
+      name: string;
+      permissions?: { view?: readonly string[]; edit?: readonly string[] };
+    }[];
+  };
+  const tenant = profile.attributes.find((a) => a.name === 'tenant_id');
+
+  it('declares tenant_id in the user profile, or Keycloak drops it', () => {
+    expect(tenant, 'tenant_id is not declared in the realm user profile').toBeDefined();
+  });
+
+  it('lets only an administrator view or edit it', () => {
+    expect(tenant?.permissions?.edit).toEqual(['admin']);
+    expect(tenant?.permissions?.view).toEqual(['admin']);
+  });
+
+  it('keeps the standard attributes, so replacing the default profile loses nothing', () => {
+    const names = profile.attributes.map((a) => a.name);
+    for (const n of ['username', 'email', 'firstName', 'lastName'])
+      expect(names).toContain(n);
+  });
+});

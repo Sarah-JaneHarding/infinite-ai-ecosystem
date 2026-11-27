@@ -12463,3 +12463,62 @@ worker 158 passing; repo lint clean. **Mutation-checked:** removing the guard fa
 | `pnpm lint`, worker typecheck and tests                            | PASS                                 |
 | Real grounding and template-fidelity checkers wired                | **NOT DONE** (S1b; D6 first)         |
 | Rollback: revert this commit; no schema change                     | PASS                                 |
+
+## Stage 150 — slice 7e (partial): the Admin client run against Keycloak 26.0.8; `tenant_id` was being dropped
+
+Source: OQ-048, `docs/PROVISIONING_DESIGN.md` §11.1 7e. There is no Docker daemon in the authoring environment, so the Compose stack could not be
+used. Instead the Keycloak 26.0.8 distribution (from the project's GitHub release, SHA-1 checked against the published value) ran natively on Java 21
+with its embedded dev database, importing this repository's unmodified `infra/keycloak/realm.json`, and the real `createKeycloakAdmin` client was
+driven against it with throwaway secrets generated outside the repository. The scripts are not committed.
+
+**Defect found and fixed.** The Admin API accepted `createUser` with a `tenant_id` attribute and stored nothing: Keycloak 26 ignores attributes the
+realm's user profile does not declare (`unmanagedAttributePolicy` is unset). Seeded dev users kept theirs only because realm import bypasses that rule.
+Every user the application created would have had no tenant claim. `realm.json` now declares `tenant_id` in the user profile with view and edit
+limited to `admin`, alongside the four standard attributes. After a fresh import the attribute is stored, survives a disable and enable, and the access
+token carries it. `packages/policy/test/keycloak-realm-provisioner.spec.ts` guards it (fails when the declaration is removed).
+
+**Observed against the real server.** Create; duplicate refused as `conflict`; find by email; role replacement leaves exactly `smt` (plus the default
+role); disable then revoke ends a live session (sessions 1 to 0, the old access token gets 401, the refresh token and a new sign-in get
+`invalid_grant`); re-enable restores sign-in; the worker's client is refused user creation; a wrong secret is `unauthorised`; `sendActionsEmail` fails
+without SMTP, as OQ-048 (d) expects. **Confirmed residual risk from OQ-048 (a):** the provisioner's own credential can map `platform_admin` to a user
+(HTTP 204), so the secret is an administrator credential.
+
+**Not verified.** `reconcile.ts` and the database wiring; the Compose image, Postgres and `start` (not `start-dev`) mode; a user editing their own
+`tenant_id` through the account API (the call returned 401, so it proves nothing); admin events and the platform-role mapping alert; secret handling in
+AWS (below).
+
+| Exit gate item                                                   | Result                |
+| ---------------------------------------------------------------- | --------------------- |
+| Realm file imports into Keycloak 26                              | PASS (26.0.8, native) |
+| Admin client calls behave as designed (create to revoke)         | PASS (run)            |
+| Defect found by the run is fixed and guarded                     | PASS (test, mutation) |
+| Wiring (`reconcile.ts`), Compose stack, self-edit of `tenant_id` | **NOT VERIFIED**      |
+| Production secret in Secrets Manager, rotation, alert (OQ-048 a) | **NOT DONE** (human)  |
+| Rollback: revert; realm file and one test only                   | PASS                  |
+
+## Stage 151 — OQ-048 (a): a place for the provisioner secret in Terraform (prepared, not applied)
+
+Source: OQ-048 (a), Stage 150's "NOT DONE" row. **Terraform and runbooks only; nothing was planned or applied.**
+
+**What changed.** `modules/stack` gains `keycloak_provisioner_enabled` (default `false`). When true it creates the empty Secrets Manager shell
+`/infinite-ai/<env>/KEYCLOAK_PROVISIONER_CLIENT_SECRET`, publishes the client id `infinite-ai-provisioner` (not a secret) to SSM, and maps both into the **web**
+task only. Both environments expose it, and now also pass `keycloak_issuer_url` through: no environment did before, so the web task has no way to learn a real
+Keycloak issuer (`apps/web` falls back to `localhost:8080`). A `check` block warns at plan time if the provisioner is enabled without an issuer.
+`docs/RUNBOOKS/aws-setup.md` gains the order (create the empty secret, populate it, then apply the rest) and `docs/RUNBOOKS/secrets-rotation.md` a row for it,
+including that it is an administrator-equivalent credential. Default off, so an existing environment's plan is unchanged.
+
+**Tests.** `packages/security/test/terraform-provisioner-secret.spec.ts` (6): mapped into web with both entries; absent from the worker and gateway; created only
+when enabled and off by default; never given a value by the owning modules or named in a `.tfvars`; only the id in plain SSM config; the check exists.
+Mutation-checked: adding the secret to the worker's map fails two of them. These read the files; they do not run Terraform.
+
+**Not verified.** `terraform fmt -check`, `validate` and `plan` were **not run**: there is no Terraform binary here and a download was refused. Formatting was
+aligned by hand and the HCL is unvalidated. Run all three before any apply. The admin-event alert on realm-role mappings is **not built**: Keycloak is not hosted
+by this Terraform, so it belongs wherever Keycloak runs. The unplumbed issuer is a gap that existed before this change.
+
+| Exit gate item                                                | Result                  |
+| ------------------------------------------------------------- | ----------------------- |
+| Secret reaches web only; never worker or gateway              | PASS (static; mutation) |
+| No value in Terraform or tfvars; default off                  | PASS (static)           |
+| `terraform fmt`, `validate`, `plan`                           | **NOT RUN**             |
+| Secret populated, rotated; admin-event alert on platform role | **NOT DONE** (human)    |
+| Rollback: revert; default-off variable, no state change       | PASS                    |

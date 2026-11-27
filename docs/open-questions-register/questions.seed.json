@@ -6,6 +6,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "resolved",
+        "text": "Decided 2026-11-26 by the owner: dedicated provisioner client (infinite-ai-provisioner), as recommended. The worker's service account is not widened. This matches Stage 139 (slice 7b), so no code changes. Still to do and not verifiable here: keep the secret in AWS Secrets Manager, rotate it, and alert on any realm-role mapping to a platform role. Not yet run against a real Keycloak (slice 7e)."
       }
     ],
     "id": "OQ-048a",
@@ -18,13 +23,21 @@
     "recommendedIndex": 0,
     "source": "docs/OPEN_QUESTIONS.md · OQ-048",
     "stage": "Provisioning 7",
-    "status": "open",
+    "status": "resolved",
     "suggestions": [
       "A new client, infinite-ai-provisioner, holding only manage-users, query-users and view-users.",
       "Widen the existing worker service account (fewer moving parts, much larger blast radius)."
     ],
     "title": "Which Keycloak client holds the power to create users?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-048 (a); (b), (c) and (d) stay open."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: dedicated provisioner client (infinite-ai-provisioner), as recommended. The worker's service account is not widened. This matches Stage 139 (slice 7b), so no code changes. Still to do and not verifiable here: keep the secret in AWS Secrets Manager, rotate it, and alert on any realm-role mapping to a platform role. Not yet run against a real Keycloak (slice 7e).",
+      "verdict": "accepted"
+    }
   },
   {
     "blocks": "Provisioning step 7b onward",
@@ -33,6 +46,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "resolved",
+        "text": "Decided 2026-11-26 by the owner: commit first, then call Keycloak, with idp_state on the row, as recommended. Already built (migration 20261113100000_oq033_idp_sync_state, Stage 140; post-commit wiring, Stage 141), so no code changes. Not yet run against a real Keycloak (slice 7e)."
       }
     ],
     "id": "OQ-048b",
@@ -48,13 +66,21 @@
     "recommendedIndex": 0,
     "source": "docs/OPEN_QUESTIONS.md · OQ-048",
     "stage": "Provisioning 7",
-    "status": "open",
+    "status": "resolved",
     "suggestions": [
       "Commit first, then call Keycloak, and record idp_state (PENDING, SYNCED, FAILED) on the row so an administrator can retry.",
       "Call Keycloak first, then commit."
     ],
     "title": "What happens when the Keycloak call fails after the database commit?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-048; (d) stays open."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: commit first, then call Keycloak, with idp_state on the row, as recommended. Already built (migration 20261113100000_oq033_idp_sync_state, Stage 140; post-commit wiring, Stage 141), so no code changes. Not yet run against a real Keycloak (slice 7e).",
+      "verdict": "accepted"
+    }
   },
   {
     "blocks": "Provisioning step 7",
@@ -63,6 +89,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "resolved",
+        "text": "Decided 2026-11-26 by the owner: yes, disable the user in Keycloak and revoke its sessions on suspend and offboard, as recommended. Already built in slice 7d, so no code changes. Not yet run against a real Keycloak (slice 7e); 7d does not merge until 7e has run."
       }
     ],
     "id": "OQ-048c",
@@ -78,13 +109,21 @@
     "recommendedIndex": 0,
     "source": "docs/OPEN_QUESTIONS.md · OQ-048",
     "stage": "Provisioning 7",
-    "status": "open",
+    "status": "resolved",
     "suggestions": [
       "Disable the Keycloak user and revoke sessions on suspend and offboard.",
       "Rely on the application's ACTIVE-account gate alone."
     ],
     "title": "Should suspending or offboarding also disable the user in Keycloak?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-048; (d) stays open."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: yes, disable the user in Keycloak and revoke its sessions on suspend and offboard, as recommended. Already built in slice 7d, so no code changes. Not yet run against a real Keycloak (slice 7e); 7d does not merge until 7e has run.",
+      "verdict": "accepted"
+    }
   },
   {
     "blocks": "Provisioning step 7 (email)",
@@ -93,6 +132,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "resolved",
+        "text": "Decided 2026-11-26 by the owner: an operator sends the first sign-in link by hand for the pilot, as recommended. No SMTP on Keycloak yet; that is a later decision once a transactional mail provider is chosen. No code changes. Not yet run against a real Keycloak (slice 7e)."
       }
     ],
     "id": "OQ-048d",
@@ -108,13 +152,19 @@
     "recommendedIndex": 0,
     "source": "docs/OPEN_QUESTIONS.md · OQ-048",
     "stage": "Provisioning 7",
-    "status": "open",
+    "status": "resolved",
     "suggestions": [
       "An operator sends the first sign-in link by hand for the pilot (already allowed in section 5 of the provisioning design).",
       "Configure SMTP on Keycloak now and test delivery."
     ],
     "title": "How do pilot users receive their first sign-in link?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": ["Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-048 (d)."],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: an operator sends the first sign-in link by hand for the pilot, as recommended. No SMTP on Keycloak yet; that is a later decision once a transactional mail provider is chosen. No code changes. Not yet run against a real Keycloak (slice 7e).",
+      "verdict": "accepted"
+    }
   },
   {
     "blocks": "Serving the 80 widgets to signed-in staff",
@@ -153,6 +203,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "updated",
+        "text": "Decided 2026-11-26 by the owner: option A, per-stage ratification with an artefact store. This records the design only; nothing is built (no new constitution kinds, migration, production getters, per-artefact gates or matching prompt context). Until it is built, production MOD-01 is unchanged and dev-only chaining is the only chaining. When built: tested migration rollback (rule 10), approval record before each guarded transition (rule 6), and a named role for every gate (see OQ-046). Not decided here: the build order (recommendation: GradeFramework and TermPlan first) and which role ratifies each artefact."
       }
     ],
     "id": "OQ-030",
@@ -176,7 +231,15 @@
       "C: stay dev-only (current state)."
     ],
     "title": "How should MOD-01 chain ratified artefacts in production?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-030. Status stays partially answered: the design is chosen, the build order and ratifying roles are not."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: option A, per-stage ratification with an artefact store. This records the design only; nothing is built (no new constitution kinds, migration, production getters, per-artefact gates or matching prompt context). Until it is built, production MOD-01 is unchanged and dev-only chaining is the only chaining. When built: tested migration rollback (rule 10), approval record before each guarded transition (rule 6), and a named role for every gate (see OQ-046). Not decided here: the build order (recommendation: GradeFramework and TermPlan first) and which role ratifies each artefact.",
+      "verdict": "followup"
+    }
   },
   {
     "blocks": "Nothing; built with assumptions",
@@ -323,6 +386,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "updated",
+        "text": "Decided 2026-11-26 by the owner: ratify by phase, Foundation first, then Intermediate, then Senior. This fixes the order and batch size and ratifies nothing by itself. Still open: the named person who ratifies each phase. ratifiedBy stays null on every SourceRef until a named person countersigns; the ratifier is not assumed from a job title. The five IP-MULTI stubs still wait for DBE data."
       }
     ],
     "id": "OQ-002",
@@ -346,7 +414,15 @@
       "Ratify only what pilot school #1 uses, at onboarding."
     ],
     "title": "Who countersigns the ingested CAPS and ATP sources?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-002 (b). Status stays partially answered."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: ratify by phase, Foundation first, then Intermediate, then Senior. This fixes the order and batch size and ratifies nothing by itself. Still open: the named person who ratifies each phase. ratifiedBy stays null on every SourceRef until a named person countersigns; the ratifier is not assumed from a job title. The five IP-MULTI stubs still wait for DBE data.",
+      "verdict": "followup"
+    }
   },
   {
     "blocks": "Unit blueprint, assessment task, rubric and parent report agents for this school",
@@ -355,6 +431,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-26T00:00:00.000Z",
+        "kind": "updated",
+        "text": "Decided 2026-11-26 by the owner: wait for onboarding; no request is sent to the school now. Reason given: running without the four templates tests the application's adaptability and the template fidelity checks. This supersedes the earlier instruction to ask the principal now with a date. Not decided here: the lesson plan template's countersignature (ratifiedAt stays null), and whether the school is still asked for a date at onboarding. The question stays partially answered until the templates arrive."
       }
     ],
     "id": "OQ-003",
@@ -373,7 +454,15 @@
       "Wait until onboarding."
     ],
     "title": "When will Benjamin Pine supply the four missing templates?",
-    "repo": "ecosystem"
+    "repo": "ecosystem",
+    "review": {
+      "actions": [
+        "Recorded the decision in docs/OPEN_QUESTIONS.md under OQ-003 and marked the 2026-11-05 decisions-table note as superseded. Status stays partially answered."
+      ],
+      "at": "2026-11-26T00:00:00.000Z",
+      "summary": "Decided 2026-11-26 by the owner: wait for onboarding; no request is sent to the school now. Reason given: running without the four templates tests the application's adaptability and the template fidelity checks. This supersedes the earlier instruction to ask the principal now with a date. Not decided here: the lesson plan template's countersignature (ratifiedAt stays null), and whether the school is still asked for a date at onboarding. The question stays partially answered until the templates arrive.",
+      "verdict": "followup"
+    }
   },
   {
     "blocks": "Calibrated age-appropriateness checking",

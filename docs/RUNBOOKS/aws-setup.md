@@ -206,6 +206,34 @@ for svc in gateway worker web; do
 done
 ```
 
+### Optional: the Keycloak provisioner secret (OQ-048 (a))
+
+Only when this environment should create and update Keycloak users from the app (provisioning step 7). It is the
+`infinite-ai-provisioner` client's secret and it is **administrator-equivalent**: it can map any realm role to any
+user. Do it in this order, because a task that references an empty secret cannot start:
+
+1. Set `keycloak_issuer_url` and `keycloak_provisioner_enabled = true` in the environment's `.tfvars`, then
+   `terraform plan`. It should add one empty secret `/infinite-ai/<env>/KEYCLOAK_PROVISIONER_CLIENT_SECRET`, one SSM
+   parameter, and change only the **web** task definition. If the worker or gateway task changes, stop. A plan
+   warning that the provisioner is enabled but `keycloak_issuer_url` is null means this step is incomplete.
+2. Create only the empty secret first, so no task definition points at it yet:
+   `terraform apply -target=module.stack.module.app_secrets -var-file=<env>.tfvars`
+3. Populate it with the value from the Keycloak admin console (Clients, `infinite-ai-provisioner`, Credentials),
+   typed at a silent prompt:
+
+   ```bash
+   read -rs -p "KEYCLOAK_PROVISIONER_CLIENT_SECRET: " VAL; echo
+   aws secretsmanager put-secret-value --secret-id /infinite-ai/$ENV/KEYCLOAK_PROVISIONER_CLIENT_SECRET --secret-string "$VAL"
+   unset VAL
+   ```
+
+4. Run the full `terraform apply`. It updates the web task definition, which now references a populated secret. If
+   web tasks ever fail to start with `ResourceInitializationError`, the secret is still empty: populate it, then
+   redeploy web as above.
+5. Before relying on it, switch on Keycloak admin events and alert on any realm-role mapping to a platform role
+   (`platform_admin`, `platform_support`). Keycloak is not hosted by this Terraform, so configure the alert where
+   Keycloak runs. Until it exists, keep this secret out of any environment that holds real data.
+
 ## 9. Prove the secrets are injected
 
 Run for each service (`gateway`, `worker`, `web`); `CLUSTER` as above.

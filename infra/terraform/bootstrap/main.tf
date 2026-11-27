@@ -97,6 +97,11 @@ resource "aws_iam_openid_connect_provider" "github" {
   tags = var.tags
 }
 
+# The repository as it appears in the token's `sub` claim (see var.github_oidc_repository).
+locals {
+  oidc_repository = coalesce(var.github_oidc_repository, var.github_repository)
+}
+
 data "aws_iam_policy_document" "github_assume" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -123,8 +128,8 @@ data "aws_iam_policy_document" "github_assume" {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       values = concat(
-        [for b in var.github_branches : "repo:${var.github_repository}:ref:refs/heads/${b}"],
-        [for e in var.github_environments : "repo:${var.github_repository}:environment:${e}"],
+        [for b in var.github_branches : "repo:${local.oidc_repository}:ref:refs/heads/${b}"],
+        [for e in var.github_environments : "repo:${local.oidc_repository}:environment:${e}"],
       )
     }
   }
@@ -179,7 +184,7 @@ data "aws_iam_policy_document" "github_plan_assume" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repository}:pull_request"]
+      values   = ["repo:${local.oidc_repository}:pull_request"]
     }
   }
 }
