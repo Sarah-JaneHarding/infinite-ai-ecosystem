@@ -26,8 +26,9 @@ const RESULTS_DIR = join(RUNBOOKS_DIR, 'drill-results');
 interface RunbookCheck {
   readonly file: string;
   readonly description: string;
-  readonly rtoMinutes: number;
-  readonly rpoMinutes: number;
+  /** `null` means the runbook deliberately commits to no figure (region loss: nothing to fail over to). */
+  readonly rtoMinutes: number | null;
+  readonly rpoMinutes: number | null;
 }
 
 // RTO and RPO per runbook, per data class. Values are conservative targets until a
@@ -41,9 +42,12 @@ const RUNBOOK_CHECKS: readonly RunbookCheck[] = [
   },
   {
     file: 'brain-restore.md',
-    description: 'Brain snapshot restore — all five tiers',
+    // The Brain lives in the same Postgres as everything else, so point-in-time recovery covers it and
+    // its RPO is the database's. An earlier 60-minute figure assumed an hourly Brain snapshot job that
+    // does not exist and is not planned (OQ-061, decided 2026-11-26). Unproven until the live drill.
+    description: 'Brain restore — all five tiers, via database point-in-time recovery',
     rtoMinutes: 120,
-    rpoMinutes: 60,
+    rpoMinutes: 5,
   },
   {
     file: 'provider-outage.md',
@@ -77,17 +81,20 @@ const RUNBOOK_CHECKS: readonly RunbookCheck[] = [
   },
   {
     file: 'region-loss.md',
-    description: 'Full region loss — cross-region failover',
-    rtoMinutes: 240,
-    rpoMinutes: 60,
+    // No secondary region, replica or off-Region copy exists in the stack, so there is no failover and
+    // no honest figure to declare. A number here would be invented (OQ-061, decided 2026-11-26).
+    description:
+      'Full region loss — no failover exists; communicate and wait for recovery',
+    rtoMinutes: null,
+    rpoMinutes: null,
   },
 ] as const;
 
 type CheckResult = {
   file: string;
   description: string;
-  rtoMinutes: number;
-  rpoMinutes: number;
+  rtoMinutes: number | null;
+  rpoMinutes: number | null;
   exists: boolean;
   pass: boolean;
   error?: string;
@@ -122,6 +129,7 @@ function main(): void {
   console.log('\nRestore drill — paper verification\n' + '='.repeat(72));
   console.log(`Date:        ${new Date().toISOString()}`);
   console.log(`Mode:        paper (runbook existence + RTO/RPO declaration)`);
+  console.log(`Note:        restores nothing — PASS is not evidence a restore works`);
   console.log(`Environment: CI / authoring sandbox — no live infrastructure`);
   console.log('');
 
@@ -130,8 +138,13 @@ function main(): void {
 
   for (const r of results) {
     const icon = r.pass ? '✓' : '✗';
-    const rto = `RTO ≤ ${r.rtoMinutes}min`;
-    const rpo = r.rpoMinutes === 0 ? 'RPO = 0' : `RPO ≤ ${r.rpoMinutes}min`;
+    const rto = r.rtoMinutes === null ? 'RTO not committed' : `RTO ≤ ${r.rtoMinutes}min`;
+    const rpo =
+      r.rpoMinutes === null
+        ? 'RPO not committed'
+        : r.rpoMinutes === 0
+          ? 'RPO = 0'
+          : `RPO ≤ ${r.rpoMinutes}min`;
     console.log(`  ${icon}  ${r.file.padEnd(40)} ${rto.padEnd(16)} ${rpo}`);
     if (!r.pass && r.error) {
       console.error(`       → ${r.error}`);
@@ -164,8 +177,11 @@ function main(): void {
     '|---------|-----|-----|--------|',
     ...results.map(
       (r) =>
-        `| ${r.file} | ≤ ${r.rtoMinutes}min | ${r.rpoMinutes === 0 ? '0' : `≤ ${r.rpoMinutes}min`} | ${r.pass ? 'PASS' : 'FAIL'} |`,
+        `| ${r.file} | ${r.rtoMinutes === null ? 'not committed' : `≤ ${r.rtoMinutes}min`} | ${r.rpoMinutes === null ? 'not committed' : r.rpoMinutes === 0 ? '0' : `≤ ${r.rpoMinutes}min`} | ${r.pass ? 'PASS' : 'FAIL'} |`,
     ),
+    '',
+    'This drill restores nothing. PASS means only that the runbook exists and mentions RTO and RPO;',
+    'it is not evidence that any restore works. The real test is docs/RUNBOOKS/restore-drill.md.',
     '',
     `Drill completed at ${new Date().toISOString()}.`,
   ];

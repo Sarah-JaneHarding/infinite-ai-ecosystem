@@ -577,7 +577,7 @@ create a user even if code asked it to.
   reinstated → enable. The database stays the authority; a mismatch is repaired from the database, never the reverse.
 - **7e — verify against a running Keycloak 26.** §13 is explicit that the Admin API calls are from knowledge of the
   product and unexercised. The sandbox (Stage 132) is where this happens; until it has run, 7d does not merge.
-  **Partly done (Stage 145).** The Admin client (7a) and the provisioner client's roles (7b) were run against Keycloak 26.0.8 with this repo's
+  **Partly done (Stage 150).** The Admin client (7a) and the provisioner client's roles (7b) were run against Keycloak 26.0.8 with this repo's
   `realm.json`: create, duplicate refusal, find, role replacement, disable and enable, session revocation of a live session, wrong-secret and
   worker-client refusals. It found one defect (`tenant_id` was dropped because the user profile did not declare it), fixed in `realm.json`.
   **Still not run:** the `reconcile.ts` wiring against a database, the Compose stack and its Postgres, SMTP (decided against, OQ-048 (d)), and

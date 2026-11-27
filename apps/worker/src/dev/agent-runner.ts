@@ -155,6 +155,10 @@ export async function runAgentLive(
     fetchImpl: recordingFetch,
     tenantId: deps.tenantId,
     toolHandlers: new Map(),
+    // Dev runner only (see `assertDevRun`): synthetic fixture tenants, never production. The real
+    // grounding and template-fidelity checkers are not wired yet, so without this the CE and DW
+    // agents would refuse to run here too. This is how they behaved before Stage 149.
+    allowUnwiredGuardrails: true,
     ...(deps.payloadBuilder === undefined ? {} : { buildPayload: deps.payloadBuilder }),
     ...(deps.ageAppropriatenessChecker === undefined
       ? {}

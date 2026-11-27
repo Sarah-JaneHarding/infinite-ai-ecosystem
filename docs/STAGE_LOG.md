@@ -12288,64 +12288,127 @@ repository is not covered. The protocol is not legal or privacy advice.
 | Adopted by the owner                                          | **NOT DONE** (human)  |
 | Rollback: revert; documents only                              | PASS                  |
 
-## Stage 145 — slice 7e (partial): the Admin client run against Keycloak 26.0.8; `tenant_id` was being dropped
+## Stage 145 — OQ-056: the Parent Portal no longer shows invented notices
 
-Source: OQ-048, `docs/PROVISIONING_DESIGN.md` §11.1 7e. There is no Docker daemon in the authoring environment, so the Compose stack could not be
-used. Instead the Keycloak 26.0.8 distribution (from the project's GitHub release, SHA-1 checked against the published value) ran natively on Java 21
-with its embedded dev database, importing this repository's unmodified `infra/keycloak/realm.json`, and the real `createKeycloakAdmin` client was
-driven against it with throwaway secrets generated outside the repository. The scripts are not committed.
+Source: OQ-056, found while writing the feature matrix (Stage 144); not in the audit. Decision 2026-11-26 (Sarah-Jane Harding): fix the notices first.
 
-**Defect found and fixed.** The Admin API accepted `createUser` with a `tenant_id` attribute and stored nothing: Keycloak 26 ignores attributes the
-realm's user profile does not declare (`unmanagedAttributePolicy` is unset). Seeded dev users kept theirs only because realm import bypasses that rule.
-Every user the application created would have had no tenant claim. `realm.json` now declares `tenant_id` in the user profile with view and edit
-limited to `admin`, alongside the four standard attributes. After a fresh import the attribute is stored, survives a disable and enable, and the access
-token carries it. `packages/policy/test/keycloak-realm-provisioner.spec.ts` guards it (fails when the declaration is removed).
+**What was wrong.** `GuardianPortal.tsx` hard-coded "Term 3 results available from 25 August" and "Parent evening: 3 September 18:00" under "School notices", a line promising
+progress "once Term 3 assessments are completed", and the claim "only information about your child is shown". None came from the school, and the last described a
+restriction the page never exercised. The other role pages had this removed earlier; this one was missed.
 
-**Observed against the real server.** Create; duplicate refused as `conflict`; find by email; role replacement leaves exactly `smt` (plus the default
-role); disable then revoke ends a live session (sessions 1 to 0, the old access token gets 401, the refresh token and a new sign-in get
-`invalid_grant`); re-enable restores sign-in; the worker's client is refused user creation; a wrong secret is `unauthorised`; `sendActionsEmail` fails
-without SMTP, as OQ-048 (d) expects. **Confirmed residual risk from OQ-048 (a):** the provisioner's own credential can map `platform_admin` to a user
-(HTTP 204), so the secret is an administrator credential.
+**What changed.** The page now reads no record and shows no notice, date, result or progress. It says "Nothing to show yet", that nothing on the page comes from the
+child's school, and tells a parent to ask the school directly, in the same plain style as the district and run-inspector pages. The claim of a restriction is gone.
 
-**Not verified.** `reconcile.ts` and the database wiring; the Compose image, Postgres and `start` (not `start-dev`) mode; a user editing their own
-`tenant_id` through the account API (the call returned 401, so it proves nothing); admin events and the platform-role mapping alert; secret handling in
-AWS (below).
+**Tests.** `guardian-portal.spec.ts` (+5): none of the invented text returns; no date or time appears at all; the page says there is nothing to show; it announces its
+state to assistive technology; the component's only import is the design system, so it cannot read data. Mutation-checked: restoring an invented line fails 3. web unit
+tier 1234 passing; lint, typecheck and format clean. `FEATURE_MATRIX.md` and OQ-056 updated.
 
-| Exit gate item                                                   | Result                |
-| ---------------------------------------------------------------- | --------------------- |
-| Realm file imports into Keycloak 26                              | PASS (26.0.8, native) |
-| Admin client calls behave as designed (create to revoke)         | PASS (run)            |
-| Defect found by the run is fixed and guarded                     | PASS (test, mutation) |
-| Wiring (`reconcile.ts`), Compose stack, self-edit of `tenant_id` | **NOT VERIFIED**      |
-| Production secret in Secrets Manager, rotation, alert (OQ-048 a) | **NOT DONE** (human)  |
-| Rollback: revert; realm file and one test only                   | PASS                  |
+**Not done, stated plainly.**
 
-## Stage 146 — OQ-048 (a): a place for the provisioner secret in Terraform (prepared, not applied)
+1. **Guardian access is still undecided** (OQ-056): where real notices come from, how a guardian is linked to a learner, what they may see. Until then guardian access stays
+   off in the pilot scope.
+2. **Learner Space still shows a sample graph and a demo learner**; it was not changed here.
+3. Not walked in a browser.
 
-Source: OQ-048 (a), Stage 145's "NOT DONE" row. **Terraform and runbooks only; nothing was planned or applied.**
+| Exit gate item                                           | Result                        |
+| -------------------------------------------------------- | ----------------------------- |
+| No invented notice, date or promise can return unnoticed | PASS (unit; mutation-checked) |
+| The page makes no claim it does not exercise             | PASS (unit)                   |
+| `pnpm lint`, `pnpm typecheck`, web unit tests            | PASS                          |
+| Rollback: revert this commit; no schema change           | PASS                          |
 
-**What changed.** `modules/stack` gains `keycloak_provisioner_enabled` (default `false`). When true it creates the empty Secrets Manager shell
-`/infinite-ai/<env>/KEYCLOAK_PROVISIONER_CLIENT_SECRET`, publishes the client id `infinite-ai-provisioner` (not a secret) to SSM, and maps both into the **web**
-task only. Both environments expose it, and now also pass `keycloak_issuer_url` through: no environment did before, so the web task has no way to learn a real
-Keycloak issuer (`apps/web` falls back to `localhost:8080`). A `check` block warns at plan time if the provisioner is enabled without an issuer.
-`docs/RUNBOOKS/aws-setup.md` gains the order (create the empty secret, populate it, then apply the rest) and `docs/RUNBOOKS/secrets-rotation.md` a row for it,
-including that it is an administrator-equivalent credential. Default off, so an existing environment's plan is unchanged.
+## Stage 146 — verification runbooks for audit tasks T13, T17 and T19
 
-**Tests.** `packages/security/test/terraform-provisioner-secret.spec.ts` (6): mapped into web with both entries; absent from the worker and gateway; created only
-when enabled and off by default; never given a value by the owning modules or named in a `.tfvars`; only the id in plain SSM config; the check exists.
-Mutation-checked: adding the secret to the worker's map fails two of them. These read the files; they do not run Terraform.
+Source: pilot-readiness audit tasks T12/T13 (MFA), T17 (staging deploy) and T19 (backup and restore). Requested 2026-11-26. **Documents only; no code, infrastructure or setting was changed**
+and nothing was run against AWS, Keycloak or a database. Each runbook says it is unrun.
 
-**Not verified.** `terraform fmt -check`, `validate` and `plan` were **not run**: there is no Terraform binary here and a download was refused. Formatting was
-aligned by hand and the HCL is unvalidated. Run all three before any apply. The admin-event alert on realm-role mappings is **not built**: Keycloak is not hosted
-by this Terraform, so it belongs wherever Keycloak runs. The unplumbed issuer is a gap that existed before this change.
+Added `docs/RUNBOOKS/cd-deploy-role-failure.md`, `verify-mfa.md` and `restore-drill.md`, indexed in `docs/RUNBOOKS/README.md`, with OQ-059 to OQ-061.
 
-| Exit gate item                                                | Result                  |
-| ------------------------------------------------------------- | ----------------------- |
-| Secret reaches web only; never worker or gateway              | PASS (static; mutation) |
-| No value in Terraform or tfvars; default off                  | PASS (static)           |
-| `terraform fmt`, `validate`, `plan`                           | **NOT RUN**             |
-| Secret populated, rotated; admin-event alert on platform role | **NOT DONE** (human)    |
-| Rollback: revert; default-off variable, no state change       | PASS                    |
+**What reading the repository and the real CD log turned up, stated plainly.**
+
+1. **The CD failure is `sts:AssumeRoleWithWebIdentity` refused by AWS**, after the workflow's own role-ARN check passed (job log of run `45483184887`). The Terraform trust policy does handle the job's `environment: staging`
+   subject, so the repository logic looks right and the cause is in what was applied in AWS or set in GitHub. The runbook orders six causes and warns against the two tempting wrong fixes (long-lived keys, wildcard trust).
+2. **The realm file would create `admin.dev` and `platform-admin.dev` in production** if imported as OQ-036 says, and nothing removes them first. All credentials in it are `${...}` placeholders, so rule 7 holds.
+3. **Restore evidence is thinner than it looks.** The drill folder holds paper drills only; no Brain snapshot job exists; one runbook step cannot be performed as written; `region-loss.md` describes Google Cloud and a second region; Keycloak has no
+   Terraform and no stated backup; the encryption key has no second copy.
+4. Checked and **not** a problem: the Education web app registers only the Keycloak provider (no development sign-in); the "open development mode" finding is about the separate Operations platform.
+
+**Renumbering.** These questions were first written as OQ-057 (CD role), OQ-058 (MFA and realm) and OQ-059 (restore drill), and the earlier commit messages and PR comments use those numbers. `main` took
+OQ-057 and OQ-058 for unrelated questions (the Toqi connector, the assistant chat panel) while this branch was open, so on merging they became **OQ-059, OQ-060 and OQ-061**. Read old references accordingly.
+
+**Not done.** None of the three runbooks has been run, so none of audit tasks T13, T17 or T19 is complete. I did not fix `database-restore.md`, `region-loss.md` or the realm file; each is a decision or a human step (logged).
+
+| Exit gate item                                                           | Result               |
+| ------------------------------------------------------------------------ | -------------------- |
+| Each runbook states what is confirmed, what is not, and that it is unrun | PASS (by reading)    |
+| No secret, ARN, account id or credential written into a document         | PASS                 |
+| Findings logged (OQ-059, OQ-060, OQ-061)                                 | PASS                 |
+| Someone with access ran a runbook and recorded the result                | **NOT DONE** (human) |
+| Rollback: revert; documents only                                         | PASS                 |
+
+## Stage 147 (identity and recovery) — OQ-060 / OQ-061: production realm rule, HoD one-time code, Brain RPO and region loss
+
+_Note: `main` also logged a "Stage 147" for its Terraform fixes (below); the two are unrelated. Parallel sessions chose the same number._
+
+Source: the decisions Sarah-Jane Harding made on 2026-11-26 after reading `docs/RUNBOOKS/verify-mfa.md` and `restore-drill.md` (Stage 146).
+
+**1. The production realm is derived, not copied (OQ-060).** `infra/keycloak/realm.json` is a development fixture with eleven `*.dev` users (two administrators) and a localhost redirect. `toProductionRealm`
+(`packages/policy/src/keycloak-production-realm.ts`) removes every person, keeps the provisioner's service account (it carries the user-management roles), drops loopback redirect URIs and web origins, changes nothing
+else, and **refuses** (throws) when the result would be unusable: no service account, or a client left with no redirect URI. No production domain is invented. `pnpm keycloak:production-realm` writes
+`infra/keycloak/realm.production.json` (`--check` verifies it is current). The rule is by _role of the entry_, not by name, so a person called anything is removed.
+
+**2. The HoD needs a one-time code (OQ-060).** `realm.json` gains the `browser-mfa otp hod` sub-flow, its role condition, and its invocation (priority 70), copied exactly from the `sbst_chair` pattern. The drift test now guards
+six roles and records `teacher`, `sbst`, `guardian` and `learner` as "not asked yet"; a new test fails if any realm role is in neither list, so a new role cannot slip through. `sbst` and `teacher` are to be decided before Phase 2.
+
+**3. The Brain RPO and region loss are stated truthfully (OQ-061).** The 60-minute Brain RPO assumed an hourly snapshot job that does not exist; it was dropped, so the Brain's RPO is the database's (≤ 5 minutes), unproven
+until the live drill. `region-loss.md` described a failover to a secondary region that the stack does not build; it now says there is no failover and commits to no RTO or RPO. `scripts/drill-restore.ts` allows "not
+committed", declares the new Brain figure, and its record now says it restores nothing. Four Terraform comments were corrected (comment-only: verified by diff, zero non-comment lines changed).
+
+**Tests.** `keycloak-realm-production.spec.ts` (+25) and additions to `keycloak-realm-mfa.spec.ts` (+3). Mutation-checked: a dev user back in the production file fails 3; a localhost redirect back fails 2; a generator that keeps
+every user fails 2; changing the dev realm without regenerating fails 2; dropping the `hod` flow's invocation fails 2; negating its role condition fails 1.
+
+**Not done, stated plainly.**
+
+1. **None of this was run against a live Keycloak or a real database.** MFA is still unverified (OQ-036, runbook Parts A and B); the Brain RPO is still unproven (live drill).
+2. **The production client keeps `https://*.infinite-ai.co.za/*`.** I have not verified Keycloak honours a wildcard in the host, and it is broad. To check on the real domain (OQ-060).
+3. **Still open:** lost authenticator and break-glass administrator; `DB_ENCRYPTION_KEY` custody and re-encryption (OQ-053); identity-provider backup; `database-restore.md` step 4; staging backup settings; `sbst`/`teacher` MFA before Phase 2.
+4. `docs/PROVISIONING_DESIGN.md` still carries its dated notes about "admin, smt and platform roles"; left as history.
+
+| Exit gate item                                                           | Result                         |
+| ------------------------------------------------------------------------ | ------------------------------ |
+| No person or loopback URI can reach the production realm file unnoticed  | PASS (unit; mutation-checked)  |
+| `hod` requires a code and no realm role is silently unclassified         | PASS (unit; mutation-checked)  |
+| Brain RPO and region-loss claims match what the stack builds             | PASS (by reading and by diff)  |
+| `pnpm lint`, `pnpm typecheck`, affected unit tests                       | PASS (see below)               |
+| Keycloak imports the files and asks the HoD for a code                   | **NOT VERIFIED** (runbook A/B) |
+| Live restore drill meets the stated RTO and RPO                          | **NOT DONE** (human)           |
+| Rollback: revert; the realm file is not deployed anywhere from this repo | PASS                           |
+
+## Stage 148 — audit T05: design for the first teacher journey (a CAPS lesson draft)
+
+Source: audit task T05; workflow chosen by Sarah-Jane Harding on 2026-11-26 (a CAPS lesson draft with educator review, synthetic input). **Documents only; no code changed.**
+
+`docs/T05_CAPS_LESSON_DRAFT_DESIGN.md` records what the code shows and proposes slices S0 to S6 with the decisions D1 to D5 (OQ-063). The audit expected T05 to be "build one workflow". Reading the code showed it is a sequence of dependent pieces,
+and that some of what looks like a feature gap is a **silent safety gap**.
+
+**Findings, stated plainly.**
+
+1. **13 agents declare guardrails that are never wired.** `groundingChecker` and `templateFidelityChecker` are optional dependencies of the step executor that nothing in `apps/worker` or `scripts` sets, so both checks are silently skipped for CE-01 to CE-09 and DW-02, DW-05, DW-07, DW-08.
+   Same class as the age-check gap fixed in Stage 143, and wider. Not in the audit.
+2. **CE-05 gets no ratified context.** `buildPayload` is unset in production, so the agent receives only the raw run input, although its prompt requires the framework, unit blueprint and template from L0 and calls itself "an empty vessel" until they are ratified. Its prompt has `ratified_by: null`.
+3. **MOD-04 cannot produce a draft.** Its `draft-artefact` step is a `tool_call` whose handler only records an episode; no model is called.
+4. **No entry point exists** (no route, no queue client in `apps/web`), already recorded in Stage 144.
+5. **The school's inputs are real but unratified:** the Benjamin Pine lesson plan template was supplied as a .docx (`ratifiedAt: null`, pending the principal), and every CAPS `SourceRef.ratifiedBy` is `null`. The ratify scripts act as a development system actor, so ratification in the pilot is a human act.
+
+**Not done.** Nothing was built or run, and I did not check whether a MOD-01 producer exists outside this repository. No CAPS content is written anywhere in this change.
+
+| Exit gate item                                                           | Result               |
+| ------------------------------------------------------------------------ | -------------------- |
+| Every claim in the design cites a file                                   | PASS (by reading)    |
+| Decisions left to the owner, none guessed (subject, grade, who ratifies) | PASS                 |
+| Logged in `docs/OPEN_QUESTIONS.md` (OQ-063)                              | PASS                 |
+| Owner confirmed the scope and decisions D1 to D5                         | **NOT DONE** (human) |
+| Rollback: revert; documents only                                         | PASS                 |
 
 ## Stage 147 — fix: two production "Terraform plan" failures (target group name, empty domain)
 
@@ -12377,3 +12440,85 @@ domain, so this plans it as plain HTTP; the apply job still requires `TF_VAR_DOM
 | `pnpm lint`, security typecheck, new specs                   | PASS                                |
 | "Terraform plan" job green on this branch                    | **NOT RUN**                         |
 | Rollback: revert; no state change (nothing deployed in prod) | PASS                                |
+
+## Stage 149 — audit T05 slice S1a: a declared guardrail with no checker fails closed
+
+Source: `docs/T05_CAPS_LESSON_DRAFT_DESIGN.md` (Stage 148), slice S1a; the owner accepted decisions D1 to D5 on 2026-11-26 and asked for work to start (OQ-063).
+
+**What changed.** `apps/worker/src/step-executor.ts`: an agent whose contract declares `grounding_check` or `template_fidelity` now throws `GuardrailNotWiredError` **before the prompt is read or any model call is made** when the executor has no checker for it. Before, the check was silently skipped (Stage 148, finding 1), so 13 agents (CE-01 to CE-09, DW-02, DW-05, DW-07, DW-08) produced output with the guardrail their contract names switched off.
+The single exception is `allowUnwiredGuardrails`, set by exactly two dev entry points (`apps/worker/src/dev/agent-runner.ts`, `scripts/dev-run-pipeline.ts` after `assertDevRun`), which only handle the seeded synthetic tenants and refuse `NODE_ENV=production`. `JobProcessorDeps` passes it through; `WorkerHostDeps` has no such field, so the production worker cannot set it.
+
+**Tests.** `step-executor.spec.ts`: refusal for each guardrail with no model call made; refusal when only one of two is wired; an agent declaring neither is unaffected; the opt-out works only when exactly `true`; **every one of the 13 real contracts refuses when unwired** (so a future agent is covered automatically). The shared test deps now wire passing checkers, and two earlier tests that asserted the old "skips when no checker" behaviour were replaced because they would have asserted the opposite of the new rule. `guardrail-wiring.spec.ts` (new): a source scan fails unless exactly the two dev entry points and the job-processor pass-through set the opt-out, the production worker files never mention it, and the dev script sets it only after `assertDevRun`.
+worker 158 passing; repo lint clean. **Mutation-checked:** removing the guard fails 5; an opt-out that defaults on fails 4; ignoring `template_fidelity` fails 2; setting the opt-out in the production worker host fails 2. (My first attempt at that last mutation did not apply, which I only noticed because the match count was 0; it was redone and did.)
+
+**Finding that changes S1b (not built).** The school's lesson plan template has 12 sections; CE-05's output schema has fields for at most four, so a correctly wired template-fidelity checker would reject every draft. Recorded as decision D6 in OQ-063. The grounding checker, by contrast, looks feasible now.
+
+**Not done, stated plainly.** No real checker is wired, so until S1b the 13 agents **cannot run in the production worker**; nothing starts them there today. The opt-out is a deliberate dev-only exception to "no flags that bypass a control" and is flagged here for review: it only restores the pre-existing behaviour for synthetic dev runs. Nothing was run against a live gateway.
+
+| Exit gate item                                                     | Result                               |
+| ------------------------------------------------------------------ | ------------------------------------ |
+| A declared guardrail with no checker refuses before any model call | PASS (unit; mutation-checked)        |
+| Every real affected agent covered, and future ones automatically   | PASS (unit)                          |
+| Production worker cannot set the opt-out                           | PASS (source scan; mutation-checked) |
+| `pnpm lint`, worker typecheck and tests                            | PASS                                 |
+| Real grounding and template-fidelity checkers wired                | **NOT DONE** (S1b; D6 first)         |
+| Rollback: revert this commit; no schema change                     | PASS                                 |
+
+## Stage 150 — slice 7e (partial): the Admin client run against Keycloak 26.0.8; `tenant_id` was being dropped
+
+Source: OQ-048, `docs/PROVISIONING_DESIGN.md` §11.1 7e. There is no Docker daemon in the authoring environment, so the Compose stack could not be
+used. Instead the Keycloak 26.0.8 distribution (from the project's GitHub release, SHA-1 checked against the published value) ran natively on Java 21
+with its embedded dev database, importing this repository's unmodified `infra/keycloak/realm.json`, and the real `createKeycloakAdmin` client was
+driven against it with throwaway secrets generated outside the repository. The scripts are not committed.
+
+**Defect found and fixed.** The Admin API accepted `createUser` with a `tenant_id` attribute and stored nothing: Keycloak 26 ignores attributes the
+realm's user profile does not declare (`unmanagedAttributePolicy` is unset). Seeded dev users kept theirs only because realm import bypasses that rule.
+Every user the application created would have had no tenant claim. `realm.json` now declares `tenant_id` in the user profile with view and edit
+limited to `admin`, alongside the four standard attributes. After a fresh import the attribute is stored, survives a disable and enable, and the access
+token carries it. `packages/policy/test/keycloak-realm-provisioner.spec.ts` guards it (fails when the declaration is removed).
+
+**Observed against the real server.** Create; duplicate refused as `conflict`; find by email; role replacement leaves exactly `smt` (plus the default
+role); disable then revoke ends a live session (sessions 1 to 0, the old access token gets 401, the refresh token and a new sign-in get
+`invalid_grant`); re-enable restores sign-in; the worker's client is refused user creation; a wrong secret is `unauthorised`; `sendActionsEmail` fails
+without SMTP, as OQ-048 (d) expects. **Confirmed residual risk from OQ-048 (a):** the provisioner's own credential can map `platform_admin` to a user
+(HTTP 204), so the secret is an administrator credential.
+
+**Not verified.** `reconcile.ts` and the database wiring; the Compose image, Postgres and `start` (not `start-dev`) mode; a user editing their own
+`tenant_id` through the account API (the call returned 401, so it proves nothing); admin events and the platform-role mapping alert; secret handling in
+AWS (below).
+
+| Exit gate item                                                   | Result                |
+| ---------------------------------------------------------------- | --------------------- |
+| Realm file imports into Keycloak 26                              | PASS (26.0.8, native) |
+| Admin client calls behave as designed (create to revoke)         | PASS (run)            |
+| Defect found by the run is fixed and guarded                     | PASS (test, mutation) |
+| Wiring (`reconcile.ts`), Compose stack, self-edit of `tenant_id` | **NOT VERIFIED**      |
+| Production secret in Secrets Manager, rotation, alert (OQ-048 a) | **NOT DONE** (human)  |
+| Rollback: revert; realm file and one test only                   | PASS                  |
+
+## Stage 151 — OQ-048 (a): a place for the provisioner secret in Terraform (prepared, not applied)
+
+Source: OQ-048 (a), Stage 150's "NOT DONE" row. **Terraform and runbooks only; nothing was planned or applied.**
+
+**What changed.** `modules/stack` gains `keycloak_provisioner_enabled` (default `false`). When true it creates the empty Secrets Manager shell
+`/infinite-ai/<env>/KEYCLOAK_PROVISIONER_CLIENT_SECRET`, publishes the client id `infinite-ai-provisioner` (not a secret) to SSM, and maps both into the **web**
+task only. Both environments expose it, and now also pass `keycloak_issuer_url` through: no environment did before, so the web task has no way to learn a real
+Keycloak issuer (`apps/web` falls back to `localhost:8080`). A `check` block warns at plan time if the provisioner is enabled without an issuer.
+`docs/RUNBOOKS/aws-setup.md` gains the order (create the empty secret, populate it, then apply the rest) and `docs/RUNBOOKS/secrets-rotation.md` a row for it,
+including that it is an administrator-equivalent credential. Default off, so an existing environment's plan is unchanged.
+
+**Tests.** `packages/security/test/terraform-provisioner-secret.spec.ts` (6): mapped into web with both entries; absent from the worker and gateway; created only
+when enabled and off by default; never given a value by the owning modules or named in a `.tfvars`; only the id in plain SSM config; the check exists.
+Mutation-checked: adding the secret to the worker's map fails two of them. These read the files; they do not run Terraform.
+
+**Not verified.** `terraform fmt -check`, `validate` and `plan` were **not run**: there is no Terraform binary here and a download was refused. Formatting was
+aligned by hand and the HCL is unvalidated. Run all three before any apply. The admin-event alert on realm-role mappings is **not built**: Keycloak is not hosted
+by this Terraform, so it belongs wherever Keycloak runs. The unplumbed issuer is a gap that existed before this change.
+
+| Exit gate item                                                | Result                  |
+| ------------------------------------------------------------- | ----------------------- |
+| Secret reaches web only; never worker or gateway              | PASS (static; mutation) |
+| No value in Terraform or tfvars; default off                  | PASS (static)           |
+| `terraform fmt`, `validate`, `plan`                           | **NOT RUN**             |
+| Secret populated, rotated; admin-event alert on platform role | **NOT DONE** (human)    |
+| Rollback: revert; default-off variable, no state change       | PASS                    |

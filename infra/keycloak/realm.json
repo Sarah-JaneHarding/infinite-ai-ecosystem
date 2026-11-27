@@ -387,6 +387,13 @@
           "priority": 60,
           "flowAlias": "browser-mfa otp sbst_chair",
           "userSetupAllowed": false
+        },
+        {
+          "authenticatorFlow": true,
+          "requirement": "CONDITIONAL",
+          "priority": 70,
+          "flowAlias": "browser-mfa otp hod",
+          "userSetupAllowed": false
         }
       ]
     },
@@ -509,6 +516,30 @@
           "userSetupAllowed": true
         }
       ]
+    },
+    {
+      "alias": "browser-mfa otp hod",
+      "description": "One-time code required when the user holds the hod role (owner decision 2026-11-26: the HoD's approval is the human gate every generated artefact passes through).",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-role",
+          "authenticatorConfig": "mfa-role-hod",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": true
+        }
+      ]
     }
   ],
   "authenticatorConfig": [
@@ -544,6 +575,13 @@
       "alias": "mfa-role-sbst_chair",
       "config": {
         "condUserRole": "sbst_chair",
+        "negate": "false"
+      }
+    },
+    {
+      "alias": "mfa-role-hod",
+      "config": {
+        "condUserRole": "hod",
         "negate": "false"
       }
     }

@@ -138,17 +138,27 @@ Every system boundary applies:
 
 ## 7. Identity hardening (Stage 16 step 4)
 
-- **MFA** is required by the committed Keycloak realm for the `admin`, `smt`, `sbst_chair`,
+- **MFA** is required by the committed Keycloak realm for the `admin`, `smt`, `sbst_chair`, `hod`,
   `platform_support` and `platform_admin` roles (OQ-036, 2026-11-11; `sbst_chair` added 2026-11-12
-  because the chair's confirmation ratifies SBST minutes into the Brain). A person holding two of these
+  because the chair's confirmation ratifies SBST minutes into the Brain; `hod` added 2026-11-26 because
+  the HoD's approval is the human gate every generated artefact passes through, so a stolen password must
+  not be enough to approve content in a named person's name). `teacher`, `sbst`, `guardian` and `learner`
+  are **not** asked for a code today; `sbst` and `teacher` come under review before any identifiable learner
+  data enters (the pilot's Phase 2), and the drift test lists them so the choice is visible. A person holding two of these
   roles is asked for a code once per role (the sub-flows are independent). `infra/keycloak/realm.json` sets the browser
   flow `browser-mfa`: password first, then a conditional one-time-code step keyed on each of those
   roles, with first-login enrolment (`CONFIGURE_TOTP`). `verifyEmail` is on. A drift test
   (`packages/policy/test/keycloak-realm-mfa.spec.ts`) fails if the file stops saying so.
   **Verified:** the configuration in this repository. **Not yet verified:** that Keycloak imports
   the flow and prompts for the code (needs one run against a live Keycloak, steps in
-  `docs/OPEN_QUESTIONS.md` OQ-036), and that the production realm was created from this file.
+  `docs/OPEN_QUESTIONS.md` OQ-036), and that the production realm was created from `realm.production.json` (below).
   Until both are done, do not tell a school that MFA is enforced in production.
+  **The realm file is a development fixture.** `infra/keycloak/realm.json` defines eleven `*.dev` sign-in users
+  (including `admin.dev` and `platform-admin.dev`) and a localhost redirect, so it must **never** be imported into
+  production. `infra/keycloak/realm.production.json` is generated from it (`pnpm keycloak:production-realm`): it removes
+  every person, keeps the provisioner's service account, drops loopback redirect URIs, and changes nothing else.
+  `packages/policy/test/keycloak-realm-production.spec.ts` fails if a person or a loopback URI returns, or if the two
+  files drift apart.
 - **Session fixation** — Keycloak regenerates the session token on every login.
 - **Session rotation** — access tokens expire in 5 minutes; refresh tokens in 30 minutes;
   the client must re-authenticate silently. A stolen short-lived token has a bounded

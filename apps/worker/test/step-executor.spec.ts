@@ -9,6 +9,18 @@ import {
   AC01Contract,
   AC10Contract,
   CE01Contract,
+  CE02Contract,
+  CE03Contract,
+  CE04Contract,
+  CE05Contract,
+  CE06Contract,
+  CE07Contract,
+  CE08Contract,
+  CE09Contract,
+  DW02Contract,
+  DW05Contract,
+  DW07Contract,
+  DW08Contract,
   LE01Contract,
   LE07Contract,
   TB03Contract,
@@ -28,6 +40,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  GuardrailNotWiredError,
   GuardrailRefusalError,
   StepExecutorError,
   createStepExecutor,
@@ -57,6 +70,11 @@ function makeDeps(overrides?: Partial<StepExecutorDeps>): StepExecutorDeps {
     gatewayBaseUrl: MOCK_GATEWAY_URL,
     tenantId: MOCK_TENANT_ID,
     toolHandlers: makeToolHandlers(),
+    // A wired worker: the two injected guardrails have a checker, so agents that declare them (CE-01
+    // does) are allowed to run. Tests about the unwired case build deps without these, or pass
+    // `allowUnwiredGuardrails`. Overrides below replace either one.
+    groundingChecker: () => PASSED,
+    templateFidelityChecker: () => PASSED,
     ...overrides,
   };
 }
@@ -840,26 +858,6 @@ describe('createStepExecutor', () => {
           }),
         ).rejects.toThrow(GuardrailRefusalError);
       });
-
-      it('skips the injected check when no groundingChecker is supplied', async () => {
-        vi.stubGlobal(
-          'fetch',
-          vi.fn().mockResolvedValue({
-            ok: true,
-            json: async () => FAKE_RESPONSE,
-          }),
-        );
-        const executor = createStepExecutor(
-          makeDeps({ agentContracts: CE01_WITH_GROUNDING }),
-        );
-        const result = await executor({
-          runId: MOCK_RUN_ID,
-          stepId: 'build-topic-graph',
-          attempt: 1,
-          input: {},
-        });
-        expect(result).toEqual({ status: 'ok', framework: {} });
-      });
     });
 
     // ── template_fidelity (injected) ──────────────────────────────────────────
@@ -932,25 +930,158 @@ describe('createStepExecutor', () => {
           }),
         ).rejects.toThrow(GuardrailRefusalError);
       });
+    });
 
-      it('skips the check when no templateFidelityChecker is supplied', async () => {
-        vi.stubGlobal(
-          'fetch',
-          vi.fn().mockResolvedValue({
-            ok: true,
-            json: async () => FAKE_RESPONSE,
+    // ── a declared guardrail with no checker wired fails closed (audit, Stage 149) ──────────
+
+    describe('declared guardrails with no checker wired fail closed', () => {
+      const AFFECTED = [
+        CE01Contract,
+        CE02Contract,
+        CE03Contract,
+        CE04Contract,
+        CE05Contract,
+        CE06Contract,
+        CE07Contract,
+        CE08Contract,
+        CE09Contract,
+        DW02Contract,
+        DW05Contract,
+        DW07Contract,
+        DW08Contract,
+      ] as const;
+
+      /** Deps with NO grounding or template-fidelity checker: how the worker used to run. */
+      function makeUnwiredDeps(
+        contractMap: StepExecutorDeps['agentContracts'],
+        overrides?: Partial<StepExecutorDeps>,
+      ): StepExecutorDeps {
+        const copy: Record<string, unknown> = {
+          ...makeDeps({ agentContracts: contractMap }),
+        };
+        delete copy.groundingChecker;
+        delete copy.templateFidelityChecker;
+        return { ...(copy as unknown as StepExecutorDeps), ...overrides };
+      }
+
+      const withGuardrails = (guardrails: readonly string[]) =>
+        new Map([[CE01Contract.id, { ...CE01Contract, guardrails: [...guardrails] }]]);
+
+      it.each([['grounding_check'], ['template_fidelity']] as const)(
+        'refuses %s with no checker, before any model call',
+        async (guardrail) => {
+          const fetchSpy = vi.fn();
+          vi.stubGlobal('fetch', fetchSpy);
+          const executor = createStepExecutor(
+            makeUnwiredDeps(withGuardrails([guardrail])),
+          );
+          const error = await executor({
+            runId: MOCK_RUN_ID,
+            stepId: 'build-topic-graph',
+            attempt: 1,
+            input: {},
+          }).catch((caught: unknown) => caught);
+          expect(error).toBeInstanceOf(GuardrailNotWiredError);
+          expect(error).toBeInstanceOf(StepExecutorError);
+          expect(error).toMatchObject({ agentId: 'CE-01', guardrail });
+          expect((error as Error).message).toContain(guardrail);
+          expect(fetchSpy).not.toHaveBeenCalled();
+        },
+      );
+
+      it('refuses when only one of two declared guardrails is wired', async () => {
+        const fetchSpy = vi.fn();
+        vi.stubGlobal('fetch', fetchSpy);
+        const executor = createStepExecutor(
+          makeUnwiredDeps(withGuardrails(['grounding_check', 'template_fidelity']), {
+            groundingChecker: () => PASSED,
           }),
         );
-        const executor = createStepExecutor(
-          makeDeps({ agentContracts: CE01_WITH_TEMPLATE_FIDELITY }),
+        await expect(
+          executor({
+            runId: MOCK_RUN_ID,
+            stepId: 'build-topic-graph',
+            attempt: 1,
+            input: {},
+          }),
+        ).rejects.toMatchObject({ guardrail: 'template_fidelity' });
+        expect(fetchSpy).not.toHaveBeenCalled();
+      });
+
+      it('lets an agent through when it declares neither injected guardrail', async () => {
+        vi.stubGlobal(
+          'fetch',
+          vi.fn().mockResolvedValue({ ok: true, json: async () => FAKE_RESPONSE }),
         );
-        const result = await executor({
-          runId: MOCK_RUN_ID,
-          stepId: 'build-topic-graph',
-          attempt: 1,
-          input: {},
-        });
-        expect(result).toEqual({ status: 'ok', framework: {} });
+        const executor = createStepExecutor(makeUnwiredDeps(withGuardrails([])));
+        await expect(
+          executor({
+            runId: MOCK_RUN_ID,
+            stepId: 'build-topic-graph',
+            attempt: 1,
+            input: {},
+          }),
+        ).resolves.toEqual({ status: 'ok', framework: {} });
+      });
+
+      it('lets the dev runners opt out explicitly, and only then', async () => {
+        vi.stubGlobal(
+          'fetch',
+          vi.fn().mockResolvedValue({ ok: true, json: async () => FAKE_RESPONSE }),
+        );
+        const contracts = withGuardrails(['grounding_check', 'template_fidelity']);
+        const optedOut = createStepExecutor(
+          makeUnwiredDeps(contracts, { allowUnwiredGuardrails: true }),
+        );
+        await expect(
+          optedOut({
+            runId: MOCK_RUN_ID,
+            stepId: 'build-topic-graph',
+            attempt: 1,
+            input: {},
+          }),
+        ).resolves.toEqual({ status: 'ok', framework: {} });
+        const notOptedOut = createStepExecutor(
+          makeUnwiredDeps(contracts, { allowUnwiredGuardrails: false }),
+        );
+        await expect(
+          notOptedOut({
+            runId: MOCK_RUN_ID,
+            stepId: 'build-topic-graph',
+            attempt: 1,
+            input: {},
+          }),
+        ).rejects.toBeInstanceOf(GuardrailNotWiredError);
+      });
+
+      it('covers every real agent that declares one of the two guardrails (13 today)', async () => {
+        const fetchSpy = vi.fn();
+        vi.stubGlobal('fetch', fetchSpy);
+        const declaring = AFFECTED.filter(
+          (c) =>
+            (c.guardrails as readonly string[]).includes('grounding_check') ||
+            (c.guardrails as readonly string[]).includes('template_fidelity'),
+        );
+        // Every contract on the list really declares one, so the list cannot rot silently.
+        expect(declaring).toHaveLength(AFFECTED.length);
+        expect(declaring).toHaveLength(13);
+        for (const contract of declaring) {
+          const executor = createStepExecutor(
+            // Registered under the key the pipeline step looks up (CE-01): what is under test
+            // is this contract's own declared guardrails, not the pipeline.
+            makeUnwiredDeps(new Map([[CE01Contract.id, contract]])),
+          );
+          await expect(
+            executor({
+              runId: MOCK_RUN_ID,
+              stepId: 'build-topic-graph',
+              attempt: 1,
+              input: {},
+            }),
+            contract.id,
+          ).rejects.toBeInstanceOf(GuardrailNotWiredError);
+        }
+        expect(fetchSpy).not.toHaveBeenCalled();
       });
     });
 
@@ -1251,6 +1382,9 @@ describe('createStepExecutor - payload builder (dev runners only)', () => {
       fetchImpl,
       tenantId: '10000000-0000-4000-8000-000000000001',
       toolHandlers: new Map(),
+      // Not what this test is about: CE-01 declares both injected guardrails, so they must be wired.
+      groundingChecker: () => PASSED,
+      templateFidelityChecker: () => PASSED,
       ...(buildPayload === undefined ? {} : { buildPayload }),
     });
     await execute({
