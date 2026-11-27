@@ -168,7 +168,7 @@ the same commit. Each stage ends with `pnpm verify:stage`. PRs stay near 400 cha
 - The phone counts thumbs up/down and raised hands **on the device**; the video is not uploaded by default. Counts fill a graph that is
   rendered as a printable or shareable image containing a code the phone can scan to reopen the data. **(my reading of "photo capturing
   that can be scanned"; to be confirmed.)**
-- Assessing what learners *say* against outcomes needs speech transcription of children's voices; not in scope for the first version.
+- Assessing what learners _say_ against outcomes needs speech transcription of children's voices; not in scope for the first version.
 - Counting accuracy is estimated, not exact; the screen says so and lets the teacher correct the count.
 
 ### 8.9 Monitoring, alerts, support resources, assistant
@@ -183,7 +183,7 @@ the same commit. Each stage ends with `pnpm verify:stage`. PRs stay near 400 cha
 ### 8.10 Agent handoff
 
 - New `proposal` record: from-agent, to-agent, payload (pseudonymous references only), status `proposed → approved/rejected →
-  delivered`. A `to` agent can only receive a proposal once a human with the required role has approved it, and the approval record
+delivered`. A `to` agent can only receive a proposal once a human with the required role has approved it, and the approval record
   exists before the transition commits (rule 6). **(my call)** The approver is the teacher of the class the proposal concerns
   (`requiredRole: teacher`, as in the MOD-04 pipeline); a proposal with no single responsible teacher goes to the HoD. Allow-lists stay closed; a new tool, `proposal.submit`, is added to named agents
   only. Handoffs appear in the Run Inspector and the audit ledger.
