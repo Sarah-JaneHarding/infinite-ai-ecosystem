@@ -98,9 +98,10 @@ describe('MARKER_PATTERNS', () => {
     expect(MARKER_MIN_DISTANCE).toBe(PATTERN_SEARCH.minDistance);
   });
 
+  // Margin increase: CI under coverage measured 14 707 ms of the former 30 000 ms budget (run 46056617421).
   it('regenerates identically from PATTERN_SEARCH', () => {
     expect(generatePatterns(PATTERN_SEARCH)).toEqual(MARKER_PATTERNS);
-  }, 30_000);
+  }, 60_000);
 });
 
 describe('generatePatterns validation', () => {

@@ -62,6 +62,7 @@ describe('decodeGrid', () => {
     expect(ROTATIONS.map(sideForRotation)).toEqual(['A', 'D', 'C', 'B']);
   });
 
+  // CPU-bound by design; the timeout is explicit because coverage on CI runs about 10x slower.
   it('corrects every 1-bit and 2-bit flip to the same card and rotation', () => {
     for (let card = 1; card <= 100; card += 1) {
       for (const rotation of ROTATIONS) {
@@ -85,8 +86,9 @@ describe('decodeGrid', () => {
         }
       }
     }
-  });
+  }, 60_000);
 
+  // CPU-bound by design; the timeout is explicit because coverage on CI runs about 10x slower.
   it('never returns a different card for 60 000 seeded 3-bit flips', () => {
     const next = mulberry32(3);
     let accepted = 0;
@@ -103,8 +105,9 @@ describe('decodeGrid', () => {
     // Variants are at least 8 apart, so a 3-bit flip is never within 2 of any other variant and
     // always lands exactly 3 from its own: every one of them must be rejected.
     expect(accepted).toBe(0);
-  });
+  }, 60_000);
 
+  // CPU-bound by design; the timeout is explicit because coverage on CI runs about 10x slower.
   it('never returns a different card or rotation for 20 000 seeded 4-bit and 5-bit flips', () => {
     const next = mulberry32(45);
     for (let n = 0; n < 20_000; n += 1) {
@@ -117,7 +120,7 @@ describe('decodeGrid', () => {
         expect(result.rotation).toBe(rotation);
       }
     }
-  });
+  }, 60_000);
 
   it('returns null for the all-white and all-black grids', () => {
     expect(decodeGrid(0)).toBeNull();
