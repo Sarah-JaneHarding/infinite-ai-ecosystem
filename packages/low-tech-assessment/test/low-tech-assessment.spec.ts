@@ -87,6 +87,35 @@ describe('generateCardSet', () => {
     expect(cards).toHaveLength(MAX_CARDS);
   });
 
+  it('MAX_CARDS is 100', () => {
+    expect(MAX_CARDS).toBe(100);
+  });
+
+  it('generates 100 cards with unique numbers, labels and codes', () => {
+    const cards = generateCardSet(100);
+    expect(cards).toHaveLength(100);
+    expect(new Set(cards.map((c) => c.cardNumber)).size).toBe(100);
+    expect(new Set(cards.map((c) => c.slotLabel)).size).toBe(100);
+    expect(new Set(cards.map((c) => c.code)).size).toBe(100);
+    expect(cards[99]).toEqual({ cardNumber: 100, slotLabel: '100', code: 'LTA-100' });
+  });
+
+  it('keeps the codes of cards 1 to 40 unchanged', () => {
+    const cards = generateCardSet(100);
+    for (let n = 1; n <= 40; n += 1) {
+      const padded = String(n).padStart(2, '0');
+      expect(cards[n - 1]).toEqual({
+        cardNumber: n,
+        slotLabel: padded,
+        code: `LTA-${padded}`,
+      });
+    }
+  });
+
+  it('throws for count 101', () => {
+    expect(() => generateCardSet(101)).toThrow(RangeError);
+  });
+
   it('throws for count = 0', () => {
     expect(() => generateCardSet(0)).toThrow(RangeError);
   });
