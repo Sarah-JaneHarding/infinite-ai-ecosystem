@@ -48,3 +48,17 @@ export type {
   QuestionTally as QuestionTallyShape,
   SessionResult as SessionResultShape,
 } from './tally.js';
+
+export {
+  GRID,
+  CARD_CELLS,
+  rotateGrid,
+  hamming,
+  patternFor,
+  cardBitmap,
+} from './marker/grid.js';
+
+export { PATTERN_SEARCH, generatePatterns } from './marker/generate.js';
+export type { PatternSearch } from './marker/generate.js';
+
+export { MARKER_PATTERNS, MARKER_MIN_DISTANCE } from './marker/patterns.js';
