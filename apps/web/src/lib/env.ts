@@ -16,6 +16,13 @@ export const WebEnvSchema = z.object({
   // never the worker's. Both unset = provisioning does not touch Keycloak (the pilot's by-hand path).
   KEYCLOAK_PROVISIONER_CLIENT_ID: z.string().min(1).optional(),
   KEYCLOAK_PROVISIONER_CLIENT_SECRET: z.string().min(1).optional(),
+  // The in-app AI assistant (staff chat). The web route is the only caller of the model gateway
+  // from the browser's side: it scrubs the text, then forwards it. The key is the same one the
+  // gateway uses to read the tenant's known names — without it the assistant refuses (fails
+  // closed), because scrubbing free text without the school's own lexicon is a guess.
+  GATEWAY_BASE_URL: z.string().url().default('http://localhost:8080'),
+  DB_ENCRYPTION_KEY: z.string().min(1).optional(),
+  DB_ENCRYPTION_KEY_VERSION: z.coerce.number().int().positive().default(1),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
 
@@ -29,6 +36,9 @@ const BUILD_TIME_ENV: WebEnv = {
   AUTH_KEYCLOAK_ISSUER: 'http://localhost:8080/realms/infinite-ai',
   KEYCLOAK_PROVISIONER_CLIENT_ID: undefined,
   KEYCLOAK_PROVISIONER_CLIENT_SECRET: undefined,
+  GATEWAY_BASE_URL: 'http://localhost:8080',
+  DB_ENCRYPTION_KEY: undefined,
+  DB_ENCRYPTION_KEY_VERSION: 1,
   NODE_ENV: 'production',
 };
 
@@ -40,6 +50,9 @@ const TEST_ENV: WebEnv = {
   AUTH_KEYCLOAK_ISSUER: 'http://localhost:8080/realms/infinite-ai',
   KEYCLOAK_PROVISIONER_CLIENT_ID: undefined,
   KEYCLOAK_PROVISIONER_CLIENT_SECRET: undefined,
+  GATEWAY_BASE_URL: 'http://localhost:8080',
+  DB_ENCRYPTION_KEY: undefined,
+  DB_ENCRYPTION_KEY_VERSION: 1,
   NODE_ENV: 'test',
 };
 
