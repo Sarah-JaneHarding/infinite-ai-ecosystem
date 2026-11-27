@@ -703,22 +703,22 @@ with `addRelease`.
 
 Recorded from the owner's instructions. Each is a decision, not yet built unless stated.
 
-| ID     | Decision                                                                                                                                                         |
-| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D-1    | OQ-043 formula price adopted, provisional (above). Built in Stage 120b.                                                                                          |
-| D-2    | Prices are shown VAT-inclusive with the ex VAT split.                                                                                                            |
-| D-3    | Teacher training is part of the ecosystem, not a second product line.                                                                                            |
-| D-4    | Pilot schools #2 and #3 are deferred until pre-pilot testing with school #1 is complete.                                                                         |
-| D-5    | Founder salary R35,000 per month during the pre-pilot and pilot phases, half-time commitment. Reviewed after the pilot phase.                                    |
-| D-6    | Voluntary VAT registration from launch, subject to the accountant.                                                                                               |
-| OQ-033 | Build first. Built: provisioning steps 1 to 3b, in Stages 112, 113 and 115 to 119 (the `NULL` gap in `user_invitation.roles` closed in Stage 119).               |
-| OQ-036 | Build second. Correct `SECURITY.md` section 7. Keycloak OTP and email verification, with a drift test.                                                           |
-| OQ-016 | December-holiday labelling sprint with Primary school staff. Two people label a sample to measure agreement.                                                     |
-| OQ-017 | Apply Terraform to a small staging environment in Nov-Dec, then run k6.                                                                                          |
-| OQ-018 | Log tokens per agent and per tenant from day one. After month one, check whether cost follows learners or educators.                                             |
-| OQ-020 | December, 30-45 minutes, using `HOW_TO_ADD_AN_AGENT.md`.                                                                                                         |
-| OQ-003 | Deferred until school onboarding. Ask the Benjamin Pine principal for the unit blueprint, assessment task, rubric/memo and parent report templates, with a date. |
-| OQ-044 | Decided: serve from the ecosystem app. Still to do: a gated route, a CSP decision (sandboxed iframe suggested) and sign-off.                                     |
+| ID     | Decision                                                                                                                                                                                                                                     |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D-1    | OQ-043 formula price adopted, provisional (above). Built in Stage 120b.                                                                                                                                                                      |
+| D-2    | Prices are shown VAT-inclusive with the ex VAT split.                                                                                                                                                                                        |
+| D-3    | Teacher training is part of the ecosystem, not a second product line.                                                                                                                                                                        |
+| D-4    | Pilot schools #2 and #3 are deferred until pre-pilot testing with school #1 is complete.                                                                                                                                                     |
+| D-5    | Founder salary R35,000 per month during the pre-pilot and pilot phases, half-time commitment. Pay after month 12 is not set: it will be reviewed at the pilot-phase review (decided 2026-11-27; Business Planning Package v1.4, section 15). |
+| D-6    | Voluntary VAT registration from launch, subject to the accountant.                                                                                                                                                                           |
+| OQ-033 | Build first. Built: provisioning steps 1 to 3b, in Stages 112, 113 and 115 to 119 (the `NULL` gap in `user_invitation.roles` closed in Stage 119).                                                                                           |
+| OQ-036 | Build second. Correct `SECURITY.md` section 7. Keycloak OTP and email verification, with a drift test.                                                                                                                                       |
+| OQ-016 | December-holiday labelling sprint with Primary school staff. Two people label a sample to measure agreement.                                                                                                                                 |
+| OQ-017 | Apply Terraform to a small staging environment in Nov-Dec, then run k6.                                                                                                                                                                      |
+| OQ-018 | Log tokens per agent and per tenant from day one. After month one, check whether cost follows learners or educators.                                                                                                                         |
+| OQ-020 | December, 30-45 minutes, using `HOW_TO_ADD_AN_AGENT.md`.                                                                                                                                                                                     |
+| OQ-003 | Deferred until school onboarding. Ask the Benjamin Pine principal for the unit blueprint, assessment task, rubric/memo and parent report templates, with a date.                                                                             |
+| OQ-044 | Decided: serve from the ecosystem app. Still to do: a gated route, a CSP decision (sandboxed iframe suggested) and sign-off.                                                                                                                 |
 
 ### OQ-046 — three human gates require roles that do not exist, so nobody can decide them · 2026-11-11
 
