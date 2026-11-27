@@ -83,12 +83,20 @@ describe('MARKER_PATTERNS', () => {
 describe('generatePatterns validation', () => {
   const base = { count: 3, minDistance: 4, minBlack: 8, maxBlack: 17 };
 
-  it('rejects count 0, minDistance 0, minBlack above maxBlack, and exhausted maxCandidates', () => {
-    expect(() => generatePatterns({ ...base, count: 0 })).toThrow(RangeError);
-    expect(() => generatePatterns({ ...base, minDistance: 0 })).toThrow(RangeError);
-    expect(() => generatePatterns({ ...base, minBlack: 18 })).toThrow(RangeError);
-    expect(() => generatePatterns({ ...base, count: 100, maxCandidates: 50 })).toThrow(
-      RangeError,
+  it('rejects count 0, minDistance 0, minBlack above maxBlack, and exhausted maxCandidates (50)', () => {
+    // Tight budget: a missing guard hits the exhaustion error (wrong message) instead of hanging.
+    const tight = { ...base, maxCandidates: 50 };
+    expect(() => generatePatterns({ ...tight, count: 0 })).toThrow(
+      /count must be at least 1/,
+    );
+    expect(() => generatePatterns({ ...tight, minDistance: 0 })).toThrow(
+      /minDistance must be at least 1/,
+    );
+    expect(() => generatePatterns({ ...tight, minBlack: 18 })).toThrow(
+      /minBlack must not exceed maxBlack/,
+    );
+    expect(() => generatePatterns({ ...tight, count: 100 })).toThrow(
+      /found only \d+ of 100 patterns within 50 candidates/,
     );
   });
 
