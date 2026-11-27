@@ -12440,3 +12440,26 @@ domain, so this plans it as plain HTTP; the apply job still requires `TF_VAR_DOM
 | `pnpm lint`, security typecheck, new specs                   | PASS                                |
 | "Terraform plan" job green on this branch                    | **NOT RUN**                         |
 | Rollback: revert; no state change (nothing deployed in prod) | PASS                                |
+
+## Stage 149 — audit T05 slice S1a: a declared guardrail with no checker fails closed
+
+Source: `docs/T05_CAPS_LESSON_DRAFT_DESIGN.md` (Stage 148), slice S1a; the owner accepted decisions D1 to D5 on 2026-11-26 and asked for work to start (OQ-063).
+
+**What changed.** `apps/worker/src/step-executor.ts`: an agent whose contract declares `grounding_check` or `template_fidelity` now throws `GuardrailNotWiredError` **before the prompt is read or any model call is made** when the executor has no checker for it. Before, the check was silently skipped (Stage 148, finding 1), so 13 agents (CE-01 to CE-09, DW-02, DW-05, DW-07, DW-08) produced output with the guardrail their contract names switched off.
+The single exception is `allowUnwiredGuardrails`, set by exactly two dev entry points (`apps/worker/src/dev/agent-runner.ts`, `scripts/dev-run-pipeline.ts` after `assertDevRun`), which only handle the seeded synthetic tenants and refuse `NODE_ENV=production`. `JobProcessorDeps` passes it through; `WorkerHostDeps` has no such field, so the production worker cannot set it.
+
+**Tests.** `step-executor.spec.ts`: refusal for each guardrail with no model call made; refusal when only one of two is wired; an agent declaring neither is unaffected; the opt-out works only when exactly `true`; **every one of the 13 real contracts refuses when unwired** (so a future agent is covered automatically). The shared test deps now wire passing checkers, and two earlier tests that asserted the old "skips when no checker" behaviour were replaced because they would have asserted the opposite of the new rule. `guardrail-wiring.spec.ts` (new): a source scan fails unless exactly the two dev entry points and the job-processor pass-through set the opt-out, the production worker files never mention it, and the dev script sets it only after `assertDevRun`.
+worker 158 passing; repo lint clean. **Mutation-checked:** removing the guard fails 5; an opt-out that defaults on fails 4; ignoring `template_fidelity` fails 2; setting the opt-out in the production worker host fails 2. (My first attempt at that last mutation did not apply, which I only noticed because the match count was 0; it was redone and did.)
+
+**Finding that changes S1b (not built).** The school's lesson plan template has 12 sections; CE-05's output schema has fields for at most four, so a correctly wired template-fidelity checker would reject every draft. Recorded as decision D6 in OQ-063. The grounding checker, by contrast, looks feasible now.
+
+**Not done, stated plainly.** No real checker is wired, so until S1b the 13 agents **cannot run in the production worker**; nothing starts them there today. The opt-out is a deliberate dev-only exception to "no flags that bypass a control" and is flagged here for review: it only restores the pre-existing behaviour for synthetic dev runs. Nothing was run against a live gateway.
+
+| Exit gate item                                                     | Result                               |
+| ------------------------------------------------------------------ | ------------------------------------ |
+| A declared guardrail with no checker refuses before any model call | PASS (unit; mutation-checked)        |
+| Every real affected agent covered, and future ones automatically   | PASS (unit)                          |
+| Production worker cannot set the opt-out                           | PASS (source scan; mutation-checked) |
+| `pnpm lint`, worker typecheck and tests                            | PASS                                 |
+| Real grounding and template-fidelity checkers wired                | **NOT DONE** (S1b; D6 first)         |
+| Rollback: revert this commit; no schema change                     | PASS                                 |

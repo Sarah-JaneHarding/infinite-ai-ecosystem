@@ -48,6 +48,12 @@ export interface JobProcessorDeps {
     phase: CapsPhase,
   ) => AgeAppropriatenessChecker;
   readonly notify?: EscalationNotifier;
+  /**
+   * DEV RUNNERS ONLY: let an agent that declares `grounding_check` or `template_fidelity` run with no
+   * checker wired. Passed straight to the step executor (see `StepExecutorDeps.allowUnwiredGuardrails`).
+   * `WorkerHostDeps` deliberately has no such field, so the production worker cannot set it.
+   */
+  readonly allowUnwiredGuardrails?: boolean;
 }
 
 export interface JobHooks {
@@ -143,6 +149,7 @@ export async function processPipelineJob(
         ? {}
         : { ageAppropriatenessChecker: jobAgeChecker }),
       ...(deps.notify === undefined ? {} : { notify: deps.notify }),
+      ...(deps.allowUnwiredGuardrails === true ? { allowUnwiredGuardrails: true } : {}),
     });
 
     const runnerOptions: RunnerOptions = {

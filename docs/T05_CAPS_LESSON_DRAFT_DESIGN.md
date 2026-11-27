@@ -1,6 +1,6 @@
 # T05 — the first teacher journey: a CAPS lesson draft (design)
 
-**Status: DESIGN, 2026-11-26. Nothing in this document is built.** Audit task T05 ("deliver one complete teacher workflow") with the workflow chosen by the owner: **a CAPS lesson draft with educator review, using synthetic input.**
+**Status: DESIGN, 2026-11-26; updated 2026-11-27 (see section 8). Owner accepted decisions D1 to D5 on 2026-11-26; slice S1a is built (Stage 149); a new decision D6 is open. Apart from S1a, nothing in this document is built.** Audit task T05 ("deliver one complete teacher workflow") with the workflow chosen by the owner: **a CAPS lesson draft with educator review, using synthetic input.**
 This note records what a read of the code found, which is more than the audit knew, and proposes the smallest honest sequence of work. It also lists the decisions that are the owner's and the steps only a named person can do.
 
 ## 1. The finding in one paragraph
@@ -48,7 +48,7 @@ Each slice ends with the repository's usual proof: strict TypeScript, happy path
 | **S5** | **Review UI** in Teacher Studio replacing the demonstration tab: status, the draft, its citations, edit, and the approval actions. No sample data.                                                                                                                                                                            | Needs a real result to show.                                                                                                                                                                                                                                                              | D1                                  |
 | **S6** | **Security and journey tests:** a teacher of tenant A cannot read or start for tenant B; learner, guardian and unauthorised roles cannot start; nothing is delivered without the approval record; no learner identifier can enter (the form has none); the budget refuses. One end-to-end browser journey on synthetic input. | Definition of Done for anything touching tenancy, auth or a guardrail.                                                                                                                                                                                                                    | A deployed staging (T17)            |
 
-**Recommended start: S1.** It needs no decision, closes a gap that affects 13 agents whether or not T05 ever ships, and mirrors the pattern already proven in T09.
+**Recommended start: S1.** _(Corrected 2026-11-27: S1 splits in two. S1a, refusing a declared-but-unwired guardrail, needs no decision and is built. S1b, wiring the real checkers, is not decision-free: see section 8.)_ It closes a gap that affects 13 agents whether or not T05 ever ships, and mirrors the pattern already proven in T09.
 
 ## 5. Decisions that are the owner's
 
@@ -69,3 +69,41 @@ beyond what the 30 CE-05 eval cases and a human reviewer show. No CAPS content, 
 
 Read from this repository at commit `42cace6` and later: contracts, the worker, the orchestrator pipelines, prompts, scripts and the source-document register. **Nothing was run.** Counts (13 agents, 30 eval cases) are from the files. I did not check
 whether a producer for MOD-01 exists outside this repository, so "no entry point" means none here. The Operations platform is out of scope.
+
+## 8. Update 2026-11-27: decisions accepted, S1a built, and a mismatch that changes S1b
+
+### 8.1 Decisions accepted by the owner (2026-11-26)
+
+| #   | Accepted                                                                                                                                                                                                                                                                                                                     | Still needed                                                                                     |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| D1  | The teacher reviews their own **private** draft; the HoD approves anything shared or published. The draft is marked "AI draft, not yet reviewed" until the teacher approves.                                                                                                                                                 | Nothing.                                                                                         |
+| D2  | One **pre-ratified** unit blueprint for one subject, grade and term; not the full in-app chain.                                                                                                                                                                                                                              | The HoD's review and ratification of that blueprint (S0).                                        |
+| D3  | **Roles:** the principal countersigns the school template; the Intermediate Phase HoD ratifies the CAPS source references and the unit blueprint; the platform owner ratifies the CE-05 prompt (after a curriculum reviewer reads it). Production ratification uses each person's real identity, never the dev system actor. | **The names.** Roles were accepted; no person has been named, and none has ratified anything.    |
+| D4  | **Grade 4 Mathematics** as the default; the volunteer teacher's own Intermediate Phase class may override it.                                                                                                                                                                                                                | The volunteer teacher, and a check that Term 1 topics are complete in the supplied CAPS and ATP. |
+| D5  | A hard model-spend ceiling of roughly **US$100 to 150** for the pilot phase (about twice the worst case from CE-05's US$0.15 per-call cap), adjusted once real pricing is known; the **platform owner funds pilot calls**; the route refuses to run if no budget is wired.                                                   | Real provider pricing, and the budget wired in the gateway (T16).                                |
+
+### 8.2 S1a is built (Stage 149)
+
+An agent whose contract declares `grounding_check` or `template_fidelity` now **refuses to run, before any model call**, if the step executor has no checker for it (`GuardrailNotWiredError`). Before, the check was silently skipped. This covers all 13 agents and is tested over every real contract.
+The only way around it is `allowUnwiredGuardrails`, set by exactly two dev entry points (the dev agent runner and `scripts/dev-run-pipeline.ts`, which is confined to synthetic fixture tenants and refuses `NODE_ENV=production`). A source-scan test fails if anything else, in particular the production worker, sets it.
+**Consequence to expect:** until S1b, CE-01 to CE-09 and DW-02, DW-05, DW-07, DW-08 cannot run in the production worker. Nothing starts them there today, so nothing is lost, but it means **T05 cannot proceed past S1 until the checkers are wired**.
+
+### 8.3 What changes for S1b: the school's template does not fit CE-05's output
+
+The Benjamin Pine lesson plan template has **12 sections**: Lesson Header, Glossary, Prior Knowledge, Resources, Learning Intentions, Success Criteria, Activities, LI and SC Delivery, Formative Assessment, High Cognitive Demand Questions, Feedback, Learner Assessment.
+CE-05's output (`LessonPlan`) carries, per lesson, only `dayNumber`, `learningObjectives`, `activities`, `resources` and a source reference. By my reading at most four of the twelve sections have an obvious counterpart (Lesson Header, Learning Intentions, Resources, Activities) and eight have **none**.
+So a correctly wired template-fidelity checker would reject **every** CE-05 draft, and the prompt's promise to fill "the school's approved template" cannot be kept by the current schema. There is also no mapping from `LessonPlan` into the checker's `ArtefactStructure`, and the renderer that would do it is a stub (OQ-003).
+
+**New decision D6, for the owner:** how should a draft match the school's own template?
+
+| Option                                                                             | What it means                                                                                                                     |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **(a) Extend CE-05 to the template's sections (recommended)**                      | New output schema and prompt version 1.1.0, new eval cases, the prompt ratified again. The draft really is the school's template. |
+| (b) Keep CE-05's compact plan and add a renderer that maps it into the 12 sections | Smaller model change, but eight sections would be empty or invented by the renderer.                                              |
+| (c) Agree a reduced template with the school                                       | Quickest, but it changes a document the school supplied and ratifies something the school did not write.                          |
+
+Under (a) the HoD should also say **which sections the model may draft and which are left for the teacher** (for example Feedback and Learner Assessment are about real learners and may belong to the teacher). That is the school's call, not mine.
+
+### 8.4 Revised slice order
+
+S0 human prerequisites (start now, in parallel) → **S1a done** → S1b wire the **grounding** checker (feasible now: lessons already carry `source` references that can be checked against ratified L0 sources) → **D6** → S1b wire the **template-fidelity** checker once the schema and mapping exist → S2 production context builder → S3 pipeline → S4 entry point (after D5's budget is wired) → S5 review UI → S6 security and journey tests.
