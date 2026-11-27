@@ -52,22 +52,32 @@ export const ROLE_NAV: Record<Role, readonly NavLink[]> = {
   teacher: [
     { label: 'Studio', href: '/teacher' },
     { label: 'Approvals', href: '/approvals' },
+    { label: 'Assistant', href: '/assistant' },
   ],
   hod: [
     { label: 'Console', href: '/hod' },
     { label: 'Approvals', href: '/approvals' },
+    { label: 'Assistant', href: '/assistant' },
   ],
-  smt: [{ label: 'Dashboard', href: '/smt' }],
-  sbst: [{ label: 'Casebook', href: '/sbst' }],
+  smt: [
+    { label: 'Dashboard', href: '/smt' },
+    { label: 'Assistant', href: '/assistant' },
+  ],
+  sbst: [
+    { label: 'Casebook', href: '/sbst' },
+    { label: 'Assistant', href: '/assistant' },
+  ],
   sbst_chair: [
     { label: 'Casebook', href: '/sbst' },
     { label: 'Approvals', href: '/approvals' },
+    { label: 'Assistant', href: '/assistant' },
   ],
   admin: [
     { label: 'Prompts', href: '/admin/prompts' },
     { label: 'School Setup', href: '/admin/setup' },
     { label: 'Staff', href: '/admin/staff' },
     { label: 'Environment Docs', href: '/admin/env' },
+    { label: 'Assistant', href: '/assistant' },
   ],
   guardian: [{ label: 'Portal', href: '/guardian' }],
   learner: [{ label: 'Space', href: '/learner' }],
@@ -100,7 +110,7 @@ export function roleCanViewPath(role: Role, pathname: string): boolean {
     'sbst_chair',
     'admin',
   ];
-  if (schoolRoles.includes(role)) allowed.push('/approvals');
+  if (schoolRoles.includes(role)) allowed.push('/approvals', '/assistant');
   return allowed.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );

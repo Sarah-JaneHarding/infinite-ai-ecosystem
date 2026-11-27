@@ -425,3 +425,19 @@ describe('unknown routes', () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe('GET /v1/assistants', () => {
+  it('lists nothing when no assistant connector is configured', async () => {
+    const res = await fetch(`${baseUrl}/v1/assistants`);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ assistants: [] });
+  });
+
+  it('lists exactly the connectors it was booted with, and never calls a provider', async () => {
+    server.close();
+    await startAndWait({ assistants: [{ id: 'grok', label: 'Grok' }] });
+    const res = await fetch(`${baseUrl}/v1/assistants`);
+    expect(await res.json()).toEqual({ assistants: [{ id: 'grok', label: 'Grok' }] });
+    expect(routeChatCompletion).not.toHaveBeenCalled();
+  });
+});

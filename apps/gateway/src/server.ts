@@ -60,6 +60,8 @@ export interface GatewayServerDeps {
   readonly costEstimator: CostEstimator;
   readonly logger: Logger;
   readonly tracer: Tracer;
+  /** Assistant connectors this deployment holds credentials for — `GET /v1/assistants`. */
+  readonly assistants?: readonly { readonly id: string; readonly label: string }[];
 }
 
 function sendJson(res: ServerResponse, status: number, body: unknown): void {
@@ -510,6 +512,10 @@ export function createGatewayServer(
       try {
         if (req.method === 'GET' && req.url === '/health') {
           sendJson(res, 200, { status: 'ok' });
+          return;
+        }
+        if (req.method === 'GET' && req.url === '/v1/assistants') {
+          sendJson(res, 200, { assistants: deps.assistants ?? [] });
           return;
         }
         if (req.method === 'POST' && req.url === '/v1/chat/completions') {

@@ -942,6 +942,14 @@ needs decisions I should not guess (rule 4: no learner personal information may 
    is the only caller and takes tenant and actor from the verified session, never the body (`AssistantChatRequest` is strict for exactly this).
 4. **Budget and audit.** Provider pricing is still zero in `apps/gateway/src/index.ts`, so no per-school cost limit bites yet (OQ-055 D7).
 
+**Resolution 2026-11-26:** the owner asked for the panel to be built with the recommendations above. Built as follows: (1) school staff only — `/assistant` and
+`/api/assistant/*` are in the route table for teacher, hod, smt, sbst, sbst_chair and admin, and the handlers re-check; (2) every turn is scrubbed with
+`packages/deident` against the tenant lexicon, fails closed when `DB_ENCRYPTION_KEY` is unset, and the page shows the user what was removed and what the model
+received; (3) the web route is the only caller, taking tenant and actor from the verified session — the request schema is strict, so a body `tenantId`, `model` or
+`system` turn is a 400; (4) each turn writes an `assistant.chat` audit event holding counts, provider and tokens, never text. **Still open:** provider pricing is zero
+in the gateway, so no per-school cost ceiling bites yet (OQ-055 D7); the audit event has no `purpose` because the taxonomy has no "staff AI assistance" entry — add one if
+the school's POPIA officer wants it recorded under a declared purpose; and the gateway has no caller authentication on the wire (Stage 06), so it must stay on a private network.
+
 ### OQ-059 — CD cannot assume the AWS deploy role; the cause is in AWS, not in the workflow · 2026-11-26 · **role assumption now works; next blocker is the missing staging ECR repositories**
 
 **Update 2026-11-26 evening:** after the owner changed settings, CD run `45894174628` passed the role assumption and failed later with `The repository with name 'infinite-ai-staging-gateway' does not exist in the registry`: the staging stack, which creates the ECR repositories, has not been applied (CD never runs Terraform; a human does). The PR `Terraform plan` job also authenticates now. **Needs the owner:** apply `infra/terraform/environments/staging` (see `infra/terraform/README.md` and `docs/RUNBOOKS/aws-setup.md`), then re-run the failed CD job. The earlier text below is kept as history.
