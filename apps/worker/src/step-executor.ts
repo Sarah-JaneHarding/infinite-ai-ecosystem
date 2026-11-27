@@ -77,11 +77,38 @@ export type ToolHandler = (input: unknown) => Promise<unknown>;
 export type ToolHandlerMap = ReadonlyMap<string, ToolHandler>;
 
 export class StepExecutorError extends Error {
-  public override readonly name = 'StepExecutorError';
+  // Typed as `string` (not the literal) so a subclass can name itself.
+  public override readonly name: string = 'StepExecutorError';
   constructor(message: string) {
     super(message);
   }
 }
+
+/**
+ * An agent's contract declares a guardrail that this executor was given no checker for, so
+ * the call is refused BEFORE any model call (audit finding, Stage 149). Before this, a declared
+ * `grounding_check` or `template_fidelity` with no injected checker was silently skipped, so the
+ * output went out unchecked while the contract said it was checked: the same failure class as the
+ * missing age checker (R05 / T09), and it affected 13 agents. Wiring the real checkers is separate
+ * work; until it is done these agents refuse to run in production rather than run unguarded.
+ */
+export class GuardrailNotWiredError extends StepExecutorError {
+  public override readonly name = 'GuardrailNotWiredError';
+  constructor(
+    public readonly agentId: string,
+    public readonly guardrail: DeclaredInjectedGuardrail,
+    stepId: string,
+  ) {
+    super(
+      `Agent "${agentId}" (step "${stepId}") declares the "${guardrail}" guardrail but no checker ` +
+        'is wired, so the call is refused before any model call. A declared guardrail is never ' +
+        'silently skipped.',
+    );
+  }
+}
+
+/** The two declared guardrails whose checker is injected rather than built in. */
+export type DeclaredInjectedGuardrail = 'grounding_check' | 'template_fidelity';
 
 /** An agent call's output failed a guardrail check. Carries the `Refusal` that caused it —
  * distinct from `StepExecutorError`, which means the call itself broke, not that its
@@ -158,6 +185,15 @@ export interface StepExecutorDeps {
    */
   readonly templateFidelityChecker?: TemplateFidelityChecker;
   /**
+   * DEV RUNNERS ONLY. When true, an agent that declares `grounding_check` or `template_fidelity`
+   * with no checker wired runs anyway (the check is not applied), which is how those agents behaved
+   * before Stage 149. Only the dev tooling sets it: `dev/agent-runner.ts` and the dev pipeline
+   * runner, which are confined to the seeded synthetic fixture tenants and refuse to run under
+   * NODE_ENV=production (`dev/dev-guard.ts`). The production worker never sets it, and a test fails
+   * if its wiring does. Leave it unset everywhere else: the default refuses.
+   */
+  readonly allowUnwiredGuardrails?: boolean;
+  /**
    * Called after a successful agent call when the contract declares `writesToBrain: true`.
    * The Brain write itself runs inside the caller's `withTenant` transaction — this is a
    * closure over that transaction created by `worker-host.ts` and injected here so the step
@@ -232,6 +268,9 @@ async function runAgentCall(
       `No agent contract registered for "${agentId}" (step "${stepId}").`,
     );
   }
+
+  // Fail closed on a declared guardrail with no checker, before the prompt is even read.
+  assertDeclaredGuardrailsWired(agentId, stepId, contract.guardrails, deps);
 
   const promptFile = path.join(
     deps.promptsRoot,
@@ -466,6 +505,24 @@ async function runAgentCall(
   }
 
   return output;
+}
+
+function assertDeclaredGuardrailsWired(
+  agentId: string,
+  stepId: string,
+  declared: readonly string[],
+  deps: StepExecutorDeps,
+): void {
+  if (deps.allowUnwiredGuardrails === true) return;
+  const injected: readonly (readonly [DeclaredInjectedGuardrail, unknown])[] = [
+    ['grounding_check', deps.groundingChecker],
+    ['template_fidelity', deps.templateFidelityChecker],
+  ];
+  for (const [guardrail, checker] of injected) {
+    if (declared.includes(guardrail) && checker === undefined) {
+      throw new GuardrailNotWiredError(agentId, guardrail, stepId);
+    }
+  }
 }
 
 async function runToolCall(

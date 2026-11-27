@@ -4,8 +4,8 @@
 # property, not a network one, but nothing here should be reachable from the public
 # internet directly either); public subnets hold only the ALB and the NAT gateways.
 #
-# A gateway VPC endpoint for S3 is included: the object-store module's bucket (Brain
-# snapshots, per docs/RUNBOOKS/region-loss.md) and ECR image pulls both cross it, and the
+# A gateway VPC endpoint for S3 is included: the object-store module's bucket and ECR
+# image pulls both cross it, and the
 # endpoint is free — routing that traffic through a NAT gateway instead would just be a
 # cost nobody chose.
 

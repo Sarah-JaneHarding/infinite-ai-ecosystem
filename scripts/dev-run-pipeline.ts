@@ -143,6 +143,10 @@ try {
           promptsRoot: resolvePromptsRoot(),
           gatewayBaseUrl: env.GATEWAY_BASE_URL,
           ageAppropriatenessCheckerFactory: buildAgeCheckerFactory(env.GATEWAY_BASE_URL),
+          // Dev runner only: `assertDevRun` above confines this to the seeded synthetic tenants and
+          // refuses NODE_ENV=production. The real grounding and template-fidelity checkers are not
+          // wired yet, so without this the CE and DW agents would refuse to run here.
+          allowUnwiredGuardrails: true,
         },
         timeoutMs: Number(flag('timeout-min') ?? '30') * 60_000,
         onStarted: (id) => console.log(`started run ${id} (in-process)`),

@@ -1,0 +1,455 @@
+{
+  "users": [
+    {
+      "username": "service-account-infinite-ai-provisioner",
+      "serviceAccountClientId": "infinite-ai-provisioner",
+      "enabled": true,
+      "clientRoles": {
+        "realm-management": ["manage-users", "query-users", "view-users", "view-realm"]
+      }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "infinite-ai-web",
+      "redirectUris": ["https://*.infinite-ai.co.za/*"],
+      "webOrigins": ["https://*.infinite-ai.co.za"],
+      "name": "Infinite AI Web",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "${KEYCLOAK_WEB_CLIENT_SECRET}",
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "access.token.lifespan": "300"
+      },
+      "protocolMappers": [
+        {
+          "name": "tenant_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "tenant_id",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "tenant_id",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "realm_roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "realm_access.roles",
+            "multivalued": "true",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "infinite-ai-worker",
+      "name": "Infinite AI Worker (service account)",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "secret": "${KEYCLOAK_WORKER_CLIENT_SECRET}",
+      "protocol": "openid-connect",
+      "attributes": {
+        "access.token.lifespan": "300"
+      }
+    },
+    {
+      "clientId": "infinite-ai-provisioner",
+      "name": "Infinite AI Provisioner (service account: manages users only)",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "secret": "${KEYCLOAK_PROVISIONER_CLIENT_SECRET}",
+      "protocol": "openid-connect",
+      "attributes": {
+        "access.token.lifespan": "300"
+      }
+    }
+  ],
+  "realm": "infinite-ai",
+  "enabled": true,
+  "displayName": "Infinite AI",
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "verifyEmail": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "refreshTokenMaxReuse": 0,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionMaxLifespan": 5184000,
+  "roles": {
+    "realm": [
+      {
+        "name": "teacher",
+        "description": "Classroom teacher — lesson delivery and learner interaction"
+      },
+      {
+        "name": "hod",
+        "description": "Head of Department — curriculum approval and teacher oversight"
+      },
+      {
+        "name": "smt",
+        "description": "School Management Team — whole-school oversight and reporting"
+      },
+      {
+        "name": "sbst",
+        "description": "School-Based Support Team — learner support and SIAS coordination"
+      },
+      {
+        "name": "sbst_chair",
+        "description": "SBST chair — confirms the SBST's draft minutes; held alongside sbst (OQ-046)"
+      },
+      {
+        "name": "admin",
+        "description": "School administrator — operational, non-instructional access"
+      },
+      {
+        "name": "guardian",
+        "description": "Parent or legal guardian — consent management and learner reports"
+      },
+      {
+        "name": "learner",
+        "description": "Enrolled learner — own data and personalised content only"
+      },
+      {
+        "name": "platform_support",
+        "description": "Infinite AI support staff — read-only, no learner PII"
+      },
+      {
+        "name": "platform_admin",
+        "description": "Infinite AI platform administrators — provisioning and billing only"
+      }
+    ]
+  },
+  "defaultRoles": [],
+  "requiredCredentials": ["password"],
+  "passwordPolicy": "length(12) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1)",
+  "browserSecurityHeaders": {
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';"
+  },
+  "eventsEnabled": true,
+  "eventsExpiration": 604800,
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": true,
+  "internationalizationEnabled": false,
+  "defaultLocale": "en",
+  "browserFlow": "browser-mfa",
+  "authenticationFlows": [
+    {
+      "alias": "browser-mfa",
+      "description": "Browser login. Password, then a one-time code for admin, smt and platform roles (OQ-036).",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "auth-cookie",
+          "authenticatorFlow": false,
+          "requirement": "ALTERNATIVE",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticatorFlow": true,
+          "requirement": "ALTERNATIVE",
+          "priority": 20,
+          "flowAlias": "browser-mfa forms",
+          "userSetupAllowed": false
+        }
+      ]
+    },
+    {
+      "alias": "browser-mfa forms",
+      "description": "Username and password, then conditional OTP.",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "auth-username-password-form",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticatorFlow": true,
+          "requirement": "CONDITIONAL",
+          "priority": 20,
+          "flowAlias": "browser-mfa otp admin",
+          "userSetupAllowed": false
+        },
+        {
+          "authenticatorFlow": true,
+          "requirement": "CONDITIONAL",
+          "priority": 30,
+          "flowAlias": "browser-mfa otp smt",
+          "userSetupAllowed": false
+        },
+        {
+          "authenticatorFlow": true,
+          "requirement": "CONDITIONAL",
+          "priority": 40,
+          "flowAlias": "browser-mfa otp platform_support",
+          "userSetupAllowed": false
+        },
+        {
+          "authenticatorFlow": true,
+          "requirement": "CONDITIONAL",
+          "priority": 50,
+          "flowAlias": "browser-mfa otp platform_admin",
+          "userSetupAllowed": false
+        },
+        {
+          "authenticatorFlow": true,
+          "requirement": "CONDITIONAL",
+          "priority": 60,
+          "flowAlias": "browser-mfa otp sbst_chair",
+          "userSetupAllowed": false
+        },
+        {
+          "authenticatorFlow": true,
+          "requirement": "CONDITIONAL",
+          "priority": 70,
+          "flowAlias": "browser-mfa otp hod",
+          "userSetupAllowed": false
+        }
+      ]
+    },
+    {
+      "alias": "browser-mfa otp admin",
+      "description": "One-time code required when the user holds the admin role.",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-role",
+          "authenticatorConfig": "mfa-role-admin",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": true
+        }
+      ]
+    },
+    {
+      "alias": "browser-mfa otp smt",
+      "description": "One-time code required when the user holds the smt role.",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-role",
+          "authenticatorConfig": "mfa-role-smt",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": true
+        }
+      ]
+    },
+    {
+      "alias": "browser-mfa otp platform_support",
+      "description": "One-time code required when the user holds the platform_support role.",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-role",
+          "authenticatorConfig": "mfa-role-platform_support",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": true
+        }
+      ]
+    },
+    {
+      "alias": "browser-mfa otp platform_admin",
+      "description": "One-time code required when the user holds the platform_admin role.",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-role",
+          "authenticatorConfig": "mfa-role-platform_admin",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": true
+        }
+      ]
+    },
+    {
+      "alias": "browser-mfa otp sbst_chair",
+      "description": "One-time code required when the user holds the sbst_chair role (OQ-046: the chair confirms minutes that become ratified Brain facts).",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-role",
+          "authenticatorConfig": "mfa-role-sbst_chair",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": true
+        }
+      ]
+    },
+    {
+      "alias": "browser-mfa otp hod",
+      "description": "One-time code required when the user holds the hod role (owner decision 2026-11-26: the HoD's approval is the human gate every generated artefact passes through).",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-role",
+          "authenticatorConfig": "mfa-role-hod",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "auth-otp-form",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": true
+        }
+      ]
+    }
+  ],
+  "authenticatorConfig": [
+    {
+      "alias": "mfa-role-admin",
+      "config": {
+        "condUserRole": "admin",
+        "negate": "false"
+      }
+    },
+    {
+      "alias": "mfa-role-smt",
+      "config": {
+        "condUserRole": "smt",
+        "negate": "false"
+      }
+    },
+    {
+      "alias": "mfa-role-platform_support",
+      "config": {
+        "condUserRole": "platform_support",
+        "negate": "false"
+      }
+    },
+    {
+      "alias": "mfa-role-platform_admin",
+      "config": {
+        "condUserRole": "platform_admin",
+        "negate": "false"
+      }
+    },
+    {
+      "alias": "mfa-role-sbst_chair",
+      "config": {
+        "condUserRole": "sbst_chair",
+        "negate": "false"
+      }
+    },
+    {
+      "alias": "mfa-role-hod",
+      "config": {
+        "condUserRole": "hod",
+        "negate": "false"
+      }
+    }
+  ],
+  "requiredActions": [
+    {
+      "alias": "CONFIGURE_TOTP",
+      "name": "Configure OTP",
+      "providerId": "CONFIGURE_TOTP",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 10
+    },
+    {
+      "alias": "VERIFY_EMAIL",
+      "name": "Verify Email",
+      "providerId": "VERIFY_EMAIL",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 50
+    }
+  ]
+}
