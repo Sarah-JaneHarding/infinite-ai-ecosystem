@@ -83,9 +83,17 @@ terraform/
    terraform init
    terraform apply \
      -var 'github_repository=Sarah-JaneHarding/infinite-ai-ecosystem' \
+     -var 'github_oidc_repository=Sarah-JaneHarding@188106373/infinite-ai-ecosystem@1315427849' \
      -var 'github_branches=["main"]' \
      -var 'github_environments=["staging"]'
    ```
+
+   `github_oidc_repository` is the repository as GitHub writes it into the token's subject. This repository's
+   tokens use the immutable-ID form (`owner@ownerId/repo@repoId`), so a trust policy written as `owner/repo`
+   is refused with "Not authorized to perform sts:AssumeRoleWithWebIdentity". Confirm the value from the `sub`
+   claim of a failed run, and leave the variable unset for a repository that uses the plain form. Re-running
+   the bootstrap with it changes only the two roles' trust policies (in place); if the plan shows anything being
+   created, you are not in the directory that holds the bootstrap's state: stop.
 
    `github_environments` lists the GitHub Actions environments the deploy role trusts. A
    job that declares `environment: staging` is identified to AWS by environment, not by

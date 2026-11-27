@@ -408,7 +408,8 @@ Open <http://localhost:3000> and press the Keycloak sign-in button. Each account
 fixture (no real person) in the demo school **Kleinbos Primary**. Password: the
 `SEED_USER_PASSWORD` printed in Part 4.1 — Keycloak makes you choose a new one on first login
 per account (12+ characters with upper, lower, digit and symbol). Use a private window per
-role, or sign out between them.
+role, or sign out between them. `admin.dev`, `smt.dev`, `hod.dev`, `chair.dev` and the two platform logins also ask you to set up an
+authenticator app the first time and for a code on every sign-in after (`docs/DEV_SETUP.md`).
 
 | Username               | Sees                                                       | Direct URL                                                                     |
 | ---------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
