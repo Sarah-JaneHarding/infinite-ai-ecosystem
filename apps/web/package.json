@@ -18,8 +18,10 @@
   },
   "dependencies": {
     "@infinite-ai/brain": "0.1.0",
+    "@infinite-ai/contracts": "0.1.0",
     "@infinite-ai/curriculum-seed": "0.1.0",
     "@infinite-ai/db": "0.1.0",
+    "@infinite-ai/deident": "0.1.0",
     "@infinite-ai/design-system": "0.1.0",
     "@infinite-ai/orchestrator": "0.1.0",
     "@infinite-ai/school-setup": "0.1.0",
