@@ -13,8 +13,12 @@ import { z } from 'zod';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-/** Maximum cards per class session. */
-export const MAX_CARDS = 40;
+/**
+ * Maximum cards per class session. Codes are `LTA-` plus the card number
+ * zero-padded to two digits, so cards 1–99 keep their two-digit codes and
+ * card 100 is `LTA-100`.
+ */
+export const MAX_CARDS = 100;
 
 /** Number of answer orientations per card (A / B / C / D). */
 export const CARD_SIDES = 4;
@@ -59,7 +63,7 @@ export type ScanResult = z.infer<typeof ScanResult>;
  *
  * The card `code` is a short, deterministic, human-readable token derived
  * from the card number — no randomness, so the same set can be reprinted
- * from the same parameters. Format: "LTA-{padded cardNumber}".
+ * from the same parameters. Format: "LTA-{cardNumber padded to width 2}".
  */
 export function generateCardSet(count: number): readonly Card[] {
   if (!Number.isInteger(count) || count < 1 || count > MAX_CARDS) {

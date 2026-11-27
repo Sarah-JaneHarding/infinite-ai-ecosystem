@@ -7,7 +7,7 @@ belong to whichever caller adopts this package.
 ## What's here
 
 - `cards.ts` — `CardSide` (A/B/C/D), `Card`/`ScanResult`, and `generateCardSet()`: each
-  learner gets a physical card (1–`MAX_CARDS`, 40 by default) with a deterministic code;
+  learner gets a physical card (1–`MAX_CARDS`, 100 by default) with a deterministic code;
   no real learner name or ID is stored, only the card number linkage happens outside this
   package after de-identification.
 - `session.ts` — `Question` (2–4 options, correct side must be among them, sides must be
