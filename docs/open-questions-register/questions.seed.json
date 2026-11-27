@@ -185,6 +185,11 @@
         "at": "2026-11-15T00:00:00.000Z",
         "kind": "raised",
         "text": "Loaded from docs/OPEN_QUESTIONS.md into the register."
+      },
+      {
+        "at": "2026-11-27T00:00:00.000Z",
+        "kind": "resolved",
+        "text": "Decision: keep as built, no second administrator (routed to executive; no rule matched, so a founder decision, 2026-11-27). One active administrator other than the person can reinstate. Revisit if a school group tenant is onboarded. No code change."
       }
     ],
     "id": "OQ-047",
@@ -198,9 +203,15 @@
     "reason": "Reinstating restores the ability to decide approval gates, which is the argument for a second administrator. Suspending needed none.",
     "recommendation": "Keep as built for the pilot. A small primary may have a single administrator, and a second-admin rule would make reinstatement impossible there. Revisit if a school group tenant is onboarded.",
     "recommendedIndex": 0,
+    "review": {
+      "actions": ["Recorded in docs/OPEN_QUESTIONS.md and docs/STAGE_LOG.md."],
+      "at": "2026-11-27T00:00:00.000Z",
+      "summary": "Decision: keep as built, no second administrator (routed to executive; no rule matched, so a founder decision, 2026-11-27). One active administrator other than the person can reinstate. Revisit if a school group tenant is onboarded. No code change.",
+      "verdict": "accepted"
+    },
     "source": "docs/OPEN_QUESTIONS.md · OQ-047",
     "stage": "Stage 135",
-    "status": "partial",
+    "status": "resolved",
     "suggestions": [
       "Keep as built: one other administrator can reinstate.",
       "Require a second administrator to confirm, like smt and admin grants."

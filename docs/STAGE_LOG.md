@@ -11870,6 +11870,8 @@ pass locally.
 
 **Not done.** A second-administrator requirement for reinstating (see OQ-047 assumption 3).
 
+**Update 2026-11-27.** The owner accepted assumption 3: no second administrator is required (OQ-047 resolved, keep as built). Not doing it is now the decision, not a gap. Revisit if a school group tenant is onboarded.
+
 | Exit gate item                                              | Result                          |
 | ----------------------------------------------------------- | ------------------------------- |
 | Only an administrator other than the person can reinstate   | PASS (unit; rules; integration) |

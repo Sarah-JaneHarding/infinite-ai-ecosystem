@@ -744,7 +744,7 @@ whether a new role is wanted, which is its own design (guardians and learners we
 CI check that every pipeline's `requiredRole` is a role provisioning can grant would stop this recurring; it needs the
 answer above first, since today three steps would fail it.
 
-### OQ-047 — reinstating a suspended account · 2026-11-12 · DECIDED 2026-11-12 (Stage 135)
+### OQ-047 — reinstating a suspended account · 2026-11-12 · DECIDED 2026-11-12 (Stage 135) · RESOLVED 2026-11-27
 
 Found building the suspend and offboard actions (`docs/PROVISIONING_DESIGN.md` §4.5, Stage 131). `setAccountStatus` moves an
 account to `SUSPENDED` or `OFFBOARDED` and nothing moves it back: a suspended account stays suspended, and the data layer refuses to
@@ -755,6 +755,11 @@ admin UI therefore offers Suspend with a warning that it cannot be undone from t
 other than the person (the same rule as suspending), roles unchanged by the suspension itself, audited as its own event; and whether
 reinstating needs a second administrator (the argument for it is that it restores the ability to decide gates; the argument against is
 that suspending needed none). Until then a wrongly suspended person needs a database change by an operator.
+
+**Resolution 2026-11-27 (founder, routed to executive; no rule matched):** keep as built. Reinstating a suspended account needs **no second
+administrator**: one active administrator other than the person can do it. Assumption 3 is accepted; no code change. Reason: a small primary
+may have a single administrator, and a second-administrator rule would make reinstatement impossible there. **Revisit if a school group
+tenant is onboarded.**
 
 ### OQ-048 — the Keycloak integration needs four owner decisions before step 7 is built · 2026-11-12
 
